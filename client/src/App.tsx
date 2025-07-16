@@ -9,6 +9,7 @@ import { LanguageProvider, useLanguage } from "@/components/language-provider";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { Auth } from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
+import { Nutrition } from "./pages/nutrition";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -86,12 +87,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           {user ? <Dashboard user={user} /> : <div>Loading...</div>}
         </Route>
         <Route path="/nutrition">
-          <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold mb-4">Nutrition Tracking</h1>
-              <p className="text-gray-600 dark:text-gray-400">Coming soon...</p>
-            </div>
-          </div>
+          {user ? <Nutrition user={user} /> : <div>Loading...</div>}
         </Route>
         <Route path="/training">
           <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">

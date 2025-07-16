@@ -117,7 +117,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/nutrition/log", async (req, res) => {
     try {
-      const logData = insertNutritionLogSchema.parse(req.body);
+      const logData = {
+        ...req.body,
+        date: new Date(req.body.date)
+      };
       const log = await storage.createNutritionLog(logData);
       res.json(log);
     } catch (error: any) {
@@ -166,6 +169,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       res.json(goal);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // AI nutrition analysis
+  app.post("/api/nutrition/analyze", async (req, res) => {
+    try {
+      const { foodDescription, quantity, unit } = req.body;
+      
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ message: "OpenAI API key not configured" });
+      }
+
+      // Import the analyzeNutrition function from services
+      const { analyzeNutrition } = await import("./services/openai");
+      
+      const analysis = await analyzeNutrition(
+        foodDescription, 
+        quantity || 1, 
+        unit || "serving"
+      );
+      
+      res.json(analysis);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }

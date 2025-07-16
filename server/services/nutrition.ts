@@ -1,5 +1,5 @@
 import { storage } from "../storage";
-import { analyzeNutrition, calculateMacros } from "./openai";
+import { analyzeNutrition } from "./openai";
 import type { InsertNutritionLog, InsertNutritionGoal } from "@shared/schema";
 
 export interface NutritionSummary {

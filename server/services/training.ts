@@ -1,5 +1,6 @@
 import { storage } from "../storage";
-import { generateTrainingAdjustment } from "./openai";
+// Note: Training AI features will be implemented later
+// import { generateTrainingAdjustment } from "./openai";
 import type { InsertWorkoutSession, InsertAutoRegulationFeedback } from "@shared/schema";
 
 export interface TrainingStats {
