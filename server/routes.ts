@@ -247,21 +247,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/feedback", async (req, res) => {
+  app.get("/api/training/sessions/:userId", async (req, res) => {
     try {
-      const feedbackData = insertAutoRegulationFeedbackSchema.parse(req.body);
-      const result = await storage.createAutoRegulationFeedback(feedbackData);
+      const userId = parseInt(req.params.userId);
+      const sessions = await storage.getWorkoutSessions(userId);
+      res.json(sessions);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/training/exercises", async (req, res) => {
+    try {
+      const exercises = await storage.getExercises();
+      res.json(exercises);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/training/session/complete", async (req, res) => {
+    try {
+      const sessionData = req.body;
+      const result = await createWorkoutSession(sessionData.userId, sessionData);
       res.json(result);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  app.post("/api/training/session", async (req, res) => {
+  app.post("/api/training/auto-regulation", async (req, res) => {
     try {
-      const sessionData = req.body;
-      const session = await storage.createWorkoutSession(sessionData);
-      res.json(session);
+      const feedbackData = req.body;
+      const result = await processAutoRegulation(
+        feedbackData.sessionId,
+        feedbackData.userId,
+        {
+          pumpQuality: feedbackData.pumpQuality,
+          muscleSoreness: feedbackData.muscleSoreness,
+          perceivedEffort: feedbackData.perceivedEffort,
+          energyLevel: feedbackData.energyLevel,
+          sleepQuality: feedbackData.sleepQuality,
+        }
+      );
+      res.json(result);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
