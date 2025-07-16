@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
-import { Calendar, Activity, Target, TrendingUp } from "lucide-react";
+import { NutritionLogger } from "@/components/nutrition-logger";
+import { Calendar, Activity, Target, TrendingUp, Plus } from "lucide-react";
 
 interface User {
   id: number;
@@ -18,6 +20,8 @@ interface DashboardProps {
 
 export function Dashboard({ user }: DashboardProps) {
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
+  const [showNutritionLogger, setShowNutritionLogger] = useState(false);
 
   const { data: nutritionSummary } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id],
@@ -174,8 +178,9 @@ export function Dashboard({ user }: DashboardProps) {
             <CardContent className="space-y-4">
               <Button 
                 className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                onClick={() => window.location.hash = '#/nutrition'}
+                onClick={() => setShowNutritionLogger(true)}
               >
+                <Plus className="w-4 h-4 mr-2" />
                 {t("log_food")}
               </Button>
               <Button 
@@ -210,6 +215,18 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Nutrition Logger Modal */}
+        {showNutritionLogger && (
+          <NutritionLogger 
+            userId={user.id}
+            onComplete={() => {
+              setShowNutritionLogger(false);
+              // Refresh nutrition data on dashboard
+              queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+            }}
+          />
+        )}
       </div>
     </div>
   );
