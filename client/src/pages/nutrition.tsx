@@ -10,8 +10,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MacroChart } from "@/components/macro-chart";
-import { Plus, Search, Trash2, Calendar } from "lucide-react";
 import { NutritionLogger } from "@/components/nutrition-logger";
+import { MealPlanner } from "@/components/meal-planner";
+import { WeeklyNutritionGoals } from "@/components/weekly-nutrition-goals";
+import { MealTimingSetup } from "@/components/meal-timing-setup";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Search, Trash2, Calendar } from "lucide-react";
 
 interface User {
   id: number;
@@ -294,6 +298,29 @@ export function Nutrition({ user }: NutritionProps) {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Enhanced RP Diet Coach Features */}
+        <div className="mt-8">
+          <Tabs defaultValue="planner" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="planner">{t("RP Meal Planner")}</TabsTrigger>
+              <TabsTrigger value="goals">{t("Weekly Goals")}</TabsTrigger>
+              <TabsTrigger value="timing">{t("Meal Timing")}</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="planner">
+              <MealPlanner userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="goals">
+              <WeeklyNutritionGoals userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="timing">
+              <MealTimingSetup userId={user.id} />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Nutrition Logger Modal */}

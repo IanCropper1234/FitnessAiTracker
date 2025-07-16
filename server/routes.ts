@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { initializeExercises } from "./data/exercises";
+import { initializeNutritionDatabase } from "./data/nutrition-seed";
 import { searchFoodDatabase, getFoodByBarcode } from "./data/foods";
 import { getNutritionSummary, logFood, generateNutritionGoal, searchFood } from "./services/nutrition";
 import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorkoutPlan } from "./services/training";
@@ -11,6 +12,7 @@ import bcrypt from "bcrypt";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize data
   await initializeExercises();
+  await initializeNutritionDatabase();
 
   // Auth routes
   app.post("/api/auth/signup", async (req, res) => {
@@ -340,6 +342,209 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(req.params.userId);
       const logs = await storage.getWeightLogs(userId);
       res.json(logs);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Enhanced Nutrition Routes - RP Diet Coach Features
+  
+  // Food Categories
+  app.get("/api/food/categories", async (req, res) => {
+    try {
+      const macroType = req.query.macroType as string;
+      
+      if (macroType) {
+        const categories = await storage.getFoodCategoriesByMacroType(macroType);
+        res.json(categories);
+      } else {
+        const categories = await storage.getFoodCategories();
+        res.json(categories);
+      }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Food Items
+  app.get("/api/food/items", async (req, res) => {
+    try {
+      const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : null;
+      const search = req.query.search as string;
+      
+      if (search) {
+        const items = await storage.searchFoodItems(search);
+        res.json(items);
+      } else if (categoryId) {
+        const items = await storage.getFoodItemsByCategory(categoryId);
+        res.json(items);
+      } else {
+        const items = await storage.getFoodItems();
+        res.json(items);
+      }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/food/barcode/:barcode", async (req, res) => {
+    try {
+      const barcode = req.params.barcode;
+      const item = await storage.getFoodItemByBarcode(barcode);
+      
+      if (!item) {
+        return res.status(404).json({ message: "Food item not found" });
+      }
+      
+      res.json(item);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Meal Planning
+  app.get("/api/meal-plans/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const date = req.query.date ? new Date(req.query.date as string) : new Date();
+      
+      const plans = await storage.getMealPlans(userId, date);
+      res.json(plans);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/meal-plans", async (req, res) => {
+    try {
+      const planData = req.body;
+      const plan = await storage.createMealPlan(planData);
+      res.json(plan);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/meal-plans/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const planData = req.body;
+      const plan = await storage.updateMealPlan(id, planData);
+      
+      if (!plan) {
+        return res.status(404).json({ message: "Meal plan not found" });
+      }
+      
+      res.json(plan);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/meal-plans/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteMealPlan(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Meal plan not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Weekly Nutrition Goals
+  app.get("/api/weekly-nutrition-goal/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const weekStartDate = req.query.weekStartDate ? new Date(req.query.weekStartDate as string) : null;
+      
+      let goal;
+      if (weekStartDate) {
+        goal = await storage.getWeeklyNutritionGoal(userId, weekStartDate);
+      } else {
+        goal = await storage.getCurrentWeeklyNutritionGoal(userId);
+      }
+      
+      res.json(goal);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/weekly-nutrition-goal", async (req, res) => {
+    try {
+      const goalData = req.body;
+      const goal = await storage.createWeeklyNutritionGoal(goalData);
+      res.json(goal);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Diet Phases
+  app.get("/api/diet-phases/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const activeOnly = req.query.activeOnly === 'true';
+      
+      if (activeOnly) {
+        const phase = await storage.getActiveDietPhase(userId);
+        res.json(phase);
+      } else {
+        const phases = await storage.getDietPhases(userId);
+        res.json(phases);
+      }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/diet-phases", async (req, res) => {
+    try {
+      const phaseData = req.body;
+      const phase = await storage.createDietPhase(phaseData);
+      res.json(phase);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Meal Timing Preferences
+  app.get("/api/meal-timing/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const preferences = await storage.getMealTimingPreferences(userId);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/meal-timing", async (req, res) => {
+    try {
+      const preferencesData = req.body;
+      const preferences = await storage.createMealTimingPreferences(preferencesData);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/meal-timing/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const preferencesData = req.body;
+      const preferences = await storage.updateMealTimingPreferences(userId, preferencesData);
+      
+      if (!preferences) {
+        return res.status(404).json({ message: "Meal timing preferences not found" });
+      }
+      
+      res.json(preferences);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }

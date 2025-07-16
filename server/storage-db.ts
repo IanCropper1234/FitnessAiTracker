@@ -1,14 +1,18 @@
 import { 
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
+  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
   type WorkoutSession, type InsertWorkoutSession, type WorkoutExercise, type InsertWorkoutExercise,
-  type AutoRegulationFeedback, type InsertAutoRegulationFeedback, type WeightLog, type InsertWeightLog
+  type AutoRegulationFeedback, type InsertAutoRegulationFeedback, type WeightLog, type InsertWeightLog,
+  type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
+  type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
+  type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte, lte, desc, isNull, like, ilike } from "drizzle-orm";
 import type { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -254,5 +258,179 @@ export class DatabaseStorage implements IStorage {
       .values(log)
       .returning();
     return newLog;
+  }
+
+  // Enhanced Nutrition Features
+  // Food Categories & Items
+  async getFoodCategories(): Promise<FoodCategory[]> {
+    return await db.select().from(foodCategories);
+  }
+
+  async getFoodCategoriesByMacroType(macroType: string): Promise<FoodCategory[]> {
+    return await db.select().from(foodCategories).where(eq(foodCategories.macroType, macroType));
+  }
+
+  async createFoodCategory(category: InsertFoodCategory): Promise<FoodCategory> {
+    const [newCategory] = await db
+      .insert(foodCategories)
+      .values(category)
+      .returning();
+    return newCategory;
+  }
+
+  async getFoodItems(): Promise<FoodItem[]> {
+    return await db.select().from(foodItems);
+  }
+
+  async getFoodItemsByCategory(categoryId: number): Promise<FoodItem[]> {
+    return await db.select().from(foodItems).where(eq(foodItems.categoryId, categoryId));
+  }
+
+  async searchFoodItems(query: string): Promise<FoodItem[]> {
+    return await db.select().from(foodItems)
+      .where(ilike(foodItems.name, `%${query}%`));
+  }
+
+  async getFoodItemByBarcode(barcode: string): Promise<FoodItem | undefined> {
+    const [item] = await db.select().from(foodItems).where(eq(foodItems.barcode, barcode));
+    return item || undefined;
+  }
+
+  async createFoodItem(item: InsertFoodItem): Promise<FoodItem> {
+    const [newItem] = await db
+      .insert(foodItems)
+      .values(item)
+      .returning();
+    return newItem;
+  }
+
+  // Meal Planning
+  async getMealPlans(userId: number, date: Date): Promise<MealPlan[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return await db.select().from(mealPlans)
+      .where(and(
+        eq(mealPlans.userId, userId),
+        gte(mealPlans.targetDate, startOfDay),
+        lte(mealPlans.targetDate, endOfDay)
+      ));
+  }
+
+  async createMealPlan(plan: InsertMealPlan): Promise<MealPlan> {
+    const [newPlan] = await db
+      .insert(mealPlans)
+      .values(plan)
+      .returning();
+    return newPlan;
+  }
+
+  async updateMealPlan(id: number, plan: Partial<InsertMealPlan>): Promise<MealPlan | undefined> {
+    const [updatedPlan] = await db
+      .update(mealPlans)
+      .set(plan)
+      .where(eq(mealPlans.id, id))
+      .returning();
+    return updatedPlan || undefined;
+  }
+
+  async deleteMealPlan(id: number): Promise<boolean> {
+    const result = await db.delete(mealPlans).where(eq(mealPlans.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Weekly Nutrition Goals
+  async getWeeklyNutritionGoal(userId: number, weekStartDate: Date): Promise<WeeklyNutritionGoal | undefined> {
+    const [goal] = await db.select().from(weeklyNutritionGoals)
+      .where(and(
+        eq(weeklyNutritionGoals.userId, userId),
+        eq(weeklyNutritionGoals.weekStartDate, weekStartDate)
+      ));
+    return goal || undefined;
+  }
+
+  async getCurrentWeeklyNutritionGoal(userId: number): Promise<WeeklyNutritionGoal | undefined> {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    return await this.getWeeklyNutritionGoal(userId, startOfWeek);
+  }
+
+  async createWeeklyNutritionGoal(goal: InsertWeeklyNutritionGoal): Promise<WeeklyNutritionGoal> {
+    const [newGoal] = await db
+      .insert(weeklyNutritionGoals)
+      .values(goal)
+      .returning();
+    return newGoal;
+  }
+
+  async updateWeeklyNutritionGoal(id: number, goal: Partial<InsertWeeklyNutritionGoal>): Promise<WeeklyNutritionGoal | undefined> {
+    const [updatedGoal] = await db
+      .update(weeklyNutritionGoals)
+      .set(goal)
+      .where(eq(weeklyNutritionGoals.id, id))
+      .returning();
+    return updatedGoal || undefined;
+  }
+
+  // Diet Phases
+  async getActiveDietPhase(userId: number): Promise<DietPhase | undefined> {
+    const [phase] = await db.select().from(dietPhases)
+      .where(and(
+        eq(dietPhases.userId, userId),
+        eq(dietPhases.isActive, true)
+      ));
+    return phase || undefined;
+  }
+
+  async getDietPhases(userId: number): Promise<DietPhase[]> {
+    return await db.select().from(dietPhases)
+      .where(eq(dietPhases.userId, userId))
+      .orderBy(desc(dietPhases.createdAt));
+  }
+
+  async createDietPhase(phase: InsertDietPhase): Promise<DietPhase> {
+    const [newPhase] = await db
+      .insert(dietPhases)
+      .values(phase)
+      .returning();
+    return newPhase;
+  }
+
+  async updateDietPhase(id: number, phase: Partial<InsertDietPhase>): Promise<DietPhase | undefined> {
+    const [updatedPhase] = await db
+      .update(dietPhases)
+      .set(phase)
+      .where(eq(dietPhases.id, id))
+      .returning();
+    return updatedPhase || undefined;
+  }
+
+  // Meal Timing Preferences
+  async getMealTimingPreferences(userId: number): Promise<MealTimingPreference | undefined> {
+    const [preferences] = await db.select().from(mealTimingPreferences)
+      .where(eq(mealTimingPreferences.userId, userId));
+    return preferences || undefined;
+  }
+
+  async createMealTimingPreferences(preferences: InsertMealTimingPreference): Promise<MealTimingPreference> {
+    const [newPreferences] = await db
+      .insert(mealTimingPreferences)
+      .values(preferences)
+      .returning();
+    return newPreferences;
+  }
+
+  async updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined> {
+    const [updatedPreferences] = await db
+      .update(mealTimingPreferences)
+      .set(preferences)
+      .where(eq(mealTimingPreferences.userId, userId))
+      .returning();
+    return updatedPreferences || undefined;
   }
 }

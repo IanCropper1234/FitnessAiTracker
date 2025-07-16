@@ -47,7 +47,88 @@ export const nutritionLogs = pgTable("nutrition_logs", {
   carbs: decimal("carbs", { precision: 6, scale: 2 }).notNull(),
   fat: decimal("fat", { precision: 6, scale: 2 }).notNull(),
   mealType: text("meal_type"), // breakfast, lunch, dinner, snack
+  mealOrder: integer("meal_order").default(1), // 1-6 for meal timing
+  scheduledTime: timestamp("scheduled_time"), // planned meal time
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Enhanced nutrition schema for RP Diet Coach methodology
+export const foodCategories = pgTable("food_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  macroType: text("macro_type").notNull(), // protein, carb, fat, mixed
+  priority: integer("priority").default(0), // for sorting
+  translations: jsonb("translations"),
+});
+
+export const foodItems = pgTable("food_items", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  barcode: text("barcode"),
+  categoryId: integer("category_id").references(() => foodCategories.id),
+  calories: decimal("calories", { precision: 8, scale: 2 }).notNull(),
+  protein: decimal("protein", { precision: 6, scale: 2 }).notNull(),
+  carbs: decimal("carbs", { precision: 6, scale: 2 }).notNull(),
+  fat: decimal("fat", { precision: 6, scale: 2 }).notNull(),
+  servingSize: text("serving_size").notNull(),
+  servingUnit: text("serving_unit").notNull(),
+  translations: jsonb("translations"),
+  isRestaurant: boolean("is_restaurant").default(false),
+  restaurantChain: text("restaurant_chain"),
+});
+
+export const mealPlans = pgTable("meal_plans", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  date: timestamp("date").notNull(),
+  mealNumber: integer("meal_number").notNull(), // 1-6
+  scheduledTime: timestamp("scheduled_time").notNull(),
+  targetCalories: decimal("target_calories", { precision: 8, scale: 2 }),
+  targetProtein: decimal("target_protein", { precision: 6, scale: 2 }),
+  targetCarbs: decimal("target_carbs", { precision: 6, scale: 2 }),
+  targetFat: decimal("target_fat", { precision: 6, scale: 2 }),
+  isPreWorkout: boolean("is_pre_workout").default(false),
+  isPostWorkout: boolean("is_post_workout").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  weekStartDate: timestamp("week_start_date").notNull(),
+  dailyCalories: integer("daily_calories").notNull(),
+  protein: decimal("protein", { precision: 6, scale: 2 }).notNull(),
+  carbs: decimal("carbs", { precision: 6, scale: 2 }).notNull(),
+  fat: decimal("fat", { precision: 6, scale: 2 }).notNull(),
+  adjustmentReason: text("adjustment_reason"), // weight_loss_slow, weight_gain_fast, etc.
+  previousWeight: decimal("previous_weight", { precision: 5, scale: 2 }),
+  currentWeight: decimal("current_weight", { precision: 5, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const dietPhases = pgTable("diet_phases", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  phase: text("phase").notNull(), // cutting, bulking, maintenance
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  targetWeightChange: decimal("target_weight_change", { precision: 5, scale: 2 }),
+  weeklyWeightChangeTarget: decimal("weekly_weight_change_target", { precision: 4, scale: 2 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const mealTimingPreferences = pgTable("meal_timing_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  wakeTime: text("wake_time").notNull(), // HH:MM format
+  sleepTime: text("sleep_time").notNull(), // HH:MM format
+  workoutTime: text("workout_time"), // HH:MM format
+  workoutDays: text("workout_days").array(), // ['monday', 'wednesday', 'friday']
+  mealsPerDay: integer("meals_per_day").default(4),
+  preWorkoutMeals: integer("pre_workout_meals").default(1),
+  postWorkoutMeals: integer("post_workout_meals").default(1),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const trainingPrograms = pgTable("training_programs", {
@@ -129,6 +210,14 @@ export const insertWorkoutExerciseSchema = createInsertSchema(workoutExercises).
 export const insertAutoRegulationFeedbackSchema = createInsertSchema(autoRegulationFeedback).omit({ id: true, createdAt: true });
 export const insertWeightLogSchema = createInsertSchema(weightLogs).omit({ id: true, createdAt: true });
 
+// Enhanced nutrition schema insert types
+export const insertFoodCategorySchema = createInsertSchema(foodCategories).omit({ id: true });
+export const insertFoodItemSchema = createInsertSchema(foodItems).omit({ id: true });
+export const insertMealPlanSchema = createInsertSchema(mealPlans).omit({ id: true, createdAt: true });
+export const insertWeeklyNutritionGoalSchema = createInsertSchema(weeklyNutritionGoals).omit({ id: true, createdAt: true });
+export const insertDietPhaseSchema = createInsertSchema(dietPhases).omit({ id: true, createdAt: true });
+export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPreferences).omit({ id: true, updatedAt: true });
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -150,3 +239,17 @@ export type AutoRegulationFeedback = typeof autoRegulationFeedback.$inferSelect;
 export type InsertAutoRegulationFeedback = z.infer<typeof insertAutoRegulationFeedbackSchema>;
 export type WeightLog = typeof weightLogs.$inferSelect;
 export type InsertWeightLog = z.infer<typeof insertWeightLogSchema>;
+
+// Enhanced nutrition types
+export type FoodCategory = typeof foodCategories.$inferSelect;
+export type InsertFoodCategory = z.infer<typeof insertFoodCategorySchema>;
+export type FoodItem = typeof foodItems.$inferSelect;
+export type InsertFoodItem = z.infer<typeof insertFoodItemSchema>;
+export type MealPlan = typeof mealPlans.$inferSelect;
+export type InsertMealPlan = z.infer<typeof insertMealPlanSchema>;
+export type WeeklyNutritionGoal = typeof weeklyNutritionGoals.$inferSelect;
+export type InsertWeeklyNutritionGoal = z.infer<typeof insertWeeklyNutritionGoalSchema>;
+export type DietPhase = typeof dietPhases.$inferSelect;
+export type InsertDietPhase = z.infer<typeof insertDietPhaseSchema>;
+export type MealTimingPreference = typeof mealTimingPreferences.$inferSelect;
+export type InsertMealTimingPreference = z.infer<typeof insertMealTimingPreferenceSchema>;

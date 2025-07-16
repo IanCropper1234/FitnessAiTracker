@@ -1,11 +1,15 @@
 import { 
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
+  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
   type WorkoutSession, type InsertWorkoutSession, type WorkoutExercise, type InsertWorkoutExercise,
-  type AutoRegulationFeedback, type InsertAutoRegulationFeedback, type WeightLog, type InsertWeightLog
+  type AutoRegulationFeedback, type InsertAutoRegulationFeedback, type WeightLog, type InsertWeightLog,
+  type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
+  type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
+  type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference
 } from "@shared/schema";
 
 export interface IStorage {
@@ -61,6 +65,41 @@ export interface IStorage {
   // Weight Logs
   getWeightLogs(userId: number): Promise<WeightLog[]>;
   createWeightLog(log: InsertWeightLog): Promise<WeightLog>;
+
+  // Enhanced Nutrition Features
+  // Food Categories & Items
+  getFoodCategories(): Promise<FoodCategory[]>;
+  getFoodCategoriesByMacroType(macroType: string): Promise<FoodCategory[]>;
+  createFoodCategory(category: InsertFoodCategory): Promise<FoodCategory>;
+  
+  getFoodItems(): Promise<FoodItem[]>;
+  getFoodItemsByCategory(categoryId: number): Promise<FoodItem[]>;
+  searchFoodItems(query: string): Promise<FoodItem[]>;
+  getFoodItemByBarcode(barcode: string): Promise<FoodItem | undefined>;
+  createFoodItem(item: InsertFoodItem): Promise<FoodItem>;
+  
+  // Meal Planning
+  getMealPlans(userId: number, date: Date): Promise<MealPlan[]>;
+  createMealPlan(plan: InsertMealPlan): Promise<MealPlan>;
+  updateMealPlan(id: number, plan: Partial<InsertMealPlan>): Promise<MealPlan | undefined>;
+  deleteMealPlan(id: number): Promise<boolean>;
+  
+  // Weekly Nutrition Goals
+  getWeeklyNutritionGoal(userId: number, weekStartDate: Date): Promise<WeeklyNutritionGoal | undefined>;
+  getCurrentWeeklyNutritionGoal(userId: number): Promise<WeeklyNutritionGoal | undefined>;
+  createWeeklyNutritionGoal(goal: InsertWeeklyNutritionGoal): Promise<WeeklyNutritionGoal>;
+  updateWeeklyNutritionGoal(id: number, goal: Partial<InsertWeeklyNutritionGoal>): Promise<WeeklyNutritionGoal | undefined>;
+  
+  // Diet Phases
+  getActiveDietPhase(userId: number): Promise<DietPhase | undefined>;
+  getDietPhases(userId: number): Promise<DietPhase[]>;
+  createDietPhase(phase: InsertDietPhase): Promise<DietPhase>;
+  updateDietPhase(id: number, phase: Partial<InsertDietPhase>): Promise<DietPhase | undefined>;
+  
+  // Meal Timing Preferences
+  getMealTimingPreferences(userId: number): Promise<MealTimingPreference | undefined>;
+  createMealTimingPreferences(preferences: InsertMealTimingPreference): Promise<MealTimingPreference>;
+  updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -189,7 +228,9 @@ export class MemStorage implements IStorage {
       ...log, 
       id: this.currentNutritionLogId++, 
       createdAt: new Date(),
-      mealType: log.mealType || null
+      mealType: log.mealType || null,
+      mealOrder: log.mealOrder || null,
+      scheduledTime: log.scheduledTime || null
     };
     this.nutritionLogs.set(newLog.id, newLog);
     return newLog;
