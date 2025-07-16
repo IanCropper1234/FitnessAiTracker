@@ -19,7 +19,7 @@ interface AuthProps {
   onSuccess: (user: User) => void;
 }
 
-export function Auth({ onSuccess }: AuthProps) {
+export default function Auth({ onSuccess }: AuthProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);

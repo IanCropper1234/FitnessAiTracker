@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { LanguageProvider, useLanguage } from "@/components/language-provider";
 import { BottomNavigation } from "@/components/bottom-navigation";
-import { Auth } from "./pages/auth";
+import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
@@ -78,7 +78,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       
       <Switch>
         <Route path="/auth">
-          <Auth onSuccess={(userData) => {
+          <Auth onSuccess={(userData: User) => {
             setUser(userData);
             setLocation("/dashboard");
           }} />
