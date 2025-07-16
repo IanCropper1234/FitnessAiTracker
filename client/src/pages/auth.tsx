@@ -26,11 +26,7 @@ export function Auth({ onSuccess }: AuthProps) {
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
-      const response = await apiRequest("/api/auth/signup", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
-      });
+      const response = await apiRequest("POST", "/api/auth/signup", data);
       return response.json();
     },
     onSuccess: (data) => {
@@ -51,11 +47,7 @@ export function Auth({ onSuccess }: AuthProps) {
 
   const signInMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      const response = await apiRequest("/api/auth/signin", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
-      });
+      const response = await apiRequest("POST", "/api/auth/signin", data);
       return response.json();
     },
     onSuccess: (data) => {
