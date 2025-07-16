@@ -33,19 +33,46 @@ Preferred communication style: Simple, everyday language.
 - Multi-language support (English, Spanish, Japanese, Chinese Simplified/Traditional, German)
 - Theme switching (light/dark mode)
 
-#### Nutrition Module
+#### Nutrition Module (RP Diet Coach Inspired)
+**Current Implementation:**
 - AI-powered food recognition and calorie calculation
 - Macro tracking (protein, carbs, fat) with visual charts
 - Meal logging with barcode scanning capability
 - Goal setting and progress tracking
 - Daily nutrition summaries and adherence monitoring
 
-#### Training Module
+**Missing RP Diet Coach Features:**
+- Personalized meal timing based on training schedule and lifestyle
+- Weekly macro adjustments based on progress and metabolism changes
+- Meal-by-meal macro breakdown with specific food recommendations
+- Automatic shopping list generation from meal plans
+- Diet adaptation algorithms that respond to weekly weigh-ins
+- Food database categorization (protein sources, carb sources, fat sources)
+- Macro flexing between meals for social eating
+- Restaurant integration and dining out recommendations
+- Sleep/wake schedule integration for meal timing
+- Dietary filter support (vegetarian, vegan, paleo, gluten-free, etc.)
+
+#### Training Module (RP Hypertrophy App Inspired)
+**Current Implementation:**
 - Evidence-based workout programming
 - Auto-regulation feedback system for training adjustments
 - Exercise database with multi-language translations
 - Workout session tracking with sets, reps, and weight logging
 - Training statistics and progress visualization
+
+**Missing RP Training Coach Features:**
+- Volume landmarks methodology (MV, MEV, MAV, MRV) implementation
+- Mesocycle periodization with accumulation and deload phases
+- 45+ pre-built training templates with body part specialization
+- Automated progressive overload calculations
+- Pump and soreness feedback integration for volume adjustments
+- 250+ exercise technique videos
+- Secondary progression options (weight vs. reps focus)
+- Volume progression algorithms based on individual recovery
+- Training template customization with exercise swapping
+- RPE (Rate of Perceived Exertion) and RIR (Reps in Reserve) tracking
+- Systemic fatigue monitoring and deload recommendations
 
 #### Internationalization
 - i18next for translation management
@@ -95,12 +122,103 @@ Preferred communication style: Simple, everyday language.
 - Automated migrations through `drizzle-kit push`
 - Type-safe database operations with full TypeScript integration
 
+### Required Database Schema Enhancements for RP Methodology
+
+**Nutrition Module Enhancements:**
+- `meal_plans` table: structured meal planning with timing
+- `food_categories` table: protein/carb/fat source classification
+- `weekly_nutrition_goals` table: adaptive macro adjustments
+- `diet_phases` table: cutting/bulking/maintenance phases
+- `meal_timing_preferences` table: training/sleep schedule integration
+
+**Training Module Enhancements:**
+- `volume_landmarks` table: MV/MEV/MAV/MRV per muscle group per user
+- `mesocycles` table: training block management
+- `training_templates` table: pre-built program library
+- `workout_feedback` table: pump/soreness/RPE tracking
+- `deload_phases` table: automated recovery periods
+- `muscle_groups` table: comprehensive anatomy mapping
+- `exercise_progressions` table: load/volume advancement tracking
+
 ### Future Integrations
 The codebase is structured to support planned n8n workflow automation for:
 - Automated nutrition report generation
 - Multi-language content translation pipelines
 - Email notifications and user engagement workflows
 - Batch processing of AI-generated content
+
+## MVP Development Plan (Enhanced RP Methodology)
+
+### Phase 1: Core Foundation (✅ Completed)
+- ✅ Authentication system with session management
+- ✅ Multi-language support (6 languages)
+- ✅ PostgreSQL database with Drizzle ORM
+- ✅ Basic nutrition logging with AI analysis
+- ✅ Responsive UI with dark/light themes
+
+### Phase 2: Enhanced Nutrition Module (Current Priority)
+**Goal**: Implement RP Diet Coach methodology for sophisticated nutrition coaching
+
+**Priority Features:**
+1. **Meal Timing & Scheduling**
+   - Training schedule integration for pre/post workout nutrition
+   - Sleep/wake schedule based meal timing
+   - Personalized meal frequency (3-6 meals/day)
+
+2. **Advanced Macro Management**
+   - Weekly macro adjustments based on progress tracking
+   - Meal-by-meal macro distribution algorithms
+   - Macro flexing system for social eating scenarios
+
+3. **Food Database Enhancement**
+   - Categorize foods by macro type (protein/carb/fat sources)
+   - Add portion size recommendations
+   - Restaurant and dining out options
+
+4. **Progress-Based Adaptation**
+   - Weekly weigh-in analysis
+   - Metabolism tracking and adjustments
+   - Automated diet phase transitions (cutting/bulking/maintenance)
+
+### Phase 3: RP Training Module Implementation
+**Goal**: Build comprehensive hypertrophy training system using RP methodology
+
+**Core Volume Landmarks System:**
+1. **Volume Landmark Framework**
+   - MV (Maintenance Volume) calculations per muscle group
+   - MEV (Minimum Effective Volume) starting points
+   - MAV (Maximum Adaptive Volume) progression zones
+   - MRV (Maximum Recoverable Volume) limits
+
+2. **Mesocycle Periodization**
+   - 3-12 week accumulation phases
+   - Automated deload week programming
+   - Volume progression algorithms
+   - Fatigue accumulation monitoring
+
+3. **Auto-Regulation System**
+   - Pump quality feedback (1-10 scale)
+   - Soreness tracking (DOMS monitoring)
+   - RPE/RIR integration for load progression
+   - Systemic fatigue indicators
+
+4. **Training Templates**
+   - 20+ pre-built mesocycle templates
+   - Body part specialization programs
+   - Training frequency options (3-6x/week per muscle)
+   - Exercise substitution system
+
+### Phase 4: Advanced Features
+1. **AI-Powered Coaching**
+   - Personalized program modifications
+   - Progress prediction algorithms
+   - Plateau detection and solutions
+
+2. **Analytics & Reporting**
+   - Training volume analytics
+   - Nutrition adherence reports
+   - Progress photography integration
+   - Performance trend analysis
 
 ## Recent Changes
 
@@ -121,6 +239,9 @@ The codebase is structured to support planned n8n workflow automation for:
 - ✅ Integrated OpenAI for smart food recognition and macro analysis
 - ✅ Created comprehensive nutrition tracking interface with charts
 - ✅ Added meal categorization and food log management
+- ✅ Fixed React export errors and resolved build issues
+- ✅ Analyzed RP Training Coach and RP Diet Coach methodology
+- ✅ Updated project plan with comprehensive RP feature requirements
 
 ## Key Architectural Decisions
 
