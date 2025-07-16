@@ -62,7 +62,7 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
     protein: 150,
     carbs: 200,
     fat: 65,
-    adjustmentReason: "",
+    adjustmentReason: "on_track",
     currentWeight: 0,
   });
 
@@ -357,7 +357,7 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
             <div className="space-y-2">
               <Label htmlFor="adjustmentReason">{t("Adjustment Reason")}</Label>
               <Select 
-                value={formData.adjustmentReason} 
+                value={formData.adjustmentReason || "on_track"} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, adjustmentReason: value }))}
               >
                 <SelectTrigger>

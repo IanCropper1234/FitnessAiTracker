@@ -81,7 +81,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedMeal, setSelectedMeal] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Fetch food categories
   const { data: categories = [] } = useQuery<FoodCategory[]>({
@@ -94,7 +94,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
     queryFn: () => {
       const params = new URLSearchParams();
       if (searchQuery) params.append("search", searchQuery);
-      if (selectedCategory) params.append("categoryId", selectedCategory);
+      if (selectedCategory && selectedCategory !== "all") params.append("categoryId", selectedCategory);
       return apiRequest(`/api/food/items?${params.toString()}`);
     },
   });
@@ -386,7 +386,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
                 <SelectValue placeholder={t("All categories")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t("All categories")}</SelectItem>
+                <SelectItem value="all">{t("All categories")}</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     {category.name}
