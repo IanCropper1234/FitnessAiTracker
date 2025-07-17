@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, Save, Loader2, Settings, Activity, Target, Utensils } from "lucide-react";
+import { User, Save, Loader2, Settings, Activity, Target, Utensils, Clock, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import type { MealTimingPreference, InsertMealTimingPreference } from "@shared/schema";
 
 interface UserProfileData {
   userId: number;
@@ -20,6 +22,17 @@ interface UserProfileData {
   activityLevel?: string;
   fitnessGoal?: string;
   dietaryRestrictions?: string[];
+}
+
+interface MealTimingData {
+  userId: number;
+  wakeTime: string;
+  sleepTime: string;
+  workoutTime?: string;
+  workoutDays: string[];
+  mealsPerDay: number;
+  preWorkoutMeals: number;
+  postWorkoutMeals: number;
 }
 
 interface UserProfileProps {
@@ -41,11 +54,32 @@ export function UserProfile({ userId }: UserProfileProps) {
     dietaryRestrictions: []
   });
 
+  const [mealTimingData, setMealTimingData] = useState<MealTimingData>({
+    userId: userId,
+    wakeTime: '07:00',
+    sleepTime: '23:00',
+    workoutTime: '',
+    workoutDays: [],
+    mealsPerDay: 4,
+    preWorkoutMeals: 1,
+    postWorkoutMeals: 1
+  });
+
   // Fetch current user profile
   const { data: userProfileResponse, isLoading } = useQuery({
     queryKey: ['/api/user/profile', userId],
     queryFn: async () => {
       const response = await fetch(`/api/user/profile/${userId}`);
+      return response.json();
+    }
+  });
+
+  // Fetch meal timing preferences
+  const { data: mealTimingResponse } = useQuery({
+    queryKey: ['/api/meal-timing', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/meal-timing/${userId}`);
+      if (!response.ok) return null;
       return response.json();
     }
   });
@@ -65,6 +99,22 @@ export function UserProfile({ userId }: UserProfileProps) {
       });
     }
   }, [userProfileResponse]);
+
+  // Update meal timing data when preferences load
+  useEffect(() => {
+    if (mealTimingResponse) {
+      setMealTimingData({
+        userId: userId,
+        wakeTime: mealTimingResponse.wakeTime || '07:00',
+        sleepTime: mealTimingResponse.sleepTime || '23:00',
+        workoutTime: mealTimingResponse.workoutTime || '',
+        workoutDays: mealTimingResponse.workoutDays || [],
+        mealsPerDay: mealTimingResponse.mealsPerDay || 4,
+        preWorkoutMeals: mealTimingResponse.preWorkoutMeals || 1,
+        postWorkoutMeals: mealTimingResponse.postWorkoutMeals || 1
+      });
+    }
+  }, [mealTimingResponse]);
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -130,8 +180,41 @@ export function UserProfile({ userId }: UserProfileProps) {
     }
   };
 
+  // Update meal timing preferences mutation
+  const updateMealTimingMutation = useMutation({
+    mutationFn: async (data: MealTimingData) => {
+      // Check if preferences exist
+      const exists = mealTimingResponse;
+      
+      if (exists) {
+        return await apiRequest("PUT", `/api/meal-timing/${userId}`, data);
+      } else {
+        return await apiRequest("POST", "/api/meal-timing", data);
+      }
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Meal timing preferences updated successfully!"
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/meal-timing'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update meal timing preferences",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleSaveProfile = () => {
     updateProfileMutation.mutate(profileData);
+  };
+
+  const handleSaveMealTiming = () => {
+    updateMealTimingMutation.mutate(mealTimingData);
   };
 
   const handleDietaryRestrictionChange = (restriction: string, checked: boolean) => {
@@ -140,6 +223,15 @@ export function UserProfile({ userId }: UserProfileProps) {
       dietaryRestrictions: checked
         ? [...(prev.dietaryRestrictions || []), restriction]
         : (prev.dietaryRestrictions || []).filter(r => r !== restriction)
+    }));
+  };
+
+  const handleWorkoutDayChange = (day: string, checked: boolean) => {
+    setMealTimingData(prev => ({
+      ...prev,
+      workoutDays: checked
+        ? [...prev.workoutDays, day]
+        : prev.workoutDays.filter(d => d !== day)
     }));
   };
 
@@ -180,7 +272,20 @@ export function UserProfile({ userId }: UserProfileProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      <Tabs defaultValue="basic-info" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="basic-info" className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            Basic Info
+          </TabsTrigger>
+          <TabsTrigger value="meal-timing" className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Meal Timing
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="basic-info" className="space-y-6 mt-6">
+          {/* Header */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -416,6 +521,233 @@ export function UserProfile({ userId }: UserProfileProps) {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="meal-timing" className="space-y-6 mt-6">
+          {/* Meal Timing Header */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                Meal Timing & Schedule
+              </CardTitle>
+              <CardDescription>
+                Personalize your meal timing for optimal nutrition and training support
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Sleep & Wake Schedule */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Daily Schedule
+                </CardTitle>
+                <CardDescription>
+                  Set your wake and sleep times for optimal meal timing
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-black dark:text-white">Wake Time *</Label>
+                    <Input
+                      type="time"
+                      value={mealTimingData.wakeTime}
+                      onChange={(e) => setMealTimingData(prev => ({ ...prev, wakeTime: e.target.value }))}
+                      className="border-gray-300 dark:border-gray-600"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-black dark:text-white">Sleep Time *</Label>
+                    <Input
+                      type="time"
+                      value={mealTimingData.sleepTime}
+                      onChange={(e) => setMealTimingData(prev => ({ ...prev, sleepTime: e.target.value }))}
+                      className="border-gray-300 dark:border-gray-600"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-black dark:text-white">Workout Time (Optional)</Label>
+                  <Input
+                    type="time"
+                    value={mealTimingData.workoutTime || ''}
+                    onChange={(e) => setMealTimingData(prev => ({ ...prev, workoutTime: e.target.value }))}
+                    className="border-gray-300 dark:border-gray-600"
+                    placeholder="Select your usual workout time"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Workout Days */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Workout Schedule
+                </CardTitle>
+                <CardDescription>
+                  Select your typical workout days for meal timing optimization
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-2">
+                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
+                    <div key={day} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={day}
+                        checked={mealTimingData.workoutDays.includes(day)}
+                        onCheckedChange={(checked) => handleWorkoutDayChange(day, checked as boolean)}
+                      />
+                      <Label
+                        htmlFor={day}
+                        className="text-sm font-medium text-black dark:text-white capitalize cursor-pointer"
+                      >
+                        {day}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Meal Frequency */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Utensils className="w-5 h-5" />
+                  Meal Frequency
+                </CardTitle>
+                <CardDescription>
+                  Configure your preferred meal schedule and workout nutrition
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label className="text-black dark:text-white">Meals Per Day</Label>
+                  <Select value={mealTimingData.mealsPerDay.toString()} onValueChange={(value) => setMealTimingData(prev => ({ ...prev, mealsPerDay: parseInt(value) }))}>
+                    <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3">3 meals</SelectItem>
+                      <SelectItem value="4">4 meals</SelectItem>
+                      <SelectItem value="5">5 meals</SelectItem>
+                      <SelectItem value="6">6 meals</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-black dark:text-white">Pre-Workout Meals</Label>
+                    <Select value={mealTimingData.preWorkoutMeals.toString()} onValueChange={(value) => setMealTimingData(prev => ({ ...prev, preWorkoutMeals: parseInt(value) }))}>
+                      <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">None</SelectItem>
+                        <SelectItem value="1">1 meal</SelectItem>
+                        <SelectItem value="2">2 meals</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-black dark:text-white">Post-Workout Meals</Label>
+                    <Select value={mealTimingData.postWorkoutMeals.toString()} onValueChange={(value) => setMealTimingData(prev => ({ ...prev, postWorkoutMeals: parseInt(value) }))}>
+                      <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">None</SelectItem>
+                        <SelectItem value="1">1 meal</SelectItem>
+                        <SelectItem value="2">2 meals</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Meal Timing Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Schedule Summary
+                </CardTitle>
+                <CardDescription>
+                  Preview your personalized meal timing schedule
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Wake Time:</span>
+                    <span className="font-medium text-black dark:text-white">{mealTimingData.wakeTime}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Sleep Time:</span>
+                    <span className="font-medium text-black dark:text-white">{mealTimingData.sleepTime}</span>
+                  </div>
+                  {mealTimingData.workoutTime && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Workout Time:</span>
+                      <span className="font-medium text-black dark:text-white">{mealTimingData.workoutTime}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Daily Meals:</span>
+                    <span className="font-medium text-black dark:text-white">{mealTimingData.mealsPerDay}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Workout Days:</span>
+                    <span className="font-medium text-black dark:text-white">
+                      {mealTimingData.workoutDays.length > 0 
+                        ? mealTimingData.workoutDays.map(d => d.slice(0, 3)).join(', ')
+                        : 'None selected'
+                      }
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Save Meal Timing Button */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Your meal timing preferences will optimize meal scheduling in Diet Builder
+                  </p>
+                </div>
+                <Button
+                  onClick={handleSaveMealTiming}
+                  disabled={updateMealTimingMutation.isPending}
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                >
+                  {updateMealTimingMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Meal Timing
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
