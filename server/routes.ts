@@ -679,38 +679,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Diet Goals Routes (for meal planning integration)
-  app.get("/api/diet-goals/:userId", async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const dietGoals = await storage.getUserDietGoals(userId);
-      res.json(dietGoals);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
 
-  app.post("/api/diet-goals", async (req, res) => {
-    try {
-      const dietGoalsData = req.body;
-      const dietGoals = await storage.createUserDietGoals(dietGoalsData);
-      res.json(dietGoals);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
-
-  app.put("/api/diet-goals/:userId", async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const updateData = req.body;
-      
-      const dietGoals = await storage.updateUserDietGoals(userId, updateData);
-      res.json(dietGoals);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
 
   // Weekly Nutrition Goals
   app.get("/api/weekly-nutrition-goal/:userId", async (req, res) => {
@@ -922,7 +891,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/diet-goals/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const goal = await storage.getDietGoal(userId);
+      const goal = await storage.getUserDietGoals(userId);
       res.json(goal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -931,7 +900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/diet-goals", async (req, res) => {
     try {
-      const goal = await storage.createDietGoal(req.body);
+      const goal = await storage.createUserDietGoals(req.body);
       res.json(goal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -941,7 +910,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/diet-goals/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const goal = await storage.updateDietGoal(userId, req.body);
+      const goal = await storage.updateUserDietGoals(userId, req.body);
       
       if (!goal) {
         return res.status(404).json({ message: "Diet goal not found" });
