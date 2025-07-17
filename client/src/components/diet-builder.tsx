@@ -222,21 +222,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Enable auto-regulation when user has complete profile data
   useEffect(() => {
-    console.log('Profile data check:', { userProfile, bodyMetrics, currentDietGoal });
     if (userProfile && !currentDietGoal) {
       const hasCompleteData = userProfile.age && userProfile.height && userProfile.activityLevel && 
                                (bodyMetrics?.length > 0 || userProfile.weight);
       
-      console.log('Complete data check:', { 
-        age: userProfile.age, 
-        height: userProfile.height, 
-        activityLevel: userProfile.activityLevel,
-        hasWeight: bodyMetrics?.length > 0 || userProfile.weight,
-        hasCompleteData 
-      });
-      
       if (hasCompleteData && !dietGoal.autoRegulation) {
-        console.log('Enabling auto-regulation');
         setDietGoal(prev => ({ ...prev, autoRegulation: true }));
       }
     }
