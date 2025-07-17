@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity } from "lucide-react";
 import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
@@ -568,11 +569,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Update macros and calories when goal or adjustments change
   useEffect(() => {
+    if (!dietGoal.tdee) return; // Wait for TDEE to be available
+    
     // Start with original TDEE-based calories for the baseline
     const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'lose' ? 0.85 : dietGoal.goal === 'gain' ? 1.15 : 1));
     const macros = calculateMacros(originalCalories, dietGoal.goal, macroAdjustments);
     const adjustedCalories = (macros.protein * 4) + (macros.carbs * 4) + (macros.fat * 9);
     
+    // Update local state
     setDietGoal(prev => ({
       ...prev,
       targetCalories: Math.round(adjustedCalories),
@@ -580,6 +584,28 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       targetCarbs: macros.carbs,
       targetFat: macros.fat
     }));
+
+    // Only save to database if there are actual macro adjustments
+    if (macroAdjustments.protein !== 0 || macroAdjustments.carbs !== 0 || macroAdjustments.fat !== 0) {
+      // Debounce the database update to avoid too many requests
+      const timeoutId = setTimeout(() => {
+        saveDietGoalMutation.mutate({
+          ...dietGoal,
+          targetCalories: Math.round(adjustedCalories),
+          targetProtein: macros.protein,
+          targetCarbs: macros.carbs,
+          targetFat: macros.fat
+        }, {
+          onSuccess: () => {
+            // Invalidate nutrition-related queries to sync with dashboard
+            queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+          }
+        });
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
   }, [dietGoal.goal, dietGoal.tdee, macroAdjustments]);
 
   // Handle macro adjustment changes and update target calories accordingly
@@ -587,9 +613,27 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     setMacroAdjustments(prev => ({ ...prev, [macro]: value }));
   };
 
-  // Reset macro adjustments
+  // Reset macro adjustments and save to database
   const resetMacroAdjustments = () => {
     setMacroAdjustments({ protein: 0, carbs: 0, fat: 0 });
+    
+    // Reset to baseline macros in database
+    const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'lose' ? 0.85 : dietGoal.goal === 'gain' ? 1.15 : 1));
+    const baseMacros = calculateMacros(originalCalories, dietGoal.goal, { protein: 0, carbs: 0, fat: 0 });
+    
+    saveDietGoalMutation.mutate({
+      ...dietGoal,
+      targetCalories: originalCalories,
+      targetProtein: baseMacros.protein,
+      targetCarbs: baseMacros.carbs,
+      targetFat: baseMacros.fat
+    }, {
+      onSuccess: () => {
+        // Invalidate nutrition-related queries to sync with dashboard
+        queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      }
+    });
   };
 
   // Calculate current calorie total from macros
