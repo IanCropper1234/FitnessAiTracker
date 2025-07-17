@@ -105,6 +105,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     weeklyWeightTarget: 0
   });
   
+  // Macro Adjustment State
+  const [macroAdjustments, setMacroAdjustments] = useState({
+    protein: 0,
+    carbs: 0,
+    fat: 0
+  });
+  
   // Meal Plan State
   const [isEditingPlan, setIsEditingPlan] = useState(false);
   const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
@@ -524,8 +531,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   };
 
-  // Calculate macros based on calories and goal
-  const calculateMacros = (calories: number, goal: string) => {
+  // Calculate macros based on calories and goal with percentage adjustments
+  const calculateMacros = (calories: number, goal: string, adjustments = { protein: 0, carbs: 0, fat: 0 }) => {
     let proteinRatio, fatRatio, carbRatio;
     
     switch (goal) {
@@ -547,17 +554,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         break;
     }
 
+    // Apply percentage adjustments
+    const adjustedProteinRatio = proteinRatio * (1 + adjustments.protein / 100);
+    const adjustedCarbRatio = carbRatio * (1 + adjustments.carbs / 100);
+    const adjustedFatRatio = fatRatio * (1 + adjustments.fat / 100);
+
     return {
-      protein: Math.round((calories * proteinRatio) / 4), // 4 cal per gram
-      carbs: Math.round((calories * carbRatio) / 4),      // 4 cal per gram  
-      fat: Math.round((calories * fatRatio) / 9)          // 9 cal per gram
+      protein: Math.round((calories * adjustedProteinRatio) / 4), // 4 cal per gram
+      carbs: Math.round((calories * adjustedCarbRatio) / 4),      // 4 cal per gram  
+      fat: Math.round((calories * adjustedFatRatio) / 9)          // 9 cal per gram
     };
   };
 
-  // Update macros when calories or goal changes
+  // Update macros when calories, goal, or adjustments change
   useEffect(() => {
     if (dietGoal.autoRegulation) {
-      const macros = calculateMacros(dietGoal.targetCalories, dietGoal.goal);
+      const macros = calculateMacros(dietGoal.targetCalories, dietGoal.goal, macroAdjustments);
       setDietGoal(prev => ({
         ...prev,
         targetProtein: macros.protein,
@@ -565,7 +577,20 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         targetFat: macros.fat
       }));
     }
-  }, [dietGoal.targetCalories, dietGoal.goal, dietGoal.autoRegulation]);
+  }, [dietGoal.targetCalories, dietGoal.goal, dietGoal.autoRegulation, macroAdjustments]);
+
+  // Handle macro adjustment changes
+  const handleMacroAdjustment = (macro: 'protein' | 'carbs' | 'fat', value: number) => {
+    setMacroAdjustments(prev => ({
+      ...prev,
+      [macro]: value
+    }));
+  };
+
+  // Reset macro adjustments
+  const resetMacroAdjustments = () => {
+    setMacroAdjustments({ protein: 0, carbs: 0, fat: 0 });
+  };
 
   // Food search and meal plan functions
   const addToMealPlan = (food: FoodItem) => {
@@ -861,27 +886,109 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <div className="text-blue-700 dark:text-blue-300 font-medium">Protein</div>
-                    <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{dietGoal.targetProtein}g</div>
+                    <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{Number(dietGoal.targetProtein).toFixed(1)}g</div>
                     <div className="text-sm text-blue-600 dark:text-blue-400">
                       {Math.round((dietGoal.targetProtein * 4) / dietGoal.targetCalories * 100)}%
                     </div>
                   </div>
                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <div className="text-green-700 dark:text-green-300 font-medium">Carbs</div>
-                    <div className="text-2xl font-bold text-green-900 dark:text-green-100">{dietGoal.targetCarbs}g</div>
+                    <div className="text-2xl font-bold text-green-900 dark:text-green-100">{Number(dietGoal.targetCarbs).toFixed(1)}g</div>
                     <div className="text-sm text-green-600 dark:text-green-400">
                       {Math.round((dietGoal.targetCarbs * 4) / dietGoal.targetCalories * 100)}%
                     </div>
                   </div>
                   <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                     <div className="text-yellow-700 dark:text-yellow-300 font-medium">Fat</div>
-                    <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">{dietGoal.targetFat}g</div>
+                    <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">{Number(dietGoal.targetFat).toFixed(1)}g</div>
                     <div className="text-sm text-yellow-600 dark:text-yellow-400">
                       {Math.round((dietGoal.targetFat * 9) / dietGoal.targetCalories * 100)}%
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Macro Adjustment Section */}
+              {dietGoal.autoRegulation && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100">Macro Adjustments</h4>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Fine-tune your macro distribution with percentage adjustments
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={resetMacroAdjustments}
+                      className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Protein</Label>
+                        <span className="text-xs text-blue-700 dark:text-blue-300">{macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%</span>
+                      </div>
+                      <div className="px-3">
+                        <input
+                          type="range"
+                          min="-50"
+                          max="50"
+                          step="5"
+                          value={macroAdjustments.protein}
+                          onChange={(e) => handleMacroAdjustment('protein', Number(e.target.value))}
+                          className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-800"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Carbs</Label>
+                        <span className="text-xs text-blue-700 dark:text-blue-300">{macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%</span>
+                      </div>
+                      <div className="px-3">
+                        <input
+                          type="range"
+                          min="-50"
+                          max="50"
+                          step="5"
+                          value={macroAdjustments.carbs}
+                          onChange={(e) => handleMacroAdjustment('carbs', Number(e.target.value))}
+                          className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer dark:bg-green-800"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Fat</Label>
+                        <span className="text-xs text-blue-700 dark:text-blue-300">{macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%</span>
+                      </div>
+                      <div className="px-3">
+                        <input
+                          type="range"
+                          min="-50"
+                          max="50"
+                          step="5"
+                          value={macroAdjustments.fat}
+                          onChange={(e) => handleMacroAdjustment('fat', Number(e.target.value))}
+                          className="w-full h-2 bg-yellow-200 rounded-lg appearance-none cursor-pointer dark:bg-yellow-800"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 p-2 rounded">
+                    <strong>Live Preview:</strong> Protein {Number(dietGoal.targetProtein).toFixed(1)}g • Carbs {Number(dietGoal.targetCarbs).toFixed(1)}g • Fat {Number(dietGoal.targetFat).toFixed(1)}g
+                  </div>
+                </div>
+              )}
 
               <Button 
                 onClick={handleSaveDietGoal}
