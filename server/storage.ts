@@ -9,7 +9,8 @@ import {
   type AutoRegulationFeedback, type InsertAutoRegulationFeedback, type WeightLog, type InsertWeightLog,
   type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
-  type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference
+  type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
+  type BodyMetric, type InsertBodyMetric
 } from "@shared/schema";
 
 export interface IStorage {
@@ -100,6 +101,14 @@ export interface IStorage {
   getMealTimingPreferences(userId: number): Promise<MealTimingPreference | undefined>;
   createMealTimingPreferences(preferences: InsertMealTimingPreference): Promise<MealTimingPreference>;
   updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined>;
+  
+  // Body Metrics
+  getBodyMetrics(userId: number): Promise<BodyMetric[]>;
+  createBodyMetric(metric: InsertBodyMetric): Promise<BodyMetric>;
+  deleteBodyMetric(id: number): Promise<boolean>;
+  
+  // Nutrition Progression
+  getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {

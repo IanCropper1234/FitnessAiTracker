@@ -550,6 +550,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Open Food Facts Integration
+  app.get("/api/food/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.length < 3) {
+        return res.json([]);
+      }
+
+      // Search Open Food Facts API
+      const response = await fetch(
+        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments,serving_size,code`
+      );
+      
+      const data = await response.json();
+      
+      // Transform Open Food Facts data to our format
+      const foods = data.products?.map((product: any) => ({
+        id: product.code || `off_${Date.now()}_${Math.random()}`,
+        name: product.product_name || 'Unknown Product',
+        brand: product.brands,
+        calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
+        protein: Math.round(product.nutriments?.['proteins_100g'] || 0),
+        carbs: Math.round(product.nutriments?.['carbohydrates_100g'] || 0),
+        fat: Math.round(product.nutriments?.['fat_100g'] || 0),
+        serving_size: product.serving_size || '100g',
+        barcode: product.code,
+        source: 'openfoodfacts'
+      })).filter((food: any) => food.calories > 0) || [];
+
+      res.json(foods);
+    } catch (error: any) {
+      console.error('Open Food Facts API error:', error);
+      res.status(500).json({ message: 'Failed to search food database' });
+    }
+  });
+
+  // Body Metrics
+  app.get("/api/body-metrics/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const metrics = await storage.getBodyMetrics(userId);
+      res.json(metrics);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/body-metrics", async (req, res) => {
+    try {
+      const metricData = req.body;
+      const metric = await storage.createBodyMetric(metricData);
+      res.json(metric);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/body-metrics/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteBodyMetric(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Body metric not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Nutrition Progression
+  app.get("/api/nutrition/progression/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const startDate = new Date(req.query.start as string);
+      const endDate = new Date(req.query.end as string);
+      
+      const progression = await storage.getNutritionProgression(userId, startDate, endDate);
+      res.json(progression);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -11,9 +11,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { MacroChart } from "@/components/macro-chart";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { MealPlanner } from "@/components/meal-planner";
-import { WeeklyNutritionGoals } from "@/components/weekly-nutrition-goals";
-import { MealTimingSetup } from "@/components/meal-timing-setup";
+import { MacroOverview } from "@/components/macro-overview";
+import { DailyFoodLog } from "@/components/daily-food-log";
+import { DietBuilder } from "@/components/diet-builder";
+import { BodyTracking } from "@/components/body-tracking";
+import { NutritionProgression } from "@/components/nutrition-progression";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Trash2, Calendar } from "lucide-react";
 
@@ -300,25 +302,35 @@ export function Nutrition({ user }: NutritionProps) {
           </Card>
         </div>
 
-        {/* Enhanced RP Diet Coach Features */}
+        {/* Enhanced Nutrition Module */}
         <div className="mt-8">
-          <Tabs defaultValue="planner" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="planner">{t("RP Meal Planner")}</TabsTrigger>
-              <TabsTrigger value="goals">{t("Weekly Goals")}</TabsTrigger>
-              <TabsTrigger value="timing">{t("Meal Timing")}</TabsTrigger>
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="overview">Macro Overview</TabsTrigger>
+              <TabsTrigger value="foodlog">Daily Food Log</TabsTrigger>
+              <TabsTrigger value="builder">Diet Builder</TabsTrigger>
+              <TabsTrigger value="body">Body Tracking</TabsTrigger>
+              <TabsTrigger value="progression">Progression</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="planner">
-              <MealPlanner userId={user.id} />
+            <TabsContent value="overview">
+              <MacroOverview userId={user.id} />
             </TabsContent>
 
-            <TabsContent value="goals">
-              <WeeklyNutritionGoals userId={user.id} />
+            <TabsContent value="foodlog">
+              <DailyFoodLog userId={user.id} />
             </TabsContent>
 
-            <TabsContent value="timing">
-              <MealTimingSetup userId={user.id} />
+            <TabsContent value="builder">
+              <DietBuilder userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="body">
+              <BodyTracking userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="progression">
+              <NutritionProgression userId={user.id} />
             </TabsContent>
           </Tabs>
         </div>

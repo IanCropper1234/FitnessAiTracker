@@ -198,6 +198,23 @@ export const weightLogs = pgTable("weight_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Body Metrics table
+export const bodyMetrics = pgTable("body_metrics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  date: timestamp("date").notNull(),
+  weight: decimal("weight", { precision: 5, scale: 2 }),
+  bodyFatPercentage: decimal("body_fat_percentage", { precision: 4, scale: 2 }),
+  neck: decimal("neck", { precision: 5, scale: 2 }),
+  chest: decimal("chest", { precision: 5, scale: 2 }),
+  waist: decimal("waist", { precision: 5, scale: 2 }),
+  hips: decimal("hips", { precision: 5, scale: 2 }),
+  thigh: decimal("thigh", { precision: 5, scale: 2 }),
+  bicep: decimal("bicep", { precision: 5, scale: 2 }),
+  unit: text("unit", { enum: ["metric", "imperial"] }).notNull().default("metric"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true, updatedAt: true });
@@ -217,6 +234,7 @@ export const insertMealPlanSchema = createInsertSchema(mealPlans).omit({ id: tru
 export const insertWeeklyNutritionGoalSchema = createInsertSchema(weeklyNutritionGoals).omit({ id: true, createdAt: true });
 export const insertDietPhaseSchema = createInsertSchema(dietPhases).omit({ id: true, createdAt: true });
 export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPreferences).omit({ id: true, updatedAt: true });
+export const insertBodyMetricSchema = createInsertSchema(bodyMetrics).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -253,3 +271,5 @@ export type DietPhase = typeof dietPhases.$inferSelect;
 export type InsertDietPhase = z.infer<typeof insertDietPhaseSchema>;
 export type MealTimingPreference = typeof mealTimingPreferences.$inferSelect;
 export type InsertMealTimingPreference = z.infer<typeof insertMealTimingPreferenceSchema>;
+export type BodyMetric = typeof bodyMetrics.$inferSelect;
+export type InsertBodyMetric = z.infer<typeof insertBodyMetricSchema>;

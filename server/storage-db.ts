@@ -1,7 +1,7 @@
 import { 
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
-  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
+  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -9,7 +9,8 @@ import {
   type AutoRegulationFeedback, type InsertAutoRegulationFeedback, type WeightLog, type InsertWeightLog,
   type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
-  type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference
+  type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
+  type BodyMetric, type InsertBodyMetric
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
@@ -425,5 +426,57 @@ export class DatabaseStorage implements IStorage {
       .where(eq(mealTimingPreferences.userId, userId))
       .returning();
     return updatedPreferences || undefined;
+  }
+
+  // Body Metrics
+  async getBodyMetrics(userId: number): Promise<BodyMetric[]> {
+    return await db.select().from(bodyMetrics)
+      .where(eq(bodyMetrics.userId, userId))
+      .orderBy(desc(bodyMetrics.date));
+  }
+
+  async createBodyMetric(metric: InsertBodyMetric): Promise<BodyMetric> {
+    const [newMetric] = await db
+      .insert(bodyMetrics)
+      .values(metric)
+      .returning();
+    return newMetric;
+  }
+
+  async deleteBodyMetric(id: number): Promise<boolean> {
+    const result = await db.delete(bodyMetrics).where(eq(bodyMetrics.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Nutrition Progression
+  async getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]> {
+    const logs = await db.select().from(nutritionLogs)
+      .where(and(
+        eq(nutritionLogs.userId, userId),
+        gte(nutritionLogs.date, startDate),
+        lte(nutritionLogs.date, endDate)
+      ))
+      .orderBy(nutritionLogs.date);
+
+    // Group by date and sum macros
+    const dailyData = logs.reduce((acc: any, log: any) => {
+      const dateKey = log.date.toISOString().split('T')[0];
+      if (!acc[dateKey]) {
+        acc[dateKey] = {
+          date: dateKey,
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+        };
+      }
+      acc[dateKey].calories += Number(log.calories) || 0;
+      acc[dateKey].protein += Number(log.protein) || 0;
+      acc[dateKey].carbs += Number(log.carbs) || 0;
+      acc[dateKey].fat += Number(log.fat) || 0;
+      return acc;
+    }, {});
+
+    return Object.values(dailyData);
   }
 }
