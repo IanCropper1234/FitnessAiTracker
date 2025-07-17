@@ -413,10 +413,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     const isWorkoutDay = mealTimingPreferences.workoutDays?.includes(today) || false;
     
-    const totalCalories = dietGoal.targetCalories;
-    const totalProtein = dietGoal.targetProtein;
-    const totalCarbs = dietGoal.targetCarbs;
-    const totalFat = dietGoal.targetFat;
+    // Use saved diet goals from database, fallback to current state
+    const activeDietGoal = currentDietGoal || dietGoal;
+    const totalCalories = activeDietGoal.targetCalories;
+    const totalProtein = activeDietGoal.targetProtein;
+    const totalCarbs = activeDietGoal.targetCarbs;
+    const totalFat = activeDietGoal.targetFat;
     
     return mealSchedule.map(meal => {
       let caloriePercent, proteinPercent, carbPercent, fatPercent;
@@ -991,30 +993,68 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {distributeMacrosAcrossMeals().map((meal, index) => (
-                      <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-black dark:text-white">{meal.scheduledTime} - {meal.description}</span>
-                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{meal.targetCalories} cal</span>
+                  {!currentDietGoal ? (
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                        Please set up your diet goals first to see personalized macro distribution.
+                      </p>
+                      <Button
+                        onClick={() => setActiveTab('diet-goal')}
+                        className="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm"
+                        size="sm"
+                      >
+                        Set Diet Goals
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {distributeMacrosAcrossMeals().map((meal, index) => (
+                        <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium text-black dark:text-white">{meal.scheduledTime} - {meal.description}</span>
+                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{meal.targetCalories} cal</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            <div className="text-center">
+                              <div className="text-green-600 dark:text-green-400 font-medium">{meal.targetProtein}g</div>
+                              <div className="text-gray-500">Protein</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-orange-600 dark:text-orange-400 font-medium">{meal.targetCarbs}g</div>
+                              <div className="text-gray-500">Carbs</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-purple-600 dark:text-purple-400 font-medium">{meal.targetFat}g</div>
+                              <div className="text-gray-500">Fat</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
+                      ))}
+                      
+                      {/* Total Summary */}
+                      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Daily Totals</div>
+                        <div className="grid grid-cols-4 gap-2 text-xs">
                           <div className="text-center">
-                            <div className="text-green-600 dark:text-green-400 font-medium">{meal.targetProtein}g</div>
+                            <div className="font-medium text-blue-600 dark:text-blue-400">{currentDietGoal.targetCalories}</div>
+                            <div className="text-gray-500">Calories</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-medium text-green-600 dark:text-green-400">{currentDietGoal.targetProtein}g</div>
                             <div className="text-gray-500">Protein</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-orange-600 dark:text-orange-400 font-medium">{meal.targetCarbs}g</div>
+                            <div className="font-medium text-orange-600 dark:text-orange-400">{currentDietGoal.targetCarbs}g</div>
                             <div className="text-gray-500">Carbs</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-purple-600 dark:text-purple-400 font-medium">{meal.targetFat}g</div>
+                            <div className="font-medium text-purple-600 dark:text-purple-400">{currentDietGoal.targetFat}g</div>
                             <div className="text-gray-500">Fat</div>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
