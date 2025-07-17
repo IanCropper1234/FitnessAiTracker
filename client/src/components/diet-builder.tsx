@@ -568,16 +568,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Update macros when calories, goal, or adjustments change
   useEffect(() => {
-    if (dietGoal.autoRegulation) {
-      const macros = calculateMacros(dietGoal.targetCalories, dietGoal.goal, macroAdjustments);
-      setDietGoal(prev => ({
-        ...prev,
-        targetProtein: macros.protein,
-        targetCarbs: macros.carbs,
-        targetFat: macros.fat
-      }));
-    }
-  }, [dietGoal.targetCalories, dietGoal.goal, dietGoal.autoRegulation, macroAdjustments]);
+    const macros = calculateMacros(dietGoal.targetCalories, dietGoal.goal, macroAdjustments);
+    setDietGoal(prev => ({
+      ...prev,
+      targetProtein: macros.protein,
+      targetCarbs: macros.carbs,
+      targetFat: macros.fat
+    }));
+  }, [dietGoal.targetCalories, dietGoal.goal, macroAdjustments]);
 
   // Handle macro adjustment changes with calorie constraint
   const handleMacroAdjustment = (macro: 'protein' | 'carbs' | 'fat', value: number) => {
@@ -934,13 +932,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </div>
 
               {/* Macro Adjustment Section */}
-              {dietGoal.autoRegulation && (
+              {(
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium text-blue-900 dark:text-blue-100">Macro Adjustments</h4>
                       <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Redistribute macros within your {dietGoal.targetCalories} calorie target
+                        Fine-tune macro distribution within your {dietGoal.targetCalories} calorie target (1% increments)
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -969,7 +967,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           type="range"
                           min="-50"
                           max="50"
-                          step="5"
+                          step="1"
                           value={macroAdjustments.protein}
                           onChange={(e) => handleMacroAdjustment('protein', Number(e.target.value))}
                           className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-800"
@@ -995,7 +993,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           type="range"
                           min="-50"
                           max="50"
-                          step="5"
+                          step="1"
                           value={macroAdjustments.carbs}
                           onChange={(e) => handleMacroAdjustment('carbs', Number(e.target.value))}
                           className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer dark:bg-green-800"
@@ -1021,7 +1019,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           type="range"
                           min="-50"
                           max="50"
-                          step="5"
+                          step="1"
                           value={macroAdjustments.fat}
                           onChange={(e) => handleMacroAdjustment('fat', Number(e.target.value))}
                           className="w-full h-2 bg-yellow-200 rounded-lg appearance-none cursor-pointer dark:bg-yellow-800"
