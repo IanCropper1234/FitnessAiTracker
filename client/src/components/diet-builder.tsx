@@ -57,11 +57,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // AI analysis mutation
   const aiAnalyzeMutation = useMutation({
     mutationFn: async (description: string) => {
-      return await apiRequest("POST", "/api/nutrition/analyze", {
+      const response = await apiRequest("POST", "/api/nutrition/analyze", {
         foodDescription: description,
         quantity: 1,
         unit: "serving"
       });
+      return response.json();
     },
     onError: (error: any) => {
       toast({
