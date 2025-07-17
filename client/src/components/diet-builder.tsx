@@ -57,7 +57,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // AI analysis mutation
   const aiAnalyzeMutation = useMutation({
     mutationFn: async (description: string) => {
-      return await apiRequest("POST", "/api/nutrition/analyze", { description });
+      return await apiRequest("POST", "/api/nutrition/analyze", {
+        foodDescription: description,
+        quantity: 1,
+        unit: "serving"
+      });
     },
     onError: (error: any) => {
       toast({
@@ -215,30 +219,30 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   <div className="grid grid-cols-4 gap-4 text-center">
                     <div>
                       <div className="text-lg font-bold text-black dark:text-white">
-                        {Math.round(aiAnalyzeMutation.data.calories)}
+                        {aiAnalyzeMutation.data.calories ? Math.round(aiAnalyzeMutation.data.calories) : 0}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">Calories</div>
                     </div>
                     <div>
                       <div className="text-lg font-bold text-black dark:text-white">
-                        {Math.round(aiAnalyzeMutation.data.protein)}g
+                        {aiAnalyzeMutation.data.protein ? Math.round(aiAnalyzeMutation.data.protein) : 0}g
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">Protein</div>
                     </div>
                     <div>
                       <div className="text-lg font-bold text-black dark:text-white">
-                        {Math.round(aiAnalyzeMutation.data.carbs)}g
+                        {aiAnalyzeMutation.data.carbs ? Math.round(aiAnalyzeMutation.data.carbs) : 0}g
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">Carbs</div>
                     </div>
                     <div>
                       <div className="text-lg font-bold text-black dark:text-white">
-                        {Math.round(aiAnalyzeMutation.data.fat)}g
+                        {aiAnalyzeMutation.data.fat ? Math.round(aiAnalyzeMutation.data.fat) : 0}g
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">Fat</div>
                     </div>
                   </div>
-                  {aiAnalyzeMutation.data.confidence && (
+                  {aiAnalyzeMutation.data.confidence && aiAnalyzeMutation.data.confidence > 0 && (
                     <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 text-center">
                       Confidence: {Math.round(aiAnalyzeMutation.data.confidence * 100)}%
                     </div>
