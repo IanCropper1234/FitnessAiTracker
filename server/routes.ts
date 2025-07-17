@@ -580,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const mealsPerDay = timingPrefs?.mealsPerDay || 4;
       
       // Get user's diet goals
-      const dietGoals = await storage.getDietGoal(userId);
+      const dietGoals = await storage.getUserDietGoals(userId);
       if (!dietGoals) {
         return res.status(400).json({ message: "No diet goals found. Please set your diet goals first." });
       }
@@ -679,7 +679,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Diet Goals Routes (for meal planning integration)
+  app.get("/api/diet-goals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const dietGoals = await storage.getUserDietGoals(userId);
+      res.json(dietGoals);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
 
+  app.post("/api/diet-goals", async (req, res) => {
+    try {
+      const dietGoalsData = req.body;
+      const dietGoals = await storage.createUserDietGoals(dietGoalsData);
+      res.json(dietGoals);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/diet-goals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const updateData = req.body;
+      
+      const dietGoals = await storage.updateUserDietGoals(userId, updateData);
+      res.json(dietGoals);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
 
   // Weekly Nutrition Goals
   app.get("/api/weekly-nutrition-goal/:userId", async (req, res) => {

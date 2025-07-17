@@ -13,9 +13,10 @@ import { MacroChart } from "@/components/macro-chart";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { MacroOverview } from "@/components/macro-overview";
 import { DailyFoodLog } from "@/components/daily-food-log";
+import { DietBuilder } from "@/components/diet-builder";
 import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
-import { UnifiedDietPlanning } from "@/components/unified-diet-planning";
+import { MealPlanner } from "@/components/meal-planner";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Trash2, Calendar } from "lucide-react";
@@ -131,7 +132,7 @@ export function Nutrition({ user }: NutritionProps) {
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
               <TabsTrigger 
                 value="overview" 
                 className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
@@ -145,10 +146,16 @@ export function Nutrition({ user }: NutritionProps) {
                 Food Log
               </TabsTrigger>
               <TabsTrigger 
-                value="diet-planning" 
+                value="builder" 
                 className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
               >
-                Diet Planning
+                Diet Plan
+              </TabsTrigger>
+              <TabsTrigger 
+                value="meal-planner" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Meal Planner
               </TabsTrigger>
               <TabsTrigger 
                 value="body" 
@@ -172,8 +179,12 @@ export function Nutrition({ user }: NutritionProps) {
               <DailyFoodLog userId={user.id} />
             </TabsContent>
 
-            <TabsContent value="diet-planning">
-              <UnifiedDietPlanning userId={user.id} />
+            <TabsContent value="builder">
+              <DietBuilder userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="meal-planner">
+              <MealPlanner userId={user.id} />
             </TabsContent>
 
             <TabsContent value="body">

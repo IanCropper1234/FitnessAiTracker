@@ -251,9 +251,6 @@ The codebase is structured to support planned n8n workflow automation for:
 ## Recent Changes
 
 ### January 17, 2025 (Latest)
-- ✅ **Unified Diet Planning System** - Combined Diet Plan and Meal Planner into one cohesive "Diet Planning" tab
-- ✅ **Improved UX Architecture** - Reduced nutrition tabs from 6 to 5 for better user experience
-- ✅ **RP Methodology Alignment** - Diet Planning now follows proper RP workflow: Goals → Implementation
 - ✅ **Advanced Meal Planning System Implementation** - Complete meal planner with 3-tab interface
 - ✅ **Intelligent Meal Template Generation** - Based on wake/sleep/workout times with pre/post workout optimization
 - ✅ **Meal Timing Preferences System** - Workout day scheduling with macro distribution adjustments
