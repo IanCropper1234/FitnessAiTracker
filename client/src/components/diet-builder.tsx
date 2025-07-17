@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { Search, Plus, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity } from "lucide-react";
+import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity } from "lucide-react";
 import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
@@ -763,7 +763,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             Meal Timing
           </TabsTrigger>
           <TabsTrigger value="meal-builder" className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
+            <ShoppingCart className="w-4 h-4" />
             Meal Builder
           </TabsTrigger>
           <TabsTrigger value="saved-plans" className="flex items-center gap-2">
@@ -1463,7 +1463,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5" />
+                  <ShoppingCart className="w-5 h-5" />
                   Current Meal Plan
                 </CardTitle>
                 <CardDescription>
