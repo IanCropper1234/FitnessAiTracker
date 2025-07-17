@@ -200,26 +200,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Food search routes
+  // Food search routes - Open Food Facts Integration
   app.get("/api/food/search", async (req, res) => {
     try {
       const query = req.query.q as string;
-      const language = (req.query.lang as string) || "en";
+      console.log('Food search query:', query);
       
-      if (!query) {
-        return res.status(400).json({ message: "Query is required" });
+      if (!query || query.length < 3) {
+        return res.json([]);
       }
 
-      // Search in local database
-      const localResults = searchFoodDatabase(query, language);
+      // Search Open Food Facts API
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments,serving_size,code`;
+      console.log('Calling Open Food Facts API:', url);
       
-      // Search using AI service
-      const aiResults = await searchFood(query);
+      const response = await fetch(url);
       
-      const results = [...localResults, ...aiResults];
-      res.json(results);
+      if (!response.ok) {
+        throw new Error(`Open Food Facts API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Open Food Facts response:', JSON.stringify(data, null, 2).substring(0, 500));
+      
+      // Transform Open Food Facts data to our format
+      const foods = data.products?.map((product: any) => ({
+        id: product.code || `off_${Date.now()}_${Math.random()}`,
+        name: product.product_name || 'Unknown Product',
+        brand: product.brands,
+        calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
+        protein: Math.round(product.nutriments?.['proteins_100g'] || 0),
+        carbs: Math.round(product.nutriments?.['carbohydrates_100g'] || 0),
+        fat: Math.round(product.nutriments?.['fat_100g'] || 0),
+        serving_size: product.serving_size || '100g',
+        barcode: product.code,
+        source: 'openfoodfacts'
+      })).filter((food: any) => food.calories > 0) || [];
+
+      console.log(`Returning ${foods.length} foods from Open Food Facts`);
+      res.json(foods);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error('Open Food Facts API error:', error);
+      // Return empty array instead of error to avoid breaking the UI
+      res.json([]);
     }
   });
 
@@ -550,41 +573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Open Food Facts Integration
-  app.get("/api/food/search", async (req, res) => {
-    try {
-      const query = req.query.q as string;
-      if (!query || query.length < 3) {
-        return res.json([]);
-      }
 
-      // Search Open Food Facts API
-      const response = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments,serving_size,code`
-      );
-      
-      const data = await response.json();
-      
-      // Transform Open Food Facts data to our format
-      const foods = data.products?.map((product: any) => ({
-        id: product.code || `off_${Date.now()}_${Math.random()}`,
-        name: product.product_name || 'Unknown Product',
-        brand: product.brands,
-        calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
-        protein: Math.round(product.nutriments?.['proteins_100g'] || 0),
-        carbs: Math.round(product.nutriments?.['carbohydrates_100g'] || 0),
-        fat: Math.round(product.nutriments?.['fat_100g'] || 0),
-        serving_size: product.serving_size || '100g',
-        barcode: product.code,
-        source: 'openfoodfacts'
-      })).filter((food: any) => food.calories > 0) || [];
-
-      res.json(foods);
-    } catch (error: any) {
-      console.error('Open Food Facts API error:', error);
-      res.status(500).json({ message: 'Failed to search food database' });
-    }
-  });
 
   // Body Metrics
   app.get("/api/body-metrics/:userId", async (req, res) => {
