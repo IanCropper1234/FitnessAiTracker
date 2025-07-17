@@ -134,6 +134,16 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  async getNutritionLogsInRange(userId: number, startDate: Date, endDate: Date): Promise<NutritionLog[]> {
+    return await db.select().from(nutritionLogs)
+      .where(and(
+        eq(nutritionLogs.userId, userId),
+        gte(nutritionLogs.date, startDate),
+        lte(nutritionLogs.date, endDate)
+      ))
+      .orderBy(desc(nutritionLogs.date));
+  }
+
   // Training Programs
   async getTrainingPrograms(userId: number): Promise<TrainingProgram[]> {
     return await db.select().from(trainingPrograms).where(eq(trainingPrograms.userId, userId));

@@ -200,6 +200,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quick add suggestions based on patterns
+  app.get("/api/nutrition/quick-add/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const mealType = req.query.mealType as string;
+      
+      // Get logs from past 30 days
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const logs = await storage.getNutritionLogsInRange(userId, thirtyDaysAgo, new Date());
+      console.log(`Quick add: Found ${logs.length} logs for user ${userId} in past 30 days`);
+      
+      // Find patterns - foods logged 2+ times in same meal type
+      const foodCounts = logs
+        .filter(log => !mealType || log.mealType === mealType)
+        .reduce((acc: any, log) => {
+          const key = `${log.foodName}_${log.mealType}_${log.quantity}_${log.unit}`;
+          if (!acc[key]) {
+            acc[key] = { count: 0, log: log };
+          }
+          acc[key].count++;
+          return acc;
+        }, {});
+      
+      console.log('Food counts:', Object.keys(foodCounts).length, 'unique combinations');
+      
+      // Return foods with 2+ occurrences, sorted by frequency
+      const suggestions = Object.values(foodCounts)
+        .filter((item: any) => item.count >= 2)
+        .sort((a: any, b: any) => b.count - a.count)
+        .slice(0, 6)
+        .map((item: any) => ({
+          ...item.log,
+          frequency: item.count
+        }));
+      
+      console.log(`Quick add: Found ${suggestions.length} suggestions with 2+ occurrences`);
+      res.json(suggestions);
+    } catch (error: any) {
+      console.error('Quick add error:', error);
+      res.json([]); // Return empty array on error to avoid breaking UI
+    }
+  });
+
+  // Copy meals from another date
+  app.post("/api/nutrition/copy-meals", async (req, res) => {
+    try {
+      const { userId, fromDate, toDate, mealTypes } = req.body;
+      
+      // Get logs from source date
+      const sourceLogs = await storage.getNutritionLogs(userId, new Date(fromDate));
+      
+      // Filter by selected meal types if specified
+      const logsToCopy = mealTypes && mealTypes.length > 0 
+        ? sourceLogs.filter(log => mealTypes.includes(log.mealType))
+        : sourceLogs;
+      
+      // Create new logs for target date
+      const copiedLogs = [];
+      for (const log of logsToCopy) {
+        const newLog = {
+          userId,
+          date: new Date(toDate),
+          foodName: log.foodName,
+          quantity: log.quantity,
+          unit: log.unit,
+          calories: log.calories,
+          protein: log.protein,
+          carbs: log.carbs,
+          fat: log.fat,
+          mealType: log.mealType
+        };
+        const createdLog = await storage.createNutritionLog(newLog);
+        copiedLogs.push(createdLog);
+      }
+      
+      res.json({ copiedCount: copiedLogs.length, logs: copiedLogs });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Food search routes - Open Food Facts Integration
   app.get("/api/food/search", async (req, res) => {
     try {
