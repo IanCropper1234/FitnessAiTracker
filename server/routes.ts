@@ -671,7 +671,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/body-metrics", async (req, res) => {
     try {
-      const metricData = req.body;
+      const metricData = {
+        ...req.body,
+        date: new Date(req.body.date)
+      };
       const metric = await storage.createBodyMetric(metricData);
       res.json(metric);
     } catch (error: any) {
