@@ -223,6 +223,12 @@ The codebase is structured to support planned n8n workflow automation for:
 ## Recent Changes
 
 ### January 17, 2025
+- ✅ Created dedicated Profile page accessible from bottom navigation
+- ✅ Moved Profile functionality from Nutrition tab to standalone page
+- ✅ Added comprehensive user profile management with BMI calculation
+- ✅ Implemented bidirectional weight synchronization between Profile and Body Tracking
+- ✅ Fixed profile validation errors for proper data type handling
+- ✅ Added user info card with sign-out functionality
 - ✅ Restructured nutrition module with comprehensive 5-tab layout:
   - Macro Overview: Daily macro tracking with charts and progress bars
   - Daily Food Log: Real-time meal logging with Open Food Facts integration

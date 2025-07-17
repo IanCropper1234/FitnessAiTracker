@@ -71,13 +71,24 @@ export function UserProfile({ userId }: UserProfileProps) {
     mutationFn: async (updatedProfile: UserProfileData) => {
       return await apiRequest("PUT", `/api/user/profile/${userId}`, updatedProfile);
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // If weight was updated, sync it to Body Tracking
+      if (profileData.weight && parseFloat(profileData.weight) > 0) {
+        try {
+          await syncWeightToBodyTracking();
+        } catch (error) {
+          console.warn('Failed to sync weight to body tracking:', error);
+          // Don't show error to user as profile save was successful
+        }
+      }
+      
       toast({
         title: "Success",
         description: "Profile updated successfully!"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
     },
     onError: (error: any) => {
       toast({
@@ -87,6 +98,37 @@ export function UserProfile({ userId }: UserProfileProps) {
       });
     }
   });
+
+  // Sync weight to body tracking
+  const syncWeightToBodyTracking = async () => {
+    if (!profileData.weight || parseFloat(profileData.weight) <= 0) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const weightValue = parseFloat(profileData.weight);
+    
+    // Check if there's already a body metric entry for today
+    const existingMetrics = await fetch(`/api/body-metrics/${userId}`).then(res => res.json());
+    const todayMetric = existingMetrics?.find((metric: any) => 
+      new Date(metric.date).toISOString().split('T')[0] === today
+    );
+    
+    if (todayMetric) {
+      // Update existing metric with new weight
+      await apiRequest("PUT", `/api/body-metrics/${todayMetric.id}`, {
+        ...todayMetric,
+        weight: weightValue.toString(),
+        unit: 'metric'
+      });
+    } else {
+      // Create new body metric entry for today
+      await apiRequest("POST", "/api/body-metrics", {
+        userId: userId,
+        date: new Date(),
+        weight: weightValue.toString(),
+        unit: 'metric'
+      });
+    }
+  };
 
   const handleSaveProfile = () => {
     updateProfileMutation.mutate(profileData);

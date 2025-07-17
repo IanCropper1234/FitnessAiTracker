@@ -62,8 +62,18 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
     mutationFn: async (metricData: any) => {
       return await apiRequest("POST", "/api/body-metrics", metricData);
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
+      // If weight was added, sync it to user profile
+      if (variables.weight) {
+        try {
+          await syncWeightToProfile(variables.weight);
+        } catch (error) {
+          console.warn('Failed to sync weight to profile:', error);
+        }
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
       setIsAddingMetric(false);
       setFormData({
         date: new Date().toISOString().split('T')[0],
@@ -103,6 +113,25 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
       });
     }
   });
+
+  // Sync weight to user profile
+  const syncWeightToProfile = async (weight: number) => {
+    try {
+      // Get current profile
+      const profileResponse = await fetch(`/api/user/profile/${userId}`);
+      const profileData = await profileResponse.json();
+      const profile = profileData.profile || profileData.user;
+      
+      // Update profile with new weight
+      await apiRequest("PUT", `/api/user/profile/${userId}`, {
+        ...profile,
+        userId: userId,
+        weight: weight.toString()
+      });
+    } catch (error) {
+      console.warn('Failed to sync weight to profile:', error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
