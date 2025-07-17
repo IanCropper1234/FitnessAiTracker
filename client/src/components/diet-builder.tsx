@@ -3,9 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
-import { Search, Plus, ShoppingCart, Database } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Search, Plus, ShoppingCart, Database, Brain, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface FoodItem {
   id: string;
@@ -26,18 +29,20 @@ interface DietBuilderProps {
 
 export function DietBuilder({ userId }: DietBuilderProps) {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
+  const [searchMode, setSearchMode] = useState<'database' | 'ai'>('database');
 
   // Search Open Food Facts database
-  const { data: searchResults, isLoading } = useQuery<FoodItem[]>({
+  const { data: searchResults, isLoading: isSearchLoading } = useQuery<FoodItem[]>({
     queryKey: ['/api/food/search', searchQuery],
     queryFn: async () => {
       if (!searchQuery.trim()) return [];
       const response = await fetch(`/api/food/search?q=${encodeURIComponent(searchQuery)}`);
       return response.json();
     },
-    enabled: searchQuery.length > 2
+    enabled: searchQuery.length > 2 && searchMode === 'database'
   });
 
   // Get custom food database
@@ -49,12 +54,53 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   });
 
+  // AI analysis mutation
+  const aiAnalyzeMutation = useMutation({
+    mutationFn: async (description: string) => {
+      return await apiRequest("POST", "/api/nutrition/analyze", { description });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to analyze food",
+        variant: "destructive"
+      });
+    }
+  });
+
   const addToMealPlan = (food: FoodItem) => {
     setSelectedFoods([...selectedFoods, food]);
   };
 
+  const addAIAnalysisToMealPlan = () => {
+    if (aiAnalyzeMutation.data) {
+      const aiFood: FoodItem = {
+        id: `ai-${Date.now()}`,
+        name: searchQuery,
+        calories: aiAnalyzeMutation.data.calories,
+        protein: aiAnalyzeMutation.data.protein,
+        carbs: aiAnalyzeMutation.data.carbs,
+        fat: aiAnalyzeMutation.data.fat,
+        source: 'custom'
+      };
+      setSelectedFoods([...selectedFoods, aiFood]);
+      setSearchQuery("");
+      aiAnalyzeMutation.reset();
+    }
+  };
+
   const removeFromMealPlan = (index: number) => {
     setSelectedFoods(selectedFoods.filter((_, i) => i !== index));
+  };
+
+  const handleSearch = () => {
+    if (!searchQuery.trim()) return;
+    // The query will automatically trigger due to enabled condition
+  };
+
+  const handleAIAnalysis = () => {
+    if (!searchQuery.trim()) return;
+    aiAnalyzeMutation.mutate(searchQuery);
   };
 
   const calculateTotalMacros = () => {
@@ -70,6 +116,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   };
 
   const totals = calculateTotalMacros();
+  const isLoading = isSearchLoading || aiAnalyzeMutation.isPending;
 
   return (
     <div className="space-y-6">
@@ -91,32 +138,133 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Search className="w-5 h-5" />
-              Food Database Search
+              {searchMode === 'database' ? <Search className="w-5 h-5" /> : <Brain className="w-5 h-5" />}
+              {searchMode === 'database' ? 'Food Database Search' : 'AI Food Analysis'}
             </CardTitle>
             <CardDescription>
-              Search from millions of foods in the Open Food Facts database
+              {searchMode === 'database' 
+                ? 'Search from millions of foods in the Open Food Facts database'
+                : 'Describe your food and get instant nutrition analysis'
+              }
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search for foods (e.g., 'chicken breast', 'oatmeal')"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+            {/* Search Mode Toggle */}
+            <div className="flex gap-2">
+              <Button
+                variant={searchMode === 'database' ? 'default' : 'outline'}
+                onClick={() => setSearchMode('database')}
+                className={searchMode === 'database' 
+                  ? "bg-black dark:bg-white text-white dark:text-black" 
+                  : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                }
+              >
+                <Database className="w-4 h-4 mr-2" />
+                Food Database
+              </Button>
+              <Button
+                variant={searchMode === 'ai' ? 'default' : 'outline'}
+                onClick={() => setSearchMode('ai')}
+                className={searchMode === 'ai' 
+                  ? "bg-black dark:bg-white text-white dark:text-black" 
+                  : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                }
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                AI Analysis
+              </Button>
             </div>
+
+            {/* Food Input */}
+            <div className="space-y-2">
+              <Label className="text-black dark:text-white">
+                {searchMode === 'ai' ? 'Describe your food (e.g., "grilled chicken breast 150g")' : 'Search for food'}
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder={searchMode === 'ai' 
+                    ? "2 slices whole wheat bread with peanut butter" 
+                    : "Search for foods (e.g., 'chicken breast', 'oatmeal')"
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white"
+                  onKeyPress={(e) => e.key === 'Enter' && (searchMode === 'ai' ? handleAIAnalysis() : handleSearch())}
+                />
+                <Button
+                  onClick={searchMode === 'ai' ? handleAIAnalysis : handleSearch}
+                  disabled={isLoading || !searchQuery.trim()}
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : searchMode === 'ai' ? (
+                    <Brain className="w-4 h-4" />
+                  ) : (
+                    <Search className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* AI Analysis Results */}
+            {aiAnalyzeMutation.data && searchMode === 'ai' && (
+              <div className="space-y-2">
+                <Label className="text-black dark:text-white">Nutrition Analysis</Label>
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="grid grid-cols-4 gap-4 text-center">
+                    <div>
+                      <div className="text-lg font-bold text-black dark:text-white">
+                        {Math.round(aiAnalyzeMutation.data.calories)}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Calories</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-black dark:text-white">
+                        {Math.round(aiAnalyzeMutation.data.protein)}g
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Protein</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-black dark:text-white">
+                        {Math.round(aiAnalyzeMutation.data.carbs)}g
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Carbs</div>
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-black dark:text-white">
+                        {Math.round(aiAnalyzeMutation.data.fat)}g
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Fat</div>
+                    </div>
+                  </div>
+                  {aiAnalyzeMutation.data.confidence && (
+                    <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 text-center">
+                      Confidence: {Math.round(aiAnalyzeMutation.data.confidence * 100)}%
+                    </div>
+                  )}
+                  <Button
+                    onClick={addAIAnalysisToMealPlan}
+                    className="w-full mt-3 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add to Meal Plan
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {isLoading && (
               <div className="text-center py-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black dark:border-white mx-auto"></div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Searching food database...</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  {searchMode === 'ai' ? 'Analyzing food...' : 'Searching food database...'}
+                </p>
               </div>
             )}
 
-            {searchResults && searchResults.length > 0 && (
+            {/* Database Search Results */}
+            {searchResults && searchResults.length > 0 && searchMode === 'database' && (
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {searchResults.map((food, index) => (
                   <div
@@ -148,7 +296,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <Button
                       size="sm"
                       onClick={() => addToMealPlan(food)}
-                      className="ml-4"
+                      className="ml-4 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
                     >
                       <Plus className="w-4 h-4 mr-1" />
                       Add
@@ -158,19 +306,28 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </div>
             )}
 
-            {searchQuery.length > 2 && !isLoading && (!searchResults || searchResults.length === 0) && (
+            {/* Empty States */}
+            {searchMode === 'database' && searchQuery.length > 2 && !isLoading && (!searchResults || searchResults.length === 0) && (
               <div className="text-center py-8 text-gray-600 dark:text-gray-400">
                 <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>No foods found matching "{searchQuery}"</p>
-                <p className="text-sm">Try a different search term or add a custom food</p>
+                <p className="text-sm">Try a different search term or use AI analysis</p>
               </div>
             )}
 
-            {searchQuery.length <= 2 && (
+            {searchMode === 'database' && searchQuery.length <= 2 && !isLoading && (
               <div className="text-center py-8 text-gray-600 dark:text-gray-400">
                 <Database className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Start typing to search the food database</p>
                 <p className="text-sm">Search from millions of foods worldwide</p>
+              </div>
+            )}
+
+            {searchMode === 'ai' && !aiAnalyzeMutation.data && !isLoading && (
+              <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Describe your food for instant analysis</p>
+                <p className="text-sm">AI will analyze nutrition content automatically</p>
               </div>
             )}
           </CardContent>
