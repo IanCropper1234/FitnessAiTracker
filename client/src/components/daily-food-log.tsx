@@ -34,6 +34,25 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
     }
   });
 
+  // Fetch diet goals to show remaining targets
+  const { data: dietGoals } = useQuery({
+    queryKey: ['/api/diet-goals', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/diet-goals/${userId}`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
+  // Fetch nutrition summary for the selected date
+  const { data: nutritionSummary } = useQuery({
+    queryKey: ['/api/nutrition/summary', userId, selectedDate],
+    queryFn: async () => {
+      const response = await fetch(`/api/nutrition/summary/${userId}?date=${selectedDate}`);
+      return response.json();
+    }
+  });
+
   // Quick add suggestions
   const { data: quickAddSuggestions } = useQuery({
     queryKey: ['/api/nutrition/quick-add', userId],
@@ -264,6 +283,61 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Remaining Macros Summary */}
+      {dietGoals && nutritionSummary && (
+        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+          <CardHeader>
+            <CardTitle className="text-blue-800 dark:text-blue-200 flex items-center gap-2">
+              <Zap className="w-5 h-5" />
+              Daily Targets & Remaining
+            </CardTitle>
+            <CardDescription className="text-blue-600 dark:text-blue-400">
+              Your remaining calories and macros for {new Date(selectedDate).toLocaleDateString()}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Calories</div>
+                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                  {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  of {dietGoals.targetCalories} remaining
+                </div>
+              </div>
+              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Protein</div>
+                <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                  {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0))}g
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  of {dietGoals.targetProtein}g remaining
+                </div>
+              </div>
+              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Carbs</div>
+                <div className="text-xl font-bold text-orange-600 dark:text-orange-400">
+                  {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0))}g
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  of {dietGoals.targetCarbs}g remaining
+                </div>
+              </div>
+              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-purple-200 dark:border-purple-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Fat</div>
+                <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                  {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0))}g
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  of {dietGoals.targetFat}g remaining
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Add Suggestions */}
       {showQuickAdd && quickAddSuggestions && quickAddSuggestions.length > 0 && (

@@ -22,6 +22,16 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
     }
   });
 
+  // Fetch diet goals to show targets and remaining
+  const { data: dietGoals } = useQuery({
+    queryKey: ['/api/diet-goals', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/diet-goals/${userId}`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -83,10 +93,20 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {nutritionSummary?.totalCalories || 0}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {nutritionSummary?.goalCalories || 2000}
+              of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
             </p>
+            {dietGoals && (
+              <p className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                Remaining: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
+              </p>
+            )}
             <Progress 
-              value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
+              value={dietGoals 
+                ? (nutritionSummary?.totalCalories || 0) / Number(dietGoals.targetCalories) * 100 
+                : nutritionSummary 
+                  ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 
+                  : 0
+              } 
               className="mt-2"
             />
           </CardContent>
@@ -103,10 +123,20 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {nutritionSummary?.totalProtein || 0}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {nutritionSummary?.goalProtein || 150}g
+              of {dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150}g
             </p>
+            {dietGoals && (
+              <p className="text-xs font-medium text-green-600 dark:text-green-400">
+                Remaining: {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0))}g
+              </p>
+            )}
             <Progress 
-              value={nutritionSummary ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 : 0} 
+              value={dietGoals 
+                ? (nutritionSummary?.totalProtein || 0) / Number(dietGoals.targetProtein) * 100 
+                : nutritionSummary 
+                  ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 
+                  : 0
+              } 
               className="mt-2"
             />
           </CardContent>
@@ -123,10 +153,20 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {nutritionSummary?.totalCarbs || 0}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {nutritionSummary?.goalCarbs || 200}g
+              of {dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200}g
             </p>
+            {dietGoals && (
+              <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
+                Remaining: {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0))}g
+              </p>
+            )}
             <Progress 
-              value={nutritionSummary ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 : 0} 
+              value={dietGoals 
+                ? (nutritionSummary?.totalCarbs || 0) / Number(dietGoals.targetCarbs) * 100 
+                : nutritionSummary 
+                  ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 
+                  : 0
+              } 
               className="mt-2"
             />
           </CardContent>
@@ -143,10 +183,20 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {nutritionSummary?.totalFat || 0}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {nutritionSummary?.goalFat || 60}g
+              of {dietGoals?.targetFat || nutritionSummary?.goalFat || 60}g
             </p>
+            {dietGoals && (
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400">
+                Remaining: {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0))}g
+              </p>
+            )}
             <Progress 
-              value={nutritionSummary ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 : 0} 
+              value={dietGoals 
+                ? (nutritionSummary?.totalFat || 0) / Number(dietGoals.targetFat) * 100 
+                : nutritionSummary 
+                  ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 
+                  : 0
+              } 
               className="mt-2"
             />
           </CardContent>
