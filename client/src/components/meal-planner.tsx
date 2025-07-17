@@ -1,36 +1,22 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Clock, Target, Plus, Search, Calendar } from "lucide-react";
-import { format, startOfWeek, addDays } from "date-fns";
-
-interface FoodCategory {
-  id: number;
-  name: string;
-  macroType: string;
-  description: string;
-}
-
-interface FoodItem {
-  id: number;
-  name: string;
-  categoryId: number;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  servingSize: string;
-  servingUnit: string;
-}
+import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Calendar, Clock, Plus, Edit, Trash2, Save, Target, 
+  Utensils, Timer, Activity, Moon, Sun, ChefHat,
+  CalendarDays, Settings, Zap, Play, Pause
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MealPlan {
   id: number;
@@ -44,21 +30,23 @@ interface MealPlan {
   targetFat: number;
   isPreWorkout: boolean;
   isPostWorkout: boolean;
+  mealName?: string;
+  foods?: FoodItem[];
 }
 
-interface WeeklyNutritionGoal {
-  id: number;
-  userId: number;
-  weekStartDate: string;
-  dailyCalories: number;
+interface FoodItem {
+  id: string;
+  name: string;
+  calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  adjustmentReason?: string;
+  quantity: number;
+  unit: string;
 }
 
 interface MealTimingPreference {
-  id: number;
+  id?: number;
   userId: number;
   wakeTime: string;
   sleepTime: string;
@@ -78,373 +66,590 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedMeal, setSelectedMeal] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-  // Fetch food categories
-  const { data: categories = [] } = useQuery<FoodCategory[]>({
-    queryKey: ["/api/food/categories"],
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [activeTab, setActiveTab] = useState<'daily-plan' | 'meal-timing' | 'templates'>('daily-plan');
+  const [editingMeal, setEditingMeal] = useState<MealPlan | null>(null);
+  const [isEditingTiming, setIsEditingTiming] = useState(false);
+  
+  // Meal timing preferences state
+  const [mealTiming, setMealTiming] = useState<MealTimingPreference>({
+    userId,
+    wakeTime: "07:00",
+    sleepTime: "23:00",
+    workoutTime: "18:00",
+    workoutDays: ["monday", "wednesday", "friday"],
+    mealsPerDay: 4,
+    preWorkoutMeals: 1,
+    postWorkoutMeals: 1
   });
 
-  // Fetch food items based on search/category
-  const { data: foodItems = [] } = useQuery<FoodItem[]>({
-    queryKey: ["/api/food/items", searchQuery, selectedCategory],
+  // Fetch meal plans for selected date
+  const { data: mealPlans, isLoading: plansLoading } = useQuery({
+    queryKey: ['/api/meal-plans', userId, selectedDate],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("search", searchQuery);
-      if (selectedCategory && selectedCategory !== "all") params.append("categoryId", selectedCategory);
-      const response = await fetch(`/api/food/items?${params.toString()}`);
-      return response.json();
-    },
-  });
-
-  // Fetch current day's meal plans
-  const { data: mealPlans = [], isError: mealPlansError } = useQuery<MealPlan[]>({
-    queryKey: ["/api/meal-plans", userId, selectedDate.toISOString().split('T')[0]],
-    queryFn: async () => {
-      const response = await fetch(`/api/meal-plans/${userId}?date=${selectedDate.toISOString()}`);
-      if (!response.ok) {
-        console.error('Meal plans API error:', response.status, response.statusText);
-        return [];
-      }
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
-    },
-  });
-
-  // Fetch current week's nutrition goal
-  const { data: weeklyGoal } = useQuery<WeeklyNutritionGoal>({
-    queryKey: ["/api/weekly-nutrition-goal", userId],
-    queryFn: async () => {
-      const response = await fetch(`/api/weekly-nutrition-goal/${userId}`);
-      return response.json();
-    },
+      const response = await apiRequest("GET", `/api/meal-plans/${userId}?date=${selectedDate}`);
+      return response || [];
+    }
   });
 
   // Fetch meal timing preferences
-  const { data: mealTiming } = useQuery<MealTimingPreference>({
-    queryKey: ["/api/meal-timing", userId],
+  const { data: timingPrefs } = useQuery({
+    queryKey: ['/api/meal-timing', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-timing/${userId}`);
-      return response.json();
-    },
+      const response = await apiRequest("GET", `/api/meal-timing/${userId}`);
+      return response;
+    }
   });
 
-  // Create meal plan mutation
-  const createMealPlan = useMutation({
-    mutationFn: (mealPlan: Partial<MealPlan>) => 
-      apiRequest("/api/meal-plans", { method: "POST", body: mealPlan }),
+  // Fetch diet goals for template generation
+  const { data: dietGoals } = useQuery({
+    queryKey: ['/api/diet-goals', userId],
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/diet-goals/${userId}`);
+      return response;
+    }
+  });
+
+  // Update meal timing preferences
+  const updateTimingMutation = useMutation({
+    mutationFn: async (preferences: Partial<MealTimingPreference>) => {
+      return await apiRequest("PUT", `/api/meal-timing/${userId}`, preferences);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/meal-plans"] });
-      toast({ title: t("Meal plan created successfully") });
+      queryClient.invalidateQueries({ queryKey: ['/api/meal-timing', userId] });
+      toast({
+        title: "Success",
+        description: "Meal timing preferences updated successfully"
+      });
+      setIsEditingTiming(false);
     },
-    onError: () => {
-      toast({ title: t("Failed to create meal plan"), variant: "destructive" });
-    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update meal timing preferences",
+        variant: "destructive"
+      });
+    }
   });
 
-  // Auto-generate meal timing based on preferences
-  const generateMealTiming = () => {
-    if (!mealTiming) return [];
-    
-    const meals = [];
-    const mealsPerDay = mealTiming.mealsPerDay;
-    const wakeHour = parseInt(mealTiming.wakeTime.split(':')[0]);
-    const sleepHour = parseInt(mealTiming.sleepTime.split(':')[0]);
-    
-    // Calculate meal intervals
-    const awakeHours = sleepHour > wakeHour ? sleepHour - wakeHour : (24 - wakeHour) + sleepHour;
-    const mealInterval = Math.floor(awakeHours / mealsPerDay);
-    
-    for (let i = 0; i < mealsPerDay; i++) {
-      const mealHour = (wakeHour + (i * mealInterval)) % 24;
-      const scheduledTime = `${mealHour.toString().padStart(2, '0')}:00`;
-      
-      meals.push({
-        mealNumber: i + 1,
-        scheduledTime,
-        isPreWorkout: false,
-        isPostWorkout: false,
+  // Generate meal plan template
+  const generateTemplateMutation = useMutation({
+    mutationFn: async (data: { userId: number; date: string; isWorkoutDay: boolean }) => {
+      return await apiRequest("POST", "/api/meal-plans/generate-template", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/meal-plans', userId] });
+      toast({
+        title: "Success",
+        description: "Meal plan template generated successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate meal plan template",
+        variant: "destructive"
       });
     }
-    
-    // Mark pre/post workout meals if workout time is set
-    if (mealTiming.workoutTime) {
-      const workoutHour = parseInt(mealTiming.workoutTime.split(':')[0]);
-      meals.forEach((meal, index) => {
-        const mealHour = parseInt(meal.scheduledTime.split(':')[0]);
-        
-        // Pre-workout meal (within 2 hours before workout)
-        if (mealHour >= workoutHour - 2 && mealHour < workoutHour) {
-          meal.isPreWorkout = true;
-        }
-        
-        // Post-workout meal (within 2 hours after workout)
-        if (mealHour >= workoutHour && mealHour <= workoutHour + 2) {
-          meal.isPostWorkout = true;
-        }
-      });
-    }
-    
-    return meals;
-  };
+  });
 
-  // Calculate macro distribution per meal
-  const calculateMealMacros = (mealNumber: number, totalMeals: number) => {
-    if (!weeklyGoal) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
-    
-    const baseCalories = Math.floor(weeklyGoal.dailyCalories / totalMeals);
-    const baseProtein = Math.floor(weeklyGoal.protein / totalMeals);
-    
-    // Distribute carbs based on workout timing
-    let carbMultiplier = 1;
-    const mealTiming = generateMealTiming();
-    const currentMeal = mealTiming[mealNumber - 1];
-    
-    if (currentMeal?.isPreWorkout) carbMultiplier = 1.3;
-    if (currentMeal?.isPostWorkout) carbMultiplier = 1.5;
-    
-    return {
-      calories: baseCalories,
-      protein: baseProtein,
-      carbs: Math.floor((weeklyGoal.carbs / totalMeals) * carbMultiplier),
-      fat: Math.floor(weeklyGoal.fat / totalMeals),
-    };
-  };
-
-  // Generate daily meal plan
-  const generateDailyMealPlan = () => {
-    if (!mealTiming || !weeklyGoal) {
-      toast({ title: t("Please set up meal timing preferences first"), variant: "destructive" });
-      return;
-    }
-    
-    const meals = generateMealTiming();
-    
-    meals.forEach((meal) => {
-      const macros = calculateMealMacros(meal.mealNumber, meals.length);
-      
-      createMealPlan.mutate({
-        userId,
-        date: selectedDate.toISOString(),
-        mealNumber: meal.mealNumber,
-        scheduledTime: `${selectedDate.toISOString().split('T')[0]}T${meal.scheduledTime}:00`,
-        targetCalories: macros.calories,
-        targetProtein: macros.protein,
-        targetCarbs: macros.carbs,
-        targetFat: macros.fat,
-        isPreWorkout: meal.isPreWorkout,
-        isPostWorkout: meal.isPostWorkout,
+  // Update meal plan
+  const updateMealMutation = useMutation({
+    mutationFn: async (data: { id: number; updates: Partial<MealPlan> }) => {
+      return await apiRequest("PUT", `/api/meal-plans/${data.id}`, data.updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/meal-plans', userId] });
+      toast({
+        title: "Success",
+        description: "Meal plan updated successfully"
       });
+      setEditingMeal(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update meal plan",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Delete meal plan
+  const deleteMealMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/meal-plans/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/meal-plans', userId] });
+      toast({
+        title: "Success",
+        description: "Meal plan deleted successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete meal plan",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Initialize meal timing from fetched data
+  useEffect(() => {
+    if (timingPrefs) {
+      setMealTiming(timingPrefs);
+    }
+  }, [timingPrefs]);
+
+  const handleGenerateTemplate = () => {
+    const isWorkoutDay = mealTiming.workoutDays.includes(
+      new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
+    );
+    
+    generateTemplateMutation.mutate({
+      userId,
+      date: selectedDate,
+      isWorkoutDay
     });
   };
 
-  const getMacroTypeColor = (macroType: string) => {
-    switch (macroType) {
-      case "protein": return "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200";
-      case "carbs": return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200";
-      case "fat": return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200";
-      case "vegetables": return "bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200";
-      default: return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
+  const handleUpdateMeal = (updates: Partial<MealPlan>) => {
+    if (editingMeal) {
+      updateMealMutation.mutate({
+        id: editingMeal.id,
+        updates
+      });
     }
   };
 
+  const handleSaveTiming = () => {
+    updateTimingMutation.mutate(mealTiming);
+  };
+
+  const getMealIcon = (mealNumber: number, isPreWorkout: boolean, isPostWorkout: boolean) => {
+    if (isPreWorkout) return <Zap className="w-4 h-4 text-yellow-500" />;
+    if (isPostWorkout) return <Activity className="w-4 h-4 text-green-500" />;
+    
+    switch (mealNumber) {
+      case 1: return <Sun className="w-4 h-4" />;
+      case 2: return <ChefHat className="w-4 h-4" />;
+      case 3: return <Utensils className="w-4 h-4" />;
+      case 4: return <Moon className="w-4 h-4" />;
+      default: return <Utensils className="w-4 h-4" />;
+    }
+  };
+
+  const getMealTime = (scheduledTime: string) => {
+    return new Date(scheduledTime).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  const formatMacros = (calories: number, protein: number, carbs: number, fat: number) => {
+    return {
+      calories: Math.round(calories),
+      protein: Math.round(protein * 10) / 10,
+      carbs: Math.round(carbs * 10) / 10,
+      fat: Math.round(fat * 10) / 10
+    };
+  };
+
+  if (plansLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">{t("RP Diet Coach")}</h2>
-          <p className="text-muted-foreground">{t("Intelligent meal planning with macro timing")}</p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4" />
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Meal Planner</h2>
+        <div className="flex items-center gap-4">
           <Input
             type="date"
-            value={format(selectedDate, "yyyy-MM-dd")}
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
             className="w-auto"
           />
-        </div>
-      </div>
-
-      {/* Weekly Nutrition Goal Summary */}
-      {weeklyGoal && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              {t("Weekly Nutrition Goals")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold">{weeklyGoal.dailyCalories}</div>
-                <div className="text-sm text-muted-foreground">{t("Calories")}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{weeklyGoal.protein}g</div>
-                <div className="text-sm text-muted-foreground">{t("Protein")}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{weeklyGoal.carbs}g</div>
-                <div className="text-sm text-muted-foreground">{t("Carbs")}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">{weeklyGoal.fat}g</div>
-                <div className="text-sm text-muted-foreground">{t("Fat")}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Meal Plans */}
-      <div className="grid gap-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{t("Daily Meal Plan")}</h3>
-          <Button onClick={generateDailyMealPlan} disabled={!mealTiming || !weeklyGoal}>
-            <Plus className="h-4 w-4 mr-2" />
-            {t("Generate Meal Plan")}
+          <Button 
+            onClick={handleGenerateTemplate}
+            disabled={generateTemplateMutation.isPending}
+            className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+          >
+            {generateTemplateMutation.isPending ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white dark:border-black mr-2"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                Generate Template
+              </>
+            )}
           </Button>
         </div>
-
-        {!Array.isArray(mealPlans) || mealPlans.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-8">
-              <p className="text-muted-foreground">{t("No meal plan for this date")}</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                {t("Generate a meal plan based on your nutrition goals and timing preferences")}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-3">
-            {Array.isArray(mealPlans) && mealPlans.map((meal) => (
-              <Card key={meal.id} className="cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => setSelectedMeal(meal.mealNumber)}>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Clock className="h-4 w-4" />
-                        <span className="font-medium">
-                          {t("Meal")} {meal.mealNumber} - {format(new Date(meal.scheduledTime), "HH:mm")}
-                        </span>
-                        {meal.isPreWorkout && (
-                          <Badge className="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200">
-                            {t("Pre-Workout")}
-                          </Badge>
-                        )}
-                        {meal.isPostWorkout && (
-                          <Badge className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
-                            {t("Post-Workout")}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">{t("Calories")}: </span>
-                          <span className="font-medium">{meal.targetCalories}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">{t("Protein")}: </span>
-                          <span className="font-medium text-blue-600">{meal.targetProtein}g</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">{t("Carbs")}: </span>
-                          <span className="font-medium text-green-600">{meal.targetCarbs}g</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">{t("Fat")}: </span>
-                          <span className="font-medium text-yellow-600">{meal.targetFat}g</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Food Database Browser */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("Food Database")}</CardTitle>
-          <CardDescription>
-            {t("Browse foods by category and add them to your meal plan")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="daily-plan">Daily Plan</TabsTrigger>
+          <TabsTrigger value="meal-timing">Meal Timing</TabsTrigger>
+          <TabsTrigger value="templates">Templates</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="daily-plan" className="space-y-4">
+          <div className="grid gap-4">
+            {mealPlans && mealPlans.length > 0 ? (
+              mealPlans.map((meal: MealPlan) => (
+                <Card key={meal.id} className="relative">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getMealIcon(meal.mealNumber, meal.isPreWorkout, meal.isPostWorkout)}
+                        <CardTitle className="text-lg">
+                          Meal {meal.mealNumber}
+                          {meal.isPreWorkout && <Badge variant="secondary" className="ml-2">Pre-Workout</Badge>}
+                          {meal.isPostWorkout && <Badge variant="secondary" className="ml-2">Post-Workout</Badge>}
+                        </CardTitle>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {getMealTime(meal.scheduledTime)}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingMeal(meal)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteMealMutation.mutate(meal.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          {formatMacros(meal.targetCalories, meal.targetProtein, meal.targetCarbs, meal.targetFat).calories}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Calories</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                          {formatMacros(meal.targetCalories, meal.targetProtein, meal.targetCarbs, meal.targetFat).protein}g
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Protein</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                          {formatMacros(meal.targetCalories, meal.targetProtein, meal.targetCarbs, meal.targetFat).carbs}g
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Carbs</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                          {formatMacros(meal.targetCalories, meal.targetProtein, meal.targetCarbs, meal.targetFat).fat}g
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Fat</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-8">
+                  <ChefHat className="w-16 h-16 text-gray-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No Meal Plan for This Date</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                    Generate a meal plan template based on your timing preferences and diet goals.
+                  </p>
+                  <Button 
+                    onClick={handleGenerateTemplate}
+                    disabled={generateTemplateMutation.isPending}
+                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Generate Template
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="meal-timing" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Meal Timing Preferences</CardTitle>
+              <CardDescription>
+                Set your daily schedule and workout timing to optimize meal distribution
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="wake-time">Wake Time</Label>
+                  <Input
+                    id="wake-time"
+                    type="time"
+                    value={mealTiming.wakeTime}
+                    onChange={(e) => setMealTiming({ ...mealTiming, wakeTime: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sleep-time">Sleep Time</Label>
+                  <Input
+                    id="sleep-time"
+                    type="time"
+                    value={mealTiming.sleepTime}
+                    onChange={(e) => setMealTiming({ ...mealTiming, sleepTime: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="workout-time">Workout Time</Label>
+                  <Input
+                    id="workout-time"
+                    type="time"
+                    value={mealTiming.workoutTime || "18:00"}
+                    onChange={(e) => setMealTiming({ ...mealTiming, workoutTime: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="meals-per-day">Meals Per Day</Label>
+                  <Select 
+                    value={mealTiming.mealsPerDay.toString()} 
+                    onValueChange={(value) => setMealTiming({ ...mealTiming, mealsPerDay: parseInt(value) })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3">3 meals</SelectItem>
+                      <SelectItem value="4">4 meals</SelectItem>
+                      <SelectItem value="5">5 meals</SelectItem>
+                      <SelectItem value="6">6 meals</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Workout Days</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
+                    <div key={day} className="flex items-center space-x-2">
+                      <Switch
+                        id={day}
+                        checked={mealTiming.workoutDays.includes(day)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setMealTiming({
+                              ...mealTiming,
+                              workoutDays: [...mealTiming.workoutDays, day]
+                            });
+                          } else {
+                            setMealTiming({
+                              ...mealTiming,
+                              workoutDays: mealTiming.workoutDays.filter(d => d !== day)
+                            });
+                          }
+                        }}
+                      />
+                      <Label htmlFor={day} className="text-sm capitalize">{day.slice(0, 3)}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleSaveTiming}
+                disabled={updateTimingMutation.isPending}
+                className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              >
+                {updateTimingMutation.isPending ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white dark:border-black mr-2"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Preferences
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="templates" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Meal Plan Templates</CardTitle>
+              <CardDescription>
+                Pre-configured meal plans for different scenarios
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-semibold">Standard Day Template</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Even macro distribution across all meals
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Play className="w-4 h-4 mr-2" />
+                    Apply
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-semibold">Workout Day Template</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Optimized for training days with pre/post workout meals
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Play className="w-4 h-4 mr-2" />
+                    Apply
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-semibold">Rest Day Template</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Lower carb distribution for non-training days
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Play className="w-4 h-4 mr-2" />
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Edit Meal Modal */}
+      {editingMeal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Edit Meal {editingMeal.mealNumber}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="scheduled-time">Scheduled Time</Label>
                 <Input
-                  placeholder={t("Search foods...")}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  id="scheduled-time"
+                  type="time"
+                  value={new Date(editingMeal.scheduledTime).toLocaleTimeString('en-US', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                  onChange={(e) => {
+                    const newTime = new Date(editingMeal.scheduledTime);
+                    const [hours, minutes] = e.target.value.split(':');
+                    newTime.setHours(parseInt(hours), parseInt(minutes));
+                    setEditingMeal({ ...editingMeal, scheduledTime: newTime.toISOString() });
+                  }}
                 />
               </div>
-            </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder={t("All categories")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t("All categories")}</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
-          {/* Food Categories */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Badge
-                key={category.id}
-                className={`cursor-pointer ${getMacroTypeColor(category.macroType)}`}
-                onClick={() => setSelectedCategory(category.id.toString())}
-              >
-                {category.name}
-              </Badge>
-            ))}
-          </div>
-
-          <Separator />
-
-          {/* Food Items */}
-          <div className="grid gap-2 max-h-96 overflow-y-auto">
-            {foodItems.map((item) => (
-              <div key={item.id} 
-                   className="flex justify-between items-center p-3 border rounded-lg hover:bg-accent cursor-pointer">
-                <div className="flex-1">
-                  <div className="font-medium">{item.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {item.servingSize}{item.servingUnit} - {item.calories} cal, {item.protein}g protein
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="target-calories">Target Calories</Label>
+                  <Input
+                    id="target-calories"
+                    type="number"
+                    value={editingMeal.targetCalories}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, targetCalories: parseInt(e.target.value) })}
+                  />
                 </div>
-                <Button size="sm" variant="outline">
-                  <Plus className="h-4 w-4" />
+                <div>
+                  <Label htmlFor="target-protein">Target Protein (g)</Label>
+                  <Input
+                    id="target-protein"
+                    type="number"
+                    step="0.1"
+                    value={editingMeal.targetProtein}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, targetProtein: parseFloat(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="target-carbs">Target Carbs (g)</Label>
+                  <Input
+                    id="target-carbs"
+                    type="number"
+                    step="0.1"
+                    value={editingMeal.targetCarbs}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, targetCarbs: parseFloat(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="target-fat">Target Fat (g)</Label>
+                  <Input
+                    id="target-fat"
+                    type="number"
+                    step="0.1"
+                    value={editingMeal.targetFat}
+                    onChange={(e) => setEditingMeal({ ...editingMeal, targetFat: parseFloat(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setEditingMeal(null)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => handleUpdateMeal(editingMeal)}
+                  disabled={updateMealMutation.isPending}
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                >
+                  {updateMealMutation.isPending ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white dark:border-black mr-2"></div>
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  Save Changes
                 </Button>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -523,7 +523,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/meal-plans", async (req, res) => {
     try {
-      const planData = req.body;
+      const planData = {
+        ...req.body,
+        date: new Date(req.body.date),
+        scheduledTime: new Date(req.body.scheduledTime)
+      };
       const plan = await storage.createMealPlan(planData);
       res.json(plan);
     } catch (error: any) {
@@ -534,7 +538,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/meal-plans/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const planData = req.body;
+      const planData = {
+        ...req.body,
+        date: req.body.date ? new Date(req.body.date) : undefined,
+        scheduledTime: req.body.scheduledTime ? new Date(req.body.scheduledTime) : undefined
+      };
       const plan = await storage.updateMealPlan(id, planData);
       
       if (!plan) {
@@ -557,6 +565,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Generate meal plan template
+  app.post("/api/meal-plans/generate-template", async (req, res) => {
+    try {
+      const { userId, date, isWorkoutDay } = req.body;
+      
+      // Get user's meal timing preferences
+      const timingPrefs = await storage.getMealTimingPreferences(userId);
+      const mealsPerDay = timingPrefs?.mealsPerDay || 4;
+      
+      // Get user's diet goals
+      const dietGoals = await storage.getUserDietGoals(userId);
+      if (!dietGoals) {
+        return res.status(400).json({ message: "No diet goals found. Please set your diet goals first." });
+      }
+      
+      // Generate meal times based on preferences
+      const wakeHour = timingPrefs ? parseInt(timingPrefs.wakeTime.split(':')[0]) : 7;
+      const sleepHour = timingPrefs ? parseInt(timingPrefs.sleepTime.split(':')[0]) : 23;
+      const awakeHours = sleepHour - wakeHour;
+      const mealInterval = awakeHours / (mealsPerDay + 1);
+      
+      const mealPlans = [];
+      for (let i = 1; i <= mealsPerDay; i++) {
+        const hour = wakeHour + (i * mealInterval);
+        const formattedHour = Math.floor(hour).toString().padStart(2, '0');
+        const minutes = Math.floor((hour % 1) * 60).toString().padStart(2, '0');
+        const scheduledTime = `${formattedHour}:${minutes}`;
+        
+        // Calculate macro distribution
+        const baseCalories = Number(dietGoals.targetCalories) / mealsPerDay;
+        const baseProtein = Number(dietGoals.targetProtein) / mealsPerDay;
+        const baseCarbs = Number(dietGoals.targetCarbs) / mealsPerDay;
+        const baseFat = Number(dietGoals.targetFat) / mealsPerDay;
+        
+        let targetCalories = baseCalories;
+        let targetProtein = baseProtein;
+        let targetCarbs = baseCarbs;
+        let targetFat = baseFat;
+        let isPreWorkout = false;
+        let isPostWorkout = false;
+        
+        // Adjust for workout days
+        if (isWorkoutDay && timingPrefs?.workoutTime) {
+          const workoutHour = parseInt(timingPrefs.workoutTime.split(':')[0]);
+          const mealHour = Math.floor(hour);
+          
+          // Pre-workout meals: higher carbs, lower fat
+          if (mealHour < workoutHour && mealHour >= workoutHour - 3) {
+            targetCalories = baseCalories * 1.1;
+            targetCarbs = baseCarbs * 1.3;
+            targetFat = baseFat * 0.7;
+            isPreWorkout = true;
+          }
+          
+          // Post-workout meals: higher protein and carbs
+          if (mealHour >= workoutHour && mealHour <= workoutHour + 3) {
+            targetCalories = baseCalories * 1.2;
+            targetProtein = baseProtein * 1.4;
+            targetCarbs = baseCarbs * 1.2;
+            targetFat = baseFat * 0.8;
+            isPostWorkout = true;
+          }
+        }
+        
+        const mealPlan = await storage.createMealPlan({
+          userId,
+          date: new Date(date),
+          mealNumber: i,
+          scheduledTime: new Date(`${date}T${scheduledTime}:00`),
+          targetCalories: Math.round(targetCalories),
+          targetProtein: Math.round(targetProtein * 100) / 100,
+          targetCarbs: Math.round(targetCarbs * 100) / 100,
+          targetFat: Math.round(targetFat * 100) / 100,
+          isPreWorkout,
+          isPostWorkout
+        });
+        
+        mealPlans.push(mealPlan);
+      }
+      
+      res.json(mealPlans);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Meal Timing Preferences Routes
+  app.get("/api/meal-timing/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const preferences = await storage.getMealTimingPreferences(userId);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/meal-timing/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const preferencesData = req.body;
+      
+      const preferences = await storage.updateMealTimingPreferences(userId, preferencesData);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Diet Goals Routes (for meal planning integration)
+  app.get("/api/diet-goals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const dietGoals = await storage.getUserDietGoals(userId);
+      res.json(dietGoals);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/diet-goals", async (req, res) => {
+    try {
+      const dietGoalsData = req.body;
+      const dietGoals = await storage.createUserDietGoals(dietGoalsData);
+      res.json(dietGoals);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/diet-goals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const updateData = req.body;
+      
+      const dietGoals = await storage.updateUserDietGoals(userId, updateData);
+      res.json(dietGoals);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
