@@ -1,7 +1,7 @@
 import { 
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
-  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics,
+  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, dietGoals,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -10,7 +10,7 @@ import {
   type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
-  type BodyMetric, type InsertBodyMetric
+  type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type DietGoal, type InsertDietGoal
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
@@ -488,5 +488,68 @@ export class DatabaseStorage implements IStorage {
     }, {});
 
     return Object.values(dailyData);
+  }
+
+  // Saved Meal Plans
+  async getSavedMealPlans(userId: number): Promise<SavedMealPlan[]> {
+    return await db.select().from(savedMealPlans)
+      .where(eq(savedMealPlans.userId, userId))
+      .orderBy(desc(savedMealPlans.createdAt));
+  }
+
+  async getSavedMealPlansByType(userId: number, mealType: string): Promise<SavedMealPlan[]> {
+    return await db.select().from(savedMealPlans)
+      .where(and(
+        eq(savedMealPlans.userId, userId),
+        eq(savedMealPlans.mealType, mealType)
+      ))
+      .orderBy(desc(savedMealPlans.createdAt));
+  }
+
+  async createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan> {
+    const [newMealPlan] = await db
+      .insert(savedMealPlans)
+      .values(mealPlan)
+      .returning();
+    return newMealPlan;
+  }
+
+  async updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined> {
+    const [updatedMealPlan] = await db
+      .update(savedMealPlans)
+      .set({ ...mealPlan, updatedAt: new Date() })
+      .where(eq(savedMealPlans.id, id))
+      .returning();
+    return updatedMealPlan || undefined;
+  }
+
+  async deleteSavedMealPlan(id: number): Promise<boolean> {
+    const result = await db.delete(savedMealPlans).where(eq(savedMealPlans.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Diet Goals
+  async getDietGoal(userId: number): Promise<DietGoal | undefined> {
+    const [goal] = await db.select().from(dietGoals)
+      .where(eq(dietGoals.userId, userId))
+      .orderBy(desc(dietGoals.createdAt));
+    return goal || undefined;
+  }
+
+  async createDietGoal(goal: InsertDietGoal): Promise<DietGoal> {
+    const [newGoal] = await db
+      .insert(dietGoals)
+      .values(goal)
+      .returning();
+    return newGoal;
+  }
+
+  async updateDietGoal(userId: number, goal: Partial<InsertDietGoal>): Promise<DietGoal | undefined> {
+    const [updatedGoal] = await db
+      .update(dietGoals)
+      .set({ ...goal, updatedAt: new Date() })
+      .where(eq(dietGoals.userId, userId))
+      .returning();
+    return updatedGoal || undefined;
   }
 }

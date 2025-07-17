@@ -215,6 +215,38 @@ export const bodyMetrics = pgTable("body_metrics", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Saved meal plans for Diet Builder
+export const savedMealPlans = pgTable("saved_meal_plans", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack
+  foods: jsonb("foods").notNull(), // Array of food items with quantities
+  totalCalories: decimal("total_calories", { precision: 8, scale: 2 }).notNull(),
+  totalProtein: decimal("total_protein", { precision: 6, scale: 2 }).notNull(),
+  totalCarbs: decimal("total_carbs", { precision: 6, scale: 2 }).notNull(),
+  totalFat: decimal("total_fat", { precision: 6, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Diet goals with TDEE calculation and auto-regulation
+export const dietGoals = pgTable("diet_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  tdee: decimal("tdee", { precision: 6, scale: 2 }).notNull(),
+  goal: text("goal").notNull(), // cut, bulk, maintain
+  targetCalories: decimal("target_calories", { precision: 6, scale: 2 }).notNull(),
+  targetProtein: decimal("target_protein", { precision: 6, scale: 2 }).notNull(),
+  targetCarbs: decimal("target_carbs", { precision: 6, scale: 2 }).notNull(),
+  targetFat: decimal("target_fat", { precision: 6, scale: 2 }).notNull(),
+  autoRegulation: boolean("auto_regulation").notNull().default(true),
+  weeklyWeightTarget: decimal("weekly_weight_target", { precision: 4, scale: 2 }), // kg per week
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true, updatedAt: true });
@@ -235,6 +267,8 @@ export const insertWeeklyNutritionGoalSchema = createInsertSchema(weeklyNutritio
 export const insertDietPhaseSchema = createInsertSchema(dietPhases).omit({ id: true, createdAt: true });
 export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPreferences).omit({ id: true, updatedAt: true });
 export const insertBodyMetricSchema = createInsertSchema(bodyMetrics).omit({ id: true, createdAt: true });
+export const insertSavedMealPlanSchema = createInsertSchema(savedMealPlans).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertDietGoalSchema = createInsertSchema(dietGoals).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -273,3 +307,7 @@ export type MealTimingPreference = typeof mealTimingPreferences.$inferSelect;
 export type InsertMealTimingPreference = z.infer<typeof insertMealTimingPreferenceSchema>;
 export type BodyMetric = typeof bodyMetrics.$inferSelect;
 export type InsertBodyMetric = z.infer<typeof insertBodyMetricSchema>;
+export type SavedMealPlan = typeof savedMealPlans.$inferSelect;
+export type InsertSavedMealPlan = z.infer<typeof insertSavedMealPlanSchema>;
+export type DietGoal = typeof dietGoals.$inferSelect;
+export type InsertDietGoal = z.infer<typeof insertDietGoalSchema>;
