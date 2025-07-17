@@ -30,16 +30,25 @@ export default function Auth({ onSuccess }: AuthProps) {
       return response.json();
     },
     onSuccess: (data) => {
-      toast({
-        title: t("welcome"),
-        description: `${t("welcome")} ${data.user.name}!`
-      });
-      onSuccess(data.user);
+      if (data && data.user) {
+        toast({
+          title: t("welcome"),
+          description: `${t("welcome")} ${data.user.name || 'User'}!`
+        });
+        onSuccess(data.user);
+      } else {
+        toast({
+          title: "Error",
+          description: "Invalid response from server",
+          variant: "destructive"
+        });
+      }
     },
     onError: (error: any) => {
+      console.error('Sign up error:', error);
       toast({
         title: "Error",
-        description: error.message || "Sign up failed",
+        description: error?.message || "Sign up failed",
         variant: "destructive"
       });
     }
@@ -51,16 +60,25 @@ export default function Auth({ onSuccess }: AuthProps) {
       return response.json();
     },
     onSuccess: (data) => {
-      toast({
-        title: t("welcome"),
-        description: `${t("welcome")} ${data.user.name}!`
-      });
-      onSuccess(data.user);
+      if (data && data.user) {
+        toast({
+          title: t("welcome"),
+          description: `${t("welcome")} ${data.user.name || 'User'}!`
+        });
+        onSuccess(data.user);
+      } else {
+        toast({
+          title: "Error",
+          description: "Invalid response from server",
+          variant: "destructive"
+        });
+      }
     },
     onError: (error: any) => {
+      console.error('Sign in error:', error);
       toast({
         title: "Error",
-        description: error.message || "Sign in failed",
+        description: error?.message || "Sign in failed",
         variant: "destructive"
       });
     }
@@ -69,10 +87,23 @@ export default function Auth({ onSuccess }: AuthProps) {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const name = formData.get("name");
+    
+    if (!email || !password || !name) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const data = {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-      name: formData.get("name") as string
+      email: email as string,
+      password: password as string,
+      name: name as string
     };
     signUpMutation.mutate(data);
   };
@@ -80,9 +111,21 @@ export default function Auth({ onSuccess }: AuthProps) {
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    
+    if (!email || !password) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const data = {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string
+      email: email as string,
+      password: password as string
     };
     signInMutation.mutate(data);
   };
