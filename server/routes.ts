@@ -580,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const mealsPerDay = timingPrefs?.mealsPerDay || 4;
       
       // Get user's diet goals
-      const dietGoals = await storage.getUserDietGoals(userId);
+      const dietGoals = await storage.getDietGoal(userId);
       if (!dietGoals) {
         return res.status(400).json({ message: "No diet goals found. Please set your diet goals first." });
       }
@@ -891,7 +891,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/diet-goals/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const goal = await storage.getUserDietGoals(userId);
+      const goal = await storage.getDietGoal(userId);
       res.json(goal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -900,7 +900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/diet-goals", async (req, res) => {
     try {
-      const goal = await storage.createUserDietGoals(req.body);
+      const goal = await storage.createDietGoal(req.body);
       res.json(goal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -910,7 +910,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/diet-goals/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const goal = await storage.updateUserDietGoals(userId, req.body);
+      const goal = await storage.updateDietGoal(userId, req.body);
       
       if (!goal) {
         return res.status(404).json({ message: "Diet goal not found" });

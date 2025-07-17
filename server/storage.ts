@@ -112,9 +112,9 @@ export interface IStorage {
   getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]>;
   
   // Diet Goals (for meal planning)
-  getUserDietGoals(userId: number): Promise<any>;
-  createUserDietGoals(goals: any): Promise<any>;
-  updateUserDietGoals(userId: number, goals: any): Promise<any>;
+  getDietGoal(userId: number): Promise<any>;
+  createDietGoal(goals: any): Promise<any>;
+  updateDietGoal(userId: number, goals: any): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -708,20 +708,20 @@ export class MemStorage implements IStorage {
   }
 
   // Diet Goals for meal planning
-  async getUserDietGoals(userId: number): Promise<any> {
+  async getDietGoal(userId: number): Promise<any> {
     return Array.from(this.dietGoals.values()).find(goal => goal.userId === userId);
   }
 
-  async createUserDietGoals(goals: any): Promise<any> {
+  async createDietGoal(goals: any): Promise<any> {
     const newGoals = { ...goals, id: this.currentDietGoalId++ };
     this.dietGoals.set(newGoals.id, newGoals);
     return newGoals;
   }
 
-  async updateUserDietGoals(userId: number, goals: any): Promise<any> {
+  async updateDietGoal(userId: number, goals: any): Promise<any> {
     const existingGoals = Array.from(this.dietGoals.values()).find(goal => goal.userId === userId);
     if (!existingGoals) {
-      return this.createUserDietGoals({ userId, ...goals });
+      return this.createDietGoal({ userId, ...goals });
     }
     
     const updatedGoals = { ...existingGoals, ...goals };
