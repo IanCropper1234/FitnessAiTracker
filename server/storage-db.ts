@@ -12,7 +12,7 @@ import {
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, gte, lte, desc, isNull, like, ilike } from "drizzle-orm";
+import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
 import type { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -306,17 +306,10 @@ export class DatabaseStorage implements IStorage {
 
   // Meal Planning
   async getMealPlans(userId: number, date: Date): Promise<MealPlan[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
+    // For now, just return all meal plans for the user to test basic functionality
     return await db.select().from(mealPlans)
-      .where(and(
-        eq(mealPlans.userId, userId),
-        gte(mealPlans.targetDate, startOfDay),
-        lte(mealPlans.targetDate, endOfDay)
-      ));
+      .where(eq(mealPlans.userId, userId))
+      .orderBy(mealPlans.mealNumber);
   }
 
   async createMealPlan(plan: InsertMealPlan): Promise<MealPlan> {

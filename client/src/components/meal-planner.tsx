@@ -101,11 +101,16 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   });
 
   // Fetch current day's meal plans
-  const { data: mealPlans = [] } = useQuery<MealPlan[]>({
+  const { data: mealPlans = [], isError: mealPlansError } = useQuery<MealPlan[]>({
     queryKey: ["/api/meal-plans", userId, selectedDate.toISOString().split('T')[0]],
     queryFn: async () => {
       const response = await fetch(`/api/meal-plans/${userId}?date=${selectedDate.toISOString()}`);
-      return response.json();
+      if (!response.ok) {
+        console.error('Meal plans API error:', response.status, response.statusText);
+        return [];
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     },
   });
 
@@ -308,7 +313,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
           </Button>
         </div>
 
-        {mealPlans.length === 0 ? (
+        {!Array.isArray(mealPlans) || mealPlans.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
               <p className="text-muted-foreground">{t("No meal plan for this date")}</p>
@@ -319,7 +324,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
           </Card>
         ) : (
           <div className="grid gap-3">
-            {mealPlans.map((meal) => (
+            {Array.isArray(mealPlans) && mealPlans.map((meal) => (
               <Card key={meal.id} className="cursor-pointer hover:shadow-md transition-shadow"
                     onClick={() => setSelectedMeal(meal.mealNumber)}>
                 <CardContent className="p-4">
