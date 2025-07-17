@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -55,21 +55,27 @@ export function MealTimingSetup({ userId }: MealTimingSetupProps) {
   // Fetch existing preferences
   const { data: preferences, isLoading } = useQuery<MealTimingPreference>({
     queryKey: ["/api/meal-timing", userId],
-    queryFn: () => apiRequest(`/api/meal-timing/${userId}`),
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          wakeTime: data.wakeTime,
-          sleepTime: data.sleepTime,
-          workoutTime: data.workoutTime || "",
-          workoutDays: data.workoutDays || [],
-          mealsPerDay: data.mealsPerDay,
-          preWorkoutMeals: data.preWorkoutMeals,
-          postWorkoutMeals: data.postWorkoutMeals,
-        });
-      }
-    }
+    queryFn: async () => {
+      const response = await fetch(`/api/meal-timing/${userId}`);
+      if (!response.ok) return null;
+      return response.json();
+    },
   });
+
+  // Update form data when preferences are loaded
+  useEffect(() => {
+    if (preferences) {
+      setFormData({
+        wakeTime: preferences.wakeTime,
+        sleepTime: preferences.sleepTime,
+        workoutTime: preferences.workoutTime || "",
+        workoutDays: preferences.workoutDays || [],
+        mealsPerDay: preferences.mealsPerDay,
+        preWorkoutMeals: preferences.preWorkoutMeals,
+        postWorkoutMeals: preferences.postWorkoutMeals,
+      });
+    }
+  }, [preferences]);
 
   // Create/update preferences mutation
   const saveMutation = useMutation({

@@ -91,30 +91,40 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   // Fetch food items based on search/category
   const { data: foodItems = [] } = useQuery<FoodItem[]>({
     queryKey: ["/api/food/items", searchQuery, selectedCategory],
-    queryFn: () => {
+    queryFn: async () => {
       const params = new URLSearchParams();
       if (searchQuery) params.append("search", searchQuery);
       if (selectedCategory && selectedCategory !== "all") params.append("categoryId", selectedCategory);
-      return apiRequest(`/api/food/items?${params.toString()}`);
+      const response = await fetch(`/api/food/items?${params.toString()}`);
+      return response.json();
     },
   });
 
   // Fetch current day's meal plans
   const { data: mealPlans = [] } = useQuery<MealPlan[]>({
     queryKey: ["/api/meal-plans", userId, selectedDate.toISOString().split('T')[0]],
-    queryFn: () => apiRequest(`/api/meal-plans/${userId}?date=${selectedDate.toISOString()}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/meal-plans/${userId}?date=${selectedDate.toISOString()}`);
+      return response.json();
+    },
   });
 
   // Fetch current week's nutrition goal
   const { data: weeklyGoal } = useQuery<WeeklyNutritionGoal>({
     queryKey: ["/api/weekly-nutrition-goal", userId],
-    queryFn: () => apiRequest(`/api/weekly-nutrition-goal/${userId}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/weekly-nutrition-goal/${userId}`);
+      return response.json();
+    },
   });
 
   // Fetch meal timing preferences
   const { data: mealTiming } = useQuery<MealTimingPreference>({
     queryKey: ["/api/meal-timing", userId],
-    queryFn: () => apiRequest(`/api/meal-timing/${userId}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/meal-timing/${userId}`);
+      return response.json();
+    },
   });
 
   // Create meal plan mutation

@@ -69,19 +69,28 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
   // Fetch current week's goal
   const { data: weeklyGoal, isLoading } = useQuery<WeeklyNutritionGoal>({
     queryKey: ["/api/weekly-nutrition-goal", userId, currentWeek.toISOString()],
-    queryFn: () => apiRequest(`/api/weekly-nutrition-goal/${userId}?weekStartDate=${currentWeek.toISOString()}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/weekly-nutrition-goal/${userId}?weekStartDate=${currentWeek.toISOString()}`);
+      return response.json();
+    },
   });
 
   // Fetch user profile for calculations
   const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ["/api/user/profile", userId],
-    queryFn: () => apiRequest(`/api/user/profile/${userId}`),
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile/${userId}`);
+      return response.json();
+    },
   });
 
   // Fetch active diet phase
   const { data: activeDietPhase } = useQuery<DietPhase>({
     queryKey: ["/api/diet-phases", userId, "active"],
-    queryFn: () => apiRequest(`/api/diet-phases/${userId}?activeOnly=true`),
+    queryFn: async () => {
+      const response = await fetch(`/api/diet-phases/${userId}?activeOnly=true`);
+      return response.json();
+    },
   });
 
   // Create/update weekly goal mutation
