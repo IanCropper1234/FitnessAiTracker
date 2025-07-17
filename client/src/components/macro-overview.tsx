@@ -120,14 +120,14 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-black dark:text-white">
-              {nutritionSummary?.totalProtein || 0}
+              {(nutritionSummary?.totalProtein || 0).toFixed(1)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150}g
+              of {(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150).toFixed(1)}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-green-600 dark:text-green-400">
-                Remaining: {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0))}g
+                Remaining: {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
               </p>
             )}
             <Progress 
@@ -150,14 +150,14 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-black dark:text-white">
-              {nutritionSummary?.totalCarbs || 0}
+              {(nutritionSummary?.totalCarbs || 0).toFixed(1)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200}g
+              of {(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200).toFixed(1)}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
-                Remaining: {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0))}g
+                Remaining: {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
               </p>
             )}
             <Progress 
@@ -180,14 +180,14 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-black dark:text-white">
-              {nutritionSummary?.totalFat || 0}
+              {(nutritionSummary?.totalFat || 0).toFixed(1)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {dietGoals?.targetFat || nutritionSummary?.goalFat || 60}g
+              of {(dietGoals?.targetFat || nutritionSummary?.goalFat || 60).toFixed(1)}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-purple-600 dark:text-purple-400">
-                Remaining: {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0))}g
+                Remaining: {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
               </p>
             )}
             <Progress 

@@ -310,7 +310,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Protein</div>
                 <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                  {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0))}g
+                  {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   of {dietGoals.targetProtein}g remaining
@@ -319,7 +319,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Carbs</div>
                 <div className="text-xl font-bold text-orange-600 dark:text-orange-400">
-                  {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0))}g
+                  {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   of {dietGoals.targetCarbs}g remaining
@@ -328,7 +328,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-purple-200 dark:border-purple-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Fat</div>
                 <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                  {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0))}g
+                  {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   of {dietGoals.targetFat}g remaining
@@ -496,9 +496,9 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                       {log.quantity} {log.unit} • <span className="font-medium">{Math.round(log.calories)} cal</span>
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 flex gap-4">
-                      <span>Protein: {Math.round(log.protein)}g</span>
-                      <span>Carbs: {Math.round(log.carbs)}g</span>
-                      <span>Fat: {Math.round(log.fat)}g</span>
+                      <span>Protein: {log.protein.toFixed(1)}g</span>
+                      <span>Carbs: {log.carbs.toFixed(1)}g</span>
+                      <span>Fat: {log.fat.toFixed(1)}g</span>
                     </div>
                   </div>
                   <Button

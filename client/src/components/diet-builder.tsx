@@ -456,9 +456,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       return {
         ...meal,
         targetCalories: Math.round(totalCalories * caloriePercent),
-        targetProtein: Math.round(totalProtein * proteinPercent),
-        targetCarbs: Math.round(totalCarbs * carbPercent),
-        targetFat: Math.round(totalFat * fatPercent)
+        targetProtein: Math.round(totalProtein * proteinPercent * 10) / 10,
+        targetCarbs: Math.round(totalCarbs * carbPercent * 10) / 10,
+        targetFat: Math.round(totalFat * fatPercent * 10) / 10
       };
     });
   };
@@ -1016,15 +1016,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           </div>
                           <div className="grid grid-cols-3 gap-2 text-xs">
                             <div className="text-center">
-                              <div className="text-green-600 dark:text-green-400 font-medium">{meal.targetProtein}g</div>
+                              <div className="text-green-600 dark:text-green-400 font-medium">{meal.targetProtein.toFixed(1)}g</div>
                               <div className="text-gray-500">Protein</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-orange-600 dark:text-orange-400 font-medium">{meal.targetCarbs}g</div>
+                              <div className="text-orange-600 dark:text-orange-400 font-medium">{meal.targetCarbs.toFixed(1)}g</div>
                               <div className="text-gray-500">Carbs</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-purple-600 dark:text-purple-400 font-medium">{meal.targetFat}g</div>
+                              <div className="text-purple-600 dark:text-purple-400 font-medium">{meal.targetFat.toFixed(1)}g</div>
                               <div className="text-gray-500">Fat</div>
                             </div>
                           </div>
@@ -1040,15 +1040,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                             <div className="text-gray-500">Calories</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-green-600 dark:text-green-400">{currentDietGoal.targetProtein}g</div>
+                            <div className="font-medium text-green-600 dark:text-green-400">{currentDietGoal.targetProtein.toFixed(1)}g</div>
                             <div className="text-gray-500">Protein</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-orange-600 dark:text-orange-400">{currentDietGoal.targetCarbs}g</div>
+                            <div className="font-medium text-orange-600 dark:text-orange-400">{currentDietGoal.targetCarbs.toFixed(1)}g</div>
                             <div className="text-gray-500">Carbs</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-purple-600 dark:text-purple-400">{currentDietGoal.targetFat}g</div>
+                            <div className="font-medium text-purple-600 dark:text-purple-400">{currentDietGoal.targetFat.toFixed(1)}g</div>
                             <div className="text-gray-500">Fat</div>
                           </div>
                         </div>
