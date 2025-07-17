@@ -54,12 +54,23 @@ interface DietGoal {
   weeklyWeightTarget?: number;
 }
 
-interface UserProfile {
-  age?: number;
-  weight?: number;
-  height?: number;
-  activityLevel?: string;
-  fitnessGoal?: string;
+interface UserProfileResponse {
+  user: {
+    id: number;
+    email: string;
+    age?: number;
+    weight?: number;
+    height?: number;
+    activityLevel?: string;
+    fitnessGoal?: string;
+  };
+  profile?: {
+    age?: number;
+    weight?: number;
+    height?: number;
+    activityLevel?: string;
+    fitnessGoal?: string;
+  };
 }
 
 interface DietBuilderProps {
@@ -78,7 +89,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [searchMode, setSearchMode] = useState<'database' | 'ai'>('database');
   const [selectedMealType, setSelectedMealType] = useState<string>("breakfast");
   
-  // Diet Goal State
+  // Diet Goal State - Initialize with auto-regulation off until data is available
   const [dietGoal, setDietGoal] = useState<DietGoal>({
     userId,
     tdee: 2000,
@@ -87,7 +98,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     targetProtein: 150,
     targetCarbs: 200,
     targetFat: 65,
-    autoRegulation: true,
+    autoRegulation: false,
     weeklyWeightTarget: 0
   });
   
@@ -175,13 +186,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   });
 
   // Fetch user profile for TDEE calculation
-  const { data: userProfile } = useQuery<UserProfile>({
+  const { data: userProfileResponse } = useQuery<UserProfileResponse>({
     queryKey: ['/api/user/profile', userId],
     queryFn: async () => {
       const response = await fetch(`/api/user/profile/${userId}`);
       return response.json();
     }
   });
+
+  // Extract profile data for easier access
+  const userProfile = userProfileResponse?.profile || userProfileResponse?.user;
 
   // Fetch body metrics for recent weight
   const { data: bodyMetrics } = useQuery({
@@ -205,6 +219,28 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       }
     }
   });
+
+  // Enable auto-regulation when user has complete profile data
+  useEffect(() => {
+    console.log('Profile data check:', { userProfile, bodyMetrics, currentDietGoal });
+    if (userProfile && !currentDietGoal) {
+      const hasCompleteData = userProfile.age && userProfile.height && userProfile.activityLevel && 
+                               (bodyMetrics?.length > 0 || userProfile.weight);
+      
+      console.log('Complete data check:', { 
+        age: userProfile.age, 
+        height: userProfile.height, 
+        activityLevel: userProfile.activityLevel,
+        hasWeight: bodyMetrics?.length > 0 || userProfile.weight,
+        hasCompleteData 
+      });
+      
+      if (hasCompleteData && !dietGoal.autoRegulation) {
+        console.log('Enabling auto-regulation');
+        setDietGoal(prev => ({ ...prev, autoRegulation: true }));
+      }
+    }
+  }, [userProfile, bodyMetrics, currentDietGoal, dietGoal.autoRegulation]);
 
   // Fetch saved meal plans
   const { data: savedMealPlans } = useQuery<SavedMealPlan[]>({
@@ -314,8 +350,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Auto-calculate TDEE when user profile changes
   useEffect(() => {
-    if (userProfile && bodyMetrics && bodyMetrics.length > 0 && dietGoal.autoRegulation) {
-      const latestWeight = bodyMetrics[0]?.weight || userProfile.weight;
+    if (userProfile && dietGoal.autoRegulation) {
+      const latestWeight = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0]?.weight : userProfile.weight;
+      
       if (userProfile.age && latestWeight && userProfile.height && userProfile.activityLevel) {
         const calculatedTDEE = calculateTDEE(
           userProfile.age,
@@ -324,14 +361,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           userProfile.activityLevel
         );
         
+        const targetCalories = calculateTargetCalories(calculatedTDEE, dietGoal.goal, dietGoal.weeklyWeightTarget);
+        
         setDietGoal(prev => ({
           ...prev,
           tdee: calculatedTDEE,
-          targetCalories: calculateTargetCalories(calculatedTDEE, prev.goal, prev.weeklyWeightTarget)
+          targetCalories: targetCalories
         }));
       }
     }
-  }, [userProfile, bodyMetrics, dietGoal.autoRegulation]);
+  }, [userProfile, bodyMetrics, dietGoal.autoRegulation, dietGoal.goal, dietGoal.weeklyWeightTarget]);
 
   // Calculate target calories based on goal
   const calculateTargetCalories = (tdee: number, goal: string, weeklyTarget?: number) => {
@@ -531,6 +570,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Data Validation Messages */}
+              {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <h4 className="font-medium text-yellow-900 dark:text-yellow-100 mb-2">Missing Profile Data</h4>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
+                    To use TDEE calculation and auto-regulation, please complete your profile first:
+                  </p>
+                  <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                    {!userProfile?.age && <li>• Add your age in profile settings</li>}
+                    {!userProfile?.height && <li>• Add your height in profile settings</li>}
+                    {!userProfile?.activityLevel && <li>• Set your activity level in profile settings</li>}
+                    {(!bodyMetrics?.length && !userProfile?.weight) && <li>• Add your current weight in Body Tracking tab</li>}
+                  </ul>
+                </div>
+              )}
+
               {/* Auto-regulation Toggle */}
               <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                 <div className="space-y-1">
@@ -538,10 +593,26 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Automatically adjust calories and macros based on your body data and weight logs
                   </p>
+                  {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      Disabled: Complete your profile data first
+                    </p>
+                  )}
                 </div>
                 <Switch
-                  checked={dietGoal.autoRegulation}
-                  onCheckedChange={(checked) => setDietGoal(prev => ({ ...prev, autoRegulation: checked }))}
+                  checked={dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight)}
+                  onCheckedChange={(checked) => {
+                    if (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) {
+                      toast({
+                        title: "Profile Incomplete",
+                        description: "Please complete your profile data first to enable auto-regulation.",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    setDietGoal(prev => ({ ...prev, autoRegulation: checked }));
+                  }}
+                  disabled={!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)}
                 />
               </div>
 
@@ -558,7 +629,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       className="border-gray-300 dark:border-gray-600"
                     />
                     {dietGoal.autoRegulation && (
-                      <p className="text-xs text-gray-500 mt-1">Auto-calculated from your profile and body metrics</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Auto-calculated from: {userProfile?.age}y, {bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight}kg, {userProfile?.height}cm, {userProfile?.activityLevel}
+                      </p>
+                    )}
+                    {!dietGoal.autoRegulation && (
+                      <p className="text-xs text-gray-500 mt-1">Manual entry mode</p>
                     )}
                   </div>
 
