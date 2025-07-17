@@ -14,6 +14,7 @@ import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface FoodItem {
   id: string;
@@ -82,6 +83,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   
   // UI State
   const [activeTab, setActiveTab] = useState<'diet-goal' | 'meal-timing' | 'meal-builder' | 'saved-plans'>('diet-goal');
@@ -926,7 +928,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </CardHeader>
               <CardContent>
                 <Button
-                  onClick={() => window.location.href = '/profile'}
+                  onClick={() => setLocation('/profile')}
                   className="bg-yellow-600 hover:bg-yellow-700 text-white"
                 >
                   <Settings className="w-4 h-4 mr-2" />
@@ -1063,7 +1065,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                   <div className="mt-4 flex justify-center">
                     <Button
-                      onClick={() => window.location.href = '/profile'}
+                      onClick={() => setLocation('/profile')}
                       variant="outline"
                       className="flex items-center gap-2"
                     >
