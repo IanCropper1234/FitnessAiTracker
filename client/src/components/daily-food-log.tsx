@@ -496,9 +496,9 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                       {log.quantity} {log.unit} • <span className="font-medium">{Math.round(log.calories)} cal</span>
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 flex gap-4">
-                      <span>Protein: {log.protein.toFixed(1)}g</span>
-                      <span>Carbs: {log.carbs.toFixed(1)}g</span>
-                      <span>Fat: {log.fat.toFixed(1)}g</span>
+                      <span>Protein: {Number(log.protein).toFixed(1)}g</span>
+                      <span>Carbs: {Number(log.carbs).toFixed(1)}g</span>
+                      <span>Fat: {Number(log.fat).toFixed(1)}g</span>
                     </div>
                   </div>
                   <Button
