@@ -26,14 +26,22 @@ export default function Auth({ onSuccess }: AuthProps) {
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
-      const response = await apiRequest("POST", "/api/auth/signup", data);
-      return response.json();
+      try {
+        const response = await apiRequest("POST", "/api/auth/signup", data);
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+      } catch (error) {
+        console.error('API request failed:', error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       if (data && data.user) {
         toast({
-          title: t("welcome"),
-          description: `${t("welcome")} ${data.user.name || 'User'}!`
+          title: t("welcome") || "Welcome",
+          description: `${t("welcome") || "Welcome"} ${data.user.name || 'User'}!`
         });
         onSuccess(data.user);
       } else {
@@ -56,14 +64,22 @@ export default function Auth({ onSuccess }: AuthProps) {
 
   const signInMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      const response = await apiRequest("POST", "/api/auth/signin", data);
-      return response.json();
+      try {
+        const response = await apiRequest("POST", "/api/auth/signin", data);
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+      } catch (error) {
+        console.error('API request failed:', error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       if (data && data.user) {
         toast({
-          title: t("welcome"),
-          description: `${t("welcome")} ${data.user.name || 'User'}!`
+          title: t("welcome") || "Welcome",
+          description: `${t("welcome") || "Welcome"} ${data.user.name || 'User'}!`
         });
         onSuccess(data.user);
       } else {
@@ -136,7 +152,7 @@ export default function Auth({ onSuccess }: AuthProps) {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-black dark:text-white">FitAI</CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-400">
-            {t("welcome")}
+            {t("welcome") || "Welcome to FitAI"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,20 +162,20 @@ export default function Auth({ onSuccess }: AuthProps) {
                 value="signin" 
                 className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white"
               >
-                {t("sign_in")}
+                {t("sign_in") || "Sign In"}
               </TabsTrigger>
               <TabsTrigger 
                 value="signup"
                 className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white"
               >
-                {t("sign_up")}
+                {t("sign_up") || "Sign Up"}
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin" className="space-y-4">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
-                  <Label htmlFor="signin-email" className="text-black dark:text-white">{t("email")}</Label>
+                  <Label htmlFor="signin-email" className="text-black dark:text-white">{t("email") || "Email"}</Label>
                   <Input
                     id="signin-email"
                     name="email"
@@ -170,7 +186,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signin-password" className="text-black dark:text-white">{t("password")}</Label>
+                  <Label htmlFor="signin-password" className="text-black dark:text-white">{t("password") || "Password"}</Label>
                   <Input
                     id="signin-password"
                     name="password"
@@ -184,7 +200,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                   className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
                   disabled={signInMutation.isPending}
                 >
-                  {signInMutation.isPending ? t("loading") : t("sign_in")}
+                  {signInMutation.isPending ? (t("loading") || "Loading...") : (t("sign_in") || "Sign In")}
                 </Button>
               </form>
             </TabsContent>
@@ -192,7 +208,7 @@ export default function Auth({ onSuccess }: AuthProps) {
             <TabsContent value="signup" className="space-y-4">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
-                  <Label htmlFor="signup-name" className="text-black dark:text-white">{t("name")}</Label>
+                  <Label htmlFor="signup-name" className="text-black dark:text-white">{t("name") || "Name"}</Label>
                   <Input
                     id="signup-name"
                     name="name"
@@ -202,7 +218,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signup-email" className="text-black dark:text-white">{t("email")}</Label>
+                  <Label htmlFor="signup-email" className="text-black dark:text-white">{t("email") || "Email"}</Label>
                   <Input
                     id="signup-email"
                     name="email"
@@ -213,7 +229,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signup-password" className="text-black dark:text-white">{t("password")}</Label>
+                  <Label htmlFor="signup-password" className="text-black dark:text-white">{t("password") || "Password"}</Label>
                   <Input
                     id="signup-password"
                     name="password"
@@ -227,7 +243,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                   className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
                   disabled={signUpMutation.isPending}
                 >
-                  {signUpMutation.isPending ? t("loading") : t("sign_up")}
+                  {signUpMutation.isPending ? (t("loading") || "Loading...") : (t("sign_up") || "Sign Up")}
                 </Button>
               </form>
             </TabsContent>
