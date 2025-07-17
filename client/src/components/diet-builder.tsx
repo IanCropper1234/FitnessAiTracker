@@ -579,17 +579,42 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   }, [dietGoal.targetCalories, dietGoal.goal, dietGoal.autoRegulation, macroAdjustments]);
 
-  // Handle macro adjustment changes
+  // Handle macro adjustment changes with calorie constraint
   const handleMacroAdjustment = (macro: 'protein' | 'carbs' | 'fat', value: number) => {
-    setMacroAdjustments(prev => ({
-      ...prev,
-      [macro]: value
-    }));
+    setMacroAdjustments(prev => {
+      const newAdjustments = { ...prev, [macro]: value };
+      
+      // Calculate total calories from adjusted macros
+      const baseMacros = calculateMacros(dietGoal.targetCalories, dietGoal.goal);
+      const adjustedProtein = Math.round((dietGoal.targetCalories * (0.25 * (1 + newAdjustments.protein / 100))) / 4);
+      const adjustedCarbs = Math.round((dietGoal.targetCalories * (0.45 * (1 + newAdjustments.carbs / 100))) / 4);
+      const adjustedFat = Math.round((dietGoal.targetCalories * (0.3 * (1 + newAdjustments.fat / 100))) / 9);
+      
+      const totalAdjustedCalories = (adjustedProtein * 4) + (adjustedCarbs * 4) + (adjustedFat * 9);
+      
+      // If total exceeds target calories, reject the change
+      if (totalAdjustedCalories > dietGoal.targetCalories * 1.1) { // Allow 10% buffer
+        return prev; // Don't update if it exceeds calories
+      }
+      
+      return newAdjustments;
+    });
   };
 
   // Reset macro adjustments
   const resetMacroAdjustments = () => {
     setMacroAdjustments({ protein: 0, carbs: 0, fat: 0 });
+  };
+
+  // Calculate remaining calories budget
+  const calculateRemainingCalories = () => {
+    const baseMacros = calculateMacros(dietGoal.targetCalories, dietGoal.goal);
+    const adjustedProtein = Math.round((dietGoal.targetCalories * (0.25 * (1 + macroAdjustments.protein / 100))) / 4);
+    const adjustedCarbs = Math.round((dietGoal.targetCalories * (0.45 * (1 + macroAdjustments.carbs / 100))) / 4);
+    const adjustedFat = Math.round((dietGoal.targetCalories * (0.3 * (1 + macroAdjustments.fat / 100))) / 9);
+    
+    const usedCalories = (adjustedProtein * 4) + (adjustedCarbs * 4) + (adjustedFat * 9);
+    return dietGoal.targetCalories - usedCalories;
   };
 
   // Food search and meal plan functions
@@ -915,17 +940,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div>
                       <h4 className="font-medium text-blue-900 dark:text-blue-100">Macro Adjustments</h4>
                       <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Fine-tune your macro distribution with percentage adjustments
+                        Redistribute macros within your {dietGoal.targetCalories} calorie target
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={resetMacroAdjustments}
-                      className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
-                    >
-                      Reset
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <div className="text-xs text-blue-700 dark:text-blue-300">
+                        Remaining: {calculateRemainingCalories()}cal
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={resetMacroAdjustments}
+                        className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                      >
+                        Reset
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-3 gap-4">
@@ -945,6 +975,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-800"
                         />
                       </div>
+                      <div className="text-center">
+                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                          {Number(dietGoal.targetProtein).toFixed(1)}g
+                        </span>
+                        <div className="text-xs text-blue-500 dark:text-blue-400">
+                          {Math.round(dietGoal.targetProtein * 4)}cal
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="space-y-2">
@@ -962,6 +1000,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           onChange={(e) => handleMacroAdjustment('carbs', Number(e.target.value))}
                           className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer dark:bg-green-800"
                         />
+                      </div>
+                      <div className="text-center">
+                        <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                          {Number(dietGoal.targetCarbs).toFixed(1)}g
+                        </span>
+                        <div className="text-xs text-green-500 dark:text-green-400">
+                          {Math.round(dietGoal.targetCarbs * 4)}cal
+                        </div>
                       </div>
                     </div>
                     
@@ -981,11 +1027,27 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           className="w-full h-2 bg-yellow-200 rounded-lg appearance-none cursor-pointer dark:bg-yellow-800"
                         />
                       </div>
+                      <div className="text-center">
+                        <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+                          {Number(dietGoal.targetFat).toFixed(1)}g
+                        </span>
+                        <div className="text-xs text-yellow-500 dark:text-yellow-400">
+                          {Math.round(dietGoal.targetFat * 9)}cal
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 p-2 rounded">
-                    <strong>Live Preview:</strong> Protein {Number(dietGoal.targetProtein).toFixed(1)}g • Carbs {Number(dietGoal.targetCarbs).toFixed(1)}g • Fat {Number(dietGoal.targetFat).toFixed(1)}g
+                  <div className="text-xs bg-blue-100 dark:bg-blue-900/30 p-3 rounded space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-blue-900 dark:text-blue-100">Total Calories:</span>
+                      <span className="text-blue-700 dark:text-blue-300">
+                        {Math.round((dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9))} / {dietGoal.targetCalories}
+                      </span>
+                    </div>
+                    <div className="text-blue-600 dark:text-blue-400">
+                      <strong>Distribution:</strong> Protein {Number(dietGoal.targetProtein).toFixed(1)}g • Carbs {Number(dietGoal.targetCarbs).toFixed(1)}g • Fat {Number(dietGoal.targetFat).toFixed(1)}g
+                    </div>
                   </div>
                 </div>
               )}
