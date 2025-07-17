@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings } from "lucide-react";
+import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity } from "lucide-react";
+import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -83,7 +84,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const queryClient = useQueryClient();
   
   // UI State
-  const [activeTab, setActiveTab] = useState<'diet-goal' | 'meal-builder' | 'saved-plans'>('diet-goal');
+  const [activeTab, setActiveTab] = useState<'diet-goal' | 'meal-timing' | 'meal-builder' | 'saved-plans'>('diet-goal');
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
   const [searchMode, setSearchMode] = useState<'database' | 'ai'>('database');
@@ -241,6 +242,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   });
 
+  // Fetch meal timing preferences for meal scheduling
+  const { data: mealTimingPreferences } = useQuery<MealTimingPreference | null>({
+    queryKey: ['/api/meal-timing', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/meal-timing/${userId}`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
   // Diet goal mutations
   const saveDietGoalMutation = useMutation({
     mutationFn: async (goal: DietGoal) => {
@@ -315,6 +326,138 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       });
     }
   });
+
+  // Meal Timing & Distribution Functions
+  const generateMealSchedule = () => {
+    if (!mealTimingPreferences) return [];
+    
+    const { wakeTime, sleepTime, workoutTime, mealsPerDay, preWorkoutMeals, postWorkoutMeals } = mealTimingPreferences;
+    
+    // Parse times
+    const wake = new Date(`2025-01-01T${wakeTime}:00`);
+    const sleep = new Date(`2025-01-01T${sleepTime}:00`);
+    const workout = workoutTime ? new Date(`2025-01-01T${workoutTime}:00`) : null;
+    
+    // Calculate awake hours
+    let awakeHours = (sleep.getTime() - wake.getTime()) / (1000 * 60 * 60);
+    if (awakeHours < 0) awakeHours += 24; // Handle overnight sleep
+    
+    const mealSchedule = [];
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const isWorkoutDay = mealTimingPreferences.workoutDays?.includes(today) || false;
+    
+    if (isWorkoutDay && workout) {
+      // Calculate pre and post workout meal timing
+      const preWorkoutWindow = 2; // 2 hours before workout
+      const postWorkoutWindow = 1; // 1 hour after workout
+      
+      // Pre-workout meals
+      for (let i = 0; i < preWorkoutMeals; i++) {
+        const mealTime = new Date(workout.getTime() - (preWorkoutWindow - (i * 0.5)) * 60 * 60 * 1000);
+        mealSchedule.push({
+          mealNumber: i + 1,
+          scheduledTime: mealTime.toTimeString().slice(0, 5),
+          type: 'pre-workout',
+          description: `Pre-workout meal ${i + 1}`
+        });
+      }
+      
+      // Post-workout meals
+      for (let i = 0; i < postWorkoutMeals; i++) {
+        const mealTime = new Date(workout.getTime() + (postWorkoutWindow + (i * 0.5)) * 60 * 60 * 1000);
+        mealSchedule.push({
+          mealNumber: preWorkoutMeals + i + 1,
+          scheduledTime: mealTime.toTimeString().slice(0, 5),
+          type: 'post-workout',
+          description: `Post-workout meal ${i + 1}`
+        });
+      }
+      
+      // Fill remaining meals
+      const remainingMeals = mealsPerDay - preWorkoutMeals - postWorkoutMeals;
+      const intervalHours = awakeHours / (remainingMeals + 1);
+      
+      for (let i = 0; i < remainingMeals; i++) {
+        const mealTime = new Date(wake.getTime() + ((i + 1) * intervalHours * 60 * 60 * 1000));
+        mealSchedule.push({
+          mealNumber: preWorkoutMeals + postWorkoutMeals + i + 1,
+          scheduledTime: mealTime.toTimeString().slice(0, 5),
+          type: 'regular',
+          description: `Meal ${preWorkoutMeals + postWorkoutMeals + i + 1}`
+        });
+      }
+    } else {
+      // Regular day - evenly distribute meals
+      const intervalHours = awakeHours / (mealsPerDay + 1);
+      
+      for (let i = 0; i < mealsPerDay; i++) {
+        const mealTime = new Date(wake.getTime() + ((i + 1) * intervalHours * 60 * 60 * 1000));
+        mealSchedule.push({
+          mealNumber: i + 1,
+          scheduledTime: mealTime.toTimeString().slice(0, 5),
+          type: 'regular',
+          description: `Meal ${i + 1}`
+        });
+      }
+    }
+    
+    return mealSchedule.sort((a, b) => a.scheduledTime.localeCompare(b.scheduledTime));
+  };
+
+  const distributeMacrosAcrossMeals = () => {
+    if (!mealTimingPreferences) return [];
+    
+    const mealSchedule = generateMealSchedule();
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const isWorkoutDay = mealTimingPreferences.workoutDays?.includes(today) || false;
+    
+    const totalCalories = dietGoal.targetCalories;
+    const totalProtein = dietGoal.targetProtein;
+    const totalCarbs = dietGoal.targetCarbs;
+    const totalFat = dietGoal.targetFat;
+    
+    return mealSchedule.map(meal => {
+      let caloriePercent, proteinPercent, carbPercent, fatPercent;
+      
+      if (isWorkoutDay && mealTimingPreferences.workoutTime) {
+        if (meal.type === 'pre-workout') {
+          // Higher carbs, moderate protein, lower fat
+          caloriePercent = 0.25;
+          proteinPercent = 0.2;
+          carbPercent = 0.35;
+          fatPercent = 0.15;
+        } else if (meal.type === 'post-workout') {
+          // High protein, moderate carbs, lower fat
+          caloriePercent = 0.3;
+          proteinPercent = 0.35;
+          carbPercent = 0.3;
+          fatPercent = 0.15;
+        } else {
+          // Regular distribution for remaining meals
+          const remainingMeals = mealTimingPreferences.mealsPerDay - mealTimingPreferences.preWorkoutMeals - mealTimingPreferences.postWorkoutMeals;
+          const remainingCalories = 0.45; // 45% for non-workout meals
+          caloriePercent = remainingCalories / remainingMeals;
+          proteinPercent = 0.45 / remainingMeals;
+          carbPercent = 0.35 / remainingMeals;
+          fatPercent = 0.7 / remainingMeals;
+        }
+      } else {
+        // Even distribution across all meals
+        caloriePercent = 1 / mealTimingPreferences.mealsPerDay;
+        proteinPercent = 1 / mealTimingPreferences.mealsPerDay;
+        carbPercent = 1 / mealTimingPreferences.mealsPerDay;
+        fatPercent = 1 / mealTimingPreferences.mealsPerDay;
+      }
+      
+      return {
+        ...meal,
+        targetCalories: Math.round(totalCalories * caloriePercent),
+        targetProtein: Math.round(totalProtein * proteinPercent),
+        targetCarbs: Math.round(totalCarbs * carbPercent),
+        targetFat: Math.round(totalFat * fatPercent)
+      };
+    });
+  };
 
   // TDEE Calculation Function
   const calculateTDEE = (age: number, weight: number, height: number, activityLevel: string, gender: 'male' | 'female' = 'male') => {
@@ -532,10 +675,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="diet-goal" className="flex items-center gap-2">
             <Calculator className="w-4 h-4" />
             Diet Goal
+          </TabsTrigger>
+          <TabsTrigger value="meal-timing" className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Meal Timing
           </TabsTrigger>
           <TabsTrigger value="meal-builder" className="flex items-center gap-2">
             <ShoppingCart className="w-4 h-4" />
@@ -751,6 +898,183 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Meal Timing Tab */}
+        <TabsContent value="meal-timing" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                Meal Timing & Distribution
+              </CardTitle>
+              <CardDescription>
+                Generate personalized meal schedules based on your timing preferences and training schedule
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {!mealTimingPreferences ? (
+            <Card className="border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
+              <CardHeader>
+                <CardTitle className="text-yellow-900 dark:text-yellow-100 text-lg">
+                  Meal Timing Not Configured
+                </CardTitle>
+                <CardDescription className="text-yellow-700 dark:text-yellow-300">
+                  Please set up your meal timing preferences in the Profile page to generate personalized meal schedules.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={() => window.location.href = '/profile'}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Configure Meal Timing
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Today's Meal Schedule */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    Today's Meal Schedule
+                  </CardTitle>
+                  <CardDescription>
+                    Optimized timing based on your preferences and workout schedule
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {generateMealSchedule().map((meal, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-3 h-3 rounded-full ${
+                            meal.type === 'pre-workout' ? 'bg-orange-500' :
+                            meal.type === 'post-workout' ? 'bg-green-500' :
+                            'bg-blue-500'
+                          }`}></div>
+                          <div>
+                            <span className="font-medium text-black dark:text-white">{meal.scheduledTime}</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">{meal.description}</span>
+                          </div>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs font-medium ${
+                          meal.type === 'pre-workout' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
+                          meal.type === 'post-workout' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
+                          'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                        }`}>
+                          {meal.type === 'pre-workout' ? 'Pre-Workout' :
+                           meal.type === 'post-workout' ? 'Post-Workout' :
+                           'Regular'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Macro Distribution */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Macro Distribution
+                  </CardTitle>
+                  <CardDescription>
+                    Optimized nutrient timing for each meal
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {distributeMacrosAcrossMeals().map((meal, index) => (
+                      <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-black dark:text-white">{meal.scheduledTime} - {meal.description}</span>
+                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{meal.targetCalories} cal</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div className="text-center">
+                            <div className="text-green-600 dark:text-green-400 font-medium">{meal.targetProtein}g</div>
+                            <div className="text-gray-500">Protein</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-orange-600 dark:text-orange-400 font-medium">{meal.targetCarbs}g</div>
+                            <div className="text-gray-500">Carbs</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-purple-600 dark:text-purple-400 font-medium">{meal.targetFat}g</div>
+                            <div className="text-gray-500">Fat</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Timing Summary */}
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="w-5 h-5" />
+                    Current Timing Configuration
+                  </CardTitle>
+                  <CardDescription>
+                    Your meal timing preferences and optimization settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.wakeTime}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Wake Time</div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.sleepTime}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Time</div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.mealsPerDay}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Meals/Day</div>
+                    </div>
+                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="text-lg font-semibold text-black dark:text-white">
+                        {mealTimingPreferences.workoutDays?.length || 0}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Workout Days</div>
+                    </div>
+                  </div>
+                  
+                  {mealTimingPreferences.workoutTime && (
+                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
+                        <Activity className="w-4 h-4" />
+                        <span className="font-medium">Workout: {mealTimingPreferences.workoutTime}</span>
+                      </div>
+                      <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                        {mealTimingPreferences.preWorkoutMeals} pre-workout meal(s) • {mealTimingPreferences.postWorkoutMeals} post-workout meal(s)
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex justify-center">
+                    <Button
+                      onClick={() => window.location.href = '/profile'}
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Adjust Timing Preferences
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </TabsContent>
 
         {/* Meal Builder Tab */}
