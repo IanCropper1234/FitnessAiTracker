@@ -763,7 +763,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             Meal Timing
           </TabsTrigger>
           <TabsTrigger value="meal-builder" className="flex items-center gap-2">
-            <ShoppingCart className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
             Meal Builder
           </TabsTrigger>
           <TabsTrigger value="saved-plans" className="flex items-center gap-2">
@@ -1463,7 +1463,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
+                  <Target className="w-5 h-5" />
                   Current Meal Plan
                 </CardTitle>
                 <CardDescription>
