@@ -10,6 +10,7 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
+import { ProfilePage } from "./pages/profile";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -98,26 +99,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           </div>
         </Route>
         <Route path="/profile">
-          <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold mb-4">Profile Settings</h1>
-              <p className="text-gray-600 dark:text-gray-400">Coming soon...</p>
-              {user && (
-                <div className="mt-4">
-                  <Button 
-                    onClick={() => {
-                      setUser(null);
-                      setLocation("/auth");
-                    }}
-                    variant="outline"
-                    className="border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    Sign Out
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
+          {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div>Loading...</div>}
         </Route>
         <Route>
           <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
