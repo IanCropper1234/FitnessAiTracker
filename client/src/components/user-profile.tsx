@@ -13,9 +13,10 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface UserProfileData {
+  userId: number;
   age?: number;
-  weight?: number;
-  height?: number;
+  weight?: string;
+  height?: string;
   activityLevel?: string;
   fitnessGoal?: string;
   dietaryRestrictions?: string[];
@@ -31,9 +32,10 @@ export function UserProfile({ userId }: UserProfileProps) {
   const queryClient = useQueryClient();
 
   const [profileData, setProfileData] = useState<UserProfileData>({
+    userId: userId,
     age: undefined,
-    weight: undefined,
-    height: undefined,
+    weight: '',
+    height: '',
     activityLevel: '',
     fitnessGoal: '',
     dietaryRestrictions: []
@@ -53,9 +55,10 @@ export function UserProfile({ userId }: UserProfileProps) {
     if (userProfileResponse?.profile || userProfileResponse?.user) {
       const profile = userProfileResponse.profile || userProfileResponse.user;
       setProfileData({
+        userId: userId,
         age: profile.age || undefined,
-        weight: profile.weight || undefined,
-        height: profile.height || undefined,
+        weight: profile.weight ? String(profile.weight) : '',
+        height: profile.height ? String(profile.height) : '',
         activityLevel: profile.activityLevel || '',
         fitnessGoal: profile.fitnessGoal || '',
         dietaryRestrictions: profile.dietaryRestrictions || []
@@ -101,8 +104,12 @@ export function UserProfile({ userId }: UserProfileProps) {
   // Calculate BMI
   const calculateBMI = () => {
     if (profileData.weight && profileData.height) {
-      const heightInMeters = profileData.height / 100;
-      return (profileData.weight / (heightInMeters * heightInMeters)).toFixed(1);
+      const weight = parseFloat(profileData.weight);
+      const height = parseFloat(profileData.height);
+      if (weight > 0 && height > 0) {
+        const heightInMeters = height / 100;
+        return (weight / (heightInMeters * heightInMeters)).toFixed(1);
+      }
     }
     return null;
   };
@@ -188,7 +195,7 @@ export function UserProfile({ userId }: UserProfileProps) {
                   type="number"
                   placeholder="175"
                   value={profileData.height || ''}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, height: Number(e.target.value) || undefined }))}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
                   className="border-gray-300 dark:border-gray-600"
                 />
               </div>
@@ -201,7 +208,7 @@ export function UserProfile({ userId }: UserProfileProps) {
                 step="0.1"
                 placeholder="70.0"
                 value={profileData.weight || ''}
-                onChange={(e) => setProfileData(prev => ({ ...prev, weight: Number(e.target.value) || undefined }))}
+                onChange={(e) => setProfileData(prev => ({ ...prev, weight: e.target.value }))}
                 className="border-gray-300 dark:border-gray-600"
               />
               <p className="text-xs text-gray-500 mt-1">
