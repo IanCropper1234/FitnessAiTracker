@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, Plus, ShoppingCart, Database, Brain, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
@@ -30,9 +31,11 @@ interface DietBuilderProps {
 export function DietBuilder({ userId }: DietBuilderProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
   const [searchMode, setSearchMode] = useState<'database' | 'ai'>('database');
+  const [selectedMealType, setSelectedMealType] = useState<string>("breakfast");
 
   // Search Open Food Facts database
   const { data: searchResults, isLoading: isSearchLoading } = useQuery<FoodItem[]>({
@@ -73,6 +76,44 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   });
 
+  // Save meal mutation
+  const saveMealMutation = useMutation({
+    mutationFn: async (mealData: { foods: FoodItem[], mealType: string }) => {
+      const promises = mealData.foods.map(food => 
+        apiRequest("POST", "/api/nutrition/log", {
+          userId,
+          foodName: food.name,
+          quantity: 1,
+          unit: "serving",
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fat: food.fat,
+          mealType: mealData.mealType,
+          date: new Date().toISOString()
+        })
+      );
+      
+      await Promise.all(promises);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: `Meal saved to ${selectedMealType} successfully!`
+      });
+      setSelectedFoods([]);
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save meal",
+        variant: "destructive"
+      });
+    }
+  });
+
   const addToMealPlan = (food: FoodItem) => {
     setSelectedFoods([...selectedFoods, food]);
   };
@@ -106,6 +147,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const handleAIAnalysis = () => {
     if (!searchQuery.trim()) return;
     aiAnalyzeMutation.mutate(searchQuery);
+  };
+
+  const handleSaveMeal = () => {
+    if (selectedFoods.length === 0) return;
+    saveMealMutation.mutate({ foods: selectedFoods, mealType: selectedMealType });
   };
 
   const calculateTotalMacros = () => {
@@ -350,6 +396,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Meal Type Selector */}
+            <div className="space-y-2">
+              <Label className="text-black dark:text-white">Meal Type</Label>
+              <Select value={selectedMealType} onValueChange={setSelectedMealType}>
+                <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                  <SelectValue placeholder="Select meal type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="breakfast">Breakfast</SelectItem>
+                  <SelectItem value="lunch">Lunch</SelectItem>
+                  <SelectItem value="dinner">Dinner</SelectItem>
+                  <SelectItem value="snack">Snack</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {selectedFoods.length > 0 ? (
               <>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -412,8 +474,19 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </div>
                 </div>
 
-                <Button className="w-full" disabled={selectedFoods.length === 0}>
-                  Save Meal to Log
+                <Button 
+                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200" 
+                  disabled={selectedFoods.length === 0 || saveMealMutation.isPending}
+                  onClick={handleSaveMeal}
+                >
+                  {saveMealMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    `Save to ${selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}`
+                  )}
                 </Button>
               </>
             ) : (
