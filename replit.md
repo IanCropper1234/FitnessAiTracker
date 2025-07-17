@@ -147,6 +147,32 @@ The codebase is structured to support planned n8n workflow automation for:
 - Email notifications and user engagement workflows
 - Batch processing of AI-generated content
 
+### iOS Deployment Strategy (Decision Pending)
+**Current Compatibility Status**: ✅ Fully Compatible with iOS
+- React + TypeScript web app works perfectly on iOS Safari
+- PWA capabilities allow "installation" on iOS devices
+- Responsive design with touch-optimized UI components
+- Apple ID authentication already integrated
+- All current features functional on iOS devices
+
+**iOS Deployment Options Evaluated**:
+1. **Progressive Web App (PWA)** - Recommended first approach
+   - Deploy current web app to Replit Deployments
+   - Users add to home screen via Safari
+   - 90% native app experience with zero additional development
+   - Maintains current development speed and feature set
+
+2. **Native iOS App** - Future enhancement option
+   - Wrap web app with Capacitor or Cordova
+   - Deploy to App Store with minimal code changes
+   - Access to additional native iOS features
+
+3. **React Native** - Complete rebuild (not recommended)
+   - Would require rebuilding entire frontend
+   - Not cost-effective given current advanced web implementation
+
+**Decision Point**: Choose iOS deployment strategy after completing core RP methodology implementation (Phase 2-3 of MVP Development Plan)
+
 ## MVP Development Plan (Enhanced RP Methodology)
 
 ### Phase 1: Core Foundation (✅ Completed)
@@ -222,7 +248,18 @@ The codebase is structured to support planned n8n workflow automation for:
 
 ## Recent Changes
 
-### January 17, 2025
+### January 17, 2025 (Latest)
+- ✅ Enhanced macro adjustment system with 1% precision increments (changed from 5%)
+- ✅ Enabled macro adjustments for both auto-regulation ON and OFF modes
+- ✅ Implemented dynamic calorie adjustment system - target calories update based on macro distribution
+- ✅ Added real-time database synchronization between Diet Builder and Dashboard components
+- ✅ Fixed data sync issues with cache invalidation for nutrition-related queries
+- ✅ Added debounced database saves (500ms) to prevent excessive API requests
+- ✅ Enhanced macro adjustment UI with individual calorie breakdown per macro
+- ✅ Evaluated iOS compatibility - confirmed full compatibility with PWA deployment option
+- ✅ Updated project documentation with iOS deployment strategy for future decision
+
+### January 17, 2025 (Earlier)
 - ✅ Created dedicated Profile page accessible from bottom navigation
 - ✅ Moved Profile functionality from Nutrition tab to standalone page
 - ✅ Added comprehensive user profile management with BMI calculation
