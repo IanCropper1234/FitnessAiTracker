@@ -208,109 +208,15 @@ export function Nutrition({ user }: NutritionProps) {
           </Card>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Macro Chart */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">Macro Breakdown</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Today's macronutrient distribution
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {nutritionSummary && (nutritionSummary.totalCalories > 0) ? (
-                <MacroChart
-                  protein={nutritionSummary.totalProtein}
-                  carbs={nutritionSummary.totalCarbs}
-                  fat={nutritionSummary.totalFat}
-                  goalProtein={nutritionSummary.goalProtein}
-                  goalCarbs={nutritionSummary.goalCarbs}
-                  goalFat={nutritionSummary.goalFat}
-                />
-              ) : (
-                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                  <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No nutrition data yet</p>
-                  <p className="text-sm">Start logging your meals to see macro breakdown</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Food Log */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">Today's Food Log</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Your meals and snacks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {nutritionLogs && nutritionLogs.length > 0 ? (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {nutritionLogs.map((log: any) => (
-                    <div 
-                      key={log.id} 
-                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-lg">{getMealTypeIcon(log.mealType)}</span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {formatMealType(log.mealType)}
-                          </span>
-                        </div>
-                        <div className="font-medium text-black dark:text-white">
-                          {log.foodName}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {log.quantity} {log.unit} • {Math.round(log.calories)} cal
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          P: {Math.round(log.protein)}g • C: {Math.round(log.carbs)}g • F: {Math.round(log.fat)}g
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(log.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                  <div className="text-4xl mb-4">🍽️</div>
-                  <p>No food logged today</p>
-                  <p className="text-sm">Start tracking your nutrition</p>
-                  <Button 
-                    onClick={() => setShowLogger(true)}
-                    variant="outline"
-                    className="mt-4 border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add First Meal
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="overview">Macro Overview</TabsTrigger>
-              <TabsTrigger value="foodlog">Daily Food Log</TabsTrigger>
-              <TabsTrigger value="builder">Diet Builder</TabsTrigger>
-              <TabsTrigger value="body">Body Tracking</TabsTrigger>
-              <TabsTrigger value="progression">Progression</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-5 h-auto">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2">Macro Overview</TabsTrigger>
+              <TabsTrigger value="foodlog" className="text-xs sm:text-sm px-2 py-2">Daily Food Log</TabsTrigger>
+              <TabsTrigger value="builder" className="text-xs sm:text-sm px-2 py-2">Diet Builder</TabsTrigger>
+              <TabsTrigger value="body" className="text-xs sm:text-sm px-2 py-2">Body Tracking</TabsTrigger>
+              <TabsTrigger value="progression" className="text-xs sm:text-sm px-2 py-2">Progression</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">

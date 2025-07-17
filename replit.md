@@ -222,6 +222,21 @@ The codebase is structured to support planned n8n workflow automation for:
 
 ## Recent Changes
 
+### January 17, 2025
+- ✅ Restructured nutrition module with comprehensive 5-tab layout:
+  - Macro Overview: Daily macro tracking with charts and progress bars
+  - Daily Food Log: Real-time meal logging with Open Food Facts integration
+  - Diet Builder: Meal planning with unified food database search
+  - Body Tracking: Weight, body measurements, and body fat percentage tracking
+  - Nutrition Progression: Charts and trends with adjustable time ranges
+- ✅ Integrated Open Food Facts API for real food database (no API key required)
+- ✅ Added body metrics tracking with weight (kg/lbs) and body measurements (cm/inches)
+- ✅ Created nutrition progression analytics with weight, body fat, and macro trends
+- ✅ Updated database schema with bodyMetrics table and progression tracking
+- ✅ Fixed tab layout overlap issues and removed duplicate macro overview sections
+- ✅ Enhanced responsive design for mobile and desktop viewing
+- ✅ Implemented unified food search across all nutrition components
+
 ### January 16, 2025
 - ✅ Rebuilt complete authentication system with proper error handling
 - ✅ Fixed API request method signature issues for POST/PUT operations
