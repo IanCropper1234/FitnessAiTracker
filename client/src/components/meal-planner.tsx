@@ -204,7 +204,17 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   }, [timingPrefs]);
 
   const handleGenerateTemplate = () => {
-    const isWorkoutDay = mealTiming.workoutDays.includes(
+    if (!dietGoals) {
+      toast({
+        title: "Setup Required",
+        description: "Please set your diet goals in the Diet Plan tab first",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const workoutDays = mealTiming?.workoutDays || [];
+    const isWorkoutDay = workoutDays.includes(
       new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
     );
     
@@ -407,7 +417,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
                   <Input
                     id="wake-time"
                     type="time"
-                    value={mealTiming.wakeTime}
+                    value={mealTiming?.wakeTime || "07:00"}
                     onChange={(e) => setMealTiming({ ...mealTiming, wakeTime: e.target.value })}
                   />
                 </div>
@@ -416,7 +426,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
                   <Input
                     id="sleep-time"
                     type="time"
-                    value={mealTiming.sleepTime}
+                    value={mealTiming?.sleepTime || "23:00"}
                     onChange={(e) => setMealTiming({ ...mealTiming, sleepTime: e.target.value })}
                   />
                 </div>
@@ -428,14 +438,14 @@ export function MealPlanner({ userId }: MealPlannerProps) {
                   <Input
                     id="workout-time"
                     type="time"
-                    value={mealTiming.workoutTime || "18:00"}
+                    value={mealTiming?.workoutTime || "18:00"}
                     onChange={(e) => setMealTiming({ ...mealTiming, workoutTime: e.target.value })}
                   />
                 </div>
                 <div>
                   <Label htmlFor="meals-per-day">Meals Per Day</Label>
                   <Select 
-                    value={mealTiming.mealsPerDay.toString()} 
+                    value={mealTiming?.mealsPerDay?.toString() || "4"} 
                     onValueChange={(value) => setMealTiming({ ...mealTiming, mealsPerDay: parseInt(value) })}
                   >
                     <SelectTrigger>
@@ -458,17 +468,18 @@ export function MealPlanner({ userId }: MealPlannerProps) {
                     <div key={day} className="flex items-center space-x-2">
                       <Switch
                         id={day}
-                        checked={mealTiming.workoutDays.includes(day)}
+                        checked={mealTiming?.workoutDays?.includes(day) || false}
                         onCheckedChange={(checked) => {
+                          const currentWorkoutDays = mealTiming?.workoutDays || [];
                           if (checked) {
                             setMealTiming({
                               ...mealTiming,
-                              workoutDays: [...mealTiming.workoutDays, day]
+                              workoutDays: [...currentWorkoutDays, day]
                             });
                           } else {
                             setMealTiming({
                               ...mealTiming,
-                              workoutDays: mealTiming.workoutDays.filter(d => d !== day)
+                              workoutDays: currentWorkoutDays.filter(d => d !== day)
                             });
                           }
                         }}
