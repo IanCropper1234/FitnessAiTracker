@@ -125,98 +125,42 @@ export function Nutrition({ user }: NutritionProps) {
           </Button>
         </div>
 
-        {/* Daily Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t("calories")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
-                {nutritionSummary?.totalCalories || 0}
-              </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                of {nutritionSummary?.goalCalories || 2000}
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
-                className="mt-2"
-              />
-            </CardContent>
-          </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t("protein")} (g)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
-                {nutritionSummary?.totalProtein || 0}
-              </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                of {nutritionSummary?.goalProtein || 150}g
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 : 0} 
-                className="mt-2"
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Carbs (g)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
-                {nutritionSummary?.totalCarbs || 0}
-              </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                of {nutritionSummary?.goalCarbs || 200}g
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 : 0} 
-                className="mt-2"
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Fat (g)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
-                {nutritionSummary?.totalFat || 0}
-              </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                of {nutritionSummary?.goalFat || 60}g
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 : 0} 
-                className="mt-2"
-              />
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 h-auto">
-              <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2">Macro Overview</TabsTrigger>
-              <TabsTrigger value="foodlog" className="text-xs sm:text-sm px-2 py-2">Daily Food Log</TabsTrigger>
-              <TabsTrigger value="builder" className="text-xs sm:text-sm px-2 py-2">Diet Builder</TabsTrigger>
-              <TabsTrigger value="body" className="text-xs sm:text-sm px-2 py-2">Body Tracking</TabsTrigger>
-              <TabsTrigger value="progression" className="text-xs sm:text-sm px-2 py-2">Progression</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+              <TabsTrigger 
+                value="overview" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="foodlog" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Food Log
+              </TabsTrigger>
+              <TabsTrigger 
+                value="builder" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Diet Plan
+              </TabsTrigger>
+              <TabsTrigger 
+                value="body" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Body
+              </TabsTrigger>
+              <TabsTrigger 
+                value="progression" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Progress
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
