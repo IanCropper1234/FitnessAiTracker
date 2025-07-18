@@ -97,23 +97,18 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
     );
   }
 
-  const completedSets = session.exercises.reduce((total, exercise) => {
-    const sets = Array.isArray(exercise.sets) ? exercise.sets : [];
-    return total + sets.filter(set => set.completed).length;
+  const completedSets = session.exercises.reduce((total, workoutExercise) => {
+    const actualRepsArray = workoutExercise.actualReps ? workoutExercise.actualReps.split(',') : [];
+    return total + (workoutExercise.isCompleted ? actualRepsArray.length : 0);
   }, 0);
   
-  const totalSets = session.exercises.reduce((total, exercise) => {
-    const sets = Array.isArray(exercise.sets) ? exercise.sets : [];
-    return total + sets.length;
+  const totalSets = session.exercises.reduce((total, workoutExercise) => {
+    return total + parseInt(workoutExercise.sets?.toString() || '0');
   }, 0);
 
-  const allSets = session.exercises
-    .flatMap(ex => Array.isArray(ex.sets) ? ex.sets : [])
-    .filter(set => set.completed && set.rpe > 0);
-  
-  const averageRPE = allSets.length > 0 
-    ? allSets.reduce((sum, set) => sum + set.rpe, 0) / allSets.length 
-    : 0;
+  const averageRPE = session.exercises
+    .filter(ex => ex.isCompleted && ex.rpe > 0)
+    .reduce((sum, ex) => sum + ex.rpe, 0) / session.exercises.filter(ex => ex.isCompleted && ex.rpe > 0).length || 0;
 
   return (
     <div className="space-y-6 p-6 max-w-4xl mx-auto">
@@ -228,28 +223,37 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
           )}
         </CardHeader>
         <CardContent className="space-y-6">
-          {session.exercises.map((exercise, index) => {
-            const sets = Array.isArray(exercise.sets) ? exercise.sets : [];
-            const exerciseVolume = sets
-              .filter(set => set.completed)
-              .reduce((sum, set) => sum + (set.weight * set.actualReps), 0);
+          {session.exercises.map((workoutExercise, index) => {
+            // Parse the stored sets data from actualReps and weight
+            const actualRepsArray = workoutExercise.actualReps ? workoutExercise.actualReps.split(',').map(r => parseInt(r)) : [];
+            const exerciseWeight = parseFloat(workoutExercise.weight || '0');
+            const exerciseRpe = workoutExercise.rpe || 0;
+            const exerciseSets = parseInt(workoutExercise.sets?.toString() || '0');
             
-            const exerciseCompletedSets = sets.filter(set => set.completed).length;
-            const exerciseProgress = sets.length > 0 ? (exerciseCompletedSets / sets.length) * 100 : 0;
+            // Calculate volume from stored data
+            const exerciseVolume = actualRepsArray.reduce((sum, reps) => sum + (exerciseWeight * reps), 0);
+            const exerciseCompletedSets = workoutExercise.isCompleted ? actualRepsArray.length : 0;
+            const exerciseProgress = exerciseSets > 0 ? (exerciseCompletedSets / exerciseSets) * 100 : 0;
+            
+            // Get exercise details from nested exercise object
+            const exerciseDetails = workoutExercise.exercise;
+            const exerciseName = exerciseDetails?.name || workoutExercise.exerciseName || 'Unknown Exercise';
+            const primaryMuscle = exerciseDetails?.primaryMuscle || 'Unknown muscle';
+            const muscleGroups = exerciseDetails?.muscleGroups || [];
             
             return (
-              <div key={exercise.id} className="space-y-4">
+              <div key={workoutExercise.id} className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium">{exercise.exerciseName}</h4>
+                    <h4 className="font-medium">{exerciseName}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {exercise.primaryMuscle || 'Unknown muscle'} • {Array.isArray(exercise.muscleGroups) ? exercise.muscleGroups.join(", ") : 'Multiple muscles'}
+                      {primaryMuscle} • {Array.isArray(muscleGroups) ? muscleGroups.join(", ") : 'Multiple muscles'}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{exerciseVolume} kg volume</p>
+                    <p className="text-sm font-medium">{exerciseVolume.toFixed(1)} kg volume</p>
                     <p className="text-xs text-muted-foreground">
-                      {exerciseCompletedSets}/{sets.length} sets
+                      {exerciseCompletedSets}/{exerciseSets} sets
                     </p>
                   </div>
                 </div>
@@ -258,22 +262,18 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                 
                 {/* Sets breakdown */}
                 <div className="grid gap-2">
-                  {sets.map((set, setIndex) => (
+                  {actualRepsArray.map((reps, setIndex) => (
                     <div 
                       key={setIndex}
-                      className={`flex items-center justify-between p-3 rounded border ${
-                        set.completed ? 'bg-green-50 border-green-200' : 'bg-muted'
-                      }`}
+                      className="flex items-center justify-between p-3 rounded border bg-green-50 border-green-200"
                     >
                       <span className="text-sm font-medium">Set {setIndex + 1}</span>
                       <div className="flex items-center gap-4 text-sm">
-                        <span>{set.weight} kg × {set.actualReps} reps</span>
-                        {set.rpe > 0 && (
-                          <span className="text-muted-foreground">RPE {set.rpe}</span>
+                        <span>{exerciseWeight} kg × {reps} reps</span>
+                        {exerciseRpe > 0 && (
+                          <span className="text-muted-foreground">RPE {exerciseRpe}</span>
                         )}
-                        {set.completed && (
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        )}
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
                       </div>
                     </div>
                   ))}
