@@ -58,19 +58,27 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   // Get current mesocycles
   const { data: mesocycles = [], isLoading: mesocyclesLoading } = useQuery({
     queryKey: ['/api/training/mesocycles', userId],
-    queryFn: () => apiRequest('GET', `/api/training/mesocycles/${userId}`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/training/mesocycles/${userId}`);
+      return response.json();
+    },
   });
 
   // Get mesocycle recommendations
   const { data: recommendations, isLoading: recommendationsLoading } = useQuery<MesocycleRecommendation>({
     queryKey: ['/api/training/mesocycle-recommendations', userId],
-    queryFn: () => apiRequest('GET', `/api/training/mesocycle-recommendations/${userId}`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/training/mesocycle-recommendations/${userId}`);
+      return response.json();
+    },
   });
 
   // Create new mesocycle mutation
   const createMesocycleMutation = useMutation({
-    mutationFn: (data: { name: string; templateId?: number; totalWeeks: number }) =>
-      apiRequest('POST', '/api/training/mesocycles', { userId, ...data }),
+    mutationFn: async (data: { name: string; templateId?: number; totalWeeks: number }) => {
+      const response = await apiRequest('POST', '/api/training/mesocycles', { userId, ...data });
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
     },

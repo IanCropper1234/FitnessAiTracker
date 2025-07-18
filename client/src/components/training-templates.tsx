@@ -56,13 +56,18 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   // Get available templates
   const { data: templates = [], isLoading } = useQuery({
     queryKey: ['/api/training/templates', selectedCategory],
-    queryFn: () => apiRequest('GET', `/api/training/templates${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/training/templates${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`);
+      return response.json();
+    },
   });
 
   // Generate workout from template
   const generateWorkoutMutation = useMutation({
-    mutationFn: (data: { templateId: number; workoutDay: number }) =>
-      apiRequest('POST', '/api/training/templates/generate-workout', { userId, ...data }),
+    mutationFn: async (data: { templateId: number; workoutDay: number }) => {
+      const response = await apiRequest('POST', '/api/training/templates/generate-workout', { userId, ...data });
+      return response.json();
+    },
     onSuccess: (data) => {
       console.log('Workout generated:', data);
       // Invalidate training sessions to update dashboard
