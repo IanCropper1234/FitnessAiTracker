@@ -616,6 +616,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save workout session progress
+  app.put("/api/training/sessions/:sessionId/progress", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const progressData = req.body;
+
+      // Update session with progress data (but don't mark as completed)
+      const updatedSession = await storage.updateWorkoutSession(sessionId, {
+        duration: progressData.duration,
+        totalVolume: progressData.totalVolume
+      });
+
+      // Update workout exercises with actual performance data
+      for (const exerciseData of progressData.exercises) {
+        const workoutExercises = await storage.getWorkoutExercises(sessionId);
+        const workoutExercise = workoutExercises.find(we => we.exerciseId === exerciseData.exerciseId);
+        
+        if (workoutExercise && exerciseData.sets.length > 0) {
+          const completedSets = exerciseData.sets.filter((set: any) => set.completed);
+          
+          if (completedSets.length > 0) {
+            const avgWeight = completedSets.reduce((sum: number, set: any) => sum + set.weight, 0) / completedSets.length;
+            const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
+            const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + set.rpe, 0) / completedSets.length);
+
+            await storage.updateWorkoutExercise(workoutExercise.id, {
+              actualReps,
+              weight: avgWeight.toString(),
+              rpe: avgRpe,
+              isCompleted: completedSets.length === exerciseData.sets.length // Mark exercise complete only if all sets done
+            });
+          }
+        }
+      }
+
+      res.json(updatedSession);
+    } catch (error: any) {
+      console.error('Save progress error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Complete workout session
   app.put("/api/training/sessions/:sessionId/complete", async (req, res) => {
     try {

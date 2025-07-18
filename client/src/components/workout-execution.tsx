@@ -139,6 +139,27 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     },
   });
 
+  const saveProgressMutation = useMutation({
+    mutationFn: async (progressData: any) => {
+      return apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Progress Saved",
+        description: "Your workout progress has been saved.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      onComplete();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save workout progress.",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading || !session) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -233,6 +254,26 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     completeWorkoutMutation.mutate(completionData);
   };
 
+  const saveAndExit = () => {
+    const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60); // minutes
+    const totalVolume = Object.values(workoutData)
+      .flat()
+      .filter(set => set.completed)
+      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0);
+
+    const progressData = {
+      duration,
+      totalVolume,
+      isCompleted: false,
+      exercises: session.exercises.map(exercise => ({
+        exerciseId: exercise.exerciseId,
+        sets: workoutData[exercise.id] || []
+      }))
+    };
+
+    saveProgressMutation.mutate(progressData);
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -272,13 +313,71 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         </Card>
       )}
 
-      {/* Current Exercise */}
+      {/* All Exercises Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Workout Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {session.exercises.map((exercise, index) => {
+              const exerciseSets = workoutData[exercise.id] || [];
+              const completedSetsCount = exerciseSets.filter(set => set.completed).length;
+              const isCurrentExercise = index === currentExerciseIndex;
+              
+              return (
+                <div
+                  key={exercise.id}
+                  className={`p-3 rounded-lg border ${
+                    isCurrentExercise 
+                      ? 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800' 
+                      : completedSetsCount === exercise.sets
+                      ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
+                      : 'bg-muted'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{exercise.exercise.name}</span>
+                      {isCurrentExercise && (
+                        <Badge variant="default" size="sm">Current</Badge>
+                      )}
+                      {completedSetsCount === exercise.sets && (
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {completedSetsCount}/{exercise.sets} sets
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    <Badge variant="outline" size="sm" className="capitalize">
+                      {exercise.exercise.category}
+                    </Badge>
+                    <Badge variant="secondary" size="sm" className="capitalize">
+                      {exercise.exercise.primaryMuscle.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Current Exercise Details */}
       {currentExercise && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
               {currentExercise.exercise.name}
+              <Badge variant="outline">
+                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+              </Badge>
             </CardTitle>
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className="capitalize">
@@ -401,6 +500,47 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         </Card>
       )}
 
+      {/* Exercise Navigation */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Exercise Navigation</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              variant="outline"
+              disabled={currentExerciseIndex === 0}
+              onClick={() => {
+                setCurrentExerciseIndex(currentExerciseIndex - 1);
+                setCurrentSetIndex(0);
+              }}
+            >
+              Previous Exercise
+            </Button>
+            
+            <div className="text-center">
+              <div className="text-sm text-muted-foreground">
+                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+              </div>
+              <div className="font-medium">
+                {currentExercise?.exercise.name}
+              </div>
+            </div>
+            
+            <Button
+              variant="outline"
+              disabled={currentExerciseIndex === session.exercises.length - 1}
+              onClick={() => {
+                setCurrentExerciseIndex(currentExerciseIndex + 1);
+                setCurrentSetIndex(0);
+              }}
+            >
+              Next Exercise
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Action Buttons */}
       <div className="flex gap-4">
         {completedSets === totalSets ? (
@@ -413,8 +553,13 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
             {completeWorkoutMutation.isPending ? "Saving..." : "Complete Workout"}
           </Button>
         ) : (
-          <Button variant="outline" onClick={onComplete} className="flex-1">
-            Save & Exit
+          <Button 
+            variant="outline" 
+            onClick={saveAndExit}
+            disabled={saveProgressMutation.isPending}
+            className="flex-1"
+          >
+            {saveProgressMutation.isPending ? "Saving..." : "Save & Exit"}
           </Button>
         )}
       </div>
