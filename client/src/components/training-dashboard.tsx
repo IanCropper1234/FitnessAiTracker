@@ -423,7 +423,14 @@ export function TrainingDashboard() {
           </div>
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Recent Workout Sessions</h3>
-            <Button>
+            <Button 
+              onClick={() => {
+                setSelectedExercises([]);
+                // Navigate to exercise library tab - using window location for tab switching
+                const exerciseTab = document.querySelector('[data-value="exercises"]') as HTMLElement;
+                if (exerciseTab) exerciseTab.click();
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
@@ -437,7 +444,14 @@ export function TrainingDashboard() {
                 <p className="text-muted-foreground text-center mb-4">
                   Start your fitness journey by creating your first workout session.
                 </p>
-                <Button>
+                <Button 
+                  onClick={() => {
+                    setSelectedExercises([]);
+                    // Navigate to exercise library tab
+                    const exerciseTab = document.querySelector('[data-value="exercises"]') as HTMLElement;
+                    if (exerciseTab) exerciseTab.click();
+                  }}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Workout
                 </Button>
