@@ -181,154 +181,22 @@ export class TemplateEngine {
       .from(trainingTemplates)
       .where(eq(trainingTemplates.createdBy, "system"));
 
-    if (existingTemplates.length > 0) {
+    if (existingTemplates.length >= 20) {
       console.log("System templates already initialized");
       return;
     }
 
-    // Define RP-based training templates
-    const templates: Omit<typeof trainingTemplates.$inferInsert, 'id' | 'createdAt'>[] = [
-      {
-        name: "Push/Pull/Legs (Beginner)",
-        description: "3-day split focusing on movement patterns with moderate volume",
-        category: "beginner",
-        daysPerWeek: 3,
-        specialization: "full_body",
-        templateData: {
-          name: "Push/Pull/Legs (Beginner)",
-          description: "3-day split for beginners",
-          category: "beginner",
-          daysPerWeek: 3,
-          workouts: [
-            {
-              name: "Push Day",
-              exercises: [
-                { exerciseId: 1, exerciseName: "Bench Press", muscleGroups: ["chest"], sets: 3, repsRange: "8-12", restPeriod: 180, orderIndex: 1 },
-                { exerciseId: 2, exerciseName: "Overhead Press", muscleGroups: ["shoulders"], sets: 3, repsRange: "8-12", restPeriod: 180, orderIndex: 2 },
-                { exerciseId: 3, exerciseName: "Incline Dumbbell Press", muscleGroups: ["chest"], sets: 3, repsRange: "10-15", restPeriod: 120, orderIndex: 3 },
-                { exerciseId: 4, exerciseName: "Tricep Dips", muscleGroups: ["triceps"], sets: 3, repsRange: "8-15", restPeriod: 90, orderIndex: 4 }
-              ],
-              estimatedDuration: 45,
-              focus: ["chest", "shoulders", "triceps"]
-            },
-            {
-              name: "Pull Day",
-              exercises: [
-                { exerciseId: 5, exerciseName: "Pull-ups", muscleGroups: ["back"], sets: 3, repsRange: "5-10", restPeriod: 180, orderIndex: 1 },
-                { exerciseId: 6, exerciseName: "Barbell Rows", muscleGroups: ["back"], sets: 3, repsRange: "8-12", restPeriod: 180, orderIndex: 2 },
-                { exerciseId: 7, exerciseName: "Lat Pulldowns", muscleGroups: ["back"], sets: 3, repsRange: "10-15", restPeriod: 120, orderIndex: 3 },
-                { exerciseId: 8, exerciseName: "Bicep Curls", muscleGroups: ["biceps"], sets: 3, repsRange: "10-15", restPeriod: 90, orderIndex: 4 }
-              ],
-              estimatedDuration: 45,
-              focus: ["back", "biceps"]
-            },
-            {
-              name: "Leg Day",
-              exercises: [
-                { exerciseId: 9, exerciseName: "Squats", muscleGroups: ["quads"], sets: 3, repsRange: "8-12", restPeriod: 180, orderIndex: 1 },
-                { exerciseId: 10, exerciseName: "Romanian Deadlifts", muscleGroups: ["hamstrings"], sets: 3, repsRange: "8-12", restPeriod: 180, orderIndex: 2 },
-                { exerciseId: 11, exerciseName: "Leg Press", muscleGroups: ["quads"], sets: 3, repsRange: "12-20", restPeriod: 120, orderIndex: 3 },
-                { exerciseId: 12, exerciseName: "Calf Raises", muscleGroups: ["calves"], sets: 4, repsRange: "15-25", restPeriod: 60, orderIndex: 4 }
-              ],
-              estimatedDuration: 50,
-              focus: ["quads", "hamstrings", "glutes", "calves"]
-            }
-          ]
-        },
-        rpMethodology: {
-          volumeGuidelines: {
-            chest: { mev: 8, mav: 16, mrv: 22 },
-            back: { mev: 10, mav: 18, mrv: 25 },
-            shoulders: { mev: 8, mav: 16, mrv: 22 },
-            biceps: { mev: 6, mav: 14, mrv: 20 },
-            triceps: { mev: 6, mav: 14, mrv: 20 },
-            quads: { mev: 8, mav: 16, mrv: 22 },
-            hamstrings: { mev: 6, mav: 12, mrv: 18 },
-            glutes: { mev: 6, mav: 12, mrv: 18 },
-            calves: { mev: 8, mav: 16, mrv: 22 }
-          },
-          progressionRules: [
-            "Start at MEV for first 2 weeks",
-            "Add 1-2 sets per muscle group weekly",
-            "Deload when approaching MRV",
-            "Focus on compound movements first"
-          ],
-          deloadGuidelines: [
-            "Reduce volume to 50-60% of MEV",
-            "Maintain movement patterns",
-            "Focus on form and mobility"
-          ]
-        },
-        isActive: true,
-        createdBy: "system"
-      },
-      {
-        name: "Upper/Lower Split (Intermediate)",
-        description: "4-day split with higher frequency and volume",
-        category: "intermediate", 
-        daysPerWeek: 4,
-        specialization: "full_body",
-        templateData: {
-          name: "Upper/Lower Split (Intermediate)",
-          description: "4-day split for intermediate trainees",
-          category: "intermediate",
-          daysPerWeek: 4,
-          workouts: [
-            {
-              name: "Upper Body A",
-              exercises: [
-                { exerciseId: 1, exerciseName: "Bench Press", muscleGroups: ["chest"], sets: 4, repsRange: "6-10", restPeriod: 180, orderIndex: 1 },
-                { exerciseId: 5, exerciseName: "Pull-ups", muscleGroups: ["back"], sets: 4, repsRange: "6-10", restPeriod: 180, orderIndex: 2 },
-                { exerciseId: 2, exerciseName: "Overhead Press", muscleGroups: ["shoulders"], sets: 3, repsRange: "8-12", restPeriod: 120, orderIndex: 3 },
-                { exerciseId: 6, exerciseName: "Barbell Rows", muscleGroups: ["back"], sets: 3, repsRange: "8-12", restPeriod: 120, orderIndex: 4 },
-                { exerciseId: 4, exerciseName: "Tricep Dips", muscleGroups: ["triceps"], sets: 3, repsRange: "10-15", restPeriod: 90, orderIndex: 5 },
-                { exerciseId: 8, exerciseName: "Bicep Curls", muscleGroups: ["biceps"], sets: 3, repsRange: "10-15", restPeriod: 90, orderIndex: 6 }
-              ],
-              estimatedDuration: 60,
-              focus: ["chest", "back", "shoulders", "arms"]
-            },
-            {
-              name: "Lower Body A", 
-              exercises: [
-                { exerciseId: 9, exerciseName: "Squats", muscleGroups: ["quads"], sets: 4, repsRange: "6-10", restPeriod: 180, orderIndex: 1 },
-                { exerciseId: 10, exerciseName: "Romanian Deadlifts", muscleGroups: ["hamstrings"], sets: 4, repsRange: "8-12", restPeriod: 180, orderIndex: 2 },
-                { exerciseId: 11, exerciseName: "Leg Press", muscleGroups: ["quads"], sets: 3, repsRange: "12-20", restPeriod: 120, orderIndex: 3 },
-                { exerciseId: 13, exerciseName: "Walking Lunges", muscleGroups: ["quads", "glutes"], sets: 3, repsRange: "12-16", restPeriod: 90, orderIndex: 4 },
-                { exerciseId: 12, exerciseName: "Calf Raises", muscleGroups: ["calves"], sets: 4, repsRange: "15-25", restPeriod: 60, orderIndex: 5 }
-              ],
-              estimatedDuration: 55,
-              focus: ["quads", "hamstrings", "glutes", "calves"]
-            }
-          ]
-        },
-        rpMethodology: {
-          volumeGuidelines: {
-            chest: { mev: 10, mav: 18, mrv: 25 },
-            back: { mev: 12, mav: 20, mrv: 28 },
-            shoulders: { mev: 10, mav: 18, mrv: 25 },
-            biceps: { mev: 8, mav: 16, mrv: 22 },
-            triceps: { mev: 8, mav: 16, mrv: 22 },
-            quads: { mev: 10, mav: 18, mrv: 25 },
-            hamstrings: { mev: 8, mav: 14, mrv: 20 },
-            glutes: { mev: 8, mav: 14, mrv: 20 },
-            calves: { mev: 10, mav: 18, mrv: 25 }
-          },
-          progressionRules: [
-            "Progressive overload each week",
-            "Vary rep ranges for different adaptations", 
-            "Monitor fatigue accumulation closely",
-            "Implement autoregulation based on feedback"
-          ],
-          deloadGuidelines: [
-            "Reduce volume to 40-50% of peak",
-            "Maintain intensity but reduce total sets",
-            "Add mobility and recovery work"
-          ]
-        },
-        isActive: true,
-        createdBy: "system"
-      }
-    ];
+    // Clear existing system templates for comprehensive refresh
+    await db
+      .delete(trainingTemplates)
+      .where(eq(trainingTemplates.createdBy, "system"));
+
+    // Import comprehensive RP-based training templates
+    const { rpTrainingTemplates } = await import("../templates/rp-templates");
+    const { rpAdvancedTemplates } = await import("../templates/rp-advanced-templates");
+    
+    // Combine all template libraries
+    const templates = [...rpTrainingTemplates, ...rpAdvancedTemplates];
 
     // Insert templates
     for (const template of templates) {
