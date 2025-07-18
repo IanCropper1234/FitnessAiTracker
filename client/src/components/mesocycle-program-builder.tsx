@@ -19,6 +19,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExerciseSelector } from "./exercise-selector";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Target, Dumbbell, Play, Settings } from "lucide-react";
+import { ALL_MUSCLE_GROUPS, MUSCLE_GROUP_DISPLAY_NAMES } from "@shared/muscle-groups";
 
 interface MesocycleProgramBuilderProps {
   isOpen: boolean;
@@ -380,7 +381,7 @@ export default function MesocycleProgramBuilder({
                           <div>
                             <Label className="text-xs">Target Muscle Groups</Label>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {["chest", "shoulders", "triceps", "lats", "rhomboids", "biceps", "quads", "hamstrings", "glutes", "calves"].map((muscle) => (
+                              {ALL_MUSCLE_GROUPS.map((muscle) => (
                                 <div key={muscle} className="flex items-center space-x-1">
                                   <Checkbox
                                     id={`${index}-${muscle}`}
@@ -392,8 +393,8 @@ export default function MesocycleProgramBuilder({
                                       updateCustomWorkoutDay(index, "muscleGroups", newMuscleGroups);
                                     }}
                                   />
-                                  <label htmlFor={`${index}-${muscle}`} className="text-xs capitalize">
-                                    {muscle}
+                                  <label htmlFor={`${index}-${muscle}`} className="text-xs">
+                                    {MUSCLE_GROUP_DISPLAY_NAMES[muscle]}
                                   </label>
                                 </div>
                               ))}
@@ -403,8 +404,8 @@ export default function MesocycleProgramBuilder({
                             <Label className="text-xs">Selected Muscle Groups</Label>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {day.muscleGroups.map((muscle) => (
-                                <Badge key={muscle} variant="secondary" className="text-xs capitalize">
-                                  {muscle}
+                                <Badge key={muscle} variant="secondary" className="text-xs">
+                                  {MUSCLE_GROUP_DISPLAY_NAMES[muscle] || muscle}
                                 </Badge>
                               ))}
                             </div>
