@@ -200,9 +200,15 @@ function WorkoutSessionsWithBulkActions({
             session={session}
             onStart={() => onStartSession(session.id)}
             onView={() => onViewSession(session.id)}
-            onDelete={() => {}}
-            onRestart={() => {}}
-            onDuplicate={() => {}}
+            onDelete={() => bulkDeleteMutation.mutate([session.id])}
+            onRestart={() => restartSessionMutation.mutate(session.id)}
+            onDuplicate={() => {
+              // TODO: Implement duplicate functionality
+              toast({
+                title: "Feature Coming Soon",
+                description: "Session duplication will be available in a future update",
+              });
+            }}
             showCheckbox={bulkDeleteMode}
             isSelected={selectedSessions.includes(session.id)}
             onSelect={() => handleSessionSelect(session.id)}

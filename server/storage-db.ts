@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, dietGoals,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -13,7 +13,8 @@ import {
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
   type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type DietGoal, type InsertDietGoal,
   type MuscleGroup, type InsertMuscleGroup, type VolumeLandmark, type InsertVolumeLandmark,
-  type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping
+  type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping,
+  type TrainingTemplate, type InsertTrainingTemplate
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
@@ -825,5 +826,35 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(mesocycles)
       .where(eq(mesocycles.userId, userId))
       .orderBy(desc(mesocycles.isActive), desc(mesocycles.createdAt));
+  }
+
+  // Training Templates
+  async getTrainingTemplate(templateId: number): Promise<TrainingTemplate | undefined> {
+    const [template] = await db.select().from(trainingTemplates).where(eq(trainingTemplates.id, templateId));
+    return template || undefined;
+  }
+
+  async getUserTrainingTemplates(userId: number): Promise<TrainingTemplate[]> {
+    return db.select().from(trainingTemplates)
+      .where(eq(trainingTemplates.createdBy, userId))
+      .orderBy(desc(trainingTemplates.createdAt));
+  }
+
+  async createTrainingTemplate(template: InsertTrainingTemplate): Promise<TrainingTemplate> {
+    const [created] = await db.insert(trainingTemplates).values(template).returning();
+    return created;
+  }
+
+  async updateTrainingTemplate(templateId: number, updates: Partial<InsertTrainingTemplate>): Promise<TrainingTemplate | undefined> {
+    const [updated] = await db.update(trainingTemplates)
+      .set(updates)
+      .where(eq(trainingTemplates.id, templateId))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteTrainingTemplate(templateId: number): Promise<boolean> {
+    const result = await db.delete(trainingTemplates).where(eq(trainingTemplates.id, templateId));
+    return result.rowCount > 0;
   }
 }
