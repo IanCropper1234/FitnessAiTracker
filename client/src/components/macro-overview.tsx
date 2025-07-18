@@ -123,7 +123,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {(nutritionSummary?.totalProtein || 0).toFixed(1)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150).toFixed(1)}g
+              of {Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150).toFixed(1)}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-green-600 dark:text-green-400">
@@ -153,7 +153,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {(nutritionSummary?.totalCarbs || 0).toFixed(1)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200).toFixed(1)}g
+              of {Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200).toFixed(1)}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
@@ -183,7 +183,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {(nutritionSummary?.totalFat || 0).toFixed(1)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              of {(dietGoals?.targetFat || nutritionSummary?.goalFat || 60).toFixed(1)}g
+              of {Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60).toFixed(1)}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-purple-600 dark:text-purple-400">

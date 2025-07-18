@@ -313,7 +313,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                   {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  of {dietGoals.targetProtein}g remaining
+                  of {Number(dietGoals.targetProtein).toFixed(1)}g remaining
                 </div>
               </div>
               <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
@@ -322,7 +322,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                   {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  of {dietGoals.targetCarbs}g remaining
+                  of {Number(dietGoals.targetCarbs).toFixed(1)}g remaining
                 </div>
               </div>
               <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-purple-200 dark:border-purple-700">
@@ -331,7 +331,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                   {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  of {dietGoals.targetFat}g remaining
+                  of {Number(dietGoals.targetFat).toFixed(1)}g remaining
                 </div>
               </div>
             </div>
