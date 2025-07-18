@@ -289,9 +289,129 @@ The codebase is structured to support planned n8n workflow automation for:
    - Progress photography integration
    - Performance trend analysis
 
+## Data Architecture & Routing Logic
+
+### Core Data Flow Architecture
+
+**Primary Entity Relationships:**
+```
+users (1) → (many) mesocycles → (many) workout_sessions → (many) workout_exercises
+users (1) → (many) auto_regulation_feedback
+users (1) → (many) volume_landmarks → (many) muscle_groups
+users (1) → (many) nutrition_logs → food_database (via AI analysis)
+```
+
+**Training System Data Flow:**
+1. **Mesocycle Creation** → Auto-generates all workout_sessions for entire duration
+2. **Session Execution** → Records workout_exercises with performance data
+3. **Session Completion** → Triggers auto_regulation_feedback collection
+4. **Feedback Analysis** → Updates volume_landmarks via AI algorithms
+5. **Week Advancement** → Recalculates next week's volume targets
+
+### Complete Database Schema Reference
+
+#### Core User Management
+- **users**: id, email, password, name, preferred_language, theme, created_at
+- **user_profiles**: id, user_id, activity_level, fitness_goal, dietary_restrictions, created_at, updated_at
+
+#### Training System Tables
+- **mesocycles**: id, user_id, program_id, template_id, name, start_date, end_date, current_week, total_weeks, phase, is_active, created_at
+- **workout_sessions**: id, user_id, program_id, mesocycle_id, date, name, is_completed, total_volume, duration, created_at
+- **workout_exercises**: id, session_id, exercise_id, order_index, sets, target_reps, actual_reps, weight, rpe, rir, is_completed, rest_period, notes
+- **exercises**: id, name, category, muscle_groups[], primary_muscle, equipment, movement_pattern, difficulty, instructions, video_url, translations
+- **training_templates**: id, name, description, category, days_per_week, duration_weeks, difficulty_level, muscle_focus[], program_structure, created_by, is_system_template, created_at
+- **training_programs**: id, user_id, name, description, days_per_week, mesocycle_duration, current_week, is_active, created_at
+
+#### Auto-Regulation & Volume System
+- **auto_regulation_feedback**: id, session_id, user_id, pump_quality, muscle_soreness, perceived_effort, energy_level, sleep_quality, created_at
+- **volume_landmarks**: id, user_id, muscle_group_id, mev, mav, mrv, current_volume, recovery_level, adaptation_level, last_updated
+- **muscle_groups**: id, name, description, category
+- **exercise_muscle_mapping**: id, exercise_id, muscle_group_id, involvement_level, created_at
+- **weekly_volume_tracking**: id, user_id, muscle_group_id, week_number, target_sets, actual_sets, average_rpe, average_rir, pump_quality, soreness, is_completed, start_date, end_date, created_at
+- **load_progression_tracking**: id, user_id, exercise_id, date, weight, reps, rpe, rir, volume, intensity_load, progression_score, created_at
+
+#### Nutrition System Tables
+- **nutrition_logs**: id, user_id, date, food_name, quantity, unit, calories, protein, carbs, fat, meal_type, meal_order, scheduled_time, category, meal_suitability[], created_at
+- **daily_nutrition_goals**: id, user_id, target_calories, target_protein, target_carbs, target_fat, auto_regulation_enabled, created_at, updated_at
+- **weekly_nutrition_goals**: id, user_id, week_start_date, target_calories, target_protein, target_carbs, target_fat, adherence_percentage, energy_level, hunger_level, weight_change, created_at
+- **meal_macro_distribution**: id, user_id, meal_type, meal_timing, protein_percentage, carb_percentage, fat_percentage, calorie_percentage, is_active, created_at
+- **macro_flexibility_rules**: id, user_id, rule_name, trigger_days[], flex_protein, flex_carbs, flex_fat, compensation_strategy, is_active, created_at
+- **diet_phases**: id, user_id, phase, start_date, end_date, target_weight_change, weekly_weight_change_target, is_active, created_at
+- **meal_timing_preferences**: id, user_id, wake_time, sleep_time, workout_time, workout_days[], meals_per_day, pre_workout_meals, post_workout_meals, updated_at
+- **body_metrics**: id, user_id, date, weight, body_fat_percentage, chest, waist, hips, bicep, thigh, created_at
+
+### Critical Data Routing Patterns
+
+#### Mesocycle to Session Creation
+```typescript
+// When creating mesocycle → automatically generate all sessions
+const sessions = await generateMesocycleProgram(mesocycleId, templateId, customProgram)
+// Each session links: mesocycle_id → mesocycles.id
+```
+
+#### Session to Exercise Assignment
+```typescript
+// When creating session → assign exercises based on template
+const exercises = await assignExercisesToSession(sessionId, templateStructure)
+// Each exercise links: session_id → workout_sessions.id
+```
+
+#### Feedback to Volume Adjustment
+```typescript
+// When feedback submitted → trigger auto-regulation
+const feedback = await createAutoRegulationFeedback(sessionId, feedbackData)
+const recommendations = await generateVolumeRecommendations(userId, feedback)
+// Updates: volume_landmarks.current_volume, recovery_level, adaptation_level
+```
+
+#### Week Advancement Logic
+```typescript
+// When advancing week → recalculate all volume targets
+const newWeek = await advanceWeek(mesocycleId)
+const volumeAdjustments = await calculateVolumeProgression(userId, newWeek)
+// Updates: mesocycles.current_week, volume_landmarks adjustments
+```
+
+### Data Validation Rules
+
+#### Required Foreign Key Relationships
+- workout_sessions.mesocycle_id → mesocycles.id (NOT NULL for mesocycle-based sessions)
+- workout_exercises.session_id → workout_sessions.id (NOT NULL)
+- auto_regulation_feedback.session_id → workout_sessions.id (NOT NULL)
+- volume_landmarks.user_id → users.id (NOT NULL)
+- volume_landmarks.muscle_group_id → muscle_groups.id (NOT NULL)
+
+#### Data Type Constraints
+- All decimal fields: precision: 5, scale: 2 (e.g., 999.99 format)
+- All percentage fields: 0-100 range validation
+- RPE/RIR fields: 1-10 integer range
+- Boolean fields: explicit true/false (not nullable unless specified)
+- Array fields: use .array() method syntax in schema definition
+
+#### Critical Null Handling
+- workout_sessions.program_id: nullable (mesocycle sessions don't require program)
+- workout_exercises.actual_reps: nullable (until exercise completed)
+- workout_exercises.rpe/rir: nullable (until exercise completed)
+- exercises.movement_pattern: ensure proper null handling in type definitions
+
 ## Recent Changes
 
-### January 18, 2025 (Latest - Complete Mesocycle Lifecycle Management Implementation)
+### January 18, 2025 (Latest - Complete System Testing & Data Architecture Documentation)
+- ✅ **COMPREHENSIVE SYSTEM TESTING**: Validated entire training workflow from mesocycle creation to auto-progression
+- ✅ **Data Architecture Documentation**: Complete database schema reference with field mappings and routing logic
+- ✅ **Workflow Verification**: Tested complete cycle:
+  - Mesocycle creation → 12 auto-generated workout sessions (4 weeks × 3 days)
+  - Session execution → Exercise completion tracking with volume/duration logging
+  - Auto-regulation feedback → 5-parameter data collection (pump, soreness, effort, energy, sleep)
+  - AI analysis → Volume recommendations for all 11 muscle groups
+  - Week advancement → Automatic progression from week 1 to week 2 with volume adjustments
+- ✅ **Database Validation**: Confirmed proper foreign key relationships and data integrity
+- ✅ **API Testing**: Verified all training endpoints functional with correct data flow
+- ✅ **Renaissance Periodization Implementation**: Validated RP methodology algorithms working correctly
+- ✅ **System State Tracking**: Active mesocycle with 1/12 sessions completed, 1 feedback entry collected
+- ✅ **Data Documentation**: Complete field reference guide for future development consistency
+
+### January 18, 2025 (Earlier - Complete Mesocycle Lifecycle Management Implementation)
 - ✅ **MAJOR IMPLEMENTATION**: Full Mesocycle Lifecycle Management with Program Builder and Auto-Progression
 - ✅ **Complete CRUD Operations**: Implemented create, update (pause/restart/modify), delete mesocycle functionality
 - ✅ **Program Builder**: Created sophisticated mesocycle program builder supporting:
