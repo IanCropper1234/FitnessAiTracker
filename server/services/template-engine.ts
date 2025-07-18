@@ -8,7 +8,7 @@ import {
   workoutSessions,
   workoutExercises
 } from "@shared/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, or, asc, desc, inArray } from "drizzle-orm";
 
 interface ExerciseTemplate {
   exerciseId: number;
@@ -339,17 +339,106 @@ export class TemplateEngine {
   }
 
   /**
-   * Get available templates for user
+   * Get available templates for user (system and user-created)
    */
-  static async getAvailableTemplates(category?: string): Promise<any[]> {
+  static async getAvailableTemplates(category?: string, userId?: number): Promise<any[]> {
     
-    let query = db.select().from(trainingTemplates).where(eq(trainingTemplates.isActive, true));
+    let query = db.select().from(trainingTemplates).where(
+      and(
+        eq(trainingTemplates.isActive, true),
+        or(
+          eq(trainingTemplates.createdBy, 'system'),
+          userId ? eq(trainingTemplates.userId, userId) : undefined
+        )
+      )
+    );
     
     if (category) {
       query = query.where(eq(trainingTemplates.category, category));
     }
 
     return await query.orderBy(trainingTemplates.daysPerWeek, trainingTemplates.name);
+  }
+
+  /**
+   * Create a user-defined training template
+   */
+  static async createUserTemplate(
+    userId: number,
+    name: string,
+    description: string,
+    category: string,
+    daysPerWeek: number,
+    templateData: any
+  ): Promise<any> {
+    const [template] = await db
+      .insert(trainingTemplates)
+      .values({
+        userId,
+        name,
+        description,
+        category,
+        daysPerWeek,
+        specialization: 'custom',
+        templateData: JSON.stringify(templateData),
+        rpMethodology: {},
+        isActive: true,
+        createdBy: 'user'
+      })
+      .returning();
+
+    return template;
+  }
+
+  /**
+   * Update an existing template (user-created only)
+   */
+  static async updateTemplate(
+    templateId: number, 
+    updateData: Partial<{
+      name: string;
+      description: string;
+      category: string;
+      daysPerWeek: number;
+      templateData: any;
+    }>
+  ): Promise<any | null> {
+    const { templateData, ...otherUpdates } = updateData;
+    
+    const updateValues = {
+      ...otherUpdates,
+      ...(templateData ? { templateData: JSON.stringify(templateData) } : {})
+    };
+
+    const [updated] = await db
+      .update(trainingTemplates)
+      .set(updateValues)
+      .where(
+        and(
+          eq(trainingTemplates.id, templateId),
+          eq(trainingTemplates.createdBy, 'user')
+        )
+      )
+      .returning();
+
+    return updated || null;
+  }
+
+  /**
+   * Delete a user-created template
+   */
+  static async deleteTemplate(templateId: number, userId: number): Promise<boolean> {
+    const result = await db
+      .delete(trainingTemplates)
+      .where(
+        and(
+          eq(trainingTemplates.id, templateId),
+          eq(trainingTemplates.userId, userId),
+          eq(trainingTemplates.createdBy, 'user')
+        )
+      );
+
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   /**

@@ -1436,14 +1436,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Training templates
   app.get("/api/training/templates", async (req, res) => {
     try {
-      const { category } = req.query;
+      const { category, userId } = req.query;
       
-      const templates = await TemplateEngine.getAvailableTemplates(category as string);
+      const templates = await TemplateEngine.getAvailableTemplates(
+        category as string, 
+        userId ? parseInt(userId as string) : undefined
+      );
       
       res.json(templates);
     } catch (error) {
       console.error("Error fetching templates:", error);
       res.status(500).json({ error: "Failed to fetch templates" });
+    }
+  });
+
+  app.post("/api/training/templates", async (req, res) => {
+    try {
+      const { userId, name, description, category, daysPerWeek, templateData } = req.body;
+      
+      const template = await TemplateEngine.createUserTemplate(
+        userId,
+        name,
+        description,
+        category,
+        daysPerWeek,
+        templateData
+      );
+      
+      res.json(template);
+    } catch (error) {
+      console.error("Error creating template:", error);
+      res.status(500).json({ error: "Failed to create template" });
+    }
+  });
+
+  app.put("/api/training/templates/:templateId", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.templateId);
+      const updateData = req.body;
+      
+      const template = await TemplateEngine.updateTemplate(templateId, updateData);
+      
+      if (!template) {
+        return res.status(404).json({ error: "Template not found" });
+      }
+      
+      res.json(template);
+    } catch (error) {
+      console.error("Error updating template:", error);
+      res.status(500).json({ error: "Failed to update template" });
+    }
+  });
+
+  app.delete("/api/training/templates/:templateId", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.templateId);
+      const { userId } = req.body;
+      
+      const success = await TemplateEngine.deleteTemplate(templateId, userId);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Template not found or unauthorized" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting template:", error);
+      res.status(500).json({ error: "Failed to delete template" });
     }
   });
 
@@ -1457,7 +1516,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         workoutDay
       );
       
-      res.json(workout);
+      // Automatically add to recent workout sessions
+      res.json({ 
+        ...workout, 
+        message: "Workout generated and added to your workout sessions" 
+      });
     } catch (error) {
       console.error("Error generating workout from template:", error);
       res.status(500).json({ error: "Failed to generate workout" });

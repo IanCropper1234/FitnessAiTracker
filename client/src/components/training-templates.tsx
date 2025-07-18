@@ -4,7 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Calendar, 
   Users, 
@@ -13,7 +18,11 @@ import {
   CheckCircle2,
   Star,
   TrendingUp,
-  Dumbbell
+  Dumbbell,
+  Plus,
+  Edit2,
+  Trash2,
+  User
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -24,6 +33,8 @@ interface TrainingTemplate {
   category: 'beginner' | 'intermediate' | 'advanced';
   daysPerWeek: number;
   specialization: string;
+  createdBy?: 'system' | 'user';
+  userId?: number;
   templateData: {
     workouts: Array<{
       name: string;
@@ -51,13 +62,19 @@ interface TrainingTemplatesProps {
 
 export default function TrainingTemplates({ userId, onTemplateSelect }: TrainingTemplatesProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<TrainingTemplate | null>(null);
   const queryClient = useQueryClient();
 
-  // Get available templates
+  // Get available templates (includes user templates)
   const { data: templates = [], isLoading } = useQuery({
-    queryKey: ['/api/training/templates', selectedCategory],
+    queryKey: ['/api/training/templates', selectedCategory, userId],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/training/templates${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`);
+      const params = new URLSearchParams();
+      if (selectedCategory !== 'all') params.append('category', selectedCategory);
+      params.append('userId', userId.toString());
+      
+      const response = await apiRequest('GET', `/api/training/templates?${params.toString()}`);
       return response.json();
     },
   });
@@ -69,9 +86,62 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
       return response.json();
     },
     onSuccess: (data) => {
-      console.log('Workout generated:', data);
+      toast({
+        title: "Workout Created",
+        description: data.message || "Workout generated and added to your sessions",
+      });
       // Invalidate training sessions to update dashboard
       queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+    },
+  });
+
+  // Create template mutation
+  const createTemplateMutation = useMutation({
+    mutationFn: async (templateData: any) => {
+      const response = await apiRequest('POST', '/api/training/templates', {
+        userId,
+        ...templateData
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Template Created",
+        description: "Your custom training template has been created successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
+      setShowCreateDialog(false);
+    },
+  });
+
+  // Update template mutation
+  const updateTemplateMutation = useMutation({
+    mutationFn: async (data: { templateId: number; updateData: any }) => {
+      const response = await apiRequest('PUT', `/api/training/templates/${data.templateId}`, data.updateData);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Template Updated",
+        description: "Your training template has been updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
+      setEditingTemplate(null);
+    },
+  });
+
+  // Delete template mutation
+  const deleteTemplateMutation = useMutation({
+    mutationFn: async (templateId: number) => {
+      const response = await apiRequest('DELETE', `/api/training/templates/${templateId}`, { userId });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Template Deleted",
+        description: "Your training template has been deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
     },
   });
 
@@ -105,19 +175,42 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
 
   return (
     <div className="space-y-6">
-      {/* Filter Controls */}
-      <div className="flex items-center gap-4">
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="beginner">Beginner</SelectItem>
-            <SelectItem value="intermediate">Intermediate</SelectItem>
-            <SelectItem value="advanced">Advanced</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Header and Controls */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Training Templates</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Choose from RP-based templates or create your own custom training programs
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-1" />
+                Create Template
+              </Button>
+            </DialogTrigger>
+            <CreateTemplateDialog 
+              userId={userId}
+              createMutation={createTemplateMutation}
+              onClose={() => setShowCreateDialog(false)}
+            />
+          </Dialog>
+
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="beginner">Beginner</SelectItem>
+              <SelectItem value="intermediate">Intermediate</SelectItem>
+              <SelectItem value="advanced">Advanced</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Templates Grid */}
@@ -127,7 +220,15 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
-                  <CardTitle className="text-lg">{template.name}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg">{template.name}</CardTitle>
+                    {template.createdBy === 'user' && (
+                      <Badge variant="outline" className="text-xs">
+                        <User className="h-3 w-3 mr-1" />
+                        Custom
+                      </Badge>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <Badge className={getCategoryColor(template.category)}>
                       {template.category}
@@ -204,6 +305,28 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                   <Dumbbell className="h-4 w-4 mr-1" />
                   {generateWorkoutMutation.isPending ? "Creating..." : "Start Workout"}
                 </Button>
+                
+                {/* User template management */}
+                {template.createdBy === 'user' && template.userId === userId && (
+                  <div className="flex gap-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => setEditingTemplate(template)}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => deleteTemplateMutation.mutate(template.id)}
+                      disabled={deleteTemplateMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+                
                 {onTemplateSelect && (
                   <Button 
                     size="sm" 
@@ -231,6 +354,15 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
               : `No ${selectedCategory} templates are available.`}
           </p>
         </div>
+      )}
+
+      {/* Edit Template Dialog */}
+      {editingTemplate && (
+        <EditTemplateDialog 
+          template={editingTemplate}
+          updateMutation={updateTemplateMutation}
+          onClose={() => setEditingTemplate(null)}
+        />
       )}
     </div>
   );
@@ -400,5 +532,218 @@ export function TemplateDetailModal({
         </div>
       </div>
     </div>
+  );
+}
+
+// Create Template Dialog Component
+function CreateTemplateDialog({ 
+  userId, 
+  createMutation, 
+  onClose 
+}: { 
+  userId: number; 
+  createMutation: any; 
+  onClose: () => void; 
+}) {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: 'beginner' as 'beginner' | 'intermediate' | 'advanced',
+    daysPerWeek: 3,
+    templateData: {
+      workouts: [
+        {
+          name: 'Day 1',
+          exercises: [],
+          estimatedDuration: 45,
+          focus: []
+        }
+      ]
+    }
+  });
+
+  const handleSubmit = () => {
+    createMutation.mutate(formData);
+  };
+
+  return (
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>Create Custom Training Template</DialogTitle>
+        <DialogDescription>
+          Design your own training program with custom workouts and exercises
+        </DialogDescription>
+      </DialogHeader>
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="name">Template Name</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              placeholder="e.g., My Custom Push/Pull"
+            />
+          </div>
+          <div>
+            <Label htmlFor="category">Category</Label>
+            <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="beginner">Beginner</SelectItem>
+                <SelectItem value="intermediate">Intermediate</SelectItem>
+                <SelectItem value="advanced">Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="Describe your training template..."
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="daysPerWeek">Days Per Week</Label>
+          <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => setFormData(prev => ({ ...prev, daysPerWeek: parseInt(value) }))}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="3">3 Days</SelectItem>
+              <SelectItem value="4">4 Days</SelectItem>
+              <SelectItem value="5">5 Days</SelectItem>
+              <SelectItem value="6">6 Days</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+          <p className="text-sm text-blue-800 dark:text-blue-200">
+            <strong>Note:</strong> After creating your template, you'll be able to add exercises and customize workouts. 
+            You can also generate workouts from this template and track your progress.
+          </p>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button variant="outline" onClick={onClose}>Cancel</Button>
+        <Button 
+          onClick={handleSubmit}
+          disabled={!formData.name || !formData.description || createMutation.isPending}
+        >
+          {createMutation.isPending ? 'Creating...' : 'Create Template'}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  );
+}
+
+// Edit Template Dialog Component
+function EditTemplateDialog({ 
+  template, 
+  updateMutation, 
+  onClose 
+}: { 
+  template: TrainingTemplate; 
+  updateMutation: any; 
+  onClose: () => void; 
+}) {
+  const [formData, setFormData] = useState({
+    name: template.name,
+    description: template.description,
+    category: template.category,
+    daysPerWeek: template.daysPerWeek,
+    templateData: template.templateData
+  });
+
+  const handleSubmit = () => {
+    updateMutation.mutate({
+      templateId: template.id,
+      updateData: formData
+    });
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Training Template</DialogTitle>
+          <DialogDescription>
+            Update your custom training template details
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="editName">Template Name</Label>
+              <Input
+                id="editName"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="editCategory">Category</Label>
+              <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">Beginner</SelectItem>
+                  <SelectItem value="intermediate">Intermediate</SelectItem>
+                  <SelectItem value="advanced">Advanced</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="editDescription">Description</Label>
+            <Textarea
+              id="editDescription"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="editDaysPerWeek">Days Per Week</Label>
+            <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => setFormData(prev => ({ ...prev, daysPerWeek: parseInt(value) }))}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">3 Days</SelectItem>
+                <SelectItem value="4">4 Days</SelectItem>
+                <SelectItem value="5">5 Days</SelectItem>
+                <SelectItem value="6">6 Days</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            onClick={handleSubmit}
+            disabled={!formData.name || !formData.description || updateMutation.isPending}
+          >
+            {updateMutation.isPending ? 'Updating...' : 'Update Template'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
