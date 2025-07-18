@@ -327,7 +327,11 @@ function WorkoutSessionCard({
   );
 }
 
-export function TrainingDashboard() {
+interface TrainingDashboardProps {
+  userId: number;
+}
+
+export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
@@ -345,7 +349,7 @@ export function TrainingDashboard() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -355,7 +359,7 @@ export function TrainingDashboard() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -365,7 +369,7 @@ export function TrainingDashboard() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -376,12 +380,12 @@ export function TrainingDashboard() {
 
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
-    queryKey: ["/api/training/stats", 1], // user ID 1 for now
+    queryKey: ["/api/training/stats", userId],
   });
 
   // Fetch recent workout sessions
   const { data: recentSessions = [], isLoading: sessionsLoading } = useQuery<WorkoutSession[]>({
-    queryKey: ["/api/training/sessions", 1],
+    queryKey: ["/api/training/sessions", userId],
   });
 
   // Group exercises by category
@@ -839,15 +843,15 @@ export function TrainingDashboard() {
         </TabsContent>
 
         <TabsContent value="templates" className="space-y-6">
-          <TrainingTemplates userId={1} />
+          <TrainingTemplates userId={userId} />
         </TabsContent>
 
         <TabsContent value="mesocycles" className="space-y-6">
-          <MesocycleDashboard userId={1} />
+          <MesocycleDashboard userId={userId} />
         </TabsContent>
 
         <TabsContent value="progression" className="space-y-6">
-          <LoadProgressionTracker userId={1} />
+          <LoadProgressionTracker userId={userId} />
         </TabsContent>
       </Tabs>
 
@@ -882,7 +886,7 @@ export function TrainingDashboard() {
                     sessionId={executingSessionId} 
                     onComplete={() => {
                       setExecutingSessionId(null);
-                      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+                      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
                     }}
                   />
                 </CardContent>

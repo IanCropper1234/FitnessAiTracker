@@ -92,7 +92,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           {user ? <Nutrition user={user} /> : <div>Loading...</div>}
         </Route>
         <Route path="/training">
-          {user ? <TrainingPage /> : <div>Loading...</div>}
+          {user ? <TrainingPage user={user} /> : <div>Loading...</div>}
         </Route>
         <Route path="/profile">
           {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div>Loading...</div>}

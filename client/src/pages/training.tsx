@@ -1,6 +1,16 @@
 import { TrainingDashboard } from "@/components/training-dashboard";
 
-export function TrainingPage() {
+interface User {
+  id: number;
+  email: string;
+  name: string;
+}
+
+interface TrainingPageProps {
+  user: User;
+}
+
+export function TrainingPage({ user }: TrainingPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -11,7 +21,7 @@ export function TrainingPage() {
           </p>
         </div>
         
-        <TrainingDashboard />
+        <TrainingDashboard userId={user.id} />
       </div>
     </div>
   );
