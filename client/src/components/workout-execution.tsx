@@ -96,7 +96,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
       });
       setWorkoutData(initialData);
     }
-  }, [session, workoutData]);
+  }, [session]);
 
   // Rest timer effect
   useEffect(() => {

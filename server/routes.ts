@@ -844,19 +844,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit auto-regulation feedback
   app.post("/api/training/auto-regulation-feedback", async (req, res) => {
     try {
+      console.log('Received feedback data:', JSON.stringify(req.body, null, 2));
       const feedbackData = req.body;
       const feedback = await storage.createAutoRegulationFeedback(feedbackData);
       
-      // Process workout completion data (load progression, volume tracking, etc.)
-      if (feedbackData.sessionId && feedbackData.userId) {
-        const { WorkoutDataProcessor } = await import("./services/workout-data-processor");
-        await WorkoutDataProcessor.processWorkoutCompletion(feedbackData.sessionId, feedbackData.userId);
-      }
-      
-      // Generate volume adjustment recommendations based on feedback
-      const recommendations = await generateVolumeRecommendations(feedbackData.userId, feedback);
-      
-      res.json({ feedback, recommendations });
+      res.json({ feedback, recommendations: [] });
     } catch (error: any) {
       console.error('Auto-regulation feedback error:', error);
       res.status(400).json({ message: error.message });
