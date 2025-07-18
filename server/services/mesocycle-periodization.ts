@@ -731,21 +731,21 @@ export class MesocyclePeriodization {
             const lastActualReps = lastExercise.actualReps;
 
             // RP Auto-progression logic
-            if (lastWeight && lastRpe && lastRir !== null) {
-              // If RPE was 8+ and RIR was 0-1, increase weight by 2.5-5%
-              if (lastRpe >= 8 && lastRir <= 1) {
+            if (lastWeight && lastRpe) {
+              // If RPE was 8+ and RIR was 0-1 (or null), increase weight by 2.5-5%
+              if (lastRpe >= 8 && (lastRir === null || lastRir <= 1)) {
                 progressedWeight = Math.round((lastWeight * 1.025) * 4) / 4; // 2.5% increase, rounded to nearest 0.25
                 progressedRpe = Math.max(7, Math.min(8, lastRpe)); // Target similar RPE
-                progressedRir = Math.max(1, Math.min(2, lastRir + 1)); // Slightly more RIR with heavier weight
+                progressedRir = Math.max(1, Math.min(2, (lastRir || 0) + 1)); // Slightly more RIR with heavier weight
               }
               // If RPE was 6-7 and RIR was 2-3, increase weight by 5-7.5%
-              else if (lastRpe >= 6 && lastRpe <= 7 && lastRir >= 2 && lastRir <= 3) {
+              else if (lastRpe >= 6 && lastRpe <= 7 && lastRir !== null && lastRir >= 2 && lastRir <= 3) {
                 progressedWeight = Math.round((lastWeight * 1.05) * 4) / 4; // 5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe + 1)); // Target slightly higher RPE
                 progressedRir = Math.max(1, Math.min(2, lastRir)); // Maintain RIR
               }
               // If RPE was <6 and RIR was 4+, increase weight by 7.5-10%
-              else if (lastRpe < 6 && lastRir >= 4) {
+              else if (lastRpe < 6 && lastRir !== null && lastRir >= 4) {
                 progressedWeight = Math.round((lastWeight * 1.075) * 4) / 4; // 7.5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe + 2)); // Target higher RPE
                 progressedRir = Math.max(1, Math.min(3, lastRir - 1)); // Reduce RIR
@@ -756,11 +756,17 @@ export class MesocyclePeriodization {
                 progressedRpe = 8; // Target lower RPE
                 progressedRir = 2; // Target more RIR
               }
+              // If RPE was 6-8 but RIR is null, apply conservative progression
+              else if (lastRpe >= 6 && lastRpe <= 8 && lastRir === null) {
+                progressedWeight = Math.round((lastWeight * 1.025) * 4) / 4; // 2.5% increase
+                progressedRpe = Math.max(7, Math.min(8, lastRpe)); // Target similar RPE
+                progressedRir = 2; // Conservative RIR target
+              }
               // Otherwise keep same weight
               else {
                 progressedWeight = lastWeight;
                 progressedRpe = lastRpe;
-                progressedRir = lastRir;
+                progressedRir = lastRir || 2; // Default RIR if null
               }
 
               // Use previous week's target reps as starting point

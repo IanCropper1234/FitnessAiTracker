@@ -29,7 +29,7 @@ interface WorkoutExercise {
   targetReps: string;
   restPeriod: number;
   notes: string;
-  weight: number | null;
+  weight: string | null;
   rpe: number | null;
   rir: number | null;
   actualReps: string | null;
@@ -90,15 +90,19 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           : exercise.targetReps.split(',').map(r => parseInt(r.trim()));
         
         // Use prefilled values from database if available
-        const prefilledWeight = exercise.weight || 0;
+        const prefilledWeight = exercise.weight ? parseFloat(exercise.weight) : 0;
         const prefilledRpe = exercise.rpe || 7;
         
         // Parse actual reps from previous week if available
         let prefilledActualReps = 0;
         if (exercise.actualReps) {
           // Handle both single number and comma-separated format
-          const repsArray = exercise.actualReps.split(',').map(r => parseInt(r.trim()));
-          prefilledActualReps = repsArray[0] || 0; // Use first set's reps as default
+          if (exercise.actualReps.includes(',')) {
+            const repsArray = exercise.actualReps.split(',').map(r => parseInt(r.trim()));
+            prefilledActualReps = repsArray[0] || 0; // Use first set's reps as default
+          } else {
+            prefilledActualReps = parseInt(exercise.actualReps) || 0;
+          }
         }
         
         initialData[exercise.id] = Array.from({ length: exercise.sets }, (_, i) => ({
