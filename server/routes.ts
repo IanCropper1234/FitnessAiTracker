@@ -759,6 +759,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const completionData = req.body;
+      
+      console.log('Workout completion data:', JSON.stringify(completionData, null, 2));
+
+      // Validate completion data structure
+      if (!completionData.exercises || !Array.isArray(completionData.exercises)) {
+        return res.status(400).json({ message: "Invalid completion data: exercises array required" });
+      }
 
       // Update session with completion data
       const updatedSession = await storage.updateWorkoutSession(sessionId, {
@@ -768,32 +775,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Update workout exercises with actual performance data
+      const workoutExercises = await storage.getWorkoutExercises(sessionId);
+      console.log('Found workout exercises:', workoutExercises.length);
+      
       for (const exerciseData of completionData.exercises) {
-        const workoutExercises = await storage.getWorkoutExercises(sessionId);
+        console.log('Processing exercise:', exerciseData.exerciseId, 'sets:', exerciseData.sets?.length);
+        
         const workoutExercise = workoutExercises.find(we => we.exerciseId === exerciseData.exerciseId);
         
-        if (workoutExercise && exerciseData.sets.length > 0) {
-          const completedSets = exerciseData.sets.filter((set: any) => set.completed);
-          
-          // Update set count for completed workout
-          const currentSetCount = exerciseData.sets.length;
-          const updateData: any = {
-            sets: currentSetCount, // Update dynamic set count
-            isCompleted: true
-          };
-          
-          if (completedSets.length > 0) {
-            const avgWeight = completedSets.reduce((sum: number, set: any) => sum + set.weight, 0) / completedSets.length;
-            const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
-            const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + set.rpe, 0) / completedSets.length);
-
-            updateData.actualReps = actualReps;
-            updateData.weight = avgWeight.toString();
-            updateData.rpe = avgRpe;
-          }
-
-          await storage.updateWorkoutExercise(workoutExercise.id, updateData);
+        if (!workoutExercise) {
+          console.log('Workout exercise not found for exerciseId:', exerciseData.exerciseId);
+          continue;
         }
+        
+        if (!exerciseData.sets || !Array.isArray(exerciseData.sets)) {
+          console.log('Invalid sets data for exercise:', exerciseData.exerciseId);
+          continue;
+        }
+        
+        const completedSets = exerciseData.sets.filter((set: any) => set.completed);
+        console.log('Completed sets:', completedSets.length, 'out of', exerciseData.sets.length);
+        
+        // Update set count for completed workout
+        const currentSetCount = exerciseData.sets.length;
+        const updateData: any = {
+          sets: currentSetCount, // Update dynamic set count
+          isCompleted: true
+        };
+        
+        if (completedSets.length > 0) {
+          const avgWeight = completedSets.reduce((sum: number, set: any) => sum + (parseFloat(set.weight) || 0), 0) / completedSets.length;
+          const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
+          const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rpe) || 0), 0) / completedSets.length);
+
+          updateData.actualReps = actualReps;
+          updateData.weight = avgWeight.toString();
+          updateData.rpe = avgRpe;
+        } else {
+          // No completed sets, mark as incomplete
+          updateData.isCompleted = false;
+        }
+
+        console.log('Updating workout exercise:', workoutExercise.id, 'with data:', updateData);
+        await storage.updateWorkoutExercise(workoutExercise.id, updateData);
       }
 
       res.json(updatedSession);
