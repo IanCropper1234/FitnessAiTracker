@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -45,16 +45,32 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
   const queryClient = useQueryClient();
 
   const [sessionName, setSessionName] = useState("");
-  const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>(
-    selectedExercises.map(exercise => ({
-      exerciseId: exercise.id,
-      exercise,
-      sets: 3,
-      targetReps: "8-12",
-      restPeriod: 90,
-      notes: ""
-    }))
-  );
+  const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([]);
+
+  // Update exercise templates when selectedExercises changes
+  useEffect(() => {
+    if (selectedExercises.length > 0) {
+      setExerciseTemplates(
+        selectedExercises.map(exercise => ({
+          exerciseId: exercise.id,
+          exercise,
+          sets: 3,
+          targetReps: "8-12",
+          restPeriod: 90,
+          notes: ""
+        }))
+      );
+    } else {
+      setExerciseTemplates([]);
+    }
+  }, [selectedExercises]);
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSessionName("");
+    }
+  }, [isOpen]);
 
   const createWorkoutSessionMutation = useMutation({
     mutationFn: async (sessionData: any) => {
@@ -80,7 +96,7 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
 
   const resetForm = () => {
     setSessionName("");
-    setExerciseTemplates([]);
+    // Don't reset exerciseTemplates here as they come from props
   };
 
   const updateExerciseTemplate = (index: number, field: keyof ExerciseTemplate, value: any) => {
