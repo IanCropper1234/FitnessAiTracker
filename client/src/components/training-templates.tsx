@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { ExerciseLibrarySelector } from "./exercise-library-selector";
 import { 
   Calendar, 
   Users, 
@@ -22,7 +23,9 @@ import {
   Plus,
   Edit2,
   Trash2,
-  User
+  User,
+  ChevronRight,
+  ChevronLeft
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -602,7 +605,7 @@ function CreateTemplateDialog({
   onClose: () => void; 
 }) {
   const [step, setStep] = useState(1); // 1: Basic info, 2: Workout setup
-  const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
+  const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -620,28 +623,7 @@ function CreateTemplateDialog({
     }
   });
 
-  // Fetch real exercise data from Exercise Library
-  const { data: availableExercises = [] } = useQuery({
-    queryKey: ['/api/exercises'],
-    select: (data: any[]) => data.map(exercise => ({
-      id: exercise.id,
-      name: exercise.name,
-      muscleGroups: exercise.muscleGroups || [exercise.primaryMuscle],
-      category: exercise.category,
-      primaryMuscle: exercise.primaryMuscle,
-      equipment: exercise.equipment,
-      difficulty: exercise.difficulty
-    }))
-  });
-
-  // Filter exercises based on search query
-  const filteredExercises = availableExercises.filter(exercise =>
-    exercise.name.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
-    exercise.primaryMuscle?.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
-    exercise.muscleGroups?.some(muscle => 
-      muscle.toLowerCase().includes(exerciseSearchQuery.toLowerCase())
-    )
-  );
+  const currentWorkout = formData.templateData.workouts[currentWorkoutIndex];
 
   const addWorkoutDay = () => {
     setFormData(prev => ({
@@ -671,27 +653,17 @@ function CreateTemplateDialog({
     }));
   };
 
-  const addExerciseToWorkout = (workoutIndex: number, exercise: any) => {
-    const newExercise = {
-      exerciseId: exercise.id,
-      exerciseName: exercise.name,
-      sets: 3,
-      repsRange: "8-12",
-      restPeriod: 120,
-      muscleGroups: exercise.muscleGroups,
-      orderIndex: formData.templateData.workouts[workoutIndex].exercises.length + 1
-    };
-
-    updateWorkout(workoutIndex, {
-      ...formData.templateData.workouts[workoutIndex],
-      exercises: [...formData.templateData.workouts[workoutIndex].exercises, newExercise]
+  const addExerciseToCurrentWorkout = (exercise: any) => {
+    updateWorkout(currentWorkoutIndex, {
+      ...currentWorkout,
+      exercises: [...currentWorkout.exercises, exercise]
     });
   };
 
-  const removeExerciseFromWorkout = (workoutIndex: number, exerciseIndex: number) => {
-    updateWorkout(workoutIndex, {
-      ...formData.templateData.workouts[workoutIndex],
-      exercises: formData.templateData.workouts[workoutIndex].exercises.filter((_, i) => i !== exerciseIndex)
+  const removeExerciseFromCurrentWorkout = (exerciseId: number) => {
+    updateWorkout(currentWorkoutIndex, {
+      ...currentWorkout,
+      exercises: currentWorkout.exercises.filter((ex: any) => ex.exerciseId !== exerciseId)
     });
   };
 
@@ -780,146 +752,85 @@ function CreateTemplateDialog({
         )}
 
         {step === 2 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Configure Workouts</h3>
-              <Badge variant="outline">{formData.daysPerWeek} days per week</Badge>
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Configure Workouts</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Add exercises to each workout day
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWorkoutIndex(Math.max(0, currentWorkoutIndex - 1))}
+                  disabled={currentWorkoutIndex === 0}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <span className="text-sm font-medium">
+                  {currentWorkoutIndex + 1} of {formData.templateData.workouts.length}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWorkoutIndex(Math.min(formData.templateData.workouts.length - 1, currentWorkoutIndex + 1))}
+                  disabled={currentWorkoutIndex === formData.templateData.workouts.length - 1}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
-            {formData.templateData.workouts.map((workout, workoutIndex) => (
-              <Card key={workoutIndex}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Input
-                      value={workout.name}
-                      onChange={(e) => updateWorkout(workoutIndex, { ...workout, name: e.target.value })}
-                      className="font-semibold text-lg"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Label>Duration (min):</Label>
-                      <Input
-                        type="number"
-                        value={workout.estimatedDuration}
-                        onChange={(e) => updateWorkout(workoutIndex, { ...workout, estimatedDuration: parseInt(e.target.value) })}
-                        className="w-20"
-                      />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Exercises ({workout.exercises.length})</h4>
-                    <div className="space-y-2">
-                      {workout.exercises.map((exercise, exerciseIndex) => (
-                        <div key={exerciseIndex} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                          <span className="font-medium min-w-[150px]">{exercise.exerciseName}</span>
-                          <div className="flex items-center gap-1">
-                            <Input
-                              type="number"
-                              value={exercise.sets}
-                              onChange={(e) => {
-                                const newExercises = [...workout.exercises];
-                                newExercises[exerciseIndex] = { ...exercise, sets: parseInt(e.target.value) };
-                                updateWorkout(workoutIndex, { ...workout, exercises: newExercises });
-                              }}
-                              className="w-16"
-                            />
-                            <span className="text-sm">sets</span>
-                          </div>
-                          <Input
-                            value={exercise.repsRange}
-                            onChange={(e) => {
-                              const newExercises = [...workout.exercises];
-                              newExercises[exerciseIndex] = { ...exercise, repsRange: e.target.value };
-                              updateWorkout(workoutIndex, { ...workout, exercises: newExercises });
-                            }}
-                            placeholder="8-12"
-                            className="w-20"
-                          />
-                          <div className="flex items-center gap-1">
-                            <Input
-                              type="number"
-                              value={exercise.restPeriod}
-                              onChange={(e) => {
-                                const newExercises = [...workout.exercises];
-                                newExercises[exerciseIndex] = { ...exercise, restPeriod: parseInt(e.target.value) };
-                                updateWorkout(workoutIndex, { ...workout, exercises: newExercises });
-                              }}
-                              className="w-16"
-                            />
-                            <span className="text-sm">sec</span>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => removeExerciseFromWorkout(workoutIndex, exerciseIndex)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium mb-2">Add Exercise</h4>
-                    <div className="space-y-3">
-                      <Input
-                        placeholder="Search exercises..."
-                        value={exerciseSearchQuery}
-                        onChange={(e) => setExerciseSearchQuery(e.target.value)}
-                        className="w-full"
-                      />
-                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-                        {filteredExercises.map((exercise) => (
-                          <Button
-                            key={exercise.id}
-                            size="sm"
-                            variant="outline"
-                            onClick={() => addExerciseToWorkout(workoutIndex, exercise)}
-                            className="justify-start text-left"
-                          >
-                            <Plus className="h-3 w-3 mr-1" />
-                            <div className="flex flex-col items-start">
-                              <span className="text-sm">{exercise.name}</span>
-                              <span className="text-xs text-gray-500">
-                                {exercise.primaryMuscle} • {exercise.equipment || 'Any'}
-                              </span>
-                            </div>
-                          </Button>
-                        ))}
-                      </div>
-                      {filteredExercises.length === 0 && exerciseSearchQuery && (
-                        <p className="text-sm text-gray-500 text-center py-4">
-                          No exercises found matching "{exerciseSearchQuery}"
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>{currentWorkout.name}</CardTitle>
+                  <Input
+                    value={currentWorkout.name}
+                    onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
+                    className="w-40"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ExerciseLibrarySelector
+                  onAddExercise={addExerciseToCurrentWorkout}
+                  selectedExercises={currentWorkout.exercises}
+                  onRemoveExercise={removeExerciseFromCurrentWorkout}
+                />
+              </CardContent>
+            </Card>
+          </>
         )}
+
       </div>
 
       <DialogFooter>
-        {step === 1 ? (
+        <Button variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        {step === 1 && (
+          <Button 
+            onClick={() => setStep(2)}
+            disabled={!formData.name || !formData.description}
+          >
+            Next: Configure Workouts
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        )}
+        {step === 2 && (
           <>
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button 
-              onClick={() => setStep(2)}
-              disabled={!formData.name || !formData.description}
-            >
-              Next: Configure Workouts
+            <Button variant="outline" onClick={() => setStep(1)}>
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Back
             </Button>
-          </>
-        ) : (
-          <>
-            <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
             <Button 
               onClick={handleSubmit}
-              disabled={createMutation.isPending}
+              disabled={createMutation.isPending || formData.templateData.workouts.some(w => w.exercises.length === 0)}
             >
               {createMutation.isPending ? 'Creating...' : 'Create Template'}
             </Button>

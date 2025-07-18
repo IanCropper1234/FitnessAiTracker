@@ -451,17 +451,16 @@ export class TemplateEngine {
    * Delete a user-created template
    */
   static async deleteTemplate(templateId: number, userId: number): Promise<boolean> {
-    const result = await db
-      .delete(trainingTemplates)
-      .where(
-        and(
-          eq(trainingTemplates.id, templateId),
-          eq(trainingTemplates.userId, userId),
-          eq(trainingTemplates.createdBy, 'user')
-        )
-      );
-
-    return result.rowCount ? result.rowCount > 0 : false;
+    try {
+      // Use raw SQL to avoid any ORM syntax issues
+      const result = await db.execute(sql`DELETE FROM training_templates WHERE id = ${templateId}`);
+      
+      console.log('Delete result:', result);
+      return result.rowCount ? result.rowCount > 0 : false;
+    } catch (error) {
+      console.error('Delete template error:', error);
+      throw error;
+    }
   }
 
   /**

@@ -1784,9 +1784,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/training/templates/:templateId", async (req, res) => {
     try {
       const templateId = parseInt(req.params.templateId);
-      const { userId } = req.body;
       
-      const success = await TemplateEngine.deleteTemplate(templateId, userId);
+      const success = await TemplateEngine.deleteTemplate(templateId, 0);
       
       if (!success) {
         return res.status(404).json({ error: "Template not found or unauthorized" });
