@@ -348,6 +348,53 @@ export const dietGoals = pgTable("diet_goals", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Step 4: Training Templates System
+export const trainingTemplates = pgTable("training_templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(), // "Upper/Lower Split", "PPL", "Full Body"
+  description: text("description"),
+  category: text("category").notNull(), // beginner, intermediate, advanced
+  daysPerWeek: integer("days_per_week").notNull(),
+  specialization: text("specialization"), // chest, back, legs, arms, full_body
+  templateData: jsonb("template_data").notNull(), // Exercise structure and rep ranges
+  rpMethodology: jsonb("rp_methodology").notNull(), // Volume guidelines per muscle group
+  isActive: boolean("is_active").default(true),
+  createdBy: text("created_by").default("system"), // system or user_id
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Mesocycle management for periodization
+export const mesocycles = pgTable("mesocycles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  programId: integer("program_id").references(() => trainingPrograms.id),
+  templateId: integer("template_id").references(() => trainingTemplates.id),
+  name: text("name").notNull(),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  currentWeek: integer("current_week").notNull().default(1),
+  totalWeeks: integer("total_weeks").notNull().default(6),
+  phase: text("phase").notNull().default("accumulation"), // accumulation, intensification, deload
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Load progression tracking
+export const loadProgressionTracking = pgTable("load_progression_tracking", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  exerciseId: integer("exercise_id").references(() => exercises.id).notNull(),
+  sessionId: integer("session_id").references(() => workoutSessions.id).notNull(),
+  previousWeight: decimal("previous_weight", { precision: 6, scale: 2 }),
+  currentWeight: decimal("current_weight", { precision: 6, scale: 2 }).notNull(),
+  targetWeight: decimal("target_weight", { precision: 6, scale: 2 }),
+  rpeAverage: decimal("rpe_average", { precision: 3, scale: 1 }),
+  rirAverage: decimal("rir_average", { precision: 3, scale: 1 }),
+  progressionType: text("progression_type").notNull(), // weight, reps, volume
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true, updatedAt: true });
@@ -370,6 +417,11 @@ export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPre
 export const insertBodyMetricSchema = createInsertSchema(bodyMetrics).omit({ id: true, createdAt: true });
 export const insertSavedMealPlanSchema = createInsertSchema(savedMealPlans).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertDietGoalSchema = createInsertSchema(dietGoals).omit({ id: true, createdAt: true, updatedAt: true });
+
+// Step 4: Advanced Training System Schemas
+export const insertTrainingTemplateSchema = createInsertSchema(trainingTemplates).omit({ id: true, createdAt: true });
+export const insertMesocycleSchema = createInsertSchema(mesocycles).omit({ id: true, createdAt: true });
+export const insertLoadProgressionTrackingSchema = createInsertSchema(loadProgressionTracking).omit({ id: true, createdAt: true });
 
 // Step 2: Volume Landmarks System Schemas
 export const insertMuscleGroupSchema = createInsertSchema(muscleGroups).omit({ id: true });
@@ -420,6 +472,14 @@ export type SavedMealPlan = typeof savedMealPlans.$inferSelect;
 export type InsertSavedMealPlan = z.infer<typeof insertSavedMealPlanSchema>;
 export type DietGoal = typeof dietGoals.$inferSelect;
 export type InsertDietGoal = z.infer<typeof insertDietGoalSchema>;
+
+// Step 4: Advanced Training System Types
+export type TrainingTemplate = typeof trainingTemplates.$inferSelect;
+export type InsertTrainingTemplate = z.infer<typeof insertTrainingTemplateSchema>;
+export type Mesocycle = typeof mesocycles.$inferSelect;
+export type InsertMesocycle = z.infer<typeof insertMesocycleSchema>;
+export type LoadProgressionTracking = typeof loadProgressionTracking.$inferSelect;
+export type InsertLoadProgressionTracking = z.infer<typeof insertLoadProgressionTrackingSchema>;
 
 // Step 2: Volume Landmarks System Types
 export type MuscleGroup = typeof muscleGroups.$inferSelect;

@@ -12,6 +12,9 @@ import bcrypt from "bcrypt";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
 import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendations } from "./auto-regulation-algorithms";
+import { MesocyclePeriodization } from "./services/mesocycle-periodization";
+import { TemplateEngine } from "./services/template-engine";
+import { LoadProgression } from "./services/load-progression";
 
 // RP Diet Coach categorization functions
 function categorizeFoodByRP(calories: number, protein: number, carbs: number, fat: number): string {
@@ -1376,6 +1379,188 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Get available weeks error:', error);
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Advanced Training System Routes
+
+  // Mesocycle management
+  app.get("/api/training/mesocycles/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      const mesocycles = await db
+        .select()
+        .from(mesocycles)
+        .where(eq(mesocycles.userId, userId))
+        .orderBy(desc(mesocycles.createdAt));
+      
+      res.json(mesocycles);
+    } catch (error) {
+      console.error("Error fetching mesocycles:", error);
+      res.status(500).json({ error: "Failed to fetch mesocycles" });
+    }
+  });
+
+  app.post("/api/training/mesocycles", async (req, res) => {
+    try {
+      const { userId, name, templateId, totalWeeks } = req.body;
+      
+      const mesocycleId = await MesocyclePeriodization.createMesocycle(
+        userId, 
+        name, 
+        templateId, 
+        totalWeeks
+      );
+      
+      res.json({ id: mesocycleId, message: "Mesocycle created successfully" });
+    } catch (error) {
+      console.error("Error creating mesocycle:", error);
+      res.status(500).json({ error: "Failed to create mesocycle" });
+    }
+  });
+
+  app.get("/api/training/mesocycle-recommendations/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      const recommendations = await MesocyclePeriodization.generateMesocycleRecommendations(userId);
+      
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error generating mesocycle recommendations:", error);
+      res.status(500).json({ error: "Failed to generate recommendations" });
+    }
+  });
+
+  // Training templates
+  app.get("/api/training/templates", async (req, res) => {
+    try {
+      const { category } = req.query;
+      
+      const templates = await TemplateEngine.getAvailableTemplates(category as string);
+      
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+      res.status(500).json({ error: "Failed to fetch templates" });
+    }
+  });
+
+  app.post("/api/training/templates/generate-workout", async (req, res) => {
+    try {
+      const { userId, templateId, workoutDay } = req.body;
+      
+      const workout = await TemplateEngine.generateWorkoutFromTemplate(
+        userId, 
+        templateId, 
+        workoutDay
+      );
+      
+      res.json(workout);
+    } catch (error) {
+      console.error("Error generating workout from template:", error);
+      res.status(500).json({ error: "Failed to generate workout" });
+    }
+  });
+
+  app.get("/api/training/templates/:templateId/customize/:userId", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.templateId);
+      const userId = parseInt(req.params.userId);
+      const { specialization, availableDays } = req.query;
+      
+      const customizedTemplate = await TemplateEngine.customizeTemplateForUser(
+        templateId,
+        userId,
+        specialization as string,
+        availableDays ? parseInt(availableDays as string) : undefined
+      );
+      
+      res.json(customizedTemplate);
+    } catch (error) {
+      console.error("Error customizing template:", error);
+      res.status(500).json({ error: "Failed to customize template" });
+    }
+  });
+
+  // Load progression
+  app.get("/api/training/load-progression/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { exerciseIds } = req.query;
+      
+      const exerciseIdArray = exerciseIds 
+        ? (exerciseIds as string).split(',').map(id => parseInt(id))
+        : [];
+      
+      const progressions = await LoadProgression.getWorkoutProgressions(userId, exerciseIdArray);
+      
+      res.json(progressions);
+    } catch (error) {
+      console.error("Error fetching load progressions:", error);
+      res.status(500).json({ error: "Failed to fetch load progressions" });
+    }
+  });
+
+  app.post("/api/training/load-progression", async (req, res) => {
+    try {
+      const {
+        userId,
+        exerciseId,
+        sessionId,
+        previousWeight,
+        currentWeight,
+        averageRpe,
+        averageRir,
+        progressionType,
+        notes
+      } = req.body;
+      
+      await LoadProgression.recordProgression(
+        userId,
+        exerciseId,
+        sessionId,
+        previousWeight,
+        currentWeight,
+        averageRpe,
+        averageRir,
+        progressionType,
+        notes
+      );
+      
+      res.json({ message: "Load progression recorded successfully" });
+    } catch (error) {
+      console.error("Error recording load progression:", error);
+      res.status(500).json({ error: "Failed to record load progression" });
+    }
+  });
+
+  app.get("/api/training/performance-analysis/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { timeframeDays } = req.query;
+      
+      const analysis = await LoadProgression.analyzePerformance(
+        userId,
+        timeframeDays ? parseInt(timeframeDays as string) : 28
+      );
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing performance:", error);
+      res.status(500).json({ error: "Failed to analyze performance" });
+    }
+  });
+
+  // Initialize system templates on startup
+  app.post("/api/training/init-templates", async (req, res) => {
+    try {
+      await TemplateEngine.initializeSystemTemplates();
+      res.json({ message: "System templates initialized successfully" });
+    } catch (error) {
+      console.error("Error initializing templates:", error);
+      res.status(500).json({ error: "Failed to initialize templates" });
     }
   });
 

@@ -24,6 +24,9 @@ import { WorkoutExecution } from "./workout-execution";
 import { WorkoutDetails } from "./workout-details";
 import { VolumeLandmarks } from "./volume-landmarks";
 import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
+import MesocycleDashboard from "./mesocycle-dashboard";
+import TrainingTemplates from "./training-templates";
+import LoadProgressionTracker from "./load-progression-tracker";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -259,13 +262,14 @@ export function TrainingDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
           <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
+          <TabsTrigger value="templates">Training Templates</TabsTrigger>
+          <TabsTrigger value="mesocycles">Periodization</TabsTrigger>
+          <TabsTrigger value="progression">Load Progression</TabsTrigger>
           <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
           <TabsTrigger value="auto-regulation">Auto-Regulation</TabsTrigger>
-          <TabsTrigger value="programs">Training Programs</TabsTrigger>
-          <TabsTrigger value="progress">Progress Tracking</TabsTrigger>
         </TabsList>
 
         <TabsContent value="exercises" className="space-y-6">
@@ -560,6 +564,18 @@ export function TrainingDashboard() {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="templates" className="space-y-6">
+          <TrainingTemplates userId={1} />
+        </TabsContent>
+
+        <TabsContent value="mesocycles" className="space-y-6">
+          <MesocycleDashboard userId={1} />
+        </TabsContent>
+
+        <TabsContent value="progression" className="space-y-6">
+          <LoadProgressionTracker userId={1} />
         </TabsContent>
       </Tabs>
 
