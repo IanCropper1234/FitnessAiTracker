@@ -712,6 +712,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete workout session
+  app.delete("/api/training/sessions/:sessionId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      
+      const success = await storage.deleteWorkoutSession(sessionId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+      
+      res.json({ message: "Session deleted successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Restart workout session (reset progress but keep structure)
+  app.post("/api/training/sessions/:sessionId/restart", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      
+      // Reset session to incomplete and clear progress data
+      const updatedSession = await storage.updateWorkoutSession(sessionId, {
+        isCompleted: false,
+        totalVolume: 0,
+        duration: 0
+      });
+
+      // Reset all exercise results for this session
+      await storage.resetWorkoutSessionProgress(sessionId);
+      
+      res.json(updatedSession);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Duplicate workout session
+  app.post("/api/training/sessions/:sessionId/duplicate", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      
+      // Get original session
+      const originalSession = await storage.getWorkoutSession(sessionId);
+      if (!originalSession) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      // Create new session with same structure but fresh state
+      const newSession = await storage.createWorkoutSession({
+        userId: originalSession.userId,
+        name: `${originalSession.name} (Copy)`,
+        programId: originalSession.programId,
+        isCompleted: false,
+        totalVolume: 0,
+        duration: 0,
+        date: new Date()
+      });
+
+      // Copy all exercises from original session
+      const originalExercises = await storage.getWorkoutExercises(sessionId);
+      for (const exercise of originalExercises) {
+        await storage.createExerciseResult({
+          sessionId: newSession.id,
+          exerciseId: exercise.exerciseId,
+          orderIndex: exercise.orderIndex,
+          sets: exercise.sets,
+          targetReps: exercise.targetReps,
+          actualReps: null,
+          weight: null,
+          rpe: null,
+          rir: null,
+          restPeriod: exercise.restPeriod,
+          notes: null,
+          isCompleted: false
+        });
+      }
+      
+      res.json(newSession);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Step 2: Volume Landmarks System API Routes
 
   // Get muscle groups

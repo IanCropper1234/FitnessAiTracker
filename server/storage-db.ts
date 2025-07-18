@@ -267,6 +267,25 @@ export class DatabaseStorage implements IStorage {
     return updatedExercise || undefined;
   }
 
+  async deleteWorkoutSession(id: number): Promise<boolean> {
+    const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
+    return result.rowCount > 0;
+  }
+
+  async resetWorkoutSessionProgress(sessionId: number): Promise<void> {
+    await db
+      .update(workoutExercises)
+      .set({
+        actualReps: null,
+        weight: null,
+        rpe: null,
+        rir: null,
+        notes: null,
+        isCompleted: false
+      })
+      .where(eq(workoutExercises.sessionId, sessionId));
+  }
+
   // Auto-Regulation Feedback
   async getAutoRegulationFeedback(sessionId: number): Promise<AutoRegulationFeedback | undefined> {
     const [feedback] = await db.select().from(autoRegulationFeedback)

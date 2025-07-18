@@ -575,6 +575,7 @@ function CreateTemplateDialog({
   onClose: () => void; 
 }) {
   const [step, setStep] = useState(1); // 1: Basic info, 2: Workout setup
+  const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -605,6 +606,15 @@ function CreateTemplateDialog({
       difficulty: exercise.difficulty
     }))
   });
+
+  // Filter exercises based on search query
+  const filteredExercises = availableExercises.filter(exercise =>
+    exercise.name.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
+    exercise.primaryMuscle?.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
+    exercise.muscleGroups?.some(muscle => 
+      muscle.toLowerCase().includes(exerciseSearchQuery.toLowerCase())
+    )
+  );
 
   const addWorkoutDay = () => {
     setFormData(prev => ({
@@ -826,19 +836,37 @@ function CreateTemplateDialog({
 
                   <div>
                     <h4 className="font-medium mb-2">Add Exercise</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {availableExercises.map((exercise) => (
-                        <Button
-                          key={exercise.id}
-                          size="sm"
-                          variant="outline"
-                          onClick={() => addExerciseToWorkout(workoutIndex, exercise)}
-                          className="justify-start"
-                        >
-                          <Plus className="h-3 w-3 mr-1" />
-                          {exercise.name}
-                        </Button>
-                      ))}
+                    <div className="space-y-3">
+                      <Input
+                        placeholder="Search exercises..."
+                        value={exerciseSearchQuery}
+                        onChange={(e) => setExerciseSearchQuery(e.target.value)}
+                        className="w-full"
+                      />
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                        {filteredExercises.map((exercise) => (
+                          <Button
+                            key={exercise.id}
+                            size="sm"
+                            variant="outline"
+                            onClick={() => addExerciseToWorkout(workoutIndex, exercise)}
+                            className="justify-start text-left"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            <div className="flex flex-col items-start">
+                              <span className="text-sm">{exercise.name}</span>
+                              <span className="text-xs text-gray-500">
+                                {exercise.primaryMuscle} • {exercise.equipment || 'Any'}
+                              </span>
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                      {filteredExercises.length === 0 && exerciseSearchQuery && (
+                        <p className="text-sm text-gray-500 text-center py-4">
+                          No exercises found matching "{exerciseSearchQuery}"
+                        </p>
+                      )}
                     </div>
                   </div>
                 </CardContent>

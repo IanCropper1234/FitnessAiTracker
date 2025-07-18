@@ -15,7 +15,11 @@ import {
   Dumbbell,
   BarChart3,
   Calendar,
-  CheckCircle2
+  CheckCircle2,
+  MoreVertical,
+  Trash2,
+  RotateCcw,
+  Copy
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -29,6 +33,7 @@ import TrainingTemplates from "./training-templates";
 import LoadProgressionTracker from "./load-progression-tracker";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface Exercise {
   id: number;
@@ -66,6 +71,98 @@ interface TrainingStats {
   }>;
 }
 
+// WorkoutSessionCard Component
+interface WorkoutSessionCardProps {
+  session: WorkoutSession;
+  onStart: () => void;
+  onView: () => void;
+  onDelete: () => void;
+  onRestart: () => void;
+  onDuplicate: () => void;
+}
+
+function WorkoutSessionCard({ session, onStart, onView, onDelete, onRestart, onDuplicate }: WorkoutSessionCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg">{session.name}</CardTitle>
+            <CardDescription>
+              {new Date(session.date).toLocaleDateString()}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            {session.isCompleted && (
+              <CheckCircle2 className="h-5 w-5 text-green-500" />
+            )}
+            <Badge variant={session.isCompleted ? "default" : "secondary"}>
+              {session.isCompleted ? "Completed" : "In Progress"}
+            </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {!session.isCompleted && (
+                  <DropdownMenuItem onClick={onRestart}>
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Restart Session
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={onDuplicate}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Duplicate Session
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onDelete} className="text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Session
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">Duration</p>
+            <p className="text-lg font-semibold">{session.duration || 0} min</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">Total Volume</p>
+            <p className="text-lg font-semibold">{session.totalVolume || 0} kg</p>
+          </div>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          {!session.isCompleted ? (
+            <Button 
+              onClick={onStart}
+              className="flex-1"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Continue Workout
+            </Button>
+          ) : (
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={onView}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View Details
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function TrainingDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -76,6 +173,37 @@ export function TrainingDashboard() {
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string>("workouts");
   const queryClient = useQueryClient();
+
+  // Session management mutations
+  const deleteSessionMutation = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const response = await apiRequest('DELETE', `/api/training/sessions/${sessionId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+    },
+  });
+
+  const restartSessionMutation = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/restart`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+    },
+  });
+
+  const duplicateSessionMutation = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/duplicate`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+    },
+  });
 
   // Fetch exercises
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
@@ -418,16 +546,6 @@ export function TrainingDashboard() {
         <TabsContent value="workouts" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Workout Sessions</h3>
-            <Button 
-              onClick={() => setShowSessionCreator(true)}
-              disabled={selectedExercises.length === 0}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Session
-            </Button>
-          </div>
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Recent Workout Sessions</h3>
             <Button onClick={() => setActiveTab("exercises")}>
               <Plus className="h-4 w-4 mr-2" />
               New Workout
@@ -449,63 +567,46 @@ export function TrainingDashboard() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {recentSessions.map((session) => (
-                <Card key={session.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{session.name}</CardTitle>
-                        <CardDescription>
-                          {new Date(session.date).toLocaleDateString()}
-                        </CardDescription>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {session.isCompleted && (
-                          <CheckCircle2 className="h-5 w-5 text-green-500" />
-                        )}
-                        <Badge variant={session.isCompleted ? "default" : "secondary"}>
-                          {session.isCompleted ? "Completed" : "In Progress"}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Duration</p>
-                        <p className="text-lg font-semibold">{session.duration || 0} min</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Volume</p>
-                        <p className="text-lg font-semibold">{session.totalVolume || 0} kg</p>
-                      </div>
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      {!session.isCompleted ? (
-                        <Button 
-                          onClick={() => setExecutingSessionId(session.id)}
-                          className="flex-1"
-                        >
-                          <Play className="h-4 w-4 mr-2" />
-                          Continue Workout
-                        </Button>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          className="flex-1"
-                          onClick={() => setViewingSessionId(session.id)}
-                        >
-                          <BarChart3 className="h-4 w-4 mr-2" />
-                          View Details
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-6">
+              {/* In Progress Sessions */}
+              {recentSessions.filter(session => !session.isCompleted).length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
+                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
+                  </h4>
+                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
+                    <WorkoutSessionCard
+                      key={session.id}
+                      session={session}
+                      onStart={() => setExecutingSessionId(session.id)}
+                      onView={() => setViewingSessionId(session.id)}
+                      onDelete={() => deleteSessionMutation.mutate(session.id)}
+                      onRestart={() => restartSessionMutation.mutate(session.id)}
+                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Completed Sessions */}
+              {recentSessions.filter(session => session.isCompleted).length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
+                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
+                  </h4>
+                  {recentSessions.filter(session => session.isCompleted).map((session) => (
+                    <WorkoutSessionCard
+                      key={session.id}
+                      session={session}
+                      onStart={() => setExecutingSessionId(session.id)}
+                      onView={() => setViewingSessionId(session.id)}
+                      onDelete={() => deleteSessionMutation.mutate(session.id)}
+                      onRestart={() => restartSessionMutation.mutate(session.id)}
+                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </TabsContent>
