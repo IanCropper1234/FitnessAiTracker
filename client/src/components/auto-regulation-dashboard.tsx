@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TrendingUp, TrendingDown, Target, AlertTriangle, Activity, Zap } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, AlertTriangle, Activity, Zap, Info } from "lucide-react";
+import { AutoRegulationExplanation } from "./auto-regulation-explanation";
 
 interface VolumeRecommendation {
   muscleGroupId: number;
@@ -270,6 +271,19 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
           </CardContent>
         </Card>
       )}
+
+      {/* How It Works Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Info className="h-5 w-5" />
+            How Auto-Regulation Applies to Your Upcoming Workouts
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AutoRegulationExplanation />
+        </CardContent>
+      </Card>
 
       {/* No Data Message */}
       {recommendations.length === 0 && !fatigueAnalysis && (

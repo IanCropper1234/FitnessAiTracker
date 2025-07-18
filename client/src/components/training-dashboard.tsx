@@ -21,6 +21,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
 import { WorkoutSessionCreator } from "./workout-session-creator";
 import { WorkoutExecution } from "./workout-execution";
+import { WorkoutDetails } from "./workout-details";
 import { VolumeLandmarks } from "./volume-landmarks";
 import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,7 @@ export function TrainingDashboard() {
   const [showSessionCreator, setShowSessionCreator] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
+  const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch exercises
@@ -172,6 +174,29 @@ export function TrainingDashboard() {
           ))}
         </div>
       </div>
+    );
+  }
+
+  // Show workout execution if executing
+  if (executingSessionId && !viewingSessionId) {
+    return (
+      <WorkoutExecution
+        sessionId={executingSessionId}
+        onComplete={() => setExecutingSessionId(null)}
+      />
+    );
+  }
+
+  // Show workout details if viewing a completed session
+  if (viewingSessionId) {
+    return (
+      <WorkoutDetails
+        sessionId={viewingSessionId}
+        onBack={() => {
+          setViewingSessionId(null);
+          setExecutingSessionId(null);
+        }}
+      />
     );
   }
 
@@ -463,7 +488,11 @@ export function TrainingDashboard() {
                           Continue Workout
                         </Button>
                       ) : (
-                        <Button variant="outline" className="flex-1">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => setViewingSessionId(session.id)}
+                        >
                           <BarChart3 className="h-4 w-4 mr-2" />
                           View Details
                         </Button>
