@@ -391,18 +391,30 @@ export class MesocyclePeriodization {
    * Delete mesocycle and associated data
    */
   static async deleteMesocycle(mesocycleId: number) {
-    // Delete associated workout sessions
+    // Delete associated workout sessions and their related data
     const sessionsToDelete = await db
       .select({ id: workoutSessions.id })
       .from(workoutSessions)
       .where(eq(workoutSessions.mesocycleId, mesocycleId));
 
     for (const session of sessionsToDelete) {
-      // Note: This would also delete workout exercises and progression data
-      // In production, consider archiving instead of hard delete
+      // Delete workout exercises for this session
+      await db
+        .delete(workoutExercises)
+        .where(eq(workoutExercises.sessionId, session.id));
+      
+      // Delete auto-regulation feedback for this session
+      await db
+        .delete(autoRegulationFeedback)
+        .where(eq(autoRegulationFeedback.sessionId, session.id));
     }
 
-    // Delete the mesocycle
+    // Delete the workout sessions
+    await db
+      .delete(workoutSessions)
+      .where(eq(workoutSessions.mesocycleId, mesocycleId));
+
+    // Finally delete the mesocycle
     await db
       .delete(mesocycles)
       .where(eq(mesocycles.id, mesocycleId));
