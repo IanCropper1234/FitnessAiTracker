@@ -97,18 +97,23 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
     );
   }
 
-  const completedSets = session.exercises.reduce((total, exercise) => 
-    total + exercise.sets.filter(set => set.completed).length, 0
-  );
+  const completedSets = session.exercises.reduce((total, exercise) => {
+    const sets = Array.isArray(exercise.sets) ? exercise.sets : [];
+    return total + sets.filter(set => set.completed).length;
+  }, 0);
   
-  const totalSets = session.exercises.reduce((total, exercise) => 
-    total + exercise.sets.length, 0
-  );
+  const totalSets = session.exercises.reduce((total, exercise) => {
+    const sets = Array.isArray(exercise.sets) ? exercise.sets : [];
+    return total + sets.length;
+  }, 0);
 
-  const averageRPE = session.exercises
-    .flatMap(ex => ex.sets)
-    .filter(set => set.completed && set.rpe > 0)
-    .reduce((sum, set, _, arr) => sum + set.rpe / arr.length, 0);
+  const allSets = session.exercises
+    .flatMap(ex => Array.isArray(ex.sets) ? ex.sets : [])
+    .filter(set => set.completed && set.rpe > 0);
+  
+  const averageRPE = allSets.length > 0 
+    ? allSets.reduce((sum, set) => sum + set.rpe, 0) / allSets.length 
+    : 0;
 
   return (
     <div className="space-y-6 p-6 max-w-4xl mx-auto">
@@ -224,12 +229,13 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {session.exercises.map((exercise, index) => {
-            const exerciseVolume = exercise.sets
+            const sets = Array.isArray(exercise.sets) ? exercise.sets : [];
+            const exerciseVolume = sets
               .filter(set => set.completed)
               .reduce((sum, set) => sum + (set.weight * set.actualReps), 0);
             
-            const exerciseCompletedSets = exercise.sets.filter(set => set.completed).length;
-            const exerciseProgress = (exerciseCompletedSets / exercise.sets.length) * 100;
+            const exerciseCompletedSets = sets.filter(set => set.completed).length;
+            const exerciseProgress = sets.length > 0 ? (exerciseCompletedSets / sets.length) * 100 : 0;
             
             return (
               <div key={exercise.id} className="space-y-4">
@@ -243,7 +249,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                   <div className="text-right">
                     <p className="text-sm font-medium">{exerciseVolume} kg volume</p>
                     <p className="text-xs text-muted-foreground">
-                      {exerciseCompletedSets}/{exercise.sets.length} sets
+                      {exerciseCompletedSets}/{sets.length} sets
                     </p>
                   </div>
                 </div>
@@ -252,7 +258,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                 
                 {/* Sets breakdown */}
                 <div className="grid gap-2">
-                  {exercise.sets.map((set, setIndex) => (
+                  {sets.map((set, setIndex) => (
                     <div 
                       key={setIndex}
                       className={`flex items-center justify-between p-3 rounded border ${
