@@ -6,6 +6,7 @@ import {
   muscleGroups,
   autoRegulationFeedback,
   workoutSessions,
+  workoutExercises,
   loadProgressionTracking
 } from "@shared/schema";
 import { eq, and, gte, lte, sql, desc } from "drizzle-orm";
@@ -505,12 +506,33 @@ export class MesocyclePeriodization {
     templateId?: number, 
     customProgram?: any
   ) {
-    // Create simple program structure for now
+    // Create simple program structure with basic exercises for templates
     const program = {
       weeklyStructure: [
-        { dayOfWeek: 0, name: "Push Day", exercises: [] },
-        { dayOfWeek: 2, name: "Pull Day", exercises: [] },
-        { dayOfWeek: 4, name: "Legs Day", exercises: [] }
+        { 
+          dayOfWeek: 0, 
+          name: "Push Day", 
+          exercises: [
+            { id: 372, name: "Pull-ups", sets: 3, targetReps: "8-10", restPeriod: 180 },
+            { id: 373, name: "Push-ups", sets: 3, targetReps: "6-8", restPeriod: 120 }
+          ]
+        },
+        { 
+          dayOfWeek: 2, 
+          name: "Pull Day", 
+          exercises: [
+            { id: 374, name: "Chin-ups", sets: 3, targetReps: "6-10", restPeriod: 120 },
+            { id: 375, name: "Dumbbell Row", sets: 3, targetReps: "8-12", restPeriod: 120 }
+          ]
+        },
+        { 
+          dayOfWeek: 4, 
+          name: "Legs Day", 
+          exercises: [
+            { id: 376, name: "Squats", sets: 3, targetReps: "8-12", restPeriod: 180 },
+            { id: 377, name: "Deadlifts", sets: 3, targetReps: "8-10", restPeriod: 180 }
+          ]
+        }
       ]
     };
 
@@ -558,7 +580,27 @@ export class MesocyclePeriodization {
           .returning({ id: workoutSessions.id });
 
         // Add exercises to session based on program
-        // This would integrate with the existing exercise system
+        if (dayProgram.exercises && dayProgram.exercises.length > 0) {
+          for (let i = 0; i < dayProgram.exercises.length; i++) {
+            const exercise = dayProgram.exercises[i];
+            await db
+              .insert(workoutExercises)
+              .values({
+                sessionId: sessionResult[0].id,
+                exerciseId: exercise.id,
+                orderIndex: i,
+                sets: exercise.sets || 3,
+                targetReps: exercise.targetReps || "8-12",
+                actualReps: null,
+                weight: null,
+                rpe: null,
+                rir: null,
+                restPeriod: exercise.restPeriod || 120,
+                notes: null,
+                isCompleted: false
+              });
+          }
+        }
       }
     }
   }
