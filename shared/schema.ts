@@ -313,8 +313,8 @@ export const weeklyVolumeTracking = pgTable("weekly_volume_tracking", {
   weekNumber: integer("week_number").notNull(), // week of current mesocycle
   targetSets: integer("target_sets").notNull(),
   actualSets: integer("actual_sets").notNull().default(0),
-  averageRpe: decimal("average_rpe", { precision: 3, scale: 1 }).default(5.0),
-  averageRir: decimal("average_rir", { precision: 3, scale: 1 }).default(2.0),
+  averageRpe: decimal("average_rpe", { precision: 3, scale: 1 }).default("5.0"),
+  averageRir: decimal("average_rir", { precision: 3, scale: 1 }).default("2.0"),
   pumpQuality: integer("pump_quality").default(5), // 1-10
   soreness: integer("soreness").default(3), // 1-10
   isCompleted: boolean("is_completed").default(false),

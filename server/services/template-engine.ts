@@ -342,22 +342,21 @@ export class TemplateEngine {
    * Get available templates for user (system and user-created)
    */
   static async getAvailableTemplates(category?: string, userId?: number): Promise<any[]> {
-    
-    let query = db.select().from(trainingTemplates).where(
-      and(
-        eq(trainingTemplates.isActive, true),
-        or(
-          eq(trainingTemplates.createdBy, 'system'),
-          userId ? eq(trainingTemplates.userId, userId) : undefined
-        )
+    const conditions = [
+      eq(trainingTemplates.isActive, true),
+      or(
+        eq(trainingTemplates.createdBy, 'system'),
+        userId ? eq(trainingTemplates.userId, userId) : eq(trainingTemplates.createdBy, 'system')
       )
-    );
+    ];
     
     if (category) {
-      query = query.where(eq(trainingTemplates.category, category));
+      conditions.push(eq(trainingTemplates.category, category));
     }
 
-    return await query.orderBy(trainingTemplates.daysPerWeek, trainingTemplates.name);
+    return await db.select().from(trainingTemplates)
+      .where(and(...conditions))
+      .orderBy(trainingTemplates.daysPerWeek, trainingTemplates.name);
   }
 
   /**

@@ -65,6 +65,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<TrainingTemplate | null>(null);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Get available templates (includes user templates)
   const { data: templates = [], isLoading } = useQuery({

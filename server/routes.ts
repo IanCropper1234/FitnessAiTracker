@@ -72,6 +72,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await initializeExercises();
   await initializeNutritionDatabase();
   await initializeVolumeLandmarks();
+  
+  // Initialize training templates
+  try {
+    await TemplateEngine.initializeSystemTemplates();
+    console.log("Training templates initialized successfully");
+  } catch (error) {
+    console.log("Training templates already initialized");
+  }
 
   // Auth routes
   app.post("/api/auth/signup", async (req, res) => {
