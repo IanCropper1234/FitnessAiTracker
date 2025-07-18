@@ -1251,36 +1251,82 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </CardContent>
               </Card>
 
-              {/* Timing Summary */}
+              {/* RP Methodology Features */}
               <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Current Timing Configuration
+                    <Activity className="w-5 h-5" />
+                    RP Diet Coach Features
                   </CardTitle>
                   <CardDescription>
-                    Your meal timing preferences and optimization settings
+                    Advanced meal timing optimization using Renaissance Periodization methodology
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.wakeTime}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Wake Time</div>
-                    </div>
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.sleepTime}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Time</div>
-                    </div>
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.mealsPerDay}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Meals/Day</div>
-                    </div>
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="text-lg font-semibold text-black dark:text-white">
-                        {mealTimingPreferences.workoutDays?.length || 0}
+                <CardContent className="space-y-6">
+                  {/* Nutrient Timing Principles */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                        <h4 className="font-medium text-orange-900 dark:text-orange-100">Pre-Workout</h4>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Workout Days</div>
+                      <div className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
+                        <div>• Higher carbs for energy</div>
+                        <div>• Moderate protein</div>
+                        <div>• Lower fat for digestion</div>
+                        <div>• Timing: 1-2 hours before</div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <h4 className="font-medium text-green-900 dark:text-green-100">Post-Workout</h4>
+                      </div>
+                      <div className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                        <div>• High protein for recovery</div>
+                        <div>• Moderate carbs for glycogen</div>
+                        <div>• Lower fat initially</div>
+                        <div>• Timing: Within 1-2 hours</div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100">Regular Meals</h4>
+                      </div>
+                      <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                        <div>• Balanced macro distribution</div>
+                        <div>• Higher fat for satiety</div>
+                        <div>• Steady protein throughout</div>
+                        <div>• Consistent timing</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Timing Configuration Summary */}
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <h4 className="font-medium text-black dark:text-white mb-3">Current Configuration</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                        <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.wakeTime}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Wake Time</div>
+                      </div>
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                        <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.sleepTime}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Time</div>
+                      </div>
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                        <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.mealsPerDay}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Meals/Day</div>
+                      </div>
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                        <div className="text-lg font-semibold text-black dark:text-white">
+                          {mealTimingPreferences.workoutDays?.length || 0}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Workout Days</div>
+                      </div>
                     </div>
                   </div>
                   
