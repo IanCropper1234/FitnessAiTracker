@@ -71,6 +71,7 @@ export function TrainingDashboard() {
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("workouts");
   const queryClient = useQueryClient();
 
   // Fetch exercises
@@ -257,7 +258,7 @@ export function TrainingDashboard() {
         </Card>
       </div>
 
-      <Tabs defaultValue="exercises" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
           <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
@@ -423,7 +424,7 @@ export function TrainingDashboard() {
           </div>
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Recent Workout Sessions</h3>
-            <Button>
+            <Button onClick={() => setActiveTab("exercises")}>
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
@@ -437,7 +438,7 @@ export function TrainingDashboard() {
                 <p className="text-muted-foreground text-center mb-4">
                   Start your fitness journey by creating your first workout session.
                 </p>
-                <Button>
+                <Button onClick={() => setActiveTab("exercises")}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Workout
                 </Button>
