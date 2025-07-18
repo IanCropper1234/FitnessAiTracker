@@ -16,6 +16,74 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 
+// Auto-progression algorithm for workout sessions
+async function getAutoProgressedValues(exerciseId: number, userId: number, previousExercise: any) {
+  try {
+    // Get recent performance data for this exercise
+    const recentSessions = await storage.getWorkoutSessions(userId);
+    const completedSessions = recentSessions.filter(s => s.isCompleted).slice(0, 3); // Last 3 sessions
+    
+    let recentPerformance = [];
+    for (const session of completedSessions) {
+      const exercises = await storage.getWorkoutExercises(session.id);
+      const exerciseData = exercises.find(e => e.exerciseId === exerciseId && e.isCompleted);
+      if (exerciseData && exerciseData.weight && exerciseData.actualReps) {
+        recentPerformance.push({
+          weight: parseFloat(exerciseData.weight),
+          reps: exerciseData.actualReps.split(',').map(r => parseInt(r.trim())),
+          rpe: exerciseData.rpe || 7,
+          date: session.date
+        });
+      }
+    }
+
+    // Progressive overload based on recent performance
+    if (recentPerformance.length > 0) {
+      const lastPerformance = recentPerformance[0];
+      const avgRPE = recentPerformance.reduce((sum, p) => sum + p.rpe, 0) / recentPerformance.length;
+      
+      let newWeight = lastPerformance.weight;
+      let newSets = previousExercise.sets;
+      let newTargetReps = previousExercise.targetReps;
+
+      // Progressive overload logic based on RPE
+      if (avgRPE < 7) {
+        // Low RPE - increase weight by 2.5%
+        newWeight = Math.round((lastPerformance.weight * 1.025) * 4) / 4;
+      } else if (avgRPE <= 8) {
+        // Moderate RPE - small increase
+        newWeight = Math.round((lastPerformance.weight * 1.0125) * 4) / 4;
+      } else {
+        // High RPE - maintain weight, possibly add volume
+        newWeight = lastPerformance.weight;
+        if (newSets < 4) newSets += 1;
+      }
+
+      return {
+        weight: newWeight.toString(),
+        sets: newSets,
+        targetReps: newTargetReps
+      };
+    }
+
+    // No recent data, use previous values with small progression
+    const baseWeight = previousExercise.weight ? parseFloat(previousExercise.weight) : 20;
+    return {
+      weight: (Math.round((baseWeight * 1.025) * 4) / 4).toString(),
+      sets: previousExercise.sets,
+      targetReps: previousExercise.targetReps
+    };
+    
+  } catch (error) {
+    console.error('Error calculating auto-progression:', error);
+    return {
+      weight: previousExercise.weight || "20",
+      sets: previousExercise.sets,
+      targetReps: previousExercise.targetReps
+    };
+  }
+}
+
 // RP Diet Coach categorization functions
 function categorizeFoodByRP(calories: number, protein: number, carbs: number, fat: number): string {
   if (calories === 0) return "mixed";
@@ -555,17 +623,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         duration: 0
       });
 
-      // Add exercises to session
+      // Add exercises to session with auto-progression
       for (const exercise of sessionData.exercises) {
+        // Get auto-progressed values for new sessions
+        const progressedValues = await getAutoProgressedValues(
+          exercise.exerciseId, 
+          sessionData.userId, 
+          exercise
+        );
+
         await storage.createWorkoutExercise({
           sessionId: session.id,
           exerciseId: exercise.exerciseId,
           orderIndex: exercise.orderIndex,
-          sets: exercise.sets,
-          targetReps: exercise.targetReps,
+          sets: progressedValues.sets,
+          targetReps: progressedValues.targetReps,
+          weight: progressedValues.weight,
           restPeriod: exercise.restPeriod,
           notes: exercise.notes || "",
-          weight: null,
           actualReps: null,
           rpe: null,
           rir: null,
@@ -772,17 +847,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         date: new Date()
       });
 
-      // Copy all exercises from original session
+      // Copy all exercises from original session with auto-progression
       const originalExercises = await storage.getWorkoutExercises(sessionId);
       for (const exercise of originalExercises) {
-        await storage.createExerciseResult({
+        // Get auto-progressed values based on previous performance
+        const progressedValues = await getAutoProgressedValues(
+          exercise.exerciseId, 
+          originalSession.userId, 
+          exercise
+        );
+
+        await storage.createWorkoutExercise({
           sessionId: newSession.id,
           exerciseId: exercise.exerciseId,
           orderIndex: exercise.orderIndex,
-          sets: exercise.sets,
-          targetReps: exercise.targetReps,
+          sets: progressedValues.sets,
+          targetReps: progressedValues.targetReps,
+          weight: progressedValues.weight,
           actualReps: null,
-          weight: null,
           rpe: null,
           rir: null,
           restPeriod: exercise.restPeriod,

@@ -268,8 +268,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteWorkoutSession(id: number): Promise<boolean> {
-    const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
-    return result.rowCount > 0;
+    try {
+      console.log(`Attempting to delete workout session ${id}`);
+      
+      // First delete related workout exercises
+      console.log('Deleting workout exercises...');
+      await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
+      
+      // Delete any auto-regulation feedback related to this session
+      console.log('Deleting auto-regulation feedback...');
+      await db.delete(autoRegulationFeedback).where(eq(autoRegulationFeedback.sessionId, id));
+      
+      // Finally delete the workout session
+      console.log('Deleting workout session...');
+      const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
+      console.log(`Delete result: ${result.rowCount} rows affected`);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error('Error deleting workout session:', error);
+      return false;
+    }
   }
 
   async resetWorkoutSessionProgress(sessionId: number): Promise<void> {
@@ -742,8 +760,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteWorkoutSession(id: number): Promise<boolean> {
-    const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
-    return result.rowCount > 0;
+    try {
+      // First delete related workout exercises
+      await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
+      
+      // Delete any auto-regulation feedback related to this session
+      await db.delete(autoRegulationFeedback).where(eq(autoRegulationFeedback.sessionId, id));
+      
+      // Finally delete the workout session
+      const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error('Error deleting workout session:', error);
+      return false;
+    }
   }
 
   // Workout Exercises
