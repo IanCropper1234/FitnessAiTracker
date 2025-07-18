@@ -723,18 +723,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (workoutExercise && exerciseData.sets.length > 0) {
           const completedSets = exerciseData.sets.filter((set: any) => set.completed);
           
+          // Update set count if it has changed dynamically
+          const currentSetCount = exerciseData.sets.length;
+          const updateData: any = {
+            sets: currentSetCount // Update dynamic set count
+          };
+          
           if (completedSets.length > 0) {
             const avgWeight = completedSets.reduce((sum: number, set: any) => sum + set.weight, 0) / completedSets.length;
             const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
             const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + set.rpe, 0) / completedSets.length);
 
-            await storage.updateWorkoutExercise(workoutExercise.id, {
-              actualReps,
-              weight: avgWeight.toString(),
-              rpe: avgRpe,
-              isCompleted: completedSets.length === exerciseData.sets.length // Mark exercise complete only if all sets done
-            });
+            updateData.actualReps = actualReps;
+            updateData.weight = avgWeight.toString();
+            updateData.rpe = avgRpe;
+            updateData.isCompleted = completedSets.length === exerciseData.sets.length; // Mark exercise complete only if all sets done
+          } else {
+            // Even if no sets completed, still update the set count
+            updateData.isCompleted = false;
           }
+
+          await storage.updateWorkoutExercise(workoutExercise.id, updateData);
         }
       }
 
@@ -766,18 +775,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (workoutExercise && exerciseData.sets.length > 0) {
           const completedSets = exerciseData.sets.filter((set: any) => set.completed);
           
+          // Update set count for completed workout
+          const currentSetCount = exerciseData.sets.length;
+          const updateData: any = {
+            sets: currentSetCount, // Update dynamic set count
+            isCompleted: true
+          };
+          
           if (completedSets.length > 0) {
             const avgWeight = completedSets.reduce((sum: number, set: any) => sum + set.weight, 0) / completedSets.length;
             const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
             const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + set.rpe, 0) / completedSets.length);
 
-            await storage.updateWorkoutExercise(workoutExercise.id, {
-              actualReps,
-              weight: avgWeight.toString(),
-              rpe: avgRpe,
-              isCompleted: true
-            });
+            updateData.actualReps = actualReps;
+            updateData.weight = avgWeight.toString();
+            updateData.rpe = avgRpe;
           }
+
+          await storage.updateWorkoutExercise(workoutExercise.id, updateData);
         }
       }
 

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw } from "lucide-react";
+import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import WorkoutFeedbackDialog from "./workout-feedback-dialog";
 
@@ -215,7 +215,8 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
   const currentSets = workoutData[currentExercise?.id] || [];
   const currentSet = currentSets[currentSetIndex];
   
-  const totalSets = session.exercises.reduce((sum, ex) => sum + ex.sets, 0);
+  // Calculate total sets dynamically based on current workout data
+  const totalSets = Object.values(workoutData).reduce((sum, sets) => sum + sets.length, 0);
   const completedSets = Object.values(workoutData).flat().filter(set => set.completed).length;
   const progressPercentage = totalSets > 0 ? (completedSets / totalSets) * 100 : 0;
 
@@ -226,6 +227,96 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         i === setIndex ? { ...set, [field]: value } : set
       )
     }));
+  };
+
+  // Add new set to current exercise
+  const addSet = (exerciseId: number) => {
+    setWorkoutData(prev => {
+      const existingSets = prev[exerciseId] || [];
+      const lastSet = existingSets[existingSets.length - 1];
+      const targetRepsArray = currentExercise.targetReps.includes('-') 
+        ? [parseInt(currentExercise.targetReps.split('-')[0])]
+        : currentExercise.targetReps.split(',').map(r => parseInt(r.trim()));
+      
+      const newSet: WorkoutSet = {
+        setNumber: existingSets.length + 1,
+        targetReps: targetRepsArray[0] || 10,
+        actualReps: lastSet?.actualReps || 0,
+        weight: lastSet?.weight || 0,
+        rpe: lastSet?.rpe || 7,
+        completed: false
+      };
+
+      const updatedSets = [...existingSets, newSet];
+      
+      // Update set numbers
+      updatedSets.forEach((set, index) => {
+        set.setNumber = index + 1;
+      });
+
+      return {
+        ...prev,
+        [exerciseId]: updatedSets
+      };
+    });
+
+    toast({
+      title: "Set Added",
+      description: `Added new set to ${currentExercise.exercise.name}`,
+    });
+  };
+
+  // Remove set from current exercise
+  const removeSet = (exerciseId: number, setIndex: number) => {
+    setWorkoutData(prev => {
+      const existingSets = prev[exerciseId] || [];
+      
+      if (existingSets.length <= 1) {
+        toast({
+          title: "Cannot Remove Set",
+          description: "Each exercise must have at least one set.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+
+      // Check if removing a completed set
+      const setToRemove = existingSets[setIndex];
+      if (setToRemove.completed) {
+        toast({
+          title: "Cannot Remove Completed Set",
+          description: "You cannot remove a set that has already been completed.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+
+      const updatedSets = existingSets.filter((_, index) => index !== setIndex);
+      
+      // Update set numbers
+      updatedSets.forEach((set, index) => {
+        set.setNumber = index + 1;
+      });
+
+      // Adjust current set index if needed
+      if (setIndex <= currentSetIndex && currentSetIndex > 0) {
+        setCurrentSetIndex(Math.max(0, currentSetIndex - 1));
+      } else if (setIndex < currentSetIndex) {
+        setCurrentSetIndex(currentSetIndex - 1);
+      } else if (currentSetIndex >= updatedSets.length) {
+        setCurrentSetIndex(Math.max(0, updatedSets.length - 1));
+      }
+
+      return {
+        ...prev,
+        [exerciseId]: updatedSets
+      };
+    });
+
+    toast({
+      title: "Set Removed",
+      description: `Removed set from ${currentExercise.exercise.name}`,
+    });
   };
 
   const completeSet = () => {
@@ -240,8 +331,11 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
 
     updateSet(currentExercise.id, currentSetIndex, 'completed', true);
     
-    // Start rest timer
-    if (currentSetIndex < currentSets.length - 1) {
+    // Get updated sets after completion
+    const updatedSets = workoutData[currentExercise.id];
+    
+    // Start rest timer and advance to next set/exercise
+    if (currentSetIndex < updatedSets.length - 1) {
       setRestTimeRemaining(currentExercise.restPeriod);
       setIsRestTimerActive(true);
       setCurrentSetIndex(currentSetIndex + 1);
@@ -370,7 +464,9 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
             {session.exercises.map((exercise, index) => {
               const exerciseSets = workoutData[exercise.id] || [];
               const completedSetsCount = exerciseSets.filter(set => set.completed).length;
+              const totalSetsCount = exerciseSets.length;
               const isCurrentExercise = index === currentExerciseIndex;
+              const isExerciseComplete = completedSetsCount === totalSetsCount && totalSetsCount > 0;
               
               return (
                 <div
@@ -378,7 +474,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                   className={`p-3 rounded-lg border ${
                     isCurrentExercise 
                       ? 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800' 
-                      : completedSetsCount === exercise.sets
+                      : isExerciseComplete
                       ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
                       : 'bg-muted'
                   }`}
@@ -389,12 +485,17 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                       {isCurrentExercise && (
                         <Badge variant="default" size="sm">Current</Badge>
                       )}
-                      {completedSetsCount === exercise.sets && (
+                      {isExerciseComplete && (
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
                       )}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {completedSetsCount}/{exercise.sets} sets
+                      {completedSetsCount}/{totalSetsCount} sets
+                      {totalSetsCount !== exercise.sets && (
+                        <span className="text-xs ml-1 text-blue-600">
+                          (modified)
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-1">
@@ -511,18 +612,49 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
 
             {/* All Sets Overview */}
             <div className="space-y-2">
-              <h4 className="font-medium">All Sets</h4>
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium">All Sets</h4>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => addSet(currentExercise.id)}
+                    className="flex items-center gap-1"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Set
+                  </Button>
+                </div>
+              </div>
               <div className="grid gap-2">
                 {currentSets.map((set, index) => (
                   <div 
                     key={index}
-                    className={`flex items-center justify-between p-2 rounded border ${
+                    className={`flex items-center justify-between p-2 rounded border cursor-pointer hover:bg-muted/50 ${
                       set.completed ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' :
                       index === currentSetIndex ? 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800' :
                       'bg-muted'
                     }`}
+                    onClick={() => !set.completed && setCurrentSetIndex(index)}
+                    title={!set.completed ? "Click to jump to this set" : "Set completed"}
                   >
-                    <span className="font-medium">Set {set.setNumber}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Set {set.setNumber}</span>
+                      {!set.completed && currentSets.length > 1 && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering set selection
+                            removeSet(currentExercise.id, index);
+                          }}
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                          title="Remove this set"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
                     <div className="flex items-center gap-4 text-sm">
                       {set.completed ? (
                         <>
@@ -530,6 +662,10 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                           <span>RPE: {set.rpe}</span>
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
                         </>
+                      ) : index === currentSetIndex ? (
+                        <Badge variant="default" size="sm">
+                          Current Set
+                        </Badge>
                       ) : (
                         <span className="text-muted-foreground">
                           Target: {set.targetReps} reps
