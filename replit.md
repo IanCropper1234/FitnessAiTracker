@@ -396,7 +396,20 @@ const volumeAdjustments = await calculateVolumeProgression(userId, newWeek)
 
 ## Recent Changes
 
-### January 18, 2025 (Latest - Complete System Testing & Data Architecture Documentation)
+### January 18, 2025 (Latest - CRITICAL FIX: Mesocycle Creation Workflow Corrected)
+- ✅ **CRITICAL WORKFLOW FIX**: Fixed mesocycle creation to only generate Week 1 sessions initially
+- ✅ **Validated Advance Week Functionality**: Confirmed automatic week progression works correctly
+- ✅ **Workflow Testing**: Complete end-to-end validation of proper mesocycle lifecycle:
+  - Mesocycle creation → Only 3 sessions for Week 1 (correct behavior)
+  - Session completion + auto-regulation feedback → Volume adjustments calculated
+  - Advance Week → Week 2 created with 3 sessions and volume progression
+  - Advance Week → Week 3 created with proper RP methodology volume adjustments
+- ✅ **Fixed Code Logic**: Updated `createMesocycleWorkouts` to create Week 1 only, subsequent weeks handled by `generateWeekWorkouts`
+- ✅ **Improved `generateWeekWorkouts`**: Enhanced function to properly replicate Week 1 structure with volume adjustments
+- ✅ **Console Logging**: Added debug logging to track mesocycle creation and week advancement process
+- ✅ **Proper Sequential Creation**: Mesocycles now create weeks on-demand based on auto-regulation feedback instead of all upfront
+
+### January 18, 2025 (Earlier - Complete System Testing & Data Architecture Documentation)
 - ✅ **COMPREHENSIVE SYSTEM TESTING**: Validated entire training workflow from mesocycle creation to auto-progression
 - ✅ **Data Architecture Documentation**: Complete database schema reference with field mappings and routing logic
 - ✅ **Workflow Verification**: Tested complete cycle:

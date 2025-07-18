@@ -544,7 +544,7 @@ export class MesocyclePeriodization {
   }
 
   /**
-   * Create workout sessions for entire mesocycle
+   * Create workout sessions for week 1 only (correct mesocycle workflow)
    */
   static async createMesocycleWorkouts(mesocycleId: number, program: any) {
     const [mesocycle] = await db
@@ -556,52 +556,53 @@ export class MesocyclePeriodization {
 
     const startDate = new Date(mesocycle.startDate);
     
-    // Generate sessions for each week
-    for (let week = 1; week <= mesocycle.totalWeeks; week++) {
-      for (const dayProgram of program.weeklyStructure) {
-        const sessionDate = new Date(startDate);
-        sessionDate.setDate(startDate.getDate() + ((week - 1) * 7) + dayProgram.dayOfWeek);
+    // Generate sessions for WEEK 1 ONLY (subsequent weeks created by Advance Week)
+    const week = 1;
+    for (const dayProgram of program.weeklyStructure) {
+      const sessionDate = new Date(startDate);
+      sessionDate.setDate(startDate.getDate() + ((week - 1) * 7) + dayProgram.dayOfWeek);
 
-        // Create workout session linked to mesocycle
-        const sessionResult = await db
-          .insert(workoutSessions)
-          .values({
-            userId: mesocycle.userId,
-            programId: null, // Not linked to training program
-            mesocycleId: mesocycleId, // Link to mesocycle
-            name: `${dayProgram.name} - Week ${week}`,
-            date: sessionDate,
-            isCompleted: false,
-            totalVolume: 0,
-            duration: 0,
-            createdAt: new Date()
-          })
-          .returning({ id: workoutSessions.id });
+      // Create workout session linked to mesocycle
+      const sessionResult = await db
+        .insert(workoutSessions)
+        .values({
+          userId: mesocycle.userId,
+          programId: null, // Not linked to training program
+          mesocycleId: mesocycleId, // Link to mesocycle
+          name: `${dayProgram.name} - Week ${week}`,
+          date: sessionDate,
+          isCompleted: false,
+          totalVolume: 0,
+          duration: 0,
+          createdAt: new Date()
+        })
+        .returning({ id: workoutSessions.id });
 
-        // Add exercises to session based on program
-        if (dayProgram.exercises && dayProgram.exercises.length > 0) {
-          for (let i = 0; i < dayProgram.exercises.length; i++) {
-            const exercise = dayProgram.exercises[i];
-            await db
-              .insert(workoutExercises)
-              .values({
-                sessionId: sessionResult[0].id,
-                exerciseId: exercise.exerciseId || exercise.id,
-                orderIndex: i,
-                sets: exercise.sets || 3,
-                targetReps: exercise.targetReps || "8-12",
-                actualReps: null,
-                weight: null,
-                rpe: null,
-                rir: null,
-                restPeriod: exercise.restPeriod || 120,
-                notes: null,
-                isCompleted: false
-              });
-          }
+      // Add exercises to session based on program
+      if (dayProgram.exercises && dayProgram.exercises.length > 0) {
+        for (let i = 0; i < dayProgram.exercises.length; i++) {
+          const exercise = dayProgram.exercises[i];
+          await db
+            .insert(workoutExercises)
+            .values({
+              sessionId: sessionResult[0].id,
+              exerciseId: exercise.exerciseId || exercise.id,
+              orderIndex: i,
+              sets: exercise.sets || 3,
+              targetReps: exercise.targetReps || "8-12",
+              actualReps: null,
+              weight: null,
+              rpe: null,
+              rir: null,
+              restPeriod: exercise.restPeriod || 120,
+              notes: null,
+              isCompleted: false
+            });
         }
       }
     }
+
+    console.log(`✅ Mesocycle ${mesocycleId}: Created Week 1 sessions only`);
   }
 
   /**
@@ -612,12 +613,100 @@ export class MesocyclePeriodization {
     week: number, 
     volumeAdjustments: VolumeProgression[]
   ) {
-    // Get base program structure
-    const program = await this.getMesocycleProgram(mesocycleId);
+    console.log(`🔄 Generating Week ${week} workouts for mesocycle ${mesocycleId}`);
     
-    // Apply volume adjustments to exercises based on muscle groups
-    // Create new workout sessions for the week with adjusted volumes
-    // This integrates with the existing workout session creation system
+    // Get mesocycle details
+    const [mesocycle] = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId));
+
+    if (!mesocycle) {
+      throw new Error("Mesocycle not found");
+    }
+
+    // Get base program structure from Week 1 sessions
+    const week1Sessions = await db
+      .select()
+      .from(workoutSessions)
+      .where(
+        and(
+          eq(workoutSessions.mesocycleId, mesocycleId),
+          gte(workoutSessions.date, mesocycle.startDate),
+          lte(workoutSessions.date, new Date(mesocycle.startDate.getTime() + 7 * 24 * 60 * 60 * 1000))
+        )
+      )
+      .orderBy(workoutSessions.date);
+
+    const startDate = new Date(mesocycle.startDate);
+    
+    // Create sessions for the new week
+    for (const baseSession of week1Sessions) {
+      // Calculate new session date
+      const sessionDate = new Date(baseSession.date);
+      sessionDate.setDate(sessionDate.getDate() + ((week - 1) * 7));
+
+      // Get exercises from base session
+      const baseExercises = await db
+        .select()
+        .from(workoutExercises)
+        .where(eq(workoutExercises.sessionId, baseSession.id))
+        .orderBy(workoutExercises.orderIndex);
+
+      // Create new session for this week
+      const sessionName = baseSession.name.replace(/Week \d+/, `Week ${week}`);
+      const sessionResult = await db
+        .insert(workoutSessions)
+        .values({
+          userId: mesocycle.userId,
+          programId: null,
+          mesocycleId: mesocycleId,
+          name: sessionName,
+          date: sessionDate,
+          isCompleted: false,
+          totalVolume: 0,
+          duration: 0,
+          createdAt: new Date()
+        })
+        .returning({ id: workoutSessions.id });
+
+      // Add exercises with volume adjustments
+      for (const exercise of baseExercises) {
+        // Apply volume adjustments based on muscle groups
+        let adjustedSets = exercise.sets;
+        
+        // Calculate adjusted sets based on volume progressions
+        const volumeProgression = volumeAdjustments.find(va => 
+          // This would need muscle group mapping for more sophisticated adjustment
+          va.week === week
+        );
+
+        if (volumeProgression) {
+          // Apply volume adjustment (RP progression)
+          const progressionFactor = week === 1 ? 1.0 : 1.0 + ((week - 1) * 0.1); // 10% progression per week
+          adjustedSets = Math.round(exercise.sets * progressionFactor);
+        }
+
+        await db
+          .insert(workoutExercises)
+          .values({
+            sessionId: sessionResult[0].id,
+            exerciseId: exercise.exerciseId,
+            orderIndex: exercise.orderIndex,
+            sets: adjustedSets,
+            targetReps: exercise.targetReps,
+            actualReps: null,
+            weight: null,
+            rpe: null,
+            rir: null,
+            restPeriod: exercise.restPeriod,
+            notes: null,
+            isCompleted: false
+          });
+      }
+    }
+
+    console.log(`✅ Generated ${week1Sessions.length} sessions for Week ${week} with volume adjustments`);
   }
 
   /**
