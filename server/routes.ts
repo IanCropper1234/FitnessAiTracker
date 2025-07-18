@@ -804,6 +804,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk delete workout sessions
+  app.delete("/api/training/sessions/bulk", async (req, res) => {
+    try {
+      const { sessionIds, userId } = req.body;
+      
+      if (!Array.isArray(sessionIds) || sessionIds.length === 0) {
+        return res.status(400).json({ error: "Session IDs array is required" });
+      }
+
+      let deletedCount = 0;
+      
+      // Delete sessions in batch
+      for (const sessionId of sessionIds) {
+        const success = await storage.deleteWorkoutSession(sessionId);
+        if (success) deletedCount++;
+      }
+
+      res.json({ 
+        success: true, 
+        message: `Successfully deleted ${deletedCount} of ${sessionIds.length} workout sessions`,
+        deletedCount 
+      });
+    } catch (error: any) {
+      console.error("Error bulk deleting workout sessions:", error);
+      res.status(500).json({ error: "Failed to bulk delete workout sessions" });
+    }
+  });
+
   // Restart workout session (reset progress but keep structure)
   app.post("/api/training/sessions/:sessionId/restart", async (req, res) => {
     try {
@@ -1055,6 +1083,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/exercises", async (req, res) => {
     try {
       const exerciseData = req.body;
+      
+      // Check for duplicate exercise names (case-insensitive)
+      const existingExercise = await storage.getExerciseByName(exerciseData.name);
+      if (existingExercise) {
+        return res.status(409).json({ 
+          error: "Exercise already exists",
+          message: `An exercise named "${exerciseData.name}" already exists in the database` 
+        });
+      }
+      
       const exercise = await storage.createExercise(exerciseData);
       res.json(exercise);
     } catch (error: any) {
@@ -1718,6 +1756,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(template);
+    } catch (error) {
+      console.error("Error updating template:", error);
+      res.status(500).json({ error: "Failed to update template" });
+    }
+  });
+
+  // Update training template
+  app.put("/api/training/templates/:templateId", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.templateId);
+      const updateData = req.body;
+      
+      const updatedTemplate = await TemplateEngine.updateTemplate(templateId, updateData);
+      
+      if (!updatedTemplate) {
+        return res.status(404).json({ error: "Template not found or unauthorized" });
+      }
+      
+      res.json(updatedTemplate);
     } catch (error) {
       console.error("Error updating template:", error);
       res.status(500).json({ error: "Failed to update template" });

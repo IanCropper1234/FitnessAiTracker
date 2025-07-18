@@ -184,6 +184,14 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(exercises);
   }
 
+  async getExerciseByName(name: string): Promise<Exercise | undefined> {
+    const [exercise] = await db.select()
+      .from(exercises)
+      .where(sql`LOWER(TRIM(${exercises.name})) = LOWER(TRIM(${name}))`)
+      .limit(1);
+    return exercise || undefined;
+  }
+
   async getExercisesByCategory(category: string): Promise<Exercise[]> {
     return await db.select().from(exercises).where(eq(exercises.category, category));
   }

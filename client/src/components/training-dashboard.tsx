@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Plus, 
   Play, 
@@ -19,7 +21,8 @@ import {
   MoreVertical,
   Trash2,
   RotateCcw,
-  Copy
+  Copy,
+  X
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -71,6 +74,145 @@ interface TrainingStats {
   }>;
 }
 
+// WorkoutSessionsWithBulkActions Component
+interface WorkoutSessionsWithBulkActionsProps {
+  sessions: WorkoutSession[];
+  onStartSession: (sessionId: number) => void;
+  onViewSession: (sessionId: number) => void;
+  userId: number;
+}
+
+function WorkoutSessionsWithBulkActions({ 
+  sessions, 
+  onStartSession, 
+  onViewSession, 
+  userId 
+}: WorkoutSessionsWithBulkActionsProps) {
+  const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
+  const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (sessionIds: number[]) => {
+      const response = await apiRequest('DELETE', '/api/training/sessions/bulk', {
+        sessionIds,
+        userId
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sessions Deleted",
+        description: `${selectedSessions.length} workout sessions have been deleted`,
+      });
+      setSelectedSessions([]);
+      setBulkDeleteMode(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+    },
+  });
+
+  const handleSelectAll = () => {
+    if (selectedSessions.length === sessions.length) {
+      setSelectedSessions([]);
+    } else {
+      setSelectedSessions(sessions.map(s => s.id));
+    }
+  };
+
+  const handleSessionSelect = (sessionId: number) => {
+    setSelectedSessions(prev => 
+      prev.includes(sessionId) 
+        ? prev.filter(id => id !== sessionId)
+        : [...prev, sessionId]
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedSessions.length > 0) {
+      bulkDeleteMutation.mutate(selectedSessions);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Bulk Actions Header */}
+      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+        <div className="flex items-center gap-4">
+          <Button
+            variant={bulkDeleteMode ? "destructive" : "outline"}
+            size="sm"
+            onClick={() => {
+              setBulkDeleteMode(!bulkDeleteMode);
+              setSelectedSessions([]);
+            }}
+          >
+            {bulkDeleteMode ? (
+              <>
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </>
+            ) : (
+              <>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Bulk Delete
+              </>
+            )}
+          </Button>
+
+          {bulkDeleteMode && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSelectAll}
+              >
+                {selectedSessions.length === sessions.length ? "Deselect All" : "Select All"}
+              </Button>
+              
+              {selectedSessions.length > 0 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  disabled={bulkDeleteMutation.isPending}
+                >
+                  Delete {selectedSessions.length} Session{selectedSessions.length !== 1 ? 's' : ''}
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+
+        {bulkDeleteMode && (
+          <p className="text-sm text-muted-foreground">
+            {selectedSessions.length} of {sessions.length} selected
+          </p>
+        )}
+      </div>
+
+      {/* Sessions Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {sessions.map((session) => (
+          <WorkoutSessionCard
+            key={session.id}
+            session={session}
+            onStart={() => onStartSession(session.id)}
+            onView={() => onViewSession(session.id)}
+            onDelete={() => {}}
+            onRestart={() => {}}
+            onDuplicate={() => {}}
+            showCheckbox={bulkDeleteMode}
+            isSelected={selectedSessions.includes(session.id)}
+            onSelect={() => handleSessionSelect(session.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // WorkoutSessionCard Component
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
@@ -79,18 +221,40 @@ interface WorkoutSessionCardProps {
   onDelete: () => void;
   onRestart: () => void;
   onDuplicate: () => void;
+  showCheckbox?: boolean;
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
-function WorkoutSessionCard({ session, onStart, onView, onDelete, onRestart, onDuplicate }: WorkoutSessionCardProps) {
+function WorkoutSessionCard({ 
+  session, 
+  onStart, 
+  onView, 
+  onDelete, 
+  onRestart, 
+  onDuplicate,
+  showCheckbox = false,
+  isSelected = false,
+  onSelect
+}: WorkoutSessionCardProps) {
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{session.name}</CardTitle>
-            <CardDescription>
-              {new Date(session.date).toLocaleDateString()}
-            </CardDescription>
+          <div className="flex items-start gap-3">
+            {showCheckbox && (
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={onSelect}
+                className="mt-1"
+              />
+            )}
+            <div>
+              <CardTitle className="text-lg">{session.name}</CardTitle>
+              <CardDescription>
+                {new Date(session.date).toLocaleDateString()}
+              </CardDescription>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {session.isCompleted && (
@@ -551,6 +715,13 @@ export function TrainingDashboard() {
               New Workout
             </Button>
           </div>
+          
+          <WorkoutSessionsWithBulkActions 
+            sessions={recentSessions}
+            onStartSession={setExecutingSessionId}
+            onViewSession={setViewingSessionId}
+            userId={userId}
+          />
 
           {recentSessions.length === 0 ? (
             <Card>

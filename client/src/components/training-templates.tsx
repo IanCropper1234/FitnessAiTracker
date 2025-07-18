@@ -259,6 +259,33 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                     </div>
                   </div>
                 </div>
+                
+                {/* Edit/Delete Actions for User Templates */}
+                {template.createdBy === 'user' && (
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingTemplate(template);
+                      }}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteTemplateMutation.mutate(template.id);
+                      }}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
               <CardDescription className="line-clamp-2">
                 {template.description}
