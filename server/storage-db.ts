@@ -769,15 +769,26 @@ export class DatabaseStorage implements IStorage {
 
   async deleteWorkoutSession(id: number): Promise<boolean> {
     try {
+      console.log('Deleting workout session with ID:', id, 'Type:', typeof id);
+      
+      if (isNaN(id) || id <= 0) {
+        console.error('Invalid session ID:', id);
+        return false;
+      }
+      
       // First delete related workout exercises
-      await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
+      const exercisesResult = await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
+      console.log('Deleted exercises:', exercisesResult.rowCount);
       
       // Delete any auto-regulation feedback related to this session
-      await db.delete(autoRegulationFeedback).where(eq(autoRegulationFeedback.sessionId, id));
+      const feedbackResult = await db.delete(autoRegulationFeedback).where(eq(autoRegulationFeedback.sessionId, id));
+      console.log('Deleted feedback:', feedbackResult.rowCount);
       
       // Finally delete the workout session
-      const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
-      return result.rowCount > 0;
+      const sessionResult = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
+      console.log('Deleted session:', sessionResult.rowCount);
+      
+      return sessionResult.rowCount > 0;
     } catch (error) {
       console.error('Error deleting workout session:', error);
       return false;

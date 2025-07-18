@@ -787,11 +787,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk delete workout sessions (must come before individual delete route)
+  app.delete("/api/training/sessions/bulk", async (req, res) => {
+    try {
+      const { sessionIds, userId } = req.body;
+      
+      console.log('Bulk delete request:', { sessionIds, userId });
+      
+      if (!Array.isArray(sessionIds) || sessionIds.length === 0) {
+        return res.status(400).json({ error: "Session IDs array is required" });
+      }
+
+      let deletedCount = 0;
+      let failedCount = 0;
+      
+      // Delete sessions in batch
+      for (const sessionId of sessionIds) {
+        const numericId = parseInt(sessionId);
+        if (isNaN(numericId)) {
+          console.error('Invalid session ID:', sessionId);
+          failedCount++;
+          continue;
+        }
+        
+        console.log('Attempting to delete session:', numericId);
+        const success = await storage.deleteWorkoutSession(numericId);
+        if (success) {
+          deletedCount++;
+        } else {
+          failedCount++;
+        }
+      }
+
+      res.json({ 
+        success: true, 
+        message: `Successfully deleted ${deletedCount} of ${sessionIds.length} workout sessions${failedCount > 0 ? ` (${failedCount} failed)` : ''}`,
+        deletedCount,
+        failedCount 
+      });
+    } catch (error: any) {
+      console.error("Error bulk deleting workout sessions:", error);
+      res.status(500).json({ error: "Failed to bulk delete workout sessions" });
+    }
+  });
+
   // Delete workout session
   app.delete("/api/training/sessions/:sessionId", async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       
+      if (isNaN(sessionId)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+      }
+      
+      console.log('Deleting session ID:', sessionId);
       const success = await storage.deleteWorkoutSession(sessionId);
       
       if (!success) {
@@ -800,35 +849,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ message: "Session deleted successfully" });
     } catch (error: any) {
+      console.error('Error deleting session:', error);
       res.status(400).json({ message: error.message });
-    }
-  });
-
-  // Bulk delete workout sessions
-  app.delete("/api/training/sessions/bulk", async (req, res) => {
-    try {
-      const { sessionIds, userId } = req.body;
-      
-      if (!Array.isArray(sessionIds) || sessionIds.length === 0) {
-        return res.status(400).json({ error: "Session IDs array is required" });
-      }
-
-      let deletedCount = 0;
-      
-      // Delete sessions in batch
-      for (const sessionId of sessionIds) {
-        const success = await storage.deleteWorkoutSession(sessionId);
-        if (success) deletedCount++;
-      }
-
-      res.json({ 
-        success: true, 
-        message: `Successfully deleted ${deletedCount} of ${sessionIds.length} workout sessions`,
-        deletedCount 
-      });
-    } catch (error: any) {
-      console.error("Error bulk deleting workout sessions:", error);
-      res.status(500).json({ error: "Failed to bulk delete workout sessions" });
     }
   });
 
