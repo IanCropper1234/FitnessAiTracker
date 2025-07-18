@@ -730,12 +730,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
           
           if (completedSets.length > 0) {
-            const avgWeight = completedSets.reduce((sum: number, set: any) => sum + set.weight, 0) / completedSets.length;
+            const avgWeight = completedSets.reduce((sum: number, set: any) => sum + (parseFloat(set.weight) || 0), 0) / completedSets.length;
             const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
-            const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + set.rpe, 0) / completedSets.length);
+            const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rpe) || 0), 0) / completedSets.length);
 
             updateData.actualReps = actualReps;
-            updateData.weight = avgWeight.toString();
+            updateData.weight = parseFloat(avgWeight.toFixed(2)); // Convert to number for decimal field
             updateData.rpe = avgRpe;
             updateData.isCompleted = completedSets.length === exerciseData.sets.length; // Mark exercise complete only if all sets done
           } else {
@@ -809,7 +809,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rpe) || 0), 0) / completedSets.length);
 
           updateData.actualReps = actualReps;
-          updateData.weight = avgWeight.toString();
+          updateData.weight = parseFloat(avgWeight.toFixed(2)); // Convert to number for decimal field
           updateData.rpe = avgRpe;
         } else {
           // No completed sets, mark as incomplete
@@ -820,8 +820,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateWorkoutExercise(workoutExercise.id, updateData);
       }
 
+      console.log('Workout completion successful for session:', sessionId);
       res.json(updatedSession);
     } catch (error: any) {
+      console.error('Workout completion error details:', error);
+      console.error('Error stack:', error.stack);
       res.status(400).json({ message: error.message });
     }
   });
