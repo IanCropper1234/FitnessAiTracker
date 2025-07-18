@@ -704,6 +704,7 @@ export class MesocyclePeriodization {
         let progressedRpe = exercise.rpe;
         let progressedRir = exercise.rir;
         let progressedTargetReps = exercise.targetReps;
+        let progressedActualReps = null;
 
         if (week > 1) {
           // Find the most recent completed exercise for this exercise type
@@ -764,6 +765,26 @@ export class MesocyclePeriodization {
 
               // Use previous week's target reps as starting point
               progressedTargetReps = exercise.targetReps;
+              
+              // Calculate suggested starting reps based on previous performance
+              if (lastActualReps) {
+                // Parse the actual reps (could be "7,8,5" format)
+                const repsArray = lastActualReps.split(',').map(r => parseInt(r.trim()));
+                // Use the first set's reps as the suggested starting rep count
+                const suggestedReps = repsArray[0];
+                
+                // Adjust based on progression strategy
+                if (progressedWeight > lastWeight) {
+                  // If weight increased, suggest slightly fewer reps
+                  progressedActualReps = Math.max(suggestedReps - 1, 1).toString();
+                } else if (progressedWeight === lastWeight) {
+                  // Same weight, aim for same or more reps
+                  progressedActualReps = Math.max(suggestedReps, 1).toString();
+                } else {
+                  // Weight decreased (rare), aim for more reps
+                  progressedActualReps = Math.max(suggestedReps + 1, 1).toString();
+                }
+              }
             }
           }
         }
@@ -776,7 +797,7 @@ export class MesocyclePeriodization {
             orderIndex: exercise.orderIndex,
             sets: adjustedSets,
             targetReps: progressedTargetReps,
-            actualReps: null,
+            actualReps: progressedActualReps,
             weight: progressedWeight,
             rpe: progressedRpe,
             rir: progressedRir,

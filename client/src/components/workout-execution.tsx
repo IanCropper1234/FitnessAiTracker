@@ -92,7 +92,14 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         // Use prefilled values from database if available
         const prefilledWeight = exercise.weight || 0;
         const prefilledRpe = exercise.rpe || 7;
-        const prefilledActualReps = exercise.actualReps ? parseInt(exercise.actualReps.split(',')[0]) : 0;
+        
+        // Parse actual reps from previous week if available
+        let prefilledActualReps = 0;
+        if (exercise.actualReps) {
+          // Handle both single number and comma-separated format
+          const repsArray = exercise.actualReps.split(',').map(r => parseInt(r.trim()));
+          prefilledActualReps = repsArray[0] || 0; // Use first set's reps as default
+        }
         
         initialData[exercise.id] = Array.from({ length: exercise.sets }, (_, i) => ({
           setNumber: i + 1,
