@@ -546,6 +546,7 @@ function CreateTemplateDialog({
   createMutation: any; 
   onClose: () => void; 
 }) {
+  const [step, setStep] = useState(1); // 1: Basic info, 2: Workout setup
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -563,12 +564,79 @@ function CreateTemplateDialog({
     }
   });
 
+  // Available exercises for selection (simplified for now)
+  const availableExercises = [
+    { id: 1, name: "Bench Press", muscleGroups: ["chest"], category: "compound" },
+    { id: 2, name: "Overhead Press", muscleGroups: ["shoulders"], category: "compound" },
+    { id: 5, name: "Pull-ups", muscleGroups: ["back"], category: "compound" },
+    { id: 6, name: "Barbell Rows", muscleGroups: ["back"], category: "compound" },
+    { id: 9, name: "Squats", muscleGroups: ["quads"], category: "compound" },
+    { id: 10, name: "Romanian Deadlifts", muscleGroups: ["hamstrings"], category: "compound" },
+    { id: 3, name: "Incline Dumbbell Press", muscleGroups: ["chest"], category: "isolation" },
+    { id: 4, name: "Tricep Dips", muscleGroups: ["triceps"], category: "isolation" },
+    { id: 8, name: "Bicep Curls", muscleGroups: ["biceps"], category: "isolation" },
+    { id: 11, name: "Leg Press", muscleGroups: ["quads"], category: "isolation" },
+    { id: 12, name: "Calf Raises", muscleGroups: ["calves"], category: "isolation" }
+  ];
+
+  const addWorkoutDay = () => {
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: [
+          ...prev.templateData.workouts,
+          {
+            name: `Day ${prev.templateData.workouts.length + 1}`,
+            exercises: [],
+            estimatedDuration: 45,
+            focus: []
+          }
+        ]
+      }
+    }));
+  };
+
+  const updateWorkout = (workoutIndex: number, workout: any) => {
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: prev.templateData.workouts.map((w, i) => i === workoutIndex ? workout : w)
+      }
+    }));
+  };
+
+  const addExerciseToWorkout = (workoutIndex: number, exercise: any) => {
+    const newExercise = {
+      exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      sets: 3,
+      repsRange: "8-12",
+      restPeriod: 120,
+      muscleGroups: exercise.muscleGroups,
+      orderIndex: formData.templateData.workouts[workoutIndex].exercises.length + 1
+    };
+
+    updateWorkout(workoutIndex, {
+      ...formData.templateData.workouts[workoutIndex],
+      exercises: [...formData.templateData.workouts[workoutIndex].exercises, newExercise]
+    });
+  };
+
+  const removeExerciseFromWorkout = (workoutIndex: number, exerciseIndex: number) => {
+    updateWorkout(workoutIndex, {
+      ...formData.templateData.workouts[workoutIndex],
+      exercises: formData.templateData.workouts[workoutIndex].exercises.filter((_, i) => i !== exerciseIndex)
+    });
+  };
+
   const handleSubmit = () => {
     createMutation.mutate(formData);
   };
 
   return (
-    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Create Custom Training Template</DialogTitle>
         <DialogDescription>
@@ -576,74 +644,205 @@ function CreateTemplateDialog({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="name">Template Name</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., My Custom Push/Pull"
-            />
+      <div className="space-y-6">
+        {step === 1 && (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">Template Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="e.g., My Custom Push/Pull"
+                />
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your training template..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="daysPerWeek">Days Per Week</Label>
+              <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
+                const days = parseInt(value);
+                setFormData(prev => ({ 
+                  ...prev, 
+                  daysPerWeek: days,
+                  templateData: {
+                    ...prev.templateData,
+                    workouts: Array.from({ length: days }, (_, i) => ({
+                      name: `Day ${i + 1}`,
+                      exercises: [],
+                      estimatedDuration: 45,
+                      focus: []
+                    }))
+                  }
+                }));
+              }}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3">3 Days</SelectItem>
+                  <SelectItem value="4">4 Days</SelectItem>
+                  <SelectItem value="5">5 Days</SelectItem>
+                  <SelectItem value="6">6 Days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Configure Workouts</h3>
+              <Badge variant="outline">{formData.daysPerWeek} days per week</Badge>
+            </div>
+
+            {formData.templateData.workouts.map((workout, workoutIndex) => (
+              <Card key={workoutIndex}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Input
+                      value={workout.name}
+                      onChange={(e) => updateWorkout(workoutIndex, { ...workout, name: e.target.value })}
+                      className="font-semibold text-lg"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Label>Duration (min):</Label>
+                      <Input
+                        type="number"
+                        value={workout.estimatedDuration}
+                        onChange={(e) => updateWorkout(workoutIndex, { ...workout, estimatedDuration: parseInt(e.target.value) })}
+                        className="w-20"
+                      />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Exercises ({workout.exercises.length})</h4>
+                    <div className="space-y-2">
+                      {workout.exercises.map((exercise, exerciseIndex) => (
+                        <div key={exerciseIndex} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                          <span className="font-medium min-w-[150px]">{exercise.exerciseName}</span>
+                          <div className="flex items-center gap-1">
+                            <Input
+                              type="number"
+                              value={exercise.sets}
+                              onChange={(e) => {
+                                const newExercises = [...workout.exercises];
+                                newExercises[exerciseIndex] = { ...exercise, sets: parseInt(e.target.value) };
+                                updateWorkout(workoutIndex, { ...workout, exercises: newExercises });
+                              }}
+                              className="w-16"
+                            />
+                            <span className="text-sm">sets</span>
+                          </div>
+                          <Input
+                            value={exercise.repsRange}
+                            onChange={(e) => {
+                              const newExercises = [...workout.exercises];
+                              newExercises[exerciseIndex] = { ...exercise, repsRange: e.target.value };
+                              updateWorkout(workoutIndex, { ...workout, exercises: newExercises });
+                            }}
+                            placeholder="8-12"
+                            className="w-20"
+                          />
+                          <div className="flex items-center gap-1">
+                            <Input
+                              type="number"
+                              value={exercise.restPeriod}
+                              onChange={(e) => {
+                                const newExercises = [...workout.exercises];
+                                newExercises[exerciseIndex] = { ...exercise, restPeriod: parseInt(e.target.value) };
+                                updateWorkout(workoutIndex, { ...workout, exercises: newExercises });
+                              }}
+                              className="w-16"
+                            />
+                            <span className="text-sm">sec</span>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeExerciseFromWorkout(workoutIndex, exerciseIndex)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">Add Exercise</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {availableExercises.map((exercise) => (
+                        <Button
+                          key={exercise.id}
+                          size="sm"
+                          variant="outline"
+                          onClick={() => addExerciseToWorkout(workoutIndex, exercise)}
+                          className="justify-start"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          {exercise.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          <div>
-            <Label htmlFor="category">Category</Label>
-            <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Describe your training template..."
-            rows={3}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="daysPerWeek">Days Per Week</Label>
-          <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => setFormData(prev => ({ ...prev, daysPerWeek: parseInt(value) }))}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">3 Days</SelectItem>
-              <SelectItem value="4">4 Days</SelectItem>
-              <SelectItem value="5">5 Days</SelectItem>
-              <SelectItem value="6">6 Days</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            <strong>Note:</strong> After creating your template, you'll be able to add exercises and customize workouts. 
-            You can also generate workouts from this template and track your progress.
-          </p>
-        </div>
+        )}
       </div>
 
       <DialogFooter>
-        <Button variant="outline" onClick={onClose}>Cancel</Button>
-        <Button 
-          onClick={handleSubmit}
-          disabled={!formData.name || !formData.description || createMutation.isPending}
-        >
-          {createMutation.isPending ? 'Creating...' : 'Create Template'}
-        </Button>
+        {step === 1 ? (
+          <>
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button 
+              onClick={() => setStep(2)}
+              disabled={!formData.name || !formData.description}
+            >
+              Next: Configure Workouts
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+            <Button 
+              onClick={handleSubmit}
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? 'Creating...' : 'Create Template'}
+            </Button>
+          </>
+        )}
       </DialogFooter>
     </DialogContent>
   );
