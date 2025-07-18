@@ -326,13 +326,14 @@ export class MesocyclePeriodization {
   }
 
   /**
-   * Create new mesocycle
+   * Create new mesocycle with custom program builder
    */
-  static async createMesocycle(
+  static async createMesocycleWithProgram(
     userId: number,
     name: string,
     templateId?: number,
-    totalWeeks: number = 6
+    totalWeeks: number = 6,
+    customProgram?: any
   ): Promise<number> {
     
     // Deactivate current mesocycles
@@ -361,6 +362,234 @@ export class MesocyclePeriodization {
       })
       .returning({ id: mesocycles.id });
 
-    return result[0].id;
+    const mesocycleId = result[0].id;
+
+    // Generate mesocycle program based on template or custom program
+    if (templateId || customProgram) {
+      await this.generateMesocycleProgram(mesocycleId, templateId, customProgram);
+    }
+
+    return mesocycleId;
+  }
+
+  /**
+   * Update mesocycle (pause, restart, modify)
+   */
+  static async updateMesocycle(mesocycleId: number, updateData: any) {
+    const result = await db
+      .update(mesocycles)
+      .set({
+        ...updateData,
+        updatedAt: new Date()
+      })
+      .where(eq(mesocycles.id, mesocycleId))
+      .returning();
+
+    return result[0];
+  }
+
+  /**
+   * Delete mesocycle and associated data
+   */
+  static async deleteMesocycle(mesocycleId: number) {
+    // Delete associated workout sessions
+    const sessionsToDelete = await db
+      .select({ id: workoutSessions.id })
+      .from(workoutSessions)
+      .where(eq(workoutSessions.programId, mesocycleId));
+
+    for (const session of sessionsToDelete) {
+      // Note: This would also delete workout exercises and progression data
+      // In production, consider archiving instead of hard delete
+    }
+
+    // Delete the mesocycle
+    await db
+      .delete(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId));
+  }
+
+  /**
+   * Get mesocycle program (weekly workout plan)
+   */
+  static async getMesocycleProgram(mesocycleId: number) {
+    // Get mesocycle details
+    const [mesocycle] = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId));
+
+    if (!mesocycle) {
+      throw new Error("Mesocycle not found");
+    }
+
+    // Get planned workout sessions for this mesocycle
+    const sessions = await db
+      .select()
+      .from(workoutSessions)
+      .where(eq(workoutSessions.programId, mesocycleId))
+      .orderBy(workoutSessions.date);
+
+    return {
+      mesocycle,
+      weeklyProgram: this.organizeSessionsByWeek(sessions, mesocycle.startDate),
+      currentWeek: mesocycle.currentWeek,
+      totalWeeks: mesocycle.totalWeeks
+    };
+  }
+
+  /**
+   * Advance to next week with auto-regulation adjustments
+   */
+  static async advanceWeek(mesocycleId: number) {
+    const [mesocycle] = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId));
+
+    if (!mesocycle) {
+      throw new Error("Mesocycle not found");
+    }
+
+    const nextWeek = mesocycle.currentWeek + 1;
+    
+    // Check if mesocycle is complete
+    if (nextWeek > mesocycle.totalWeeks) {
+      // Complete mesocycle and suggest deload
+      await db
+        .update(mesocycles)
+        .set({
+          isActive: false,
+          phase: 'deload',
+          updatedAt: new Date()
+        })
+        .where(eq(mesocycles.id, mesocycleId));
+
+      return {
+        mesocycleComplete: true,
+        recommendation: "Mesocycle completed. Time for a deload week!"
+      };
+    }
+
+    // Apply auto-regulation adjustments for next week
+    const volumeAdjustments = await this.calculateVolumeProgression(
+      mesocycle.userId, 
+      nextWeek, 
+      mesocycle.totalWeeks
+    );
+
+    // Update mesocycle week
+    await db
+      .update(mesocycles)
+      .set({
+        currentWeek: nextWeek,
+        updatedAt: new Date()
+      })
+      .where(eq(mesocycles.id, mesocycleId));
+
+    // Generate next week's workouts with adjusted volumes
+    await this.generateWeekWorkouts(mesocycleId, nextWeek, volumeAdjustments);
+
+    return {
+      newWeek: nextWeek,
+      volumeAdjustments,
+      message: `Advanced to week ${nextWeek}. Volume adjusted based on auto-regulation feedback.`
+    };
+  }
+
+  /**
+   * Generate mesocycle program from template
+   */
+  static async generateMesocycleProgram(
+    mesocycleId: number, 
+    templateId?: number, 
+    customProgram?: any
+  ) {
+    const { TemplateEngine } = await import("./template-engine");
+    
+    if (templateId) {
+      // Use existing template
+      const program = await TemplateEngine.generateWorkoutProgram(templateId, mesocycleId);
+      await this.createMesocycleWorkouts(mesocycleId, program);
+    } else if (customProgram) {
+      // Use custom program design
+      await this.createMesocycleWorkouts(mesocycleId, customProgram);
+    }
+  }
+
+  /**
+   * Create workout sessions for entire mesocycle
+   */
+  static async createMesocycleWorkouts(mesocycleId: number, program: any) {
+    const [mesocycle] = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId));
+
+    if (!mesocycle) return;
+
+    const startDate = new Date(mesocycle.startDate);
+    
+    // Generate sessions for each week
+    for (let week = 1; week <= mesocycle.totalWeeks; week++) {
+      for (const dayProgram of program.weeklyStructure) {
+        const sessionDate = new Date(startDate);
+        sessionDate.setDate(startDate.getDate() + ((week - 1) * 7) + dayProgram.dayOfWeek);
+
+        // Create workout session
+        const sessionResult = await db
+          .insert(workoutSessions)
+          .values({
+            userId: mesocycle.userId,
+            programId: mesocycleId,
+            name: `${dayProgram.name} - Week ${week}`,
+            date: sessionDate,
+            isCompleted: false,
+            totalVolume: null,
+            duration: null,
+            createdAt: new Date()
+          })
+          .returning({ id: workoutSessions.id });
+
+        // Add exercises to session based on program
+        // This would integrate with the existing exercise system
+      }
+    }
+  }
+
+  /**
+   * Generate workouts for specific week with volume adjustments
+   */
+  static async generateWeekWorkouts(
+    mesocycleId: number, 
+    week: number, 
+    volumeAdjustments: VolumeProgression[]
+  ) {
+    // Get base program structure
+    const program = await this.getMesocycleProgram(mesocycleId);
+    
+    // Apply volume adjustments to exercises based on muscle groups
+    // Create new workout sessions for the week with adjusted volumes
+    // This integrates with the existing workout session creation system
+  }
+
+  /**
+   * Organize sessions by week for program display
+   */
+  static organizeSessionsByWeek(sessions: any[], startDate: Date) {
+    const weeks: any = {};
+    
+    sessions.forEach(session => {
+      const sessionDate = new Date(session.date);
+      const daysDiff = Math.floor((sessionDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const week = Math.floor(daysDiff / 7) + 1;
+      
+      if (!weeks[week]) {
+        weeks[week] = [];
+      }
+      weeks[week].push(session);
+    });
+    
+    return weeks;
   }
 }

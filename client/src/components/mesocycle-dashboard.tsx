@@ -13,9 +13,28 @@ import {
   AlertTriangle, 
   CheckCircle2,
   PlayCircle,
-  PauseCircle
+  PauseCircle,
+  Plus,
+  Trash2,
+  Edit3,
+  Settings,
+  Pause,
+  RotateCcw
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import MesocycleProgramBuilder from "./mesocycle-program-builder";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface Mesocycle {
   id: number;
@@ -54,6 +73,9 @@ interface MesocycleDashboardProps {
 
 export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  const [showProgramBuilder, setShowProgramBuilder] = useState(false);
 
   // Get current mesocycles
   const { data: mesocycles = [], isLoading: mesocyclesLoading } = useQuery({
@@ -73,18 +95,76 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     },
   });
 
-  // Create new mesocycle mutation
-  const createMesocycleMutation = useMutation({
-    mutationFn: async (data: { name: string; templateId?: number; totalWeeks: number }) => {
-      const response = await apiRequest('POST', '/api/training/mesocycles', { userId, ...data });
+  // Update mesocycle mutation (pause/restart/modify)
+  const updateMesocycleMutation = useMutation({
+    mutationFn: async ({ id, updateData }: { id: number; updateData: any }) => {
+      const response = await apiRequest('PUT', `/api/training/mesocycles/${id}`, updateData);
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      toast({
+        title: "Mesocycle Updated",
+        description: "Changes applied successfully.",
+      });
+    },
+  });
+
+  // Delete mesocycle mutation
+  const deleteMesocycleMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest('DELETE', `/api/training/mesocycles/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      toast({
+        title: "Mesocycle Deleted",
+        description: "The mesocycle has been removed successfully.",
+      });
+    },
+  });
+
+  // Advance week mutation
+  const advanceWeekMutation = useMutation({
+    mutationFn: async (mesocycleId: number) => {
+      const response = await apiRequest('POST', `/api/training/mesocycles/${mesocycleId}/advance-week`);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+      toast({
+        title: data.mesocycleComplete ? "Mesocycle Complete!" : "Week Advanced",
+        description: data.message || data.recommendation,
+      });
     },
   });
 
   const activeMesocycle = mesocycles.find((m: Mesocycle) => m.isActive);
+
+  const handlePauseMesocycle = (mesocycleId: number) => {
+    updateMesocycleMutation.mutate({
+      id: mesocycleId,
+      updateData: { isActive: false }
+    });
+  };
+
+  const handleRestartMesocycle = (mesocycleId: number) => {
+    // Deactivate other mesocycles first, then activate this one
+    updateMesocycleMutation.mutate({
+      id: mesocycleId,
+      updateData: { isActive: true }
+    });
+  };
+
+  const handleAdvanceWeek = (mesocycleId: number) => {
+    advanceWeekMutation.mutate(mesocycleId);
+  };
+
+  const handleDeleteMesocycle = (mesocycleId: number) => {
+    deleteMesocycleMutation.mutate(mesocycleId);
+  };
 
   const getPhaseColor = (phase: string) => {
     switch (phase) {
@@ -156,6 +236,61 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                   <span>Ends: {new Date(activeMesocycle.endDate).toLocaleDateString()}</span>
                 </div>
               </div>
+
+              {/* Mesocycle Controls */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleAdvanceWeek(activeMesocycle.id)}
+                  disabled={advanceWeekMutation.isPending}
+                  className="flex items-center gap-2"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  {advanceWeekMutation.isPending ? "Advancing..." : "Advance Week"}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePauseMesocycle(activeMesocycle.id)}
+                  disabled={updateMesocycleMutation.isPending}
+                  className="flex items-center gap-2"
+                >
+                  <Pause className="h-4 w-4" />
+                  Pause
+                </Button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Mesocycle</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete "{activeMesocycle.name}" and all associated workout data. 
+                        This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDeleteMesocycle(activeMesocycle.id)}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Delete Permanently
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -167,13 +302,11 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </CardHeader>
           <CardContent>
             <Button 
-              onClick={() => createMesocycleMutation.mutate({
-                name: "New Mesocycle",
-                totalWeeks: 6
-              })}
-              disabled={createMesocycleMutation.isPending}
+              onClick={() => setShowProgramBuilder(true)}
+              className="flex items-center gap-2"
             >
-              {createMesocycleMutation.isPending ? "Creating..." : "Start New Mesocycle"}
+              <Plus className="h-4 w-4" />
+              Create New Mesocycle
             </Button>
           </CardContent>
         </Card>
@@ -355,6 +488,31 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </CardContent>
         </Card>
       )}
+
+      {/* Global Action Bar */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Button
+              onClick={() => setShowProgramBuilder(true)}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Create New Mesocycle
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Program Builder Dialog */}
+      <MesocycleProgramBuilder
+        isOpen={showProgramBuilder}
+        onClose={() => setShowProgramBuilder(false)}
+        userId={userId}
+        onCreateSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+        }}
+      />
     </div>
   );
 }

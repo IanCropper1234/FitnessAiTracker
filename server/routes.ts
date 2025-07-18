@@ -1499,19 +1499,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/training/mesocycles", async (req, res) => {
     try {
-      const { userId, name, templateId, totalWeeks } = req.body;
+      const { userId, name, templateId, totalWeeks, customProgram } = req.body;
       
-      const mesocycleId = await MesocyclePeriodization.createMesocycle(
+      const mesocycleId = await MesocyclePeriodization.createMesocycleWithProgram(
         userId, 
         name, 
         templateId, 
-        totalWeeks
+        totalWeeks,
+        customProgram
       );
       
       res.json({ id: mesocycleId, message: "Mesocycle created successfully" });
     } catch (error) {
       console.error("Error creating mesocycle:", error);
       res.status(500).json({ error: "Failed to create mesocycle" });
+    }
+  });
+
+  // Update mesocycle (pause/restart/modify)
+  app.put("/api/training/mesocycles/:id", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      const updatedMesocycle = await MesocyclePeriodization.updateMesocycle(mesocycleId, updateData);
+      
+      res.json(updatedMesocycle);
+    } catch (error) {
+      console.error("Error updating mesocycle:", error);
+      res.status(500).json({ error: "Failed to update mesocycle" });
+    }
+  });
+
+  // Delete mesocycle
+  app.delete("/api/training/mesocycles/:id", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.id);
+      
+      await MesocyclePeriodization.deleteMesocycle(mesocycleId);
+      
+      res.json({ message: "Mesocycle deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting mesocycle:", error);
+      res.status(500).json({ error: "Failed to delete mesocycle" });
+    }
+  });
+
+  // Get mesocycle workout program
+  app.get("/api/training/mesocycles/:id/program", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.id);
+      
+      const program = await MesocyclePeriodization.getMesocycleProgram(mesocycleId);
+      
+      res.json(program);
+    } catch (error) {
+      console.error("Error fetching mesocycle program:", error);
+      res.status(500).json({ error: "Failed to fetch program" });
+    }
+  });
+
+  // Advance mesocycle week (auto-progression)
+  app.post("/api/training/mesocycles/:id/advance-week", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.id);
+      
+      const result = await MesocyclePeriodization.advanceWeek(mesocycleId);
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error advancing mesocycle week:", error);
+      res.status(500).json({ error: "Failed to advance week" });
     }
   });
 
