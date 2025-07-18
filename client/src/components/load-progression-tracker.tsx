@@ -47,14 +47,14 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
   // Get load progressions for specific exercises
   const { data: progressions = [], isLoading: progressionsLoading } = useQuery({
     queryKey: ['/api/training/load-progression', userId, exerciseIds],
-    queryFn: () => apiRequest(`/api/training/load-progression/${userId}${exerciseIds ? `?exerciseIds=${exerciseIds.join(',')}` : ''}`, { method: 'GET' }),
+    queryFn: () => apiRequest('GET', `/api/training/load-progression/${userId}${exerciseIds ? `?exerciseIds=${exerciseIds.join(',')}` : ''}`),
     enabled: !!userId,
   });
 
   // Get performance analysis
   const { data: analysis, isLoading: analysisLoading } = useQuery<PerformanceAnalysis>({
     queryKey: ['/api/training/performance-analysis', userId, timeframe],
-    queryFn: () => apiRequest(`/api/training/performance-analysis/${userId}?timeframeDays=${timeframe}`, { method: 'GET' }),
+    queryFn: () => apiRequest('GET', `/api/training/performance-analysis/${userId}?timeframeDays=${timeframe}`),
     enabled: !!userId,
   });
 

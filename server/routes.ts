@@ -1389,13 +1389,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       
-      const mesocycles = await db
+      const userMesocycles = await db
         .select()
         .from(mesocycles)
         .where(eq(mesocycles.userId, userId))
         .orderBy(desc(mesocycles.createdAt));
       
-      res.json(mesocycles);
+      res.json(userMesocycles);
     } catch (error) {
       console.error("Error fetching mesocycles:", error);
       res.status(500).json({ error: "Failed to fetch mesocycles" });
