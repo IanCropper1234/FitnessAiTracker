@@ -240,7 +240,10 @@ export class DatabaseStorage implements IStorage {
 
   // Workout Exercises
   async getWorkoutExercises(sessionId: number): Promise<WorkoutExercise[]> {
-    return await db.select().from(workoutExercises).where(eq(workoutExercises.sessionId, sessionId));
+    console.log(`Getting workout exercises for session ${sessionId}`);
+    const result = await db.select().from(workoutExercises).where(eq(workoutExercises.sessionId, sessionId));
+    console.log(`Found ${result.length} workout exercises for session ${sessionId}`);
+    return result;
   }
 
   async createWorkoutExercise(exercise: InsertWorkoutExercise): Promise<WorkoutExercise> {

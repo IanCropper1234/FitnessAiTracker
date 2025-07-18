@@ -71,7 +71,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
 
   // Fetch workout session details
   const { data: session, isLoading } = useQuery<WorkoutSession>({
-    queryKey: ["/api/training/sessions", sessionId],
+    queryKey: ["/api/training/session", sessionId],
   });
 
   // Initialize workout data
@@ -145,6 +145,24 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p>Loading workout session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if session has exercises
+  if (!session.exercises || session.exercises.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-center">
+          <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No exercises in this session</h3>
+          <p className="text-muted-foreground mb-4">
+            This workout session doesn't have any exercises. Please add exercises to continue.
+          </p>
+          <Button onClick={onComplete}>
+            Return to Dashboard
+          </Button>
         </div>
       </div>
     );

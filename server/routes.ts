@@ -568,15 +568,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get workout session with exercises
-  app.get("/api/training/sessions/:sessionId", async (req, res) => {
+  app.get("/api/training/session/:sessionId", async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
+      console.log(`API: Getting session ${sessionId}`);
       const session = await storage.getWorkoutSession(sessionId);
       
       if (!session) {
+        console.log(`API: Session ${sessionId} not found`);
         return res.status(404).json({ message: "Session not found" });
       }
 
+      console.log(`API: Found session ${sessionId}, getting exercises...`);
       // Get exercises for this session
       const workoutExercises = await storage.getWorkoutExercises(sessionId);
       
@@ -585,8 +588,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         workoutExercises.map(async (we) => {
           const exercise = await storage.getExercise(we.exerciseId);
           return {
-            ...we,
-            exercise
+            id: we.id,
+            exerciseId: we.exerciseId,
+            orderIndex: we.orderIndex,
+            sets: we.sets,
+            targetReps: we.targetReps,
+            restPeriod: we.restPeriod || 90,
+            notes: we.notes || "",
+            weight: we.weight,
+            actualReps: we.actualReps,
+            rpe: we.rpe,
+            rir: we.rir,
+            isCompleted: we.isCompleted,
+            exercise: exercise
           };
         })
       );
