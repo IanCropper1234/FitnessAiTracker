@@ -196,6 +196,7 @@ export const workoutSessions = pgTable("workout_sessions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   programId: integer("program_id").references(() => trainingPrograms.id), // Made nullable
+  mesocycleId: integer("mesocycle_id").references(() => mesocycles.id), // Link to mesocycles
   date: timestamp("date").notNull(),
   name: text("name").notNull(),
   isCompleted: boolean("is_completed").notNull().default(false),

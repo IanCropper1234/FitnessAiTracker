@@ -365,10 +365,8 @@ export class MesocyclePeriodization {
 
     const mesocycleId = result[0].id;
 
-    // Generate mesocycle program based on template or custom program
-    if (templateId || customProgram) {
-      await this.generateMesocycleProgram(mesocycleId, templateId, customProgram);
-    }
+    // Always generate mesocycle program (use default if no template/custom program)
+    await this.generateMesocycleProgram(mesocycleId, templateId, customProgram);
 
     return mesocycleId;
   }
@@ -397,7 +395,7 @@ export class MesocyclePeriodization {
     const sessionsToDelete = await db
       .select({ id: workoutSessions.id })
       .from(workoutSessions)
-      .where(eq(workoutSessions.programId, mesocycleId));
+      .where(eq(workoutSessions.mesocycleId, mesocycleId));
 
     for (const session of sessionsToDelete) {
       // Note: This would also delete workout exercises and progression data
@@ -428,7 +426,7 @@ export class MesocyclePeriodization {
     const sessions = await db
       .select()
       .from(workoutSessions)
-      .where(eq(workoutSessions.programId, mesocycleId))
+      .where(eq(workoutSessions.mesocycleId, mesocycleId))
       .orderBy(workoutSessions.date);
 
     return {
@@ -513,24 +511,24 @@ export class MesocyclePeriodization {
           dayOfWeek: 0, 
           name: "Push Day", 
           exercises: [
-            { id: 372, name: "Pull-ups", sets: 3, targetReps: "8-10", restPeriod: 180 },
-            { id: 373, name: "Push-ups", sets: 3, targetReps: "6-8", restPeriod: 120 }
+            { exerciseId: 372, sets: 3, targetReps: "8-10", restPeriod: 180 },
+            { exerciseId: 373, sets: 3, targetReps: "6-8", restPeriod: 120 }
           ]
         },
         { 
           dayOfWeek: 2, 
           name: "Pull Day", 
           exercises: [
-            { id: 374, name: "Chin-ups", sets: 3, targetReps: "6-10", restPeriod: 120 },
-            { id: 375, name: "Dumbbell Row", sets: 3, targetReps: "8-12", restPeriod: 120 }
+            { exerciseId: 374, sets: 3, targetReps: "6-10", restPeriod: 120 },
+            { exerciseId: 375, sets: 3, targetReps: "8-12", restPeriod: 120 }
           ]
         },
         { 
           dayOfWeek: 4, 
           name: "Legs Day", 
           exercises: [
-            { id: 376, name: "Squats", sets: 3, targetReps: "8-12", restPeriod: 180 },
-            { id: 377, name: "Deadlifts", sets: 3, targetReps: "8-10", restPeriod: 180 }
+            { exerciseId: 376, sets: 3, targetReps: "8-12", restPeriod: 180 },
+            { exerciseId: 377, sets: 3, targetReps: "8-10", restPeriod: 180 }
           ]
         }
       ]
@@ -564,17 +562,18 @@ export class MesocyclePeriodization {
         const sessionDate = new Date(startDate);
         sessionDate.setDate(startDate.getDate() + ((week - 1) * 7) + dayProgram.dayOfWeek);
 
-        // Create workout session
+        // Create workout session linked to mesocycle
         const sessionResult = await db
           .insert(workoutSessions)
           .values({
             userId: mesocycle.userId,
-            programId: null, // Set to null to avoid foreign key constraint
+            programId: null, // Not linked to training program
+            mesocycleId: mesocycleId, // Link to mesocycle
             name: `${dayProgram.name} - Week ${week}`,
             date: sessionDate,
             isCompleted: false,
-            totalVolume: null,
-            duration: null,
+            totalVolume: 0,
+            duration: 0,
             createdAt: new Date()
           })
           .returning({ id: workoutSessions.id });
@@ -587,7 +586,7 @@ export class MesocyclePeriodization {
               .insert(workoutExercises)
               .values({
                 sessionId: sessionResult[0].id,
-                exerciseId: exercise.id,
+                exerciseId: exercise.exerciseId || exercise.id,
                 orderIndex: i,
                 sets: exercise.sets || 3,
                 targetReps: exercise.targetReps || "8-12",
