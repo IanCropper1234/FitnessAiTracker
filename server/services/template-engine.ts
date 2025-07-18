@@ -523,4 +523,98 @@ export class TemplateEngine {
 
     return templateData;
   }
+
+  /**
+   * Generate workout program from template for mesocycle
+   */
+  static async generateWorkoutProgram(templateId: number, mesocycleId?: number) {
+    const template = await db
+      .select()
+      .from(trainingTemplates)
+      .where(eq(trainingTemplates.id, templateId))
+      .limit(1);
+
+    if (template.length === 0) {
+      throw new Error(`Template ${templateId} not found`);
+    }
+
+    const templateData = template[0].templateData as any;
+    
+    // Create basic weekly structure based on template
+    const weeklyStructure = [];
+    const daysPerWeek = template[0].daysPerWeek;
+    
+    for (let day = 0; day < daysPerWeek; day++) {
+      weeklyStructure.push({
+        dayOfWeek: day,
+        name: `Day ${day + 1}`,
+        exercises: [],
+        muscleGroups: templateData?.targetMuscleGroups || []
+      });
+    }
+
+    return {
+      templateId,
+      mesocycleId,
+      weeklyStructure,
+      name: template[0].name,
+      description: template[0].description
+    };
+  }
+
+  /**
+   * Get template by ID
+   */
+  static async getTemplate(templateId: number) {
+    const templates = await db
+      .select()
+      .from(trainingTemplates)
+      .where(eq(trainingTemplates.id, templateId))
+      .limit(1);
+    
+    return templates[0] || null;
+  }
+
+  /**
+   * Create weekly structure from template
+   */
+  static createWeeklyStructureFromTemplate(template: any) {
+    const weeklyStructure = [];
+    const daysPerWeek = template.daysPerWeek || 3;
+    
+    for (let day = 0; day < daysPerWeek; day++) {
+      weeklyStructure.push({
+        dayOfWeek: day,
+        name: `${template.name} - Day ${day + 1}`,
+        exercises: [],
+        muscleGroups: []
+      });
+    }
+    
+    return weeklyStructure;
+  }
+
+  /**
+   * Calculate volume progression for template
+   */
+  static calculateVolumeProgression(template: any) {
+    return {
+      startingVolume: 10,
+      weeklyIncrease: 1,
+      maxVolume: 20
+    };
+  }
+
+  /**
+   * Select exercises for template
+   */
+  static async selectExercisesForTemplate(template: any) {
+    // Get basic exercises for the template
+    const exercisesList = await db
+      .select()
+      .from(exercises)
+      .limit(10);
+    
+    return exercisesList;
+  }
 }

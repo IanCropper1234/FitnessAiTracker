@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { apiRequest } from "@/lib/queryClient";
+import { ExerciseSelector } from "./exercise-selector";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Target, Dumbbell, Play, Settings } from "lucide-react";
 
@@ -37,12 +38,25 @@ interface TrainingTemplate {
   estimatedDuration: number;
 }
 
+interface SelectedExercise {
+  id: number;
+  name: string;
+  category: string;
+  muscleGroups: string[] | null;
+  primaryMuscle: string;
+  equipment: string | null;
+  difficulty: string | null;
+  sets: number;
+  targetReps: string;
+  restPeriod: number;
+}
+
 interface CustomProgram {
   weeklyStructure: {
     dayOfWeek: number;
     name: string;
     muscleGroups: string[];
-    exercises: number[];
+    exercises: SelectedExercise[];
   }[];
   specialization?: string[];
   frequency: number;
@@ -65,6 +79,7 @@ export default function MesocycleProgramBuilder({
     weeklyStructure: [],
     frequency: 4
   });
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
 
   // Get available training templates
   const { data: templates = [], isLoading: templatesLoading } = useQuery<TrainingTemplate[]>({
@@ -175,6 +190,13 @@ export default function MesocycleProgramBuilder({
       weeklyStructure: prev.weeklyStructure.map((day, i) => 
         i === index ? { ...day, [field]: value } : day
       )
+    }));
+  };
+
+  const removeCustomWorkoutDay = (index: number) => {
+    setCustomProgram(prev => ({
+      ...prev,
+      weeklyStructure: prev.weeklyStructure.filter((_, i) => i !== index)
     }));
   };
 
@@ -387,6 +409,26 @@ export default function MesocycleProgramBuilder({
                               ))}
                             </div>
                           </div>
+                        </div>
+                        
+                        {/* Exercise Selection */}
+                        <div className="mt-4">
+                          <ExerciseSelector
+                            selectedExercises={day.exercises}
+                            onExercisesChange={(exercises) => updateCustomWorkoutDay(index, "exercises", exercises)}
+                            targetMuscleGroups={day.muscleGroups}
+                          />
+                        </div>
+                        
+                        <div className="flex justify-end mt-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeCustomWorkoutDay(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Remove Day
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
