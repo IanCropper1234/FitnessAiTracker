@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -58,6 +60,8 @@ interface TrainingStats {
 
 export function TrainingDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const queryClient = useQueryClient();
 
   // Fetch exercises
@@ -84,10 +88,18 @@ export function TrainingDashboard() {
     return acc;
   }, {} as Record<string, Exercise[]>);
 
-  // Filter exercises based on selected category
-  const filteredExercises = selectedCategory === "all" 
-    ? exercises 
-    : exercises.filter(ex => ex.category === selectedCategory);
+  // Filter exercises based on selected category and search query
+  const filteredExercises = exercises.filter(exercise => {
+    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+    const matchesSearch = searchQuery === "" || 
+      exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exercise.primaryMuscle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exercise.muscleGroups.some(muscle => muscle.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      exercise.equipment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exercise.movementPattern?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesCategory && matchesSearch;
+  });
 
   // Exercise difficulty colors
   const getDifficultyColor = (difficulty: string) => {
@@ -109,6 +121,18 @@ export function TrainingDashboard() {
       case "rotation": return "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
+  };
+
+  // Add exercise to workout function
+  const addToWorkout = (exercise: Exercise) => {
+    if (!selectedExercises.find(ex => ex.id === exercise.id)) {
+      setSelectedExercises([...selectedExercises, exercise]);
+    }
+  };
+
+  // Check if exercise is already in workout
+  const isInWorkout = (exerciseId: number) => {
+    return selectedExercises.some(ex => ex.id === exerciseId);
   };
 
   if (exercisesLoading || statsLoading || sessionsLoading) {
@@ -194,6 +218,37 @@ export function TrainingDashboard() {
         </TabsList>
 
         <TabsContent value="exercises" className="space-y-6">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search exercises by name, muscle group, equipment..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {/* Selected exercises indicator */}
+          {selectedExercises.length > 0 && (
+            <div className="bg-muted p-4 rounded-lg">
+              <h4 className="font-medium mb-2">Selected for Workout ({selectedExercises.length})</h4>
+              <div className="flex flex-wrap gap-2">
+                {selectedExercises.map((exercise) => (
+                  <Badge key={exercise.id} variant="secondary" className="flex items-center gap-1">
+                    {exercise.name}
+                    <button
+                      onClick={() => setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id))}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      ×
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-wrap gap-2">
               <Button
@@ -270,9 +325,24 @@ export function TrainingDashboard() {
                     </div>
                     
                     <div className="flex gap-2 pt-2">
-                      <Button size="sm" className="flex-1">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add to Workout
+                      <Button 
+                        size="sm" 
+                        className="flex-1"
+                        variant={isInWorkout(exercise.id) ? "secondary" : "default"}
+                        onClick={() => addToWorkout(exercise)}
+                        disabled={isInWorkout(exercise.id)}
+                      >
+                        {isInWorkout(exercise.id) ? (
+                          <>
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            Added
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add to Workout
+                          </>
+                        )}
                       </Button>
                       <ExerciseManagement exercise={exercise} />
                     </div>
