@@ -1205,19 +1205,19 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-medium text-black dark:text-white">{meal.scheduledTime} - {meal.description}</span>
-                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{meal.targetCalories} cal</span>
+                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{Math.round(meal.targetCalories)} cal</span>
                           </div>
                           <div className="grid grid-cols-3 gap-2 text-xs">
                             <div className="text-center">
-                              <div className="text-green-600 dark:text-green-400 font-medium">{meal.targetProtein.toFixed(1)}g</div>
+                              <div className="text-green-600 dark:text-green-400 font-medium">{Number(meal.targetProtein).toFixed(1)}g</div>
                               <div className="text-gray-500">Protein</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-orange-600 dark:text-orange-400 font-medium">{meal.targetCarbs.toFixed(1)}g</div>
+                              <div className="text-orange-600 dark:text-orange-400 font-medium">{Number(meal.targetCarbs).toFixed(1)}g</div>
                               <div className="text-gray-500">Carbs</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-purple-600 dark:text-purple-400 font-medium">{meal.targetFat.toFixed(1)}g</div>
+                              <div className="text-purple-600 dark:text-purple-400 font-medium">{Number(meal.targetFat).toFixed(1)}g</div>
                               <div className="text-gray-500">Fat</div>
                             </div>
                           </div>
@@ -1229,19 +1229,19 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Daily Totals</div>
                         <div className="grid grid-cols-4 gap-2 text-xs">
                           <div className="text-center">
-                            <div className="font-medium text-blue-600 dark:text-blue-400">{currentDietGoal.targetCalories}</div>
+                            <div className="font-medium text-blue-600 dark:text-blue-400">{Number(currentDietGoal.targetCalories).toFixed(0)}</div>
                             <div className="text-gray-500">Calories</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-green-600 dark:text-green-400">{currentDietGoal.targetProtein.toFixed(1)}g</div>
+                            <div className="font-medium text-green-600 dark:text-green-400">{Number(currentDietGoal.targetProtein).toFixed(1)}g</div>
                             <div className="text-gray-500">Protein</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-orange-600 dark:text-orange-400">{currentDietGoal.targetCarbs.toFixed(1)}g</div>
+                            <div className="font-medium text-orange-600 dark:text-orange-400">{Number(currentDietGoal.targetCarbs).toFixed(1)}g</div>
                             <div className="text-gray-500">Carbs</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-purple-600 dark:text-purple-400">{currentDietGoal.targetFat.toFixed(1)}g</div>
+                            <div className="font-medium text-purple-600 dark:text-purple-400">{Number(currentDietGoal.targetFat).toFixed(1)}g</div>
                             <div className="text-gray-500">Fat</div>
                           </div>
                         </div>
