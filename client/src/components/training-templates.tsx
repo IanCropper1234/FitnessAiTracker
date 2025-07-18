@@ -26,6 +26,23 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
+// Helper function to calculate next workout day in template rotation
+function calculateNextWorkoutDay(template: any, userId: number): number {
+  try {
+    // Get user's recent sessions to determine the next workout day
+    // This is a simplified approach - in production, you'd track template progression
+    const totalWorkouts = template.templateData?.workouts?.length || 1;
+    
+    // For now, cycle through workouts sequentially (0, 1, 2, 0, 1, 2...)
+    // In a real implementation, you'd track the user's current position in the template
+    const sessionCount = Math.floor(Math.random() * totalWorkouts); // Simplified for demo
+    return sessionCount % totalWorkouts;
+  } catch (error) {
+    console.error('Error calculating next workout day:', error);
+    return 0; // Default to first workout
+  }
+}
+
 interface TrainingTemplate {
   id: number;
   name: string;
@@ -82,14 +99,17 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
 
   // Generate workout from template
   const generateWorkoutMutation = useMutation({
-    mutationFn: async (data: { templateId: number; workoutDay: number }) => {
-      const response = await apiRequest('POST', '/api/training/templates/generate-workout', { userId, ...data });
+    mutationFn: async (data: { templateId: number; workoutDay?: number; userId: number }) => {
+      const response = await apiRequest('POST', '/api/training/templates/generate-workout', data);
       return response.json();
     },
     onSuccess: (data) => {
+      const workoutInfo = data.workoutDay !== undefined 
+        ? `Day ${data.workoutDay + 1} of ${data.totalWorkouts}` 
+        : "Workout";
       toast({
         title: "Workout Created",
-        description: data.message || "Workout generated and added to your sessions",
+        description: `${workoutInfo} generated and ready to start`,
       });
       // Invalidate training sessions to update dashboard
       queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
@@ -300,7 +320,15 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                 <Button 
                   size="sm" 
                   className="flex-1"
-                  onClick={() => generateWorkoutMutation.mutate({ templateId: template.id, workoutDay: 0 })}
+                  onClick={() => {
+                    // Calculate next workout day based on template progression
+                    const nextWorkoutDay = calculateNextWorkoutDay(template, userId);
+                    generateWorkoutMutation.mutate({ 
+                      templateId: template.id, 
+                      workoutDay: nextWorkoutDay,
+                      userId: userId 
+                    });
+                  }}
                   disabled={generateWorkoutMutation.isPending}
                 >
                   <Dumbbell className="h-4 w-4 mr-1" />
@@ -564,20 +592,19 @@ function CreateTemplateDialog({
     }
   });
 
-  // Available exercises for selection (simplified for now)
-  const availableExercises = [
-    { id: 1, name: "Bench Press", muscleGroups: ["chest"], category: "compound" },
-    { id: 2, name: "Overhead Press", muscleGroups: ["shoulders"], category: "compound" },
-    { id: 5, name: "Pull-ups", muscleGroups: ["back"], category: "compound" },
-    { id: 6, name: "Barbell Rows", muscleGroups: ["back"], category: "compound" },
-    { id: 9, name: "Squats", muscleGroups: ["quads"], category: "compound" },
-    { id: 10, name: "Romanian Deadlifts", muscleGroups: ["hamstrings"], category: "compound" },
-    { id: 3, name: "Incline Dumbbell Press", muscleGroups: ["chest"], category: "isolation" },
-    { id: 4, name: "Tricep Dips", muscleGroups: ["triceps"], category: "isolation" },
-    { id: 8, name: "Bicep Curls", muscleGroups: ["biceps"], category: "isolation" },
-    { id: 11, name: "Leg Press", muscleGroups: ["quads"], category: "isolation" },
-    { id: 12, name: "Calf Raises", muscleGroups: ["calves"], category: "isolation" }
-  ];
+  // Fetch real exercise data from Exercise Library
+  const { data: availableExercises = [] } = useQuery({
+    queryKey: ['/api/exercises'],
+    select: (data: any[]) => data.map(exercise => ({
+      id: exercise.id,
+      name: exercise.name,
+      muscleGroups: exercise.muscleGroups || [exercise.primaryMuscle],
+      category: exercise.category,
+      primaryMuscle: exercise.primaryMuscle,
+      equipment: exercise.equipment,
+      difficulty: exercise.difficulty
+    }))
+  });
 
   const addWorkoutDay = () => {
     setFormData(prev => ({

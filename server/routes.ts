@@ -1397,11 +1397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       
-      const userMesocycles = await db
-        .select()
-        .from(mesocycles)
-        .where(eq(mesocycles.userId, userId))
-        .orderBy(desc(mesocycles.createdAt));
+      const userMesocycles = await storage.getUserMesocycles(userId);
       
       res.json(userMesocycles);
     } catch (error) {
@@ -1518,15 +1514,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId, templateId, workoutDay } = req.body;
       
+      // Get template data to determine total workouts
+      const template = await storage.getTrainingTemplate(templateId);
+      if (!template) {
+        return res.status(404).json({ error: "Template not found" });
+      }
+
+      // Calculate next workout day based on user's progression
+      let nextWorkoutDay = workoutDay || 0;
+      if (userId && workoutDay === undefined) {
+        // Get user's recent sessions for this template to determine progression
+        const recentSessions = await storage.getUserWorkoutSessions(userId, { templateId, limit: 10 });
+        const totalWorkouts = template.templateData?.workouts?.length || 1;
+        
+        if (recentSessions.length > 0) {
+          // Find the last completed session and increment workout day
+          const lastSession = recentSessions.find(s => s.isCompleted);
+          if (lastSession) {
+            // Extract workout day from session data and increment
+            const lastWorkoutDay = lastSession.programId ? (lastSession.programId % totalWorkouts) : 0;
+            nextWorkoutDay = (lastWorkoutDay + 1) % totalWorkouts;
+          }
+        }
+      }
+      
       const workout = await TemplateEngine.generateWorkoutFromTemplate(
         userId, 
         templateId, 
-        workoutDay
+        nextWorkoutDay
       );
       
       // Automatically add to recent workout sessions
       res.json({ 
         ...workout, 
+        workoutDay: nextWorkoutDay,
+        totalWorkouts: template.templateData?.workouts?.length || 1,
         message: "Workout generated and added to your workout sessions" 
       });
     } catch (error) {
