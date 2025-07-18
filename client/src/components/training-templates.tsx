@@ -56,7 +56,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   // Get available templates
   const { data: templates = [], isLoading } = useQuery({
     queryKey: ['/api/training/templates', selectedCategory],
-    queryFn: () => apiRequest(`/api/training/templates${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`),
+    queryFn: () => apiRequest(`/api/training/templates${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`, { method: 'GET' }),
   });
 
   // Generate workout from template

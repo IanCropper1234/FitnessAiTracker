@@ -58,13 +58,13 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   // Get current mesocycles
   const { data: mesocycles = [], isLoading: mesocyclesLoading } = useQuery({
     queryKey: ['/api/training/mesocycles', userId],
-    queryFn: () => apiRequest(`/api/training/mesocycles/${userId}`),
+    queryFn: () => apiRequest(`/api/training/mesocycles/${userId}`, { method: 'GET' }),
   });
 
   // Get mesocycle recommendations
   const { data: recommendations, isLoading: recommendationsLoading } = useQuery<MesocycleRecommendation>({
     queryKey: ['/api/training/mesocycle-recommendations', userId],
-    queryFn: () => apiRequest(`/api/training/mesocycle-recommendations/${userId}`),
+    queryFn: () => apiRequest(`/api/training/mesocycle-recommendations/${userId}`, { method: 'GET' }),
   });
 
   // Create new mesocycle mutation
