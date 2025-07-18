@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { AutoRegulationFeedback } from "./auto-regulation-feedback";
 
 interface WorkoutSet {
   setNumber: number;
@@ -68,6 +69,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
   const [sessionStartTime] = useState(Date.now());
   const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Fetch workout session details
   const { data: session, isLoading } = useQuery<WorkoutSession>({
@@ -124,11 +126,11 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     onSuccess: () => {
       toast({
         title: "Workout Completed!",
-        description: "Great job! Your workout has been saved.",
+        description: "Great job! Now let's collect some feedback to optimize your future training.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
       queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
-      onComplete();
+      setShowFeedback(true);
     },
     onError: () => {
       toast({
@@ -279,6 +281,20 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Show auto-regulation feedback after workout completion
+  if (showFeedback && session.userId) {
+    return (
+      <AutoRegulationFeedback
+        sessionId={sessionId}
+        userId={session.userId}
+        onComplete={() => {
+          setShowFeedback(false);
+          onComplete();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 p-6 max-w-4xl mx-auto">

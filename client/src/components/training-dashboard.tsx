@@ -22,6 +22,7 @@ import { ExerciseManagement, CreateExerciseButton } from "./exercise-management"
 import { WorkoutSessionCreator } from "./workout-session-creator";
 import { WorkoutExecution } from "./workout-execution";
 import { VolumeLandmarks } from "./volume-landmarks";
+import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -232,10 +233,11 @@ export function TrainingDashboard() {
       </div>
 
       <Tabs defaultValue="exercises" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
           <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
           <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
+          <TabsTrigger value="auto-regulation">Auto-Regulation</TabsTrigger>
           <TabsTrigger value="programs">Training Programs</TabsTrigger>
           <TabsTrigger value="progress">Progress Tracking</TabsTrigger>
         </TabsList>
@@ -476,6 +478,10 @@ export function TrainingDashboard() {
 
         <TabsContent value="volume" className="space-y-6">
           <VolumeLandmarks />
+        </TabsContent>
+
+        <TabsContent value="auto-regulation" className="space-y-6">
+          <AutoRegulationDashboard userId={1} />
         </TabsContent>
 
         <TabsContent value="programs" className="space-y-6">

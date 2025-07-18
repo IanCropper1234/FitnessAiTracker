@@ -20,6 +20,10 @@ import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
 import type { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
+  // Database access for external algorithms
+  getDb() {
+    return db;
+  }
   // Users
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));

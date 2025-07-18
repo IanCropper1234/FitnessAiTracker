@@ -11,6 +11,7 @@ import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, in
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
+import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendations } from "./auto-regulation-algorithms";
 
 // RP Diet Coach categorization functions
 function categorizeFoodByRP(calories: number, protein: number, carbs: number, fat: number): string {
@@ -737,6 +738,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(updatedLandmark);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Step 3: Auto-Regulation System API Routes
+
+  // Submit auto-regulation feedback
+  app.post("/api/training/auto-regulation-feedback", async (req, res) => {
+    try {
+      const feedbackData = req.body;
+      const feedback = await storage.createAutoRegulationFeedback(feedbackData);
+      
+      // Generate volume adjustment recommendations based on feedback
+      const recommendations = await generateVolumeRecommendations(feedbackData.userId, feedback);
+      
+      res.json({ feedback, recommendations });
+    } catch (error: any) {
+      console.error('Auto-regulation feedback error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get auto-regulation feedback for session
+  app.get("/api/training/auto-regulation-feedback/:sessionId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const feedback = await storage.getAutoRegulationFeedback(sessionId);
+      res.json(feedback);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get fatigue analysis for user
+  app.get("/api/training/fatigue-analysis/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const days = parseInt(req.query.days as string) || 14; // Default 14 days
+      
+      const fatigueAnalysis = await getFatigueAnalysis(userId, days);
+      res.json(fatigueAnalysis);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get volume recommendations for user
+  app.get("/api/training/volume-recommendations/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const recommendations = await getVolumeRecommendations(userId);
+      res.json(recommendations);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }

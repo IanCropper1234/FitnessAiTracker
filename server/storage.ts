@@ -17,6 +17,9 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
+  // Database access
+  getDb(): any;
+  
   // Users
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
@@ -139,6 +142,10 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  // Database access (not available in memory storage)
+  getDb(): any {
+    throw new Error("Database access not available in memory storage");
+  }
   private users: Map<number, User> = new Map();
   private userProfiles: Map<number, UserProfile> = new Map();
   private nutritionGoals: Map<number, NutritionGoal> = new Map();
