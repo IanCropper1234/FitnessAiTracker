@@ -33,7 +33,7 @@ interface TrainingTemplate {
   category: string;
   split: string;
   weeklyFrequency: number;
-  targetMuscleGroups: string[];
+  targetMuscleGroups?: string[];
   estimatedDuration: number;
 }
 
@@ -297,14 +297,14 @@ export default function MesocycleProgramBuilder({
                           {template.description}
                         </p>
                         <div className="flex flex-wrap gap-1">
-                          {template.targetMuscleGroups.slice(0, 3).map((muscle) => (
+                          {(template.targetMuscleGroups || []).slice(0, 3).map((muscle) => (
                             <Badge key={muscle} variant="secondary" className="text-xs">
                               {muscle}
                             </Badge>
                           ))}
-                          {template.targetMuscleGroups.length > 3 && (
+                          {(template.targetMuscleGroups || []).length > 3 && (
                             <Badge variant="secondary" className="text-xs">
-                              +{template.targetMuscleGroups.length - 3} more
+                              +{(template.targetMuscleGroups || []).length - 3} more
                             </Badge>
                           )}
                         </div>
@@ -420,7 +420,7 @@ export default function MesocycleProgramBuilder({
                 <div className="mt-3">
                   <span className="font-medium text-sm">Target Muscles:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {selectedTemplate.targetMuscleGroups.map((muscle) => (
+                    {(selectedTemplate.targetMuscleGroups || []).map((muscle) => (
                       <Badge key={muscle} variant="outline" className="text-xs capitalize">
                         {muscle}
                       </Badge>
