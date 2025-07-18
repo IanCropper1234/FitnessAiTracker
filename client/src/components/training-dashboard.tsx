@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
+import { WorkoutSessionCreator } from "./workout-session-creator";
+import { WorkoutExecution } from "./workout-execution";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -62,6 +64,8 @@ export function TrainingDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+  const [showSessionCreator, setShowSessionCreator] = useState(false);
+  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch exercises
@@ -133,6 +137,22 @@ export function TrainingDashboard() {
   // Check if exercise is already in workout
   const isInWorkout = (exerciseId: number) => {
     return selectedExercises.some(ex => ex.id === exerciseId);
+  };
+
+  // Handle session creation success
+  const handleSessionCreated = () => {
+    setShowSessionCreator(false);
+    setSelectedExercises([]);
+  };
+
+  // Start workout session
+  const startWorkoutSession = (sessionId: number) => {
+    setActiveSessionId(sessionId);
+  };
+
+  // Handle workout completion
+  const handleWorkoutComplete = () => {
+    setActiveSessionId(null);
   };
 
   if (exercisesLoading || statsLoading || sessionsLoading) {
@@ -233,7 +253,7 @@ export function TrainingDashboard() {
           {selectedExercises.length > 0 && (
             <div className="bg-muted p-4 rounded-lg">
               <h4 className="font-medium mb-2">Selected for Workout ({selectedExercises.length})</h4>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-3">
                 {selectedExercises.map((exercise) => (
                   <Badge key={exercise.id} variant="secondary" className="flex items-center gap-1">
                     {exercise.name}
@@ -246,6 +266,13 @@ export function TrainingDashboard() {
                   </Badge>
                 ))}
               </div>
+              <Button 
+                onClick={() => setShowSessionCreator(true)}
+                disabled={selectedExercises.length === 0}
+                className="w-full"
+              >
+                Create Workout Session ({selectedExercises.length} exercises)
+              </Button>
             </div>
           )}
 
@@ -354,6 +381,16 @@ export function TrainingDashboard() {
         </TabsContent>
 
         <TabsContent value="workouts" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Workout Sessions</h3>
+            <Button 
+              onClick={() => setShowSessionCreator(true)}
+              disabled={selectedExercises.length === 0}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Session
+            </Button>
+          </div>
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Recent Workout Sessions</h3>
             <Button>
@@ -464,6 +501,44 @@ export function TrainingDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Workout Session Creator Dialog */}
+      <WorkoutSessionCreator
+        selectedExercises={selectedExercises}
+        isOpen={showSessionCreator}
+        onClose={() => setShowSessionCreator(false)}
+        onSuccess={handleSessionCreated}
+      />
+
+      {/* Workout Execution Modal */}
+      {activeSessionId && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Active Workout Session</CardTitle>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={handleWorkoutComplete}
+                    >
+                      ×
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <WorkoutExecution 
+                    sessionId={activeSessionId} 
+                    onComplete={handleWorkoutComplete}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -575,4 +575,59 @@ export class DatabaseStorage implements IStorage {
       return await this.createDietGoal({ userId, ...goal } as InsertDietGoal);
     }
   }
+
+  // Workout Sessions
+  async createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession> {
+    const [created] = await db.insert(workoutSessions).values(session).returning();
+    return created;
+  }
+
+  async getWorkoutSession(id: number): Promise<WorkoutSession | undefined> {
+    const [session] = await db.select().from(workoutSessions).where(eq(workoutSessions.id, id));
+    return session || undefined;
+  }
+
+  async getUserWorkoutSessions(userId: number): Promise<WorkoutSession[]> {
+    return db.select().from(workoutSessions)
+      .where(eq(workoutSessions.userId, userId))
+      .orderBy(desc(workoutSessions.date));
+  }
+
+  async updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined> {
+    const [updated] = await db.update(workoutSessions)
+      .set(updates)
+      .where(eq(workoutSessions.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteWorkoutSession(id: number): Promise<boolean> {
+    const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Workout Exercises
+  async createWorkoutExercise(workoutExercise: InsertWorkoutExercise): Promise<WorkoutExercise> {
+    const [created] = await db.insert(workoutExercises).values(workoutExercise).returning();
+    return created;
+  }
+
+  async getWorkoutExercises(sessionId: number): Promise<WorkoutExercise[]> {
+    return db.select().from(workoutExercises)
+      .where(eq(workoutExercises.sessionId, sessionId))
+      .orderBy(workoutExercises.orderIndex);
+  }
+
+  async updateWorkoutExercise(id: number, updates: Partial<InsertWorkoutExercise>): Promise<WorkoutExercise | undefined> {
+    const [updated] = await db.update(workoutExercises)
+      .set(updates)
+      .where(eq(workoutExercises.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteWorkoutExercise(id: number): Promise<boolean> {
+    const result = await db.delete(workoutExercises).where(eq(workoutExercises.id, id));
+    return result.rowCount > 0;
+  }
 }

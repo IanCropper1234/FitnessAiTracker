@@ -525,6 +525,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create new workout session
+  app.post("/api/training/sessions", async (req, res) => {
+    try {
+      const sessionData = req.body;
+      
+      // Create the workout session
+      const session = await storage.createWorkoutSession({
+        userId: sessionData.userId,
+        programId: 1, // Default program for now
+        name: sessionData.name,
+        date: new Date(),
+        isCompleted: false,
+        totalVolume: 0,
+        duration: 0
+      });
+
+      // Add exercises to session
+      for (const exercise of sessionData.exercises) {
+        await storage.createWorkoutExercise({
+          sessionId: session.id,
+          exerciseId: exercise.exerciseId,
+          orderIndex: exercise.orderIndex,
+          sets: exercise.sets,
+          targetReps: exercise.targetReps,
+          restPeriod: exercise.restPeriod,
+          notes: exercise.notes || "",
+          weight: null,
+          actualReps: null,
+          rpe: null,
+          rir: null,
+          isCompleted: false
+        });
+      }
+
+      res.json(session);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get workout session with exercises
+  app.get("/api/training/sessions/:sessionId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const session = await storage.getWorkoutSession(sessionId);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      // Get exercises for this session
+      const workoutExercises = await storage.getWorkoutExercises(sessionId);
+      
+      // Get exercise details for each workout exercise
+      const exercisesWithDetails = await Promise.all(
+        workoutExercises.map(async (we) => {
+          const exercise = await storage.getExercise(we.exerciseId);
+          return {
+            ...we,
+            exercise
+          };
+        })
+      );
+
+      const sessionWithExercises = {
+        ...session,
+        exercises: exercisesWithDetails
+      };
+
+      res.json(sessionWithExercises);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Complete workout session
+  app.put("/api/training/sessions/:sessionId/complete", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const completionData = req.body;
+
+      // Update session with completion data
+      const updatedSession = await storage.updateWorkoutSession(sessionId, {
+        isCompleted: true,
+        duration: completionData.duration,
+        totalVolume: completionData.totalVolume
+      });
+
+      // Update workout exercises with actual performance data
+      for (const exerciseData of completionData.exercises) {
+        const workoutExercises = await storage.getWorkoutExercises(sessionId);
+        const workoutExercise = workoutExercises.find(we => we.exerciseId === exerciseData.exerciseId);
+        
+        if (workoutExercise && exerciseData.sets.length > 0) {
+          const completedSets = exerciseData.sets.filter((set: any) => set.completed);
+          
+          if (completedSets.length > 0) {
+            const avgWeight = completedSets.reduce((sum: number, set: any) => sum + set.weight, 0) / completedSets.length;
+            const actualReps = completedSets.map((set: any) => set.actualReps).join(',');
+            const avgRpe = Math.round(completedSets.reduce((sum: number, set: any) => sum + set.rpe, 0) / completedSets.length);
+
+            await storage.updateWorkoutExercise(workoutExercise.id, {
+              actualReps,
+              weight: avgWeight.toString(),
+              rpe: avgRpe,
+              isCompleted: true
+            });
+          }
+        }
+      }
+
+      res.json(updatedSession);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.post("/api/training/auto-regulation", async (req, res) => {
     try {
       const feedbackData = req.body;
