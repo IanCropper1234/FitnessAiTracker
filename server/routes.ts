@@ -848,7 +848,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const feedbackData = req.body;
       const feedback = await storage.createAutoRegulationFeedback(feedbackData);
       
-      res.json({ feedback, recommendations: [] });
+      // Re-enable volume recommendations now that basic feedback is working
+      let recommendations: any[] = [];
+      try {
+        recommendations = await generateVolumeRecommendations(feedbackData.userId, feedback);
+      } catch (recError) {
+        console.error('Volume recommendations error:', recError);
+        // Continue without recommendations rather than failing the entire request
+      }
+      
+      res.json({ feedback, recommendations });
     } catch (error: any) {
       console.error('Auto-regulation feedback error:', error);
       res.status(400).json({ message: error.message });

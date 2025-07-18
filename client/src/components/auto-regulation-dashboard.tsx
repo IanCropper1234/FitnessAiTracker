@@ -194,13 +194,13 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium">{mg.muscleGroupName}</span>
-                          <span className={`text-sm font-medium ${getFatigueColor(mg.fatigueLevel)}`}>
-                            {mg.fatigueLevel.toFixed(1)}/10
+                          <span className={`text-sm font-medium ${getFatigueColor(mg.fatigueLevel || 0)}`}>
+                            {(mg.fatigueLevel || 0).toFixed(1)}/10
                           </span>
                         </div>
-                        <Progress value={mg.fatigueLevel * 10} className="h-2" />
+                        <Progress value={(mg.fatigueLevel || 0) * 10} className="h-2" />
                         <p className="text-xs text-muted-foreground mt-1">
-                          Volume stress: {(mg.volumeStress * 100).toFixed(0)}% of MAV
+                          Volume stress: {((mg.volumeStress || 0) * 100).toFixed(0)}% of MAV
                         </p>
                       </div>
                     </div>
