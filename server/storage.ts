@@ -2,6 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -10,7 +11,9 @@ import {
   type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
-  type BodyMetric, type InsertBodyMetric
+  type BodyMetric, type InsertBodyMetric, type MuscleGroup, type InsertMuscleGroup,
+  type VolumeLandmark, type InsertVolumeLandmark, type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking,
+  type ExerciseMuscleMapping, type InsertExerciseMuscleMapping
 } from "@shared/schema";
 
 export interface IStorage {
@@ -69,6 +72,27 @@ export interface IStorage {
   // Weight Logs
   getWeightLogs(userId: number): Promise<WeightLog[]>;
   createWeightLog(log: InsertWeightLog): Promise<WeightLog>;
+
+  // Step 2: Volume Landmarks System
+  // Muscle Groups
+  getMuscleGroups(): Promise<MuscleGroup[]>;
+  getMuscleGroup(id: number): Promise<MuscleGroup | undefined>;
+  createMuscleGroup(muscleGroup: InsertMuscleGroup): Promise<MuscleGroup>;
+
+  // Volume Landmarks  
+  getVolumeLandmarks(userId: number): Promise<VolumeLandmark[]>;
+  getVolumeLandmark(userId: number, muscleGroupId: number): Promise<VolumeLandmark | undefined>;
+  createVolumeLandmark(landmark: InsertVolumeLandmark): Promise<VolumeLandmark>;
+  updateVolumeLandmark(userId: number, muscleGroupId: number, landmark: Partial<InsertVolumeLandmark>): Promise<VolumeLandmark | undefined>;
+
+  // Weekly Volume Tracking
+  getWeeklyVolumeTracking(userId: number): Promise<WeeklyVolumeTracking[]>;
+  createWeeklyVolumeTracking(tracking: InsertWeeklyVolumeTracking): Promise<WeeklyVolumeTracking>;
+  updateWeeklyVolumeTracking(id: number, tracking: Partial<InsertWeeklyVolumeTracking>): Promise<WeeklyVolumeTracking | undefined>;
+
+  // Exercise Muscle Mapping
+  getExerciseMuscleMapping(exerciseId: number): Promise<ExerciseMuscleMapping[]>;
+  createExerciseMuscleMapping(mapping: InsertExerciseMuscleMapping): Promise<ExerciseMuscleMapping>;
 
   // Enhanced Nutrition Features
   // Food Categories & Items

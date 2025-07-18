@@ -2,6 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, dietGoals,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -10,7 +11,9 @@ import {
   type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
-  type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type DietGoal, type InsertDietGoal
+  type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type DietGoal, type InsertDietGoal,
+  type MuscleGroup, type InsertMuscleGroup, type VolumeLandmark, type InsertVolumeLandmark,
+  type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
@@ -270,6 +273,117 @@ export class DatabaseStorage implements IStorage {
       .values(feedback)
       .returning();
     return newFeedback;
+  }
+
+  // Step 2: Volume Landmarks System
+
+  // Muscle Groups
+  async getMuscleGroups(): Promise<MuscleGroup[]> {
+    return await db.select().from(muscleGroups);
+  }
+
+  async getMuscleGroup(id: number): Promise<MuscleGroup | undefined> {
+    const [muscleGroup] = await db.select().from(muscleGroups).where(eq(muscleGroups.id, id));
+    return muscleGroup || undefined;
+  }
+
+  async createMuscleGroup(muscleGroup: InsertMuscleGroup): Promise<MuscleGroup> {
+    const [newMuscleGroup] = await db
+      .insert(muscleGroups)
+      .values(muscleGroup)
+      .returning();
+    return newMuscleGroup;
+  }
+
+  // Volume Landmarks
+  async getVolumeLandmarks(userId: number): Promise<VolumeLandmark[]> {
+    return await db.select({
+      id: volumeLandmarks.id,
+      userId: volumeLandmarks.userId,
+      muscleGroupId: volumeLandmarks.muscleGroupId,
+      mv: volumeLandmarks.mv,
+      mev: volumeLandmarks.mev,
+      mav: volumeLandmarks.mav,
+      mrv: volumeLandmarks.mrv,
+      currentVolume: volumeLandmarks.currentVolume,
+      targetVolume: volumeLandmarks.targetVolume,
+      recoveryLevel: volumeLandmarks.recoveryLevel,
+      adaptationLevel: volumeLandmarks.adaptationLevel,
+      lastUpdated: volumeLandmarks.lastUpdated,
+      createdAt: volumeLandmarks.createdAt,
+      muscleGroup: {
+        id: muscleGroups.id,
+        name: muscleGroups.name,
+        category: muscleGroups.category,
+        bodyPart: muscleGroups.bodyPart,
+        priority: muscleGroups.priority,
+        translations: muscleGroups.translations
+      }
+    })
+    .from(volumeLandmarks)
+    .leftJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
+    .where(eq(volumeLandmarks.userId, userId));
+  }
+
+  async getVolumeLandmark(userId: number, muscleGroupId: number): Promise<VolumeLandmark | undefined> {
+    const [landmark] = await db.select().from(volumeLandmarks)
+      .where(and(eq(volumeLandmarks.userId, userId), eq(volumeLandmarks.muscleGroupId, muscleGroupId)));
+    return landmark || undefined;
+  }
+
+  async createVolumeLandmark(landmark: InsertVolumeLandmark): Promise<VolumeLandmark> {
+    const [newLandmark] = await db
+      .insert(volumeLandmarks)
+      .values(landmark)
+      .returning();
+    return newLandmark;
+  }
+
+  async updateVolumeLandmark(userId: number, muscleGroupId: number, landmark: Partial<InsertVolumeLandmark>): Promise<VolumeLandmark | undefined> {
+    const [updatedLandmark] = await db
+      .update(volumeLandmarks)
+      .set({ ...landmark, lastUpdated: new Date() })
+      .where(and(eq(volumeLandmarks.userId, userId), eq(volumeLandmarks.muscleGroupId, muscleGroupId)))
+      .returning();
+    return updatedLandmark || undefined;
+  }
+
+  // Weekly Volume Tracking
+  async getWeeklyVolumeTracking(userId: number): Promise<WeeklyVolumeTracking[]> {
+    return await db.select().from(weeklyVolumeTracking)
+      .where(eq(weeklyVolumeTracking.userId, userId))
+      .orderBy(desc(weeklyVolumeTracking.startDate));
+  }
+
+  async createWeeklyVolumeTracking(tracking: InsertWeeklyVolumeTracking): Promise<WeeklyVolumeTracking> {
+    const [newTracking] = await db
+      .insert(weeklyVolumeTracking)
+      .values(tracking)
+      .returning();
+    return newTracking;
+  }
+
+  async updateWeeklyVolumeTracking(id: number, tracking: Partial<InsertWeeklyVolumeTracking>): Promise<WeeklyVolumeTracking | undefined> {
+    const [updatedTracking] = await db
+      .update(weeklyVolumeTracking)
+      .set(tracking)
+      .where(eq(weeklyVolumeTracking.id, id))
+      .returning();
+    return updatedTracking || undefined;
+  }
+
+  // Exercise Muscle Mapping
+  async getExerciseMuscleMapping(exerciseId: number): Promise<ExerciseMuscleMapping[]> {
+    return await db.select().from(exerciseMuscleMapping)
+      .where(eq(exerciseMuscleMapping.exerciseId, exerciseId));
+  }
+
+  async createExerciseMuscleMapping(mapping: InsertExerciseMuscleMapping): Promise<ExerciseMuscleMapping> {
+    const [newMapping] = await db
+      .insert(exerciseMuscleMapping)
+      .values(mapping)
+      .returning();
+    return newMapping;
   }
 
   // Weight Logs

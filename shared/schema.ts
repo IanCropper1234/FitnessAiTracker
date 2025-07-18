@@ -195,7 +195,7 @@ export const exercises = pgTable("exercises", {
 export const workoutSessions = pgTable("workout_sessions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  programId: integer("program_id").references(() => trainingPrograms.id).notNull(),
+  programId: integer("program_id").references(() => trainingPrograms.id), // Made nullable
   date: timestamp("date").notNull(),
   name: text("name").notNull(),
   isCompleted: boolean("is_completed").notNull().default(false),
@@ -273,6 +273,65 @@ export const savedMealPlans = pgTable("saved_meal_plans", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Step 2: Volume Landmarks System - RP Training Tables
+
+// Muscle Groups with Renaissance Periodization methodology
+export const muscleGroups = pgTable("muscle_groups", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(), // chest, back, shoulders, biceps, triceps, etc.
+  category: text("category").notNull(), // push, pull, legs
+  bodyPart: text("body_part").notNull(), // upper, lower
+  priority: integer("priority").notNull().default(1), // 1=primary, 2=secondary for training split
+  translations: jsonb("translations"), // multilingual names
+});
+
+// Volume Landmarks per muscle group per user (RP Methodology)
+export const volumeLandmarks = pgTable("volume_landmarks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
+  // Renaissance Periodization Volume Landmarks
+  mv: integer("mv").notNull().default(0), // Maintenance Volume (sets/week)
+  mev: integer("mev").notNull().default(8), // Minimum Effective Volume
+  mav: integer("mav").notNull().default(16), // Maximum Adaptive Volume
+  mrv: integer("mrv").notNull().default(22), // Maximum Recoverable Volume
+  // Current volume tracking
+  currentVolume: integer("current_volume").notNull().default(0), // sets this week
+  targetVolume: integer("target_volume").notNull().default(12), // target sets this week
+  // Auto-regulation factors
+  recoveryLevel: integer("recovery_level").default(5), // 1-10 scale
+  adaptationLevel: integer("adaptation_level").default(5), // 1-10 scale
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Weekly volume tracking for progression
+export const weeklyVolumeTracking = pgTable("weekly_volume_tracking", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
+  weekNumber: integer("week_number").notNull(), // week of current mesocycle
+  targetSets: integer("target_sets").notNull(),
+  actualSets: integer("actual_sets").notNull().default(0),
+  averageRpe: decimal("average_rpe", { precision: 3, scale: 1 }).default(5.0),
+  averageRir: decimal("average_rir", { precision: 3, scale: 1 }).default(2.0),
+  pumpQuality: integer("pump_quality").default(5), // 1-10
+  soreness: integer("soreness").default(3), // 1-10
+  isCompleted: boolean("is_completed").default(false),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Exercise to muscle group mapping with contribution percentages
+export const exerciseMuscleMapping = pgTable("exercise_muscle_mapping", {
+  id: serial("id").primaryKey(),
+  exerciseId: integer("exercise_id").references(() => exercises.id).notNull(),
+  muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
+  contributionPercentage: integer("contribution_percentage").notNull().default(100), // 0-100%
+  role: text("role").notNull().default("primary"), // primary, secondary, stabilizer
+});
+
 // Diet goals with TDEE calculation and auto-regulation
 export const dietGoals = pgTable("diet_goals", {
   id: serial("id").primaryKey(),
@@ -311,6 +370,12 @@ export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPre
 export const insertBodyMetricSchema = createInsertSchema(bodyMetrics).omit({ id: true, createdAt: true });
 export const insertSavedMealPlanSchema = createInsertSchema(savedMealPlans).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertDietGoalSchema = createInsertSchema(dietGoals).omit({ id: true, createdAt: true, updatedAt: true });
+
+// Step 2: Volume Landmarks System Schemas
+export const insertMuscleGroupSchema = createInsertSchema(muscleGroups).omit({ id: true });
+export const insertVolumeLandmarkSchema = createInsertSchema(volumeLandmarks).omit({ id: true, lastUpdated: true, createdAt: true });
+export const insertWeeklyVolumeTrackingSchema = createInsertSchema(weeklyVolumeTracking).omit({ id: true, createdAt: true });
+export const insertExerciseMuscleMapping = createInsertSchema(exerciseMuscleMapping).omit({ id: true });
 export const insertMealMacroDistributionSchema = createInsertSchema(mealMacroDistribution).omit({ id: true, createdAt: true });
 export const insertMacroFlexibilityRuleSchema = createInsertSchema(macroFlexibilityRules).omit({ id: true, createdAt: true });
 
@@ -355,3 +420,13 @@ export type SavedMealPlan = typeof savedMealPlans.$inferSelect;
 export type InsertSavedMealPlan = z.infer<typeof insertSavedMealPlanSchema>;
 export type DietGoal = typeof dietGoals.$inferSelect;
 export type InsertDietGoal = z.infer<typeof insertDietGoalSchema>;
+
+// Step 2: Volume Landmarks System Types
+export type MuscleGroup = typeof muscleGroups.$inferSelect;
+export type InsertMuscleGroup = z.infer<typeof insertMuscleGroupSchema>;
+export type VolumeLandmark = typeof volumeLandmarks.$inferSelect;
+export type InsertVolumeLandmark = z.infer<typeof insertVolumeLandmarkSchema>;
+export type WeeklyVolumeTracking = typeof weeklyVolumeTracking.$inferSelect;
+export type InsertWeeklyVolumeTracking = z.infer<typeof insertWeeklyVolumeTrackingSchema>;
+export type ExerciseMuscleMapping = typeof exerciseMuscleMapping.$inferSelect;
+export type InsertExerciseMuscleMapping = z.infer<typeof insertExerciseMuscleMapping>;

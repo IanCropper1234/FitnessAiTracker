@@ -21,6 +21,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
 import { WorkoutSessionCreator } from "./workout-session-creator";
 import { WorkoutExecution } from "./workout-execution";
+import { VolumeLandmarks } from "./volume-landmarks";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -230,9 +231,10 @@ export function TrainingDashboard() {
       </div>
 
       <Tabs defaultValue="exercises" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
           <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
+          <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
           <TabsTrigger value="programs">Training Programs</TabsTrigger>
           <TabsTrigger value="progress">Progress Tracking</TabsTrigger>
         </TabsList>
@@ -451,6 +453,10 @@ export function TrainingDashboard() {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="volume" className="space-y-6">
+          <VolumeLandmarks />
         </TabsContent>
 
         <TabsContent value="programs" className="space-y-6">

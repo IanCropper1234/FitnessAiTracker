@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { initializeExercises } from "./data/exercises";
 import { initializeNutritionDatabase } from "./data/nutrition-seed";
+import { initializeVolumeLandmarks } from "./init-volume-landmarks";
 import { searchFoodDatabase, getFoodByBarcode } from "./data/foods";
 import { getNutritionSummary, logFood, generateNutritionGoal, searchFood } from "./services/nutrition";
 import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorkoutPlan } from "./services/training";
@@ -66,6 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize data
   await initializeExercises();
   await initializeNutritionDatabase();
+  await initializeVolumeLandmarks();
 
   // Auth routes
   app.post("/api/auth/signup", async (req, res) => {
@@ -637,6 +639,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       res.json(updatedSession);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Step 2: Volume Landmarks System API Routes
+
+  // Get muscle groups
+  app.get("/api/training/muscle-groups", async (req, res) => {
+    try {
+      const muscleGroups = await storage.getMuscleGroups();
+      res.json(muscleGroups);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get volume landmarks for user
+  app.get("/api/training/volume-landmarks/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const landmarks = await storage.getVolumeLandmarks(userId);
+      res.json(landmarks);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Update volume landmark
+  app.put("/api/training/volume-landmarks/:userId/:muscleGroupId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const muscleGroupId = parseInt(req.params.muscleGroupId);
+      const landmarkData = req.body;
+      
+      const updatedLandmark = await storage.updateVolumeLandmark(userId, muscleGroupId, landmarkData);
+      
+      if (!updatedLandmark) {
+        return res.status(404).json({ message: "Volume landmark not found" });
+      }
+      
+      res.json(updatedLandmark);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get weekly volume tracking
+  app.get("/api/training/weekly-volume/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const weeklyTracking = await storage.getWeeklyVolumeTracking(userId);
+      res.json(weeklyTracking);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get exercise muscle mapping
+  app.get("/api/training/exercise-muscles/:exerciseId", async (req, res) => {
+    try {
+      const exerciseId = parseInt(req.params.exerciseId);
+      const mapping = await storage.getExerciseMuscleMapping(exerciseId);
+      res.json(mapping);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
