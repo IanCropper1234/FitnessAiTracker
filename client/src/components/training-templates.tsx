@@ -262,7 +262,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
               <div className="space-y-2">
                 <h4 className="font-medium text-sm">Workouts Preview:</h4>
                 <div className="space-y-1">
-                  {template.templateData.workouts.slice(0, 2).map((workout, index) => (
+                  {template.templateData?.workouts?.slice(0, 2).map((workout, index) => (
                     <div key={index} className="flex items-center justify-between text-xs p-2 bg-gray-50 dark:bg-gray-800 rounded">
                       <span className="font-medium">{workout.name}</span>
                       <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -270,8 +270,8 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                         <span>{workout.estimatedDuration}min</span>
                       </div>
                     </div>
-                  ))}
-                  {template.templateData.workouts.length > 2 && (
+                  )) || [<div key="no-workouts" className="text-gray-500 text-xs text-center">No workouts configured</div>]}
+                  {template.templateData?.workouts?.length > 2 && (
                     <p className="text-xs text-gray-500 text-center">
                       +{template.templateData.workouts.length - 2} more workouts
                     </p>
@@ -286,12 +286,12 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                   RP Methodology
                 </h4>
                 <div className="text-xs space-y-1">
-                  {template.rpMethodology.progressionRules.slice(0, 2).map((rule, index) => (
+                  {template.rpMethodology?.progressionRules?.slice(0, 2).map((rule, index) => (
                     <div key={index} className="flex items-start gap-2">
                       <CheckCircle2 className="h-3 w-3 text-green-500 mt-0.5 flex-shrink-0" />
                       <span className="text-gray-600 dark:text-gray-400">{rule}</span>
                     </div>
-                  ))}
+                  )) || [<div key="no-rules" className="text-gray-500 text-xs">No progression rules defined</div>]}
                 </div>
               </div>
 
