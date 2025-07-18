@@ -81,10 +81,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
         ...data,
         translations: { en: data.name }
       };
-      return apiRequest("/api/exercises", {
-        method: "POST",
-        body: JSON.stringify(exerciseData),
-      });
+      return apiRequest("POST", "/api/exercises", exerciseData);
     },
     onSuccess: () => {
       toast({
@@ -106,10 +103,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
 
   const updateExerciseMutation = useMutation({
     mutationFn: async (data: ExerciseFormData) => {
-      return apiRequest(`/api/exercises/${exercise!.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("PUT", `/api/exercises/${exercise!.id}`, data);
     },
     onSuccess: () => {
       toast({
@@ -345,9 +339,7 @@ export function ExerciseManagement({ exercise }: ExerciseManagementProps) {
 
   const deleteExerciseMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest(`/api/exercises/${exercise.id}`, {
-        method: "DELETE",
-      });
+      return apiRequest("DELETE", `/api/exercises/${exercise.id}`);
     },
     onSuccess: () => {
       toast({
