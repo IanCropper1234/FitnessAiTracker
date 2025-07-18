@@ -352,10 +352,10 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
 
   const completeWorkout = () => {
     const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60); // minutes
-    const totalVolume = Object.values(workoutData)
+    const totalVolume = Math.round(Object.values(workoutData)
       .flat()
       .filter(set => set.completed)
-      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0);
+      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0));
 
     const completionData = {
       duration,
@@ -372,10 +372,10 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
 
   const saveAndExit = () => {
     const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60); // minutes
-    const totalVolume = Object.values(workoutData)
+    const totalVolume = Math.round(Object.values(workoutData)
       .flat()
       .filter(set => set.completed)
-      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0);
+      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0));
 
     const progressData = {
       duration,
