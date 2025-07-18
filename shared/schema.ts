@@ -183,7 +183,10 @@ export const exercises = pgTable("exercises", {
   name: text("name").notNull(),
   category: text("category").notNull(), // push, pull, legs, cardio
   muscleGroups: text("muscle_groups").array(),
+  primaryMuscle: text("primary_muscle").notNull(), // main muscle targeted
   equipment: text("equipment"),
+  movementPattern: text("movement_pattern"), // compound, isolation, unilateral, bilateral
+  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced
   instructions: text("instructions"),
   videoUrl: text("video_url"),
   translations: jsonb("translations"), // multilingual names
@@ -207,10 +210,14 @@ export const workoutExercises = pgTable("workout_exercises", {
   exerciseId: integer("exercise_id").references(() => exercises.id).notNull(),
   orderIndex: integer("order_index").notNull(),
   sets: integer("sets").notNull(),
-  reps: text("reps").notNull(), // e.g., "8-12" or "10,10,8"
+  targetReps: text("target_reps").notNull(), // e.g., "8-12" or "10,10,8"
+  actualReps: text("actual_reps"), // actual reps performed
   weight: decimal("weight", { precision: 6, scale: 2 }),
+  rpe: integer("rpe"), // Rate of Perceived Exertion 1-10
+  rir: integer("rir"), // Reps in Reserve 0-5
   restPeriod: integer("rest_period"), // seconds
   notes: text("notes"),
+  isCompleted: boolean("is_completed").default(false),
 });
 
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {
