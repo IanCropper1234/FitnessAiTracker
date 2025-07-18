@@ -18,6 +18,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
 
 interface Exercise {
   id: number;
@@ -193,7 +194,7 @@ export function TrainingDashboard() {
         </TabsList>
 
         <TabsContent value="exercises" className="space-y-6">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedCategory === "all" ? "default" : "outline"}
@@ -214,6 +215,8 @@ export function TrainingDashboard() {
                 </Button>
               ))}
             </div>
+            
+            <CreateExerciseButton />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -271,9 +274,7 @@ export function TrainingDashboard() {
                         <Plus className="h-4 w-4 mr-2" />
                         Add to Workout
                       </Button>
-                      <Button size="sm" variant="outline">
-                        <Play className="h-4 w-4" />
-                      </Button>
+                      <ExerciseManagement exercise={exercise} />
                     </div>
                   </div>
                 </CardContent>

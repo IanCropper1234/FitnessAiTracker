@@ -573,6 +573,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create new exercise
+  app.post("/api/exercises", async (req, res) => {
+    try {
+      const exerciseData = req.body;
+      const exercise = await storage.createExercise(exerciseData);
+      res.json(exercise);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Update exercise
+  app.put("/api/exercises/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const exerciseData = req.body;
+      const exercise = await storage.updateExercise(id, exerciseData);
+      
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      
+      res.json(exercise);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Delete exercise
+  app.delete("/api/exercises/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteExercise(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Weight tracking
   app.post("/api/weight/log", async (req, res) => {
     try {

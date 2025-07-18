@@ -194,6 +194,20 @@ export class DatabaseStorage implements IStorage {
     return newExercise;
   }
 
+  async updateExercise(id: number, exercise: Partial<InsertExercise>): Promise<Exercise | undefined> {
+    const [updatedExercise] = await db
+      .update(exercises)
+      .set(exercise)
+      .where(eq(exercises.id, id))
+      .returning();
+    return updatedExercise || undefined;
+  }
+
+  async deleteExercise(id: number): Promise<boolean> {
+    const result = await db.delete(exercises).where(eq(exercises.id, id));
+    return result.rowCount > 0;
+  }
+
   // Workout Sessions
   async getWorkoutSessions(userId: number): Promise<WorkoutSession[]> {
     return await db.select().from(workoutSessions).where(eq(workoutSessions.userId, userId));
