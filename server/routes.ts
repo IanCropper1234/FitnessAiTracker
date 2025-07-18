@@ -1862,6 +1862,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/training/templates/generate-program", async (req, res) => {
+    try {
+      const { userId, templateId } = req.body;
+      
+      if (!userId || !templateId) {
+        return res.status(400).json({ error: "userId and templateId are required" });
+      }
+
+      const program = await TemplateEngine.generateFullProgramFromTemplate(userId, templateId);
+      
+      res.json({ 
+        ...program,
+        message: `Full training program created: ${program.totalWorkouts} workout sessions added to your dashboard` 
+      });
+    } catch (error) {
+      console.error("Error generating program from template:", error);
+      res.status(500).json({ error: "Failed to generate program from template" });
+    }
+  });
+
   app.post("/api/training/templates/generate-workout", async (req, res) => {
     try {
       const { userId, templateId, workoutDay } = req.body;

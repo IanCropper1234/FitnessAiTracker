@@ -100,6 +100,22 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     },
   });
 
+  // Generate full program from template
+  const generateProgramMutation = useMutation({
+    mutationFn: async (data: { templateId: number; userId: number }) => {
+      const response = await apiRequest('POST', '/api/training/templates/generate-program', data);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Training Program Created",
+        description: `${data.totalWorkouts} workout sessions created and ready to start`,
+      });
+      // Invalidate training sessions to update dashboard
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+    },
+  });
+
   // Generate workout from template
   const generateWorkoutMutation = useMutation({
     mutationFn: async (data: { templateId: number; workoutDay?: number; userId: number }) => {
@@ -351,18 +367,15 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                   size="sm" 
                   className="flex-1"
                   onClick={() => {
-                    // Calculate next workout day based on template progression
-                    const nextWorkoutDay = calculateNextWorkoutDay(template, userId);
-                    generateWorkoutMutation.mutate({ 
+                    generateProgramMutation.mutate({ 
                       templateId: template.id, 
-                      workoutDay: nextWorkoutDay,
                       userId: userId 
                     });
                   }}
-                  disabled={generateWorkoutMutation.isPending}
+                  disabled={generateProgramMutation.isPending}
                 >
                   <Dumbbell className="h-4 w-4 mr-1" />
-                  {generateWorkoutMutation.isPending ? "Creating..." : "Start Workout"}
+                  {generateProgramMutation.isPending ? "Creating..." : "Start Workout"}
                 </Button>
                 
                 {/* User template management */}

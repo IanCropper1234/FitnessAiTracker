@@ -45,7 +45,152 @@ interface TrainingTemplateData {
 export class TemplateEngine {
   
   /**
-   * Generate workout from template based on user's volume landmarks
+   * Generate full program from template (all workout days)
+   */
+  static async generateFullProgramFromTemplate(
+    userId: number,
+    templateId: number
+  ): Promise<{
+    sessions: Array<{
+      sessionId: number;
+      workoutDay: number;
+      name: string;
+      exercises: ExerciseTemplate[];
+    }>;
+    totalWorkouts: number;
+  }> {
+    
+    // Get template data
+    const template = await db
+      .select()
+      .from(trainingTemplates)
+      .where(eq(trainingTemplates.id, templateId))
+      .limit(1);
+
+    if (template.length === 0) {
+      throw new Error("Template not found");
+    }
+
+    const templateData = template[0].templateData as TrainingTemplateData;
+    const sessions = [];
+
+    // Generate all workout sessions for the template
+    for (let workoutDay = 0; workoutDay < templateData.workouts.length; workoutDay++) {
+      const workoutTemplate = templateData.workouts[workoutDay];
+      
+      // Get user's current volume landmarks
+      const userLandmarks = await db
+        .select({
+          muscleGroupId: volumeLandmarks.muscleGroupId,
+          muscleGroupName: muscleGroups.name,
+          targetVolume: volumeLandmarks.targetVolume,
+          currentVolume: volumeLandmarks.currentVolume,
+          mev: volumeLandmarks.mev,
+          mav: volumeLandmarks.mav,
+          recoveryLevel: volumeLandmarks.recoveryLevel
+        })
+        .from(volumeLandmarks)
+        .innerJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
+        .where(eq(volumeLandmarks.userId, userId));
+
+      // Customize exercises for this workout
+      const customizedExercises: ExerciseTemplate[] = [];
+      
+      for (const templateExercise of workoutTemplate.exercises) {
+        // Get exercise details
+        const exerciseDetails = await db
+          .select({
+            id: exercises.id,
+            name: exercises.name,
+            muscleGroups: exercises.muscleGroups,
+            difficulty: exercises.difficulty
+          })
+          .from(exercises)
+          .where(eq(exercises.id, templateExercise.exerciseId))
+          .limit(1);
+
+        if (exerciseDetails.length === 0) continue;
+
+        const exercise = exerciseDetails[0];
+        
+        // Find relevant muscle group landmarks for this exercise
+        const relevantLandmarks = userLandmarks.filter(landmark =>
+          exercise.muscleGroups.includes(landmark.muscleGroupName)
+        );
+
+        let adjustedSets = templateExercise.sets;
+        
+        // Adjust sets based on recovery and current volume
+        if (relevantLandmarks.length > 0) {
+          const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + l.recoveryLevel, 0) / relevantLandmarks.length;
+          
+          if (avgRecovery < 5) {
+            // Poor recovery: reduce volume
+            adjustedSets = Math.max(1, Math.floor(adjustedSets * 0.8));
+          } else if (avgRecovery > 7) {
+            // Good recovery: can handle full volume or slightly more
+            adjustedSets = Math.min(adjustedSets * 1.1, adjustedSets + 1);
+          }
+        }
+
+        customizedExercises.push({
+          exerciseId: exercise.id,
+          exerciseName: exercise.name,
+          muscleGroups: exercise.muscleGroups,
+          sets: Math.round(adjustedSets),
+          repsRange: templateExercise.repsRange,
+          restPeriod: templateExercise.restPeriod,
+          orderIndex: templateExercise.orderIndex,
+          notes: templateExercise.notes
+        });
+      }
+
+      // Create workout session for this day
+      const sessionResult = await db
+        .insert(workoutSessions)
+        .values({
+          userId,
+          date: new Date(Date.now() + workoutDay * 24 * 60 * 60 * 1000), // Space sessions 1 day apart
+          name: `${workoutTemplate.name} - Day ${workoutDay + 1}`,
+          isCompleted: false,
+          totalVolume: 0,
+          duration: 0
+        })
+        .returning({ id: workoutSessions.id });
+
+      const sessionId = sessionResult[0].id;
+
+      // Add exercises to session
+      for (const exercise of customizedExercises) {
+        await db
+          .insert(workoutExercises)
+          .values({
+            sessionId,
+            exerciseId: exercise.exerciseId,
+            orderIndex: exercise.orderIndex,
+            sets: exercise.sets,
+            targetReps: exercise.repsRange,
+            restPeriod: exercise.restPeriod,
+            isCompleted: false
+          });
+      }
+
+      sessions.push({
+        sessionId,
+        workoutDay,
+        name: workoutTemplate.name,
+        exercises: customizedExercises
+      });
+    }
+
+    return {
+      sessions,
+      totalWorkouts: templateData.workouts.length
+    };
+  }
+
+  /**
+   * Generate single workout from template based on user's volume landmarks
    */
   static async generateWorkoutFromTemplate(
     userId: number,
