@@ -243,7 +243,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                   <div>
                     <h4 className="font-medium">{exercise.exerciseName}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {exercise.primaryMuscle} • {exercise.muscleGroups.join(", ")}
+                      {exercise.primaryMuscle || 'Unknown muscle'} • {Array.isArray(exercise.muscleGroups) ? exercise.muscleGroups.join(", ") : 'Multiple muscles'}
                     </p>
                   </div>
                   <div className="text-right">
