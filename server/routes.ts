@@ -847,6 +847,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const feedbackData = req.body;
       const feedback = await storage.createAutoRegulationFeedback(feedbackData);
       
+      // Process workout completion data (load progression, volume tracking, etc.)
+      if (feedbackData.sessionId && feedbackData.userId) {
+        const { WorkoutDataProcessor } = await import("./services/workout-data-processor");
+        await WorkoutDataProcessor.processWorkoutCompletion(feedbackData.sessionId, feedbackData.userId);
+      }
+      
       // Generate volume adjustment recommendations based on feedback
       const recommendations = await generateVolumeRecommendations(feedbackData.userId, feedback);
       

@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { AutoRegulationFeedback } from "./auto-regulation-feedback";
+import WorkoutFeedbackDialog from "./workout-feedback-dialog";
 
 interface WorkoutSet {
   setNumber: number;
@@ -285,14 +285,22 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
   // Show auto-regulation feedback after workout completion
   if (showFeedback && session.userId) {
     return (
-      <AutoRegulationFeedback
-        sessionId={sessionId}
-        userId={session.userId}
-        onComplete={() => {
-          setShowFeedback(false);
-          onComplete();
-        }}
-      />
+      <>
+        <WorkoutFeedbackDialog
+          isOpen={showFeedback}
+          onClose={() => setShowFeedback(false)}
+          sessionId={sessionId}
+          userId={session.userId}
+          onSubmitComplete={() => {
+            setShowFeedback(false);
+            onComplete();
+          }}
+        />
+        <div className="p-6 text-center">
+          <p className="text-lg font-medium">Workout Complete!</p>
+          <p className="text-muted-foreground">Please provide your feedback to optimize future training.</p>
+        </div>
+      </>
     );
   }
 
