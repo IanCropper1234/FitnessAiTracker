@@ -533,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create the workout session
       const session = await storage.createWorkoutSession({
         userId: sessionData.userId,
-        programId: 1, // Default program for now
+        programId: null, // No program required for individual sessions
         name: sessionData.name,
         date: new Date(),
         isCompleted: false,
