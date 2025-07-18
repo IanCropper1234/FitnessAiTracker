@@ -640,6 +640,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                   >
                     <div className="flex items-center gap-2">
                       <span className="font-medium">Set {set.setNumber}</span>
+                      {/* Show delete button for incomplete sets when there are multiple sets */}
                       {!set.completed && currentSets.length > 1 && (
                         <Button
                           size="sm"
@@ -648,7 +649,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                             e.stopPropagation(); // Prevent triggering set selection
                             removeSet(currentExercise.id, index);
                           }}
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           title="Remove this set"
                         >
                           <Minus className="h-3 w-3" />
