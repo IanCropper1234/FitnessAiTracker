@@ -9,7 +9,7 @@ import {
   workoutExercises,
   loadProgressionTracking
 } from "@shared/schema";
-import { eq, and, gte, lte, sql, desc } from "drizzle-orm";
+import { eq, and, gte, lte, sql, desc, isNotNull } from "drizzle-orm";
 
 interface VolumeProgression {
   muscleGroupId: number;
@@ -682,7 +682,7 @@ export class MesocyclePeriodization {
         })
         .returning({ id: workoutSessions.id });
 
-      // Add exercises with volume adjustments
+      // Add exercises with volume adjustments and auto-progression
       for (const exercise of baseExercises) {
         // Apply volume adjustments based on muscle groups
         let adjustedSets = exercise.sets;
@@ -699,6 +699,60 @@ export class MesocyclePeriodization {
           adjustedSets = Math.round(exercise.sets * progressionFactor);
         }
 
+        // Get the latest completed exercise data for auto-progression
+        let progressedWeight = exercise.weight;
+        let progressedRpe = exercise.rpe;
+        let progressedRir = exercise.rir;
+
+        if (week > 1) {
+          // Find the most recent completed exercise for this exercise type
+          const previousWeekExercises = await db
+            .select()
+            .from(workoutExercises)
+            .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+            .where(
+              and(
+                eq(workoutSessions.mesocycleId, mesocycleId),
+                eq(workoutExercises.exerciseId, exercise.exerciseId),
+                eq(workoutSessions.isCompleted, true),
+                isNotNull(workoutExercises.weight)
+              )
+            )
+            .orderBy(desc(workoutSessions.date))
+            .limit(1);
+
+          if (previousWeekExercises.length > 0) {
+            const lastExercise = previousWeekExercises[0].workout_exercises;
+            const lastWeight = lastExercise.weight;
+            const lastRpe = lastExercise.rpe;
+            const lastRir = lastExercise.rir;
+
+            // RP Auto-progression logic
+            if (lastWeight && lastRpe && lastRir !== null) {
+              // If RPE was 8+ and RIR was 0-1, increase weight by 2.5-5%
+              if (lastRpe >= 8 && lastRir <= 1) {
+                progressedWeight = Math.round((lastWeight * 1.025) * 4) / 4; // 2.5% increase, rounded to nearest 0.25
+              }
+              // If RPE was 6-7 and RIR was 2-3, increase weight by 5-7.5%
+              else if (lastRpe >= 6 && lastRpe <= 7 && lastRir >= 2 && lastRir <= 3) {
+                progressedWeight = Math.round((lastWeight * 1.05) * 4) / 4; // 5% increase
+              }
+              // If RPE was <6 and RIR was 4+, increase weight by 7.5-10%
+              else if (lastRpe < 6 && lastRir >= 4) {
+                progressedWeight = Math.round((lastWeight * 1.075) * 4) / 4; // 7.5% increase
+              }
+              // Otherwise keep same weight
+              else {
+                progressedWeight = lastWeight;
+              }
+
+              // Target RPE progression (aim for 7-8 RPE)
+              progressedRpe = Math.max(7, Math.min(8, lastRpe));
+              progressedRir = Math.max(1, Math.min(2, lastRir));
+            }
+          }
+        }
+
         await db
           .insert(workoutExercises)
           .values({
@@ -708,9 +762,9 @@ export class MesocyclePeriodization {
             sets: adjustedSets,
             targetReps: exercise.targetReps,
             actualReps: null,
-            weight: null,
-            rpe: null,
-            rir: null,
+            weight: progressedWeight,
+            rpe: progressedRpe,
+            rir: progressedRir,
             restPeriod: exercise.restPeriod,
             notes: null,
             isCompleted: false
