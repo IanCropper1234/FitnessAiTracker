@@ -188,9 +188,15 @@ export class AdvancedMacroManagementService {
         .orderBy(desc(weeklyNutritionGoals.weekStartDate));
 
       if (weekStartDate) {
+        // Convert weekStartDate to proper date format
         const weekStart = new Date(weekStartDate);
+        if (isNaN(weekStart.getTime())) {
+          console.error('Invalid weekStartDate:', weekStartDate);
+          return [];
+        }
+        
         const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 7);
+        weekEnd.setDate(weekEnd.getDate() + 6); // Week should be 7 days, so +6 from start
         
         query = query.where(and(
           eq(weeklyNutritionGoals.userId, userId),

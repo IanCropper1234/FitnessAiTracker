@@ -8,6 +8,8 @@ import { getNutritionSummary, logFood, generateNutritionGoal, searchFood } from 
 import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorkoutPlan } from "./services/training";
 import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 // RP Diet Coach categorization functions
 function categorizeFoodByRP(calories: number, protein: number, carbs: number, fat: number): string {
@@ -989,6 +991,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(weeklyGoals);
     } catch (error: any) {
       console.error('Get weekly goals error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get available weeks with food log data
+  app.get("/api/nutrition/available-weeks/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Get distinct weeks that have food logs
+      const result = await db.execute(sql`
+        SELECT 
+          date_trunc('week', date)::date as week_start,
+          COUNT(*) as log_count,
+          MIN(date)::date as first_log,
+          MAX(date)::date as last_log
+        FROM nutrition_logs 
+        WHERE user_id = ${userId}
+        GROUP BY date_trunc('week', date)
+        ORDER BY week_start DESC
+        LIMIT 12
+      `);
+      
+      const availableWeeks = result.rows.map((row: any) => ({
+        weekStart: row.week_start,
+        logCount: parseInt(row.log_count),
+        firstLog: row.first_log,
+        lastLog: row.last_log,
+        weekLabel: `Week of ${new Date(row.week_start).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          year: 'numeric'
+        })}`
+      }));
+
+      res.json(availableWeeks);
+    } catch (error: any) {
+      console.error('Get available weeks error:', error);
       res.status(500).json({ message: error.message });
     }
   });

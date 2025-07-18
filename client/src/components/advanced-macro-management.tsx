@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedWeek, setSelectedWeek] = useState(new Date().toISOString().slice(0, 10));
+  const [selectedWeek, setSelectedWeek] = useState<string>("");
 
   // Get current diet goals
   const { data: dietGoals } = useQuery({
@@ -33,13 +33,31 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Get available weeks with food log data
+  const { data: availableWeeks } = useQuery({
+    queryKey: ['/api/nutrition/available-weeks', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/nutrition/available-weeks/${userId}`);
+      return response.json();
+    }
+  });
+
+  // Set default selected week to the most recent week with data
+  useEffect(() => {
+    if (availableWeeks && availableWeeks.length > 0 && !selectedWeek) {
+      setSelectedWeek(availableWeeks[0].weekStart);
+    }
+  }, [availableWeeks, selectedWeek]);
+
   // Get weekly nutrition goals
   const { data: weeklyGoals } = useQuery({
     queryKey: ['/api/weekly-goals', userId, selectedWeek],
     queryFn: async () => {
+      if (!selectedWeek) return [];
       const response = await fetch(`/api/weekly-goals/${userId}?week=${selectedWeek}`);
       return response.json();
-    }
+    },
+    enabled: !!selectedWeek
   });
 
   // Get meal macro distribution
@@ -192,13 +210,18 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Label htmlFor="week-select" className="text-black dark:text-white">Week:</Label>
-                <Input
-                  id="week-select"
-                  type="week"
-                  value={selectedWeek.slice(0, 10)}
-                  onChange={(e) => setSelectedWeek(e.target.value)}
-                  className="w-48"
-                />
+                <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+                  <SelectTrigger className="w-64">
+                    <SelectValue placeholder="Select a week with food logs" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableWeeks?.map((week: any) => (
+                      <SelectItem key={week.weekStart} value={week.weekStart}>
+                        {week.weekLabel} ({week.logCount} logs)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
