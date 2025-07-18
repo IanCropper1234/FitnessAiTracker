@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, dietGoals,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -769,5 +769,12 @@ export class DatabaseStorage implements IStorage {
   async deleteWorkoutExercise(id: number): Promise<boolean> {
     const result = await db.delete(workoutExercises).where(eq(workoutExercises.id, id));
     return result.rowCount > 0;
+  }
+
+  // Mesocycle Management
+  async getUserMesocycles(userId: number): Promise<any[]> {
+    return db.select().from(mesocycles)
+      .where(eq(mesocycles.userId, userId))
+      .orderBy(desc(mesocycles.isActive), desc(mesocycles.createdAt));
   }
 }
