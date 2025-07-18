@@ -545,11 +545,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateDietGoal(userId: number, goal: Partial<InsertDietGoal>): Promise<DietGoal | undefined> {
-    const [updatedGoal] = await db
-      .update(dietGoals)
-      .set({ ...goal, updatedAt: new Date() })
-      .where(eq(dietGoals.userId, userId))
-      .returning();
-    return updatedGoal || undefined;
+    // First check if a diet goal exists for this user
+    const existingGoal = await this.getDietGoal(userId);
+    
+    if (existingGoal) {
+      // Update the existing goal
+      const [updatedGoal] = await db
+        .update(dietGoals)
+        .set({ ...goal, updatedAt: new Date() })
+        .where(eq(dietGoals.id, existingGoal.id))
+        .returning();
+      return updatedGoal || undefined;
+    } else {
+      // Create a new goal if none exists
+      return await this.createDietGoal({ userId, ...goal } as InsertDietGoal);
+    }
   }
 }

@@ -265,11 +265,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // Diet goal mutations
   const saveDietGoalMutation = useMutation({
     mutationFn: async (goal: DietGoal) => {
-      if (goal.id) {
-        return await apiRequest("PUT", `/api/diet-goals/${userId}`, goal);
-      } else {
-        return await apiRequest("POST", "/api/diet-goals", goal);
-      }
+      // Always use PUT to update/create the goal for this user
+      return await apiRequest("PUT", `/api/diet-goals/${userId}`, goal);
     },
     onSuccess: () => {
       toast({
@@ -277,6 +274,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         description: "Diet goal saved successfully!"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
     },
     onError: (error: any) => {
       toast({
@@ -595,12 +593,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           targetProtein: macros.protein,
           targetCarbs: macros.carbs,
           targetFat: macros.fat
-        }, {
-          onSuccess: () => {
-            // Invalidate nutrition-related queries to sync with dashboard
-            queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
-          }
         });
       }, 500);
 
@@ -627,12 +619,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       targetProtein: baseMacros.protein,
       targetCarbs: baseMacros.carbs,
       targetFat: baseMacros.fat
-    }, {
-      onSuccess: () => {
-        // Invalidate nutrition-related queries to sync with dashboard
-        queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
-      }
     });
   };
 
