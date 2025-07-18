@@ -117,7 +117,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate both mesocycles and sessions cache since sessions are deleted
       queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
       toast({
         title: "Mesocycle Deleted",
         description: "The mesocycle has been removed successfully.",

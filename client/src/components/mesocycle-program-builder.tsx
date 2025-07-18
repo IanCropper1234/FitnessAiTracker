@@ -110,7 +110,9 @@ export default function MesocycleProgramBuilder({
         title: "Mesocycle Created!",
         description: "Your training program has been set up successfully.",
       });
+      // Invalidate both mesocycles and sessions cache since new sessions are created
       queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
       onCreateSuccess();
       handleClose();
     },
