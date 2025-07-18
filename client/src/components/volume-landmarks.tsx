@@ -91,12 +91,14 @@ export function VolumeLandmarks() {
     }
   };
 
-  const groupedLandmarks = volumeLandmarks?.reduce((acc: any, landmark: VolumeLandmark) => {
-    const category = landmark.muscleGroup?.category || "other";
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(landmark);
-    return acc;
-  }, {}) || {};
+  const groupedLandmarks = Array.isArray(volumeLandmarks) 
+    ? volumeLandmarks.reduce((acc: any, landmark: VolumeLandmark) => {
+        const category = landmark.muscleGroup?.category || "other";
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(landmark);
+        return acc;
+      }, {}) 
+    : {};
 
   if (isLoading) {
     return (

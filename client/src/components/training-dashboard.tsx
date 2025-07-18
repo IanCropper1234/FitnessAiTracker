@@ -67,6 +67,7 @@ export function TrainingDashboard() {
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [showSessionCreator, setShowSessionCreator] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
+  const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch exercises
@@ -438,7 +439,7 @@ export function TrainingDashboard() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Duration</p>
                         <p className="text-lg font-semibold">{session.duration || 0} min</p>
@@ -447,6 +448,24 @@ export function TrainingDashboard() {
                         <p className="text-sm font-medium text-muted-foreground">Total Volume</p>
                         <p className="text-lg font-semibold">{session.totalVolume || 0} kg</p>
                       </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      {!session.isCompleted ? (
+                        <Button 
+                          onClick={() => setExecutingSessionId(session.id)}
+                          className="flex-1"
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Continue Workout
+                        </Button>
+                      ) : (
+                        <Button variant="outline" className="flex-1">
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          View Details
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -517,7 +536,7 @@ export function TrainingDashboard() {
       />
 
       {/* Workout Execution Modal */}
-      {activeSessionId && (
+      {executingSessionId && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4">
@@ -528,7 +547,7 @@ export function TrainingDashboard() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={handleWorkoutComplete}
+                      onClick={() => setExecutingSessionId(null)}
                     >
                       ×
                     </Button>
@@ -536,8 +555,11 @@ export function TrainingDashboard() {
                 </CardHeader>
                 <CardContent>
                   <WorkoutExecution 
-                    sessionId={activeSessionId} 
-                    onComplete={handleWorkoutComplete}
+                    sessionId={executingSessionId} 
+                    onComplete={() => {
+                      setExecutingSessionId(null);
+                      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+                    }}
                   />
                 </CardContent>
               </Card>
