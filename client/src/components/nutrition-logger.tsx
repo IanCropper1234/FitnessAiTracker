@@ -23,6 +23,8 @@ interface FoodSearchResult {
   carbs: number;
   fat: number;
   servingSize: string;
+  category?: string;
+  mealSuitability?: string[];
 }
 
 export function NutritionLogger({ userId, onComplete }: NutritionLoggerProps) {
@@ -36,9 +38,17 @@ export function NutritionLogger({ userId, onComplete }: NutritionLoggerProps) {
   const [unit, setUnit] = useState('serving');
   const [mealType, setMealType] = useState('');
 
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
+
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
-      const response = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
+      // Enhanced search with RP categorization
+      let url = `/api/food/search?q=${encodeURIComponent(query)}`;
+      if (selectedCategory) url += `&category=${selectedCategory}`;
+      if (selectedMealSuitability) url += `&mealType=${selectedMealSuitability}`;
+      
+      const response = await fetch(url);
       return response.json();
     }
   });
@@ -270,11 +280,39 @@ export function NutritionLogger({ userId, onComplete }: NutritionLoggerProps) {
                         : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }`}
                   >
-                    <div className="font-medium">{food.name}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium">{food.name}</div>
+                      <div className="flex gap-1">
+                        {food.category && (
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            food.category === 'protein' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                            food.category === 'carb' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
+                            food.category === 'fat' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                          }`}>
+                            {food.category.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                     <div className="text-sm opacity-75">
                       {food.calories} cal • P: {food.protein}g • C: {food.carbs}g • F: {food.fat}g
                     </div>
-                    <div className="text-xs opacity-60">{food.servingSize}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs opacity-60">{food.servingSize}</div>
+                      {food.mealSuitability && food.mealSuitability.length > 0 && (
+                        <div className="flex gap-1">
+                          {food.mealSuitability.slice(0, 2).map((timing, idx) => (
+                            <span key={idx} className="text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                              {timing}
+                            </span>
+                          ))}
+                          {food.mealSuitability.length > 2 && (
+                            <span className="text-xs text-gray-500">+{food.mealSuitability.length - 2}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -312,9 +350,33 @@ export function NutritionLogger({ userId, onComplete }: NutritionLoggerProps) {
                     <div className="text-sm text-gray-600 dark:text-gray-400">Fat</div>
                   </div>
                 </div>
-                {aiAnalyzeMutation.data.confidence && aiAnalyzeMutation.data.confidence > 0 && (
-                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 text-center">
-                    Confidence: {Math.round(aiAnalyzeMutation.data.confidence * 100)}%
+                <div className="mt-3 flex items-center justify-center gap-4">
+                  {aiAnalyzeMutation.data.confidence && aiAnalyzeMutation.data.confidence > 0 && (
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                      Confidence: {Math.round(aiAnalyzeMutation.data.confidence * 100)}%
+                    </div>
+                  )}
+                  {aiAnalyzeMutation.data.category && (
+                    <span className={`text-xs px-2 py-1 rounded font-medium ${
+                      aiAnalyzeMutation.data.category === 'protein' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                      aiAnalyzeMutation.data.category === 'carb' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
+                      aiAnalyzeMutation.data.category === 'fat' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                    }`}>
+                      {aiAnalyzeMutation.data.category.toUpperCase()} SOURCE
+                    </span>
+                  )}
+                </div>
+                {aiAnalyzeMutation.data.mealSuitability && aiAnalyzeMutation.data.mealSuitability.length > 0 && (
+                  <div className="mt-2 text-center">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">RP Meal Timing:</div>
+                    <div className="flex justify-center gap-1 flex-wrap">
+                      {aiAnalyzeMutation.data.mealSuitability.map((timing: string, idx: number) => (
+                        <span key={idx} className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800">
+                          {timing}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

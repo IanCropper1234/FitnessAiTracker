@@ -49,6 +49,9 @@ export const nutritionLogs = pgTable("nutrition_logs", {
   mealType: text("meal_type"), // breakfast, lunch, dinner, snack
   mealOrder: integer("meal_order").default(1), // 1-6 for meal timing
   scheduledTime: timestamp("scheduled_time"), // planned meal time
+  // Enhanced RP Diet Coach categorization
+  category: text("category"), // protein, carb, fat, mixed
+  mealSuitability: text("meal_suitability").array(), // pre-workout, post-workout, regular, snack
   createdAt: timestamp("created_at").defaultNow(),
 });
 

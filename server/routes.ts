@@ -9,6 +9,57 @@ import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorko
 import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 
+// RP Diet Coach categorization functions
+function categorizeFoodByRP(calories: number, protein: number, carbs: number, fat: number): string {
+  if (calories === 0) return "mixed";
+  
+  // RP methodology ratios per 100 calories
+  const proteinPer100Cal = (protein * 4 * 100) / calories;
+  const carbsPer100Cal = (carbs * 4 * 100) / calories;
+  const fatPer100Cal = (fat * 9 * 100) / calories;
+  
+  // Primary protein source: >20g protein per 100 calories
+  if (proteinPer100Cal >= 80) return "protein";
+  
+  // Primary carb source: >15g carbs per 100 calories, low fat
+  if (carbsPer100Cal >= 60 && fatPer100Cal < 25) return "carb";
+  
+  // Primary fat source: >8g fat per 100 calories
+  if (fatPer100Cal >= 65) return "fat";
+  
+  return "mixed";
+}
+
+function getMealSuitability(category: string, protein: number, carbs: number, fat: number): string[] {
+  const suitability: string[] = [];
+  
+  switch (category) {
+    case "protein":
+      suitability.push("post-workout", "regular");
+      if (fat < 3) suitability.push("pre-workout");
+      break;
+    case "carb":
+      suitability.push("pre-workout", "regular");
+      if (protein > 5) suitability.push("post-workout");
+      break;
+    case "fat":
+      suitability.push("regular", "snack");
+      break;
+    case "mixed":
+      suitability.push("regular");
+      if (carbs > 15 && fat < 8) suitability.push("pre-workout");
+      if (protein > 15) suitability.push("post-workout");
+      break;
+  }
+  
+  // All foods can be snacks
+  if (!suitability.includes("snack")) {
+    suitability.push("snack");
+  }
+  
+  return suitability;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize data
   await initializeExercises();
@@ -271,7 +322,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           protein: log.protein,
           carbs: log.carbs,
           fat: log.fat,
-          mealType: log.mealType
+          mealType: log.mealType,
+          category: log.category,
+          mealSuitability: log.mealSuitability
         };
         const createdLog = await storage.createNutritionLog(newLog);
         copiedLogs.push(createdLog);
@@ -283,11 +336,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Food search routes - Open Food Facts Integration
+  // Enhanced Food search routes with RP categorization
   app.get("/api/food/search", async (req, res) => {
     try {
       const query = req.query.q as string;
-      console.log('Food search query:', query);
+      const category = req.query.category as string; // protein, carb, fat, mixed
+      const mealType = req.query.mealType as string; // pre-workout, post-workout, regular, snack
+      
+      console.log('Enhanced food search:', { query, category, mealType });
       
       if (!query || query.length < 3) {
         return res.json([]);
@@ -295,7 +351,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Search Open Food Facts API
       const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments,serving_size,code`;
-      console.log('Calling Open Food Facts API:', url);
       
       const response = await fetch(url);
       
@@ -304,27 +359,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const data = await response.json();
-      console.log('Open Food Facts response:', JSON.stringify(data, null, 2).substring(0, 500));
       
-      // Transform Open Food Facts data to our format
-      const foods = data.products?.map((product: any) => ({
-        id: product.code || `off_${Date.now()}_${Math.random()}`,
-        name: product.product_name || 'Unknown Product',
-        brand: product.brands,
-        calories: Math.round(product.nutriments?.['energy-kcal_100g'] || 0),
-        protein: Math.round(product.nutriments?.['proteins_100g'] || 0),
-        carbs: Math.round(product.nutriments?.['carbohydrates_100g'] || 0),
-        fat: Math.round(product.nutriments?.['fat_100g'] || 0),
-        serving_size: product.serving_size || '100g',
-        barcode: product.code,
-        source: 'openfoodfacts'
-      })).filter((food: any) => food.calories > 0) || [];
+      // Transform and categorize foods using RP methodology
+      const foods = await Promise.all(data.products?.map(async (product: any) => {
+        const calories = Math.round(product.nutriments?.['energy-kcal_100g'] || 0);
+        const protein = Math.round(product.nutriments?.['proteins_100g'] || 0);
+        const carbs = Math.round(product.nutriments?.['carbohydrates_100g'] || 0);
+        const fat = Math.round(product.nutriments?.['fat_100g'] || 0);
+        
+        if (calories === 0) return null;
+        
+        // Apply RP categorization logic
+        const foodCategory = categorizeFoodByRP(calories, protein, carbs, fat);
+        const suitability = getMealSuitability(foodCategory, protein, carbs, fat);
+        
+        return {
+          id: product.code || `off_${Date.now()}_${Math.random()}`,
+          name: product.product_name || 'Unknown Product',
+          brand: product.brands,
+          calories,
+          protein,
+          carbs,
+          fat,
+          serving_size: product.serving_size || '100g',
+          barcode: product.code,
+          source: 'openfoodfacts',
+          category: foodCategory,
+          mealSuitability: suitability
+        };
+      }) || []);
 
-      console.log(`Returning ${foods.length} foods from Open Food Facts`);
-      res.json(foods);
+      // Filter out null values and apply category/meal type filters
+      let filteredFoods = foods.filter(food => food !== null);
+      
+      if (category) {
+        filteredFoods = filteredFoods.filter(food => food.category === category);
+      }
+      
+      if (mealType) {
+        filteredFoods = filteredFoods.filter(food => 
+          food.mealSuitability && food.mealSuitability.includes(mealType)
+        );
+      }
+
+      console.log(`Returning ${filteredFoods.length} enhanced foods with RP categorization`);
+      res.json(filteredFoods);
     } catch (error: any) {
-      console.error('Open Food Facts API error:', error);
-      // Return empty array instead of error to avoid breaking the UI
+      console.error('Enhanced food search error:', error);
       res.json([]);
     }
   });
@@ -341,6 +422,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(food);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // RP Diet Coach food recommendations
+  app.get("/api/food/recommendations/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const mealType = req.query.mealType as string;
+      const currentTime = req.query.time as string;
+      
+      // Get user's recent logs to understand preferences
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const recentLogs = await storage.getNutritionLogsInRange(userId, thirtyDaysAgo, new Date());
+      
+      // Analyze food patterns by category
+      const categoryPreferences = recentLogs.reduce((acc: any, log) => {
+        if (log.category) {
+          if (!acc[log.category]) acc[log.category] = [];
+          acc[log.category].push(log.foodName);
+        }
+        return acc;
+      }, {});
+      
+      // Generate RP-based recommendations
+      const recommendations = [];
+      
+      // Pre-workout recommendations (high carb, low fat)
+      if (mealType === "pre-workout") {
+        recommendations.push(
+          { name: "Banana", category: "carb", reason: "Fast-digesting carbs for energy" },
+          { name: "Oatmeal", category: "carb", reason: "Sustained energy release" },
+          { name: "White rice", category: "carb", reason: "Quick carb absorption" }
+        );
+      }
+      
+      // Post-workout recommendations (high protein, moderate carbs)
+      if (mealType === "post-workout") {
+        recommendations.push(
+          { name: "Whey protein shake", category: "protein", reason: "Fast protein absorption for recovery" },
+          { name: "Greek yogurt", category: "mixed", reason: "High protein with carbs for glycogen replenishment" },
+          { name: "Chicken breast", category: "protein", reason: "High-quality lean protein" }
+        );
+      }
+      
+      // Regular meal recommendations (balanced)
+      if (mealType === "regular" || !mealType) {
+        recommendations.push(
+          { name: "Salmon", category: "mixed", reason: "Omega-3 fatty acids and high-quality protein" },
+          { name: "Sweet potato", category: "carb", reason: "Complex carbs with fiber" },
+          { name: "Avocado", category: "fat", reason: "Healthy monounsaturated fats" }
+        );
+      }
+      
+      res.json(recommendations);
+    } catch (error: any) {
+      console.error('Food recommendations error:', error);
+      res.json([]);
     }
   });
 

@@ -68,6 +68,8 @@ export async function logFood(
       carbs: nutrition.carbs.toString(),
       fat: nutrition.fat.toString(),
       mealType,
+      category: nutrition.category,
+      mealSuitability: nutrition.mealSuitability,
     };
 
     return await storage.createNutritionLog(logData);

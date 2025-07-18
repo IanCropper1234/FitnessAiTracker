@@ -4,6 +4,16 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY environment variable is required");
 }
 
+export interface NutritionAnalysis {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  confidence: number;
+  category?: string; // protein, carb, fat, mixed
+  mealSuitability?: string[]; // pre-workout, post-workout, regular, snack
+}
+
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
 });
@@ -12,13 +22,7 @@ export async function analyzeNutrition(
   foodDescription: string, 
   quantity: number = 1, 
   unit: string = "serving"
-): Promise<{
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  confidence: number;
-}> {
+): Promise<NutritionAnalysis> {
   try {
     const prompt = `Analyze the nutritional content of: "${foodDescription}" for ${quantity} ${unit}(s).
 
@@ -28,13 +32,26 @@ Please provide accurate nutritional information in JSON format with these exact 
 - carbs: carbohydrates in grams (number)
 - fat: fat in grams (number)
 - confidence: confidence level 0-1 (number, where 1 is very confident)
+- category: primary macro category (string: "protein", "carb", "fat", or "mixed")
+- mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 
-Be as accurate as possible based on standard nutritional databases. If the description is vague, make reasonable assumptions and lower the confidence score.
+Category Guidelines (Renaissance Periodization methodology):
+- "protein": >20g protein per 100 calories (chicken, fish, eggs, protein powder)
+- "carb": >15g carbs per 100 calories, low fat (rice, oats, fruits, bread)
+- "fat": >8g fat per 100 calories (nuts, oils, avocado, fatty fish)
+- "mixed": balanced macros or doesn't fit above categories
+
+Meal Suitability Guidelines:
+- "pre-workout": high carbs, moderate protein, low fat (fast energy)
+- "post-workout": high protein, moderate carbs, low fat (recovery)
+- "regular": balanced macros for main meals
+- "snack": appropriate for between-meal consumption
 
 Examples:
-- "100g grilled chicken breast" → high confidence 
-- "a sandwich" → lower confidence due to vagueness
-- "2 slices whole wheat bread with peanut butter" → medium-high confidence
+- "100g grilled chicken breast" → category: "protein", suitability: ["post-workout", "regular"]
+- "1 banana" → category: "carb", suitability: ["pre-workout", "snack"]
+- "30g almonds" → category: "fat", suitability: ["regular", "snack"]
+- "oatmeal with berries" → category: "mixed", suitability: ["pre-workout", "regular"]
 
 Return only valid JSON.`;
 
@@ -43,7 +60,7 @@ Return only valid JSON.`;
       messages: [
         {
           role: "system",
-          content: "You are a nutrition expert. Analyze food descriptions and provide accurate nutritional information in JSON format."
+          content: "You are a nutrition expert specializing in Renaissance Periodization methodology. Analyze food descriptions and categorize them for optimal meal timing and macro distribution."
         },
         {
           role: "user",
@@ -73,7 +90,9 @@ Return only valid JSON.`;
       protein: Math.round(result.protein * 100) / 100,
       carbs: Math.round(result.carbs * 100) / 100,
       fat: Math.round(result.fat * 100) / 100,
-      confidence: result.confidence || 0.8
+      confidence: result.confidence || 0.8,
+      category: result.category || "mixed",
+      mealSuitability: result.mealSuitability || ["regular"]
     };
 
   } catch (error: any) {
