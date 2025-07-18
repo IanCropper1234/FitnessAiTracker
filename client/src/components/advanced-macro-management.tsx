@@ -83,12 +83,24 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     mutationFn: async (data: any) => {
       return await apiRequest("POST", "/api/weekly-adjustment", data);
     },
-    onSuccess: () => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      
+      const { adjustment, appliedToCurrentGoals } = response;
       toast({
         title: "Weekly Adjustment Applied",
-        description: "Your macros have been updated based on your progress!"
+        description: appliedToCurrentGoals 
+          ? `Your target calories updated to ${adjustment.newCalories} (${adjustment.adjustmentPercentage > 0 ? '+' : ''}${adjustment.adjustmentPercentage}%)` 
+          : "Weekly analysis recorded. Target macros maintained."
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Adjustment Failed",
+        description: error.message || "Failed to apply weekly adjustment",
+        variant: "destructive"
       });
     }
   });

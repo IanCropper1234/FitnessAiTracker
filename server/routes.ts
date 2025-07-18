@@ -970,10 +970,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         adjustmentPercentage: adjustment.adjustment.adjustmentPercentage
       });
 
+      // Always update current diet goals with the new adjustments
+      const updatedDietGoals = await storage.updateDietGoal(userId, {
+        targetCalories: adjustment.adjustment.newCalories.toString(),
+        targetProtein: adjustment.adjustment.newProtein.toString(),
+        targetCarbs: adjustment.adjustment.newCarbs.toString(),
+        targetFat: adjustment.adjustment.newFat.toString()
+      });
+
       res.json({
         weeklyGoal,
         adjustment: adjustment.adjustment,
-        appliedToCurrentGoals: Math.abs(adjustment.adjustment.adjustmentPercentage) >= 2
+        appliedToCurrentGoals: true,
+        updatedDietGoals
       });
     } catch (error: any) {
       console.error('Weekly adjustment error:', error);
