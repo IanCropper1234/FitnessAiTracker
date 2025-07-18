@@ -106,6 +106,38 @@ export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
   adjustmentReason: text("adjustment_reason"), // weight_loss_slow, weight_gain_fast, etc.
   previousWeight: decimal("previous_weight", { precision: 5, scale: 2 }),
   currentWeight: decimal("current_weight", { precision: 5, scale: 2 }),
+  adherencePercentage: decimal("adherence_percentage", { precision: 5, scale: 2 }), // % compliance
+  energyLevels: integer("energy_levels"), // 1-10 scale
+  hungerLevels: integer("hunger_levels"), // 1-10 scale
+  adjustmentPercentage: decimal("adjustment_percentage", { precision: 5, scale: 2 }), // % change applied
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Macro distribution per meal for advanced meal planning
+export const mealMacroDistribution = pgTable("meal_macro_distribution", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  mealType: text("meal_type").notNull(), // "breakfast", "lunch", "dinner", "snack1", etc.
+  mealTiming: text("meal_timing"), // "pre-workout", "post-workout", "regular"
+  proteinPercentage: decimal("protein_percentage", { precision: 5, scale: 2 }),
+  carbPercentage: decimal("carb_percentage", { precision: 5, scale: 2 }),
+  fatPercentage: decimal("fat_percentage", { precision: 5, scale: 2 }),
+  caloriePercentage: decimal("calorie_percentage", { precision: 5, scale: 2 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Macro flexibility rules for social eating
+export const macroFlexibilityRules = pgTable("macro_flexibility_rules", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  ruleName: text("rule_name").notNull(), // "Weekend Social", "Business Lunch", etc.
+  triggerDays: text("trigger_days").array(), // ["saturday", "sunday"]
+  flexProtein: decimal("flex_protein", { precision: 5, scale: 2 }), // % allowable variance
+  flexCarbs: decimal("flex_carbs", { precision: 5, scale: 2 }),
+  flexFat: decimal("flex_fat", { precision: 5, scale: 2 }),
+  compensationStrategy: text("compensation_strategy"), // "reduce_next_meal", "reduce_next_day"
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -272,6 +304,8 @@ export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPre
 export const insertBodyMetricSchema = createInsertSchema(bodyMetrics).omit({ id: true, createdAt: true });
 export const insertSavedMealPlanSchema = createInsertSchema(savedMealPlans).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertDietGoalSchema = createInsertSchema(dietGoals).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertMealMacroDistributionSchema = createInsertSchema(mealMacroDistribution).omit({ id: true, createdAt: true });
+export const insertMacroFlexibilityRuleSchema = createInsertSchema(macroFlexibilityRules).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;

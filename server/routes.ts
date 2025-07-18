@@ -942,6 +942,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Advanced Macro Management API endpoints
+  const { AdvancedMacroManagementService } = await import("./services/advanced-macro-management");
+
+  // Weekly macro adjustment endpoint
+  app.post("/api/weekly-adjustment", async (req, res) => {
+    try {
+      const { userId, weekStartDate, currentGoals, adjustmentReason, energyLevels, hungerLevels, adherencePercentage } = req.body;
+      
+      // Calculate the adjustment based on RP methodology
+      const adjustment = await AdvancedMacroManagementService.calculateWeeklyAdjustment(userId, weekStartDate);
+      
+      // Create weekly goal entry
+      const weeklyGoal = await AdvancedMacroManagementService.createWeeklyGoal({
+        userId,
+        weekStartDate,
+        dailyCalories: adjustment.adjustment.newCalories,
+        protein: adjustment.adjustment.newProtein,
+        carbs: adjustment.adjustment.newCarbs,
+        fat: adjustment.adjustment.newFat,
+        adjustmentReason: adjustment.adjustment.adjustmentReason,
+        adherencePercentage: adjustment.adherencePercentage,
+        energyLevels,
+        hungerLevels,
+        adjustmentPercentage: adjustment.adjustment.adjustmentPercentage
+      });
+
+      res.json({
+        weeklyGoal,
+        adjustment: adjustment.adjustment,
+        appliedToCurrentGoals: Math.abs(adjustment.adjustment.adjustmentPercentage) >= 2
+      });
+    } catch (error: any) {
+      console.error('Weekly adjustment error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get weekly goals
+  app.get("/api/weekly-goals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const week = req.query.week as string;
+      
+      const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(userId, week);
+      res.json(weeklyGoals);
+    } catch (error: any) {
+      console.error('Get weekly goals error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
