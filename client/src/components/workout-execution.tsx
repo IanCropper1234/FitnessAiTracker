@@ -29,6 +29,10 @@ interface WorkoutExercise {
   targetReps: string;
   restPeriod: number;
   notes: string;
+  weight: number | null;
+  rpe: number | null;
+  rir: number | null;
+  actualReps: string | null;
   exercise: {
     id: number;
     name: string;
@@ -85,12 +89,17 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           ? [parseInt(exercise.targetReps.split('-')[0])]
           : exercise.targetReps.split(',').map(r => parseInt(r.trim()));
         
+        // Use prefilled values from database if available
+        const prefilledWeight = exercise.weight || 0;
+        const prefilledRpe = exercise.rpe || 7;
+        const prefilledActualReps = exercise.actualReps ? parseInt(exercise.actualReps.split(',')[0]) : 0;
+        
         initialData[exercise.id] = Array.from({ length: exercise.sets }, (_, i) => ({
           setNumber: i + 1,
           targetReps: targetRepsArray[i] || targetRepsArray[0] || 10,
-          actualReps: 0,
-          weight: 0,
-          rpe: 7,
+          actualReps: prefilledActualReps,
+          weight: prefilledWeight,
+          rpe: prefilledRpe,
           completed: false
         }));
       });
