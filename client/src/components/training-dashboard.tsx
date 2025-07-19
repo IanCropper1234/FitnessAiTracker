@@ -509,55 +509,54 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   return (
     <div className="space-y-6 p-6">
       {/* Training Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+      <div className="grid grid-cols-3 gap-2 w-full">
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <Calendar className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              Total Sessions
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{trainingStats?.totalSessions || 0}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
+              {trainingStats?.totalSessions || 0}
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               workouts completed
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              Total Volume
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{trainingStats?.totalVolume || 0}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
+              {trainingStats?.totalVolume || 0}
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               kg lifted this month
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Session</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <Clock className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              Avg Session
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{trainingStats?.averageSessionLength || 0}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
+              {trainingStats?.averageSessionLength || 0}
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               minutes per workout
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Exercises</CardTitle>
-            <Dumbbell className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{exercises.length}</div>
-            <p className="text-xs text-muted-foreground">
-              in exercise database
             </p>
           </CardContent>
         </Card>
