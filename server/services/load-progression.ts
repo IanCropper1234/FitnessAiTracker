@@ -4,7 +4,8 @@ import {
   workoutExercises,
   workoutSessions,
   exercises,
-  autoRegulationFeedback
+  autoRegulationFeedback,
+  mesocycles
 } from "@shared/schema";
 import { eq, and, desc, gte, sql } from "drizzle-orm";
 
@@ -347,6 +348,13 @@ export class LoadProgression {
     
     const recommendations: LoadProgressionRecommendation[] = [];
     
+    // Check if user has an active mesocycle with upcoming workouts
+    const activeMesocycle = await db
+      .select()
+      .from(mesocycles)
+      .where(and(eq(mesocycles.userId, userId), eq(mesocycles.isActive, true)))
+      .limit(1);
+
     // If no specific exercises provided, get all exercises user has performed
     let targetExerciseIds = exerciseIds;
     if (exerciseIds.length === 0) {
@@ -364,44 +372,105 @@ export class LoadProgression {
     }
     
     for (const exerciseId of targetExerciseIds) {
-      // Get most recent performance for this exercise
-      const recentPerformance = await db
-        .select({
-          weight: workoutExercises.weight,
-          actualReps: workoutExercises.actualReps,
-          rpe: workoutExercises.rpe,
-          rir: workoutExercises.rir
-        })
-        .from(workoutExercises)
-        .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
-        .where(and(
-          eq(workoutSessions.userId, userId),
-          eq(workoutExercises.exerciseId, exerciseId),
-          eq(workoutExercises.isCompleted, true)
-        ))
-        .orderBy(desc(workoutSessions.date))
-        .limit(1);
+      let currentWeight = 0;
+      let targetReps = '8-12';
+      let isFromUpcomingWorkout = false;
 
-      if (recentPerformance.length === 0) continue;
+      // Priority 1: Check upcoming mesocycle workouts for current week targets
+      if (activeMesocycle.length > 0) {
+        const upcomingWorkout = await db
+          .select({
+            weight: workoutExercises.weight,
+            targetReps: workoutExercises.targetReps,
+            sessionDate: workoutSessions.date
+          })
+          .from(workoutExercises)
+          .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+          .where(and(
+            eq(workoutSessions.userId, userId),
+            eq(workoutExercises.exerciseId, exerciseId),
+            eq(workoutSessions.mesocycleId, activeMesocycle[0].id),
+            eq(workoutExercises.isCompleted, false)
+          ))
+          .orderBy(workoutSessions.date)
+          .limit(1);
 
-      const performance = recentPerformance[0];
-      const currentWeight = parseFloat(performance.weight || '0');
-      const repsArray = performance.actualReps?.split(',').map(r => parseInt(r)) || [];
-      const avgReps = repsArray.length > 0 ? repsArray.reduce((sum, r) => sum + r, 0) / repsArray.length : 10;
-      const rpe = performance.rpe || 7;
-      const rir = performance.rir || 2;
+        if (upcomingWorkout.length > 0) {
+          currentWeight = parseFloat(upcomingWorkout[0].weight || '0');
+          targetReps = upcomingWorkout[0].targetReps || '8-12';
+          isFromUpcomingWorkout = true;
+        }
+      }
 
-      if (currentWeight > 0) {
-        const recommendation = await this.calculateLoadProgression(
-          userId,
-          exerciseId,
-          currentWeight,
-          avgReps,
-          rpe,
-          rir
-        );
+      // Priority 2: If no upcoming workout, use most recent completed performance
+      if (currentWeight === 0) {
+        const recentPerformance = await db
+          .select({
+            weight: workoutExercises.weight,
+            actualReps: workoutExercises.actualReps,
+            rpe: workoutExercises.rpe,
+            rir: workoutExercises.rir,
+            targetReps: workoutExercises.targetReps
+          })
+          .from(workoutExercises)
+          .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+          .where(and(
+            eq(workoutSessions.userId, userId),
+            eq(workoutExercises.exerciseId, exerciseId),
+            eq(workoutExercises.isCompleted, true)
+          ))
+          .orderBy(desc(workoutSessions.date))
+          .limit(1);
+
+        if (recentPerformance.length > 0) {
+          const performance = recentPerformance[0];
+          currentWeight = parseFloat(performance.weight || '0');
+          targetReps = performance.targetReps || '8-12';
+          
+          const repsArray = performance.actualReps?.split(',').map(r => parseInt(r)) || [];
+          const avgReps = repsArray.length > 0 ? repsArray.reduce((sum, r) => sum + r, 0) / repsArray.length : 10;
+          const rpe = performance.rpe || 7;
+          const rir = performance.rir || 2;
+
+          // Calculate progression based on past performance
+          const recommendation = await this.calculateLoadProgression(
+            userId,
+            exerciseId,
+            currentWeight,
+            avgReps,
+            rpe,
+            rir
+          );
+          
+          recommendations.push(recommendation);
+          continue;
+        }
+      }
+
+      // If we have upcoming workout data, create aligned recommendation
+      if (currentWeight > 0 && isFromUpcomingWorkout) {
+        const exerciseDetails = await db
+          .select({ name: exercises.name })
+          .from(exercises)
+          .where(eq(exercises.id, exerciseId))
+          .limit(1);
+
+        const exerciseName = exerciseDetails[0]?.name || "Unknown Exercise";
         
-        recommendations.push(recommendation);
+        recommendations.push({
+          exerciseId,
+          exerciseName,
+          currentWeight,
+          recommendedWeight: currentWeight, // Already adjusted by Advance Week
+          recommendedReps: targetReps,
+          progressionType: 'weight',
+          confidence: 0.9, // High confidence since it's from mesocycle progression
+          reasoning: [
+            "Weight already adjusted by mesocycle auto-progression",
+            "Follow current mesocycle programming",
+            "Focus on hitting target rep ranges with good form"
+          ]
+        });
       }
     }
     
