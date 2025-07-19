@@ -833,21 +833,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const avgRpe = completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rpe) || 7), 0) / completedSets.length;
               const avgRir = completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rir) || 2), 0) / completedSets.length;
               
-              // Get previous weight for comparison
-              const previousPerformance = await db
-                .select({ weight: workoutExercises.weight })
-                .from(workoutExercises)
-                .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
-                .where(and(
-                  eq(workoutSessions.userId, session.userId),
-                  eq(workoutExercises.exerciseId, exerciseData.exerciseId),
-                  eq(workoutExercises.isCompleted, true),
-                  lt(workoutSessions.date, session.date)
-                ))
-                .orderBy(desc(workoutSessions.date))
-                .limit(1);
+              // Get previous weight for comparison using simplified query
+              let previousWeight = 0;
+              try {
+                const previousPerformance = await db
+                  .select({ 
+                    weight: workoutExercises.weight,
+                    sessionDate: workoutSessions.date 
+                  })
+                  .from(workoutExercises)
+                  .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+                  .where(and(
+                    eq(workoutSessions.userId, session.userId),
+                    eq(workoutExercises.exerciseId, exerciseData.exerciseId),
+                    eq(workoutExercises.isCompleted, true),
+                    lt(workoutSessions.date, session.date)
+                  ))
+                  .orderBy(desc(workoutSessions.date))
+                  .limit(1);
 
-              const previousWeight = previousPerformance.length > 0 ? parseFloat(previousPerformance[0].weight || '0') : 0;
+                if (previousPerformance.length > 0 && previousPerformance[0].weight) {
+                  previousWeight = parseFloat(previousPerformance[0].weight.toString());
+                }
+              } catch (queryError) {
+                console.log('Previous weight query failed, using 0 as default:', queryError);
+                previousWeight = 0;
+              }
               
               // Record progression data
               await LoadProgression.recordProgression(

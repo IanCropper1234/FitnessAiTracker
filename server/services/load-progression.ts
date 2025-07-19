@@ -325,20 +325,25 @@ export class LoadProgression {
     notes?: string
   ): Promise<void> {
     
+    // Ensure all numeric values are properly converted and not null/undefined
+    const safeValues = {
+      userId: parseInt(userId.toString()),
+      exerciseId: parseInt(exerciseId.toString()),
+      sessionId: parseInt(sessionId.toString()),
+      previousWeight: parseFloat((previousWeight || 0).toString()),
+      currentWeight: parseFloat((currentWeight || 0).toString()),
+      targetWeight: null, // Will be calculated for next session
+      rpeAverage: parseFloat((averageRpe || 7).toString()),
+      rirAverage: parseFloat((averageRir || 2).toString()),
+      progressionType: progressionType || 'volume',
+      notes: notes || null
+    };
+
+    console.log('Recording load progression with values:', safeValues);
+    
     await db
       .insert(loadProgressionTracking)
-      .values({
-        userId,
-        exerciseId,
-        sessionId,
-        previousWeight: parseFloat(previousWeight.toString()),
-        currentWeight: parseFloat(currentWeight.toString()),
-        targetWeight: null, // Will be calculated for next session
-        rpeAverage: parseFloat(averageRpe.toString()),
-        rirAverage: parseFloat(averageRir.toString()),
-        progressionType,
-        notes
-      });
+      .values(safeValues);
   }
 
   /**
