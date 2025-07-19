@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -276,7 +276,7 @@ function SortableCard({ card, userId }: { card: DashboardCard; userId: number })
       >
         <GripVertical className="h-4 w-4 text-gray-600 dark:text-gray-400" />
       </div>
-      <card.component userId={userId} />
+      {React.createElement(card.component, { userId })}
     </div>
   );
 }
@@ -379,23 +379,30 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
 
   // Save card configuration to localStorage
   const saveConfiguration = (newCards: DashboardCard[]) => {
-    localStorage.setItem(`dashboard-config-${user.id}`, JSON.stringify(newCards));
-    setCards(newCards);
+    try {
+      localStorage.setItem(`dashboard-config-${user.id}`, JSON.stringify(newCards));
+      setCards(newCards);
+      console.log('Dashboard configuration saved successfully');
+    } catch (error) {
+      console.error('Failed to save dashboard configuration:', error);
+    }
   };
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
+    if (active.id !== over?.id && over?.id) {
       const oldIndex = cards.findIndex(card => card.id === active.id);
       const newIndex = cards.findIndex(card => card.id === over.id);
       
-      const newCards = arrayMove(cards, oldIndex, newIndex).map((card, index) => ({
-        ...card,
-        order: index,
-      }));
-      
-      saveConfiguration(newCards);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newCards = arrayMove(cards, oldIndex, newIndex).map((card, index) => ({
+          ...card,
+          order: index,
+        }));
+        
+        saveConfiguration(newCards);
+      }
     }
   };
 
