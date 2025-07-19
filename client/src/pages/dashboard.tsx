@@ -124,78 +124,78 @@ export function Dashboard({ user }: DashboardProps) {
         </Card>
 
         {/* Quick Stats - Single Row */}
-        <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t("calories")} {t("today")}
+        <div className="grid grid-cols-4 gap-2 w-full">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+              <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+                Calories
               </CardTitle>
-              <Target className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
+            <CardContent className="px-2 pb-2">
+              <div className="text-lg font-bold text-black dark:text-white text-center">
                 {nutritionSummary?.totalCalories || 0}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                {t("goal")}: {nutritionSummary?.goalCalories || 2000}
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                /{nutritionSummary?.goalCalories || 2000}
               </p>
               <Progress 
                 value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
-                className="mt-2"
+                className="mt-1 h-1"
               />
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t("protein")} (g)
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+              <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+                Protein
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
-                {nutritionSummary?.totalProtein || 0}
+            <CardContent className="px-2 pb-2">
+              <div className="text-lg font-bold text-black dark:text-white text-center">
+                {nutritionSummary?.totalProtein || 0}g
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                {t("goal")}: {nutritionSummary?.goalProtein || 150}g
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                /{nutritionSummary?.goalProtein || 150}g
               </p>
               <Progress 
                 value={nutritionSummary ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 : 0} 
-                className="mt-2"
+                className="mt-1 h-1"
               />
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t("training")} Sessions
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+              <Activity className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+                Sessions
               </CardTitle>
-              <Activity className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
+            <CardContent className="px-2 pb-2">
+              <div className="text-lg font-bold text-black dark:text-white text-center">
                 {trainingStats?.totalSessions || 0}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 This week
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+              <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Adherence
               </CardTitle>
-              <Target className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
+            <CardContent className="px-2 pb-2">
+              <div className="text-lg font-bold text-black dark:text-white text-center">
                 {nutritionSummary?.adherence || 0}%
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 Overall
               </p>
             </CardContent>
