@@ -7,9 +7,10 @@ import {
   autoRegulationFeedback,
   workoutSessions,
   workoutExercises,
-  loadProgressionTracking
+  loadProgressionTracking,
+  exerciseMuscleMapping
 } from "@shared/schema";
-import { eq, and, gte, lte, sql, desc, isNotNull } from "drizzle-orm";
+import { eq, and, gte, lte, sql, desc, isNotNull, inArray } from "drizzle-orm";
 
 interface VolumeProgression {
   muscleGroupId: number;
@@ -261,20 +262,95 @@ export class MesocyclePeriodization {
   }
 
   /**
-   * Update volume landmarks based on current week performance
+   * Update volume landmarks based on auto-regulation feedback using RP methodology
    */
-  static async updateVolumeLandmarks(
+  static async updateVolumeLandmarksFromFeedback(
+    userId: number,
+    sessionId: number,
+    feedbackData: {
+      pumpQuality: number;
+      muscleSoreness: number;
+      perceivedEffort: number;
+      energyLevel: number;
+      sleepQuality: number;
+    }
+  ): Promise<void> {
+    
+    // Get exercises from the session to determine muscle groups trained
+    const sessionExercises = await db
+      .select({
+        exerciseId: workoutExercises.exerciseId,
+        sets: workoutExercises.sets,
+        isCompleted: workoutExercises.isCompleted,
+        weight: workoutExercises.weight,
+        rpe: workoutExercises.rpe,
+        rir: workoutExercises.rir
+      })
+      .from(workoutExercises)
+      .where(and(
+        eq(workoutExercises.sessionId, sessionId),
+        eq(workoutExercises.isCompleted, true)
+      ));
+
+    // Get muscle group mappings for completed exercises
+    const muscleGroupMappings = await db
+      .select({
+        muscleGroupId: exerciseMuscleMapping.muscleGroupId,
+        contributionPercentage: exerciseMuscleMapping.contributionPercentage,
+        role: exerciseMuscleMapping.role,
+        exerciseId: exerciseMuscleMapping.exerciseId
+      })
+      .from(exerciseMuscleMapping)
+      .where(
+        inArray(exerciseMuscleMapping.exerciseId, sessionExercises.map(e => e.exerciseId))
+      );
+
+    // Calculate sets per muscle group from this session
+    const muscleGroupSets = new Map<number, number>();
+    for (const exercise of sessionExercises) {
+      const mappings = muscleGroupMappings.filter(m => m.exerciseId === exercise.exerciseId);
+      
+      for (const mapping of mappings) {
+        // Use contribution percentage as multiplier (convert from percentage to decimal)
+        const contributionMultiplier = (mapping.contributionPercentage || 50) / 100.0;
+        const sets = exercise.sets * contributionMultiplier;
+        
+        muscleGroupSets.set(
+          mapping.muscleGroupId,
+          (muscleGroupSets.get(mapping.muscleGroupId) || 0) + sets
+        );
+      }
+    }
+
+    // Update volume landmarks for each trained muscle group
+    for (const [muscleGroupId, setsThisSession] of muscleGroupSets) {
+      await this.updateSingleMuscleGroupVolume(
+        userId,
+        muscleGroupId,
+        setsThisSession,
+        feedbackData
+      );
+    }
+  }
+
+  /**
+   * Update volume landmarks for a single muscle group using RP methodology
+   */
+  static async updateSingleMuscleGroupVolume(
     userId: number, 
     muscleGroupId: number, 
     actualSets: number,
-    averageRpe: number,
-    averageRir: number,
-    pumpQuality: number,
-    soreness: number
+    feedbackData: {
+      pumpQuality: number;
+      muscleSoreness: number;
+      perceivedEffort: number;
+      energyLevel: number;
+      sleepQuality: number;
+    }
   ): Promise<void> {
     
-    // Get current landmarks
-    const current = await db
+    // Get current volume landmarks
+    const currentLandmarks = await db
       .select()
       .from(volumeLandmarks)
       .where(and(
@@ -283,47 +359,152 @@ export class MesocyclePeriodization {
       ))
       .limit(1);
 
-    if (current.length === 0) return;
-
-    const landmark = current[0];
-    
-    // RP Auto-regulation algorithm for landmark adjustment
-    let mevAdjustment = 0;
-    let mavAdjustment = 0;
-    let mrvAdjustment = 0;
-
-    // Positive indicators: can handle more volume
-    if (averageRpe < 7 && averageRir > 2 && pumpQuality > 7 && soreness < 5) {
-      mavAdjustment = 1;
-      mrvAdjustment = 1;
-    }
-    
-    // Negative indicators: reduce volume capacity
-    if (averageRpe > 8.5 || averageRir < 1 || pumpQuality < 5 || soreness > 7) {
-      mavAdjustment = -1;
-      mrvAdjustment = -2;
+    if (currentLandmarks.length === 0) {
+      // Initialize landmarks if they don't exist
+      console.log(`Initializing volume landmarks for muscle group ${muscleGroupId}`);
+      return;
     }
 
-    // Update landmarks with bounds checking
-    const newMev = Math.max(6, landmark.mev + mevAdjustment);
-    const newMav = Math.max(newMev + 4, Math.min(30, landmark.mav + mavAdjustment));
-    const newMrv = Math.max(newMav + 2, Math.min(35, landmark.mrv + mrvAdjustment));
+    const landmarks = currentLandmarks[0];
 
+    // Renaissance Periodization Volume Adjustment Algorithm
+    // Based on multiple feedback indicators following RP methodology
+    
+    // 1. Calculate Recovery Score (0-10) from multiple indicators
+    const recoveryScore = this.calculateRecoveryScore(feedbackData);
+    
+    // 2. Calculate Adaptation Score (0-10) based on pump quality and performance
+    const adaptationScore = this.calculateAdaptationScore(feedbackData, actualSets, landmarks.targetVolume || landmarks.currentVolume);
+    
+    // 3. Determine Volume Adjustment using RP progression rules
+    const volumeAdjustment = this.calculateVolumeAdjustment(
+      recoveryScore, 
+      adaptationScore, 
+      landmarks.currentVolume,
+      landmarks.mev,
+      landmarks.mav,
+      landmarks.mrv
+    );
+
+    // 4. Update volume landmarks with RP methodology
+    const newCurrentVolume = Math.max(landmarks.mev, Math.min(landmarks.mrv, landmarks.currentVolume + volumeAdjustment));
+    const newTargetVolume = this.calculateNextWeekTarget(newCurrentVolume, recoveryScore, adaptationScore, landmarks.mav);
+    const newRecoveryLevel = Math.max(1, Math.min(10, Math.round(recoveryScore)));
+    const newAdaptationLevel = Math.max(1, Math.min(10, Math.round(adaptationScore)));
+
+    // 5. Apply updates to database
     await db
       .update(volumeLandmarks)
       .set({
-        mev: newMev,
-        mav: newMav,
-        mrv: newMrv,
-        currentVolume: actualSets,
-        recoveryLevel: Math.round(10 - (soreness + (10 - pumpQuality)) / 2),
-        adaptationLevel: Math.round((pumpQuality + (10 - averageRpe) + averageRir) / 3),
-        lastUpdated: sql`NOW()`
+        currentVolume: newCurrentVolume,
+        targetVolume: newTargetVolume,
+        recoveryLevel: newRecoveryLevel,
+        adaptationLevel: newAdaptationLevel,
+        lastUpdated: new Date()
       })
       .where(and(
         eq(volumeLandmarks.userId, userId),
         eq(volumeLandmarks.muscleGroupId, muscleGroupId)
       ));
+
+    console.log(`Updated volume landmarks for muscle group ${muscleGroupId}: ${landmarks.currentVolume} → ${newCurrentVolume} sets (target: ${newTargetVolume})`)
+  }
+
+  /**
+   * Calculate recovery score using RP methodology (0-10 scale)
+   */
+  private static calculateRecoveryScore(feedbackData: {
+    pumpQuality: number;
+    muscleSoreness: number;
+    perceivedEffort: number;
+    energyLevel: number;
+    sleepQuality: number;
+  }): number {
+    // RP methodology: Lower soreness and effort = better recovery
+    const sorenessRecovery = 10 - feedbackData.muscleSoreness; // Invert soreness (lower is better)
+    const effortRecovery = 10 - feedbackData.perceivedEffort; // Invert effort (lower is better)
+    const energyScore = feedbackData.energyLevel; // Higher is better
+    const sleepScore = feedbackData.sleepQuality; // Higher is better
+    
+    // Weighted average: soreness and effort most important for volume decisions
+    return (sorenessRecovery * 0.3 + effortRecovery * 0.3 + energyScore * 0.25 + sleepScore * 0.15);
+  }
+
+  /**
+   * Calculate adaptation score using RP methodology (0-10 scale)
+   */
+  private static calculateAdaptationScore(
+    feedbackData: { pumpQuality: number },
+    actualSets: number,
+    targetSets: number
+  ): number {
+    // RP methodology: Pump quality is primary indicator of muscle adaptation
+    const pumpScore = feedbackData.pumpQuality;
+    
+    // Bonus for completing target volume
+    const volumeCompletion = targetSets > 0 ? Math.min(1.0, actualSets / targetSets) : 1.0;
+    const volumeBonus = volumeCompletion >= 1.0 ? 1.0 : volumeCompletion * 0.5;
+    
+    return Math.min(10, pumpScore + volumeBonus);
+  }
+
+  /**
+   * Calculate volume adjustment based on RP progression rules
+   */
+  private static calculateVolumeAdjustment(
+    recoveryScore: number,
+    adaptationScore: number,
+    currentVolume: number,
+    mev: number,
+    mav: number,
+    mrv: number
+  ): number {
+    // RP methodology volume progression rules
+    
+    // Excellent recovery AND adaptation (8+/10): Aggressive progression
+    if (recoveryScore >= 8 && adaptationScore >= 8) {
+      return currentVolume < mav ? 2 : 1; // +2 sets if below MAV, +1 if approaching MRV
+    }
+    
+    // Good recovery OR adaptation (6-7/10): Conservative progression  
+    if (recoveryScore >= 6 && adaptationScore >= 6) {
+      return currentVolume < mav ? 1 : 0; // +1 set if below MAV, maintain if above
+    }
+    
+    // Moderate recovery (4-6/10): Maintain current volume
+    if (recoveryScore >= 4 && adaptationScore >= 4) {
+      return 0; // Maintain
+    }
+    
+    // Poor recovery (<4/10): Volume reduction required
+    if (recoveryScore < 4 || adaptationScore < 4) {
+      return currentVolume > mev ? -2 : -1; // -2 sets if above MEV, -1 to stay above MEV
+    }
+    
+    return 0; // Default: maintain
+  }
+
+  /**
+   * Calculate next week's target volume using RP methodology
+   */
+  private static calculateNextWeekTarget(
+    currentVolume: number,
+    recoveryScore: number,
+    adaptationScore: number,
+    mav: number
+  ): number {
+    // RP methodology: Plan next week based on current adaptation
+    
+    if (recoveryScore >= 7 && adaptationScore >= 7) {
+      // Plan for progression next week
+      return Math.min(mav, currentVolume + 1);
+    } else if (recoveryScore >= 5 && adaptationScore >= 5) {
+      // Plan to maintain next week
+      return currentVolume;
+    } else {
+      // Plan potential reduction next week if recovery doesn't improve
+      return Math.max(currentVolume - 1, currentVolume * 0.8);
+    }
   }
 
   /**

@@ -1071,7 +1071,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const feedbackData = req.body;
       const feedback = await storage.createAutoRegulationFeedback(feedbackData);
       
-      // Re-enable volume recommendations now that basic feedback is working
+      // Update Volume Landmarks using RP methodology based on session feedback
+      try {
+        await MesocyclePeriodization.updateVolumeLandmarksFromFeedback(
+          feedbackData.userId,
+          feedbackData.sessionId,
+          {
+            pumpQuality: feedbackData.pumpQuality,
+            muscleSoreness: feedbackData.muscleSoreness,
+            perceivedEffort: feedbackData.perceivedEffort,
+            energyLevel: feedbackData.energyLevel,
+            sleepQuality: feedbackData.sleepQuality
+          }
+        );
+        console.log('Volume landmarks updated using RP methodology');
+      } catch (volumeError) {
+        console.error('Volume landmarks update error:', volumeError);
+        // Continue without landmarks update rather than failing the entire request
+      }
+      
+      // Generate volume recommendations using AI
       let recommendations: any[] = [];
       try {
         recommendations = await generateVolumeRecommendations(feedbackData.userId, feedback);
