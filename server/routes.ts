@@ -1714,6 +1714,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Meal Distribution API endpoints
+  app.get("/api/meal-distribution/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const distributions = await AdvancedMacroManagementService.getMealDistributions(userId);
+      res.json(distributions);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/meal-distribution", async (req, res) => {
+    try {
+      const distribution = await AdvancedMacroManagementService.createMealDistribution(req.body);
+      res.json(distribution);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Macro Flexibility API endpoints
+  app.get("/api/flexibility-rules/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const rules = await AdvancedMacroManagementService.getFlexibilityRules(userId);
+      res.json(rules);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/flexibility-rules", async (req, res) => {
+    try {
+      const rule = await AdvancedMacroManagementService.createFlexibilityRule(req.body);
+      res.json(rule);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Shopping List Generation API endpoints
+  const { ShoppingListGenerator } = await import("./services/shopping-list-generator");
+
+  app.get("/api/shopping-list/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const startDate = req.query.startDate as string || new Date().toISOString();
+      const endDate = req.query.endDate as string || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      
+      const shoppingList = await ShoppingListGenerator.generateFromMealPlans(userId, startDate, endDate);
+      res.json(shoppingList);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/shopping-list/optimized/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const dietGoals = await storage.getDietGoal(userId);
+      
+      if (!dietGoals) {
+        return res.status(404).json({ message: "Diet goals not found. Please set up your nutrition targets first." });
+      }
+      
+      const optimizedList = await ShoppingListGenerator.generateOptimizedList(userId, dietGoals);
+      res.json(optimizedList);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Get available weeks with food log data
   app.get("/api/nutrition/available-weeks/:userId", async (req, res) => {
     try {

@@ -17,6 +17,7 @@ import { DietBuilder } from "@/components/diet-builder";
 import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
 import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
+import { ShoppingListGenerator } from "@/components/shopping-list-generator";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, Trash2, Calendar } from "lucide-react";
@@ -132,7 +133,7 @@ export function Nutrition({ user }: NutritionProps) {
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <TabsList className="grid w-full grid-cols-7 h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
               <TabsTrigger 
                 value="overview" 
                 className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
@@ -169,6 +170,12 @@ export function Nutrition({ user }: NutritionProps) {
               >
                 Progress
               </TabsTrigger>
+              <TabsTrigger 
+                value="shopping" 
+                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
+              >
+                Shopping
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
@@ -193,6 +200,10 @@ export function Nutrition({ user }: NutritionProps) {
 
             <TabsContent value="progression">
               <NutritionProgression userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="shopping">
+              <ShoppingListGenerator userId={user.id} />
             </TabsContent>
           </Tabs>
         </div>

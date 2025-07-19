@@ -78,6 +78,33 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Mutations for creating distributions and flexibility rules
+  const createDistributionMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/meal-distribution", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/meal-distribution', userId] });
+      toast({
+        title: "Success",
+        description: "Meal distribution created successfully"
+      });
+    }
+  });
+
+  const createFlexibilityMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/flexibility-rules", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/flexibility-rules', userId] });
+      toast({
+        title: "Success", 
+        description: "Flexibility rule created successfully"
+      });
+    }
+  });
+
   // Generate weekly adjustment mutation
   const weeklyAdjustmentMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -188,6 +215,82 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
 
     return recommendation;
+  };
+
+  // Create default RP-based meal distribution
+  const createDefaultMealDistribution = async () => {
+    const defaultDistributions = [
+      {
+        userId,
+        mealType: "breakfast",
+        mealTiming: "regular",
+        proteinPercentage: 25,
+        carbPercentage: 30,
+        fatPercentage: 20,
+        caloriePercentage: 25
+      },
+      {
+        userId,
+        mealType: "pre_workout",
+        mealTiming: "pre_workout", 
+        proteinPercentage: 15,
+        carbPercentage: 65,
+        fatPercentage: 5,
+        caloriePercentage: 15
+      },
+      {
+        userId,
+        mealType: "post_workout",
+        mealTiming: "post_workout",
+        proteinPercentage: 45,
+        carbPercentage: 35,
+        fatPercentage: 10,
+        caloriePercentage: 25
+      },
+      {
+        userId,
+        mealType: "dinner",
+        mealTiming: "regular",
+        proteinPercentage: 30,
+        carbPercentage: 20,
+        fatPercentage: 35,
+        caloriePercentage: 35
+      }
+    ];
+
+    for (const distribution of defaultDistributions) {
+      await createDistributionMutation.mutateAsync(distribution);
+    }
+  };
+
+  // Create default flexibility rules for social eating
+  const createDefaultFlexibilityRules = async () => {
+    const defaultRules = [
+      {
+        userId,
+        ruleName: "Weekend Social Eating",
+        triggerDays: ["saturday", "sunday"],
+        flexProtein: 10,
+        flexCarbs: 25,
+        flexFat: 20,
+        compensationStrategy: "reduce_next_day",
+        isActive: true
+      },
+      {
+        userId,
+        ruleName: "Business Lunch",
+        triggerDays: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        flexProtein: 15,
+        flexCarbs: 30,
+        flexFat: 25,
+        compensationStrategy: "reduce_next_meal",
+        isActive: true
+      }
+    ];
+
+    for (const rule of defaultRules) {
+      await createFlexibilityMutation.mutateAsync(rule);
+    }
   };
 
   const recommendation = calculateAdjustmentRecommendation();
@@ -327,11 +430,78 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center text-gray-600 dark:text-gray-400 py-8">
-                Meal distribution configuration coming soon...
-                <br />
-                <span className="text-sm">This will allow you to set different macro ratios for each meal</span>
-              </div>
+              {mealDistribution && mealDistribution.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="grid gap-4">
+                    {mealDistribution.map((meal: any) => (
+                      <div key={meal.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-medium capitalize">{meal.mealType}</h3>
+                            {meal.mealTiming && (
+                              <Badge variant="outline" className="text-xs">
+                                {meal.mealTiming.replace('_', ' ')}
+                              </Badge>
+                            )}
+                          </div>
+                          <Badge variant="secondary">
+                            {parseFloat(meal.caloriePercentage || 0).toFixed(0)}% calories
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 text-sm">
+                          <div className="text-center">
+                            <div className="text-red-600 font-medium">
+                              {parseFloat(meal.proteinPercentage || 0).toFixed(0)}%
+                            </div>
+                            <div className="text-gray-600 dark:text-gray-400">Protein</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-blue-600 font-medium">
+                              {parseFloat(meal.carbPercentage || 0).toFixed(0)}%
+                            </div>
+                            <div className="text-gray-600 dark:text-gray-400">Carbs</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-yellow-600 font-medium">
+                              {parseFloat(meal.fatPercentage || 0).toFixed(0)}%
+                            </div>
+                            <div className="text-gray-600 dark:text-gray-400">Fat</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                      RP Methodology Notes:
+                    </h4>
+                    <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                      <li>• Pre-workout: Higher carbs (60-70%) for energy</li>
+                      <li>• Post-workout: High protein (40-50%) + moderate carbs</li>
+                      <li>• Regular meals: Balanced macros based on daily targets</li>
+                      <li>• Evening meals: Lower carbs, higher fat for recovery</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Target className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    No meal distributions configured yet
+                  </p>
+                  <Button 
+                    onClick={() => createDefaultMealDistribution()}
+                    disabled={createDistributionMutation.isPending}
+                  >
+                    {createDistributionMutation.isPending ? (
+                      <>Creating...</>
+                    ) : (
+                      <>Create Default RP Distribution</>
+                    )}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -347,11 +517,87 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center text-gray-600 dark:text-gray-400 py-8">
-                Macro flexibility system coming soon...
-                <br />
-                <span className="text-sm">This will allow you to set flexible macro ranges for weekends and social events</span>
-              </div>
+              {flexibilityRules && flexibilityRules.length > 0 ? (
+                <div className="space-y-4">
+                  {flexibilityRules.map((rule: any) => (
+                    <div key={rule.id} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium">{rule.ruleName}</h3>
+                        <Badge variant={rule.isActive ? "default" : "secondary"}>
+                          {rule.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Trigger Days:</p>
+                          <div className="flex gap-1 mt-1">
+                            {rule.triggerDays?.map((day: string) => (
+                              <Badge key={day} variant="outline" className="text-xs capitalize">
+                                {day}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Compensation:</p>
+                          <p className="text-sm font-medium capitalize">
+                            {rule.compensationStrategy?.replace('_', ' ')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3 text-sm">
+                        <div className="text-center">
+                          <div className="text-red-600 font-medium">
+                            ±{parseFloat(rule.flexProtein || 0).toFixed(0)}%
+                          </div>
+                          <div className="text-gray-600 dark:text-gray-400">Protein</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-blue-600 font-medium">
+                            ±{parseFloat(rule.flexCarbs || 0).toFixed(0)}%
+                          </div>
+                          <div className="text-gray-600 dark:text-gray-400">Carbs</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-yellow-600 font-medium">
+                            ±{parseFloat(rule.flexFat || 0).toFixed(0)}%
+                          </div>
+                          <div className="text-gray-600 dark:text-gray-400">Fat</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div className="mt-6 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
+                      Flexibility Tips:
+                    </h4>
+                    <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
+                      <li>• Weekend rules allow higher fat/carb flexibility</li>
+                      <li>• Business lunches can compensate with lighter dinner</li>
+                      <li>• Social events: Bank calories earlier in the day</li>
+                      <li>• Next-day compensation maintains weekly averages</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Settings className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    No flexibility rules configured yet
+                  </p>
+                  <Button 
+                    onClick={() => createDefaultFlexibilityRules()}
+                    disabled={createFlexibilityMutation.isPending}
+                  >
+                    {createFlexibilityMutation.isPending ? (
+                      <>Creating...</>
+                    ) : (
+                      <>Create Default Flexibility Rules</>
+                    )}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
