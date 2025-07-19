@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// Removed Tabs import - using expandable sections instead
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -22,9 +22,7 @@ import {
   Trash2,
   RotateCcw,
   Copy,
-  X,
-  ChevronDown,
-  ChevronUp
+  X
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -39,7 +37,6 @@ import LoadProgressionTracker from "./load-progression-tracker";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface Exercise {
   id: number;
@@ -204,13 +201,7 @@ function WorkoutSessionsWithBulkActions({
             onStart={() => onStartSession(session.id)}
             onView={() => onViewSession(session.id)}
             onDelete={() => bulkDeleteMutation.mutate([session.id])}
-            onRestart={() => {
-              // TODO: Implement restart functionality  
-              toast({
-                title: "Feature Coming Soon",
-                description: "Session restart will be available in a future update",
-              });
-            }}
+            onRestart={() => restartSessionMutation.mutate(session.id)}
             onDuplicate={() => {
               // TODO: Implement duplicate functionality
               toast({
@@ -355,7 +346,6 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string>("workouts");
-  const [isExpanded, setIsExpanded] = useState(false);
   const queryClient = useQueryClient();
 
   // Session management mutations
@@ -519,7 +509,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   return (
     <div className="space-y-6 p-6">
       {/* Training Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
@@ -558,73 +548,34 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
             </p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Exercises</CardTitle>
+            <Dumbbell className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{exercises.length}</div>
+            <p className="text-xs text-muted-foreground">
+              in exercise database
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Section Selector */}
-      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-        <Card>
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg">Training Sections</CardTitle>
-                  <CardDescription>
-                    {activeTab === "exercises" && "Exercise Library"}
-                    {activeTab === "workouts" && "Workout Sessions"}
-                    {activeTab === "templates" && "Training Templates"}
-                    {activeTab === "mesocycles" && "Periodization"}
-                    {activeTab === "progression" && "Load Progression"}
-                    {activeTab === "volume" && "Volume Landmarks"}
-                    {activeTab === "auto-regulation" && "Auto-Regulation"}
-                  </CardDescription>
-                </div>
-                {isExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {[
-                  { value: "exercises", label: "Exercise Library", icon: Dumbbell },
-                  { value: "workouts", label: "Workout Sessions", icon: Play },
-                  { value: "templates", label: "Training Templates", icon: Target },
-                  { value: "mesocycles", label: "Periodization", icon: Calendar },
-                  { value: "progression", label: "Load Progression", icon: TrendingUp },
-                  { value: "volume", label: "Volume Landmarks", icon: BarChart3 },
-                  { value: "auto-regulation", label: "Auto-Regulation", icon: Clock },
-                ].map((section) => {
-                  const Icon = section.icon;
-                  return (
-                    <Button
-                      key={section.value}
-                      variant={activeTab === section.value ? "default" : "outline"}
-                      className="justify-start h-auto p-3"
-                      onClick={() => {
-                        setActiveTab(section.value);
-                        setIsExpanded(false);
-                      }}
-                    >
-                      <Icon className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{section.label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
+          <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
+          <TabsTrigger value="templates">Training Templates</TabsTrigger>
+          <TabsTrigger value="mesocycles">Periodization</TabsTrigger>
+          <TabsTrigger value="progression">Load Progression</TabsTrigger>
+          <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
+          <TabsTrigger value="auto-regulation">Auto-Regulation</TabsTrigger>
+        </TabsList>
 
-      {/* Content Sections */}
-      <div className="w-full">
-        {activeTab === "exercises" && (
-          <div className="space-y-6">
-            {/* Search Bar */}
+        <TabsContent value="exercises" className="space-y-6">
+          {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -764,57 +715,151 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               </Card>
             ))}
           </div>
-        )}
+        </TabsContent>
 
-        {activeTab === "workouts" && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Workout Sessions</h3>
-              <Button onClick={() => setActiveTab("exercises")}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Workout
-              </Button>
+        <TabsContent value="workouts" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Workout Sessions</h3>
+            <Button onClick={() => setActiveTab("exercises")}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Workout
+            </Button>
+          </div>
+          
+          <WorkoutSessionsWithBulkActions 
+            sessions={recentSessions}
+            onStartSession={setExecutingSessionId}
+            onViewSession={setViewingSessionId}
+            userId={userId}
+          />
+
+          {recentSessions.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <Dumbbell className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No workouts yet</h3>
+                <p className="text-muted-foreground text-center mb-4">
+                  Start your fitness journey by creating your first workout session.
+                </p>
+                <Button onClick={() => setActiveTab("exercises")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create First Workout
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {/* In Progress Sessions */}
+              {recentSessions.filter(session => !session.isCompleted).length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
+                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
+                  </h4>
+                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
+                    <WorkoutSessionCard
+                      key={session.id}
+                      session={session}
+                      onStart={() => setExecutingSessionId(session.id)}
+                      onView={() => setViewingSessionId(session.id)}
+                      onDelete={() => deleteSessionMutation.mutate(session.id)}
+                      onRestart={() => restartSessionMutation.mutate(session.id)}
+                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Completed Sessions */}
+              {recentSessions.filter(session => session.isCompleted).length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
+                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
+                  </h4>
+                  {recentSessions.filter(session => session.isCompleted).map((session) => (
+                    <WorkoutSessionCard
+                      key={session.id}
+                      session={session}
+                      onStart={() => setExecutingSessionId(session.id)}
+                      onView={() => setViewingSessionId(session.id)}
+                      onDelete={() => deleteSessionMutation.mutate(session.id)}
+                      onRestart={() => restartSessionMutation.mutate(session.id)}
+                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            
-            <WorkoutSessionsWithBulkActions 
-              sessions={recentSessions}
-              onStartSession={setExecutingSessionId}
-              onViewSession={setViewingSessionId}
-              userId={userId}
-            />
-          </div>
-        )}
+          )}
+        </TabsContent>
 
-        {activeTab === "templates" && (
-          <div className="space-y-6">
-            <TrainingTemplates userId={userId} />
-          </div>
-        )}
+        <TabsContent value="volume" className="space-y-6">
+          <VolumeLandmarks />
+        </TabsContent>
 
-        {activeTab === "mesocycles" && (
-          <div className="space-y-6">
-            <MesocycleDashboard userId={userId} />
-          </div>
-        )}
+        <TabsContent value="auto-regulation" className="space-y-6">
+          <AutoRegulationDashboard userId={1} />
+        </TabsContent>
 
-        {activeTab === "progression" && (
-          <div className="space-y-6">
-            <LoadProgressionTracker userId={userId} />
+        <TabsContent value="programs" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Training Programs</h3>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Create Program
+            </Button>
           </div>
-        )}
 
-        {activeTab === "volume" && (
-          <div className="space-y-6">
-            <VolumeLandmarks />
-          </div>
-        )}
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <Target className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No training programs yet</h3>
+              <p className="text-muted-foreground text-center mb-4">
+                Create structured training programs with Renaissance Periodization methodology.
+              </p>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Program
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {activeTab === "auto-regulation" && (
-          <div className="space-y-6">
-            <AutoRegulationDashboard userId={1} />
+        <TabsContent value="progress" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Progress Tracking</h3>
+            <Button variant="outline">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View Analytics
+            </Button>
           </div>
-        )}
-      </div>
+
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Track Your Progress</h3>
+              <p className="text-muted-foreground text-center mb-4">
+                Complete workouts to see your strength and volume progression.
+              </p>
+              <Button>
+                <Play className="h-4 w-4 mr-2" />
+                Start First Workout
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="templates" className="space-y-6">
+          <TrainingTemplates userId={userId} />
+        </TabsContent>
+
+        <TabsContent value="mesocycles" className="space-y-6">
+          <MesocycleDashboard userId={userId} />
+        </TabsContent>
+
+        <TabsContent value="progression" className="space-y-6">
+          <LoadProgressionTracker userId={userId} />
+        </TabsContent>
+      </Tabs>
 
       {/* Workout Session Creator Dialog */}
       <WorkoutSessionCreator

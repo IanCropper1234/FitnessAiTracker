@@ -1,4 +1,4 @@
-import { TrainingDashboard } from "@/components/training-dashboard-fixed";
+import { TrainingDashboard } from "@/components/training-dashboard";
 
 interface User {
   id: number;
