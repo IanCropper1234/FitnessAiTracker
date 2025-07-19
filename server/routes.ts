@@ -7,7 +7,7 @@ import { initializeVolumeLandmarks } from "./init-volume-landmarks";
 import { searchFoodDatabase, getFoodByBarcode } from "./data/foods";
 import { getNutritionSummary, logFood, generateNutritionGoal, searchFood } from "./services/nutrition";
 import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorkoutPlan } from "./services/training";
-import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema } from "@shared/schema";
+import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema, nutritionLogs } from "@shared/schema";
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendations } from "./auto-regulation-algorithms";
