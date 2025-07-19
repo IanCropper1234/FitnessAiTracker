@@ -564,15 +564,52 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
-          <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
-          <TabsTrigger value="templates">Training Templates</TabsTrigger>
-          <TabsTrigger value="mesocycles">Periodization</TabsTrigger>
-          <TabsTrigger value="progression">Load Progression</TabsTrigger>
-          <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
-          <TabsTrigger value="auto-regulation">Auto-Regulation</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-2">
+          <TabsList className="inline-flex h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-xl min-w-full">
+            <TabsTrigger 
+              value="exercises" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Exercise Library
+            </TabsTrigger>
+            <TabsTrigger 
+              value="workouts" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Workout Sessions
+            </TabsTrigger>
+            <TabsTrigger 
+              value="templates" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Training Templates
+            </TabsTrigger>
+            <TabsTrigger 
+              value="mesocycles" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Periodization
+            </TabsTrigger>
+            <TabsTrigger 
+              value="progression" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Load Progression
+            </TabsTrigger>
+            <TabsTrigger 
+              value="volume" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Volume Landmarks
+            </TabsTrigger>
+            <TabsTrigger 
+              value="auto-regulation" 
+              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+            >
+              Auto-Regulation
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="exercises" className="space-y-6">
           {/* Search Bar */}

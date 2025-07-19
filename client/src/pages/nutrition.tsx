@@ -133,50 +133,52 @@ export function Nutrition({ user }: NutritionProps) {
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-7 h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <TabsTrigger 
-                value="overview" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                Overview
-              </TabsTrigger>
-              <TabsTrigger 
-                value="foodlog" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                Food Log
-              </TabsTrigger>
-              <TabsTrigger 
-                value="builder" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                Diet Plan
-              </TabsTrigger>
-              <TabsTrigger 
-                value="advanced" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                RP Coach
-              </TabsTrigger>
-              <TabsTrigger 
-                value="body" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                Body
-              </TabsTrigger>
-              <TabsTrigger 
-                value="progression" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                Progress
-              </TabsTrigger>
-              <TabsTrigger 
-                value="shopping" 
-                className="text-xs sm:text-sm px-1 sm:px-2 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all"
-              >
-                Shopping
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto pb-2">
+              <TabsList className="inline-flex h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-xl min-w-full">
+                <TabsTrigger 
+                  value="overview" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="foodlog" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  Food Log
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="builder" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  Diet Plan
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="advanced" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  RP Coach
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="body" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  Body
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="progression" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  Progress
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="shopping" 
+                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                >
+                  Shopping
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="overview">
               <MacroOverview userId={user.id} />
