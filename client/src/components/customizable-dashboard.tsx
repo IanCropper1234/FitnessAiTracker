@@ -556,7 +556,12 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
             <Button
               variant={editMode ? "default" : "outline"}
               size="sm"
-              onClick={() => setEditMode(!editMode)}
+              onClick={() => {
+                setEditMode(!editMode);
+                if (editMode) {
+                  setShowSettings(false); // Close settings when clicking Done
+                }
+              }}
               className="min-h-[44px] flex items-center gap-2"
             >
               <Edit3 className="h-4 w-4" />
