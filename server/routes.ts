@@ -15,6 +15,8 @@ import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendat
 import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
+import { workoutExercises, workoutSessions } from "@shared/schema";
+import { eq, and, desc, sql, lt } from "drizzle-orm";
 
 // Auto-progression algorithm for workout sessions
 async function getAutoProgressedValues(exerciseId: number, userId: number, previousExercise: any) {
@@ -818,6 +820,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         console.log('Updating workout exercise:', workoutExercise.id, 'with data:', updateData);
         await storage.updateWorkoutExercise(workoutExercise.id, updateData);
+      }
+
+      // Auto-record load progression for all completed exercises
+      try {
+        const session = await storage.getWorkoutSession(sessionId);
+        if (session) {
+          for (const exerciseData of completionData.exercises) {
+            const completedSets = exerciseData.sets?.filter((set: any) => set.completed) || [];
+            if (completedSets.length > 0) {
+              const avgWeight = completedSets.reduce((sum: number, set: any) => sum + (parseFloat(set.weight) || 0), 0) / completedSets.length;
+              const avgRpe = completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rpe) || 7), 0) / completedSets.length;
+              const avgRir = completedSets.reduce((sum: number, set: any) => sum + (parseInt(set.rir) || 2), 0) / completedSets.length;
+              
+              // Get previous weight for comparison
+              const previousPerformance = await db
+                .select({ weight: workoutExercises.weight })
+                .from(workoutExercises)
+                .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+                .where(and(
+                  eq(workoutSessions.userId, session.userId),
+                  eq(workoutExercises.exerciseId, exerciseData.exerciseId),
+                  eq(workoutExercises.isCompleted, true),
+                  sql`${workoutSessions.date} < ${session.date}`
+                ))
+                .orderBy(desc(workoutSessions.date))
+                .limit(1);
+
+              const previousWeight = previousPerformance.length > 0 ? parseFloat(previousPerformance[0].weight || '0') : 0;
+              
+              // Record progression data
+              await LoadProgression.recordProgression(
+                session.userId,
+                exerciseData.exerciseId,
+                sessionId,
+                previousWeight,
+                avgWeight,
+                avgRpe,
+                avgRir,
+                avgWeight > previousWeight ? 'weight' : 'volume',
+                'Auto-recorded from workout completion'
+              );
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error recording load progression:', error);
+        // Don't fail the workout completion if progression recording fails
       }
 
       console.log('Workout completion successful for session:', sessionId);

@@ -343,11 +343,27 @@ export class LoadProgression {
   /**
    * Get progression recommendations for upcoming workout
    */
-  static async getWorkoutProgressions(userId: number, exerciseIds: number[]): Promise<LoadProgressionRecommendation[]> {
+  static async getWorkoutProgressions(userId: number, exerciseIds: number[] = []): Promise<LoadProgressionRecommendation[]> {
     
     const recommendations: LoadProgressionRecommendation[] = [];
     
-    for (const exerciseId of exerciseIds) {
+    // If no specific exercises provided, get all exercises user has performed
+    let targetExerciseIds = exerciseIds;
+    if (exerciseIds.length === 0) {
+      const recentExercises = await db
+        .selectDistinct({ exerciseId: workoutExercises.exerciseId })
+        .from(workoutExercises)
+        .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+        .where(and(
+          eq(workoutSessions.userId, userId),
+          eq(workoutExercises.isCompleted, true)
+        ))
+        .limit(20); // Get up to 20 most recent exercises
+      
+      targetExerciseIds = recentExercises.map(e => e.exerciseId);
+    }
+    
+    for (const exerciseId of targetExerciseIds) {
       // Get most recent performance for this exercise
       const recentPerformance = await db
         .select({
