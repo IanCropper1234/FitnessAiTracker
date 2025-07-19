@@ -23,43 +23,7 @@ interface User {
   name: string;
 }
 
-function HeaderControls() {
-  const { theme, toggleTheme } = useTheme();
-  const { language, setLanguage, t } = useLanguage();
-  
-  return (
-    <div className="fixed top-4 right-4 flex items-center gap-2 z-50 safe-top">
-      {/* Language Selector */}
-      <Select value={language} onValueChange={setLanguage}>
-        <SelectTrigger className="min-h-[44px] w-20 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-gray-300 dark:border-gray-600 transition-all duration-200">
-          <Globe className="w-5 h-5" />
-        </SelectTrigger>
-        <SelectContent className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-gray-300 dark:border-gray-600">
-          <SelectItem value="en">EN</SelectItem>
-          <SelectItem value="es">ES</SelectItem>
-          <SelectItem value="ja">JA</SelectItem>
-          <SelectItem value="zh-CN">中文</SelectItem>
-          <SelectItem value="de">DE</SelectItem>
-          <SelectItem value="zh-TW">繁中</SelectItem>
-        </SelectContent>
-      </Select>
-      
-      {/* Theme Toggle */}
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={toggleTheme}
-        className="min-h-[44px] min-w-[44px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
-      >
-        {theme === "light" ? (
-          <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-        ) : (
-          <Sun className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-        )}
-      </Button>
-    </div>
-  );
-}
+// HeaderControls removed - moved to Profile page
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
@@ -77,7 +41,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
-      <HeaderControls />
+      {/* Header controls moved to Profile page */}
       
       <Switch>
         <Route path="/auth">

@@ -456,7 +456,7 @@ export function UserProfile({ userId }: UserProfileProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {[
               'vegetarian',
               'vegan',
@@ -471,15 +471,18 @@ export function UserProfile({ userId }: UserProfileProps) {
               'low_fat',
               'mediterranean'
             ].map((restriction) => (
-              <div key={restriction} className="flex items-center space-x-2">
-                <Checkbox
-                  id={restriction}
-                  checked={profileData.dietaryRestrictions?.includes(restriction) || false}
-                  onCheckedChange={(checked) => handleDietaryRestrictionChange(restriction, checked as boolean)}
-                />
+              <div key={restriction} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="relative">
+                  <Checkbox
+                    id={restriction}
+                    checked={profileData.dietaryRestrictions?.includes(restriction) || false}
+                    onCheckedChange={(checked) => handleDietaryRestrictionChange(restriction, checked as boolean)}
+                    className="h-5 w-5 rounded-sm border-2 border-blue-500 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 data-[state=checked]:text-white"
+                  />
+                </div>
                 <Label
                   htmlFor={restriction}
-                  className="text-sm font-medium text-black dark:text-white capitalize cursor-pointer"
+                  className="text-sm font-medium text-black dark:text-white capitalize cursor-pointer flex-1 select-none"
                 >
                   {restriction.replace('_', ' ')}
                 </Label>
