@@ -516,59 +516,49 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Training Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{trainingStats?.totalSessions || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              workouts completed
-            </p>
-          </CardContent>
-        </Card>
+      {/* Compact Training Stats */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Total Sessions */}
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-2">
+              <Calendar className="h-4 w-4 text-blue-500 mr-1" />
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Sessions</span>
+            </div>
+            <div className="text-xl font-bold text-black dark:text-white">{trainingStats?.totalSessions || 0}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-500">completed</div>
+          </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{trainingStats?.totalVolume || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              kg lifted this month
-            </p>
-          </CardContent>
-        </Card>
+          {/* Total Volume */}
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-2">
+              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Volume</span>
+            </div>
+            <div className="text-xl font-bold text-black dark:text-white">{trainingStats?.totalVolume || 0}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-500">kg lifted</div>
+          </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Session</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{trainingStats?.averageSessionLength || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              minutes per workout
-            </p>
-          </CardContent>
-        </Card>
+          {/* Avg Session */}
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-2">
+              <Clock className="h-4 w-4 text-purple-500 mr-1" />
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Avg Time</span>
+            </div>
+            <div className="text-xl font-bold text-black dark:text-white">{trainingStats?.averageSessionLength || 0}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-500">minutes</div>
+          </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Exercises</CardTitle>
-            <Dumbbell className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{exercises.length}</div>
-            <p className="text-xs text-muted-foreground">
-              in exercise database
-            </p>
-          </CardContent>
-        </Card>
+          {/* Exercises */}
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-2">
+              <Dumbbell className="h-4 w-4 text-orange-500 mr-1" />
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Exercises</span>
+            </div>
+            <div className="text-xl font-bold text-black dark:text-white">{exercises.length}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-500">available</div>
+          </div>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
