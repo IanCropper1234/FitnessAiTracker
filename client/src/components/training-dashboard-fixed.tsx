@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// Removed Tabs import - using expandable sections instead
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -77,271 +76,6 @@ interface TrainingStats {
   }>;
 }
 
-// WorkoutSessionsWithBulkActions Component
-interface WorkoutSessionsWithBulkActionsProps {
-  sessions: WorkoutSession[];
-  onStartSession: (sessionId: number) => void;
-  onViewSession: (sessionId: number) => void;
-  userId: number;
-}
-
-function WorkoutSessionsWithBulkActions({ 
-  sessions, 
-  onStartSession, 
-  onViewSession, 
-  userId 
-}: WorkoutSessionsWithBulkActionsProps) {
-  const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
-  const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  // Bulk delete mutation
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (sessionIds: number[]) => {
-      const response = await apiRequest('DELETE', '/api/training/sessions/bulk', {
-        sessionIds,
-        userId
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Sessions Deleted",
-        description: `${selectedSessions.length} workout sessions have been deleted`,
-      });
-      setSelectedSessions([]);
-      setBulkDeleteMode(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
-    },
-  });
-
-  const handleSelectAll = () => {
-    if (selectedSessions.length === sessions.length) {
-      setSelectedSessions([]);
-    } else {
-      setSelectedSessions(sessions.map(s => s.id));
-    }
-  };
-
-  const handleSessionSelect = (sessionId: number) => {
-    setSelectedSessions(prev => 
-      prev.includes(sessionId) 
-        ? prev.filter(id => id !== sessionId)
-        : [...prev, sessionId]
-    );
-  };
-
-  const handleBulkDelete = () => {
-    if (selectedSessions.length > 0) {
-      bulkDeleteMutation.mutate(selectedSessions);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Bulk Actions Header */}
-      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-        <div className="flex items-center gap-4">
-          <Button
-            variant={bulkDeleteMode ? "destructive" : "outline"}
-            size="sm"
-            onClick={() => {
-              setBulkDeleteMode(!bulkDeleteMode);
-              setSelectedSessions([]);
-            }}
-          >
-            {bulkDeleteMode ? (
-              <>
-                <X className="h-4 w-4 mr-2" />
-                Cancel
-              </>
-            ) : (
-              <>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Bulk Delete
-              </>
-            )}
-          </Button>
-
-          {bulkDeleteMode && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSelectAll}
-              >
-                {selectedSessions.length === sessions.length ? "Deselect All" : "Select All"}
-              </Button>
-              
-              {selectedSessions.length > 0 && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleBulkDelete}
-                  disabled={bulkDeleteMutation.isPending}
-                >
-                  Delete {selectedSessions.length} Session{selectedSessions.length !== 1 ? 's' : ''}
-                </Button>
-              )}
-            </>
-          )}
-        </div>
-
-        {bulkDeleteMode && (
-          <p className="text-sm text-muted-foreground">
-            {selectedSessions.length} of {sessions.length} selected
-          </p>
-        )}
-      </div>
-
-      {/* Sessions Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {sessions.map((session) => (
-          <WorkoutSessionCard
-            key={session.id}
-            session={session}
-            onStart={() => onStartSession(session.id)}
-            onView={() => onViewSession(session.id)}
-            onDelete={() => bulkDeleteMutation.mutate([session.id])}
-            onRestart={() => {
-              // TODO: Implement restart functionality  
-              toast({
-                title: "Feature Coming Soon",
-                description: "Session restart will be available in a future update",
-              });
-            }}
-            onDuplicate={() => {
-              // TODO: Implement duplicate functionality
-              toast({
-                title: "Feature Coming Soon",
-                description: "Session duplication will be available in a future update",
-              });
-            }}
-            showCheckbox={bulkDeleteMode}
-            isSelected={selectedSessions.includes(session.id)}
-            onSelect={() => handleSessionSelect(session.id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// WorkoutSessionCard Component
-interface WorkoutSessionCardProps {
-  session: WorkoutSession;
-  onStart: () => void;
-  onView: () => void;
-  onDelete: () => void;
-  onRestart: () => void;
-  onDuplicate: () => void;
-  showCheckbox?: boolean;
-  isSelected?: boolean;
-  onSelect?: () => void;
-}
-
-function WorkoutSessionCard({ 
-  session, 
-  onStart, 
-  onView, 
-  onDelete, 
-  onRestart, 
-  onDuplicate,
-  showCheckbox = false,
-  isSelected = false,
-  onSelect
-}: WorkoutSessionCardProps) {
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex items-start gap-3">
-            {showCheckbox && (
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={onSelect}
-                className="mt-1"
-              />
-            )}
-            <div>
-              <CardTitle className="text-lg">{session.name}</CardTitle>
-              <CardDescription>
-                {new Date(session.date).toLocaleDateString()}
-              </CardDescription>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {session.isCompleted && (
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-            )}
-            <Badge variant={session.isCompleted ? "default" : "secondary"}>
-              {session.isCompleted ? "Completed" : "In Progress"}
-            </Badge>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {!session.isCompleted && (
-                  <DropdownMenuItem onClick={onRestart}>
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Restart Session
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={onDuplicate}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Duplicate Session
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDelete} className="text-destructive">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Session
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Duration</p>
-            <p className="text-lg font-semibold">{session.duration || 0} min</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Total Volume</p>
-            <p className="text-lg font-semibold">{session.totalVolume || 0} kg</p>
-          </div>
-        </div>
-        
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          {!session.isCompleted ? (
-            <Button 
-              onClick={onStart}
-              className="flex-1"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              Continue Workout
-            </Button>
-          ) : (
-            <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={onView}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Details
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 interface TrainingDashboardProps {
   userId: number;
 }
@@ -357,37 +91,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [activeTab, setActiveTab] = useState<string>("workouts");
   const [isExpanded, setIsExpanded] = useState(false);
   const queryClient = useQueryClient();
-
-  // Session management mutations
-  const deleteSessionMutation = useMutation({
-    mutationFn: async (sessionId: number) => {
-      const response = await apiRequest('DELETE', `/api/training/sessions/${sessionId}`);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
-    },
-  });
-
-  const restartSessionMutation = useMutation({
-    mutationFn: async (sessionId: number) => {
-      const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/restart`);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
-    },
-  });
-
-  const duplicateSessionMutation = useMutation({
-    mutationFn: async (sessionId: number) => {
-      const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/duplicate`);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
-    },
-  });
+  const { toast } = useToast();
 
   // Fetch exercises
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
@@ -402,6 +106,17 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   // Fetch recent workout sessions
   const { data: recentSessions = [], isLoading: sessionsLoading } = useQuery<WorkoutSession[]>({
     queryKey: ["/api/training/sessions", userId],
+  });
+
+  // Session management mutations
+  const deleteSessionMutation = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const response = await apiRequest('DELETE', `/api/training/sessions/${sessionId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
+    },
   });
 
   // Group exercises by category
@@ -466,21 +181,11 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     setSelectedExercises([]);
   };
 
-  // Start workout session
-  const startWorkoutSession = (sessionId: number) => {
-    setActiveSessionId(sessionId);
-  };
-
-  // Handle workout completion
-  const handleWorkoutComplete = () => {
-    setActiveSessionId(null);
-  };
-
   if (exercisesLoading || statsLoading || sessionsLoading) {
     return (
       <div className="space-y-6 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
@@ -518,7 +223,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Training Stats Cards */}
+      {/* Training Stats Cards - 3:1 Layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -560,7 +265,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
         </Card>
       </div>
 
-      {/* Section Selector */}
+      {/* Section Selector - Expandable */}
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <Card>
           <CollapsibleTrigger asChild>
@@ -625,44 +330,46 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
         {activeTab === "exercises" && (
           <div className="space-y-6">
             {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search exercises by name, muscle group, equipment..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Selected exercises indicator */}
-          {selectedExercises.length > 0 && (
-            <div className="bg-muted p-4 rounded-lg">
-              <h4 className="font-medium mb-2">Selected for Workout ({selectedExercises.length})</h4>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {selectedExercises.map((exercise) => (
-                  <Badge key={exercise.id} variant="secondary" className="flex items-center gap-1">
-                    {exercise.name}
-                    <button
-                      onClick={() => setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id))}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      ×
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-              <Button 
-                onClick={() => setShowSessionCreator(true)}
-                disabled={selectedExercises.length === 0}
-                className="w-full"
-              >
-                Create Workout Session ({selectedExercises.length} exercises)
-              </Button>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search exercises by name, muscle group, equipment..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
             </div>
-          )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            {/* Selected exercises indicator */}
+            {selectedExercises.length > 0 && (
+              <Card>
+                <CardContent className="p-4">
+                  <h4 className="font-medium mb-2">Selected for Workout ({selectedExercises.length})</h4>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {selectedExercises.map((exercise) => (
+                      <Badge key={exercise.id} variant="secondary" className="flex items-center gap-1">
+                        {exercise.name}
+                        <button
+                          onClick={() => setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id))}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button 
+                    onClick={() => setShowSessionCreator(true)}
+                    disabled={selectedExercises.length === 0}
+                    className="w-full"
+                  >
+                    Create Workout Session ({selectedExercises.length} exercises)
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Category Filters */}
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedCategory === "all" ? "default" : "outline"}
@@ -683,86 +390,85 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                 </Button>
               ))}
             </div>
-            
-            <CreateExerciseButton />
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg">{exercise.name}</CardTitle>
-                    <Badge variant="outline" className="capitalize">
-                      {exercise.category}
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className={getDifficultyColor(exercise.difficulty)}>
-                      {exercise.difficulty}
-                    </Badge>
-                    <Badge className={getPatternColor(exercise.movementPattern)}>
-                      {exercise.movementPattern}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Primary Muscle</p>
-                      <p className="text-sm capitalize font-medium">{exercise.primaryMuscle.replace('_', ' ')}</p>
+            {/* Exercise Grid */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredExercises.map((exercise) => (
+                <Card key={exercise.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-lg">{exercise.name}</CardTitle>
+                      <Badge variant="outline" className="capitalize">
+                        {exercise.category}
+                      </Badge>
                     </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Equipment</p>
-                      <p className="text-sm capitalize">{exercise.equipment?.replace('_', ' ') || "Bodyweight"}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className={getDifficultyColor(exercise.difficulty)}>
+                        {exercise.difficulty}
+                      </Badge>
+                      <Badge className={getPatternColor(exercise.movementPattern)}>
+                        {exercise.movementPattern}
+                      </Badge>
                     </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Muscle Groups</p>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {exercise.muscleGroups.map((muscle) => (
-                          <Badge key={muscle} variant="secondary" className="text-xs capitalize">
-                            {muscle.replace('_', ' ')}
-                          </Badge>
-                        ))}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Primary Muscle</p>
+                        <p className="text-sm capitalize font-medium">{exercise.primaryMuscle.replace('_', ' ')}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Equipment</p>
+                        <p className="text-sm capitalize">{exercise.equipment?.replace('_', ' ') || "Bodyweight"}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Muscle Groups</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {exercise.muscleGroups.map((muscle) => (
+                            <Badge key={muscle} variant="secondary" className="text-xs capitalize">
+                              {muscle.replace('_', ' ')}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          {exercise.instructions}
+                        </p>
+                      </div>
+                      
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          size="sm" 
+                          className="flex-1"
+                          variant={isInWorkout(exercise.id) ? "secondary" : "default"}
+                          onClick={() => addToWorkout(exercise)}
+                          disabled={isInWorkout(exercise.id)}
+                        >
+                          {isInWorkout(exercise.id) ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 mr-2" />
+                              Added
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add to Workout
+                            </>
+                          )}
+                        </Button>
+                        <ExerciseManagement exercise={exercise} />
                       </div>
                     </div>
-                    
-                    <Separator />
-                    
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        {exercise.instructions}
-                      </p>
-                    </div>
-                    
-                    <div className="flex gap-2 pt-2">
-                      <Button 
-                        size="sm" 
-                        className="flex-1"
-                        variant={isInWorkout(exercise.id) ? "secondary" : "default"}
-                        onClick={() => addToWorkout(exercise)}
-                        disabled={isInWorkout(exercise.id)}
-                      >
-                        {isInWorkout(exercise.id) ? (
-                          <>
-                            <CheckCircle2 className="h-4 w-4 mr-2" />
-                            Added
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add to Workout
-                          </>
-                        )}
-                      </Button>
-                      <ExerciseManagement exercise={exercise} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
 
@@ -776,12 +482,74 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               </Button>
             </div>
             
-            <WorkoutSessionsWithBulkActions 
-              sessions={recentSessions}
-              onStartSession={setExecutingSessionId}
-              onViewSession={setViewingSessionId}
-              userId={userId}
-            />
+            {recentSessions.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <Dumbbell className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No workouts yet</h3>
+                  <p className="text-muted-foreground text-center mb-4">
+                    Start your fitness journey by creating your first workout session.
+                  </p>
+                  <Button onClick={() => setActiveTab("exercises")}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create First Workout
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {recentSessions.map((session) => (
+                  <Card key={session.id}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg">{session.name}</CardTitle>
+                          <CardDescription>
+                            {new Date(session.date).toLocaleDateString()}
+                          </CardDescription>
+                        </div>
+                        <Badge variant={session.isCompleted ? "default" : "secondary"}>
+                          {session.isCompleted ? "Completed" : "In Progress"}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">Duration</p>
+                          <p className="text-lg font-semibold">{session.duration || 0} min</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">Total Volume</p>
+                          <p className="text-lg font-semibold">{session.totalVolume || 0} kg</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        {!session.isCompleted ? (
+                          <Button 
+                            onClick={() => setExecutingSessionId(session.id)}
+                            className="flex-1"
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            Continue Workout
+                          </Button>
+                        ) : (
+                          <Button 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => setViewingSessionId(session.id)}
+                          >
+                            <BarChart3 className="h-4 w-4 mr-2" />
+                            View Details
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
