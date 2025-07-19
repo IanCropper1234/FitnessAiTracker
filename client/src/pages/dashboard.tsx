@@ -3,10 +3,13 @@ import { useLanguage } from "@/components/language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
+import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { Calendar, Activity, Target, TrendingUp, Plus } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils } from "lucide-react";
 
 interface User {
   id: number;
@@ -22,6 +25,7 @@ export function Dashboard({ user }: DashboardProps) {
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
+  const [showTrainingOverview, setShowTrainingOverview] = useState(false);
 
   const { data: nutritionSummary } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id],
@@ -60,8 +64,67 @@ export function Dashboard({ user }: DashboardProps) {
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Overview Section with Toggle */}
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-black dark:text-white flex items-center gap-2">
+                  {showTrainingOverview ? (
+                    <>
+                      <Dumbbell className="h-5 w-5" />
+                      Training Overview
+                    </>
+                  ) : (
+                    <>
+                      <Utensils className="h-5 w-5" />
+                      {t("nutrition")} Overview
+                    </>
+                  )}
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
+                  {showTrainingOverview ? "Training progress and analytics" : "Today's macro breakdown"}
+                </CardDescription>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="overview-toggle" className="text-sm text-gray-600 dark:text-gray-400">
+                  Nutrition
+                </Label>
+                <Switch
+                  id="overview-toggle"
+                  checked={showTrainingOverview}
+                  onCheckedChange={setShowTrainingOverview}
+                />
+                <Label htmlFor="overview-toggle" className="text-sm text-gray-600 dark:text-gray-400">
+                  Training
+                </Label>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {showTrainingOverview ? (
+              <TrainingOverview userId={user.id} />
+            ) : (
+              nutritionSummary ? (
+                <MacroChart
+                  protein={nutritionSummary.totalProtein}
+                  carbs={nutritionSummary.totalCarbs}
+                  fat={nutritionSummary.totalFat}
+                  goalProtein={nutritionSummary.goalProtein}
+                  goalCarbs={nutritionSummary.goalCarbs}
+                  goalFat={nutritionSummary.goalFat}
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                  No nutrition data yet. Start logging your meals!
+                </div>
+              )
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Quick Stats - Single Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -141,32 +204,6 @@ export function Dashboard({ user }: DashboardProps) {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Nutrition Overview */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">{t("nutrition")} Overview</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Today's macro breakdown
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {nutritionSummary ? (
-                <MacroChart
-                  protein={nutritionSummary.totalProtein}
-                  carbs={nutritionSummary.totalCarbs}
-                  fat={nutritionSummary.totalFat}
-                  goalProtein={nutritionSummary.goalProtein}
-                  goalCarbs={nutritionSummary.goalCarbs}
-                  goalFat={nutritionSummary.goalFat}
-                />
-              ) : (
-                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                  No nutrition data yet. Start logging your meals!
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Quick Actions */}
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader>
@@ -199,22 +236,22 @@ export function Dashboard({ user }: DashboardProps) {
               </Button>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Recent Activity */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader>
-            <CardTitle className="text-black dark:text-white">Recent Activity</CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-400">
-              Your latest nutrition and training logs
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-              No recent activity. Start tracking your fitness journey!
-            </div>
-          </CardContent>
-        </Card>
+          {/* Recent Activity Placeholder */}
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader>
+              <CardTitle className="text-black dark:text-white">Recent Activity</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                Your latest updates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                Recent activity will appear here
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Nutrition Logger Modal */}
         {showNutritionLogger && (
