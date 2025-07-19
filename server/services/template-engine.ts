@@ -140,7 +140,7 @@ export class TemplateEngine {
           sets: Math.round(adjustedSets),
           repsRange: templateExercise.repsRange,
           restPeriod: templateExercise.restPeriod,
-          orderIndex: templateExercise.orderIndex,
+          orderIndex: templateExercise.orderIndex ?? workoutTemplate.exercises.indexOf(templateExercise),
           notes: templateExercise.notes
         });
       }
@@ -167,7 +167,7 @@ export class TemplateEngine {
           .values({
             sessionId,
             exerciseId: exercise.exerciseId,
-            orderIndex: exercise.orderIndex,
+            orderIndex: exercise.orderIndex ?? 0,
             sets: exercise.sets,
             targetReps: exercise.repsRange,
             restPeriod: exercise.restPeriod,
@@ -277,7 +277,7 @@ export class TemplateEngine {
         sets: Math.round(adjustedSets),
         repsRange: templateExercise.repsRange,
         restPeriod: templateExercise.restPeriod,
-        orderIndex: templateExercise.orderIndex,
+        orderIndex: templateExercise.orderIndex ?? workoutTemplate.exercises.indexOf(templateExercise),
         notes: templateExercise.notes
       });
     }
@@ -298,13 +298,14 @@ export class TemplateEngine {
     const sessionId = sessionResult[0].id;
 
     // Add exercises to session
-    for (const exercise of customizedExercises) {
+    for (let i = 0; i < customizedExercises.length; i++) {
+      const exercise = customizedExercises[i];
       await db
         .insert(workoutExercises)
         .values({
           sessionId,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex,
+          orderIndex: exercise.orderIndex ?? i,
           sets: exercise.sets,
           targetReps: exercise.repsRange,
           restPeriod: exercise.restPeriod,
