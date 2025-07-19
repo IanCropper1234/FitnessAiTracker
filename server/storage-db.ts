@@ -203,6 +203,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
+    // Double-check for duplicates before insertion (case-insensitive)
+    const existingExercise = await this.getExerciseByName(exercise.name);
+    if (existingExercise) {
+      throw new Error(`Exercise with name "${exercise.name}" already exists`);
+    }
+    
     const [newExercise] = await db
       .insert(exercises)
       .values(exercise)

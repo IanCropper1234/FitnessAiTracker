@@ -1216,18 +1216,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const exerciseData = req.body;
       
-      // Check for duplicate exercise names (case-insensitive)
-      const existingExercise = await storage.getExerciseByName(exerciseData.name);
-      if (existingExercise) {
-        return res.status(409).json({ 
-          error: "Exercise already exists",
-          message: `An exercise named "${exerciseData.name}" already exists in the database` 
+      // Validate exercise name
+      if (!exerciseData.name || typeof exerciseData.name !== 'string' || exerciseData.name.trim() === '') {
+        return res.status(400).json({ 
+          error: "Invalid exercise name",
+          message: "Exercise name is required and must be a non-empty string" 
         });
       }
+      
+      // Trim the name to prevent whitespace issues
+      exerciseData.name = exerciseData.name.trim();
       
       const exercise = await storage.createExercise(exerciseData);
       res.json(exercise);
     } catch (error: any) {
+      if (error.message.includes('already exists')) {
+        return res.status(409).json({ 
+          error: "Exercise already exists",
+          message: error.message 
+        });
+      }
       res.status(400).json({ message: error.message });
     }
   });
