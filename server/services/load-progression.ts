@@ -331,11 +331,11 @@ export class LoadProgression {
         userId,
         exerciseId,
         sessionId,
-        previousWeight: previousWeight.toString(),
-        currentWeight: currentWeight.toString(),
+        previousWeight: parseFloat(previousWeight.toString()),
+        currentWeight: parseFloat(currentWeight.toString()),
         targetWeight: null, // Will be calculated for next session
-        rpeAverage: averageRpe.toString(),
-        rirAverage: averageRir.toString(),
+        rpeAverage: parseFloat(averageRpe.toString()),
+        rirAverage: parseFloat(averageRir.toString()),
         progressionType,
         notes
       });

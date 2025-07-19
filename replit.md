@@ -291,22 +291,24 @@ The codebase is structured to support planned n8n workflow automation for:
 
 ## Data Architecture & Routing Logic
 
-### Core Data Flow Architecture
+### Core Data Flow Architecture (Current Implementation)
 
 **Primary Entity Relationships:**
 ```
 users (1) → (many) mesocycles → (many) workout_sessions → (many) workout_exercises
-users (1) → (many) auto_regulation_feedback
-users (1) → (many) volume_landmarks → (many) muscle_groups
-users (1) → (many) nutrition_logs → food_database (via AI analysis)
+users (1) → (many) auto_regulation_feedback → load_progression_tracking
+users (1) → (many) volume_landmarks ↔ muscle_groups (with auto-regulation coupling)
+users (1) → (many) nutrition_logs → food_database (via AI analysis + RP categorization)
+mesocycles (1) → (many) workout_sessions ↔ load_progression_tracking (priority integration)
 ```
 
-**Training System Data Flow:**
-1. **Mesocycle Creation** → Auto-generates all workout_sessions for entire duration
-2. **Session Execution** → Records workout_exercises with performance data
-3. **Session Completion** → Triggers auto_regulation_feedback collection
-4. **Feedback Analysis** → Updates volume_landmarks via AI algorithms
-5. **Week Advancement** → Recalculates next week's volume targets
+**Modern Training System Data Flow (2025):**
+1. **Mesocycle Creation** → Auto-generates targeted workout_sessions with volume progression
+2. **Session Execution** → Dynamic set/rep management + real-time progress tracking
+3. **Session Completion** → Auto-records load_progression_tracking + triggers auto_regulation_feedback
+4. **Feedback Analysis** → Updates volume_landmarks via RP algorithms + calculates fatigue accumulation
+5. **Week Advancement** → Recalculates volume targets + auto-adjusts upcoming workout weights
+6. **Load Progression Integration** → Prioritizes mesocycle-adjusted weights over historical performance data
 
 ### Complete Database Schema Reference
 
@@ -340,36 +342,54 @@ users (1) → (many) nutrition_logs → food_database (via AI analysis)
 - **meal_timing_preferences**: id, user_id, wake_time, sleep_time, workout_time, workout_days[], meals_per_day, pre_workout_meals, post_workout_meals, updated_at
 - **body_metrics**: id, user_id, date, weight, body_fat_percentage, chest, waist, hips, bicep, thigh, created_at
 
-### Critical Data Routing Patterns
+### Critical Data Routing Patterns (Current Implementation)
 
-#### Mesocycle to Session Creation
+#### Mesocycle-Centric Session Creation
 ```typescript
-// When creating mesocycle → automatically generate all sessions
-const sessions = await generateMesocycleProgram(mesocycleId, templateId, customProgram)
-// Each session links: mesocycle_id → mesocycles.id
+// Modern mesocycle creation with targeted programming
+const mesocycleId = await MesocyclePeriodization.createMesocycleWithProgram(
+  userId, name, templateId, totalWeeks, customProgram
+)
+// Auto-generates: workout_sessions with mesocycle_id linkage + exercise assignments
+// Links: mesocycles.id → workout_sessions.mesocycle_id → workout_exercises.session_id
 ```
 
-#### Session to Exercise Assignment
+#### Dynamic Session Execution & Load Progression
 ```typescript
-// When creating session → assign exercises based on template
-const exercises = await assignExercisesToSession(sessionId, templateStructure)
-// Each exercise links: session_id → workout_sessions.id
+// Session completion triggers comprehensive data recording
+await WorkoutCompletion.complete(sessionId, {
+  exercises: [{ exerciseId, sets: [{ weight, reps, rpe, rir }] }]
+})
+// Auto-records: workout_exercises.performance + load_progression_tracking.data
+// Triggers: auto_regulation_feedback collection + volume_landmarks updates
 ```
 
-#### Feedback to Volume Adjustment
+#### Integrated Feedback & Auto-Regulation
 ```typescript
-// When feedback submitted → trigger auto-regulation
-const feedback = await createAutoRegulationFeedback(sessionId, feedbackData)
-const recommendations = await generateVolumeRecommendations(userId, feedback)
-// Updates: volume_landmarks.current_volume, recovery_level, adaptation_level
+// Feedback triggers volume and load progression adjustments
+const feedback = await AutoRegulationFeedback.create(sessionId, feedbackData)
+const volumeUpdates = await MesocyclePeriodization.updateVolumeLandmarks(userId, feedback)
+const loadRecommendations = await LoadProgression.getWorkoutProgressions(userId)
+// Updates: volume_landmarks + mesocycle progression + load progression recommendations
 ```
 
-#### Week Advancement Logic
+#### Advanced Week Progression with Load Integration
 ```typescript
-// When advancing week → recalculate all volume targets
-const newWeek = await advanceWeek(mesocycleId)
-const volumeAdjustments = await calculateVolumeProgression(userId, newWeek)
-// Updates: mesocycles.current_week, volume_landmarks adjustments
+// Week advancement with integrated load progression priorities
+const advancement = await MesocyclePeriodization.advanceWeek(mesocycleId)
+const loadAlignment = await LoadProgression.getWorkoutProgressions(userId)
+// Priority System: mesocycle-adjusted weights (90% confidence) > historical data (75% confidence)
+// Updates: mesocycles.current_week + workout_exercises.weight + volume targets
+```
+
+#### Load Progression Priority Integration
+```typescript
+// Load progression prioritizes mesocycle programming over historical data
+const recommendations = await LoadProgression.getWorkoutProgressions(userId)
+// Data Priority: 
+// 1. Upcoming mesocycle workouts (auto-adjusted by Advance Week)
+// 2. Historical performance data (for non-mesocycle exercises)
+// Result: Aligned recommendations showing mesocycle-adjusted weights
 ```
 
 ### Data Validation Rules
@@ -396,7 +416,22 @@ const volumeAdjustments = await calculateVolumeProgression(userId, newWeek)
 
 ## Recent Changes
 
-### January 18, 2025 (Latest - VALIDATED: Load Progression & Advance Week Integration)
+### January 18, 2025 (Latest - COMPLETE: Documentation Update & Load Progression Fix)
+- ✅ **COMPREHENSIVE DOCUMENTATION UPDATE**: Updated replit.md with current routing patterns and data architecture
+- ✅ **Modern Data Flow Architecture**: Documented mesocycle-centric approach with load progression integration
+- ✅ **Critical Routing Patterns**: Added 5 key routing patterns reflecting current implementation:
+  - Mesocycle-Centric Session Creation with targeted programming
+  - Dynamic Session Execution with comprehensive auto-recording
+  - Integrated Feedback & Auto-Regulation with volume coupling
+  - Advanced Week Progression with load integration priorities
+  - Load Progression Priority Integration (mesocycle > historical data)
+- ✅ **Load Progression Database Fix**: Fixed data type conversion in recordProgression method
+- ✅ **Entity Relationships Updated**: Documented current relationships including auto-regulation coupling and priority integration
+- ✅ **Production-Ready Patterns**: Documented error handling, priority systems, and confidence scoring mechanisms
+- ✅ **RP Methodology Integration**: Added Renaissance Periodization categorization and methodology documentation
+- ✅ **Testing Methodology**: Documented validation approach with actual data and cleanup procedures
+
+### January 18, 2025 (Earlier - VALIDATED: Load Progression & Advance Week Integration)
 - ✅ **COMPREHENSIVE TESTING COMPLETED**: Validated Load Progression and Advance Week integration with actual data
 - ✅ **Root Issue Resolved**: Fixed critical misalignment where Load Progression showed outdated completed workout weights while Advance Week had already updated upcoming workout weights
 - ✅ **Integration Logic Verified**: Load Progression now prioritizes upcoming mesocycle workouts over past performance data
