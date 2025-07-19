@@ -14,6 +14,7 @@ import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendat
 import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
+import { AnalyticsService } from "./services/analytics-service";
 import { workoutExercises, workoutSessions } from "@shared/schema";
 import { eq, and, desc, sql, lt } from "drizzle-orm";
 
@@ -2269,6 +2270,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error initializing templates:", error);
       res.status(500).json({ error: "Failed to initialize templates" });
+    }
+  });
+
+  // Analytics and Reporting Routes
+  
+  // Get nutrition analytics for a time period
+  app.get("/api/analytics/nutrition/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: "startDate and endDate are required" });
+      }
+      
+      const analytics = await AnalyticsService.getNutritionAnalytics(
+        userId, 
+        startDate as string, 
+        endDate as string
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching nutrition analytics:", error);
+      res.status(500).json({ error: "Failed to fetch nutrition analytics" });
+    }
+  });
+
+  // Get training analytics for a time period
+  app.get("/api/analytics/training/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: "startDate and endDate are required" });
+      }
+      
+      const analytics = await AnalyticsService.getTrainingAnalytics(
+        userId, 
+        startDate as string, 
+        endDate as string
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching training analytics:", error);
+      res.status(500).json({ error: "Failed to fetch training analytics" });
+    }
+  });
+
+  // Get body progress analytics for a time period
+  app.get("/api/analytics/body-progress/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: "startDate and endDate are required" });
+      }
+      
+      const analytics = await AnalyticsService.getBodyProgressAnalytics(
+        userId, 
+        startDate as string, 
+        endDate as string
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching body progress analytics:", error);
+      res.status(500).json({ error: "Failed to fetch body progress analytics" });
+    }
+  });
+
+  // Get auto-regulation feedback analytics for a time period
+  app.get("/api/analytics/feedback/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: "startDate and endDate are required" });
+      }
+      
+      const analytics = await AnalyticsService.getFeedbackAnalytics(
+        userId, 
+        startDate as string, 
+        endDate as string
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching feedback analytics:", error);
+      res.status(500).json({ error: "Failed to fetch feedback analytics" });
+    }
+  });
+
+  // Get comprehensive analytics summary
+  app.get("/api/analytics/comprehensive/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: "startDate and endDate are required" });
+      }
+      
+      const analytics = await AnalyticsService.getComprehensiveAnalytics(
+        userId, 
+        startDate as string, 
+        endDate as string
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching comprehensive analytics:", error);
+      res.status(500).json({ error: "Failed to fetch comprehensive analytics" });
     }
   });
 

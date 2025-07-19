@@ -11,6 +11,7 @@ import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { TrainingPage } from "./pages/training";
+import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -93,6 +94,9 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/training">
           {user ? <TrainingPage user={user} /> : <div>Loading...</div>}
+        </Route>
+        <Route path="/reports">
+          {user ? <ReportsPage userId={user.id} /> : <div>Loading...</div>}
         </Route>
         <Route path="/profile">
           {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div>Loading...</div>}
