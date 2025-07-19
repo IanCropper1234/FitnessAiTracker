@@ -276,7 +276,7 @@ function SortableCard({ card, userId }: { card: DashboardCard; userId: number })
       >
         <GripVertical className="h-4 w-4 text-gray-600 dark:text-gray-400" />
       </div>
-      {React.createElement(card.component, { userId })}
+      {card.component && <card.component userId={userId} />}
     </div>
   );
 }
@@ -364,13 +364,30 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
     })
   );
 
+  // Component mapping to ensure components are preserved after localStorage loading
+  const componentMap = {
+    'calories': CaloriesCard,
+    'protein': ProteinCard,
+    'training-sessions': TrainingSessionsCard,
+    'weight-progress': WeightProgressCard,
+    'training-volume': TrainingVolumeCard,
+    'recovery-score': RecoveryScoreCard,
+    'macro-overview': MacroOverviewCard,
+  };
+
   // Load saved card configuration from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`dashboard-config-${user.id}`);
     if (saved) {
       try {
         const savedCards = JSON.parse(saved);
-        setCards(savedCards);
+        // Restore component references after loading from localStorage
+        const restoredCards = savedCards.map((card: any) => ({
+          ...card,
+          component: componentMap[card.id as keyof typeof componentMap],
+          icon: cards.find(c => c.id === card.id)?.icon || Target,
+        }));
+        setCards(restoredCards);
       } catch (error) {
         console.warn('Failed to load dashboard configuration:', error);
       }
