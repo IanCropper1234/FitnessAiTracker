@@ -103,8 +103,8 @@ export function Nutrition({ user }: NutritionProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white pb-20">
-      <div className="container mx-auto p-4 space-y-6">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+      <div className="container mx-auto p-4 space-y-6 pb-24">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
