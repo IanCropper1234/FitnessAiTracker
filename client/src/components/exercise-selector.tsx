@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Plus, Dumbbell, Target } from "lucide-react";
 
@@ -96,6 +96,9 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>Select Exercises</DialogTitle>
+              <DialogDescription>
+                Choose exercises from the library to add to your workout plan
+              </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">
@@ -243,7 +246,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                     <label className="text-sm font-medium">Sets</label>
                     <Input
                       type="number"
-                      value={exercise.sets}
+                      value={exercise.sets || 1}
                       onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
                       min="1"
                       max="10"
@@ -261,7 +264,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                     <label className="text-sm font-medium">Rest (sec)</label>
                     <Input
                       type="number"
-                      value={exercise.restPeriod}
+                      value={exercise.restPeriod || 60}
                       onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value) || 60)}
                       min="30"
                       max="600"
