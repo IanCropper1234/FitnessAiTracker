@@ -44,6 +44,7 @@ import LoadProgressionTracker from "./load-progression-tracker";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown, Check } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -572,57 +573,116 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="overflow-x-auto pb-2">
-          <TabsList className="inline-flex h-16 p-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl min-w-full border-2 border-red-100 dark:border-gray-700 shadow-lg">
-            <TabsTrigger 
-              value="exercises" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <Dumbbell className="h-4 w-4" />
-              Arsenal
-            </TabsTrigger>
-            <TabsTrigger 
-              value="workouts" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <Activity className="h-4 w-4" />
-              Sessions
-            </TabsTrigger>
-            <TabsTrigger 
-              value="templates" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <Trophy className="h-4 w-4" />
-              Programs
-            </TabsTrigger>
-            <TabsTrigger 
-              value="mesocycles" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <Timer className="h-4 w-4" />
-              Cycles
-            </TabsTrigger>
-            <TabsTrigger 
-              value="progression" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <TrendingUp className="h-4 w-4" />
-              Progress
-            </TabsTrigger>
-            <TabsTrigger 
-              value="volume" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <Gauge className="h-4 w-4" />
-              Volume
-            </TabsTrigger>
-            <TabsTrigger 
-              value="auto-regulation" 
-              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
-            >
-              <Zap className="h-4 w-4" />
-              Recovery
-            </TabsTrigger>
-          </TabsList>
+          {/* iOS-style Dropdown Tab Selector */}
+          <div className="flex justify-center mb-6">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="h-14 px-6 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 border-2 border-red-100 dark:border-gray-700 rounded-2xl shadow-lg hover:scale-105 transition-all duration-300 min-w-[200px]"
+                >
+                  <div className="flex items-center gap-3">
+                    {activeTab === "exercises" && <Dumbbell className="h-5 w-5 text-blue-500" />}
+                    {activeTab === "workouts" && <Activity className="h-5 w-5 text-green-500" />}
+                    {activeTab === "templates" && <Trophy className="h-5 w-5 text-purple-500" />}
+                    {activeTab === "mesocycles" && <Timer className="h-5 w-5 text-orange-500" />}
+                    {activeTab === "progression" && <TrendingUp className="h-5 w-5 text-red-500" />}
+                    {activeTab === "volume" && <Gauge className="h-5 w-5 text-yellow-500" />}
+                    {activeTab === "auto-regulation" && <Zap className="h-5 w-5 text-teal-500" />}
+                    <span className="font-semibold">
+                      {activeTab === "exercises" && "Exercise Arsenal"}
+                      {activeTab === "workouts" && "Training Sessions"}
+                      {activeTab === "templates" && "Program Templates"}
+                      {activeTab === "mesocycles" && "Training Cycles"}
+                      {activeTab === "progression" && "Load Progression"}
+                      {activeTab === "volume" && "Volume Control"}
+                      {activeTab === "auto-regulation" && "Recovery Hub"}
+                    </span>
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64 p-2 bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl">
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("exercises")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-all"
+                >
+                  <Dumbbell className="h-5 w-5 text-blue-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Exercise Arsenal</div>
+                    <div className="text-xs text-gray-500">Browse exercise library</div>
+                  </div>
+                  {activeTab === "exercises" && <Check className="h-4 w-4 text-blue-500" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("workouts")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer transition-all"
+                >
+                  <Activity className="h-5 w-5 text-green-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Training Sessions</div>
+                    <div className="text-xs text-gray-500">Active workout sessions</div>
+                  </div>
+                  {activeTab === "workouts" && <Check className="h-4 w-4 text-green-500" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("templates")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer transition-all"
+                >
+                  <Trophy className="h-5 w-5 text-purple-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Program Templates</div>
+                    <div className="text-xs text-gray-500">Pre-built training programs</div>
+                  </div>
+                  {activeTab === "templates" && <Check className="h-4 w-4 text-purple-500" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("mesocycles")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer transition-all"
+                >
+                  <Timer className="h-5 w-5 text-orange-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Training Cycles</div>
+                    <div className="text-xs text-gray-500">Periodization management</div>
+                  </div>
+                  {activeTab === "mesocycles" && <Check className="h-4 w-4 text-orange-500" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("progression")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all"
+                >
+                  <TrendingUp className="h-5 w-5 text-red-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Load Progression</div>
+                    <div className="text-xs text-gray-500">Track strength gains</div>
+                  </div>
+                  {activeTab === "progression" && <Check className="h-4 w-4 text-red-500" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("volume")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer transition-all"
+                >
+                  <Gauge className="h-5 w-5 text-yellow-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Volume Control</div>
+                    <div className="text-xs text-gray-500">RP volume landmarks</div>
+                  </div>
+                  {activeTab === "volume" && <Check className="h-4 w-4 text-yellow-500" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setActiveTab("auto-regulation")}
+                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-900/20 cursor-pointer transition-all"
+                >
+                  <Zap className="h-5 w-5 text-teal-500" />
+                  <div className="flex-1">
+                    <div className="font-semibold">Recovery Hub</div>
+                    <div className="text-xs text-gray-500">Auto-regulation feedback</div>
+                  </div>
+                  {activeTab === "auto-regulation" && <Check className="h-4 w-4 text-teal-500" />}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <TabsContent value="exercises" className="space-y-6">
