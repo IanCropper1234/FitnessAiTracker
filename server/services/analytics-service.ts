@@ -452,7 +452,13 @@ export class AnalyticsService {
         nutritionConsistency: nutrition.totalDays > 0 ? Math.round((nutrition.totalLogs / (nutrition.totalDays * 4)) * 100) : 0, // Assuming 4 meals/day target
         trainingConsistency: training.summary.weeklyFrequency > 0 ? Math.round((training.summary.weeklyFrequency / 4) * 100) : 0, // Assuming 4 sessions/week target
         recoveryScore: feedback.summary.recoveryScore || 0,
-        progressTrend: bodyProgress.progress.trend
+        progressTrend: bodyProgress.progress.trend,
+        weightChange: bodyProgress.progress.weightChange || 0,
+        totalNutritionLogs: nutrition.totalLogs || 0,
+        totalTrainingSessions: training.summary.totalSessions || 0,
+        totalBodyMetrics: bodyProgress.summary.totalEntries || 0,
+        totalFeedbackEntries: feedback.summary.totalFeedback || 0,
+        averageSessionsPerWeek: training.summary.weeklyFrequency || 0
       };
 
       return {
