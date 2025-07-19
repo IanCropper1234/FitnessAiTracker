@@ -842,7 +842,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   eq(workoutSessions.userId, session.userId),
                   eq(workoutExercises.exerciseId, exerciseData.exerciseId),
                   eq(workoutExercises.isCompleted, true),
-                  sql`${workoutSessions.date} < ${session.date}`
+                  lt(workoutSessions.date, session.date)
                 ))
                 .orderBy(desc(workoutSessions.date))
                 .limit(1);
