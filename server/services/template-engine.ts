@@ -140,7 +140,7 @@ export class TemplateEngine {
           sets: Math.round(adjustedSets),
           repsRange: templateExercise.repsRange,
           restPeriod: templateExercise.restPeriod,
-          orderIndex: templateExercise.orderIndex ?? workoutTemplate.exercises.indexOf(templateExercise),
+          orderIndex: templateExercise.orderIndex,
           notes: templateExercise.notes
         });
       }
@@ -167,7 +167,7 @@ export class TemplateEngine {
           .values({
             sessionId,
             exerciseId: exercise.exerciseId,
-            orderIndex: exercise.orderIndex ?? 0,
+            orderIndex: exercise.orderIndex,
             sets: exercise.sets,
             targetReps: exercise.repsRange,
             restPeriod: exercise.restPeriod,
@@ -277,7 +277,7 @@ export class TemplateEngine {
         sets: Math.round(adjustedSets),
         repsRange: templateExercise.repsRange,
         restPeriod: templateExercise.restPeriod,
-        orderIndex: templateExercise.orderIndex ?? workoutTemplate.exercises.indexOf(templateExercise),
+        orderIndex: templateExercise.orderIndex,
         notes: templateExercise.notes
       });
     }
@@ -298,14 +298,13 @@ export class TemplateEngine {
     const sessionId = sessionResult[0].id;
 
     // Add exercises to session
-    for (let i = 0; i < customizedExercises.length; i++) {
-      const exercise = customizedExercises[i];
+    for (const exercise of customizedExercises) {
       await db
         .insert(workoutExercises)
         .values({
           sessionId,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex ?? i,
+          orderIndex: exercise.orderIndex,
           sets: exercise.sets,
           targetReps: exercise.repsRange,
           restPeriod: exercise.restPeriod,
@@ -437,7 +436,29 @@ export class TemplateEngine {
     return updated || null;
   }
 
+  /**
+   * Update a user-created template
+   */
+  static async updateTemplate(templateId: number, updateData: any): Promise<TrainingTemplate | null> {
+    const [updated] = await db
+      .update(trainingTemplates)
+      .set({
+        name: updateData.name,
+        description: updateData.description,
+        category: updateData.category,
+        daysPerWeek: updateData.daysPerWeek,
+        templateData: updateData.templateData
+      })
+      .where(
+        and(
+          eq(trainingTemplates.id, templateId),
+          eq(trainingTemplates.createdBy, 'user')
+        )
+      )
+      .returning();
 
+    return updated || null;
+  }
 
   /**
    * Delete a user-created template

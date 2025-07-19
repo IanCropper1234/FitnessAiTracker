@@ -15,9 +15,8 @@ export function BottomNavigation() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-black/95 backdrop-blur-md border-t border-gray-200/50 dark:border-gray-800/50 z-50 pb-safe">
-      {/* iOS-style navigation with enhanced touch targets and safe area support */}
-      <div className="grid grid-cols-5 h-20">
+    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 z-50">
+      <div className="grid grid-cols-5 h-16">
         {navItems.map((item) => {
           const isActive = location === item.path;
           const Icon = item.icon;
@@ -26,28 +25,14 @@ export function BottomNavigation() {
             <button
               key={item.path}
               onClick={() => setLocation(item.path)}
-              className={`
-                flex flex-col items-center justify-center space-y-1 text-xs
-                min-h-[44px] px-2 py-2 mx-1 rounded-xl
-                transition-all duration-200 ease-out
-                transform-gpu active:scale-95
-                ${
-                  isActive 
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-900/20 shadow-sm" 
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
-                }
-              `}
+              className={`flex flex-col items-center justify-center space-y-1 text-xs transition-colors ${
+                isActive 
+                  ? "text-black dark:text-white" 
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              }`}
             >
-              <Icon 
-                className={`w-6 h-6 transition-transform duration-200 ${
-                  isActive ? "scale-110" : ""
-                }`} 
-              />
-              <span className={`font-medium leading-none ${
-                isActive ? "text-blue-600 dark:text-blue-400" : ""
-              }`}>
-                {item.label}
-              </span>
+              <Icon className="w-5 h-5" />
+              <span>{item.label}</span>
             </button>
           );
         })}

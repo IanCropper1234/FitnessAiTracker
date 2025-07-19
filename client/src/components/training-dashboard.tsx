@@ -22,14 +22,7 @@ import {
   Trash2,
   RotateCcw,
   Copy,
-  X,
-  Zap,
-  Trophy,
-  Activity,
-  Timer,
-  Flame,
-  Medal,
-  Gauge
+  X
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -44,7 +37,6 @@ import LoadProgressionTracker from "./load-progression-tracker";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Check } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -516,164 +508,71 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Compact Training Stats */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Total Sessions */}
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Calendar className="h-4 w-4 text-blue-500 mr-1" />
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Sessions</span>
-            </div>
-            <div className="text-xl font-bold text-black dark:text-white">{trainingStats?.totalSessions || 0}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-500">completed</div>
-          </div>
+      {/* Training Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{trainingStats?.totalSessions || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              workouts completed
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* Total Volume */}
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Volume</span>
-            </div>
-            <div className="text-xl font-bold text-black dark:text-white">{trainingStats?.totalVolume || 0}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-500">kg lifted</div>
-          </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{trainingStats?.totalVolume || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              kg lifted this month
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* Avg Session */}
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Clock className="h-4 w-4 text-purple-500 mr-1" />
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Avg Time</span>
-            </div>
-            <div className="text-xl font-bold text-black dark:text-white">{trainingStats?.averageSessionLength || 0}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-500">minutes</div>
-          </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg Session</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{trainingStats?.averageSessionLength || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              minutes per workout
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* Exercises */}
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Dumbbell className="h-4 w-4 text-orange-500 mr-1" />
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Exercises</span>
-            </div>
-            <div className="text-xl font-bold text-black dark:text-white">{exercises.length}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-500">available</div>
-          </div>
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Exercises</CardTitle>
+            <Dumbbell className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{exercises.length}</div>
+            <p className="text-xs text-muted-foreground">
+              in exercise database
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="overflow-x-auto pb-2">
-          {/* iOS-style Dropdown Tab Selector */}
-          <div className="flex justify-center mb-6">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-14 px-6 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 border-2 border-red-100 dark:border-gray-700 rounded-2xl shadow-lg hover:scale-105 transition-all duration-300 min-w-[200px]"
-                >
-                  <div className="flex items-center gap-3">
-                    {activeTab === "exercises" && <Dumbbell className="h-5 w-5 text-blue-500" />}
-                    {activeTab === "workouts" && <Activity className="h-5 w-5 text-green-500" />}
-                    {activeTab === "templates" && <Trophy className="h-5 w-5 text-purple-500" />}
-                    {activeTab === "mesocycles" && <Timer className="h-5 w-5 text-orange-500" />}
-                    {activeTab === "progression" && <TrendingUp className="h-5 w-5 text-red-500" />}
-                    {activeTab === "volume" && <Gauge className="h-5 w-5 text-yellow-500" />}
-                    {activeTab === "auto-regulation" && <Zap className="h-5 w-5 text-teal-500" />}
-                    <span className="font-semibold">
-                      {activeTab === "exercises" && "Exercise Arsenal"}
-                      {activeTab === "workouts" && "Training Sessions"}
-                      {activeTab === "templates" && "Program Templates"}
-                      {activeTab === "mesocycles" && "Training Cycles"}
-                      {activeTab === "progression" && "Load Progression"}
-                      {activeTab === "volume" && "Volume Control"}
-                      {activeTab === "auto-regulation" && "Recovery Hub"}
-                    </span>
-                    <ChevronDown className="h-4 w-4 ml-auto" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 p-2 bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl">
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("exercises")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-all"
-                >
-                  <Dumbbell className="h-5 w-5 text-blue-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Exercise Arsenal</div>
-                    <div className="text-xs text-gray-500">Browse exercise library</div>
-                  </div>
-                  {activeTab === "exercises" && <Check className="h-4 w-4 text-blue-500" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("workouts")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer transition-all"
-                >
-                  <Activity className="h-5 w-5 text-green-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Training Sessions</div>
-                    <div className="text-xs text-gray-500">Active workout sessions</div>
-                  </div>
-                  {activeTab === "workouts" && <Check className="h-4 w-4 text-green-500" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("templates")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer transition-all"
-                >
-                  <Trophy className="h-5 w-5 text-purple-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Program Templates</div>
-                    <div className="text-xs text-gray-500">Pre-built training programs</div>
-                  </div>
-                  {activeTab === "templates" && <Check className="h-4 w-4 text-purple-500" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("mesocycles")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer transition-all"
-                >
-                  <Timer className="h-5 w-5 text-orange-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Training Cycles</div>
-                    <div className="text-xs text-gray-500">Periodization management</div>
-                  </div>
-                  {activeTab === "mesocycles" && <Check className="h-4 w-4 text-orange-500" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("progression")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all"
-                >
-                  <TrendingUp className="h-5 w-5 text-red-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Load Progression</div>
-                    <div className="text-xs text-gray-500">Track strength gains</div>
-                  </div>
-                  {activeTab === "progression" && <Check className="h-4 w-4 text-red-500" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("volume")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer transition-all"
-                >
-                  <Gauge className="h-5 w-5 text-yellow-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Volume Control</div>
-                    <div className="text-xs text-gray-500">RP volume landmarks</div>
-                  </div>
-                  {activeTab === "volume" && <Check className="h-4 w-4 text-yellow-500" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setActiveTab("auto-regulation")}
-                  className="flex items-center gap-3 p-4 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-900/20 cursor-pointer transition-all"
-                >
-                  <Zap className="h-5 w-5 text-teal-500" />
-                  <div className="flex-1">
-                    <div className="font-semibold">Recovery Hub</div>
-                    <div className="text-xs text-gray-500">Auto-regulation feedback</div>
-                  </div>
-                  {activeTab === "auto-regulation" && <Check className="h-4 w-4 text-teal-500" />}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
+          <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
+          <TabsTrigger value="templates">Training Templates</TabsTrigger>
+          <TabsTrigger value="mesocycles">Periodization</TabsTrigger>
+          <TabsTrigger value="progression">Load Progression</TabsTrigger>
+          <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
+          <TabsTrigger value="auto-regulation">Auto-Regulation</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="exercises" className="space-y-6">
           {/* Search Bar */}
