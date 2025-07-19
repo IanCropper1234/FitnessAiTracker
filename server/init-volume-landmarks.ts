@@ -7,8 +7,14 @@ export async function initializeVolumeLandmarks() {
   console.log("Initializing Volume Landmarks system...");
 
   try {
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Volume landmarks initialization timeout')), 10000)
+    );
+    
     // Check if muscle groups already exist
-    const existingMuscleGroups = await db.select().from(muscleGroups);
+    const muscleGroupPromise = db.select().from(muscleGroups);
+    const existingMuscleGroups = await Promise.race([muscleGroupPromise, timeoutPromise]);
     
     if (existingMuscleGroups.length === 0) {
       console.log("Inserting muscle groups...");

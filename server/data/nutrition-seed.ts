@@ -67,8 +67,15 @@ export async function initializeNutritionDatabase() {
   try {
     console.log("Initializing nutrition database...");
     
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Nutrition database initialization timeout')), 10000)
+    );
+    
     // Check if categories already exist
-    const existingCategories = await storage.getFoodCategories();
+    const categoriesPromise = storage.getFoodCategories();
+    const existingCategories = await Promise.race([categoriesPromise, timeoutPromise]);
+    
     if (existingCategories.length > 0) {
       console.log("Nutrition database already initialized");
       return;
