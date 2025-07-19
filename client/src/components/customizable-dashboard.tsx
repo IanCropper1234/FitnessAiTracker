@@ -269,13 +269,28 @@ function SortableCard({ card, userId }: { card: DashboardCard; userId: number })
         card.size === 'large' ? 'col-span-2' : 'col-span-1'
       }`}
     >
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute top-2 right-2 z-10 cursor-move p-1 rounded bg-gray-100 dark:bg-gray-800 opacity-50 hover:opacity-100 transition-opacity"
-      >
-        <GripVertical className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-      </div>
+      {editMode && (
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute top-2 right-2 z-10 cursor-move p-1 rounded bg-gray-100 dark:bg-gray-800 opacity-50 hover:opacity-100 transition-opacity"
+        >
+          <GripVertical className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+        </div>
+      )}
+      {editMode && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const newCards = cards.filter(c => c.id !== card.id);
+            saveConfiguration(newCards);
+          }}
+          className="absolute top-2 left-2 z-10 h-8 w-8 p-0 bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 border-red-300 dark:border-red-700"
+        >
+          <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
+        </Button>
+      )}
       {card.component && <card.component userId={userId} />}
     </div>
   );
@@ -284,6 +299,7 @@ function SortableCard({ card, userId }: { card: DashboardCard; userId: number })
 export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
   const { t } = useLanguage();
   const [showSettings, setShowSettings] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [cards, setCards] = useState<DashboardCard[]>([
     {
       id: 'calories',
@@ -355,6 +371,86 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
       size: 'large',
       order: 6,
     },
+    {
+      id: 'weekly-streak',
+      title: 'Weekly Streak',
+      description: 'Consecutive training days',
+      icon: Flame,
+      visible: false,
+      component: WeeklyStreakCard,
+      size: 'small',
+      order: 7,
+    },
+    {
+      id: 'sleep-quality',
+      title: 'Sleep Quality',
+      description: 'Average sleep rating',
+      icon: Moon,
+      visible: false,
+      component: SleepQualityCard,
+      size: 'small',
+      order: 8,
+    },
+    {
+      id: 'energy-level',
+      title: 'Energy Level',
+      description: 'Daily energy tracking',
+      icon: Battery,
+      visible: false,
+      component: EnergyLevelCard,
+      size: 'small',
+      order: 9,
+    },
+    {
+      id: 'body-fat',
+      title: 'Body Fat %',
+      description: 'Body composition tracking',
+      icon: Percent,
+      visible: false,
+      component: BodyFatCard,
+      size: 'small',
+      order: 10,
+    },
+    {
+      id: 'workout-duration',
+      title: 'Workout Duration',
+      description: 'Average session length',
+      icon: Clock,
+      visible: false,
+      component: WorkoutDurationCard,
+      size: 'small',
+      order: 11,
+    },
+    {
+      id: 'muscle-soreness',
+      title: 'Muscle Soreness',
+      description: 'Recovery indicator',
+      icon: Heart,
+      visible: false,
+      component: MuscleSorenessCard,
+      size: 'small',
+      order: 12,
+    },
+    {
+      id: 'weekly-volume',
+      title: 'Weekly Volume Trend',
+      description: 'Training volume progression',
+      icon: TrendingUp,
+      visible: false,
+      component: WeeklyVolumeCard,
+      size: 'large',
+      order: 13,
+    },
+    {
+      id: 'nutrition-adherence',
+      title: 'Nutrition Adherence',
+      description: 'Diet goal compliance',
+      icon: CheckCircle,
+      visible: false,
+      component: NutritionAdherenceCard,
+      size: 'small',
+      order: 14,
+    },
   ]);
 
   const sensors = useSensors(
@@ -373,6 +469,14 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
     'training-volume': TrainingVolumeCard,
     'recovery-score': RecoveryScoreCard,
     'macro-overview': MacroOverviewCard,
+    'weekly-streak': WeeklyStreakCard,
+    'sleep-quality': SleepQualityCard,
+    'energy-level': EnergyLevelCard,
+    'body-fat': BodyFatCard,
+    'workout-duration': WorkoutDurationCard,
+    'muscle-soreness': MuscleSorenessCard,
+    'weekly-volume': WeeklyVolumeCard,
+    'nutrition-adherence': NutritionAdherenceCard,
   };
 
   // Load saved card configuration from localStorage
@@ -451,14 +555,28 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
               {today}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowSettings(!showSettings)}
-            className="min-h-[44px] min-w-[44px]"
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={editMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => setEditMode(!editMode)}
+              className="min-h-[44px] flex items-center gap-2"
+            >
+              <Edit3 className="h-4 w-4" />
+              {editMode ? 'Done' : 'Edit'}
+            </Button>
+            {editMode && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowSettings(!showSettings)}
+                className="min-h-[44px] flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Dashboard Settings */}
@@ -528,5 +646,181 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
         )}
       </div>
     </div>
+  );
+}
+
+// New Card Components
+function WeeklyStreakCard({ userId }: { userId: number }) {
+  const { data: trainingStats } = useQuery({
+    queryKey: [`/api/training/stats/${userId}`],
+    enabled: !!userId,
+  });
+
+  const streak = trainingStats?.weeklyStreak || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Weekly Streak</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{streak}</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">days this week</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SleepQualityCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/7`],
+    enabled: !!userId,
+  });
+
+  const sleepScore = analytics?.feedback?.avgSleepQuality || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Sleep Quality</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{sleepScore.toFixed(1)}/10</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">weekly average</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EnergyLevelCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/7`],
+    enabled: !!userId,
+  });
+
+  const energyLevel = analytics?.feedback?.avgEnergyLevel || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Energy Level</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{energyLevel.toFixed(1)}/10</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">weekly average</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BodyFatCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/30`],
+    enabled: !!userId,
+  });
+
+  const bodyFat = analytics?.overview?.currentBodyFat || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Body Fat %</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{bodyFat.toFixed(1)}%</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">current</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WorkoutDurationCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/7`],
+    enabled: !!userId,
+  });
+
+  const avgDuration = analytics?.training?.avgDuration || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Workout Duration</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{avgDuration}min</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">average session</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function MuscleSorenessCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/7`],
+    enabled: !!userId,
+  });
+
+  const soreness = analytics?.feedback?.avgSoreness || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Muscle Soreness</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-red-600 dark:text-red-400">{soreness.toFixed(1)}/10</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">weekly average</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WeeklyVolumeCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/14`],
+    enabled: !!userId,
+  });
+
+  const weeklyVolume = analytics?.training?.totalVolume || 0;
+  const prevVolume = analytics?.training?.prevVolume || 0;
+  const change = prevVolume > 0 ? ((weeklyVolume - prevVolume) / prevVolume * 100) : 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 h-64">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Weekly Volume Trend</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">{weeklyVolume} sets</div>
+        <div className={`text-sm font-medium ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          {change >= 0 ? '+' : ''}{change.toFixed(1)}% vs last week
+        </div>
+        <div className="mt-4 h-32 bg-gray-100 dark:bg-gray-800 rounded flex items-end justify-center">
+          <div className="text-xs text-gray-500">Volume chart placeholder</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function NutritionAdherenceCard({ userId }: { userId: number }) {
+  const { data: analytics } = useQuery({
+    queryKey: [`/api/analytics/comprehensive/${userId}/7`],
+    enabled: !!userId,
+  });
+
+  const adherence = analytics?.nutrition?.adherencePercentage || 0;
+
+  return (
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">Nutrition Adherence</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-green-600 dark:text-green-400">{adherence.toFixed(0)}%</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400">weekly goal compliance</p>
+      </CardContent>
+    </Card>
   );
 }
