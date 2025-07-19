@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ClickableCheckbox } from "@/components/ui/clickable-checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { User, Save, Loader2, Settings, Activity, Target, Utensils, Clock, Calendar } from "lucide-react";
@@ -389,65 +389,57 @@ export function UserProfile({ userId }: UserProfileProps) {
               Your activity level and fitness goals for personalized recommendations
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             <div>
-              <Label className="text-black dark:text-white mb-3 block">Activity Level *</Label>
-              <div className="space-y-2">
-                {[
-                  { value: 'sedentary', label: 'Sedentary', description: 'Office job, little exercise' },
-                  { value: 'lightly_active', label: 'Lightly Active', description: 'Light exercise 1-3 days/week' },
-                  { value: 'moderately_active', label: 'Moderately Active', description: 'Moderate exercise 3-5 days/week' },
-                  { value: 'very_active', label: 'Very Active', description: 'Hard exercise 6-7 days/week' },
-                  { value: 'extremely_active', label: 'Extremely Active', description: 'Very hard exercise, physical job' }
-                ].map((activity) => (
-                  <ClickableCheckbox
-                    key={activity.value}
-                    checked={profileData.activityLevel === activity.value}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setProfileData(prev => ({ ...prev, activityLevel: activity.value }));
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="font-medium">{activity.label}</div>
-                      <div className="text-xs opacity-80">{activity.description}</div>
-                    </div>
-                  </ClickableCheckbox>
-                ))}
-              </div>
+              <Label className="text-black dark:text-white">Activity Level *</Label>
+              <Select 
+                value={profileData.activityLevel} 
+                onValueChange={(value) => setProfileData(prev => ({ ...prev, activityLevel: value }))}
+              >
+                <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                  <SelectValue placeholder="Select activity level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sedentary">Sedentary (Office job, little exercise)</SelectItem>
+                  <SelectItem value="lightly_active">Lightly Active (Light exercise 1-3 days/week)</SelectItem>
+                  <SelectItem value="moderately_active">Moderately Active (Moderate exercise 3-5 days/week)</SelectItem>
+                  <SelectItem value="very_active">Very Active (Hard exercise 6-7 days/week)</SelectItem>
+                  <SelectItem value="extremely_active">Extremely Active (Very hard exercise, physical job)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <Label className="text-black dark:text-white mb-3 block">Fitness Goal *</Label>
-              <div className="space-y-2">
-                {[
-                  { value: 'weight_loss', label: 'Weight Loss', description: 'Reduce body weight and fat' },
-                  { value: 'muscle_gain', label: 'Muscle Gain', description: 'Build muscle mass and strength' },
-                  { value: 'maintenance', label: 'Maintenance', description: 'Maintain current weight and fitness' },
-                  { value: 'body_recomposition', label: 'Body Recomposition', description: 'Lose fat while gaining muscle' },
-                  { value: 'strength', label: 'Strength Gain', description: 'Focus on getting stronger' },
-                  { value: 'endurance', label: 'Endurance Improvement', description: 'Improve cardiovascular fitness' }
-                ].map((goal) => (
-                  <ClickableCheckbox
-                    key={goal.value}
-                    checked={profileData.fitnessGoal === goal.value}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setProfileData(prev => ({ ...prev, fitnessGoal: goal.value }));
-                      }
-                    }}
-                  >
-                    <div>
-                      <div className="font-medium">{goal.label}</div>
-                      <div className="text-xs opacity-80">{goal.description}</div>
-                    </div>
-                  </ClickableCheckbox>
-                ))}
-              </div>
+              <Label className="text-black dark:text-white">Fitness Goal *</Label>
+              <Select 
+                value={profileData.fitnessGoal} 
+                onValueChange={(value) => setProfileData(prev => ({ ...prev, fitnessGoal: value }))}
+              >
+                <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                  <SelectValue placeholder="Select fitness goal" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weight_loss">Weight Loss</SelectItem>
+                  <SelectItem value="muscle_gain">Muscle Gain</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="body_recomposition">Body Recomposition</SelectItem>
+                  <SelectItem value="strength">Strength Gain</SelectItem>
+                  <SelectItem value="endurance">Endurance Improvement</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-
+            {/* Activity Level Descriptions */}
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Activity Level Guide</h4>
+              <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                <li><strong>Sedentary:</strong> Desk job, minimal physical activity</li>
+                <li><strong>Lightly Active:</strong> Light exercise or sports 1-3 days/week</li>
+                <li><strong>Moderately Active:</strong> Moderate exercise 3-5 days/week</li>
+                <li><strong>Very Active:</strong> Hard exercise 6-7 days a week</li>
+                <li><strong>Extremely Active:</strong> Very hard exercise, physical job, or training twice a day</li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -464,7 +456,7 @@ export function UserProfile({ userId }: UserProfileProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {[
               'vegetarian',
               'vegan',
@@ -479,14 +471,22 @@ export function UserProfile({ userId }: UserProfileProps) {
               'low_fat',
               'mediterranean'
             ].map((restriction) => (
-              <ClickableCheckbox
-                key={restriction}
-                id={restriction}
-                checked={profileData.dietaryRestrictions?.includes(restriction) || false}
-                onCheckedChange={(checked) => handleDietaryRestrictionChange(restriction, checked)}
-              >
-                {restriction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </ClickableCheckbox>
+              <div key={restriction} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="relative">
+                  <Checkbox
+                    id={restriction}
+                    checked={profileData.dietaryRestrictions?.includes(restriction) || false}
+                    onCheckedChange={(checked) => handleDietaryRestrictionChange(restriction, checked as boolean)}
+                    className="h-5 w-5 rounded-sm border-2 border-blue-500 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 data-[state=checked]:text-white"
+                  />
+                </div>
+                <Label
+                  htmlFor={restriction}
+                  className="text-sm font-medium text-black dark:text-white capitalize cursor-pointer flex-1 select-none"
+                >
+                  {restriction.replace('_', ' ')}
+                </Label>
+              </div>
             ))}
           </div>
         </CardContent>
@@ -598,16 +598,21 @@ export function UserProfile({ userId }: UserProfileProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
-                    <ClickableCheckbox
-                      key={day}
-                      id={day}
-                      checked={mealTimingData.workoutDays.includes(day)}
-                      onCheckedChange={(checked) => handleWorkoutDayChange(day, checked)}
-                    >
-                      {day.charAt(0).toUpperCase() + day.slice(1)}
-                    </ClickableCheckbox>
+                    <div key={day} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={day}
+                        checked={mealTimingData.workoutDays.includes(day)}
+                        onCheckedChange={(checked) => handleWorkoutDayChange(day, checked as boolean)}
+                      />
+                      <Label
+                        htmlFor={day}
+                        className="text-sm font-medium text-black dark:text-white capitalize cursor-pointer"
+                      >
+                        {day}
+                      </Label>
+                    </div>
                   ))}
                 </div>
               </CardContent>
@@ -624,71 +629,47 @@ export function UserProfile({ userId }: UserProfileProps) {
                   Configure your preferred meal schedule and workout nutrition
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 <div>
-                  <Label className="text-black dark:text-white mb-3 block">Meals Per Day</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[3, 4, 5, 6].map((mealCount) => (
-                      <ClickableCheckbox
-                        key={mealCount}
-                        checked={mealTimingData.mealsPerDay === mealCount}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setMealTimingData(prev => ({ ...prev, mealsPerDay: mealCount }));
-                          }
-                        }}
-                      >
-                        {mealCount} meals
-                      </ClickableCheckbox>
-                    ))}
-                  </div>
+                  <Label className="text-black dark:text-white">Meals Per Day</Label>
+                  <Select value={mealTimingData.mealsPerDay.toString()} onValueChange={(value) => setMealTimingData(prev => ({ ...prev, mealsPerDay: parseInt(value) }))}>
+                    <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3">3 meals</SelectItem>
+                      <SelectItem value="4">4 meals</SelectItem>
+                      <SelectItem value="5">5 meals</SelectItem>
+                      <SelectItem value="6">6 meals</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-black dark:text-white mb-3 block">Pre-Workout Meals</Label>
-                    <div className="space-y-2">
-                      {[
-                        { value: 0, label: 'None' },
-                        { value: 1, label: '1 meal' },
-                        { value: 2, label: '2 meals' }
-                      ].map((option) => (
-                        <ClickableCheckbox
-                          key={option.value}
-                          checked={mealTimingData.preWorkoutMeals === option.value}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setMealTimingData(prev => ({ ...prev, preWorkoutMeals: option.value }));
-                            }
-                          }}
-                        >
-                          {option.label}
-                        </ClickableCheckbox>
-                      ))}
-                    </div>
+                    <Label className="text-black dark:text-white">Pre-Workout Meals</Label>
+                    <Select value={mealTimingData.preWorkoutMeals.toString()} onValueChange={(value) => setMealTimingData(prev => ({ ...prev, preWorkoutMeals: parseInt(value) }))}>
+                      <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">None</SelectItem>
+                        <SelectItem value="1">1 meal</SelectItem>
+                        <SelectItem value="2">2 meals</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  
                   <div>
-                    <Label className="text-black dark:text-white mb-3 block">Post-Workout Meals</Label>
-                    <div className="space-y-2">
-                      {[
-                        { value: 0, label: 'None' },
-                        { value: 1, label: '1 meal' },
-                        { value: 2, label: '2 meals' }
-                      ].map((option) => (
-                        <ClickableCheckbox
-                          key={option.value}
-                          checked={mealTimingData.postWorkoutMeals === option.value}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setMealTimingData(prev => ({ ...prev, postWorkoutMeals: option.value }));
-                            }
-                          }}
-                        >
-                          {option.label}
-                        </ClickableCheckbox>
-                      ))}
-                    </div>
+                    <Label className="text-black dark:text-white">Post-Workout Meals</Label>
+                    <Select value={mealTimingData.postWorkoutMeals.toString()} onValueChange={(value) => setMealTimingData(prev => ({ ...prev, postWorkoutMeals: parseInt(value) }))}>
+                      <SelectTrigger className="border-gray-300 dark:border-gray-600">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">None</SelectItem>
+                        <SelectItem value="1">1 meal</SelectItem>
+                        <SelectItem value="2">2 meals</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </CardContent>
