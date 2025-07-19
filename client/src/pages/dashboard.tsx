@@ -124,8 +124,8 @@ export function Dashboard({ user }: DashboardProps) {
         </Card>
 
         {/* Quick Stats - Single Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+        <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {t("calories")} {t("today")}
@@ -146,7 +146,7 @@ export function Dashboard({ user }: DashboardProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {t("protein")} (g)
@@ -167,7 +167,7 @@ export function Dashboard({ user }: DashboardProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {t("training")} Sessions
@@ -184,7 +184,7 @@ export function Dashboard({ user }: DashboardProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 min-h-[120px]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 Adherence
