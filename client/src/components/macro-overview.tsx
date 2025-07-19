@@ -81,22 +81,22 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
       </Card>
 
       {/* Macro Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-2 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Calories
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black dark:text-white">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
               {nutritionSummary?.totalCalories || 0}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-blue-600 dark:text-blue-400">
+              <p className="text-xs font-medium text-blue-600 dark:text-blue-400 text-center">
                 Remaining: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
               </p>
             )}
@@ -107,26 +107,26 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
                   ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 
                   : 0
               } 
-              className="mt-2"
+              className="mt-1 h-1"
             />
           </CardContent>
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Protein (g)
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black dark:text-white">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
               {(nutritionSummary?.totalProtein || 0).toFixed(1)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               of {Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150).toFixed(1)}g
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-green-600 dark:text-green-400">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 text-center">
                 Remaining: {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
               </p>
             )}
@@ -137,26 +137,26 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
                   ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 
                   : 0
               } 
-              className="mt-2"
+              className="mt-1 h-1"
             />
           </CardContent>
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Carbs (g)
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black dark:text-white">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
               {(nutritionSummary?.totalCarbs || 0).toFixed(1)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               of {Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200).toFixed(1)}g
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
+              <p className="text-xs font-medium text-orange-600 dark:text-orange-400 text-center">
                 Remaining: {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
               </p>
             )}
@@ -167,26 +167,26 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
                   ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 
                   : 0
               } 
-              className="mt-2"
+              className="mt-1 h-1"
             />
           </CardContent>
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Fat (g)
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black dark:text-white">
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
               {(nutritionSummary?.totalFat || 0).toFixed(1)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               of {Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60).toFixed(1)}g
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-purple-600 dark:text-purple-400">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 text-center">
                 Remaining: {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
               </p>
             )}
@@ -197,7 +197,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
                   ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 
                   : 0
               } 
-              className="mt-2"
+              className="mt-1 h-1"
             />
           </CardContent>
         </Card>
