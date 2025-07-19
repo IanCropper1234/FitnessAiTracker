@@ -437,29 +437,7 @@ export class TemplateEngine {
     return updated || null;
   }
 
-  /**
-   * Update a user-created template
-   */
-  static async updateTemplate(templateId: number, updateData: any): Promise<TrainingTemplate | null> {
-    const [updated] = await db
-      .update(trainingTemplates)
-      .set({
-        name: updateData.name,
-        description: updateData.description,
-        category: updateData.category,
-        daysPerWeek: updateData.daysPerWeek,
-        templateData: updateData.templateData
-      })
-      .where(
-        and(
-          eq(trainingTemplates.id, templateId),
-          eq(trainingTemplates.createdBy, 'user')
-        )
-      )
-      .returning();
 
-    return updated || null;
-  }
 
   /**
    * Delete a user-created template
