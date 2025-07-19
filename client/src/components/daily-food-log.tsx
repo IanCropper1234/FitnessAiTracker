@@ -25,6 +25,9 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   const [showCopyMeal, setShowCopyMeal] = useState(false);
   const [copyFromDate, setCopyFromDate] = useState("");
   const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
+  const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [copyToDate, setCopyToDate] = useState("");
 
   const { data: nutritionLogs, isLoading } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, selectedDate],
@@ -148,6 +151,62 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
     }
   });
 
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (logIds: number[]) => {
+      const deletePromises = logIds.map(id => 
+        apiRequest("DELETE", `/api/nutrition/log/${id}`)
+      );
+      return Promise.all(deletePromises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      setSelectedLogs([]);
+      setBulkMode(false);
+      toast({
+        title: "Success",
+        description: `Deleted ${selectedLogs.length} food entries`
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete selected entries",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Bulk copy to date mutation
+  const bulkCopyToDateMutation = useMutation({
+    mutationFn: async (data: { logIds: number[]; targetDate: string }) => {
+      return await apiRequest("POST", "/api/nutrition/bulk-copy", {
+        userId,
+        logIds: data.logIds,
+        targetDate: data.targetDate
+      });
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      setSelectedLogs([]);
+      setBulkMode(false);
+      setCopyToDate("");
+      toast({
+        title: "Success",
+        description: `Copied ${data.copiedCount} entries to ${copyToDate}`
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: "Failed to copy selected entries",
+        variant: "destructive"
+      });
+    }
+  });
+
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
       case 'breakfast': return '🌅';
@@ -190,6 +249,39 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
       toDate: selectedDate,
       mealTypes: selectedMealTypes.length > 0 ? selectedMealTypes : undefined
     });
+  };
+
+  const toggleLogSelection = (logId: number) => {
+    setSelectedLogs(prev => 
+      prev.includes(logId) 
+        ? prev.filter(id => id !== logId)
+        : [...prev, logId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedLogs.length === nutritionLogs?.length) {
+      setSelectedLogs([]);
+    } else {
+      setSelectedLogs(nutritionLogs?.map((log: any) => log.id) || []);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedLogs.length === 0) return;
+    bulkDeleteMutation.mutate(selectedLogs);
+  };
+
+  const handleBulkCopyToDate = () => {
+    if (selectedLogs.length === 0 || !copyToDate) {
+      toast({
+        title: "Error",
+        description: "Please select entries and a target date",
+        variant: "destructive"
+      });
+      return;
+    }
+    bulkCopyToDateMutation.mutate({ logIds: selectedLogs, targetDate: copyToDate });
   };
 
   const toggleMealTypeSelection = (mealType: string) => {
@@ -256,6 +348,14 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               >
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Meals
+              </Button>
+              <Button 
+                onClick={() => setBulkMode(!bulkMode)}
+                variant={bulkMode ? "destructive" : "outline"}
+                size="sm"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                {bulkMode ? "Exit Bulk" : "Bulk Edit"}
               </Button>
               <Button 
                 onClick={() => setShowLogger(true)}
@@ -472,13 +572,76 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Bulk Operations Controls */}
+          {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
+            <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="select-all"
+                    checked={selectedLogs.length === nutritionLogs.length}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                  <label htmlFor="select-all" className="text-sm font-medium">
+                    Select All ({selectedLogs.length} selected)
+                  </label>
+                </div>
+                {selectedLogs.length > 0 && (
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleBulkDelete}
+                      variant="destructive"
+                      size="sm"
+                      disabled={bulkDeleteMutation.isPending}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete ({selectedLogs.length})
+                    </Button>
+                  </div>
+                )}
+              </div>
+              
+              {selectedLogs.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <Label htmlFor="copy-to-date" className="text-sm">Copy to:</Label>
+                  <input
+                    id="copy-to-date"
+                    type="date"
+                    value={copyToDate}
+                    onChange={(e) => setCopyToDate(e.target.value)}
+                    className="px-2 py-1 text-sm border rounded"
+                  />
+                  <Button
+                    onClick={handleBulkCopyToDate}
+                    variant="outline"
+                    size="sm"
+                    disabled={!copyToDate || bulkCopyToDateMutation.isPending}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
           {nutritionLogs && nutritionLogs.length > 0 ? (
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {nutritionLogs.map((log: any) => (
                 <div 
                   key={log.id} 
-                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                  className={`flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${
+                    bulkMode && selectedLogs.includes(log.id) ? 'ring-2 ring-blue-500' : ''
+                  }`}
                 >
+                  {bulkMode && (
+                    <div className="mr-3">
+                      <Checkbox
+                        checked={selectedLogs.includes(log.id)}
+                        onCheckedChange={() => toggleLogSelection(log.id)}
+                      />
+                    </div>
+                  )}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-lg">{getMealTypeIcon(log.mealType)}</span>
@@ -501,15 +664,17 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                       <span>Fat: {Number(log.fat).toFixed(1)}g</span>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteMutation.mutate(log.id)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  {!bulkMode && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(log.id)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               ))}
             </div>

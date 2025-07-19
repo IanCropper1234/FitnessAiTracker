@@ -707,6 +707,40 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     deleteMealPlanMutation.mutate(planId);
   };
 
+  // Log meal plan mutation
+  const logMealPlanMutation = useMutation({
+    mutationFn: async (data: { planId: number; targetDate?: string; mealType?: string }) => {
+      return await apiRequest("POST", "/api/nutrition/log-meal-plan", {
+        userId,
+        ...data
+      });
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      toast({
+        title: "Meal Logged Successfully",
+        description: `Added ${data.loggedCount} food entries to your nutrition log`
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to log meal plan",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleLogMealPlan = (plan: SavedMealPlan) => {
+    const today = new Date().toISOString().split('T')[0];
+    logMealPlanMutation.mutate({
+      planId: plan.id,
+      targetDate: today,
+      mealType: plan.mealType
+    });
+  };
+
   const calculateTotalMacros = () => {
     return selectedFoods.reduce(
       (totals, food) => ({
@@ -1728,13 +1762,24 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           )}
                         </div>
 
-                        <Button
-                          onClick={() => loadMealPlan(plan)}
-                          className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Load & Edit Plan
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => handleLogMealPlan(plan)}
+                            disabled={logMealPlanMutation.isPending}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Log Meal
+                          </Button>
+                          <Button
+                            onClick={() => loadMealPlan(plan)}
+                            variant="outline"
+                            className="flex-1 border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Plan
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   ))}

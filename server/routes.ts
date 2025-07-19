@@ -1786,6 +1786,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk copy nutrition logs
+  app.post("/api/nutrition/bulk-copy", async (req, res) => {
+    try {
+      const { userId, logIds, targetDate } = req.body;
+      
+      // Get the original logs
+      const originalLogs = await db.select()
+        .from(nutritionLogs)
+        .where(and(
+          eq(nutritionLogs.userId, userId),
+          sql`${nutritionLogs.id} = ANY(${logIds})`
+        ));
+
+      // Create new logs for the target date
+      const newLogs = originalLogs.map(log => ({
+        userId: log.userId,
+        date: new Date(targetDate),
+        foodName: log.foodName,
+        quantity: log.quantity,
+        unit: log.unit,
+        calories: log.calories,
+        protein: log.protein,
+        carbs: log.carbs,
+        fat: log.fat,
+        mealType: log.mealType,
+        mealOrder: log.mealOrder,
+        scheduledTime: log.scheduledTime,
+        category: log.category,
+        mealSuitability: log.mealSuitability
+      }));
+
+      const results = await db.insert(nutritionLogs).values(newLogs).returning();
+      
+      res.json({ 
+        success: true, 
+        copiedCount: results.length,
+        targetDate 
+      });
+    } catch (error: any) {
+      console.error('Bulk copy error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Log meal plan to nutrition logs
+  app.post("/api/nutrition/log-meal-plan", async (req, res) => {
+    try {
+      const { userId, planId, targetDate, mealType } = req.body;
+      
+      // Get the saved meal plan
+      const mealPlan = await storage.getSavedMealPlan(userId, planId);
+      if (!mealPlan) {
+        return res.status(404).json({ message: "Meal plan not found" });
+      }
+
+      // Create nutrition log entries for each food in the meal plan
+      const logEntries = mealPlan.foods.map((food: any) => ({
+        userId,
+        date: new Date(targetDate || new Date()),
+        foodName: food.name,
+        quantity: food.quantity || 1,
+        unit: food.serving_size || 'serving',
+        calories: (food.calories * (food.quantity || 1)).toString(),
+        protein: (food.protein * (food.quantity || 1)).toString(),
+        carbs: (food.carbs * (food.quantity || 1)).toString(),
+        fat: (food.fat * (food.quantity || 1)).toString(),
+        mealType: mealType || mealPlan.mealType,
+        mealOrder: 1,
+        category: 'logged_from_plan',
+        mealSuitability: ['regular']
+      }));
+
+      const results = await db.insert(nutritionLogs).values(logEntries).returning();
+      
+      res.json({ 
+        success: true, 
+        loggedCount: results.length,
+        mealPlan: mealPlan.name
+      });
+    } catch (error: any) {
+      console.error('Log meal plan error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Get available weeks with food log data
   app.get("/api/nutrition/available-weeks/:userId", async (req, res) => {
     try {

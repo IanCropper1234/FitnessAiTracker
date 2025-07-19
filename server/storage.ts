@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -13,7 +13,7 @@ import {
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
   type BodyMetric, type InsertBodyMetric, type MuscleGroup, type InsertMuscleGroup,
   type VolumeLandmark, type InsertVolumeLandmark, type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking,
-  type ExerciseMuscleMapping, type InsertExerciseMuscleMapping
+  type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan
 } from "@shared/schema";
 
 export interface IStorage {
@@ -140,6 +140,14 @@ export interface IStorage {
   
   // Nutrition Progression
   getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]>;
+  
+  // Saved Meal Plans
+  getSavedMealPlans(userId: number): Promise<SavedMealPlan[]>;
+  getSavedMealPlan(userId: number, planId: number): Promise<SavedMealPlan | undefined>;
+  getSavedMealPlansByType(userId: number, mealType: string): Promise<SavedMealPlan[]>;
+  createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan>;
+  updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined>;
+  deleteSavedMealPlan(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
