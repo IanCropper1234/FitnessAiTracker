@@ -28,13 +28,13 @@ function HeaderControls() {
   const { language, setLanguage, t } = useLanguage();
   
   return (
-    <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+    <div className="fixed top-4 right-4 flex items-center gap-2 z-50 safe-top">
       {/* Language Selector */}
       <Select value={language} onValueChange={setLanguage}>
-        <SelectTrigger className="w-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
-          <Globe className="w-4 h-4" />
+        <SelectTrigger className="min-h-[44px] w-20 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-gray-300 dark:border-gray-600 transition-all duration-200">
+          <Globe className="w-5 h-5" />
         </SelectTrigger>
-        <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
+        <SelectContent className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-gray-300 dark:border-gray-600">
           <SelectItem value="en">EN</SelectItem>
           <SelectItem value="es">ES</SelectItem>
           <SelectItem value="ja">JA</SelectItem>
@@ -49,12 +49,12 @@ function HeaderControls() {
         variant="outline"
         size="icon"
         onClick={toggleTheme}
-        className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+        className="min-h-[44px] min-w-[44px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
       >
         {theme === "light" ? (
-          <Moon className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+          <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
         ) : (
-          <Sun className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+          <Sun className="h-5 w-5 text-gray-700 dark:text-gray-300" />
         )}
       </Button>
     </div>
