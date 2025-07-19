@@ -1,29 +1,71 @@
 import { db } from "../db";
 import { nutritionLogs, bodyMetrics, workoutSessions, workoutExercises, autoRegulationFeedback } from "@shared/schema";
-import { eq, and, gte, lte, desc, sql, avg, sum, count } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 
 export class AnalyticsService {
   // Get nutrition analytics for a specific time period
-  static async getNutritionAnalytics(userId: number, startDate: string, endDate: string) {
+  static async getNutritionAnalytics(userId: number, days: number = 30) {
     try {
-      const logs = await db
-        .select()
-        .from(nutritionLogs)
-        .where(
-          and(
-            eq(nutritionLogs.userId, userId),
-            gte(nutritionLogs.date, startDate),
-            lte(nutritionLogs.date, endDate)
-          )
-        )
-        .orderBy(desc(nutritionLogs.date));
+      // Calculate date range
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      // Use raw SQL to avoid date conversion issues in Drizzle
+      const result = await db.execute(sql`
+        SELECT 
+          id,
+          user_id,
+          date,
+          food_name,
+          quantity,
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          meal_type,
+          meal_order,
+          category,
+          created_at
+        FROM nutrition_logs 
+        WHERE user_id = ${userId}
+          AND date >= ${startDate.toISOString().split('T')[0]}
+          AND date <= ${endDate.toISOString().split('T')[0]}
+        ORDER BY date DESC
+      `);
+
+      const logs = result.rows || [];
+
+      if (logs.length === 0) {
+        return {
+          data: [],
+          dailyData: [],
+          averages: {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0
+          },
+          totalLogs: 0,
+          totalDays: 0,
+          summary: {
+            totalCalories: 0,
+            totalProtein: 0,
+            totalCarbs: 0,
+            totalFat: 0
+          }
+        };
+      }
 
       // Calculate daily totals
-      const dailyTotals = logs.reduce((acc, log) => {
-        const date = log.date;
-        if (!acc[date]) {
-          acc[date] = {
-            date,
+      const dailyTotals = logs.reduce((acc: any, log: any) => {
+        const logDate = new Date(log.date);
+        const dateKey = logDate.toISOString().split('T')[0];
+        
+        if (!acc[dateKey]) {
+          acc[dateKey] = {
+            date: dateKey,
             calories: 0,
             protein: 0,
             carbs: 0,
@@ -31,94 +73,95 @@ export class AnalyticsService {
             logCount: 0
           };
         }
-        acc[date].calories += parseFloat(log.calories.toString()) || 0;
-        acc[date].protein += parseFloat(log.protein.toString()) || 0;
-        acc[date].carbs += parseFloat(log.carbs.toString()) || 0;
-        acc[date].fat += parseFloat(log.fat.toString()) || 0;
-        acc[date].logCount += 1;
+        
+        acc[dateKey].calories += parseFloat(log.calories?.toString() || '0');
+        acc[dateKey].protein += parseFloat(log.protein?.toString() || '0');
+        acc[dateKey].carbs += parseFloat(log.carbs?.toString() || '0');
+        acc[dateKey].fat += parseFloat(log.fat?.toString() || '0');
+        acc[dateKey].logCount += 1;
+        
         return acc;
-      }, {} as Record<string, any>);
+      }, {});
 
       const dailyData = Object.values(dailyTotals);
+      const totalDays = Math.max(dailyData.length, 1);
       
       // Calculate averages
-      const totalDays = dailyData.length;
       const averages = {
-        calories: totalDays > 0 ? dailyData.reduce((sum, day) => sum + day.calories, 0) / totalDays : 0,
-        protein: totalDays > 0 ? dailyData.reduce((sum, day) => sum + day.protein, 0) / totalDays : 0,
-        carbs: totalDays > 0 ? dailyData.reduce((sum, day) => sum + day.carbs, 0) / totalDays : 0,
-        fat: totalDays > 0 ? dailyData.reduce((sum, day) => sum + day.fat, 0) / totalDays : 0
+        calories: Math.round(dailyData.reduce((sum: number, day: any) => sum + day.calories, 0) / totalDays),
+        protein: Math.round(dailyData.reduce((sum: number, day: any) => sum + day.protein, 0) / totalDays),
+        carbs: Math.round(dailyData.reduce((sum: number, day: any) => sum + day.carbs, 0) / totalDays),
+        fat: Math.round(dailyData.reduce((sum: number, day: any) => sum + day.fat, 0) / totalDays)
       };
 
       return {
-        dailyData: dailyData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+        data: logs,
+        dailyData: dailyData.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()),
         averages,
         totalLogs: logs.length,
-        totalDays,
+        totalDays: dailyData.length,
         summary: {
-          totalCalories: dailyData.reduce((sum, day) => sum + day.calories, 0),
-          totalProtein: dailyData.reduce((sum, day) => sum + day.protein, 0),
-          totalCarbs: dailyData.reduce((sum, day) => sum + day.carbs, 0),
-          totalFat: dailyData.reduce((sum, day) => sum + day.fat, 0)
+          totalCalories: dailyData.reduce((sum: number, day: any) => sum + day.calories, 0),
+          totalProtein: dailyData.reduce((sum: number, day: any) => sum + day.protein, 0),
+          totalCarbs: dailyData.reduce((sum: number, day: any) => sum + day.carbs, 0),
+          totalFat: dailyData.reduce((sum: number, day: any) => sum + day.fat, 0)
         }
       };
     } catch (error) {
       console.error('Error in getNutritionAnalytics:', error);
-      throw error;
+      throw new Error('Failed to fetch nutrition analytics');
     }
   }
 
   // Get training analytics for a specific time period
-  static async getTrainingAnalytics(userId: number, startDate: string, endDate: string) {
+  static async getTrainingAnalytics(userId: number, days: number = 30) {
     try {
-      const sessions = await db
-        .select()
-        .from(workoutSessions)
-        .where(
-          and(
-            eq(workoutSessions.userId, userId),
-            gte(workoutSessions.date, startDate),
-            lte(workoutSessions.date, endDate),
-            eq(workoutSessions.isCompleted, true)
-          )
-        )
-        .orderBy(desc(workoutSessions.date));
+      // Calculate date range
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      // Use raw SQL for training sessions
+      const sessionResult = await db.execute(sql`
+        SELECT 
+          id,
+          user_id,
+          program_id,
+          mesocycle_id,
+          date,
+          name,
+          is_completed,
+          total_volume,
+          duration,
+          created_at
+        FROM workout_sessions 
+        WHERE user_id = ${userId}
+          AND date >= ${startDate.toISOString().split('T')[0]}
+          AND date <= ${endDate.toISOString().split('T')[0]}
+          AND is_completed = true
+        ORDER BY date DESC
+      `);
 
-      // Get exercises for completed sessions
-      const exerciseData = [];
-      let totalVolume = 0;
-      let totalDuration = 0;
+      const sessions = sessionResult.rows || [];
 
-      for (const session of sessions) {
-        const exercises = await db
-          .select()
-          .from(workoutExercises)
-          .where(
-            and(
-              eq(workoutExercises.sessionId, session.id),
-              eq(workoutExercises.isCompleted, true)
-            )
-          );
-
-        const sessionVolume = parseFloat(session.totalVolume?.toString() || '0');
-        const sessionDuration = parseFloat(session.duration?.toString() || '0');
-        
-        totalVolume += sessionVolume;
-        totalDuration += sessionDuration;
-
-        exerciseData.push({
-          date: session.date,
-          sessionId: session.id,
-          volume: sessionVolume,
-          duration: sessionDuration,
-          exerciseCount: exercises.length
-        });
+      if (sessions.length === 0) {
+        return {
+          data: [],
+          weeklyData: [],
+          summary: {
+            totalSessions: 0,
+            totalVolume: 0,
+            averageDuration: 0,
+            weeklyFrequency: 0
+          }
+        };
       }
 
-      // Calculate weekly aggregations
-      const weeklyData = exerciseData.reduce((acc, session) => {
-        const date = new Date(session.date);
-        const weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
+      // Calculate weekly aggregations for RP methodology
+      const weeklyData = sessions.reduce((acc: any, session: any) => {
+        const sessionDate = new Date(session.date);
+        const weekStart = new Date(sessionDate);
+        weekStart.setDate(sessionDate.getDate() - sessionDate.getDay()); // Start of week (Sunday)
         const weekKey = weekStart.toISOString().split('T')[0];
         
         if (!acc[weekKey]) {
@@ -127,205 +170,286 @@ export class AnalyticsService {
             sessions: 0,
             totalVolume: 0,
             totalDuration: 0,
-            totalExercises: 0
+            averageVolume: 0,
+            averageDuration: 0
           };
         }
         
         acc[weekKey].sessions += 1;
-        acc[weekKey].totalVolume += session.volume;
-        acc[weekKey].totalDuration += session.duration;
-        acc[weekKey].totalExercises += session.exerciseCount;
+        acc[weekKey].totalVolume += parseInt(session.total_volume?.toString() || '0');
+        acc[weekKey].totalDuration += parseInt(session.duration?.toString() || '0');
         
         return acc;
-      }, {} as Record<string, any>);
+      }, {});
+
+      // Calculate averages for each week
+      Object.values(weeklyData).forEach((week: any) => {
+        week.averageVolume = Math.round(week.totalVolume / week.sessions);
+        week.averageDuration = Math.round(week.totalDuration / week.sessions);
+      });
+
+      const weeklyDataArray = Object.values(weeklyData);
+      
+      const summary = {
+        totalSessions: sessions.length,
+        totalVolume: sessions.reduce((sum: number, session: any) => sum + parseInt(session.total_volume?.toString() || '0'), 0),
+        averageDuration: Math.round(sessions.reduce((sum: number, session: any) => sum + parseInt(session.duration?.toString() || '0'), 0) / sessions.length),
+        weeklyFrequency: Math.round((sessions.length / Math.max(weeklyDataArray.length, 1)) * 10) / 10
+      };
 
       return {
-        sessions: exerciseData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-        weeklyData: Object.values(weeklyData),
-        summary: {
-          totalSessions: sessions.length,
-          totalVolume,
-          totalDuration,
-          averageSessionDuration: sessions.length > 0 ? totalDuration / sessions.length : 0,
-          averageWeeklyVolume: Object.values(weeklyData).length > 0 ? 
-            Object.values(weeklyData).reduce((sum: number, week: any) => sum + week.totalVolume, 0) / Object.values(weeklyData).length : 0
-        }
+        data: sessions,
+        weeklyData: weeklyDataArray.sort((a: any, b: any) => new Date(a.weekStart).getTime() - new Date(b.weekStart).getTime()),
+        summary
       };
     } catch (error) {
       console.error('Error in getTrainingAnalytics:', error);
-      throw error;
+      throw new Error('Failed to fetch training analytics');
     }
   }
 
   // Get body progress analytics
-  static async getBodyProgressAnalytics(userId: number, startDate: string, endDate: string) {
+  static async getBodyProgressAnalytics(userId: number, days: number = 30) {
     try {
-      const metrics = await db
-        .select()
-        .from(bodyMetrics)
-        .where(
-          and(
-            eq(bodyMetrics.userId, userId),
-            gte(bodyMetrics.date, startDate),
-            lte(bodyMetrics.date, endDate)
-          )
-        )
-        .orderBy(desc(bodyMetrics.date));
+      // Calculate date range
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      // Use raw SQL for body metrics
+      const result = await db.execute(sql`
+        SELECT 
+          id,
+          user_id,
+          date,
+          weight,
+          body_fat_percentage,
+          neck,
+          chest,
+          waist,
+          hips,
+          thigh,
+          bicep,
+          unit,
+          created_at
+        FROM body_metrics 
+        WHERE user_id = ${userId}
+          AND date >= ${startDate.toISOString().split('T')[0]}
+          AND date <= ${endDate.toISOString().split('T')[0]}
+        ORDER BY date DESC
+      `);
+
+      const metrics = result.rows || [];
 
       if (metrics.length === 0) {
         return {
           data: [],
-          progress: null,
           summary: {
             totalEntries: 0,
+            currentWeight: null,
+            currentBodyFat: null
+          },
+          progress: {
             weightChange: 0,
-            bodyFatChange: 0
+            bodyFatChange: 0,
+            trend: 'stable'
           }
         };
       }
 
-      const latest = metrics[0];
-      const earliest = metrics[metrics.length - 1];
+      // Sort by date for progress calculation
+      const sortedMetrics = metrics.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const latest = sortedMetrics[sortedMetrics.length - 1];
+      const earliest = sortedMetrics[0];
 
-      const weightChange = parseFloat(latest.weight) - parseFloat(earliest.weight);
-      const bodyFatChange = latest.bodyFatPercentage && earliest.bodyFatPercentage ?
-        parseFloat(latest.bodyFatPercentage) - parseFloat(earliest.bodyFatPercentage) : 0;
+      const weightChange = latest.weight && earliest.weight 
+        ? parseFloat(latest.weight.toString()) - parseFloat(earliest.weight.toString())
+        : 0;
+      
+      const bodyFatChange = latest.body_fat_percentage && earliest.body_fat_percentage
+        ? parseFloat(latest.body_fat_percentage.toString()) - parseFloat(earliest.body_fat_percentage.toString())
+        : 0;
+
+      let trend = 'stable';
+      if (Math.abs(weightChange) > 0.5) {
+        trend = weightChange > 0 ? 'gain' : 'loss';
+      }
 
       return {
-        data: metrics.reverse(), // Order from oldest to newest for charts
-        progress: {
-          weightChange: Number(weightChange.toFixed(1)),
-          bodyFatChange: Number(bodyFatChange.toFixed(1)),
-          trend: weightChange > 0 ? 'gain' : weightChange < 0 ? 'loss' : 'maintained',
-          timespan: Math.ceil((new Date(latest.date).getTime() - new Date(earliest.date).getTime()) / (1000 * 60 * 60 * 24))
-        },
+        data: metrics,
         summary: {
           totalEntries: metrics.length,
-          currentWeight: parseFloat(latest.weight),
-          currentBodyFat: latest.bodyFatPercentage ? parseFloat(latest.bodyFatPercentage) : null,
-          weightChange,
-          bodyFatChange
+          currentWeight: latest.weight ? parseFloat(latest.weight.toString()) : null,
+          currentBodyFat: latest.body_fat_percentage ? parseFloat(latest.body_fat_percentage.toString()) : null
+        },
+        progress: {
+          weightChange: Math.round(weightChange * 10) / 10,
+          bodyFatChange: Math.round(bodyFatChange * 10) / 10,
+          trend
         }
       };
     } catch (error) {
       console.error('Error in getBodyProgressAnalytics:', error);
-      throw error;
+      throw new Error('Failed to fetch body progress analytics');
     }
   }
 
   // Get auto-regulation feedback analytics
-  static async getFeedbackAnalytics(userId: number, startDate: string, endDate: string) {
+  static async getFeedbackAnalytics(userId: number, days: number = 30) {
     try {
-      const feedback = await db
-        .select()
-        .from(autoRegulationFeedback)
-        .where(
-          and(
-            eq(autoRegulationFeedback.userId, userId),
-            gte(autoRegulationFeedback.createdAt, startDate),
-            lte(autoRegulationFeedback.createdAt, endDate)
-          )
-        )
-        .orderBy(desc(autoRegulationFeedback.createdAt));
+      // Calculate date range
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      // Use raw SQL for feedback data
+      const result = await db.execute(sql`
+        SELECT 
+          arf.id,
+          arf.session_id,
+          arf.user_id,
+          arf.pump_quality,
+          arf.muscle_soreness,
+          arf.perceived_effort,
+          arf.energy_level,
+          arf.sleep_quality,
+          arf.created_at,
+          ws.date as session_date
+        FROM auto_regulation_feedback arf
+        JOIN workout_sessions ws ON arf.session_id = ws.id
+        WHERE arf.user_id = ${userId}
+          AND ws.date >= ${startDate.toISOString().split('T')[0]}
+          AND ws.date <= ${endDate.toISOString().split('T')[0]}
+        ORDER BY ws.date DESC
+      `);
 
-      if (feedback.length === 0) {
+      const feedbackData = result.rows || [];
+
+      if (feedbackData.length === 0) {
         return {
           data: [],
-          averages: null,
-          trends: null
+          averages: {
+            pumpQuality: 0,
+            muscleSoreness: 0,
+            perceivedEffort: 0,
+            energyLevel: 0,
+            sleepQuality: 0
+          },
+          summary: {
+            recoveryScore: 0,
+            fatigueScore: 0,
+            totalFeedback: 0
+          },
+          trends: {
+            pumpQuality: 0,
+            energyLevel: 0,
+            sleepQuality: 0
+          }
         };
       }
 
-      // Calculate averages
+      // Calculate averages following RP methodology
       const averages = {
-        pumpQuality: feedback.reduce((sum, f) => sum + (f.pumpQuality || 0), 0) / feedback.length,
-        muscleSoreness: feedback.reduce((sum, f) => sum + (f.muscleSoreness || 0), 0) / feedback.length,
-        perceivedEffort: feedback.reduce((sum, f) => sum + (f.perceivedEffort || 0), 0) / feedback.length,
-        energyLevel: feedback.reduce((sum, f) => sum + (f.energyLevel || 0), 0) / feedback.length,
-        sleepQuality: feedback.reduce((sum, f) => sum + (f.sleepQuality || 0), 0) / feedback.length
+        pumpQuality: Math.round((feedbackData.reduce((sum: number, fb: any) => sum + parseInt(fb.pump_quality?.toString() || '0'), 0) / feedbackData.length) * 10) / 10,
+        muscleSoreness: Math.round((feedbackData.reduce((sum: number, fb: any) => sum + parseInt(fb.muscle_soreness?.toString() || '0'), 0) / feedbackData.length) * 10) / 10,
+        perceivedEffort: Math.round((feedbackData.reduce((sum: number, fb: any) => sum + parseInt(fb.perceived_effort?.toString() || '0'), 0) / feedbackData.length) * 10) / 10,
+        energyLevel: Math.round((feedbackData.reduce((sum: number, fb: any) => sum + parseInt(fb.energy_level?.toString() || '0'), 0) / feedbackData.length) * 10) / 10,
+        sleepQuality: Math.round((feedbackData.reduce((sum: number, fb: any) => sum + parseInt(fb.sleep_quality?.toString() || '0'), 0) / feedbackData.length) * 10) / 10
       };
 
-      // Calculate trends (last 7 entries vs previous 7)
-      let trends = null;
-      if (feedback.length >= 14) {
-        const recent = feedback.slice(0, 7);
-        const previous = feedback.slice(7, 14);
-        
-        const recentAvgs = {
-          pumpQuality: recent.reduce((sum, f) => sum + (f.pumpQuality || 0), 0) / recent.length,
-          energyLevel: recent.reduce((sum, f) => sum + (f.energyLevel || 0), 0) / recent.length,
-          sleepQuality: recent.reduce((sum, f) => sum + (f.sleepQuality || 0), 0) / recent.length
+      // RP methodology: Recovery score calculation (weighted scoring)
+      const recoveryScore = Math.round(
+        (averages.sleepQuality * 0.3 + 
+         averages.energyLevel * 0.3 + 
+         (10 - averages.muscleSoreness) * 0.25 + 
+         (10 - averages.perceivedEffort) * 0.15) * 10
+      ) / 10;
+
+      // RP methodology: Fatigue score calculation
+      const fatigueScore = Math.round(
+        (averages.perceivedEffort * 0.4 + 
+         averages.muscleSoreness * 0.35 + 
+         (10 - averages.energyLevel) * 0.25) * 10
+      ) / 10;
+
+      // Calculate trends (compare first and second half of period)
+      const midPoint = Math.floor(feedbackData.length / 2);
+      const firstHalf = feedbackData.slice(0, midPoint);
+      const secondHalf = feedbackData.slice(midPoint);
+
+      const trends = {
+        pumpQuality: 0,
+        energyLevel: 0,
+        sleepQuality: 0
+      };
+
+      if (firstHalf.length > 0 && secondHalf.length > 0) {
+        const firstHalfAvg = {
+          pump: firstHalf.reduce((sum: number, fb: any) => sum + parseInt(fb.pump_quality?.toString() || '0'), 0) / firstHalf.length,
+          energy: firstHalf.reduce((sum: number, fb: any) => sum + parseInt(fb.energy_level?.toString() || '0'), 0) / firstHalf.length,
+          sleep: firstHalf.reduce((sum: number, fb: any) => sum + parseInt(fb.sleep_quality?.toString() || '0'), 0) / firstHalf.length
         };
         
-        const previousAvgs = {
-          pumpQuality: previous.reduce((sum, f) => sum + (f.pumpQuality || 0), 0) / previous.length,
-          energyLevel: previous.reduce((sum, f) => sum + (f.energyLevel || 0), 0) / previous.length,
-          sleepQuality: previous.reduce((sum, f) => sum + (f.sleepQuality || 0), 0) / previous.length
+        const secondHalfAvg = {
+          pump: secondHalf.reduce((sum: number, fb: any) => sum + parseInt(fb.pump_quality?.toString() || '0'), 0) / secondHalf.length,
+          energy: secondHalf.reduce((sum: number, fb: any) => sum + parseInt(fb.energy_level?.toString() || '0'), 0) / secondHalf.length,
+          sleep: secondHalf.reduce((sum: number, fb: any) => sum + parseInt(fb.sleep_quality?.toString() || '0'), 0) / secondHalf.length
         };
 
-        trends = {
-          pumpQuality: recentAvgs.pumpQuality - previousAvgs.pumpQuality,
-          energyLevel: recentAvgs.energyLevel - previousAvgs.energyLevel,
-          sleepQuality: recentAvgs.sleepQuality - previousAvgs.sleepQuality
-        };
+        trends.pumpQuality = Math.round((secondHalfAvg.pump - firstHalfAvg.pump) * 10) / 10;
+        trends.energyLevel = Math.round((secondHalfAvg.energy - firstHalfAvg.energy) * 10) / 10;
+        trends.sleepQuality = Math.round((secondHalfAvg.sleep - firstHalfAvg.sleep) * 10) / 10;
       }
 
       return {
-        data: feedback.reverse(), // Order from oldest to newest
-        averages: {
-          pumpQuality: Number(averages.pumpQuality.toFixed(1)),
-          muscleSoreness: Number(averages.muscleSoreness.toFixed(1)),
-          perceivedEffort: Number(averages.perceivedEffort.toFixed(1)),
-          energyLevel: Number(averages.energyLevel.toFixed(1)),
-          sleepQuality: Number(averages.sleepQuality.toFixed(1))
-        },
-        trends: trends ? {
-          pumpQuality: Number(trends.pumpQuality.toFixed(1)),
-          energyLevel: Number(trends.energyLevel.toFixed(1)),
-          sleepQuality: Number(trends.sleepQuality.toFixed(1))
-        } : null,
+        data: feedbackData,
+        averages,
         summary: {
-          totalEntries: feedback.length,
-          recoveryScore: Number(((averages.energyLevel + averages.sleepQuality) / 2).toFixed(1)),
-          fatigueScore: Number(((averages.muscleSoreness + averages.perceivedEffort) / 2).toFixed(1))
-        }
+          recoveryScore,
+          fatigueScore,
+          totalFeedback: feedbackData.length
+        },
+        trends
       };
     } catch (error) {
       console.error('Error in getFeedbackAnalytics:', error);
-      throw error;
+      throw new Error('Failed to fetch feedback analytics');
     }
   }
 
-  // Get comprehensive analytics summary
-  static async getComprehensiveAnalytics(userId: number, startDate: string, endDate: string) {
+  // Get comprehensive analytics combining all modules
+  static async getComprehensiveAnalytics(userId: number, days: number = 30) {
     try {
       const [nutrition, training, bodyProgress, feedback] = await Promise.all([
-        this.getNutritionAnalytics(userId, startDate, endDate),
-        this.getTrainingAnalytics(userId, startDate, endDate),
-        this.getBodyProgressAnalytics(userId, startDate, endDate),
-        this.getFeedbackAnalytics(userId, startDate, endDate)
+        this.getNutritionAnalytics(userId, days),
+        this.getTrainingAnalytics(userId, days),
+        this.getBodyProgressAnalytics(userId, days),
+        this.getFeedbackAnalytics(userId, days)
       ]);
 
+      // Create comprehensive overview metrics following RP principles
+      const overview = {
+        nutritionConsistency: nutrition.totalDays > 0 ? Math.round((nutrition.totalLogs / (nutrition.totalDays * 4)) * 100) : 0, // Assuming 4 meals/day target
+        trainingConsistency: training.summary.weeklyFrequency > 0 ? Math.round((training.summary.weeklyFrequency / 4) * 100) : 0, // Assuming 4 sessions/week target
+        recoveryScore: feedback.summary.recoveryScore || 0,
+        progressTrend: bodyProgress.progress.trend
+      };
+
       return {
+        overview,
         nutrition,
         training,
         bodyProgress,
         feedback,
-        overview: {
-          totalNutritionLogs: nutrition.totalLogs,
-          totalTrainingSessions: training.summary.totalSessions,
-          totalBodyMetrics: bodyProgress.summary.totalEntries,
-          totalFeedbackEntries: feedback.summary?.totalEntries || 0,
-          averageCaloriesPerDay: Math.round(nutrition.averages.calories),
-          averageSessionsPerWeek: training.summary.totalSessions > 0 ? 
-            Number((training.summary.totalSessions / Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24 * 7))).toFixed(1)) : 0,
-          weightChange: bodyProgress.progress?.weightChange || 0,
-          recoveryScore: feedback.summary?.recoveryScore || 0
+        period: {
+          days,
+          startDate: new Date(Date.now() - (days * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
+          endDate: new Date().toISOString().split('T')[0]
         }
       };
     } catch (error) {
       console.error('Error in getComprehensiveAnalytics:', error);
-      throw error;
+      throw new Error('Failed to fetch comprehensive analytics');
     }
   }
 }

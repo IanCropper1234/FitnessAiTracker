@@ -2279,17 +2279,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/analytics/nutrition/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { startDate, endDate } = req.query;
+      const days = parseInt(req.query.days as string) || 30;
       
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: "startDate and endDate are required" });
-      }
-      
-      const analytics = await AnalyticsService.getNutritionAnalytics(
-        userId, 
-        startDate as string, 
-        endDate as string
-      );
+      const analytics = await AnalyticsService.getNutritionAnalytics(userId, days);
       
       res.json(analytics);
     } catch (error) {
@@ -2302,17 +2294,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/analytics/training/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { startDate, endDate } = req.query;
+      const days = parseInt(req.query.days as string) || 30;
       
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: "startDate and endDate are required" });
-      }
-      
-      const analytics = await AnalyticsService.getTrainingAnalytics(
-        userId, 
-        startDate as string, 
-        endDate as string
-      );
+      const analytics = await AnalyticsService.getTrainingAnalytics(userId, days);
       
       res.json(analytics);
     } catch (error) {
@@ -2325,17 +2309,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/analytics/body-progress/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { startDate, endDate } = req.query;
+      const days = parseInt(req.query.days as string) || 30;
       
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: "startDate and endDate are required" });
-      }
-      
-      const analytics = await AnalyticsService.getBodyProgressAnalytics(
-        userId, 
-        startDate as string, 
-        endDate as string
-      );
+      const analytics = await AnalyticsService.getBodyProgressAnalytics(userId, days);
       
       res.json(analytics);
     } catch (error) {
@@ -2348,17 +2324,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/analytics/feedback/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { startDate, endDate } = req.query;
+      const days = parseInt(req.query.days as string) || 30;
       
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: "startDate and endDate are required" });
-      }
-      
-      const analytics = await AnalyticsService.getFeedbackAnalytics(
-        userId, 
-        startDate as string, 
-        endDate as string
-      );
+      const analytics = await AnalyticsService.getFeedbackAnalytics(userId, days);
       
       res.json(analytics);
     } catch (error) {
@@ -2371,17 +2339,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/analytics/comprehensive/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { startDate, endDate } = req.query;
+      const days = parseInt(req.query.days as string) || 30;
       
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: "startDate and endDate are required" });
-      }
-      
-      const analytics = await AnalyticsService.getComprehensiveAnalytics(
-        userId, 
-        startDate as string, 
-        endDate as string
-      );
+      const analytics = await AnalyticsService.getComprehensiveAnalytics(userId, days);
       
       res.json(analytics);
     } catch (error) {

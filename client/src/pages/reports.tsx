@@ -28,24 +28,11 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   const [selectedPeriod, setSelectedPeriod] = useState("30");
   const [reportType, setReportType] = useState("overview");
 
-  // Calculate date range based on selected period
-  const getDateRange = () => {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(endDate.getDate() - parseInt(selectedPeriod));
-    return {
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0]
-    };
-  };
-
-  const { startDate, endDate } = getDateRange();
-
   // Fetch comprehensive analytics data
   const { data: comprehensiveAnalytics, isLoading } = useQuery({
     queryKey: ['/api/analytics/comprehensive', userId, selectedPeriod],
     queryFn: async () => {
-      const response = await fetch(`/api/analytics/comprehensive/${userId}?startDate=${startDate}&endDate=${endDate}`);
+      const response = await fetch(`/api/analytics/comprehensive/${userId}?days=${selectedPeriod}`);
       if (!response.ok) throw new Error('Failed to fetch analytics');
       return response.json();
     },
@@ -56,7 +43,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   const { data: nutritionAnalytics } = useQuery({
     queryKey: ['/api/analytics/nutrition', userId, selectedPeriod],
     queryFn: async () => {
-      const response = await fetch(`/api/analytics/nutrition/${userId}?startDate=${startDate}&endDate=${endDate}`);
+      const response = await fetch(`/api/analytics/nutrition/${userId}?days=${selectedPeriod}`);
       if (!response.ok) throw new Error('Failed to fetch nutrition analytics');
       return response.json();
     },
@@ -66,7 +53,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   const { data: trainingAnalytics } = useQuery({
     queryKey: ['/api/analytics/training', userId, selectedPeriod],
     queryFn: async () => {
-      const response = await fetch(`/api/analytics/training/${userId}?startDate=${startDate}&endDate=${endDate}`);
+      const response = await fetch(`/api/analytics/training/${userId}?days=${selectedPeriod}`);
       if (!response.ok) throw new Error('Failed to fetch training analytics');
       return response.json();
     },
@@ -76,7 +63,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   const { data: bodyProgressAnalytics } = useQuery({
     queryKey: ['/api/analytics/body-progress', userId, selectedPeriod],
     queryFn: async () => {
-      const response = await fetch(`/api/analytics/body-progress/${userId}?startDate=${startDate}&endDate=${endDate}`);
+      const response = await fetch(`/api/analytics/body-progress/${userId}?days=${selectedPeriod}`);
       if (!response.ok) throw new Error('Failed to fetch body progress analytics');
       return response.json();
     },
