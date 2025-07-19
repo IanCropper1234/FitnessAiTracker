@@ -245,7 +245,7 @@ const MacroOverviewCard = ({ userId }: { userId: number }) => {
 };
 
 // Sortable card wrapper
-function SortableCard({ card, userId }: { card: DashboardCard; userId: number }) {
+function SortableCard({ card, userId, editMode, onDelete }: { card: DashboardCard; userId: number; editMode: boolean; onDelete: (cardId: string) => void }) {
   const {
     attributes,
     listeners,
@@ -282,10 +282,7 @@ function SortableCard({ card, userId }: { card: DashboardCard; userId: number })
         <Button
           variant="outline"
           size="sm"
-          onClick={() => {
-            const newCards = cards.filter(c => c.id !== card.id);
-            saveConfiguration(newCards);
-          }}
+          onClick={() => onDelete(card.id)}
           className="absolute top-2 left-2 z-10 h-8 w-8 p-0 bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 border-red-300 dark:border-red-700"
         >
           <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
@@ -622,7 +619,16 @@ export function CustomizableDashboard({ user }: CustomizableDashboardProps) {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-1">
               {visibleCards.map((card) => (
-                <SortableCard key={card.id} card={card} userId={user.id} />
+                <SortableCard 
+                  key={card.id} 
+                  card={card} 
+                  userId={user.id} 
+                  editMode={editMode}
+                  onDelete={(cardId) => {
+                    const newCards = cards.filter(c => c.id !== cardId);
+                    saveConfiguration(newCards);
+                  }}
+                />
               ))}
             </div>
           </SortableContext>
