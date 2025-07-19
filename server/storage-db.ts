@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, dietGoals,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates, loadProgressionTracking,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -792,7 +792,11 @@ export class DatabaseStorage implements IStorage {
         return false;
       }
       
-      // First delete related workout exercises
+      // First delete load progression tracking records
+      const progressionResult = await db.delete(loadProgressionTracking).where(eq(loadProgressionTracking.sessionId, id));
+      console.log('Deleted progression records:', progressionResult.rowCount);
+      
+      // Delete related workout exercises
       const exercisesResult = await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
       console.log('Deleted exercises:', exercisesResult.rowCount);
       
