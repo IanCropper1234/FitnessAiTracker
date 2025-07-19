@@ -20,7 +20,7 @@ import { AdvancedMacroManagement } from "@/components/advanced-macro-management"
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Trash2, Calendar } from "lucide-react";
+import { Plus, Search, Trash2, Calendar, Target, Zap, Trophy, TrendingUp, Activity, Flame, Apple, Heart, Scale, Clipboard } from "lucide-react";
 
 interface User {
   id: number;
@@ -130,51 +130,58 @@ export function Nutrition({ user }: NutritionProps) {
 
 
 
-        {/* Enhanced Nutrition Module */}
+        {/* Athletic Nutrition Hub */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
             <div className="overflow-x-auto pb-2">
-              <TabsList className="inline-flex h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-xl min-w-full">
+              <TabsList className="inline-flex h-16 p-2 bg-gradient-to-r from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl min-w-full border-2 border-blue-100 dark:border-gray-700 shadow-lg">
                 <TabsTrigger 
                   value="overview" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
-                  Overview
+                  <Target className="h-4 w-4" />
+                  Performance
                 </TabsTrigger>
                 <TabsTrigger 
                   value="foodlog" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
-                  Food Log
+                  <Clipboard className="h-4 w-4" />
+                  Fuel Log
                 </TabsTrigger>
                 <TabsTrigger 
                   value="builder" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
-                  Diet Plan
+                  <Apple className="h-4 w-4" />
+                  Game Plan
                 </TabsTrigger>
                 <TabsTrigger 
                   value="advanced" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
-                  RP Coach
+                  <Flame className="h-4 w-4" />
+                  Elite Coach
                 </TabsTrigger>
                 <TabsTrigger 
                   value="body" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
-                  Body
+                  <Scale className="h-4 w-4" />
+                  Physique
                 </TabsTrigger>
                 <TabsTrigger 
                   value="progression" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
+                  <TrendingUp className="h-4 w-4" />
                   Progress
                 </TabsTrigger>
                 <TabsTrigger 
                   value="shopping" 
-                  className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+                  className="flex flex-col items-center gap-1 text-xs px-3 py-2 min-h-[56px] min-w-[80px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-pink-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
                 >
+                  <Heart className="h-4 w-4" />
                   Shopping
                 </TabsTrigger>
               </TabsList>

@@ -22,7 +22,14 @@ import {
   Trash2,
   RotateCcw,
   Copy,
-  X
+  X,
+  Zap,
+  Trophy,
+  Activity,
+  Timer,
+  Flame,
+  Medal,
+  Gauge
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -565,48 +572,55 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="overflow-x-auto pb-2">
-          <TabsList className="inline-flex h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-xl min-w-full">
+          <TabsList className="inline-flex h-16 p-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl min-w-full border-2 border-red-100 dark:border-gray-700 shadow-lg">
             <TabsTrigger 
               value="exercises" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Exercise Library
+              <Dumbbell className="h-4 w-4" />
+              Arsenal
             </TabsTrigger>
             <TabsTrigger 
               value="workouts" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Workout Sessions
+              <Activity className="h-4 w-4" />
+              Sessions
             </TabsTrigger>
             <TabsTrigger 
               value="templates" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Training Templates
+              <Trophy className="h-4 w-4" />
+              Programs
             </TabsTrigger>
             <TabsTrigger 
               value="mesocycles" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Periodization
+              <Timer className="h-4 w-4" />
+              Cycles
             </TabsTrigger>
             <TabsTrigger 
               value="progression" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Load Progression
+              <TrendingUp className="h-4 w-4" />
+              Progress
             </TabsTrigger>
             <TabsTrigger 
               value="volume" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Volume Landmarks
+              <Gauge className="h-4 w-4" />
+              Volume
             </TabsTrigger>
             <TabsTrigger 
               value="auto-regulation" 
-              className="text-xs sm:text-sm px-3 py-3 min-h-[44px] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-lg transition-all whitespace-nowrap"
+              className="flex flex-col items-center gap-1 text-xs px-2 py-2 min-h-[56px] min-w-[70px] data-[state=active]:bg-gradient-to-b data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-xl transition-all duration-300 hover:scale-105 font-semibold"
             >
-              Auto-Regulation
+              <Zap className="h-4 w-4" />
+              Recovery
             </TabsTrigger>
           </TabsList>
         </div>
