@@ -244,7 +244,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                     <Input
                       type="number"
                       value={exercise.sets}
-                      onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value))}
+                      onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
                       min="1"
                       max="10"
                     />
@@ -262,7 +262,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                     <Input
                       type="number"
                       value={exercise.restPeriod}
-                      onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value))}
+                      onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value) || 60)}
                       min="30"
                       max="600"
                     />

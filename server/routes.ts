@@ -10,7 +10,6 @@ import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorko
 import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 import { db } from "./db";
-import { sql } from "drizzle-orm";
 import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendations } from "./auto-regulation-algorithms";
 import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
