@@ -2350,6 +2350,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Time synchronization endpoint
+  app.get("/api/time/info", async (req, res) => {
+    try {
+      const { TimeSyncService } = await import("./utils/time-sync");
+      const timeInfo = TimeSyncService.getTimeInfo();
+      const currentTime = await TimeSyncService.getCurrentTime();
+      
+      res.json({
+        serverTime: timeInfo.serverTime.toISOString(),
+        realTime: timeInfo.realTime?.toISOString() || null,
+        currentSyncedTime: currentTime.toISOString(),
+        offsetMs: timeInfo.offsetMs,
+        lastSync: timeInfo.lastSync?.toISOString() || null,
+        isSynced: !!timeInfo.realTime
+      });
+    } catch (error) {
+      console.error("Error getting time info:", error);
+      res.status(500).json({ error: "Failed to get time information" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

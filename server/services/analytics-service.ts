@@ -264,8 +264,16 @@ export class AnalyticsService {
         };
       }
 
-      // Sort by date for progress calculation
-      const sortedMetrics = metrics.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      // Sort by date first, then by created_at for same-date entries to get truly latest
+      const sortedMetrics = metrics.sort((a: any, b: any) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        if (dateA === dateB) {
+          // If same date, sort by created_at to get most recent entry
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        }
+        return dateA - dateB;
+      });
       const latest = sortedMetrics[sortedMetrics.length - 1];
       const earliest = sortedMetrics[0];
 
