@@ -116,12 +116,14 @@ export class AnalyticsService {
   // Get training analytics for a specific time period
   static async getTrainingAnalytics(userId: number, days: number = 30) {
     try {
-      // Calculate date range
-      const endDate = new Date();
+      // Calculate date range - include both past and future sessions within the window
+      const centerDate = new Date();
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - days);
+      startDate.setDate(centerDate.getDate() - days);
+      const endDate = new Date();
+      endDate.setDate(centerDate.getDate() + days); // Allow future sessions too
       
-      // Use raw SQL for training sessions
+      // Use raw SQL for training sessions - get all completed sessions, then filter by date range
       const sessionResult = await db.execute(sql`
         SELECT 
           id,
@@ -136,13 +138,18 @@ export class AnalyticsService {
           created_at
         FROM workout_sessions 
         WHERE user_id = ${userId}
-          AND date >= ${startDate.toISOString().split('T')[0]}
-          AND date <= ${endDate.toISOString().split('T')[0]}
           AND is_completed = true
         ORDER BY date DESC
       `);
 
-      const sessions = sessionResult.rows || [];
+      const allSessions = sessionResult.rows || [];
+
+      // Filter sessions by date range in JavaScript since SQL date filtering was problematic
+      const sessions = allSessions.filter((session: any) => {
+        const sessionDate = new Date(session.date);
+        const daysDifference = Math.abs((centerDate.getTime() - sessionDate.getTime()) / (1000 * 60 * 60 * 24));
+        return daysDifference <= days;
+      });
 
       if (sessions.length === 0) {
         return {
@@ -302,7 +309,7 @@ export class AnalyticsService {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
       
-      // Use raw SQL for feedback data
+      // Use raw SQL for feedback data - get all feedback then filter by date
       const result = await db.execute(sql`
         SELECT 
           arf.id,
@@ -318,12 +325,17 @@ export class AnalyticsService {
         FROM auto_regulation_feedback arf
         JOIN workout_sessions ws ON arf.session_id = ws.id
         WHERE arf.user_id = ${userId}
-          AND ws.date >= ${startDate.toISOString().split('T')[0]}
-          AND ws.date <= ${endDate.toISOString().split('T')[0]}
         ORDER BY ws.date DESC
       `);
 
-      const feedbackData = result.rows || [];
+      const allFeedbackData = result.rows || [];
+
+      // Filter feedback by date range in JavaScript
+      const feedbackData = allFeedbackData.filter((feedback: any) => {
+        const sessionDate = new Date(feedback.session_date);
+        const daysDifference = Math.abs((endDate.getTime() - sessionDate.getTime()) / (1000 * 60 * 60 * 24));
+        return daysDifference <= days;
+      });
 
       if (feedbackData.length === 0) {
         return {
