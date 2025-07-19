@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { Settings, Plus, GripVertical, Eye, EyeOff, Target, TrendingUp, Activity, Calendar, Scale, Zap, Clock, BarChart3 } from "lucide-react";
+import { Settings, Plus, GripVertical, Eye, EyeOff, Target, TrendingUp, Activity, Calendar, Scale, Zap, Clock, BarChart3, Edit3, Trash2, Flame, Moon, Battery, Percent, Heart, CheckCircle, PieChart } from "lucide-react";
 import { useLanguage } from "./language-provider";
 import { MacroChart } from "./macro-chart";
 import {
