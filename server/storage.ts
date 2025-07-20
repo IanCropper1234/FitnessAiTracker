@@ -148,6 +148,10 @@ export interface IStorage {
   createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan>;
   updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined>;
   deleteSavedMealPlan(id: number): Promise<boolean>;
+
+  // Mesocycles
+  getMesocycle(id: number): Promise<any | undefined>;
+  getUserMesocycles(userId: number): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -538,6 +542,17 @@ export class MemStorage implements IStorage {
 
   async deleteSavedMealPlan(id: number): Promise<boolean> {
     return false;
+  }
+
+  // Mesocycles
+  async getMesocycle(id: number): Promise<any | undefined> {
+    // Not implemented in memory storage
+    return undefined;
+  }
+
+  async getUserMesocycles(userId: number): Promise<any[]> {
+    // Not implemented in memory storage
+    return [];
   }
 }
 

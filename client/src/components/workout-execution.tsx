@@ -96,7 +96,9 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     queryKey: ["/api/training/exercise-recommendations", sessionId],
     queryFn: async () => {
       const response = await fetch(`/api/training/exercise-recommendations/${sessionId}`);
-      return response.json();
+      const data = await response.json();
+      // Ensure we return an array even if API returns an error object
+      return Array.isArray(data) ? data : [];
     },
     enabled: !!sessionId && !!session
   });

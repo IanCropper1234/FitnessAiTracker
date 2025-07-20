@@ -872,6 +872,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Mesocycle Management
+  async getMesocycle(id: number): Promise<any | undefined> {
+    const [mesocycle] = await db.select().from(mesocycles).where(eq(mesocycles.id, id));
+    return mesocycle || undefined;
+  }
+
   async getUserMesocycles(userId: number): Promise<any[]> {
     return db.select().from(mesocycles)
       .where(eq(mesocycles.userId, userId))
