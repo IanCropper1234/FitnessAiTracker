@@ -49,13 +49,11 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
   });
 
   // Fetch body metrics
-  const { data: metrics = [], isLoading } = useQuery<BodyMetric[]>({
+  const { data: metrics, isLoading } = useQuery<BodyMetric[]>({
     queryKey: ['/api/body-metrics', userId],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics/${userId}`);
-      const data = await response.json();
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
+      return response.json();
     }
   });
 

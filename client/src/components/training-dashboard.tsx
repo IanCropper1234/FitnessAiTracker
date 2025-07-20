@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -351,15 +351,8 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string>("workouts");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
   const queryClient = useQueryClient();
-
-  // Memoize the date change handler to prevent unnecessary re-renders
-  const handleDateChange = useCallback((newDate: Date) => {
-    console.log('Date change triggered:', newDate);
-    setSelectedDate(newDate);
-    // Don't manually invalidate queries - let React Query handle it with the new dateQueryParam
-  }, []);
 
   // Handle URL parameters for auto-starting workout sessions
   useEffect(() => {
@@ -414,87 +407,49 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     queryKey: ["/api/exercises"],
   });
 
-  // Create stable date objects to prevent render loops
-  const todayDate = useMemo(() => {
-    const today = new Date();
-    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  }, []);
-
-  const yesterdayDate = useMemo(() => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
-  }, []);
-
-  // Memoize the filtered date to prevent render loops
-  const currentDate = useMemo(() => {
-    try {
-      switch (dateFilter) {
-        case 'today':
-          return todayDate;
-        case 'yesterday':
-          return yesterdayDate;
-        case 'custom':
-          // Ensure selectedDate is a valid Date object
-          if (selectedDate instanceof Date && !isNaN(selectedDate.getTime())) {
-            return selectedDate;
-          } else if (selectedDate) {
-            const parsedDate = new Date(selectedDate);
-            if (!isNaN(parsedDate.getTime())) {
-              return parsedDate;
-            }
-          }
-          return todayDate;
-        default:
-          return todayDate;
-      }
-    } catch (error) {
-      console.warn('Date parsing error:', error);
-      return todayDate;
+  // Helper function to get date based on filter
+  const getFilteredDate = () => {
+    switch (dateFilter) {
+      case 'today':
+        return new Date();
+      case 'yesterday':
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return yesterday;
+      case 'custom':
+        return selectedDate;
+      case 'all':
+      default:
+        return null; // No date filter
     }
-  }, [dateFilter, selectedDate, todayDate, yesterdayDate]);
+  };
 
-  // Memoize the date query parameter to prevent unnecessary re-renders
-  const dateQueryParam = useMemo(() => {
-    if (currentDate instanceof Date && !isNaN(currentDate.getTime())) {
-      return currentDate.getFullYear() + '-' + 
-             String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
-             String(currentDate.getDate()).padStart(2, '0');
-    }
-    return new Date().toISOString().split('T')[0];
-  }, [currentDate]);
+  const currentDate = getFilteredDate();
+  const dateQueryParam = currentDate ? currentDate.toISOString().split('T')[0] : null;
 
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
     queryKey: ["/api/training/stats", userId, dateQueryParam],
     queryFn: async () => {
-      console.log(`Fetching stats for date: ${dateQueryParam}`);
-      const response = await fetch(`/api/training/stats/${userId}?date=${dateQueryParam}`);
-      const data = await response.json();
-      console.log(`Stats for ${dateQueryParam}:`, data);
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false
+      const url = dateQueryParam 
+        ? `/api/training/stats/${userId}?date=${dateQueryParam}`
+        : `/api/training/stats/${userId}`;
+      const response = await fetch(url);
+      return response.json();
+    }
   });
 
   // Fetch recent workout sessions with date filtering
   const { data: recentSessions = [], isLoading: sessionsLoading } = useQuery<WorkoutSession[]>({
     queryKey: ["/api/training/sessions", userId, dateQueryParam],
     queryFn: async () => {
-      console.log(`Fetching sessions for date: ${dateQueryParam}`);
-      const response = await fetch(`/api/training/sessions/${userId}?date=${dateQueryParam}`);
-      const data = await response.json();
-      console.log(`Received ${Array.isArray(data) ? data.length : 0} sessions for ${dateQueryParam}:`, data);
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false
+      const url = dateQueryParam 
+        ? `/api/training/sessions/${userId}?date=${dateQueryParam}`
+        : `/api/training/sessions/${userId}`;
+      const response = await fetch(url);
+      return response.json();
+    }
   });
-
-  // Add defensive check to ensure recentSessions is always an array
-  const safeSessions = Array.isArray(recentSessions) ? recentSessions : [];
 
   // Group exercises by category
   const exercisesByCategory = exercises.reduce((acc, exercise) => {
@@ -643,53 +598,14 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="gap-2">
-                  {(() => {
-                    try {
-                      const dateToFormat = selectedDate instanceof Date ? 
-                        selectedDate : 
-                        new Date(selectedDate);
-                      return !isNaN(dateToFormat.getTime()) ? 
-                        format(dateToFormat, "MMM dd, yyyy") : 
-                        'Select Date';
-                    } catch (error) {
-                      return 'Select Date';
-                    }
-                  })()}
+                  {format(selectedDate, "MMM dd, yyyy")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Input
                   type="date"
-                  value={(() => {
-                    try {
-                      const dateToConvert = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
-                      if (!isNaN(dateToConvert.getTime())) {
-                        // Use local date formatting to avoid timezone issues
-                        return dateToConvert.getFullYear() + '-' + 
-                               String(dateToConvert.getMonth() + 1).padStart(2, '0') + '-' + 
-                               String(dateToConvert.getDate()).padStart(2, '0');
-                      }
-                      return '';
-                    } catch (error) {
-                      return '';
-                    }
-                  })()}
-                  onChange={(e) => {
-                    try {
-                      const dateValue = e.target.value;
-                      if (dateValue) {
-                        // Parse date as local date to avoid timezone issues
-                        const [year, month, day] = dateValue.split('-').map(Number);
-                        const newDate = new Date(year, month - 1, day);
-                        if (!isNaN(newDate.getTime())) {
-                          console.log('Setting date with local parsing:', newDate, 'from input:', dateValue);
-                          handleDateChange(newDate);
-                        }
-                      }
-                    } catch (error) {
-                      console.error('Date selection error:', error);
-                    }
-                  }}
+                  value={selectedDate.toISOString().split('T')[0]}
+                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
                   className="w-auto"
                 />
               </PopoverContent>
@@ -939,12 +855,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
           ) : (
             <div className="space-y-6">
               {/* In Progress Sessions */}
-              {safeSessions.filter(session => !session.isCompleted).length > 0 && (
+              {recentSessions && recentSessions.filter && recentSessions.filter(session => !session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
-                    In Progress ({safeSessions.filter(session => !session.isCompleted).length})
+                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
                   </h4>
-                  {safeSessions.filter(session => !session.isCompleted).map((session) => (
+                  {recentSessions && recentSessions.filter && recentSessions.filter(session => !session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
@@ -959,12 +875,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               )}
 
               {/* Completed Sessions */}
-              {safeSessions.filter(session => session.isCompleted).length > 0 && (
+              {recentSessions && recentSessions.filter && recentSessions.filter(session => session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
-                    Recent Completed Sessions ({safeSessions.filter(session => session.isCompleted).length})
+                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
                   </h4>
-                  {safeSessions.filter(session => session.isCompleted).map((session) => (
+                  {recentSessions && recentSessions.filter && recentSessions.filter(session => session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}

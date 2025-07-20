@@ -30,13 +30,11 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   const [bulkMode, setBulkMode] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
 
-  const { data: nutritionLogs = [], isLoading } = useQuery({
+  const { data: nutritionLogs, isLoading } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, selectedDate],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/logs/${userId}?date=${selectedDate}`);
-      const data = await response.json();
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
+      return response.json();
     }
   });
 
@@ -60,25 +58,21 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   });
 
   // Quick add suggestions
-  const { data: quickAddSuggestions = [] } = useQuery({
+  const { data: quickAddSuggestions } = useQuery({
     queryKey: ['/api/nutrition/quick-add', userId],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/quick-add/${userId}`);
-      const data = await response.json();
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
+      return response.json();
     }
   });
 
   // Copy meals from another date
-  const { data: copySourceLogs = [] } = useQuery({
+  const { data: copySourceLogs } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, copyFromDate],
     queryFn: async () => {
       if (!copyFromDate) return [];
       const response = await fetch(`/api/nutrition/logs/${userId}?date=${copyFromDate}`);
-      const data = await response.json();
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
+      return response.json();
     },
     enabled: !!copyFromDate
   });

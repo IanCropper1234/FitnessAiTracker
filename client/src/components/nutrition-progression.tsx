@@ -52,31 +52,22 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   const { startDate, endDate } = getDateRange();
 
   // Fetch progression data
-  const { data: progressionData = [], isLoading } = useQuery<ProgressData[]>({
+  const { data: progressionData, isLoading } = useQuery<ProgressData[]>({
     queryKey: ['/api/nutrition/progression', userId, timeRange],
     queryFn: async () => {
       const response = await fetch(
         `/api/nutrition/progression/${userId}?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
       );
-      const data = await response.json();
-      // Ensure we always return an array
-      return Array.isArray(data) ? data : [];
+      return response.json();
     }
   });
 
   // Fetch body metrics for weight/body fat trends
-  const { data: bodyMetrics = [] } = useQuery({
+  const { data: bodyMetrics } = useQuery({
     queryKey: ['/api/body-metrics', userId, timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics/${userId}`);
       const allMetrics = await response.json();
-      
-      // Ensure allMetrics is an array before filtering
-      if (!Array.isArray(allMetrics)) {
-        console.warn('Body metrics API returned non-array data:', allMetrics);
-        return [];
-      }
-      
       // Filter by date range and sort by date
       const filteredMetrics = allMetrics
         .filter((metric: any) => {
