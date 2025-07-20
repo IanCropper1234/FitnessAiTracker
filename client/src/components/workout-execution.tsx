@@ -193,11 +193,13 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     },
     onSuccess: (data) => {
       console.log('Save Progress - Success:', data);
+      // Invalidate cache to ensure fresh data on next load
+      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
       toast({
         title: "Progress Saved",
         description: "Your workout progress has been saved.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
       onComplete();
     },
     onError: (error) => {
