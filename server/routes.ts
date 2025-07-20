@@ -2292,6 +2292,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get exercise recommendations for specific session (for workout execution recommendations)
+  app.get("/api/training/exercise-recommendations/:sessionId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      
+      if (isNaN(sessionId)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+      }
+      
+      // Get session details
+      const session = await storage.getWorkoutSession(sessionId);
+      if (!session || !session.mesocycleId) {
+        return res.json([]);
+      }
+      
+      // Get mesocycle details to determine current week
+      const mesocycle = await storage.getMesocycle(session.mesocycleId);
+      if (!mesocycle) {
+        return res.json([]);
+      }
+      
+      // Get exercise recommendations for each exercise in the session
+      const recommendations = await Promise.all(
+        session.exercises.map(async (exercise) => {
+          try {
+            // Get recent performance data for this exercise
+            const recentPerformance = await db
+              .select({
+                weight: workoutExercises.weight,
+                reps: workoutExercises.actualReps,
+                rpe: workoutExercises.rpe,
+                rir: workoutExercises.rir,
+                date: workoutSessions.date
+              })
+              .from(workoutExercises)
+              .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+              .where(and(
+                eq(workoutSessions.userId, session.userId),
+                eq(workoutExercises.exerciseId, exercise.exerciseId),
+                eq(workoutExercises.isCompleted, true),
+                lt(workoutSessions.date, session.date)
+              ))
+              .orderBy(desc(workoutSessions.date))
+              .limit(3);
+            
+            if (recentPerformance.length === 0) {
+              // No previous data, return basic recommendations
+              return {
+                exerciseId: exercise.exerciseId,
+                exerciseName: exercise.exercise.name,
+                recommendedWeight: parseFloat(exercise.weight) || 10,
+                recommendedReps: exercise.targetReps,
+                recommendedRpe: 7,
+                week: mesocycle.currentWeek,
+                reasoning: `Week ${mesocycle.currentWeek} starting point - no previous data available`
+              };
+            }
+            
+            // Calculate averages from recent performance
+            const avgWeight = recentPerformance.reduce((sum, p) => sum + parseFloat(p.weight || '0'), 0) / recentPerformance.length;
+            const avgRpe = recentPerformance.reduce((sum, p) => sum + (p.rpe || 7), 0) / recentPerformance.length;
+            const avgRir = recentPerformance.reduce((sum, p) => sum + (p.rir || 2), 0) / recentPerformance.length;
+            
+            // Apply load progression algorithm
+            let recommendedWeight = avgWeight;
+            let recommendedReps = exercise.targetReps;
+            let recommendedRpe = 7;
+            let reasoning = '';
+            
+            // Week-based progression adjustments
+            const weekMultiplier = 1 + (mesocycle.currentWeek - 1) * 0.025; // 2.5% increase per week
+            
+            // RPE-based adjustments
+            if (avgRpe >= 8 && avgRpe <= 8.5 && avgRir >= 1 && avgRir <= 2) {
+              // Perfect progression zone
+              const weightIncrement = exercise.exercise.movementPattern === 'compound' ? 2.5 : 1.25;
+              recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
+              recommendedRpe = 8;
+              reasoning = `Week ${mesocycle.currentWeek} progression - perfect RPE/RIR zone, increase weight`;
+            } else if (avgRpe < 7 || avgRir > 3) {
+              // Too easy - larger increase
+              const weightIncrement = exercise.exercise.movementPattern === 'compound' ? 5 : 2.5;
+              recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
+              recommendedRpe = 8;
+              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too light, significant increase`;
+            } else if (avgRpe > 9 || avgRir < 1) {
+              // Too hard - maintain or slight decrease
+              recommendedWeight = avgWeight * 0.975; // 2.5% reduction
+              recommendedRpe = 7;
+              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too heavy, slight reduction`;
+            } else {
+              // Moderate progression
+              const weightIncrement = exercise.exercise.movementPattern === 'compound' ? 1.25 : 0.625;
+              recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
+              recommendedRpe = Math.ceil(avgRpe);
+              reasoning = `Week ${mesocycle.currentWeek} progression - moderate increase based on feedback`;
+            }
+            
+            return {
+              exerciseId: exercise.exerciseId,
+              exerciseName: exercise.exercise.name,
+              recommendedWeight: Math.round(recommendedWeight * 4) / 4, // Round to nearest 0.25
+              recommendedReps: recommendedReps,
+              recommendedRpe: recommendedRpe,
+              week: mesocycle.currentWeek,
+              reasoning: reasoning
+            };
+            
+          } catch (error) {
+            console.error(`Error calculating recommendations for exercise ${exercise.exerciseId}:`, error);
+            return {
+              exerciseId: exercise.exerciseId,
+              exerciseName: exercise.exercise.name,
+              recommendedWeight: parseFloat(exercise.weight) || 10,
+              recommendedReps: exercise.targetReps,
+              recommendedRpe: 7,
+              week: mesocycle.currentWeek,
+              reasoning: `Week ${mesocycle.currentWeek} - using current values (calculation error)`
+            };
+          }
+        })
+      );
+      
+      res.json(recommendations);
+    } catch (error: any) {
+      console.error('Exercise recommendations error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.get("/api/training/performance-analysis/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);

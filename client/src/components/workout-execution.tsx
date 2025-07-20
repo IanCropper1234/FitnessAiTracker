@@ -59,6 +59,16 @@ interface WorkoutSession {
   exercises: WorkoutExercise[];
 }
 
+interface ExerciseRecommendation {
+  exerciseId: number;
+  exerciseName: string;
+  recommendedWeight: number;
+  recommendedReps: string;
+  recommendedRpe: number;
+  week: number;
+  reasoning: string;
+}
+
 interface WorkoutExecutionProps {
   sessionId: number;
   onComplete: () => void;
@@ -79,6 +89,16 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
   // Fetch workout session details
   const { data: session, isLoading } = useQuery<WorkoutSession>({
     queryKey: ["/api/training/session", sessionId],
+  });
+
+  // Fetch exercise recommendations
+  const { data: recommendations = [] } = useQuery<ExerciseRecommendation[]>({
+    queryKey: ["/api/training/exercise-recommendations", sessionId],
+    queryFn: async () => {
+      const response = await fetch(`/api/training/exercise-recommendations/${sessionId}`);
+      return response.json();
+    },
+    enabled: !!sessionId && !!session
   });
 
   // Initialize workout data
@@ -257,6 +277,11 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         i === setIndex ? { ...set, [field]: value } : set
       )
     }));
+  };
+
+  // Helper function to get recommendations for an exercise
+  const getExerciseRecommendation = (exerciseId: number): ExerciseRecommendation | null => {
+    return recommendations.find(rec => rec.exerciseId === exerciseId) || null;
   };
 
   // Add new set to current exercise
@@ -586,42 +611,67 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                   </span>
                 </h4>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <Label>Weight (kg)</Label>
-                    <Input
-                      type="number"
-                      step="0.5"
-                      value={currentSet.weight || ''}
-                      onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(e.target.value) || 0)}
-                      placeholder="0"
-                    />
-                  </div>
+                {(() => {
+                  const exerciseRec = getExerciseRecommendation(currentExercise.exerciseId);
                   
-                  <div className="space-y-2">
-                    <Label>Actual Reps</Label>
-                    <Input
-                      type="number"
-                      value={currentSet.actualReps || ''}
-                      onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(e.target.value) || 0)}
-                      placeholder="0"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>RPE (1-10)</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={currentSet.rpe || ''}
-                      onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(e.target.value) || 7)}
-                      placeholder="7"
-                    />
-                  </div>
-                  
-                  <div className="flex items-end">
-                    <Button 
+                  return (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label>Weight (kg)</Label>
+                          {exerciseRec && (
+                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                              Recommend: {exerciseRec.recommendedWeight}kg (Week {exerciseRec.week})
+                            </span>
+                          )}
+                        </div>
+                        <Input
+                          type="number"
+                          step="0.5"
+                          value={currentSet.weight || ''}
+                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(e.target.value) || 0)}
+                          placeholder="0"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label>Actual Reps</Label>
+                          {exerciseRec && (
+                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                              Recommend: {exerciseRec.recommendedReps} (Week {exerciseRec.week})
+                            </span>
+                          )}
+                        </div>
+                        <Input
+                          type="number"
+                          value={currentSet.actualReps || ''}
+                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(e.target.value) || 0)}
+                          placeholder="0"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label>RPE (1-10)</Label>
+                          {exerciseRec && (
+                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                              Recommend: {exerciseRec.recommendedRpe} (Week {exerciseRec.week})
+                            </span>
+                          )}
+                        </div>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={currentSet.rpe || ''}
+                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(e.target.value) || 7)}
+                          placeholder="7"
+                        />
+                      </div>
+                      
+                      <div className="flex items-end">
+                        <Button 
                       onClick={completeSet}
                       disabled={currentSet.completed}
                       className="w-full"
@@ -638,8 +688,10 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                         </>
                       )}
                     </Button>
-                  </div>
-                </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
