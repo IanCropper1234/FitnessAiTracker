@@ -537,7 +537,16 @@ const sortedData = data.sort((a, b) => {
 
 ## Recent Changes
 
-### July 20, 2025 (Latest - COMPLETE: Flexible Session Customization & Template-Mesocycle Integration)
+### July 20, 2025 (Latest - IDENTIFIED: Critical Template-Mesocycle Integration Conflicts)
+- 🔍 **CONFLICT VALIDATION COMPLETED**: Systematically tested all integration points between template, mesocycle, and advance week systems
+- ❌ **SESSION OWNERSHIP CONFLICT CONFIRMED**: 15 standalone sessions (mesocycleId: null), 0 mesocycle-linked sessions, advance week creates orphaned volume adjustments
+- ❌ **TEMPLATE INTEGRATION FAILURE CONFIRMED**: Template generation with mesocycleId parameter fails, cannot create proper template-based mesocycles
+- ❌ **ADVANCE WEEK ORPHANED OPERATIONS**: Week progression works (2→3→4) but generates 0 sessions per week with volume adjustments applied to nothing
+- ✅ **FLEXIBILITY SYSTEM VALIDATED**: SessionCustomization and MesocycleSessionGenerator services work correctly for add/remove/substitute exercises
+- 🔧 **UNIFIED SOLUTION CREATED**: UnifiedMesocycleTemplate service provides conflict detection, validation, and automated repair capabilities
+- 📋 **ROOT CAUSE IDENTIFIED**: Template generation creates standalone sessions instead of mesocycle-linked sessions, breaking the progression workflow
+
+### July 20, 2025 (Earlier - COMPLETE: Flexible Session Customization & Template-Mesocycle Integration)
 - ✅ **COMPREHENSIVE FLEXIBILITY SOLUTION**: Implemented complete session customization system within mesocycles
 - ✅ **SessionCustomization Service**: Add/remove/substitute exercises with future week propagation
 - ✅ **MesocycleSessionGenerator Service**: Create additional sessions, extra training days, deload sessions

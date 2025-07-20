@@ -2412,6 +2412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Session Customization API Routes
   const { SessionCustomization } = await import("./services/session-customization");
   const { MesocycleSessionGenerator } = await import("./services/mesocycle-session-generator");
+  const { UnifiedMesocycleTemplate } = await import("./services/unified-mesocycle-template");
 
   // Add exercise to existing session
   app.post("/api/training/sessions/:sessionId/exercises", async (req, res) => {
@@ -2521,6 +2522,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Error creating extra training day:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Unified Template-Mesocycle Integration Routes
+  app.post("/api/training/mesocycles/from-template", async (req, res) => {
+    try {
+      const { userId, templateId, startDate, totalWeeks } = req.body;
+      
+      const result = await UnifiedMesocycleTemplate.createMesocycleFromTemplate(
+        userId,
+        templateId,
+        new Date(startDate),
+        totalWeeks || 6
+      );
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error creating mesocycle from template:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/training/mesocycles/:mesocycleId/validate", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.mesocycleId);
+      
+      const validation = await UnifiedMesocycleTemplate.validateIntegration(mesocycleId);
+      
+      res.json(validation);
+    } catch (error: any) {
+      console.error("Error validating mesocycle integration:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/training/mesocycles/:mesocycleId/fix-orphaned", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.mesocycleId);
+      const { userId } = req.body;
+      
+      await UnifiedMesocycleTemplate.fixOrphanedSessions(userId, mesocycleId);
+      await UnifiedMesocycleTemplate.reactivateMesocycle(mesocycleId);
+      
+      const validation = await UnifiedMesocycleTemplate.validateIntegration(mesocycleId);
+      
+      res.json({ 
+        success: true,
+        message: "Orphaned sessions fixed and mesocycle reactivated",
+        validation
+      });
+    } catch (error: any) {
+      console.error("Error fixing orphaned sessions:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/training/demonstrate-workflow/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      const demo = await UnifiedMesocycleTemplate.demonstrateProperWorkflow(userId);
+      
+      res.json(demo);
+    } catch (error: any) {
+      console.error("Error demonstrating workflow:", error);
       res.status(500).json({ error: error.message });
     }
   });
