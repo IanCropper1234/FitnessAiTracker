@@ -2409,6 +2409,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Session Customization API Routes
+  const { SessionCustomization } = await import("./services/session-customization");
+  const { MesocycleSessionGenerator } = await import("./services/mesocycle-session-generator");
+
+  // Add exercise to existing session
+  app.post("/api/training/sessions/:sessionId/exercises", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const { exerciseId, insertPosition } = req.body;
+      
+      const newExercise = await SessionCustomization.addExerciseToSession(
+        sessionId, 
+        exerciseId, 
+        insertPosition
+      );
+      
+      res.json({ 
+        success: true, 
+        exercise: newExercise,
+        message: "Exercise added to session and future weeks"
+      });
+    } catch (error: any) {
+      console.error("Error adding exercise to session:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Remove exercise from session
+  app.delete("/api/training/sessions/:sessionId/exercises/:exerciseId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const exerciseId = parseInt(req.params.exerciseId);
+      
+      await SessionCustomization.removeExerciseFromSession(sessionId, exerciseId);
+      
+      res.json({ 
+        success: true,
+        message: "Exercise removed from session and future weeks"
+      });
+    } catch (error: any) {
+      console.error("Error removing exercise from session:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Substitute exercise in session
+  app.put("/api/training/sessions/:sessionId/exercises/:exerciseId/substitute", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const oldExerciseId = parseInt(req.params.exerciseId);
+      const { newExerciseId } = req.body;
+      
+      await SessionCustomization.substituteExercise(
+        sessionId, 
+        oldExerciseId, 
+        newExerciseId
+      );
+      
+      res.json({ 
+        success: true,
+        message: "Exercise substituted in session and future weeks"
+      });
+    } catch (error: any) {
+      console.error("Error substituting exercise:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Create additional session in mesocycle
+  app.post("/api/training/mesocycles/:mesocycleId/sessions", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.mesocycleId);
+      const { sessionName, targetDate, exerciseIds } = req.body;
+      
+      const newSession = await MesocycleSessionGenerator.createAdditionalSession(
+        mesocycleId,
+        sessionName,
+        new Date(targetDate),
+        exerciseIds
+      );
+      
+      res.json({ 
+        success: true, 
+        session: newSession,
+        message: "Additional session created in mesocycle"
+      });
+    } catch (error: any) {
+      console.error("Error creating additional session:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Create specialized extra training day
+  app.post("/api/training/mesocycles/:mesocycleId/extra-day", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.mesocycleId);
+      const { sessionType, targetDate, customName } = req.body;
+      
+      const newSession = await MesocycleSessionGenerator.createExtraTrainingDay(
+        mesocycleId,
+        sessionType,
+        new Date(targetDate),
+        customName
+      );
+      
+      res.json({ 
+        success: true, 
+        session: newSession,
+        message: `${sessionType} session created successfully`
+      });
+    } catch (error: any) {
+      console.error("Error creating extra training day:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
