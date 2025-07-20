@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -358,14 +358,8 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const handleDateChange = useCallback((newDate: Date) => {
     console.log('Date change triggered:', newDate);
     setSelectedDate(newDate);
-    // Invalidate queries to force refetch with new date
-    queryClient.invalidateQueries({ 
-      queryKey: ["/api/training/sessions", userId] 
-    });
-    queryClient.invalidateQueries({ 
-      queryKey: ["/api/training/stats", userId] 
-    });
-  }, [userId, queryClient]);
+    // Don't manually invalidate queries - let React Query handle it with the new dateQueryParam
+  }, []);
 
   // Handle URL parameters for auto-starting workout sessions
   useEffect(() => {
@@ -420,8 +414,8 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     queryKey: ["/api/exercises"],
   });
 
-  // Helper function to get date based on filter
-  const getFilteredDate = () => {
+  // Memoize the filtered date to prevent render loops
+  const currentDate = useMemo(() => {
     try {
       switch (dateFilter) {
         case 'today':
@@ -448,15 +442,17 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       console.warn('Date parsing error:', error);
       return new Date();
     }
-  };
+  }, [dateFilter, selectedDate]);
 
-  const currentDate = getFilteredDate();
-  // Convert date to local date string for proper timezone handling
-  const dateQueryParam = currentDate instanceof Date && !isNaN(currentDate.getTime()) ? 
-    currentDate.getFullYear() + '-' + 
-    String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
-    String(currentDate.getDate()).padStart(2, '0') : 
-    new Date().toISOString().split('T')[0];
+  // Memoize the date query parameter to prevent unnecessary re-renders
+  const dateQueryParam = useMemo(() => {
+    if (currentDate instanceof Date && !isNaN(currentDate.getTime())) {
+      return currentDate.getFullYear() + '-' + 
+             String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
+             String(currentDate.getDate()).padStart(2, '0');
+    }
+    return new Date().toISOString().split('T')[0];
+  }, [currentDate]);
 
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
