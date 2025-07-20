@@ -351,7 +351,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string>("workouts");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
   const queryClient = useQueryClient();
 
   // Handle URL parameters for auto-starting workout sessions
@@ -418,19 +418,23 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
         return yesterday;
       case 'custom':
         return selectedDate;
+      case 'all':
       default:
-        return new Date();
+        return null; // No date filter
     }
   };
 
   const currentDate = getFilteredDate();
-  const dateQueryParam = currentDate.toISOString().split('T')[0];
+  const dateQueryParam = currentDate ? currentDate.toISOString().split('T')[0] : null;
 
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
     queryKey: ["/api/training/stats", userId, dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/training/stats/${userId}?date=${dateQueryParam}`);
+      const url = dateQueryParam 
+        ? `/api/training/stats/${userId}?date=${dateQueryParam}`
+        : `/api/training/stats/${userId}`;
+      const response = await fetch(url);
       return response.json();
     }
   });
@@ -439,7 +443,10 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const { data: recentSessions = [], isLoading: sessionsLoading } = useQuery<WorkoutSession[]>({
     queryKey: ["/api/training/sessions", userId, dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/training/sessions/${userId}?date=${dateQueryParam}`);
+      const url = dateQueryParam 
+        ? `/api/training/sessions/${userId}?date=${dateQueryParam}`
+        : `/api/training/sessions/${userId}`;
+      const response = await fetch(url);
       return response.json();
     }
   });
@@ -848,12 +855,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
           ) : (
             <div className="space-y-6">
               {/* In Progress Sessions */}
-              {recentSessions.filter(session => !session.isCompleted).length > 0 && (
+              {recentSessions && recentSessions.filter && recentSessions.filter(session => !session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
                     In Progress ({recentSessions.filter(session => !session.isCompleted).length})
                   </h4>
-                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
+                  {recentSessions && recentSessions.filter && recentSessions.filter(session => !session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
@@ -868,12 +875,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               )}
 
               {/* Completed Sessions */}
-              {recentSessions.filter(session => session.isCompleted).length > 0 && (
+              {recentSessions && recentSessions.filter && recentSessions.filter(session => session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
                     Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
                   </h4>
-                  {recentSessions.filter(session => session.isCompleted).map((session) => (
+                  {recentSessions && recentSessions.filter && recentSessions.filter(session => session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
