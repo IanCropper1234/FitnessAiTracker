@@ -414,16 +414,26 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     queryKey: ["/api/exercises"],
   });
 
+  // Create stable date objects to prevent render loops
+  const todayDate = useMemo(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  }, []);
+
+  const yesterdayDate = useMemo(() => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+  }, []);
+
   // Memoize the filtered date to prevent render loops
   const currentDate = useMemo(() => {
     try {
       switch (dateFilter) {
         case 'today':
-          return new Date();
+          return todayDate;
         case 'yesterday':
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          return yesterday;
+          return yesterdayDate;
         case 'custom':
           // Ensure selectedDate is a valid Date object
           if (selectedDate instanceof Date && !isNaN(selectedDate.getTime())) {
@@ -434,15 +444,15 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               return parsedDate;
             }
           }
-          return new Date();
+          return todayDate;
         default:
-          return new Date();
+          return todayDate;
       }
     } catch (error) {
       console.warn('Date parsing error:', error);
-      return new Date();
+      return todayDate;
     }
-  }, [dateFilter, selectedDate]);
+  }, [dateFilter, selectedDate, todayDate, yesterdayDate]);
 
   // Memoize the date query parameter to prevent unnecessary re-renders
   const dateQueryParam = useMemo(() => {
