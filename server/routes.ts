@@ -2141,13 +2141,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/training/templates/generate-program", async (req, res) => {
     try {
-      const { userId, templateId } = req.body;
+      const { userId, templateId, mesocycleId, startDate } = req.body;
       
       if (!userId || !templateId) {
         return res.status(400).json({ error: "userId and templateId are required" });
       }
 
-      const program = await TemplateEngine.generateFullProgramFromTemplate(userId, templateId);
+      const program = await TemplateEngine.generateFullProgramFromTemplate(
+        userId, 
+        templateId, 
+        mesocycleId, 
+        startDate ? new Date(startDate) : undefined
+      );
       
       res.json({ 
         ...program,

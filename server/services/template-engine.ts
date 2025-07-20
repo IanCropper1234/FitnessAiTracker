@@ -49,7 +49,9 @@ export class TemplateEngine {
    */
   static async generateFullProgramFromTemplate(
     userId: number,
-    templateId: number
+    templateId: number,
+    mesocycleId?: number,
+    startDate?: Date
   ): Promise<{
     sessions: Array<{
       sessionId: number;
@@ -146,12 +148,21 @@ export class TemplateEngine {
       }
 
       // Create workout session for this day
+      const sessionDate = startDate 
+        ? new Date(startDate.getTime() + workoutDay * 24 * 60 * 60 * 1000)
+        : new Date(Date.now() + workoutDay * 24 * 60 * 60 * 1000);
+      
+      const sessionName = mesocycleId 
+        ? `${workoutTemplate.name} - Week 1` 
+        : `${workoutTemplate.name} - Day ${workoutDay + 1}`;
+      
       const sessionResult = await db
         .insert(workoutSessions)
         .values({
           userId,
-          date: new Date(Date.now() + workoutDay * 24 * 60 * 60 * 1000), // Space sessions 1 day apart
-          name: `${workoutTemplate.name} - Day ${workoutDay + 1}`,
+          mesocycleId: mesocycleId || null, // Link to mesocycle if provided
+          date: sessionDate,
+          name: sessionName,
           isCompleted: false,
           totalVolume: 0,
           duration: 0
