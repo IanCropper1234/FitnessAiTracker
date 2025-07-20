@@ -53,7 +53,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                className="border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 pl-[7px] pr-[7px] pt-[7px] pb-[7px] mt-[0px] mb-[0px] ml-[6px] mr-[6px]"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
