@@ -2579,6 +2579,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/training/mesocycles/:mesocycleId/repair-data", async (req, res) => {
+    try {
+      const mesocycleId = parseInt(req.params.mesocycleId);
+      const { userId } = req.body;
+      
+      const repair = await UnifiedMesocycleTemplate.repairExistingData(userId, mesocycleId);
+      
+      res.json(repair);
+    } catch (error: any) {
+      console.error("Error repairing data:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/training/demonstrate-workflow/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);

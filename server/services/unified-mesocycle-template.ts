@@ -5,7 +5,7 @@ import {
   workoutExercises,
   trainingTemplates
 } from "@shared/schema";
-import { eq, and, gte, sql } from "drizzle-orm";
+import { eq, and, gte, sql, isNull } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
 
 export class UnifiedMesocycleTemplate {
@@ -101,6 +101,7 @@ export class UnifiedMesocycleTemplate {
   
   /**
    * Fix orphaned sessions by linking them to mesocycle
+   * Updated to handle all existing sessions and reset mesocycle properly
    */
   static async fixOrphanedSessions(userId: number, mesocycleId: number) {
     console.log(`🔧 Fixing orphaned sessions for user ${userId}`);
@@ -114,23 +115,82 @@ export class UnifiedMesocycleTemplate {
       throw new Error("Mesocycle not found");
     }
     
-    // Update recent sessions to link to mesocycle
+    // Get all orphaned sessions for this user
+    const orphanedSessions = await db
+      .select()
+      .from(workoutSessions)
+      .where(
+        and(
+          eq(workoutSessions.userId, userId),
+          isNull(workoutSessions.mesocycleId)
+        )
+      );
+    
+    console.log(`Found ${orphanedSessions.length} orphaned sessions to integrate`);
+    
+    // Update ALL orphaned sessions to link to mesocycle
     const result = await db
       .update(workoutSessions)
       .set({ 
-        mesocycleId: mesocycleId,
-        name: sql`CONCAT(name, ' - Week 1')`
+        mesocycleId: mesocycleId
       })
       .where(
         and(
           eq(workoutSessions.userId, userId),
-          eq(workoutSessions.mesocycleId, null),
-          gte(workoutSessions.date, mesocycle.startDate)
+          isNull(workoutSessions.mesocycleId)
         )
       );
     
-    console.log(`✅ Fixed orphaned sessions`);
+    console.log(`✅ Integrated ${orphanedSessions.length} sessions into mesocycle ${mesocycleId}`);
+    return { 
+      integratedSessions: orphanedSessions.length,
+      result 
+    };
+  }
+  
+  /**
+   * Reset mesocycle to Week 1 and reactivate
+   */
+  static async resetMesocycleToWeek1(mesocycleId: number) {
+    console.log(`🔄 Resetting mesocycle ${mesocycleId} to Week 1`);
+    
+    const result = await db
+      .update(mesocycles)
+      .set({ 
+        currentWeek: 1,
+        isActive: true,
+        phase: 'accumulation',
+        updatedAt: new Date()
+      })
+      .where(eq(mesocycles.id, mesocycleId));
+    
+    console.log(`✅ Mesocycle ${mesocycleId} reset to Week 1 and reactivated`);
     return result;
+  }
+  
+  /**
+   * Comprehensive data repair for existing system
+   */
+  static async repairExistingData(userId: number, mesocycleId: number) {
+    console.log(`🛠️ Starting comprehensive data repair for user ${userId}`);
+    
+    // Step 1: Reset mesocycle to Week 1
+    await this.resetMesocycleToWeek1(mesocycleId);
+    
+    // Step 2: Integrate all orphaned sessions
+    const integrationResult = await this.fixOrphanedSessions(userId, mesocycleId);
+    
+    // Step 3: Validate repair
+    const validation = await this.validateIntegration(mesocycleId);
+    
+    console.log(`✅ Data repair completed: ${integrationResult.integratedSessions} sessions integrated`);
+    
+    return {
+      mesocycleReset: true,
+      integratedSessions: integrationResult.integratedSessions,
+      validation,
+      status: "Repair completed successfully"
+    };
   }
   
   /**

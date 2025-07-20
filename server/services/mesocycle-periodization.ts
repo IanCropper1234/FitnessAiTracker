@@ -686,6 +686,12 @@ export class MesocyclePeriodization {
 
     // Generate next week's workouts with adjusted volumes
     await this.generateWeekWorkouts(mesocycleId, nextWeek, volumeAdjustments);
+    
+    // Also integrate any existing orphaned sessions for this user
+    await this.integrateOrphanedSessionsToMesocycle(mesocycle.userId, mesocycleId);
+    
+    // Also integrate any existing orphaned sessions for this user
+    await this.integrateOrphanedSessionsToMesocycle(mesocycle.userId, mesocycleId);
 
     return {
       newWeek: nextWeek,
