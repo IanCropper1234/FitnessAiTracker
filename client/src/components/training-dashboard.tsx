@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -354,6 +354,19 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
   const queryClient = useQueryClient();
 
+  // Memoize the date change handler to prevent unnecessary re-renders
+  const handleDateChange = useCallback((newDate: Date) => {
+    console.log('Date change triggered:', newDate);
+    setSelectedDate(newDate);
+    // Invalidate queries to force refetch with new date
+    queryClient.invalidateQueries({ 
+      queryKey: ["/api/training/sessions", userId] 
+    });
+    queryClient.invalidateQueries({ 
+      queryKey: ["/api/training/stats", userId] 
+    });
+  }, [userId, queryClient]);
+
   // Handle URL parameters for auto-starting workout sessions
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -447,20 +460,29 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
     queryKey: ["/api/training/stats", userId, dateQueryParam],
     queryFn: async () => {
+      console.log(`Fetching stats for date: ${dateQueryParam}`);
       const response = await fetch(`/api/training/stats/${userId}?date=${dateQueryParam}`);
-      return response.json();
-    }
+      const data = await response.json();
+      console.log(`Stats for ${dateQueryParam}:`, data);
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false
   });
 
   // Fetch recent workout sessions with date filtering
   const { data: recentSessions = [], isLoading: sessionsLoading } = useQuery<WorkoutSession[]>({
     queryKey: ["/api/training/sessions", userId, dateQueryParam],
     queryFn: async () => {
+      console.log(`Fetching sessions for date: ${dateQueryParam}`);
       const response = await fetch(`/api/training/sessions/${userId}?date=${dateQueryParam}`);
       const data = await response.json();
+      console.log(`Received ${Array.isArray(data) ? data.length : 0} sessions for ${dateQueryParam}:`, data);
       // Ensure we always return an array
       return Array.isArray(data) ? data : [];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false
   });
 
   // Add defensive check to ensure recentSessions is always an array
@@ -640,8 +662,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                       if (dateValue) {
                         const newDate = new Date(dateValue + 'T00:00:00');
                         if (!isNaN(newDate.getTime())) {
-                          console.log('Setting new date:', newDate);
-                          setSelectedDate(newDate);
+                          handleDateChange(newDate);
                         }
                       }
                     } catch (error) {
