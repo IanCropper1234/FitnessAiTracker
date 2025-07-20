@@ -691,14 +691,14 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="exercises">Exercise Library</TabsTrigger>
-          <TabsTrigger value="workouts">Workout Sessions</TabsTrigger>
-          <TabsTrigger value="templates">Training Templates</TabsTrigger>
-          <TabsTrigger value="mesocycles">Periodization</TabsTrigger>
-          <TabsTrigger value="progression">Load Progression</TabsTrigger>
-          <TabsTrigger value="volume">Volume Landmarks</TabsTrigger>
-          <TabsTrigger value="auto-regulation">Auto-Regulation</TabsTrigger>
+        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <TabsTrigger value="exercises" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Exercise Library</TabsTrigger>
+          <TabsTrigger value="workouts" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Workout Sessions</TabsTrigger>
+          <TabsTrigger value="templates" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Training Templates</TabsTrigger>
+          <TabsTrigger value="mesocycles" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Periodization</TabsTrigger>
+          <TabsTrigger value="progression" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Load Progression</TabsTrigger>
+          <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Volume Landmarks</TabsTrigger>
+          <TabsTrigger value="auto-regulation" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Auto-Regulation</TabsTrigger>
         </TabsList>
 
         <TabsContent value="exercises" className="space-y-6">
