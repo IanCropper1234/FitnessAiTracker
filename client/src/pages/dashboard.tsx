@@ -333,7 +333,7 @@ export function Dashboard({ user }: DashboardProps) {
               >
                 <Dumbbell className="w-4 h-4 mr-2" />
                 {workoutSessions && workoutSessions.filter((session: any) => !session.isCompleted).length > 0 
-                  ? t("continue_workout") || "Continue Workout"
+                  ? "Continue Workout"
                   : t("start_workout")}
               </Button>
               <Button 
