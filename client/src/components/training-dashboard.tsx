@@ -440,7 +440,9 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     queryKey: ["/api/training/sessions", userId, dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/training/sessions/${userId}?date=${dateQueryParam}`);
-      return response.json();
+      const data = await response.json();
+      // Ensure we always return an array
+      return Array.isArray(data) ? data : [];
     }
   });
 
