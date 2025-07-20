@@ -1,8 +1,11 @@
 import { UserProfile } from "@/components/user-profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { useTheme } from "@/components/theme-provider";
+import { useLanguage } from "@/components/language-provider";
 
 interface User {
   id: number;
@@ -17,6 +20,8 @@ interface ProfilePageProps {
 
 export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const [, setLocation] = useLocation();
+  const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
 
   const handleSignOut = () => {
     if (onSignOut) {
@@ -58,6 +63,71 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* App Settings Card */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-black dark:text-white">App Settings</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Customize your app preferences</p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* Language Selector */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-black dark:text-white flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    Language
+                  </label>
+                  <Select value={language} onValueChange={setLanguage}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Español</SelectItem>
+                      <SelectItem value="ja">日本語</SelectItem>
+                      <SelectItem value="zh-CN">中文 (简体)</SelectItem>
+                      <SelectItem value="de">Deutsch</SelectItem>
+                      <SelectItem value="zh-TW">中文 (繁體)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Theme Toggle */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-black dark:text-white flex items-center gap-2">
+                    {theme === "light" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                    Theme
+                  </label>
+                  <Button
+                    onClick={toggleTheme}
+                    variant="outline"
+                    className="w-full justify-start"
+                  >
+                    {theme === "light" ? (
+                      <>
+                        <Moon className="w-4 h-4 mr-2" />
+                        Switch to Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="w-4 h-4 mr-2" />
+                        Switch to Light Mode
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

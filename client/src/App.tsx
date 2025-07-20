@@ -23,43 +23,7 @@ interface User {
   name: string;
 }
 
-function HeaderControls() {
-  const { theme, toggleTheme } = useTheme();
-  const { language, setLanguage, t } = useLanguage();
-  
-  return (
-    <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
-      {/* Language Selector */}
-      <Select value={language} onValueChange={setLanguage}>
-        <SelectTrigger className="w-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
-          <Globe className="w-4 h-4" />
-        </SelectTrigger>
-        <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
-          <SelectItem value="en">EN</SelectItem>
-          <SelectItem value="es">ES</SelectItem>
-          <SelectItem value="ja">JA</SelectItem>
-          <SelectItem value="zh-CN">中文</SelectItem>
-          <SelectItem value="de">DE</SelectItem>
-          <SelectItem value="zh-TW">繁中</SelectItem>
-        </SelectContent>
-      </Select>
-      
-      {/* Theme Toggle */}
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={toggleTheme}
-        className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-      >
-        {theme === "light" ? (
-          <Moon className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-        ) : (
-          <Sun className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-        )}
-      </Button>
-    </div>
-  );
-}
+
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
@@ -77,8 +41,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
-      <HeaderControls />
-      
       <Switch>
         <Route path="/auth">
           <Auth onSuccess={(userData: User) => {
