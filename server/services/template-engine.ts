@@ -167,10 +167,10 @@ export class TemplateEngine {
           .values({
             sessionId,
             exerciseId: exercise.exerciseId,
-            orderIndex: exercise.orderIndex,
+            orderIndex: exercise.orderIndex || 1, // Ensure orderIndex is never null
             sets: exercise.sets,
             targetReps: exercise.repsRange,
-            restPeriod: exercise.restPeriod,
+            restPeriod: exercise.restPeriod || 60, // Default rest period
             isCompleted: false
           });
       }
@@ -304,10 +304,11 @@ export class TemplateEngine {
         .values({
           sessionId,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex,
+          orderIndex: exercise.orderIndex || 1, // Ensure orderIndex is never null
           sets: exercise.sets,
           targetReps: exercise.repsRange,
-          restPeriod: exercise.restPeriod,
+          restPeriod: exercise.restPeriod || 60, // Default rest period
+          isCompleted: false,
           notes: exercise.notes
         });
     }
@@ -320,16 +321,8 @@ export class TemplateEngine {
    */
   static async initializeSystemTemplates(): Promise<void> {
     
-    // Check if templates already exist
-    const existingTemplates = await db
-      .select({ count: trainingTemplates.id })
-      .from(trainingTemplates)
-      .where(eq(trainingTemplates.createdBy, "system"));
-
-    if (existingTemplates.length >= 20) {
-      console.log("System templates already initialized");
-      return;
-    }
+    // Force refresh templates to ensure correct data structure
+    console.log("Refreshing system templates to ensure correct structure...");
 
     // Clear existing system templates for comprehensive refresh
     await db

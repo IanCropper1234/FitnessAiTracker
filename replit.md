@@ -537,7 +537,17 @@ const sortedData = data.sort((a, b) => {
 
 ## Recent Changes
 
-### July 20, 2025 (Latest - COMPLETE: Comprehensive Date Filtering Consistency Fix)
+### July 20, 2025 (Latest - COMPLETE: Training Template Generation & Date Filtering Fix)
+- ✅ **CRITICAL TRAINING TEMPLATE FIX**: Resolved training template generation issue that was only creating single workout sessions
+- ✅ **Database Constraint Fix**: Fixed null value constraint violation in workout_exercises.order_index field by adding proper default values
+- ✅ **Template Engine Enhancement**: Enhanced generateFullProgramFromTemplate function with improved error handling and null safety
+- ✅ **Multiple Session Generation VALIDATED**: Confirmed template generation now correctly creates multiple workout sessions:
+  - Full Body (Beginner) - Template ID 1024: Creates 2 sessions (Full Body A, Full Body B)
+  - Push/Pull/Legs (Beginner) - Template ID 1025: Creates 3 sessions (Push Day, Pull Day, Leg Day)
+- ✅ **Template Data Integrity**: Fixed template initialization to ensure proper data structure and exercise mapping
+- ✅ **Production Testing**: Validated complete end-to-end workflow from template selection to workout session creation with authentic exercise data
+
+### July 20, 2025 (Earlier - COMPLETE: Comprehensive Date Filtering Consistency Fix)
 - ✅ **CRITICAL DATA CONSISTENCY FIXED**: Resolved date filtering inconsistencies across all storage modules that caused data to appear on incorrect dates
 - ✅ **Enhanced Database Functions**: Updated getWorkoutSessions and getBodyMetrics functions in storage-db.ts to support optional date filtering with proper start-of-day/end-of-day boundary handling
 - ✅ **API Route Consistency**: Updated training sessions and body metrics API routes to support optional date query parameters for filtering data by specific dates
