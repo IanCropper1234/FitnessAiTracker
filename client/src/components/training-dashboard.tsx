@@ -463,6 +463,9 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     }
   });
 
+  // Add defensive check to ensure recentSessions is always an array
+  const safeSessions = Array.isArray(recentSessions) ? recentSessions : [];
+
   // Group exercises by category
   const exercisesByCategory = exercises.reduce((acc, exercise) => {
     if (!acc[exercise.category]) {
@@ -632,9 +635,17 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                     new Date(selectedDate).toISOString().split('T')[0]
                   }
                   onChange={(e) => {
-                    const newDate = new Date(e.target.value);
-                    if (!isNaN(newDate.getTime())) {
-                      setSelectedDate(newDate);
+                    try {
+                      const dateValue = e.target.value;
+                      if (dateValue) {
+                        const newDate = new Date(dateValue + 'T00:00:00');
+                        if (!isNaN(newDate.getTime())) {
+                          console.log('Setting new date:', newDate);
+                          setSelectedDate(newDate);
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Date selection error:', error);
                     }
                   }}
                   className="w-auto"
@@ -886,12 +897,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
           ) : (
             <div className="space-y-6">
               {/* In Progress Sessions */}
-              {recentSessions.filter(session => !session.isCompleted).length > 0 && (
+              {safeSessions.filter(session => !session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
-                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
+                    In Progress ({safeSessions.filter(session => !session.isCompleted).length})
                   </h4>
-                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
+                  {safeSessions.filter(session => !session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
@@ -906,12 +917,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               )}
 
               {/* Completed Sessions */}
-              {recentSessions.filter(session => session.isCompleted).length > 0 && (
+              {safeSessions.filter(session => session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
-                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
+                    Recent Completed Sessions ({safeSessions.filter(session => session.isCompleted).length})
                   </h4>
-                  {recentSessions.filter(session => session.isCompleted).map((session) => (
+                  {safeSessions.filter(session => session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
