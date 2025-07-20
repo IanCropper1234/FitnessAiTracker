@@ -451,9 +451,11 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   };
 
   const currentDate = getFilteredDate();
-  // Safely convert date to string for query parameter
+  // Convert date to local date string for proper timezone handling
   const dateQueryParam = currentDate instanceof Date && !isNaN(currentDate.getTime()) ? 
-    currentDate.toISOString().split('T')[0] : 
+    currentDate.getFullYear() + '-' + 
+    String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
+    String(currentDate.getDate()).padStart(2, '0') : 
     new Date().toISOString().split('T')[0];
 
   // Fetch training stats
@@ -652,16 +654,29 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               <PopoverContent className="w-auto p-0">
                 <Input
                   type="date"
-                  value={selectedDate instanceof Date ? 
-                    selectedDate.toISOString().split('T')[0] : 
-                    new Date(selectedDate).toISOString().split('T')[0]
-                  }
+                  value={(() => {
+                    try {
+                      const dateToConvert = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
+                      if (!isNaN(dateToConvert.getTime())) {
+                        // Use local date formatting to avoid timezone issues
+                        return dateToConvert.getFullYear() + '-' + 
+                               String(dateToConvert.getMonth() + 1).padStart(2, '0') + '-' + 
+                               String(dateToConvert.getDate()).padStart(2, '0');
+                      }
+                      return '';
+                    } catch (error) {
+                      return '';
+                    }
+                  })()}
                   onChange={(e) => {
                     try {
                       const dateValue = e.target.value;
                       if (dateValue) {
-                        const newDate = new Date(dateValue + 'T00:00:00');
+                        // Parse date as local date to avoid timezone issues
+                        const [year, month, day] = dateValue.split('-').map(Number);
+                        const newDate = new Date(year, month - 1, day);
                         if (!isNaN(newDate.getTime())) {
+                          console.log('Setting date with local parsing:', newDate, 'from input:', dateValue);
                           handleDateChange(newDate);
                         }
                       }
