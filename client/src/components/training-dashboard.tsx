@@ -427,6 +427,11 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const currentDate = getFilteredDate();
   const dateQueryParam = currentDate ? currentDate.toISOString().split('T')[0] : null;
 
+  // Debug effect to log date changes
+  useEffect(() => {
+    console.log('Date change triggered:', currentDate);
+  }, [dateFilter, selectedDate]);
+
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
     queryKey: ["/api/training/stats", userId, dateQueryParam],
@@ -434,8 +439,15 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       const url = dateQueryParam 
         ? `/api/training/stats/${userId}?date=${dateQueryParam}`
         : `/api/training/stats/${userId}`;
+      
+      console.log('Fetching stats for date:', dateQueryParam || 'all dates');
+      
       const response = await fetch(url);
-      return response.json();
+      const data = await response.json();
+      
+      console.log(`Stats for ${dateQueryParam || 'all dates'}:`, data);
+      
+      return data;
     }
   });
 
@@ -446,8 +458,18 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       const url = dateQueryParam 
         ? `/api/training/sessions/${userId}?date=${dateQueryParam}`
         : `/api/training/sessions/${userId}`;
+      
+      // Debug logging
+      console.log('Fetching sessions for date:', dateQueryParam || 'all dates');
+      
       const response = await fetch(url);
-      return response.json();
+      const data = await response.json();
+      
+      // Ensure we always return an array
+      const sessions = Array.isArray(data) ? data : [];
+      console.log(`Received ${sessions.length} sessions for ${dateQueryParam || 'all dates'}:`, sessions);
+      
+      return sessions;
     }
   });
 
@@ -838,7 +860,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
             userId={userId}
           />
 
-          {recentSessions.length === 0 ? (
+          {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <Dumbbell className="h-12 w-12 text-muted-foreground mb-4" />
@@ -855,12 +877,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
           ) : (
             <div className="space-y-6">
               {/* In Progress Sessions */}
-              {recentSessions && recentSessions.filter && recentSessions.filter(session => !session.isCompleted).length > 0 && (
+              {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
                     In Progress ({recentSessions.filter(session => !session.isCompleted).length})
                   </h4>
-                  {recentSessions && recentSessions.filter && recentSessions.filter(session => !session.isCompleted).map((session) => (
+                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
@@ -875,12 +897,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               )}
 
               {/* Completed Sessions */}
-              {recentSessions && recentSessions.filter && recentSessions.filter(session => session.isCompleted).length > 0 && (
+              {Array.isArray(recentSessions) && recentSessions.filter(session => session.isCompleted).length > 0 && (
                 <div className="space-y-4">
                   <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
                     Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
                   </h4>
-                  {recentSessions && recentSessions.filter && recentSessions.filter(session => session.isCompleted).map((session) => (
+                  {recentSessions.filter(session => session.isCompleted).map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
