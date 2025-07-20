@@ -697,6 +697,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const exercisesWithDetails = await Promise.all(
         workoutExercises.map(async (we) => {
           const exercise = await storage.getExercise(we.exerciseId);
+          console.log(`API: Workout exercise ${we.id} setsData:`, we.setsData);
           return {
             id: we.id,
             exerciseId: we.exerciseId,
@@ -710,6 +711,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             rpe: we.rpe,
             rir: we.rir,
             isCompleted: we.isCompleted,
+            setsData: we.setsData, // Include saved sets data
             exercise: exercise
           };
         })

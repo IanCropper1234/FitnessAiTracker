@@ -284,6 +284,9 @@ export class DatabaseStorage implements IStorage {
     console.log(`Getting workout exercises for session ${sessionId}`);
     const result = await db.select().from(workoutExercises).where(eq(workoutExercises.sessionId, sessionId));
     console.log(`Found ${result.length} workout exercises for session ${sessionId}`);
+    result.forEach(exercise => {
+      console.log(`DB: Exercise ${exercise.id} setsData:`, exercise.setsData);
+    });
     return result;
   }
 
@@ -863,10 +866,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateWorkoutExercise(id: number, updates: Partial<InsertWorkoutExercise>): Promise<WorkoutExercise | undefined> {
+    console.log(`DB: Updating workout exercise ${id} with:`, updates);
     const [updated] = await db.update(workoutExercises)
       .set(updates)
       .where(eq(workoutExercises.id, id))
       .returning();
+    console.log(`DB: Updated workout exercise ${id} result:`, updated);
     return updated || undefined;
   }
 
