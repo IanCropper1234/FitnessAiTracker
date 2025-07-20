@@ -108,7 +108,8 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         }
         
         // Check if we have saved sets data to restore
-        if (exercise.setsData && Array.isArray(exercise.setsData)) {
+        console.log(`Exercise ${exercise.id} setsData:`, exercise.setsData);
+        if (exercise.setsData && Array.isArray(exercise.setsData) && exercise.setsData.length > 0) {
           console.log(`Restoring saved sets data for exercise ${exercise.id}:`, exercise.setsData);
           initialData[exercise.id] = exercise.setsData.map((savedSet: any) => ({
             setNumber: savedSet.setNumber,
@@ -116,7 +117,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
             actualReps: savedSet.actualReps || prefilledActualReps,
             weight: savedSet.weight || prefilledWeight,
             rpe: savedSet.rpe || prefilledRpe,
-            completed: savedSet.completed || false
+            completed: Boolean(savedSet.completed) // Ensure boolean conversion
           }));
         } else {
           // No saved data, create fresh sets
