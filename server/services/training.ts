@@ -58,20 +58,61 @@ export async function getTrainingStats(userId: number): Promise<TrainingStats> {
 }
 
 async function getWeeklyProgress(userId: number) {
-  // Generate last 8 weeks of data
-  const weeks = [];
-  for (let i = 7; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - (i * 7));
-    const weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
+  try {
+    // Get all completed workout sessions for the user
+    const sessions = await storage.getWorkoutSessions(userId);
+    const completedSessions = sessions.filter(session => session.isCompleted);
     
-    weeks.push({
-      week: weekStart.toISOString().split('T')[0],
-      sessions: 0, // TODO: Count sessions in this week
-      volume: 0    // TODO: Sum volume for this week
+    if (completedSessions.length === 0) {
+      return [];
+    }
+    
+    // Group sessions by week directly from their dates
+    const weekGroups: { [key: string]: { sessions: number; volume: number; weekStart: Date } } = {};
+    
+    completedSessions.forEach(session => {
+      const sessionDate = new Date(session.date);
+      
+      // Calculate week start (Sunday) for this session
+      const weekStart = new Date(sessionDate);
+      weekStart.setDate(sessionDate.getDate() - sessionDate.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekKey = weekStart.toISOString().split('T')[0];
+      
+      if (!weekGroups[weekKey]) {
+        weekGroups[weekKey] = {
+          sessions: 0,
+          volume: 0,
+          weekStart: new Date(weekStart)
+        };
+      }
+      
+      weekGroups[weekKey].sessions++;
+      weekGroups[weekKey].volume += (session.totalVolume || 0);
     });
+    
+    // Convert to array and sort by date (most recent first)
+    const weeklyData = Object.entries(weekGroups)
+      .map(([weekKey, data]) => ({
+        week: weekKey,
+        sessions: data.sessions,
+        volume: data.volume,
+        weekStart: data.weekStart
+      }))
+      .sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime()) // Oldest first for chart display
+      .slice(-8); // Take last 8 weeks
+    
+    console.log('Weekly progress calculated:', weeklyData.length, 'weeks with data');
+    
+    return weeklyData.map(week => ({
+      week: week.week,
+      sessions: week.sessions,
+      volume: week.volume
+    }));
+  } catch (error) {
+    console.error('Error getting weekly progress:', error);
+    return [];
   }
   
   return weeks;
