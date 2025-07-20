@@ -298,15 +298,6 @@ export class DatabaseStorage implements IStorage {
     return newExercise;
   }
 
-  async updateWorkoutExercise(id: number, exercise: Partial<InsertWorkoutExercise>): Promise<WorkoutExercise | undefined> {
-    const [updatedExercise] = await db
-      .update(workoutExercises)
-      .set(exercise)
-      .where(eq(workoutExercises.id, id))
-      .returning();
-    return updatedExercise || undefined;
-  }
-
   async deleteWorkoutSession(id: number): Promise<boolean> {
     try {
       console.log(`Attempting to delete workout session ${id}`);
