@@ -279,13 +279,14 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
           <CardTitle>Analysis Timeframe</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2">
             {[7, 14, 28, 56].map((days) => (
               <Button
                 key={days}
                 variant={timeframe === days ? "default" : "outline"}
                 size="sm"
                 onClick={() => setTimeframe(days)}
+                className="flex-shrink-0 whitespace-nowrap"
               >
                 {days} days
               </Button>

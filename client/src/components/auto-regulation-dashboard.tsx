@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TrendingUp, TrendingDown, Target, AlertTriangle, Activity, Zap, Info } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { TrendingUp, TrendingDown, Target, AlertTriangle, Activity, Zap, Info, ChevronDown, ChevronRight } from "lucide-react";
 import { AutoRegulationExplanation } from "./auto-regulation-explanation";
 
 interface VolumeRecommendation {
@@ -35,6 +37,8 @@ interface AutoRegulationDashboardProps {
 }
 
 export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps) {
+  const [isExplanationOpen, setIsExplanationOpen] = useState(false);
+
   // Fetch volume recommendations
   const { data: recommendations = [], isLoading: recommendationsLoading } = useQuery<VolumeRecommendation[]>({
     queryKey: ["/api/training/volume-recommendations", userId],
@@ -274,15 +278,28 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
 
       {/* How It Works Section */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            How Auto-Regulation Applies to Your Upcoming Workouts
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AutoRegulationExplanation />
-        </CardContent>
+        <Collapsible open={isExplanationOpen} onOpenChange={setIsExplanationOpen}>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Info className="h-5 w-5" />
+                  How Auto-Regulation Applies to Your Upcoming Workouts
+                </div>
+                {isExplanationOpen ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </CardTitle>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent>
+              <AutoRegulationExplanation />
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
       </Card>
 
       {/* No Data Message */}
