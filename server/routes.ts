@@ -753,7 +753,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Update set count if it has changed dynamically
           const currentSetCount = exerciseData.sets.length;
           const updateData: any = {
-            sets: currentSetCount // Update dynamic set count
+            sets: currentSetCount, // Update dynamic set count
+            setsData: exerciseData.sets // Store individual set completion states
           };
           
           if (completedSets.length > 0) {
@@ -770,6 +771,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             updateData.isCompleted = false;
           }
 
+          console.log(`API: Updating exercise ${exerciseData.exerciseId} with sets data:`, updateData.setsData);
           await storage.updateWorkoutExercise(workoutExercise.id, updateData);
         }
       }

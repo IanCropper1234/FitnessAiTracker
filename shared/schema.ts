@@ -219,6 +219,7 @@ export const workoutExercises = pgTable("workout_exercises", {
   restPeriod: integer("rest_period"), // seconds
   notes: text("notes"),
   isCompleted: boolean("is_completed").default(false),
+  setsData: jsonb("sets_data"), // Individual set completion states
 });
 
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {

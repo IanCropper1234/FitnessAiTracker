@@ -45,6 +45,7 @@ interface WorkoutExercise {
     instructions: string;
   };
   workoutSets: WorkoutSet[];
+  setsData?: WorkoutSet[];
 }
 
 interface WorkoutSession {
@@ -83,6 +84,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
   // Initialize workout data
   useEffect(() => {
     if (session && Object.keys(workoutData).length === 0) {
+      console.log('Initializing workout data from session:', session);
       const initialData: Record<number, WorkoutSet[]> = {};
       session.exercises.forEach(exercise => {
         const targetRepsArray = exercise.targetReps.includes('-') 
@@ -105,15 +107,30 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           }
         }
         
-        initialData[exercise.id] = Array.from({ length: exercise.sets }, (_, i) => ({
-          setNumber: i + 1,
-          targetReps: targetRepsArray[i] || targetRepsArray[0] || 10,
-          actualReps: prefilledActualReps,
-          weight: prefilledWeight,
-          rpe: prefilledRpe,
-          completed: false
-        }));
+        // Check if we have saved sets data to restore
+        if (exercise.setsData && Array.isArray(exercise.setsData)) {
+          console.log(`Restoring saved sets data for exercise ${exercise.id}:`, exercise.setsData);
+          initialData[exercise.id] = exercise.setsData.map((savedSet: any) => ({
+            setNumber: savedSet.setNumber,
+            targetReps: savedSet.targetReps,
+            actualReps: savedSet.actualReps || prefilledActualReps,
+            weight: savedSet.weight || prefilledWeight,
+            rpe: savedSet.rpe || prefilledRpe,
+            completed: savedSet.completed || false
+          }));
+        } else {
+          // No saved data, create fresh sets
+          initialData[exercise.id] = Array.from({ length: exercise.sets }, (_, i) => ({
+            setNumber: i + 1,
+            targetReps: targetRepsArray[i] || targetRepsArray[0] || 10,
+            actualReps: prefilledActualReps,
+            weight: prefilledWeight,
+            rpe: prefilledRpe,
+            completed: false
+          }));
+        }
       });
+      console.log('Initialized workout data:', initialData);
       setWorkoutData(initialData);
     }
   }, [session]);
