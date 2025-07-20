@@ -265,15 +265,18 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
         const landmark = landmarks.find(l => l.muscleGroupId === mg.id);
         
         let volumeStress = 0;
-        if (landmark) {
+        let fatigueLevel = overallFatigue; // Default to overall fatigue
+        
+        if (landmark && landmark.mavSets > 0) {
           volumeStress = volume / landmark.mavSets; // Ratio of current to MAV
+          fatigueLevel = Math.min(10, overallFatigue * (1 + volumeStress * 0.2));
         }
 
         return {
           muscleGroupId: mg.id,
           muscleGroupName: mg.name,
-          fatigueLevel: Math.min(10, overallFatigue * (1 + volumeStress * 0.2)),
-          volumeStress
+          fatigueLevel: Math.round(fatigueLevel * 10) / 10, // Round to 1 decimal
+          volumeStress: Math.round(volumeStress * 100) / 100 // Round to 2 decimals
         };
       })
     );
