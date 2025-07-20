@@ -409,22 +409,39 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
   // Helper function to get date based on filter
   const getFilteredDate = () => {
-    switch (dateFilter) {
-      case 'today':
-        return new Date();
-      case 'yesterday':
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        return yesterday;
-      case 'custom':
-        return selectedDate;
-      default:
-        return new Date();
+    try {
+      switch (dateFilter) {
+        case 'today':
+          return new Date();
+        case 'yesterday':
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          return yesterday;
+        case 'custom':
+          // Ensure selectedDate is a valid Date object
+          if (selectedDate instanceof Date && !isNaN(selectedDate.getTime())) {
+            return selectedDate;
+          } else if (selectedDate) {
+            const parsedDate = new Date(selectedDate);
+            if (!isNaN(parsedDate.getTime())) {
+              return parsedDate;
+            }
+          }
+          return new Date();
+        default:
+          return new Date();
+      }
+    } catch (error) {
+      console.warn('Date parsing error:', error);
+      return new Date();
     }
   };
 
   const currentDate = getFilteredDate();
-  const dateQueryParam = currentDate.toISOString().split('T')[0];
+  // Safely convert date to string for query parameter
+  const dateQueryParam = currentDate instanceof Date && !isNaN(currentDate.getTime()) ? 
+    currentDate.toISOString().split('T')[0] : 
+    new Date().toISOString().split('T')[0];
 
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
@@ -593,14 +610,33 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="gap-2">
-                  {format(selectedDate, "MMM dd, yyyy")}
+                  {(() => {
+                    try {
+                      const dateToFormat = selectedDate instanceof Date ? 
+                        selectedDate : 
+                        new Date(selectedDate);
+                      return !isNaN(dateToFormat.getTime()) ? 
+                        format(dateToFormat, "MMM dd, yyyy") : 
+                        'Select Date';
+                    } catch (error) {
+                      return 'Select Date';
+                    }
+                  })()}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Input
                   type="date"
-                  value={selectedDate.toISOString().split('T')[0]}
-                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                  value={selectedDate instanceof Date ? 
+                    selectedDate.toISOString().split('T')[0] : 
+                    new Date(selectedDate).toISOString().split('T')[0]
+                  }
+                  onChange={(e) => {
+                    const newDate = new Date(e.target.value);
+                    if (!isNaN(newDate.getTime())) {
+                      setSelectedDate(newDate);
+                    }
+                  }}
                   className="w-auto"
                 />
               </PopoverContent>
