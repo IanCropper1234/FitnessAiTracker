@@ -68,11 +68,16 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics/${userId}`);
       const allMetrics = await response.json();
-      // Filter by date range
-      return allMetrics.filter((metric: any) => {
-        const metricDate = new Date(metric.date);
-        return metricDate >= startDate && metricDate <= endDate;
-      });
+      // Filter by date range and sort by date
+      const filteredMetrics = allMetrics
+        .filter((metric: any) => {
+          const metricDate = new Date(metric.date);
+          return metricDate >= startDate && metricDate <= endDate;
+        })
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      console.log(`Filtered ${filteredMetrics.length} metrics from ${startDate.toISOString()} to ${endDate.toISOString()}`);
+      return filteredMetrics;
     }
   });
 
@@ -209,8 +214,23 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     const latest = progressionData[progressionData.length - 1];
     const previous = progressionData[0];
 
-    const weightChange = bodyMetrics && bodyMetrics.length >= 2 
-      ? bodyMetrics[bodyMetrics.length - 1].weight - bodyMetrics[0].weight 
+    // Sort body metrics by date and get latest entry per date to avoid duplicates
+    const sortedBodyMetrics = bodyMetrics ? [...bodyMetrics]
+      .sort((a, b) => {
+        const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+        // If same date, sort by createdAt to get latest entry
+        return dateComparison === 0 ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() : dateComparison;
+      })
+      .filter((metric, index, array) => {
+        // Keep only the latest entry for each date
+        const nextIndex = array.findIndex((m, i) => i > index && 
+          new Date(m.date).toDateString() === new Date(metric.date).toDateString()
+        );
+        return nextIndex === -1; // Keep if no later entry exists for same date
+      }) : [];
+
+    const weightChange = sortedBodyMetrics && sortedBodyMetrics.length >= 2 
+      ? parseFloat(sortedBodyMetrics[sortedBodyMetrics.length - 1].weight) - parseFloat(sortedBodyMetrics[0].weight)
       : 0;
 
     const calorieChange = latest.calories - previous.calories;

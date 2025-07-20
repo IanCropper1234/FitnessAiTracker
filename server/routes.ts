@@ -1575,8 +1575,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/nutrition/progression/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const startDate = new Date(req.query.start as string);
-      const endDate = new Date(req.query.end as string);
+      const startDateStr = req.query.start as string;
+      const endDateStr = req.query.end as string;
+      
+      if (!startDateStr || !endDateStr) {
+        return res.status(400).json({ message: "Start and end dates are required" });
+      }
+      
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+      
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return res.status(400).json({ message: "Invalid date format" });
+      }
       
       const progression = await storage.getNutritionProgression(userId, startDate, endDate);
       res.json(progression);
