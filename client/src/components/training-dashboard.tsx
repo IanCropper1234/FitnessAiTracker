@@ -22,7 +22,9 @@ import {
   Trash2,
   RotateCcw,
   Copy,
-  X
+  X,
+  ChevronDown,
+  CalendarIcon
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -37,6 +39,8 @@ import LoadProgressionTracker from "./load-progression-tracker";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 
 interface Exercise {
   id: number;
@@ -346,6 +350,8 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string>("workouts");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
   const queryClient = useQueryClient();
 
   // Session management mutations
@@ -384,14 +390,41 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     queryKey: ["/api/exercises"],
   });
 
+  // Helper function to get date based on filter
+  const getFilteredDate = () => {
+    switch (dateFilter) {
+      case 'today':
+        return new Date();
+      case 'yesterday':
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return yesterday;
+      case 'custom':
+        return selectedDate;
+      default:
+        return new Date();
+    }
+  };
+
+  const currentDate = getFilteredDate();
+  const dateQueryParam = currentDate.toISOString().split('T')[0];
+
   // Fetch training stats
   const { data: trainingStats, isLoading: statsLoading } = useQuery<TrainingStats>({
-    queryKey: ["/api/training/stats", userId],
+    queryKey: ["/api/training/stats", userId, dateQueryParam],
+    queryFn: async () => {
+      const response = await fetch(`/api/training/stats/${userId}?date=${dateQueryParam}`);
+      return response.json();
+    }
   });
 
-  // Fetch recent workout sessions
+  // Fetch recent workout sessions with date filtering
   const { data: recentSessions = [], isLoading: sessionsLoading } = useQuery<WorkoutSession[]>({
-    queryKey: ["/api/training/sessions", userId],
+    queryKey: ["/api/training/sessions", userId, dateQueryParam],
+    queryFn: async () => {
+      const response = await fetch(`/api/training/sessions/${userId}?date=${dateQueryParam}`);
+      return response.json();
+    }
   });
 
   // Group exercises by category
@@ -508,6 +541,55 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
   return (
     <div className="space-y-6 p-6">
+      {/* Header with Date Selection */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold">Training Dashboard</h2>
+        
+        {/* Date Filter Controls */}
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <CalendarIcon className="h-4 w-4" />
+                {dateFilter === 'today' ? 'Today' : 
+                 dateFilter === 'yesterday' ? 'Yesterday' : 
+                 'Custom'}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setDateFilter('today')}>
+                Today
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDateFilter('yesterday')}>
+                Yesterday
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDateFilter('custom')}>
+                Custom Date
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {dateFilter === 'custom' && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  {format(selectedDate, "MMM dd, yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Input
+                  type="date"
+                  value={selectedDate.toISOString().split('T')[0]}
+                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                  className="w-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      </div>
+
       {/* Training Stats Cards */}
       <div className="grid grid-cols-3 gap-2 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">

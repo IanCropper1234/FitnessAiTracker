@@ -9,7 +9,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 interface User {
   id: number;
@@ -26,19 +31,40 @@ export function Dashboard({ user }: DashboardProps) {
   const queryClient = useQueryClient();
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
+
+  // Helper function to get date based on filter
+  const getFilteredDate = () => {
+    switch (dateFilter) {
+      case 'today':
+        return new Date();
+      case 'yesterday':
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return yesterday;
+      case 'custom':
+        return selectedDate;
+      default:
+        return new Date();
+    }
+  };
+
+  const currentDate = getFilteredDate();
+  const dateQueryParam = currentDate.toISOString().split('T')[0];
 
   const { data: nutritionSummary } = useQuery({
-    queryKey: ['/api/nutrition/summary', user.id],
+    queryKey: ['/api/nutrition/summary', user.id, dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${user.id}`);
+      const response = await fetch(`/api/nutrition/summary/${user.id}?date=${dateQueryParam}`);
       return response.json();
     }
   });
 
   const { data: trainingStats } = useQuery({
-    queryKey: ['/api/training/stats', user.id],
+    queryKey: ['/api/training/stats', user.id, dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/training/stats/${user.id}`);
+      const response = await fetch(`/api/training/stats/${user.id}?date=${dateQueryParam}`);
       return response.json();
     }
   });
@@ -53,14 +79,63 @@ export function Dashboard({ user }: DashboardProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <div className="container mx-auto p-4 space-y-6">
-        {/* Header */}
+        {/* Header with Date Selection */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{t("welcome")}, {user.name}</h1>
             <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              {today}
+              {currentDate.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
             </p>
+          </div>
+          
+          {/* Date Filter Controls */}
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <CalendarIcon className="h-4 w-4" />
+                  {dateFilter === 'today' ? 'Today' : 
+                   dateFilter === 'yesterday' ? 'Yesterday' : 
+                   'Custom'}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setDateFilter('today')}>
+                  Today
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDateFilter('yesterday')}>
+                  Yesterday
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDateFilter('custom')}>
+                  Custom Date
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {dateFilter === 'custom' && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    {format(selectedDate, "MMM dd, yyyy")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Input
+                    type="date"
+                    value={selectedDate.toISOString().split('T')[0]}
+                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                    className="w-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         </div>
 
@@ -103,7 +178,7 @@ export function Dashboard({ user }: DashboardProps) {
           </CardHeader>
           <CardContent>
             {showTrainingOverview ? (
-              <TrainingOverview userId={user.id} />
+              <TrainingOverview userId={user.id} date={currentDate} />
             ) : (
               nutritionSummary ? (
                 <MacroChart

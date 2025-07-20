@@ -580,6 +580,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Direct session creation for testing
+  app.post("/api/training/sessions/direct", async (req, res) => {
+    try {
+      const sessionData = req.body;
+      const session = await storage.createWorkoutSession({
+        userId: sessionData.userId,
+        programId: sessionData.programId || null,
+        mesocycleId: null,
+        name: sessionData.name,
+        date: new Date(sessionData.date),
+        isCompleted: sessionData.isCompleted || false,
+        totalVolume: sessionData.totalVolume || 0,
+        duration: sessionData.duration || 0
+      });
+      res.json(session);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.get("/api/training/sessions/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);

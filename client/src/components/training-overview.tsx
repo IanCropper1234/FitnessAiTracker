@@ -15,13 +15,19 @@ interface TrainingStats {
 
 interface TrainingOverviewProps {
   userId: number;
+  date?: Date;
 }
 
-export function TrainingOverview({ userId }: TrainingOverviewProps) {
+export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
+  const dateQueryParam = date ? date.toISOString().split('T')[0] : '';
+  
   const { data: trainingStats } = useQuery<TrainingStats>({
-    queryKey: ['/api/training/stats', userId],
+    queryKey: ['/api/training/stats', userId, dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/training/stats/${userId}`);
+      const url = dateQueryParam 
+        ? `/api/training/stats/${userId}?date=${dateQueryParam}`
+        : `/api/training/stats/${userId}`;
+      const response = await fetch(url);
       return response.json();
     }
   });
