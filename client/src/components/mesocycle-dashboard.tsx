@@ -317,10 +317,10 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       {/* Recommendations */}
       {recommendations && (
         <Tabs defaultValue="volume" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="volume">Volume Progression</TabsTrigger>
-            <TabsTrigger value="fatigue">Fatigue Analysis</TabsTrigger>
-            <TabsTrigger value="phase">Phase Management</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Volume Progression</TabsTrigger>
+            <TabsTrigger value="fatigue" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Fatigue Analysis</TabsTrigger>
+            <TabsTrigger value="phase" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Phase Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="volume" className="space-y-4">
