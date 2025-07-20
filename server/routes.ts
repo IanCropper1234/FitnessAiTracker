@@ -573,7 +573,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/training/stats/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const stats = await getTrainingStats(userId);
+      const date = req.query.date as string; // Optional date filter
+      const stats = await getTrainingStats(userId, date);
       res.json(stats);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

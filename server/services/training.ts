@@ -21,10 +21,10 @@ export interface TrainingStats {
   }>;
 }
 
-export async function getTrainingStats(userId: number): Promise<TrainingStats> {
+export async function getTrainingStats(userId: number, dateFilter?: string): Promise<TrainingStats> {
   try {
     // Get all workout sessions for the user
-    const sessions = await storage.getWorkoutSessions(userId);
+    const sessions = await storage.getWorkoutSessions(userId, dateFilter);
     const completedSessions = sessions.filter(session => session.isCompleted);
     
     // Calculate total volume
@@ -36,7 +36,7 @@ export async function getTrainingStats(userId: number): Promise<TrainingStats> {
       : 0;
 
     // Get weekly progress for the last 8 weeks
-    const weeklyProgress = await getWeeklyProgress(userId);
+    const weeklyProgress = await getWeeklyProgress(userId, dateFilter);
 
     return {
       totalSessions: completedSessions.length,
@@ -57,10 +57,10 @@ export async function getTrainingStats(userId: number): Promise<TrainingStats> {
   }
 }
 
-async function getWeeklyProgress(userId: number) {
+async function getWeeklyProgress(userId: number, dateFilter?: string) {
   try {
     // Get all completed workout sessions for the user
-    const sessions = await storage.getWorkoutSessions(userId);
+    const sessions = await storage.getWorkoutSessions(userId, dateFilter);
     const completedSessions = sessions.filter(session => session.isCompleted);
     
     if (completedSessions.length === 0) {
