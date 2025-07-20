@@ -15,7 +15,7 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
-import { workoutExercises, workoutSessions } from "@shared/schema";
+import { workoutExercises, workoutSessions, exercises } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
 
 // Auto-progression algorithm for workout sessions
@@ -2301,9 +2301,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid session ID" });
       }
       
-      // Get session details
-      const session = await storage.getWorkoutSession(sessionId);
+      // Get session details with exercises
+      const session = await db
+        .select({
+          id: workoutSessions.id,
+          userId: workoutSessions.userId,
+          mesocycleId: workoutSessions.mesocycleId,
+          date: workoutSessions.date,
+          name: workoutSessions.name
+        })
+        .from(workoutSessions)
+        .where(eq(workoutSessions.id, sessionId))
+        .then(rows => rows[0]);
+        
       if (!session || !session.mesocycleId) {
+        return res.json([]);
+      }
+
+      // Get exercises for this session
+      const sessionExercises = await db
+        .select({
+          id: workoutExercises.id,
+          exerciseId: workoutExercises.exerciseId,
+          orderIndex: workoutExercises.orderIndex,
+          sets: workoutExercises.sets,
+          targetReps: workoutExercises.targetReps,
+          weight: workoutExercises.weight,
+          actualReps: workoutExercises.actualReps,
+          rpe: workoutExercises.rpe,
+          rir: workoutExercises.rir,
+          exerciseName: exercises.name,
+          exerciseCategory: exercises.category,
+          movementPattern: exercises.movementPattern
+        })
+        .from(workoutExercises)
+        .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id))
+        .where(eq(workoutExercises.sessionId, sessionId))
+        .orderBy(workoutExercises.orderIndex);
+
+      if (sessionExercises.length === 0) {
         return res.json([]);
       }
       
@@ -2315,7 +2351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get exercise recommendations for each exercise in the session
       const recommendations = await Promise.all(
-        session.exercises.map(async (exercise) => {
+        sessionExercises.map(async (exercise) => {
           try {
             // Get recent performance data for this exercise
             const recentPerformance = await db
@@ -2341,7 +2377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // No previous data, return basic recommendations
               return {
                 exerciseId: exercise.exerciseId,
-                exerciseName: exercise.exercise.name,
+                exerciseName: exercise.exerciseName,
                 recommendedWeight: parseFloat(exercise.weight) || 10,
                 recommendedReps: exercise.targetReps,
                 recommendedRpe: 7,
@@ -2367,13 +2403,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // RPE-based adjustments
             if (avgRpe >= 8 && avgRpe <= 8.5 && avgRir >= 1 && avgRir <= 2) {
               // Perfect progression zone
-              const weightIncrement = exercise.exercise.movementPattern === 'compound' ? 2.5 : 1.25;
+              const weightIncrement = exercise.movementPattern === 'compound' ? 2.5 : 1.25;
               recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
               recommendedRpe = 8;
               reasoning = `Week ${mesocycle.currentWeek} progression - perfect RPE/RIR zone, increase weight`;
             } else if (avgRpe < 7 || avgRir > 3) {
               // Too easy - larger increase
-              const weightIncrement = exercise.exercise.movementPattern === 'compound' ? 5 : 2.5;
+              const weightIncrement = exercise.movementPattern === 'compound' ? 5 : 2.5;
               recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
               recommendedRpe = 8;
               reasoning = `Week ${mesocycle.currentWeek} progression - previous load too light, significant increase`;
@@ -2384,7 +2420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               reasoning = `Week ${mesocycle.currentWeek} progression - previous load too heavy, slight reduction`;
             } else {
               // Moderate progression
-              const weightIncrement = exercise.exercise.movementPattern === 'compound' ? 1.25 : 0.625;
+              const weightIncrement = exercise.movementPattern === 'compound' ? 1.25 : 0.625;
               recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
               recommendedRpe = Math.ceil(avgRpe);
               reasoning = `Week ${mesocycle.currentWeek} progression - moderate increase based on feedback`;
@@ -2392,7 +2428,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             return {
               exerciseId: exercise.exerciseId,
-              exerciseName: exercise.exercise.name,
+              exerciseName: exercise.exerciseName,
               recommendedWeight: Math.round(recommendedWeight * 4) / 4, // Round to nearest 0.25
               recommendedReps: recommendedReps,
               recommendedRpe: recommendedRpe,
@@ -2404,7 +2440,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error(`Error calculating recommendations for exercise ${exercise.exerciseId}:`, error);
             return {
               exerciseId: exercise.exerciseId,
-              exerciseName: exercise.exercise.name,
+              exerciseName: exercise.exerciseName,
               recommendedWeight: parseFloat(exercise.weight) || 10,
               recommendedReps: exercise.targetReps,
               recommendedRpe: 7,
