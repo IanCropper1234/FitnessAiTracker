@@ -163,9 +163,13 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
 
   const saveProgressMutation = useMutation({
     mutationFn: async (progressData: any) => {
-      return apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
+      console.log('Save Progress - Sending data:', progressData);
+      const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
+      console.log('Save Progress - Response:', response);
+      return response;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Save Progress - Success:', data);
       toast({
         title: "Progress Saved",
         description: "Your workout progress has been saved.",
@@ -173,10 +177,11 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
       queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
       onComplete();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Save Progress - Error:', error);
       toast({
         title: "Error",
-        description: "Failed to save workout progress.",
+        description: `Failed to save workout progress: ${error.message || 'Unknown error'}`,
         variant: "destructive",
       });
     },
@@ -387,6 +392,9 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
       }))
     };
 
+    console.log('Save & Exit - Progress Data:', progressData);
+    console.log('Save & Exit - Workout Data:', workoutData);
+    
     saveProgressMutation.mutate(progressData);
   };
 
