@@ -101,23 +101,26 @@ export class DatabaseStorage implements IStorage {
 
   // Nutrition Logs
   async getNutritionLogs(userId: number, date?: Date): Promise<NutritionLog[]> {
-    let query = db.select().from(nutritionLogs).where(eq(nutritionLogs.userId, userId));
-    
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
       
-      query = query.where(
-        and(
-          eq(nutritionLogs.userId, userId),
-          // Note: You might need to adjust this date filtering based on your DB setup
+      return await db.select().from(nutritionLogs)
+        .where(
+          and(
+            eq(nutritionLogs.userId, userId),
+            gte(nutritionLogs.date, startOfDay),
+            lte(nutritionLogs.date, endOfDay)
+          )
         )
-      );
+        .orderBy(desc(nutritionLogs.date));
     }
     
-    return await query;
+    return await db.select().from(nutritionLogs)
+      .where(eq(nutritionLogs.userId, userId))
+      .orderBy(desc(nutritionLogs.date));
   }
 
   async createNutritionLog(log: InsertNutritionLog): Promise<NutritionLog> {
