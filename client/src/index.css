@@ -11,9 +11,10 @@
   display: none;  /* Safari and Chrome */
 }
 
+
 @layer base {
   :root {
-    /* Option 1: Sophisticated Fitness Professional - Light Theme */
+    /* Sophisticated Fitness Professional - Light Theme */
     --background: 210 20% 98%;
     --foreground: 220 26% 14%;
     --card: 0 0% 100%;
@@ -42,7 +43,7 @@
   }
 
   .dark {
-    /* Option 1: Sophisticated Fitness Professional - Dark Theme */
+    /* Sophisticated Fitness Professional - Dark Theme */
     --background: 220 26% 8%;
     --foreground: 210 20% 98%;
     --card: 218 24% 12%;
@@ -76,73 +77,32 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-}
 
-.theme-transition {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
+  /* Smooth theme transitions */
+  .theme-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-:root {
-  /* Sophisticated Fitness Professional - Enhanced Light Theme */
-  --background: hsl(210, 20%, 98%);
-  --foreground: hsl(220, 26%, 14%);
-  --muted: hsl(210, 20%, 94%);
-  --muted-foreground: hsl(220, 13%, 46%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(220, 26%, 14%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(220, 26%, 14%);
-  --border: hsl(210, 20%, 90%);
-  --input: hsl(210, 20%, 90%);
-  --primary: hsl(180, 94%, 35%);
-  --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(210, 20%, 94%);
-  --secondary-foreground: hsl(220, 26%, 14%);
-  --accent: hsl(25, 95%, 55%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 72%, 58%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(180, 94%, 35%);
-  --radius: 0.5rem;
-  
-  /* Custom FitAI variables - Option 1 */
-  --dark-bg: hsl(220, 26%, 8%);
-  --dark-card: hsl(218, 24%, 12%);
-  --dark-border: hsl(220, 26%, 18%);
-  --light-bg: hsl(210, 20%, 98%);
-  --light-card: hsl(0, 0%, 100%);
-  --light-border: hsl(210, 20%, 90%);
-  --success: hsl(145, 72%, 42%);
-  --success-foreground: hsl(0, 0%, 98%);
-  --warning: hsl(35, 91%, 62%);
-  --warning-foreground: hsl(0, 0%, 98%);
-  --info: hsl(200, 94%, 55%);
-  --info-foreground: hsl(0, 0%, 98%);
-}
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
 
-.dark {
-  /* Sophisticated Fitness Professional - Enhanced Dark Theme */
-  --background: hsl(220, 26%, 8%);
-  --foreground: hsl(210, 20%, 98%);
-  --muted: hsl(220, 26%, 16%);
-  --muted-foreground: hsl(220, 13%, 64%);
-  --popover: hsl(218, 24%, 12%);
-  --popover-foreground: hsl(210, 20%, 98%);
-  --card: hsl(218, 24%, 12%);
-  --card-foreground: hsl(210, 20%, 98%);
-  --border: hsl(220, 26%, 18%);
-  --input: hsl(220, 26%, 18%);
-  --primary: hsl(180, 94%, 35%);
-  --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(220, 26%, 16%);
-  --secondary-foreground: hsl(210, 20%, 98%);
-  --accent: hsl(25, 95%, 55%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 72%, 58%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(180, 94%, 35%);
-  --radius: 0.5rem;
+  ::-webkit-scrollbar-track {
+    background: var(--muted);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ring);
+  }
 }
 
 @layer base {
