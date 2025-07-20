@@ -59,7 +59,7 @@ export interface IStorage {
   deleteExercise(id: number): Promise<boolean>;
   
   // Workout Sessions
-  getWorkoutSessions(userId: number): Promise<WorkoutSession[]>;
+  getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]>;
   getWorkoutSession(id: number): Promise<WorkoutSession | undefined>;
   createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession>;
   updateWorkoutSession(id: number, session: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
@@ -134,7 +134,7 @@ export interface IStorage {
   updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined>;
   
   // Body Metrics
-  getBodyMetrics(userId: number): Promise<BodyMetric[]>;
+  getBodyMetrics(userId: number, date?: Date): Promise<BodyMetric[]>;
   createBodyMetric(metric: InsertBodyMetric): Promise<BodyMetric>;
   deleteBodyMetric(id: number): Promise<boolean>;
   
@@ -176,6 +176,8 @@ export class MemStorage implements IStorage {
   private currentWorkoutExerciseId = 1;
   private currentAutoRegulationFeedbackId = 1;
   private currentWeightLogId = 1;
+  private bodyMetrics: Map<number, BodyMetric> = new Map();
+  private currentBodyMetricId = 1;
 
   // Users
   async getUser(id: number): Promise<User | undefined> {
@@ -371,10 +373,23 @@ export class MemStorage implements IStorage {
   }
 
   // Workout Sessions
-  async getWorkoutSessions(userId: number): Promise<WorkoutSession[]> {
-    return Array.from(this.workoutSessions.values())
-      .filter(session => session.userId === userId)
-      .sort((a, b) => b.date.getTime() - a.date.getTime());
+  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
+    let sessions = Array.from(this.workoutSessions.values())
+      .filter(session => session.userId === userId);
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      sessions = sessions.filter(session => {
+        const sessionDate = new Date(session.date);
+        return sessionDate >= startOfDay && sessionDate <= endOfDay;
+      });
+    }
+    
+    return sessions.sort((a, b) => b.date.getTime() - a.date.getTime());
   }
 
   async getWorkoutSession(id: number): Promise<WorkoutSession | undefined> {
@@ -453,6 +468,76 @@ export class MemStorage implements IStorage {
     const newLog: WeightLog = { ...log, id: this.currentWeightLogId++, createdAt: new Date() };
     this.weightLogs.set(newLog.id, newLog);
     return newLog;
+  }
+
+  // Body Metrics (missing methods added for completeness)
+  async getBodyMetrics(userId: number, date?: Date): Promise<BodyMetric[]> {
+    let metrics = Array.from(this.bodyMetrics.values())
+      .filter(metric => metric.userId === userId);
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      metrics = metrics.filter(metric => {
+        const metricDate = new Date(metric.date);
+        return metricDate >= startOfDay && metricDate <= endOfDay;
+      });
+    }
+    
+    return metrics.sort((a, b) => b.date.getTime() - a.date.getTime());
+  }
+
+  async createBodyMetric(metric: InsertBodyMetric): Promise<BodyMetric> {
+    const newMetric: BodyMetric = { 
+      ...metric, 
+      id: this.currentBodyMetricId++,
+      createdAt: new Date(),
+      bodyFatPercentage: metric.bodyFatPercentage || null,
+      neck: metric.neck || null,
+      chest: metric.chest || null,
+      waist: metric.waist || null,
+      hips: metric.hips || null,
+      thigh: metric.thigh || null,
+      bicep: metric.bicep || null
+    };
+    this.bodyMetrics.set(newMetric.id, newMetric);
+    return newMetric;
+  }
+
+  async deleteBodyMetric(id: number): Promise<boolean> {
+    return this.bodyMetrics.delete(id);
+  }
+
+  // Placeholder methods for compatibility
+  async getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]> {
+    return [];
+  }
+
+  async getSavedMealPlans(userId: number): Promise<SavedMealPlan[]> {
+    return [];
+  }
+
+  async getSavedMealPlan(userId: number, planId: number): Promise<SavedMealPlan | undefined> {
+    return undefined;
+  }
+
+  async getSavedMealPlansByType(userId: number, mealType: string): Promise<SavedMealPlan[]> {
+    return [];
+  }
+
+  async createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined> {
+    return undefined;
+  }
+
+  async deleteSavedMealPlan(id: number): Promise<boolean> {
+    return false;
   }
 }
 

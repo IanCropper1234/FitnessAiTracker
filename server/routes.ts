@@ -583,7 +583,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/training/sessions/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const sessions = await storage.getWorkoutSessions(userId);
+      const date = req.query.date ? new Date(req.query.date as string) : undefined;
+      const sessions = await storage.getWorkoutSessions(userId, date);
       res.json(sessions);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1514,7 +1515,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/body-metrics/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const metrics = await storage.getBodyMetrics(userId);
+      const date = req.query.date ? new Date(req.query.date as string) : undefined;
+      const metrics = await storage.getBodyMetrics(userId, date);
       res.json(metrics);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

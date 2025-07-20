@@ -234,8 +234,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Workout Sessions
-  async getWorkoutSessions(userId: number): Promise<WorkoutSession[]> {
-    return await db.select().from(workoutSessions).where(eq(workoutSessions.userId, userId));
+  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      return await db.select().from(workoutSessions)
+        .where(
+          and(
+            eq(workoutSessions.userId, userId),
+            gte(workoutSessions.date, startOfDay),
+            lte(workoutSessions.date, endOfDay)
+          )
+        )
+        .orderBy(desc(workoutSessions.date));
+    }
+    
+    return await db.select().from(workoutSessions)
+      .where(eq(workoutSessions.userId, userId))
+      .orderBy(desc(workoutSessions.date));
   }
 
   async getWorkoutSession(id: number): Promise<WorkoutSession | undefined> {
@@ -629,7 +648,24 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Body Metrics
-  async getBodyMetrics(userId: number): Promise<BodyMetric[]> {
+  async getBodyMetrics(userId: number, date?: Date): Promise<BodyMetric[]> {
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      return await db.select().from(bodyMetrics)
+        .where(
+          and(
+            eq(bodyMetrics.userId, userId),
+            gte(bodyMetrics.date, startOfDay),
+            lte(bodyMetrics.date, endOfDay)
+          )
+        )
+        .orderBy(desc(bodyMetrics.date));
+    }
+    
     return await db.select().from(bodyMetrics)
       .where(eq(bodyMetrics.userId, userId))
       .orderBy(desc(bodyMetrics.date));
