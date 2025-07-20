@@ -16,7 +16,7 @@ import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
 import { workoutExercises, workoutSessions } from "@shared/schema";
-import { eq, and, desc, sql, lt } from "drizzle-orm";
+import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
 
 // Auto-progression algorithm for workout sessions
 async function getAutoProgressedValues(exerciseId: number, userId: number, previousExercise: any) {
@@ -1839,7 +1839,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .from(nutritionLogs)
         .where(and(
           eq(nutritionLogs.userId, userId),
-          sql`${nutritionLogs.id} = ANY(${logIds})`
+          inArray(nutritionLogs.id, logIds)
         ));
 
       // Create new logs for the target date
