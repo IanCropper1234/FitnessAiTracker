@@ -579,6 +579,11 @@ export class MesocyclePeriodization {
       .where(eq(workoutSessions.mesocycleId, mesocycleId));
 
     for (const session of sessionsToDelete) {
+      // Delete load progression tracking for this session (CRITICAL - this was missing!)
+      await db
+        .delete(loadProgressionTracking)
+        .where(eq(loadProgressionTracking.sessionId, session.id));
+      
       // Delete workout exercises for this session
       await db
         .delete(workoutExercises)
