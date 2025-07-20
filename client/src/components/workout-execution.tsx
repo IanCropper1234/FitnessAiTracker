@@ -108,7 +108,12 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
         }
         
         // Check if we have saved sets data to restore
-        console.log(`Exercise ${exercise.id} setsData:`, exercise.setsData);
+        console.log(`Exercise ${exercise.id} all data:`, {
+          id: exercise.id,
+          sets: exercise.sets,
+          setsData: exercise.setsData,
+          setsDataLength: exercise.setsData?.length
+        });
         if (exercise.setsData && Array.isArray(exercise.setsData) && exercise.setsData.length > 0) {
           console.log(`Restoring saved sets data for exercise ${exercise.id}:`, exercise.setsData);
           initialData[exercise.id] = exercise.setsData.map((savedSet: any) => ({
