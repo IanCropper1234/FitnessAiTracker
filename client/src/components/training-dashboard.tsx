@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -353,6 +353,23 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
   const queryClient = useQueryClient();
+
+  // Handle URL parameters for auto-starting workout sessions
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionIdParam = params.get('sessionId');
+    
+    if (sessionIdParam && !executingSessionId) {
+      const sessionId = parseInt(sessionIdParam);
+      if (!isNaN(sessionId)) {
+        setExecutingSessionId(sessionId);
+        // Clear the URL parameter after capturing it
+        const url = new URL(window.location.href);
+        url.searchParams.delete('sessionId');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+  }, [executingSessionId]);
 
   // Session management mutations
   const deleteSessionMutation = useMutation({

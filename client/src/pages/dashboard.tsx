@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useLanguage } from "@/components/language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ interface DashboardProps {
 export function Dashboard({ user }: DashboardProps) {
   const { t } = useLanguage();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -69,12 +71,41 @@ export function Dashboard({ user }: DashboardProps) {
     }
   });
 
+  // Get active workout sessions for smart Start Workout behavior
+  const { data: workoutSessions } = useQuery({
+    queryKey: ['/api/training/sessions', user.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/training/sessions/${user.id}`);
+      return response.json();
+    }
+  });
+
   const today = new Date().toLocaleDateString('en-US', { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
+
+  // Smart Start Workout function
+  const handleStartWorkout = () => {
+    if (workoutSessions && workoutSessions.length > 0) {
+      // Find the most recent active (incomplete) workout session
+      const activeSessions = workoutSessions
+        .filter((session: any) => !session.isCompleted)
+        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      if (activeSessions.length > 0) {
+        // Navigate to training page with the session ID as a query parameter
+        // This will allow the TrainingDashboard to automatically start the session
+        setLocation(`/training?sessionId=${activeSessions[0].id}`);
+        return;
+      }
+    }
+    
+    // No active sessions found, go to training page to create new workout
+    setLocation('/training');
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
@@ -298,9 +329,12 @@ export function Dashboard({ user }: DashboardProps) {
               <Button 
                 variant="outline"
                 className="w-full border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => window.location.hash = '#/training'}
+                onClick={handleStartWorkout}
               >
-                {t("start_workout")}
+                <Dumbbell className="w-4 h-4 mr-2" />
+                {workoutSessions && workoutSessions.filter((session: any) => !session.isCompleted).length > 0 
+                  ? t("continue_workout") || "Continue Workout"
+                  : t("start_workout")}
               </Button>
               <Button 
                 variant="outline"
