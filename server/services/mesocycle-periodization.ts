@@ -11,6 +11,7 @@ import {
   exerciseMuscleMapping
 } from "@shared/schema";
 import { eq, and, gte, lte, sql, desc, isNotNull, inArray } from "drizzle-orm";
+import { TemplateEngine } from "./template-engine";
 
 interface VolumeProgression {
   muscleGroupId: number;
@@ -686,12 +687,6 @@ export class MesocyclePeriodization {
 
     // Generate next week's workouts with adjusted volumes
     await this.generateWeekWorkouts(mesocycleId, nextWeek, volumeAdjustments);
-    
-    // Also integrate any existing orphaned sessions for this user
-    await this.integrateOrphanedSessionsToMesocycle(mesocycle.userId, mesocycleId);
-    
-    // Also integrate any existing orphaned sessions for this user
-    await this.integrateOrphanedSessionsToMesocycle(mesocycle.userId, mesocycleId);
 
     return {
       newWeek: nextWeek,
@@ -701,14 +696,56 @@ export class MesocyclePeriodization {
   }
 
   /**
-   * Generate mesocycle program from template
+   * Generate mesocycle program from template - FIXED to properly use TemplateEngine
    */
   static async generateMesocycleProgram(
     mesocycleId: number, 
     templateId?: number, 
     customProgram?: any
   ) {
-    // Create simple program structure with basic exercises for templates
+    // Get mesocycle details
+    const [mesocycle] = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId));
+
+    if (!mesocycle) {
+      throw new Error("Mesocycle not found");
+    }
+
+    if (templateId) {
+      // Use TemplateEngine to generate proper template-based sessions
+      console.log(`🔄 Generating Week 1 workouts for mesocycle ${mesocycleId} from template ${templateId}`);
+      
+      try {
+        const templateSessions = await TemplateEngine.generateFullProgramFromTemplate(
+          mesocycle.userId,
+          templateId,
+          mesocycleId,
+          mesocycle.startDate
+        );
+        
+        console.log(`✅ Generated ${templateSessions.totalWorkouts} sessions for Week 1 with volume adjustments`);
+        return templateSessions;
+        
+      } catch (error) {
+        console.error("Template generation failed, falling back to default program:", error);
+        // Fall back to default program if template fails
+        await this.createDefaultMesocycleWorkouts(mesocycleId);
+      }
+    } else if (customProgram && customProgram.weeklyStructure) {
+      // Use custom program design
+      await this.createMesocycleWorkouts(mesocycleId, customProgram);
+    } else {
+      // Use default program structure
+      await this.createDefaultMesocycleWorkouts(mesocycleId);
+    }
+  }
+
+  /**
+   * Create default mesocycle workouts when no template is provided
+   */
+  static async createDefaultMesocycleWorkouts(mesocycleId: number) {
     const program = {
       weeklyStructure: [
         { 
@@ -738,13 +775,7 @@ export class MesocyclePeriodization {
       ]
     };
 
-    if (customProgram && customProgram.weeklyStructure) {
-      // Use custom program design
-      await this.createMesocycleWorkouts(mesocycleId, customProgram);
-    } else {
-      // Use default program structure
-      await this.createMesocycleWorkouts(mesocycleId, program);
-    }
+    await this.createMesocycleWorkouts(mesocycleId, program);
   }
 
   /**

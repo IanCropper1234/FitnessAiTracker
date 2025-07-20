@@ -148,47 +148,50 @@ export class TemplateEngine {
       }
 
       // Create workout session for this day
-      const sessionDate = startDate 
-        ? new Date(startDate.getTime() + workoutDay * 24 * 60 * 60 * 1000)
-        : new Date(Date.now() + workoutDay * 24 * 60 * 60 * 1000);
-      
-      const sessionName = mesocycleId 
-        ? `${workoutTemplate.name} - Week 1` 
-        : `${workoutTemplate.name} - Day ${workoutDay + 1}`;
-      
-      const sessionResult = await db
+      const sessionDate = startDate ? new Date(startDate) : new Date();
+      if (startDate) {
+        sessionDate.setDate(startDate.getDate() + workoutDay);
+      }
+
+      const [session] = await db
         .insert(workoutSessions)
         .values({
-          userId,
-          mesocycleId: mesocycleId || null, // Link to mesocycle if provided
+          userId: userId,
+          programId: null,
+          mesocycleId: mesocycleId, // Link to mesocycle
+          name: `${workoutTemplate.name} - Week 1`,
           date: sessionDate,
-          name: sessionName,
           isCompleted: false,
           totalVolume: 0,
-          duration: 0
+          duration: 0,
+          createdAt: new Date()
         })
         .returning({ id: workoutSessions.id });
 
-      const sessionId = sessionResult[0].id;
-
-      // Add exercises to session
-      for (const exercise of customizedExercises) {
+      // Add exercises to the session
+      for (let i = 0; i < customizedExercises.length; i++) {
+        const exercise = customizedExercises[i];
         await db
           .insert(workoutExercises)
           .values({
-            sessionId,
+            sessionId: session.id,
             exerciseId: exercise.exerciseId,
-            orderIndex: exercise.orderIndex || 1, // Ensure orderIndex is never null
+            orderIndex: exercise.orderIndex,
             sets: exercise.sets,
             targetReps: exercise.repsRange,
-            restPeriod: exercise.restPeriod || 60, // Default rest period
-            isCompleted: false
+            actualReps: null,
+            weight: null,
+            rpe: null,
+            rir: null,
+            restPeriod: exercise.restPeriod,
+            isCompleted: false,
+            notes: exercise.notes
           });
       }
 
       sessions.push({
-        sessionId,
-        workoutDay,
+        sessionId: session.id,
+        workoutDay: workoutDay,
         name: workoutTemplate.name,
         exercises: customizedExercises
       });
