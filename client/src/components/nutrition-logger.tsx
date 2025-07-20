@@ -13,6 +13,7 @@ import { X, Search, Loader2, Utensils, Brain } from "lucide-react";
 
 interface NutritionLoggerProps {
   userId: number;
+  selectedDate?: string;
   onComplete?: () => void;
 }
 
@@ -27,7 +28,7 @@ interface FoodSearchResult {
   mealSuitability?: string[];
 }
 
-export function NutritionLogger({ userId, onComplete }: NutritionLoggerProps) {
+export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionLoggerProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   
@@ -118,7 +119,7 @@ export function NutritionLogger({ userId, onComplete }: NutritionLoggerProps) {
 
     const logData = {
       userId,
-      date: new Date(),
+      date: selectedDate ? new Date(selectedDate + 'T00:00:00') : new Date(),
       foodName: searchMode === 'ai' ? foodQuery : selectedFood?.name || foodQuery,
       quantity: quantity,
       unit: unit,

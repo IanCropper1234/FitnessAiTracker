@@ -701,6 +701,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
       {showLogger && (
         <NutritionLogger 
           userId={userId}
+          selectedDate={selectedDate}
           onComplete={() => {
             setShowLogger(false);
             queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
