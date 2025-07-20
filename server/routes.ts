@@ -2318,7 +2318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
 
-      // Get exercises for this session
+      // Get exercises for this session with full exercise library data
       const sessionExercises = await db
         .select({
           id: workoutExercises.id,
@@ -2330,9 +2330,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           actualReps: workoutExercises.actualReps,
           rpe: workoutExercises.rpe,
           rir: workoutExercises.rir,
+          // Exercise library data
           exerciseName: exercises.name,
           exerciseCategory: exercises.category,
-          movementPattern: exercises.movementPattern
+          movementPattern: exercises.movementPattern,
+          primaryMuscle: exercises.primaryMuscle,
+          muscleGroups: exercises.muscleGroups,
+          equipment: exercises.equipment,
+          difficulty: exercises.difficulty,
+          instructions: exercises.instructions,
+          translations: exercises.translations
         })
         .from(workoutExercises)
         .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id))
@@ -2433,7 +2440,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               recommendedReps: recommendedReps,
               recommendedRpe: recommendedRpe,
               week: mesocycle.currentWeek,
-              reasoning: reasoning
+              reasoning: reasoning,
+              // Include exercise library metadata for better recommendations
+              movementPattern: exercise.movementPattern,
+              primaryMuscle: exercise.primaryMuscle,
+              difficulty: exercise.difficulty
             };
             
           } catch (error) {
