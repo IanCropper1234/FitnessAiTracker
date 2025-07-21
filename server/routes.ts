@@ -275,6 +275,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Recent activities route
+  app.get("/api/activities/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      // Get recent nutrition logs (last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const nutritionLogs = await storage.getNutritionLogsInRange(userId, sevenDaysAgo, new Date());
+      const workoutSessions = await storage.getWorkoutSessions(userId);
+      
+      // Format activities
+      const activities = [
+        ...nutritionLogs.slice(0, limit).map(log => ({
+          id: `nutrition-${log.id}`,
+          type: 'nutrition',
+          title: 'Logged food',
+          description: `${log.foodName} - ${log.calories} cal`,
+          timestamp: log.createdAt || new Date(),
+          data: log
+        })),
+        ...workoutSessions.slice(0, limit).map(session => ({
+          id: `workout-${session.id}`,
+          type: session.isCompleted ? 'workout_completion' : 'workout',
+          title: session.isCompleted ? 'Completed workout' : 'Started workout',
+          description: `${session.name} - ${session.totalVolume || 0} kg total`,
+          timestamp: session.createdAt || new Date(),
+          data: session
+        }))
+      ].sort((a, b) => {
+        const dateA = a.timestamp instanceof Date ? a.timestamp : new Date(a.timestamp);
+        const dateB = b.timestamp instanceof Date ? b.timestamp : new Date(b.timestamp);
+        return dateB.getTime() - dateA.getTime();
+      }).slice(0, limit);
+      
+      res.json(activities);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Nutrition routes
   app.get("/api/nutrition/summary/:userId", async (req, res) => {
     try {

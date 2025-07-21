@@ -10,6 +10,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
+import { RecentActivity } from "@/components/recent-activity";
 import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -345,20 +346,8 @@ export function Dashboard({ user }: DashboardProps) {
             </CardContent>
           </Card>
 
-          {/* Recent Activity Placeholder */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">Recent Activity</CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Your latest updates
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                Recent activity will appear here
-              </div>
-            </CardContent>
-          </Card>
+          {/* Recent Activity */}
+          <RecentActivity userId={user.id} />
         </div>
 
         {/* Nutrition Logger Modal */}
@@ -367,8 +356,9 @@ export function Dashboard({ user }: DashboardProps) {
             userId={user.id}
             onComplete={() => {
               setShowNutritionLogger(false);
-              // Refresh nutrition data on dashboard
+              // Refresh nutrition data and recent activities on dashboard
               queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+              queryClient.invalidateQueries({ queryKey: ['/api/activities', user.id] });
             }}
           />
         )}
