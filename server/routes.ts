@@ -95,31 +95,37 @@ async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string,
   
   switch (fitnessGoal) {
     case "Weight Loss":
+    case "weight_loss":
       dietGoal = "cut";
       calorieAdjustment = -300; // 300 calorie deficit
       weeklyWeightTarget = -0.5; // 0.5kg loss per week
       break;
     case "Muscle Gain":
+    case "muscle_gain":
       dietGoal = "bulk";
       calorieAdjustment = +250; // 250 calorie surplus
       weeklyWeightTarget = 0.25; // 0.25kg gain per week
       break;
     case "Body Recomposition":
+    case "body_recomposition":
       dietGoal = "maintain";
       calorieAdjustment = 0; // Maintenance calories
       weeklyWeightTarget = 0;
       break;
     case "Strength Gain":
+    case "strength_gain":
       dietGoal = "bulk";
       calorieAdjustment = +200; // Modest surplus
       weeklyWeightTarget = 0.2;
       break;
     case "Endurance Improvement":
+    case "endurance_improvement":
       dietGoal = "maintain";
       calorieAdjustment = +100; // Slight surplus for recovery
       weeklyWeightTarget = 0;
       break;
     case "Maintenance":
+    case "maintenance":
     default:
       dietGoal = "maintain";
       calorieAdjustment = 0;
