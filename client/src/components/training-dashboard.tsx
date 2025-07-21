@@ -25,7 +25,14 @@ import {
   X,
   ChevronDown,
   CalendarIcon,
-  Settings
+  Settings,
+  BookOpen,
+  Activity,
+  FileText,
+  Repeat,
+  ChartBar,
+  Volume2,
+  Zap
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -673,13 +680,41 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-          <TabsTrigger value="exercises" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Exercise Library</TabsTrigger>
-          <TabsTrigger value="workouts" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Workout Sessions</TabsTrigger>
-          <TabsTrigger value="templates" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Training Templates</TabsTrigger>
-          <TabsTrigger value="mesocycles" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Periodization</TabsTrigger>
-          <TabsTrigger value="progression" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Load Progression</TabsTrigger>
-          <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Volume Landmarks</TabsTrigger>
-          <TabsTrigger value="auto-regulation" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Auto-Regulation</TabsTrigger>
+          <TabsTrigger value="exercises" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Exercise Library</span>
+            <span className="sm:hidden">Exercises</span>
+          </TabsTrigger>
+          <TabsTrigger value="workouts" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Workout Sessions</span>
+            <span className="sm:hidden">Workouts</span>
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Training Templates</span>
+            <span className="sm:hidden">Templates</span>
+          </TabsTrigger>
+          <TabsTrigger value="mesocycles" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Periodization</span>
+            <span className="sm:hidden">Periods</span>
+          </TabsTrigger>
+          <TabsTrigger value="progression" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <ChartBar className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Load Progression</span>
+            <span className="sm:hidden">Progress</span>
+          </TabsTrigger>
+          <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <Volume2 className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Volume Landmarks</span>
+            <span className="sm:hidden">Volume</span>
+          </TabsTrigger>
+          <TabsTrigger value="auto-regulation" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
+            <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Auto-Regulation</span>
+            <span className="sm:hidden">Auto-Reg</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="exercises" className="space-y-6">
