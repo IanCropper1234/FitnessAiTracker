@@ -601,16 +601,69 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="copyDate">Select Date</Label>
-              <Input
-                id="copyDate"
-                type="date"
-                value={copyDate}
-                onChange={(e) => setCopyDate(e.target.value)}
-                className="mt-1"
-              />
+              <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                {copyOperation?.sourceSection ? 'Copy from date' : 'Copy to date'}
+              </Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentDate = copyDate ? new Date(copyDate) : new Date();
+                    currentDate.setDate(currentDate.getDate() - 1);
+                    setCopyDate(currentDate.toISOString().split('T')[0]);
+                  }}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex-1 justify-between h-8 px-3 py-1 text-sm"
+                    >
+                      {copyDate 
+                        ? new Date(copyDate).toLocaleDateString('en-GB', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric' 
+                          })
+                        : 'Select date'
+                      }
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={copyDate ? new Date(copyDate) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          setCopyDate(date.toISOString().split('T')[0]);
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentDate = copyDate ? new Date(copyDate) : new Date();
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    setCopyDate(currentDate.toISOString().split('T')[0]);
+                  }}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setShowCopyDialog(false)}>
                 Cancel
               </Button>
@@ -626,6 +679,7 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
                   }
                 }}
                 disabled={!copyDate}
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
               >
                 Copy
               </Button>

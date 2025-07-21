@@ -8,6 +8,16 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 21, 2025 - Enhanced Daily Food Log with Drag-and-Drop & Advanced Copy Operations
+✓ **COMPLETE**: Enhanced Daily Food Log with preset meal columns and advanced functionality
+✓ **PRESET MEAL COLUMNS**: Organized food logs into Breakfast, Lunch, Dinner, Snack columns with professional Lucide icons
+✓ **DRAG-AND-DROP**: Implemented native drag-and-drop functionality to move food items between meal types
+✓ **COPY OPERATIONS**: Added three-dots menu with copy functionality for individual items and entire meal sections
+✓ **DATE SELECTORS**: Enhanced copy dialogs with consistent ChevronLeft/ChevronRight navigation and Popover calendar
+✓ **BACKEND API**: Created PUT route for updating nutrition log meal types with real-time cache invalidation
+✓ **RESPONSIVE DESIGN**: Grid layout adapts from 1 column (mobile) to 4 columns (desktop)
+✓ **VISUAL FEEDBACK**: Added drag indicators, hover effects, and transition animations for smooth user experience
+
 ### July 21, 2025 - Integrated Nutrition Overview & UI Streamlining
 ✓ **COMPLETE**: Integrated Macro Overview and Daily Food Log into unified Overview tab
 ✓ **UI INTEGRATION**: Combined macro tracking with daily food log in single comprehensive interface
