@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Info } from "lucide-react";
+import { Check, Info, Plus, Minus } from "lucide-react";
 import { useFeature } from "@/hooks/useFeature";
 import { SpinnerInput } from "./SpinnerInput";
 
@@ -33,7 +33,10 @@ interface EnhancedSetInputProps {
   recommendation?: ExerciseRecommendation;
   onUpdateSet: (field: keyof WorkoutSet, value: any) => void;
   onCompleteSet: () => void;
+  onAddSet?: () => void;
+  onRemoveSet?: () => void;
   isActive: boolean;
+  canRemoveSet?: boolean;
   weightUnit?: 'kg' | 'lbs';
   onWeightUnitChange?: (unit: 'kg' | 'lbs') => void;
 }
@@ -43,7 +46,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   recommendation,
   onUpdateSet,
   onCompleteSet,
+  onAddSet,
+  onRemoveSet,
   isActive,
+  canRemoveSet = false,
   weightUnit = 'kg',
   onWeightUnitChange,
 }) => {
@@ -253,21 +259,49 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Complete Set Button */}
         {!set.completed && isActive && (
-          <Button
-            onClick={onCompleteSet}
-            disabled={!isSetValid}
-            className="w-full"
-            variant={isSetValid ? "default" : "secondary"}
-          >
-            {isSetValid ? (
-              <>
-                <Check className="h-4 w-4 mr-2" />
-                Complete Set
-              </>
-            ) : (
-              "Enter Weight, Reps & RPE"
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              onClick={onCompleteSet}
+              disabled={!isSetValid}
+              className="w-full"
+              variant={isSetValid ? "default" : "secondary"}
+            >
+              {isSetValid ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Complete Set
+                </>
+              ) : (
+                "Enter Weight, Reps & RPE"
+              )}
+            </Button>
+            
+            {/* Set Management Buttons */}
+            <div className="flex gap-2">
+              {onAddSet && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onAddSet}
+                  className="flex-1 text-xs"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add Set
+                </Button>
+              )}
+              {onRemoveSet && canRemoveSet && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onRemoveSet}
+                  className="flex-1 text-xs text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                >
+                  <Minus className="h-3 w-3 mr-1" />
+                  Remove Set
+                </Button>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Completed Set Display */}

@@ -426,7 +426,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                     recommendation={getExerciseRecommendation(currentExercise.exerciseId)}
                     onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
                     onCompleteSet={completeSet}
+                    onAddSet={() => addSet(currentExercise.id)}
+                    onRemoveSet={currentSets.length > 1 ? () => removeSet(currentExercise.id, currentSetIndex) : undefined}
                     isActive={true}
+                    canRemoveSet={currentSets.length > 1}
                     weightUnit={weightUnit}
                     onWeightUnitChange={setWeightUnit}
                   />
