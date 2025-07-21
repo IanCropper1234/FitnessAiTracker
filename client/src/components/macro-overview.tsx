@@ -253,33 +253,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
         </Card>
       </div>
 
-      {/* Macro Breakdown Chart */}
-      <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-        <CardHeader>
-          <CardTitle className="text-black dark:text-white">Macro Breakdown</CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">
-            Macronutrient distribution for {new Date(selectedDate).toLocaleDateString()}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {nutritionSummary && (nutritionSummary.totalCalories > 0) ? (
-            <MacroChart
-              protein={nutritionSummary.totalProtein}
-              carbs={nutritionSummary.totalCarbs}
-              fat={nutritionSummary.totalFat}
-              goalProtein={nutritionSummary.goalProtein}
-              goalCarbs={nutritionSummary.goalCarbs}
-              goalFat={nutritionSummary.goalFat}
-            />
-          ) : (
-            <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-              <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No nutrition data for this date</p>
-              <p className="text-sm">Start logging your meals to see macro breakdown</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
     </div>
   );
 }
