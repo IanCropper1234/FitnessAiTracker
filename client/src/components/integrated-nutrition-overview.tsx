@@ -602,21 +602,64 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               
               {selectedLogs.length > 0 && (
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-blue-200 dark:border-blue-600">
-                  <Label htmlFor="bulk-copy-date" className="text-sm font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">
+                  <Label className="text-sm font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">
                     Copy to date:
                   </Label>
                   <div className="flex items-center gap-2 flex-1">
-                    <Input
-                      id="bulk-copy-date"
-                      type="date"
-                      className="flex-1"
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          handleBulkCopy(e.target.value);
-                          e.target.value = '';
-                        }
-                      }}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          className="justify-start text-left font-normal flex-1 bg-white dark:bg-gray-800"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          Select date
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <div className="flex items-center justify-between p-3 border-b">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const today = new Date();
+                              const yesterday = new Date(today);
+                              yesterday.setDate(today.getDate() - 1);
+                              const dateStr = yesterday.toISOString().split('T')[0];
+                              handleBulkCopy(dateStr);
+                            }}
+                          >
+                            <ChevronLeft className="h-4 w-4 mr-1" />
+                            Yesterday
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const today = new Date();
+                              const tomorrow = new Date(today);
+                              tomorrow.setDate(today.getDate() + 1);
+                              const dateStr = tomorrow.toISOString().split('T')[0];
+                              handleBulkCopy(dateStr);
+                            }}
+                          >
+                            Tomorrow
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </div>
+                        <CalendarComponent
+                          mode="single"
+                          selected={undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const dateStr = date.toISOString().split('T')[0];
+                              handleBulkCopy(dateStr);
+                            }
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               )}
