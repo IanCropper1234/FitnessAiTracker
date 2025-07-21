@@ -627,7 +627,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             setIsRestTimerActive(false);
             setRestTimeRemaining(0);
           }}
-          position="bottom-right"
+          position="bottom-left"
           draggable={true}
         />
       )}
