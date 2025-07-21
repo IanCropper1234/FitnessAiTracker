@@ -833,13 +833,6 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
               New Workout
             </Button>
           </div>
-          
-          <WorkoutSessionsWithBulkActions 
-            sessions={recentSessions}
-            onStartSession={setExecutingSessionId}
-            onViewSession={setViewingSessionId}
-            userId={userId}
-          />
 
           {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
             <Card>
