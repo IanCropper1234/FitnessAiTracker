@@ -322,7 +322,7 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-black dark:text-white flex items-center gap-2">
+              <CardTitle className="font-semibold tracking-tight text-black dark:text-white flex items-center gap-2 text-[18px]">
                 <Utensils className="w-5 h-5" />
                 Daily Food Log
               </CardTitle>
