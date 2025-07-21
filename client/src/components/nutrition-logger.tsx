@@ -132,9 +132,12 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       return;
     }
 
+    const finalDate = selectedDate || new Date().toISOString().split('T')[0];
+    console.log('Logging food with selectedDate:', selectedDate, 'finalDate:', finalDate);
+    
     const logData = {
       userId,
-      date: selectedDate ? new Date(selectedDate + 'T00:00:00') : new Date(),
+      date: finalDate,
       foodName: searchMode === 'ai' ? foodQuery : selectedFood?.name || foodQuery,
       quantity: quantity,
       unit: unit,
