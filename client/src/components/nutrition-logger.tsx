@@ -71,11 +71,19 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
     mutationFn: async (data: any) => {
       return await apiRequest("POST", "/api/nutrition/log", data);
     },
-    onSuccess: () => {
-      // Invalidate all nutrition-related queries to refresh the food log
+    onSuccess: (response, variables) => {
+      // Invalidate specific date queries to refresh the food log
+      const loggedDate = variables.date ? new Date(variables.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+      console.log('Food logged successfully, invalidating cache for date:', loggedDate, 'originalDate:', variables.date);
+      
+      // Invalidate all possible query variations
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
+      
+      // Force a complete cache refresh for nutrition data
+      queryClient.refetchQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.refetchQueries({ queryKey: ['/api/nutrition/summary'] });
       
       toast({
         title: "Success",
