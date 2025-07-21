@@ -101,7 +101,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   return (
     <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
       <CardContent className="p-4 space-y-4">
-        {/* Set Header */}
+        {/* Set Header with Add/Remove Buttons */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Badge variant={set.completed ? "default" : "outline"} className="bg-primary text-primary-foreground">
@@ -110,18 +110,45 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <span className="text-sm text-foreground/70">
               Target: {set.targetReps} reps
             </span>
+            {(setRecommendation || recommendation) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowRecommendation(!showRecommendation)}
+                className="text-xs text-foreground hover:bg-accent"
+              >
+                <Info className="h-3 w-3 mr-1" />
+                Rec
+              </Button>
+            )}
           </div>
           
-          {(setRecommendation || recommendation) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowRecommendation(!showRecommendation)}
-              className="text-xs text-foreground hover:bg-accent"
-            >
-              <Info className="h-3 w-3 mr-1" />
-              Recommended
-            </Button>
+          {/* Add/Remove Set Buttons - Right Side */}
+          {!set.completed && isActive && (
+            <div className="flex items-center gap-1">
+              {onAddSet && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onAddSet}
+                  className="w-8 h-8 p-0 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
+                  title="Add Set"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
+              {onRemoveSet && canRemoveSet && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onRemoveSet}
+                  className="w-8 h-8 p-0 text-red-400 border-red-500/30 bg-red-500/10 hover:bg-red-500/20"
+                  title="Remove Set"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
 
@@ -280,49 +307,21 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Complete Set Button */}
         {!set.completed && isActive && (
-          <div className="space-y-2">
-            <Button
-              onClick={onCompleteSet}
-              disabled={!isSetValid}
-              className="w-full"
-              variant={isSetValid ? "default" : "secondary"}
-            >
-              {isSetValid ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Complete Set
-                </>
-              ) : (
-                "Enter Weight, Reps & RPE"
-              )}
-            </Button>
-            
-            {/* Set Management Buttons */}
-            <div className="flex gap-2">
-              {onAddSet && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onAddSet}
-                  className="flex-1 text-xs bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add Set
-                </Button>
-              )}
-              {onRemoveSet && canRemoveSet && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onRemoveSet}
-                  className="flex-1 text-xs bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300"
-                >
-                  <Minus className="h-3 w-3 mr-1" />
-                  Remove Set
-                </Button>
-              )}
-            </div>
-          </div>
+          <Button
+            onClick={onCompleteSet}
+            disabled={!isSetValid}
+            className="w-full"
+            variant={isSetValid ? "default" : "secondary"}
+          >
+            {isSetValid ? (
+              <>
+                <Check className="h-4 w-4 mr-2" />
+                Complete Set
+              </>
+            ) : (
+              "Enter Weight, Reps & RPE"
+            )}
+          </Button>
         )}
 
         {/* Completed Set Display */}
