@@ -172,23 +172,23 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         )}
 
-        {/* Compact Single-Row Input Layout */}
-        <div className="grid grid-cols-4 gap-2 items-end pl-[1px] pr-[1px] pt-[0px] pb-[0px] mt-[8px] mb-[8px] ml-[-35px] mr-[-35px]">
-          {/* Weight Input with Unit Selection */}
-          <div className="space-y-1">
+        {/* Mobile-Optimized Input Layout */}
+        <div className="space-y-4">
+          {/* Weight Input Row with Unit Selection */}
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-medium text-foreground/80 leading-none">Weight</label>
+              <label className="text-xs font-medium text-foreground">Weight</label>
               <Select
                 value={weightUnit}
                 onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                 disabled={set.completed}
               >
-                <SelectTrigger className="w-10 h-5 text-[9px] bg-background border-border text-foreground p-0">
-                  <SelectValue className="text-[9px]" />
+                <SelectTrigger className="w-14 h-7 text-xs bg-background border-border text-foreground">
+                  <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-border min-w-[40px]">
-                  <SelectItem value="kg" className="text-xs py-1">KG</SelectItem>
-                  <SelectItem value="lbs" className="text-xs py-1">lbs</SelectItem>
+                <SelectContent className="bg-popover border-border">
+                  <SelectItem value="kg">KG</SelectItem>
+                  <SelectItem value="lbs">lbs</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -202,7 +202,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   step={0.5}
                   placeholder="0"
                   disabled={set.completed}
-                  className="w-full h-8 text-sm"
+                  className="w-full"
                 />
               ) : (
                 <Input
@@ -214,100 +214,102 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   min="0"
                   max="1000"
                   disabled={set.completed}
-                  className="w-full h-8 text-sm bg-background border-border text-foreground px-2"
+                  className="w-full bg-background border-border text-foreground"
                   inputMode="decimal"
                 />
               )}
             </div>
           </div>
 
-          {/* Actual Reps Input */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-medium text-foreground/80 leading-none">Actual Reps</label>
-            {spinnerEnabled ? (
-              <SpinnerInput
-                value={set.actualReps}
-                onChange={handleRepsChange}
-                min={0}
-                max={50}
-                step={1}
-                placeholder="0"
-                disabled={set.completed}
-                className="h-8 text-sm"
-              />
-            ) : (
-              <Input
-                type="number"
-                value={set.actualReps || ''}
-                onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
-                placeholder="0"
-                min="0"
-                max="50"
-                disabled={set.completed}
-                className="h-8 text-sm bg-background border-border text-foreground px-2"
-                inputMode="numeric"
-              />
-            )}
-          </div>
+          {/* Reps and RPE Row */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Actual Reps Input */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-foreground">Actual Reps</label>
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.actualReps}
+                  onChange={handleRepsChange}
+                  min={0}
+                  max={50}
+                  step={1}
+                  placeholder="0"
+                  disabled={set.completed}
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.actualReps || ''}
+                  onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                  min="0"
+                  max="50"
+                  disabled={set.completed}
+                  className="bg-background border-border text-foreground"
+                  inputMode="numeric"
+                />
+              )}
+            </div>
 
-          {/* RPE Input (1-10) */}
-          <div className="space-y-1">
-            <label className="text-[10px] font-medium text-foreground/80 leading-none">RPE</label>
-            {spinnerEnabled ? (
-              <SpinnerInput
-                value={set.rpe}
-                onChange={handleRpeChange}
-                min={1}
-                max={10}
-                step={0.5}
-                placeholder="8"
-                disabled={set.completed}
-                className="h-8 text-sm"
-              />
-            ) : (
-              <Input
-                type="number"
-                value={set.rpe || ''}
-                onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
-                placeholder="8"
-                min="1"
-                max="10"
-                step="0.5"
-                disabled={set.completed}
-                className="h-8 text-sm bg-background border-border text-foreground px-2"
-                inputMode="decimal"
-              />
-            )}
-          </div>
-
-          {/* Complete/Action Button */}
-          <div className="space-y-1">
-            <div className="h-3"></div> {/* Spacer for alignment */}
-            {!set.completed && isActive ? (
-              <Button
-                onClick={onCompleteSet}
-                disabled={!isSetValid}
-                className="h-8 px-2 text-xs"
-                variant={isSetValid ? "default" : "secondary"}
-                size="sm"
-              >
-                {isSetValid ? (
-                  <Check className="h-3 w-3" />
-                ) : (
-                  "Fill"
-                )}
-              </Button>
-            ) : set.completed ? (
-              <div className="h-8 flex items-center justify-center">
-                <Check className="h-4 w-4 text-emerald-400" />
-              </div>
-            ) : (
-              <div className="h-8"></div>
-            )}
+            {/* RPE Input (1-10) */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-foreground">RPE (1-10)</label>
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.rpe}
+                  onChange={handleRpeChange}
+                  min={1}
+                  max={10}
+                  step={0.5}
+                  placeholder="8"
+                  disabled={set.completed}
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.rpe || ''}
+                  onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
+                  placeholder="8"
+                  min="1"
+                  max="10"
+                  step="0.5"
+                  disabled={set.completed}
+                  className="bg-background border-border text-foreground"
+                  inputMode="decimal"
+                />
+              )}
+            </div>
           </div>
         </div>
 
+        {/* Complete Set Button */}
+        {!set.completed && isActive && (
+          <Button
+            onClick={onCompleteSet}
+            disabled={!isSetValid}
+            className="w-full"
+            variant={isSetValid ? "default" : "secondary"}
+          >
+            {isSetValid ? (
+              <>
+                <Check className="h-4 w-4 mr-2" />
+                Complete Set
+              </>
+            ) : (
+              "Enter Weight, Reps & RPE"
+            )}
+          </Button>
+        )}
 
+        {/* Completed Set Display */}
+        {set.completed && (
+          <div className="flex items-center justify-center p-2 bg-emerald-500/10 border border-emerald-500/20 rounded">
+            <Check className="h-4 w-4 text-emerald-400 mr-2" />
+            <span className="text-sm text-emerald-300 font-medium">
+              Completed: {set.weight}{weightUnit} × {set.actualReps} reps @ RPE {set.rpe}
+            </span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
