@@ -283,7 +283,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={onAddSet}
-                  className="flex-1 text-xs"
+                  className="flex-1 text-xs bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300"
                 >
                   <Plus className="h-3 w-3 mr-1" />
                   Add Set
@@ -294,7 +294,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={onRemoveSet}
-                  className="flex-1 text-xs text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                  className="flex-1 text-xs bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300"
                 >
                   <Minus className="h-3 w-3 mr-1" />
                   Remove Set

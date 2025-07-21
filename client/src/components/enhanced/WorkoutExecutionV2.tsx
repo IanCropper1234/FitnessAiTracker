@@ -292,6 +292,81 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }
   };
 
+  const addSet = (exerciseId: number) => {
+    setWorkoutData(prev => {
+      const currentSets = prev[exerciseId] || [];
+      const lastSet = currentSets[currentSets.length - 1];
+      const newSet: WorkoutSet = {
+        setNumber: currentSets.length + 1,
+        targetReps: lastSet?.targetReps || 8,
+        actualReps: 0,
+        weight: lastSet?.weight || 0,
+        rpe: lastSet?.rpe || 8,
+        completed: false,
+      };
+      
+      const newSets = [...currentSets, newSet];
+      
+      toast({
+        title: "Set Added",
+        description: `Added Set ${newSet.setNumber} to ${currentExercise?.exercise.name}`,
+        duration: 2000,
+      });
+      
+      return {
+        ...prev,
+        [exerciseId]: newSets
+      };
+    });
+  };
+
+  const removeSet = (exerciseId: number, setIndex: number) => {
+    setWorkoutData(prev => {
+      const currentSets = prev[exerciseId] || [];
+      if (currentSets.length <= 1) {
+        toast({
+          title: "Cannot Remove Set",
+          description: "Each exercise must have at least one set.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+
+      const setToRemove = currentSets[setIndex];
+      if (setToRemove?.completed) {
+        toast({
+          title: "Cannot Remove Completed Set",
+          description: "You cannot remove a completed set.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+
+      const newSets = currentSets.filter((_, i) => i !== setIndex).map((set, i) => ({
+        ...set,
+        setNumber: i + 1
+      }));
+      
+      // Adjust current set index if needed
+      if (setIndex <= currentSetIndex && currentSetIndex > 0) {
+        setCurrentSetIndex(currentSetIndex - 1);
+      } else if (setIndex < currentSets.length - 1 && currentSetIndex >= newSets.length) {
+        setCurrentSetIndex(newSets.length - 1);
+      }
+      
+      toast({
+        title: "Set Removed",
+        description: `Removed set from ${currentExercise?.exercise.name}`,
+        duration: 2000,
+      });
+      
+      return {
+        ...prev,
+        [exerciseId]: newSets
+      };
+    });
+  };
+
   const saveAndExit = () => {
     const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
     const totalVolume = Math.round(Object.values(workoutData)
@@ -332,8 +407,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     saveProgressMutation.mutate(progressData);
   };
 
-  const getExerciseRecommendation = (exerciseId: number): ExerciseRecommendation | null => {
-    return recommendations.find(rec => rec.exerciseId === exerciseId) || null;
+  const getExerciseRecommendation = (exerciseId: number): ExerciseRecommendation | undefined => {
+    return recommendations.find(rec => rec.exerciseId === exerciseId);
   };
 
   const handleExercisesReorder = (newOrder: WorkoutExercise[]) => {
@@ -373,7 +448,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 progress={progressPercentage}
                 size={60}
                 strokeWidth={4}
-                showPercentage={true}
               />
             ) : (
               <Progress value={progressPercentage} className="w-full" />
