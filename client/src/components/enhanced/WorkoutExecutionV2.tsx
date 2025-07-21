@@ -494,7 +494,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         <CardHeader className="pb-4">
           {/* Top Row - Session Name and Badges */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <CardTitle className="text-lg sm:text-xl font-bold truncate">
+            <CardTitle className="text-lg sm:text-xl font-bold truncate text-center">
               {session.name}
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
