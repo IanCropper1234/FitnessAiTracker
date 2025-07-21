@@ -706,6 +706,235 @@ const sortedData = data.sort((a, b) => {
 - Reports Interface: 4-tab dashboard with accurate progress tracking
 - Data Accuracy: Weight change 12kg gain (62kg→74kg), 3 training sessions, 5.7/10 recovery score
 
+## Workout Execution System Analysis & Documentation
+
+### Complete Workout Execution Architecture (Pre-Redesign Reference)
+
+**Current Implementation Status**: Fully functional workout execution system with comprehensive data persistence, auto-save, and RP methodology integration.
+
+#### Component Structure (`client/src/components/workout-execution.tsx`)
+
+**Key Interfaces & Data Types:**
+```typescript
+interface WorkoutSet {
+  setNumber: number;
+  targetReps: number;
+  actualReps: number;
+  weight: number;
+  rpe: number;
+  completed: boolean;
+}
+
+interface WorkoutExercise {
+  id: number;
+  exerciseId: number;
+  orderIndex: number;
+  sets: number;
+  targetReps: string; // "8-12" or "10,10,8"
+  restPeriod: number;
+  exercise: ExerciseDetails;
+  setsData?: WorkoutSet[]; // Restored from database
+}
+
+interface ExerciseRecommendation {
+  exerciseId: number;
+  recommendedWeight: number;
+  recommendedReps: string;
+  recommendedRpe: number;
+  week: number;
+  reasoning: string;
+}
+```
+
+#### Core API Integration Points
+
+**Primary Data Fetch Routes:**
+- `GET /api/training/session/:sessionId` - Fetch complete session with exercises
+- `GET /api/training/exercise-recommendations/:sessionId` - Get RP-based recommendations
+
+**Auto-Save & Progress Routes:**
+- `PUT /api/training/sessions/:sessionId/progress` - Save workout progress (auto-save)
+- `PUT /api/training/sessions/:sessionId/complete` - Mark workout complete
+- `POST /api/training/session/complete` - Alternative completion endpoint
+
+**Load Progression Routes:**
+- `GET /api/training/load-progression/:userId` - Historical progression data
+- `POST /api/training/load-progression` - Record new progression data
+
+#### State Management & Data Flow
+
+**React Query Integration:**
+```typescript
+// Session data with automatic cache invalidation
+const { data: session, isLoading } = useQuery<WorkoutSession>({
+  queryKey: ["/api/training/session", sessionId],
+});
+
+// Exercise recommendations with RP methodology
+const { data: recommendations = [] } = useQuery<ExerciseRecommendation[]>({
+  queryKey: ["/api/training/exercise-recommendations", sessionId],
+  enabled: !!sessionId && !!session
+});
+```
+
+**Local State Management:**
+- `workoutData: Record<number, WorkoutSet[]>` - Core workout state by exercise ID
+- `currentExerciseIndex: number` - Active exercise navigation
+- `currentSetIndex: number` - Active set within current exercise
+- `isRestTimerActive: boolean` - Rest period management
+- `restTimeRemaining: number` - Countdown timer state
+
+#### Auto-Save & Data Persistence System
+
+**Data Restoration from Database:**
+- Checks `exercise.setsData` for previously saved progress
+- Restores individual set completion states, weights, reps, RPE
+- Falls back to prefilled values from mesocycle progression
+
+**Auto-Save Mechanism:**
+- Progress saved via `saveProgressMutation` when "Save & Exit" clicked
+- Updates `setsData` JSONB field with individual set completion states
+- Preserves dynamic set count changes (add/remove sets)
+- Maintains exercise completion status
+
+**Save & Exit Data Structure:**
+```typescript
+const progressData = {
+  duration: Math.round((Date.now() - sessionStartTime) / 1000 / 60),
+  totalVolume: completedSets.reduce((sum, set) => sum + (set.weight * set.actualReps), 0),
+  isCompleted: false,
+  exercises: session.exercises.map(exercise => ({
+    exerciseId: exercise.exerciseId,
+    sets: workoutData[exercise.id] || []
+  }))
+};
+```
+
+#### Set Management & Dynamic Functionality
+
+**Dynamic Set Operations:**
+- `addSet(exerciseId)` - Add new set with smart defaults from last set
+- `removeSet(exerciseId, setIndex)` - Remove incomplete sets only
+- `updateSet(exerciseId, setIndex, field, value)` - Real-time field updates
+- Automatic set number recalculation on add/remove
+
+**Set Completion Logic:**
+- Validates weight and reps before allowing completion
+- Triggers rest timer based on `exercise.restPeriod`
+- Auto-advances to next set or next exercise
+- Visual feedback with completion states
+
+#### Exercise Recommendations & RP Integration
+
+**Recommendation Display:**
+- Shows recommended weight, reps, RPE from mesocycle progression
+- Includes reasoning (e.g., "Week 2 progression", "Previous performance adjusted")
+- Real-time recommendation fetching per session
+
+**Load Progression Integration:**
+- Auto-records progression data on workout completion
+- Feeds into LoadProgression service for future recommendations
+- Tracks weight, RPE, RIR progression over time
+
+#### Rest Timer & Workout Flow
+
+**Rest Timer Features:**
+- Automatic timer start after set completion
+- Visual countdown with skip functionality
+- Toast notification when rest period complete
+- Customizable rest periods per exercise
+
+**Navigation & Flow Control:**
+- Exercise navigation with previous/next buttons (← →)
+- Set selection within exercise (click to jump to specific set)
+- Progress tracking with percentage completion
+- Exercise overview with completion status
+
+#### Workout Completion & Auto-Regulation
+
+**Completion Process:**
+1. Calculate total duration and volume
+2. Save all exercise performance data
+3. Trigger auto-regulation feedback dialog
+4. Auto-record load progression for future sessions
+5. Update volume landmarks via RP algorithms
+
+**Auto-Regulation Integration:**
+- Shows `WorkoutFeedbackDialog` after completion
+- Collects pump quality, soreness, effort, energy, sleep quality
+- Feeds into RP volume adjustment algorithms
+- Updates volume landmarks for next week
+
+#### Error Handling & Validation
+
+**Data Validation:**
+- Weight validation with decimal input pattern
+- RPE validation (1-10 range)
+- RIR validation (0-5 range) 
+- Rep validation (positive integers only)
+
+**Error States:**
+- Loading states during data fetch
+- Empty session handling
+- Failed save operations with user feedback
+- Network error recovery with toast notifications
+
+#### Mobile Optimization Features
+
+**4-Column Layout:**
+- Compact mobile-first design
+- Touch-optimized input fields
+- Vertical button layout for narrow screens
+- Responsive grid with proper spacing
+
+**Input Optimizations:**
+- `inputMode="decimal"` for weight fields
+- `inputMode="numeric"` for rep/RPE fields
+- Removed spinner buttons for mobile
+- Custom validation patterns
+
+#### Current UI Components & Layout
+
+**Header Section:**
+- Session name with exercise counter
+- Progress bar with completion percentage
+- Rest timer card when active
+
+**Exercise Overview:**
+- All exercises with completion status
+- Current exercise highlighting
+- Set completion counters per exercise
+- Exercise categories and muscle group badges
+
+**Current Exercise Details:**
+- Exercise instructions and equipment info
+- Recommendation display from RP algorithms
+- 4-column input grid (Weight, Reps, RPE, Action)
+- Individual set completion tracking
+
+**Navigation & Actions:**
+- Arrow-based exercise navigation (← →)
+- Add/remove sets functionality
+- Save & Exit vs Complete Workout options
+- Set management with completion states
+
+#### Data Synchronization & Caching
+
+**Cache Invalidation Strategy:**
+```typescript
+// After save operations
+queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
+```
+
+**Optimistic Updates:**
+- Real-time UI updates before server sync
+- Local state maintained during async operations
+- Rollback capability on save failures
+
+This comprehensive analysis provides the complete foundation for preserving all functionality during the upcoming workout execution redesign. All API integrations, data flows, state management, and user interactions are documented for reference.
+
 ## Recent Changes
 
 ### July 20, 2025 (Latest - COMPLETE: Critical Template-Mesocycle Integration Conflicts Resolved)
