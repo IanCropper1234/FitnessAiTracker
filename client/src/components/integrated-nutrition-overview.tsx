@@ -446,8 +446,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger');
                 if (onShowLogger) {
                   onShowLogger();
-                } else {
-                  setShowLogger(true);
                 }
               }}
               className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"

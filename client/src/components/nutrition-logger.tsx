@@ -237,7 +237,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                   <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
+                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
                     <SelectItem value="serving">serving</SelectItem>
                     <SelectItem value="g">grams (g)</SelectItem>
                     <SelectItem value="oz">ounces (oz)</SelectItem>
@@ -257,7 +257,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
               <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white">
                 <SelectValue placeholder="Select meal type (optional)" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
+              <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
                 <SelectItem value="breakfast">
                   <div className="flex items-center gap-2">
                     <Sunrise className="h-4 w-4" />
