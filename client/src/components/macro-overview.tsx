@@ -205,60 +205,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
             </Card>
           </div>
 
-          {/* Current Consumption Row */}
-          <div className="grid grid-cols-4 gap-4 mt-4">
-            {/* Calories Consumed */}
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white dark:text-white">
-                {nutritionSummary?.totalCalories || 0}
-              </div>
-              <div className="text-xs text-blue-400 dark:text-blue-400">
-                of {dietGoals?.targetCalories || 2000}
-              </div>
-              <div className="text-xs text-blue-400 dark:text-blue-400">
-                Remaining: {Math.max(0, Number(dietGoals?.targetCalories || 2000) - (nutritionSummary?.totalCalories || 0))}
-              </div>
-            </div>
-
-            {/* Protein Consumed */}
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white dark:text-white">
-                {(nutritionSummary?.totalProtein || 0).toFixed(1)}
-              </div>
-              <div className="text-xs text-green-400 dark:text-green-400">
-                of {Number(dietGoals?.targetProtein || 150).toFixed(1)}g
-              </div>
-              <div className="text-xs text-green-400 dark:text-green-400">
-                Remaining: {Math.max(0, Number(dietGoals?.targetProtein || 150) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
-              </div>
-            </div>
-
-            {/* Carbs Consumed */}
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white dark:text-white">
-                {(nutritionSummary?.totalCarbs || 0).toFixed(1)}
-              </div>
-              <div className="text-xs text-orange-400 dark:text-orange-400">
-                of {Number(dietGoals?.targetCarbs || 200).toFixed(1)}g
-              </div>
-              <div className="text-xs text-orange-400 dark:text-orange-400">
-                Remaining: {Math.max(0, Number(dietGoals?.targetCarbs || 200) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
-              </div>
-            </div>
-
-            {/* Fat Consumed */}
-            <div className="text-center">
-              <div className="text-2xl font-bold text-white dark:text-white">
-                {(nutritionSummary?.totalFat || 0).toFixed(1)}
-              </div>
-              <div className="text-xs text-purple-400 dark:text-purple-400">
-                of {Number(dietGoals?.targetFat || 60).toFixed(1)}g
-              </div>
-              <div className="text-xs text-purple-400 dark:text-purple-400">
-                Remaining: {Math.max(0, Number(dietGoals?.targetFat || 60) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
-              </div>
-            </div>
-          </div>
+          
         </CardContent>
       </Card>
 
