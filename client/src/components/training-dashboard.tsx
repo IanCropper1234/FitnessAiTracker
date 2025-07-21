@@ -24,18 +24,20 @@ import {
   Copy,
   X,
   ChevronDown,
-  CalendarIcon
+  CalendarIcon,
+  Settings
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
 import { WorkoutSessionCreator } from "./workout-session-creator";
-import { WorkoutExecution } from "./workout-execution";
+import { WorkoutExecutionWrapper } from "./WorkoutExecutionWrapper";
 import { WorkoutDetails } from "./workout-details";
 import { VolumeLandmarks } from "./volume-landmarks";
 import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
 import MesocycleDashboard from "./mesocycle-dashboard";
 import TrainingTemplates from "./training-templates";
 import LoadProgressionTracker from "./load-progression-tracker";
+import { FeatureFlagManager } from "./FeatureFlagManager";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -352,6 +354,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [activeTab, setActiveTab] = useState<string>("workouts");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
+  const [showFeatureManager, setShowFeatureManager] = useState(false);
   const queryClient = useQueryClient();
 
   // Handle URL parameters for auto-starting workout sessions
@@ -565,7 +568,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   // Show workout execution if executing
   if (executingSessionId && !viewingSessionId) {
     return (
-      <WorkoutExecution
+      <WorkoutExecutionWrapper
         sessionId={executingSessionId}
         onComplete={() => setExecutingSessionId(null)}
       />
@@ -640,6 +643,20 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Header with Feature Manager Button */}
+      <div className="flex items-center justify-between mb-4">
+        <div></div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowFeatureManager(true)}
+          className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+        >
+          <Settings className="h-4 w-4 mr-2" />
+          V2 Features
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -967,8 +984,8 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <WorkoutExecution 
-                    sessionId={executingSessionId} 
+                  <WorkoutExecutionWrapper 
+                    sessionId={executingSessionId.toString()} 
                     onComplete={() => {
                       setExecutingSessionId(null);
                       queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
@@ -980,6 +997,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
           </div>
         </div>
       )}
+
+      {/* Feature Flag Manager Modal */}
+      <FeatureFlagManager 
+        isOpen={showFeatureManager}
+        onClose={() => setShowFeatureManager(false)}
+      />
     </div>
   );
 }

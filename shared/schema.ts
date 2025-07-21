@@ -202,6 +202,11 @@ export const workoutSessions = pgTable("workout_sessions", {
   isCompleted: boolean("is_completed").notNull().default(false),
   totalVolume: integer("total_volume").default(0),
   duration: integer("duration"), // minutes
+  // V2 Enhancement fields
+  version: text("version").notNull().default("1.0"), // "1.0" = Legacy, "2.0" = Enhanced
+  features: jsonb("features"), // Feature flags: { spinnerSetInput: true, gestureNavigation: true }
+  algorithm: text("algorithm"), // Load progression algorithm used
+  actualFinishedAt: timestamp("actual_finished_at"), // Precise completion timestamp
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -220,6 +225,11 @@ export const workoutExercises = pgTable("workout_exercises", {
   notes: text("notes"),
   isCompleted: boolean("is_completed").default(false),
   setsData: jsonb("sets_data"), // Individual set completion states
+  // V2 Enhancement fields
+  targetRestSec: integer("target_rest_sec"), // Target rest period in seconds
+  recommendedWeight: decimal("recommended_weight", { precision: 6, scale: 2 }), // AI recommended weight
+  recommendedRpe: integer("recommended_rpe"), // AI recommended RPE
+  finishedAt: timestamp("finished_at"), // Individual exercise completion time
 });
 
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {

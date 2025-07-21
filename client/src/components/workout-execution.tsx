@@ -74,7 +74,7 @@ interface WorkoutExecutionProps {
   onComplete: () => void;
 }
 
-export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
+function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -835,3 +835,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
     </div>
   );
 }
+
+export default WorkoutExecution;
+export { WorkoutExecution };
