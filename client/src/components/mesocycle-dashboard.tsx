@@ -336,10 +336,10 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {recommendations.nextWeekVolume.map((volume, index) => (
+                  {recommendations.nextWeekVolume.map((volume: any, index: number) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div>
-                        <p className="font-medium">Muscle Group {volume.muscleGroupId}</p>
+                        <p className="font-medium">{volume.muscleGroupName || `Muscle Group ${volume.muscleGroupId}`}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">
                           Week {volume.week} • {volume.phase}
                         </p>

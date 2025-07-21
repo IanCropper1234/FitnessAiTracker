@@ -15,6 +15,7 @@ import { TemplateEngine } from "./template-engine";
 
 interface VolumeProgression {
   muscleGroupId: number;
+  muscleGroupName?: string;
   week: number;
   targetSets: number;
   phase: 'accumulation' | 'intensification' | 'deload';
@@ -46,10 +47,11 @@ export class MesocyclePeriodization {
     totalWeeks: number = 6
   ): Promise<VolumeProgression[]> {
     
-    // Get user's volume landmarks for all muscle groups
+    // Get user's volume landmarks for all muscle groups with names
     const landmarks = await db
       .select({
         muscleGroupId: volumeLandmarks.muscleGroupId,
+        muscleGroupName: muscleGroups.name,
         mev: volumeLandmarks.mev,
         mav: volumeLandmarks.mav,
         mrv: volumeLandmarks.mrv,
@@ -58,6 +60,7 @@ export class MesocyclePeriodization {
         adaptationLevel: volumeLandmarks.adaptationLevel
       })
       .from(volumeLandmarks)
+      .innerJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
       .where(eq(volumeLandmarks.userId, userId));
 
     const progressions: VolumeProgression[] = [];
@@ -73,10 +76,11 @@ export class MesocyclePeriodization {
         targetSets = Math.round(landmark.mev + (progressionRate * (currentWeek - 1)));
         
         // Apply auto-regulation adjustments
-        if (landmark.recoveryLevel < 4) {
+        if (landmark.recoveryLevel !== null && landmark.recoveryLevel < 4) {
           // Poor recovery: reduce volume by 10-20%
           targetSets = Math.round(targetSets * 0.8);
-        } else if (landmark.recoveryLevel > 7 && landmark.adaptationLevel > 6) {
+        } else if (landmark.recoveryLevel !== null && landmark.recoveryLevel > 7 && 
+                   landmark.adaptationLevel !== null && landmark.adaptationLevel > 6) {
           // Good recovery and adaptation: can push closer to MAV
           targetSets = Math.min(targetSets * 1.1, landmark.mav);
         }
@@ -87,7 +91,7 @@ export class MesocyclePeriodization {
         
       } else if (currentWeek === totalWeeks - 1) {
         // Intensification phase: Push to MAV/MRV
-        targetSets = landmark.recoveryLevel >= 6 ? landmark.mav : Math.round(landmark.mav * 0.9);
+        targetSets = (landmark.recoveryLevel !== null && landmark.recoveryLevel >= 6) ? landmark.mav : Math.round(landmark.mav * 0.9);
         phase = 'intensification';
         
       } else {
@@ -98,6 +102,7 @@ export class MesocyclePeriodization {
       
       progressions.push({
         muscleGroupId: landmark.muscleGroupId,
+        muscleGroupName: landmark.muscleGroupName,
         week: currentWeek + 1,
         targetSets: Math.max(targetSets, landmark.mev), // Never go below MEV except deload
         phase
