@@ -26,7 +26,8 @@ import {
   ArrowRight,
   ArrowLeft,
   GripVertical,
-  Check
+  Check,
+  Target
 } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -274,27 +275,113 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
-    if (!e.dataTransfer || !log) return;
-    setDraggedItem(log);
-    e.dataTransfer.effectAllowed = 'move';
+    try {
+      if (!e.dataTransfer || !log) return;
+      setDraggedItem(log);
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', JSON.stringify(log));
+      
+      // iOS-specific drag feedback
+      if (e.currentTarget instanceof HTMLElement) {
+        e.currentTarget.style.opacity = '0.6';
+        e.currentTarget.style.transform = 'scale(0.95)';
+      }
+    } catch (error) {
+      console.warn('Drag start error:', error);
+      // Fallback for iOS Safari
+      setDraggedItem(log);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
+    e.stopPropagation();
+    
+    try {
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'move';
+      }
+      
+      // iOS-specific drop zone feedback
+      if (e.currentTarget instanceof HTMLElement) {
+        e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+        e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+      }
+    } catch (error) {
+      console.warn('Drag over error:', error);
     }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    
+    // Reset drop zone styling
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.backgroundColor = '';
+      e.currentTarget.style.borderColor = '';
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    // Reset drag source styling
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '';
+      e.currentTarget.style.transform = '';
+    }
+    
+    // Clean up in case drop didn't fire
+    setTimeout(() => {
+      setDraggedItem(null);
+    }, 100);
   };
 
   const handleDrop = (e: React.DragEvent, targetMealType: string) => {
     e.preventDefault();
-    if (draggedItem && targetMealType && draggedItem.mealType && draggedItem.mealType !== targetMealType && draggedItem.id) {
-      updateMealTypeMutation.mutate({
-        logId: draggedItem.id,
-        newMealType: targetMealType
+    e.stopPropagation();
+    
+    try {
+      // Reset drop zone styling
+      if (e.currentTarget instanceof HTMLElement) {
+        e.currentTarget.style.backgroundColor = '';
+        e.currentTarget.style.borderColor = '';
+      }
+      
+      let itemToMove = draggedItem;
+      
+      // Fallback: try to get data from dataTransfer for iOS
+      if (!itemToMove && e.dataTransfer) {
+        try {
+          const transferData = e.dataTransfer.getData('text/plain');
+          if (transferData) {
+            itemToMove = JSON.parse(transferData);
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse drag data:', parseError);
+        }
+      }
+      
+      if (itemToMove && targetMealType && itemToMove.mealType && itemToMove.mealType !== targetMealType && itemToMove.id) {
+        updateMealTypeMutation.mutate({
+          logId: itemToMove.id,
+          newMealType: targetMealType
+        });
+        
+        toast({
+          title: "Food Moved",
+          description: `Moved "${itemToMove.foodName}" to ${targetMealType}`,
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.warn('Drop error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to move food item. Please try again.",
+        variant: "destructive"
       });
+    } finally {
+      setDraggedItem(null);
     }
-    setDraggedItem(null);
   };
 
   const handleCopyFood = (log: any, targetMealType?: string) => {
@@ -407,20 +494,24 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
 
       
 
-      {/* Macro Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
+      {/* iOS-style Macro Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full overflow-hidden"
+           style={{ maxWidth: '100%' }}>
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
+            <div className="p-1.5 bg-orange-100 dark:bg-orange-900 rounded-lg mb-2">
+              <Target className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+            </div>
             <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Calories
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-1.5 pb-2">
-            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
-              {nutritionSummary?.totalCalories || 0}
+          <CardContent className="px-2 pb-3">
+            <div className="text-lg md:text-xl font-bold text-black dark:text-white text-center">
+              {Math.round(nutritionSummary?.totalCalories || 0)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
-              of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
+            <p className="text-xs text-gray-500 dark:text-gray-500 text-center leading-tight">
+              /{Math.round(dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000)}
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-blue-600 dark:text-blue-400 text-center leading-tight">
@@ -667,15 +758,17 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
             </div>
           )}
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pb-safe"
+               style={{ overflowX: 'hidden' }}>
             {mealTypes.map((mealType) => {
               const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType.key) || [];
               
               return (
                 <div 
                   key={mealType.key}
-                  className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 min-h-[160px] overflow-hidden"
+                  className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 min-h-[160px] overflow-hidden transition-colors duration-200"
                   onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, mealType.key)}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -734,14 +827,16 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           key={log.id}
                           draggable={!bulkMode}
                           onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
-                          className={`flex items-start gap-2 p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow ${
+                          onDragEnd={handleDragEnd}
+                          className={`flex items-start gap-2 p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-all duration-200 ${
                             bulkMode 
                               ? selectedLogs.includes(log.id) 
                                 ? 'ring-2 ring-blue-500 border-blue-500' 
                                 : 'cursor-pointer' 
-                              : 'cursor-move'
+                              : 'cursor-move ios-button-style'
                           }`}
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
+                          style={{ touchAction: 'none' }}
                         >
                           {/* Selection/Drag Handle */}
                           <div className="flex-shrink-0 mt-0.5">
@@ -759,16 +854,25 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           {/* Food Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2 mb-1">
-                              <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <span className="font-medium text-black dark:text-white text-sm truncate">
-                                  <span className="sm:hidden">
+                              <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                                <span className="font-medium text-black dark:text-white text-sm truncate block w-full" 
+                                      style={{ 
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '100%'
+                                      }}>
+                                  <span className="xs:hidden">
+                                    {log.foodName.length > 14 ? `${log.foodName.substring(0, 14)}...` : log.foodName}
+                                  </span>
+                                  <span className="hidden xs:block sm:hidden">
                                     {log.foodName.length > 18 ? `${log.foodName.substring(0, 18)}...` : log.foodName}
                                   </span>
                                   <span className="hidden sm:block md:hidden">
-                                    {log.foodName.length > 25 ? `${log.foodName.substring(0, 25)}...` : log.foodName}
+                                    {log.foodName.length > 22 ? `${log.foodName.substring(0, 22)}...` : log.foodName}
                                   </span>
                                   <span className="hidden md:block">
-                                    {log.foodName.length > 40 ? `${log.foodName.substring(0, 40)}...` : log.foodName}
+                                    {log.foodName.length > 35 ? `${log.foodName.substring(0, 35)}...` : log.foodName}
                                   </span>
                                 </span>
                                 <Badge className={`${rpCategory.color} text-xs flex-shrink-0`}>
