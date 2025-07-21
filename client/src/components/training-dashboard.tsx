@@ -31,7 +31,7 @@ import {
   FileText,
   Repeat,
   ChartBar,
-  Volume2,
+  MapPin,
   Zap
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -696,7 +696,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
             <ChartBar className="h-5 w-5" />
           </TabsTrigger>
           <TabsTrigger value="volume" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Volume Landmarks">
-            <Volume2 className="h-5 w-5" />
+            <MapPin className="h-5 w-5" />
           </TabsTrigger>
           <TabsTrigger value="auto-regulation" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Auto-Regulation">
             <Zap className="h-5 w-5" />
