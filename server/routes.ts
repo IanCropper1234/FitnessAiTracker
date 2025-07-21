@@ -86,6 +86,113 @@ async function getAutoProgressedValues(exerciseId: number, userId: number, previ
   }
 }
 
+// Auto-sync diet goals with fitness goal changes
+async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string, profileData: any) {
+  // Map fitness goals to diet goals and calculate appropriate macros
+  let dietGoal = "maintain";
+  let calorieAdjustment = 0;
+  let weeklyWeightTarget = 0;
+  
+  switch (fitnessGoal) {
+    case "Weight Loss":
+      dietGoal = "cut";
+      calorieAdjustment = -300; // 300 calorie deficit
+      weeklyWeightTarget = -0.5; // 0.5kg loss per week
+      break;
+    case "Muscle Gain":
+      dietGoal = "bulk";
+      calorieAdjustment = +250; // 250 calorie surplus
+      weeklyWeightTarget = 0.25; // 0.25kg gain per week
+      break;
+    case "Body Recomposition":
+      dietGoal = "maintain";
+      calorieAdjustment = 0; // Maintenance calories
+      weeklyWeightTarget = 0;
+      break;
+    case "Strength Gain":
+      dietGoal = "bulk";
+      calorieAdjustment = +200; // Modest surplus
+      weeklyWeightTarget = 0.2;
+      break;
+    case "Endurance Improvement":
+      dietGoal = "maintain";
+      calorieAdjustment = +100; // Slight surplus for recovery
+      weeklyWeightTarget = 0;
+      break;
+    case "Maintenance":
+    default:
+      dietGoal = "maintain";
+      calorieAdjustment = 0;
+      weeklyWeightTarget = 0;
+      break;
+  }
+  
+  // Calculate TDEE based on profile data
+  const weight = profileData.weight ? parseFloat(profileData.weight) : 70;
+  const height = profileData.height ? parseFloat(profileData.height) : 170;
+  const age = profileData.age || 30;
+  
+  // Harris-Benedict equation for BMR
+  const bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+  
+  // Activity level multipliers
+  const activityMultipliers: Record<string, number> = {
+    "Sedentary": 1.2,
+    "Lightly Active": 1.375,
+    "Moderately Active": 1.55,
+    "Very Active": 1.725,
+    "Extremely Active": 1.9
+  };
+  
+  const activityMultiplier = activityMultipliers[profileData.activityLevel] || 1.55;
+  const tdee = Math.round(bmr * activityMultiplier);
+  const targetCalories = tdee + calorieAdjustment;
+  
+  // Calculate macros based on goal
+  let proteinPerKg = 1.6; // Base protein
+  let fatPercentage = 25; // Base fat percentage
+  
+  if (dietGoal === "bulk") {
+    proteinPerKg = 1.8; // Higher protein for muscle gain
+    fatPercentage = 25;
+  } else if (dietGoal === "cut") {
+    proteinPerKg = 2.0; // Higher protein for muscle preservation
+    fatPercentage = 20; // Lower fat for deficit
+  }
+  
+  const targetProtein = Math.round(weight * proteinPerKg);
+  const targetFat = Math.round((targetCalories * fatPercentage / 100) / 9);
+  const targetCarbs = Math.round((targetCalories - (targetProtein * 4) - (targetFat * 9)) / 4);
+  
+  // Update or create diet goals
+  try {
+    const existingGoals = await storage.getDietGoal(userId);
+    
+    const dietGoalData = {
+      userId,
+      tdee: tdee.toString(),
+      goal: dietGoal,
+      targetCalories: targetCalories.toString(),
+      targetProtein: targetProtein.toString(),
+      targetCarbs: targetCarbs.toString(),
+      targetFat: targetFat.toString(),
+      autoRegulation: true,
+      weeklyWeightTarget: weeklyWeightTarget.toString()
+    };
+    
+    if (existingGoals) {
+      await storage.updateDietGoal(userId, dietGoalData);
+    } else {
+      await storage.createDietGoal(dietGoalData);
+    }
+    
+    console.log(`Auto-synced diet goals for fitness goal "${fitnessGoal}": ${dietGoal} - ${targetCalories} cal, ${targetProtein}g protein`);
+  } catch (error) {
+    console.error('Failed to sync diet goals:', error);
+    throw error;
+  }
+}
+
 // RP Diet Coach categorization functions
 function categorizeFoodByRP(calories: number, protein: number, carbs: number, fat: number): string {
   if (calories === 0) return "mixed";
@@ -229,10 +336,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(req.params.userId);
       const profileData = insertUserProfileSchema.parse(req.body);
       
+      // Get current profile to check if fitness goal changed
+      const currentProfile = await storage.getUserProfile(userId);
+      const fitnessGoalChanged = currentProfile?.fitnessGoal !== profileData.fitnessGoal;
+      
       const profile = await storage.updateUserProfile(userId, profileData);
       
       if (!profile) {
         return res.status(404).json({ message: "Profile not found" });
+      }
+
+      // Auto-sync diet goals when fitness goal changes
+      if (fitnessGoalChanged && profileData.fitnessGoal) {
+        try {
+          await syncDietGoalsWithFitnessGoal(userId, profileData.fitnessGoal, profileData);
+        } catch (error) {
+          console.warn('Failed to sync diet goals with fitness goal:', error);
+          // Don't fail the profile update if diet goal sync fails
+        }
       }
 
       res.json(profile);

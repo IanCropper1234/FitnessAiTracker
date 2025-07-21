@@ -1,10 +1,10 @@
 import { UserProfile } from "@/components/user-profile";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code } from "lucide-react";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
@@ -21,6 +21,118 @@ interface User {
 interface ProfilePageProps {
   user: User;
   onSignOut?: () => void;
+}
+
+interface DietGoals {
+  goal: string;
+  targetCalories: string;
+  targetProtein: string;
+  targetCarbs: string;
+  targetFat: string;
+  weeklyWeightTarget: string;
+}
+
+function DietGoalsCard({ userId }: { userId: number }) {
+  const { data: dietGoals, isLoading } = useQuery<DietGoals>({
+    queryKey: ['/api/diet-goals', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/diet-goals/${userId}`);
+      return response.json();
+    }
+  });
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile/${userId}`);
+      return response.json();
+    }
+  });
+
+  if (isLoading) return null;
+
+  const getGoalDescription = (goal: string) => {
+    switch (goal) {
+      case "bulk": return "Muscle Gain (Calorie Surplus)";
+      case "cut": return "Weight Loss (Calorie Deficit)";
+      case "maintain": return "Weight Maintenance";
+      default: return "Maintenance";
+    }
+  };
+
+  const getGoalColor = (goal: string) => {
+    switch (goal) {
+      case "bulk": return "text-green-600 dark:text-green-400";
+      case "cut": return "text-red-600 dark:text-red-400";
+      case "maintain": return "text-blue-600 dark:text-blue-400";
+      default: return "text-gray-600 dark:text-gray-400";
+    }
+  };
+
+  const fitnessGoal = userProfile?.profile?.fitnessGoal || "Not Set";
+  const weeklyTarget = parseFloat(dietGoals?.weeklyWeightTarget || "0");
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="w-5 h-5" />
+          Diet Goals
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="text-blue-800 dark:text-blue-200">
+              Your diet goals are automatically set based on your fitness goal: <strong>{fitnessGoal}</strong>
+            </p>
+            <p className="text-blue-700 dark:text-blue-300 mt-1">
+              When you change your fitness goal in the profile below, your diet goals will update automatically.
+            </p>
+          </div>
+        </div>
+
+        {dietGoals && (
+          <div className="grid gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Goal</label>
+                <p className={`text-lg font-semibold ${getGoalColor(dietGoals.goal)}`}>
+                  {getGoalDescription(dietGoals.goal)}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Weekly Weight Target</label>
+                <p className="text-lg font-semibold text-black dark:text-white">
+                  {weeklyTarget > 0 ? `+${weeklyTarget}kg` : weeklyTarget < 0 ? `${weeklyTarget}kg` : '0kg'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-4 gap-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Calories</p>
+                <p className="text-lg font-bold text-black dark:text-white">{dietGoals.targetCalories}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Protein</p>
+                <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{dietGoals.targetProtein}g</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Carbs</p>
+                <p className="text-lg font-bold text-orange-600 dark:text-orange-400">{dietGoals.targetCarbs}g</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Fat</p>
+                <p className="text-lg font-bold text-green-600 dark:text-green-400">{dietGoals.targetFat}g</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
@@ -194,6 +306,9 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Diet Goals Card */}
+        <DietGoalsCard userId={user.id} />
 
         {/* Profile Component */}
         <UserProfile userId={user.id} />
