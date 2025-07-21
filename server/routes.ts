@@ -737,11 +737,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`API: Saving progress for session ${sessionId}:`, JSON.stringify(progressData, null, 2));
 
-      // Update session with progress data (but don't mark as completed)
-      const updatedSession = await storage.updateWorkoutSession(sessionId, {
+      // Update session with progress data - mark as completed if requested
+      const sessionUpdates: any = {
         duration: progressData.duration,
         totalVolume: progressData.totalVolume
-      });
+      };
+      
+      if (progressData.isCompleted) {
+        sessionUpdates.isCompleted = true;
+      }
+      
+      const updatedSession = await storage.updateWorkoutSession(sessionId, sessionUpdates);
 
       console.log(`API: Session ${sessionId} updated with progress:`, updatedSession);
 
