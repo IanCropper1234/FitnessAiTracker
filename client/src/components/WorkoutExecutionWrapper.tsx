@@ -64,7 +64,7 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
   if (error) {
     console.error('WorkoutExecutionWrapper error:', error);
     console.log('Falling back to legacy component due to error');
-    return <WorkoutExecution sessionId={sessionId} onComplete={onComplete} />;
+    return <WorkoutExecution sessionId={parseInt(sessionId, 10)} onComplete={onComplete} />;
   }
 
   // Loading state
