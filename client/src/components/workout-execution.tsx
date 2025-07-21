@@ -617,79 +617,73 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                   const exerciseRec = getExerciseRecommendation(currentExercise.exerciseId);
                   
                   return (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>Weight (kg)</Label>
-                          {exerciseRec && (
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                              Recommend: {exerciseRec.recommendedWeight}kg (Week {exerciseRec.week})
-                            </span>
-                          )}
+                    <div className="space-y-4">
+                      {/* Mobile-optimized recommendations */}
+                      {exerciseRec && (
+                        <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1 bg-blue-50 dark:bg-blue-950 p-2 rounded">
+                          <div>Recommend: {exerciseRec.recommendedWeight}kg | {exerciseRec.recommendedReps} reps | RPE {exerciseRec.recommendedRpe} (Week {exerciseRec.week})</div>
                         </div>
-                        <Input
-                          type="number"
-                          step="0.5"
-                          value={currentSet.weight || ''}
-                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(e.target.value) || 0)}
-                          placeholder="0"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>Actual Reps</Label>
-                          {exerciseRec && (
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                              Recommend: {exerciseRec.recommendedReps} (Week {exerciseRec.week})
-                            </span>
-                          )}
-                        </div>
-                        <Input
-                          type="number"
-                          value={currentSet.actualReps || ''}
-                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(e.target.value) || 0)}
-                          placeholder="0"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>RPE (1-10)</Label>
-                          {exerciseRec && (
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                              Recommend: {exerciseRec.recommendedRpe} (Week {exerciseRec.week})
-                            </span>
-                          )}
-                        </div>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={currentSet.rpe || ''}
-                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(e.target.value) || 7)}
-                          placeholder="7"
-                        />
-                      </div>
-                      
-                      <div className="flex items-end">
-                        <Button 
-                      onClick={completeSet}
-                      disabled={currentSet.completed}
-                      className="w-full"
-                    >
-                      {currentSet.completed ? (
-                        <>
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
-                          Completed
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
-                          Complete Set
-                        </>
                       )}
-                    </Button>
+                      
+                      {/* Compact 4-column layout for mobile */}
+                      <div className="grid grid-cols-4 gap-2">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Weight (kg)</Label>
+                          <Input
+                            type="number"
+                            step="0.5"
+                            value={currentSet.weight || ''}
+                            onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(e.target.value) || 0)}
+                            placeholder="0"
+                            className="h-12 text-lg font-semibold text-center"
+                          />
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <Label className="text-xs">Actual Reps</Label>
+                          <Input
+                            type="number"
+                            value={currentSet.actualReps || ''}
+                            onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(e.target.value) || 0)}
+                            placeholder="0"
+                            className="h-12 text-lg font-semibold text-center"
+                          />
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <Label className="text-xs">RPE (1-10)</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="10"
+                            value={currentSet.rpe || ''}
+                            onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(e.target.value) || 7)}
+                            placeholder="7"
+                            className="h-12 text-lg font-semibold text-center"
+                          />
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <Label className="text-xs opacity-0">Action</Label>
+                          <Button 
+                            onClick={completeSet}
+                            disabled={currentSet.completed}
+                            className="w-full h-12 text-xs"
+                            size="sm"
+                          >
+                            {currentSet.completed ? (
+                              <>
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Done
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Complete
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   );
