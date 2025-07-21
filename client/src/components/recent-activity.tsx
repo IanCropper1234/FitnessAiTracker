@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Utensils, Dumbbell, TrendingUp, Clock, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Utensils, Dumbbell, TrendingUp, Clock, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { useLocation } from "wouter";
 
 interface ActivityItem {
   id: string;
@@ -18,11 +21,14 @@ interface RecentActivityProps {
 }
 
 export function RecentActivity({ userId }: RecentActivityProps) {
+  const [, setLocation] = useLocation();
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // Fetch recent activities from unified endpoint
   const { data: activities = [] } = useQuery({
     queryKey: ['/api/activities', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/activities/${userId}?limit=8`);
+      const response = await fetch(`/api/activities/${userId}?limit=5`);
       return response.json();
     }
   });
@@ -32,6 +38,21 @@ export function RecentActivity({ userId }: RecentActivityProps) {
     ...activity,
     timestamp: new Date(activity.timestamp)
   }));
+
+  // Show only 3 activities by default, 5 when expanded
+  const displayedActivities = isExpanded 
+    ? formattedActivities.slice(0, 5) 
+    : formattedActivities.slice(0, 3);
+
+  const handleActivityClick = (activity: ActivityItem) => {
+    if (activity.type === 'nutrition') {
+      // Navigate to nutrition page with daily food log tab
+      setLocation('/nutrition');
+    } else if (activity.type === 'workout' || activity.type === 'workout_completion') {
+      // Navigate to training page
+      setLocation('/training');
+    }
+  };
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -89,10 +110,12 @@ export function RecentActivity({ userId }: RecentActivityProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {formattedActivities.map((activity) => (
+          {displayedActivities.map((activity) => (
             <div 
               key={activity.id}
-              className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer hover:shadow-sm"
+              onClick={() => handleActivityClick(activity)}
+              title={`Click to go to ${activity.type === 'nutrition' ? 'nutrition' : 'training'} page`}
             >
               <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
                 {getActivityIcon(activity.type)}
@@ -113,6 +136,30 @@ export function RecentActivity({ userId }: RecentActivityProps) {
             </div>
           ))}
         </div>
+        
+        {/* Expand/Collapse Button */}
+        {formattedActivities.length > 3 && (
+          <div className="mt-4 flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="h-4 w-4 mr-1" />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                  Show More
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
