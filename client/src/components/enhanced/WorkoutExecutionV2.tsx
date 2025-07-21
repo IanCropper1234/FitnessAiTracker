@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle } from 'lucide-react';
+import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useFeature } from '@/hooks/useFeature';
 
@@ -540,10 +540,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                     setRecommendation={getSetRecommendation(currentExercise.exerciseId, currentSet.setNumber)}
                     onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
                     onCompleteSet={completeSet}
-                    onAddSet={() => addSet(currentExercise.id)}
-                    onRemoveSet={currentSets.length > 1 ? () => removeSet(currentExercise.id, currentSetIndex) : undefined}
                     isActive={true}
-                    canRemoveSet={currentSets.length > 1}
                     weightUnit={weightUnit}
                     onWeightUnitChange={setWeightUnit}
                   />
@@ -551,7 +548,32 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
                 {/* All Sets Overview */}
                 <div className="space-y-2">
-                  <h4 className="font-medium">All Sets</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">All Sets</h4>
+                    {/* Add/Remove Set Buttons */}
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addSet(currentExercise.id)}
+                        className="w-8 h-8 p-0 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
+                        title="Add Set"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                      {currentSets.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeSet(currentExercise.id, currentSetIndex)}
+                          className="w-8 h-8 p-0 text-red-400 border-red-500/30 bg-red-500/10 hover:bg-red-500/20"
+                          title="Remove Set"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                   <div className="grid gap-2">
                     {currentSets.map((set, index) => (
                       <div
