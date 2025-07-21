@@ -170,18 +170,14 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
 
   const bulkCopyMutation = useMutation({
     mutationFn: async ({ logIds, targetDate }: { logIds: number[], targetDate: string }) => {
-      console.log('Bulk copy mutation started with:', { logIds, targetDate });
-      
       const logsToCreate = nutritionLogs?.filter((log: any) => logIds.includes(log.id));
-      console.log('Logs to create:', logsToCreate);
       
       if (!logsToCreate || logsToCreate.length === 0) {
-        console.log('No logs found to copy');
         throw new Error('No logs found to copy');
       }
       
-      const promises = logsToCreate.map((log: any) => {
-        const newLogData = {
+      const promises = logsToCreate.map((log: any) => 
+        apiRequest("POST", "/api/nutrition/log", {
           userId: log.userId,
           date: targetDate,
           foodName: log.foodName,
@@ -194,24 +190,27 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           mealType: log.mealType,
           category: log.category,
           mealSuitability: log.mealSuitability
-        };
-        console.log('Creating new log:', newLogData);
-        return apiRequest("POST", "/api/nutrition/log", newLogData);
-      });
+        })
+      );
       
-      const results = await Promise.all(promises);
-      console.log('Bulk copy results:', results);
-      return results;
+      return await Promise.all(promises);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
       setBulkMode(false);
       setSelectedLogs([]);
+      
+      const formattedDate = new Date(variables.targetDate).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit', 
+        year: 'numeric'
+      });
+      
       toast({
         title: "Success",
-        description: `${selectedLogs.length} food logs copied successfully`
+        description: `${selectedLogs.length} food logs copied to ${formattedDate}`
       });
     },
     onError: (error: any) => {
@@ -273,16 +272,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   };
 
   const handleBulkCopy = (targetDate: string) => {
-    if (selectedLogs.length === 0 || !targetDate) {
-      console.log('Bulk copy aborted:', { selectedLogsLength: selectedLogs.length, targetDate });
-      return;
-    }
-    
-    console.log('Starting bulk copy:', { 
-      selectedLogs, 
-      targetDate, 
-      selectedLogsData: nutritionLogs?.filter((log: any) => selectedLogs.includes(log.id))
-    });
+    if (selectedLogs.length === 0 || !targetDate) return;
     
     bulkCopyMutation.mutate({ logIds: selectedLogs, targetDate });
   };
