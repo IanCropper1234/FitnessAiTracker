@@ -672,43 +672,44 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             </Card>
           )}
 
-          {/* Enhanced Navigation */}
-          <Card>
-            <CardContent className="flex items-center justify-between gap-4 pt-6">
-              <Button
-                variant="outline"
-                disabled={currentExerciseIndex === 0}
-                onClick={() => {
-                  setCurrentExerciseIndex(currentExerciseIndex - 1);
-                  setCurrentSetIndex(0);
-                }}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Previous
-              </Button>
-              
-              <div className="text-center">
-                <div className="text-sm text-foreground/70">
-                  Exercise {currentExerciseIndex + 1} of {session.exercises.length}
-                </div>
-                <div className="font-medium text-foreground">
-                  {currentExercise?.exercise.name}
-                </div>
-              </div>
-              
-              <Button
-                variant="outline"
-                disabled={currentExerciseIndex === session.exercises.length - 1}
-                onClick={() => {
-                  setCurrentExerciseIndex(currentExerciseIndex + 1);
-                  setCurrentSetIndex(0);
-                }}
-              >
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Simplified Navigation - Just Arrows and Exercise Names */}
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              variant="ghost"
+              disabled={currentExerciseIndex === 0}
+              onClick={() => {
+                setCurrentExerciseIndex(currentExerciseIndex - 1);
+                setCurrentSetIndex(0);
+              }}
+              className="flex items-center gap-2 text-sm"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-foreground/70">Previous</span>
+              {currentExerciseIndex > 0 && (
+                <span className="font-medium">
+                  {session.exercises[currentExerciseIndex - 1]?.exercise.name}
+                </span>
+              )}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              disabled={currentExerciseIndex === session.exercises.length - 1}
+              onClick={() => {
+                setCurrentExerciseIndex(currentExerciseIndex + 1);
+                setCurrentSetIndex(0);
+              }}
+              className="flex items-center gap-2 text-sm"
+            >
+              {currentExerciseIndex < session.exercises.length - 1 && (
+                <span className="font-medium">
+                  {session.exercises[currentExerciseIndex + 1]?.exercise.name}
+                </span>
+              )}
+              <span className="text-foreground/70">Next</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </TabsContent>
 
         {/* Exercise Management Tab */}
