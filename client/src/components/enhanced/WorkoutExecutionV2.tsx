@@ -105,7 +105,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   // Check if we should use legacy component
   if (!isV2Enabled || session?.version === "1.0") {
-    return <WorkoutExecution sessionId={sessionId} onComplete={onComplete} />;
+    return <WorkoutExecution sessionId={parseInt(sessionId, 10)} onComplete={onComplete} />;
   }
 
   // Fetch exercise recommendations
@@ -170,18 +170,28 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return () => clearInterval(interval);
   }, [isRestTimerActive, restTimeRemaining, toast]);
 
-  // Gesture navigation
+  // Gesture navigation with feedback
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
       if (gestureNavEnabled && currentExerciseIndex < (session?.exercises.length || 0) - 1) {
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCurrentSetIndex(0);
+        toast({
+          title: "Next Exercise",
+          description: `Swiped to ${session?.exercises[currentExerciseIndex + 1]?.exercise.name}`,
+          duration: 2000,
+        });
       }
     },
     onSwipedRight: () => {
       if (gestureNavEnabled && currentExerciseIndex > 0) {
         setCurrentExerciseIndex(currentExerciseIndex - 1);
         setCurrentSetIndex(0);
+        toast({
+          title: "Previous Exercise", 
+          description: `Swiped to ${session?.exercises[currentExerciseIndex - 1]?.exercise.name}`,
+          duration: 2000,
+        });
       }
     },
     preventScrollOnSwipe: true,
@@ -254,12 +264,26 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     
     // Start rest timer and advance
     if (currentSetIndex < currentSets.length - 1) {
-      setRestTimeRemaining(currentExercise.restPeriod);
-      setIsRestTimerActive(true);
+      // Next set in same exercise
+      if (restTimerFABEnabled) {
+        setRestTimeRemaining(currentExercise.restPeriod);
+        setIsRestTimerActive(true);
+        toast({
+          title: "Set Complete!",
+          description: `Rest ${Math.floor(currentExercise.restPeriod / 60)}:${(currentExercise.restPeriod % 60).toString().padStart(2, '0')} before next set`,
+          duration: 3000,
+        });
+      }
       setCurrentSetIndex(currentSetIndex + 1);
     } else if (currentExerciseIndex < session.exercises.length - 1) {
+      // Move to next exercise
       setCurrentExerciseIndex(currentExerciseIndex + 1);
       setCurrentSetIndex(0);
+      toast({
+        title: "Exercise Complete!",
+        description: `Moving to ${session.exercises[currentExerciseIndex + 1]?.exercise.name}`,
+        duration: 3000,
+      });
     }
   };
 
@@ -348,7 +372,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             {spinnerInputEnabled ? (
               <SetRowSpinner
                 set={currentSet}
-                recommendation={getExerciseRecommendation(currentExercise.exerciseId)}
+                recommendation={getExerciseRecommendation(currentExercise.exerciseId) || undefined}
                 onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
                 onCompleteSet={completeSet}
                 isActive={true}

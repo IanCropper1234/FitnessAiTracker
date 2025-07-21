@@ -38,6 +38,7 @@ import MesocycleDashboard from "./mesocycle-dashboard";
 import TrainingTemplates from "./training-templates";
 import LoadProgressionTracker from "./load-progression-tracker";
 import { FeatureFlagManager } from "./FeatureFlagManager";
+import { FeatureShowcase } from "./enhanced/FeatureShowcase";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -355,6 +356,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
   const [showFeatureManager, setShowFeatureManager] = useState(false);
+  const [showFeatureShowcase, setShowFeatureShowcase] = useState(false);
   const queryClient = useQueryClient();
 
   // Handle URL parameters for auto-starting workout sessions
@@ -648,15 +650,25 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       {/* Header with Feature Manager Button */}
       <div className="flex items-center justify-between mb-4">
         <div></div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowFeatureManager(true)}
-          className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
-        >
-          <Settings className="h-4 w-4 mr-2" />
-          V2 Features
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFeatureShowcase(true)}
+            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+          >
+            🚀 Demo V2
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFeatureManager(true)}
+            className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            V2 Features
+          </Button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -1002,6 +1014,12 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
       <FeatureFlagManager 
         isOpen={showFeatureManager}
         onClose={() => setShowFeatureManager(false)}
+      />
+
+      {/* Feature Showcase Modal */}
+      <FeatureShowcase
+        isVisible={showFeatureShowcase}
+        onClose={() => setShowFeatureShowcase(false)}
       />
     </div>
   );
