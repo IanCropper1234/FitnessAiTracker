@@ -78,6 +78,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Get comprehensive analytics for weight change data
+  const { data: comprehensiveAnalytics } = useQuery({
+    queryKey: ['/api/analytics/comprehensive', userId, 14], // 14 days to capture weight data from July 9-14
+    queryFn: async () => {
+      const response = await fetch(`/api/analytics/comprehensive/${userId}?days=14`);
+      return response.json();
+    }
+  });
+
   // Mutations for creating distributions and flexibility rules
   const createDistributionMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -393,13 +402,19 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {((parseFloat(weeklyGoals[0].currentWeight || "0") - parseFloat(weeklyGoals[0].previousWeight || "0")) || 0).toFixed(1)}kg
+                          {comprehensiveAnalytics?.overview?.weightChange 
+                            ? `${comprehensiveAnalytics.overview.weightChange > 0 ? '+' : ''}${comprehensiveAnalytics.overview.weightChange.toFixed(1)}kg`
+                            : '0.0kg'
+                          }
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Calorie Adjustment</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {weeklyGoals[0].adjustmentPercentage || 0}%
+                          {(weeklyGoals && weeklyGoals[0] && weeklyGoals[0].adjustmentPercentage) 
+                            ? `${weeklyGoals[0].adjustmentPercentage}%`
+                            : '0.0%'
+                          }
                         </span>
                       </div>
                     </div>
