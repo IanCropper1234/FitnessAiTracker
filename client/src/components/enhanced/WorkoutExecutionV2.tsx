@@ -213,7 +213,17 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       return response;
     },
     onSuccess: (data, variables) => {
+      // Invalidate all relevant caches when workout is completed
       queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
+      // Also invalidate user-specific session queries with all possible query key variants
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === "/api/training/sessions" && query.queryKey[1] === "1"
+      });
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === "/api/training/stats" && query.queryKey[1] === "1"
+      });
       
       if (variables.isCompleted) {
         // Workout completed - show feedback dialog
@@ -667,6 +677,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           userId={session.userId}
           onSubmitComplete={() => {
             setShowFeedback(false);
+            // Additional cache invalidation after feedback submission
+            queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
+            queryClient.invalidateQueries({ predicate: (query) => 
+              query.queryKey[0] === "/api/training/sessions" && query.queryKey[1] === "1"
+            });
+            queryClient.invalidateQueries({ predicate: (query) => 
+              query.queryKey[0] === "/api/training/stats" && query.queryKey[1] === "1"
+            });
             onComplete();
           }}
         />
