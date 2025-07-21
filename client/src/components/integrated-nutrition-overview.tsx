@@ -441,7 +441,10 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
               </CardDescription>
             </div>
             <Button 
-              onClick={() => setShowLogger(true)}
+              onClick={() => {
+                console.log('Add Food button clicked in IntegratedNutritionOverview, setting showLogger to true');
+                setShowLogger(true);
+              }}
               className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
             >
               <Plus className="w-4 h-4 mr-2" />

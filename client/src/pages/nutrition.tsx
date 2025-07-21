@@ -135,7 +135,10 @@ export function Nutrition({ user }: NutritionProps) {
             </p>
           </div>
           <Button 
-            onClick={() => setShowLogger(true)}
+            onClick={() => {
+              console.log('Log Food button clicked, setting showLogger to true');
+              setShowLogger(true);
+            }}
             className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -197,14 +200,17 @@ export function Nutrition({ user }: NutritionProps) {
 
         {/* Nutrition Logger Modal */}
         {showLogger && (
-          <NutritionLogger 
-            userId={user.id}
-            onComplete={() => {
-              setShowLogger(false);
-              queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-              queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
-            }}
-          />
+          <div style={{ position: 'relative', zIndex: 9999 }}>
+            <NutritionLogger 
+              userId={user.id}
+              onComplete={() => {
+                console.log('NutritionLogger onComplete called, setting showLogger to false');
+                setShowLogger(false);
+                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+              }}
+            />
+          </div>
         )}
       </div>
     </div>
