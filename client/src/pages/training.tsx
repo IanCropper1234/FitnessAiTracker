@@ -1,4 +1,7 @@
 import { TrainingDashboard } from "@/components/training-dashboard";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 interface User {
   id: number;
@@ -21,6 +24,19 @@ export function TrainingPage({ user }: TrainingPageProps) {
               Track your workouts and build strength with Renaissance Periodization methodology
             </p>
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                Custom
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Today</DropdownMenuItem>
+              <DropdownMenuItem>Yesterday</DropdownMenuItem>
+              <DropdownMenuItem>Custom Date</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <TrainingDashboard userId={user.id} />

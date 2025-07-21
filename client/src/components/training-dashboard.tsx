@@ -586,55 +586,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header with Date Selection */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Training Dashboard</h2>
-        
-        {/* Date Filter Controls */}
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <CalendarIcon className="h-4 w-4" />
-                {dateFilter === 'today' ? 'Today' : 
-                 dateFilter === 'yesterday' ? 'Yesterday' : 
-                 'Custom'}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setDateFilter('today')}>
-                Today
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDateFilter('yesterday')}>
-                Yesterday
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDateFilter('custom')}>
-                Custom Date
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {dateFilter === 'custom' && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  {format(selectedDate, "MMM dd, yyyy")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Input
-                  type="date"
-                  value={selectedDate.toISOString().split('T')[0]}
-                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                  className="w-auto"
-                />
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
-      </div>
+    <div className="space-y-6">{/* Removed p-6 and header section */}
 
       {/* Training Stats Cards */}
       <div className="grid grid-cols-3 gap-2 w-full">
