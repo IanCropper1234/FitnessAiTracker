@@ -112,14 +112,22 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Back to Training Button - Outside Container */}
+      <div className="flex items-center justify-start">
+        <Button variant="ghost" onClick={onBack} className="gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Training
+        </Button>
+      </div>
+
       {/* Header */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={onBack} className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Training
-            </Button>
+            <CardTitle className="flex items-center gap-2">
+              <Dumbbell className="h-5 w-5" />
+              {session.name}
+            </CardTitle>
             <div className="flex items-center gap-2">
               {session.isCompleted ? (
                 <Badge variant="default" className="bg-green-500">
@@ -131,11 +139,6 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
               )}
             </div>
           </div>
-          
-          <CardTitle className="flex items-center gap-2">
-            <Dumbbell className="h-5 w-5" />
-            {session.name}
-          </CardTitle>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <div className="text-center p-3 bg-muted rounded-lg">
