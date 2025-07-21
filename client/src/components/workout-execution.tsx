@@ -679,20 +679,18 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                           <Button 
                             onClick={completeSet}
                             disabled={currentSet.completed}
-                            size="sm"
-                            className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-10 w-full rounded-md border-2 font-medium transition-all text-xs px-1 bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700 pl-[4px] pr-[4px] pt-[0px] pb-[0px] ml-[12px] mr-[12px] mt-[0px] mb-[0px]"
+                            className={`h-10 w-full rounded-md border-2 font-medium transition-all p-1 ${
+                              currentSet.completed 
+                                ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
+                                : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
+                            }`}
                           >
-                            {currentSet.completed ? (
-                              <div className="flex items-center justify-center w-full">
-                                <CheckCircle2 className="h-3 w-3 mr-1 flex-shrink-0" />
-                                <span className="text-xs">Done</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-center w-full">
-                                <CheckCircle2 className="h-3 w-3 mr-1 flex-shrink-0" />
-                                <span className="text-xs">Complete</span>
-                              </div>
-                            )}
+                            <div className="flex flex-col items-center justify-center h-full">
+                              <CheckCircle2 className="h-3 w-3" />
+                              <span className="text-[10px] leading-none mt-0.5">
+                                {currentSet.completed ? 'Done' : 'Set'}
+                              </span>
+                            </div>
                           </Button>
                         </div>
                       </div>
