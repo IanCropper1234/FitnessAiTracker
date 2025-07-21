@@ -529,6 +529,18 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
     }
   };
 
+  // Helper function to format database strings to user-friendly text
+  const formatDisplayText = (text: string | undefined | null): string => {
+    if (!text) return "";
+    return text
+      .replace(/_/g, ' ') // Replace all underscores with spaces
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space between camelCase
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
+      .trim();
+  };
+
   // Add exercise to workout function
   const addToWorkout = (exercise: Exercise) => {
     if (!selectedExercises.find(ex => ex.id === exercise.id)) {
@@ -779,10 +791,10 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Badge className={getDifficultyColor(exercise.difficulty)}>
-                      {exercise.difficulty}
+                      {formatDisplayText(exercise.difficulty)}
                     </Badge>
                     <Badge className={getPatternColor(exercise.movementPattern)}>
-                      {exercise.movementPattern}
+                      {formatDisplayText(exercise.movementPattern)}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -790,20 +802,20 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                   <div className="space-y-3">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Primary Muscle</p>
-                      <p className="text-sm capitalize font-medium">{exercise.primaryMuscle.replace('_', ' ')}</p>
+                      <p className="text-sm font-medium">{formatDisplayText(exercise.primaryMuscle)}</p>
                     </div>
                     
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Equipment</p>
-                      <p className="text-sm capitalize">{exercise.equipment?.replace('_', ' ') || "Bodyweight"}</p>
+                      <p className="text-sm">{formatDisplayText(exercise.equipment) || "Bodyweight"}</p>
                     </div>
                     
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Muscle Groups</p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {exercise.muscleGroups.map((muscle) => (
-                          <Badge key={muscle} variant="secondary" className="text-xs capitalize">
-                            {muscle.replace('_', ' ')}
+                          <Badge key={muscle} variant="secondary" className="text-xs">
+                            {formatDisplayText(muscle)}
                           </Badge>
                         ))}
                       </div>
