@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus } from "lucide-react";
+import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import WorkoutFeedbackDialog from "./workout-feedback-dialog";
 
