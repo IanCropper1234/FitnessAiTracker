@@ -93,6 +93,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
+  const [customRestTime, setCustomRestTime] = useState<number | null>(null);
   const [sessionStartTime] = useState(Date.now());
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
@@ -271,11 +272,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     if (currentSetIndex < currentSets.length - 1) {
       // Next set in same exercise
       if (restTimerFABEnabled) {
-        setRestTimeRemaining(currentExercise.restPeriod);
+        const restTime = customRestTime || currentExercise.restPeriod;
+        setRestTimeRemaining(restTime);
         setIsRestTimerActive(true);
         toast({
           title: "Set Complete!",
-          description: `Rest ${Math.floor(currentExercise.restPeriod / 60)}:${(currentExercise.restPeriod % 60).toString().padStart(2, '0')} before next set`,
+          description: `Rest ${Math.floor(restTime / 60)}:${(restTime % 60).toString().padStart(2, '0')} before next set`,
           duration: 3000,
         });
       }
@@ -622,10 +624,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         <RestTimerFAB
           isActive={isRestTimerActive}
           timeRemaining={restTimeRemaining}
-          totalTime={currentExercise?.restPeriod || 120}
+          totalTime={customRestTime || currentExercise?.restPeriod || 120}
+          defaultRestPeriod={currentExercise?.restPeriod || 120}
           onSkip={() => {
             setIsRestTimerActive(false);
             setRestTimeRemaining(0);
+          }}
+          onCustomTimeSet={(seconds) => {
+            setCustomRestTime(seconds);
+            setRestTimeRemaining(seconds);
+            setIsRestTimerActive(true);
+            toast({
+              title: "Custom Rest Timer Started",
+              description: `Rest for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`,
+              duration: 2000,
+            });
           }}
           position="bottom-left"
           draggable={false}
