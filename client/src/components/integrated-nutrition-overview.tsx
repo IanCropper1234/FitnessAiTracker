@@ -526,20 +526,20 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       {/* Daily Food Log Section */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="font-semibold tracking-tight text-black dark:text-white flex items-center gap-2 text-[18px]">
-                <Utensils className="w-5 h-5" />
-                Daily Food Log
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="font-semibold tracking-tight text-black dark:text-white flex items-center gap-2 text-base sm:text-[18px]">
+                <Utensils className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="truncate">Daily Food Log</span>
               </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
+              <CardDescription className="text-gray-600 dark:text-gray-400 text-sm">
                 Food entries for {selectedDate === new Date().toISOString().split('T')[0] 
                   ? 'today'
                   : new Date(selectedDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
                 }
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {nutritionLogs && nutritionLogs.length > 0 && (
                 <Button
                   variant={bulkMode ? "default" : "outline"}
@@ -548,10 +548,11 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="gap-2"
+                  className="gap-1 text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  <Check className="w-4 h-4" />
-                  {bulkMode ? 'Exit Selection' : 'Select Items'}
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{bulkMode ? 'Exit Selection' : 'Select Items'}</span>
+                  <span className="sm:hidden">{bulkMode ? 'Exit' : 'Select'}</span>
                 </Button>
               )}
               <Button 
@@ -561,9 +562,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     onShowLogger(selectedDate);
                   }
                 }}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-xs sm:text-sm px-2 sm:px-3"
+                size="sm"
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Add Food
               </Button>
             </div>
@@ -621,7 +623,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
             </div>
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {mealTypes.map((mealType) => {
               const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType.key) || [];
               
