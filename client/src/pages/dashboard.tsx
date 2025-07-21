@@ -11,7 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -93,14 +93,14 @@ export function Dashboard({ user }: DashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white pt-safe">
-      <div className="container mx-auto p-4 space-y-6 pb-24">
-        {/* iOS-style Header with Date Selection */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+      <div className="container mx-auto p-4 space-y-6">
+        {/* Header with Date Selection */}
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t("welcome")}, {user.name}</h1>
-            <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-base mt-1">
-              <Calendar className="w-5 h-5" />
+            <h1 className="text-3xl font-bold">{t("welcome")}, {user.name}</h1>
+            <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-[12px] pl-[2px] pr-[2px]">
+              <Calendar className="w-4 h-4" />
               {currentDate.toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -110,22 +110,22 @@ export function Dashboard({ user }: DashboardProps) {
             </p>
           </div>
           
-          {/* iOS-style Date Navigation Controls */}
-          <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-2">
+          {/* Date Navigation Controls */}
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={() => {
                 const currentDate = new Date(selectedDate);
                 currentDate.setDate(currentDate.getDate() - 1);
                 setSelectedDate(currentDate.toISOString().split('T')[0]);
               }}
-              className="h-9 w-9 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             
-            <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 rounded-lg min-w-[140px] justify-center shadow-sm">
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
               <span className="text-sm font-medium">
                 {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
                  new Date(selectedDate).toLocaleDateString('en-GB', { 
@@ -136,11 +136,11 @@ export function Dashboard({ user }: DashboardProps) {
               </span>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                    <ChevronDown className="h-4 w-4" />
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <ChevronDown className="h-3 w-3" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 rounded-xl border-0 shadow-xl" align="center">
+                <PopoverContent className="w-auto p-0" align="center">
                   <CalendarComponent
                     mode="single"
                     selected={new Date(selectedDate)}
@@ -150,7 +150,6 @@ export function Dashboard({ user }: DashboardProps) {
                       }
                     }}
                     initialFocus
-                    className="rounded-xl"
                   />
                 </PopoverContent>
               </Popover>
@@ -158,47 +157,43 @@ export function Dashboard({ user }: DashboardProps) {
             
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={() => {
                 const currentDate = new Date(selectedDate);
                 currentDate.setDate(currentDate.getDate() + 1);
                 setSelectedDate(currentDate.toISOString().split('T')[0]);
               }}
-              className="h-9 w-9 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* iOS-style Overview Section with Toggle */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-lg">
-          <CardHeader className="pb-4">
+        {/* Overview Section with Toggle */}
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-black dark:text-white flex items-center gap-3 text-xl">
+                <CardTitle className="text-black dark:text-white flex items-center gap-2">
                   {showTrainingOverview ? (
                     <>
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Dumbbell className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                      </div>
+                      <Dumbbell className="h-5 w-5" />
                       Training Overview
                     </>
                   ) : (
                     <>
-                      <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                        <Utensils className="h-6 w-6 text-green-600 dark:text-green-400" />
-                      </div>
+                      <Utensils className="h-5 w-5" />
                       {t("nutrition")} Overview
                     </>
                   )}
                 </CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400 mt-2">
+                <CardDescription className="text-gray-600 dark:text-gray-400">
                   {showTrainingOverview ? "Training progress and analytics" : "Today's macro breakdown"}
                 </CardDescription>
               </div>
-              <div className="flex items-center space-x-3 bg-gray-100 dark:bg-gray-800 rounded-xl p-2">
-                <Label htmlFor="overview-toggle" className={`text-sm font-medium transition-colors ${!showTrainingOverview ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="overview-toggle" className="text-sm text-gray-600 dark:text-gray-400">
                   Nutrition
                 </Label>
                 <Switch
@@ -206,7 +201,7 @@ export function Dashboard({ user }: DashboardProps) {
                   checked={showTrainingOverview}
                   onCheckedChange={setShowTrainingOverview}
                 />
-                <Label htmlFor="overview-toggle" className={`text-sm font-medium transition-colors ${showTrainingOverview ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                <Label htmlFor="overview-toggle" className="text-sm text-gray-600 dark:text-gray-400">
                   Training
                 </Label>
               </div>
@@ -234,27 +229,25 @@ export function Dashboard({ user }: DashboardProps) {
           </CardContent>
         </Card>
 
-        {/* iOS-style Quick Stats - Single Row */}
-        <div className="grid grid-cols-4 gap-3 w-full">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-3">
-              <div className="p-1.5 bg-orange-100 dark:bg-orange-900 rounded-lg mb-2">
-                <Target className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-              </div>
+        {/* Quick Stats - Single Row */}
+        <div className="grid grid-cols-4 gap-2 w-full">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+              <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
               <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Calories
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div className="text-xl font-bold text-black dark:text-white text-center">
+            <CardContent className="px-2 pb-2">
+              <div className="text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.totalCalories || 0)}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-500 text-center">
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 /{Math.round(nutritionSummary?.goalCalories || 2000)}
               </p>
               <Progress 
                 value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
-                className="mt-2 h-2 bg-gray-200 dark:bg-gray-700"
+                className="mt-1 h-1"
               />
             </CardContent>
           </Card>
@@ -317,49 +310,37 @@ export function Dashboard({ user }: DashboardProps) {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* iOS-style Quick Actions */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 shadow-lg">
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                  <Activity className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
-                  <CardTitle className="text-black dark:text-white text-xl">Quick Actions</CardTitle>
-                  <CardDescription className="text-gray-600 dark:text-gray-400">
-                    Common tasks and shortcuts
-                  </CardDescription>
-                </div>
-              </div>
+          {/* Quick Actions */}
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardHeader>
+              <CardTitle className="text-black dark:text-white">Quick Actions</CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                Common tasks
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Button 
-                variant="ios"
-                size="ios"
-                className="w-full"
+                className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
                 onClick={() => setShowNutritionLogger(true)}
               >
-                <Plus className="w-5 h-5 mr-3" />
+                <Plus className="w-4 h-4 mr-2" />
                 {t("log_food")}
               </Button>
               <Button 
-                variant="iosSecondary"
-                size="ios"
-                className="w-full"
+                variant="outline"
+                className="w-full border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={handleStartWorkout}
               >
-                <Dumbbell className="w-5 h-5 mr-3" />
+                <Dumbbell className="w-4 h-4 mr-2" />
                 {workoutSessions && workoutSessions.filter((session: any) => !session.isCompleted).length > 0 
                   ? "Continue Workout"
                   : t("start_workout")}
               </Button>
               <Button 
-                variant="iosSecondary"
-                size="ios"
-                className="w-full"
+                variant="outline"
+                className="w-full border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => window.location.hash = '#/profile'}
               >
-                <User className="w-5 h-5 mr-3" />
                 View {t("profile")}
               </Button>
             </CardContent>
