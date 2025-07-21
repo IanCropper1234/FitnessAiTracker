@@ -966,7 +966,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4">
                   <WorkoutExecution 
                     sessionId={executingSessionId} 
                     onComplete={() => {

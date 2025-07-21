@@ -479,7 +479,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Session Header */}
       <Card>
         <CardHeader>
