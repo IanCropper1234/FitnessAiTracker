@@ -5,12 +5,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { Plus, Trash2, Calendar, Zap, Copy, Check } from "lucide-react";
+import { Plus, Trash2, Calendar, Zap, Copy, Check, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DailyFoodLogProps {
   userId: number;
@@ -377,17 +379,62 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4">
-            <label htmlFor="date" className="text-sm font-medium">
-              Select Date:
-            </label>
-            <input
-              type="date"
-              id="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
-            />
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const currentDate = new Date(selectedDate);
+                currentDate.setDate(currentDate.getDate() - 1);
+                setSelectedDate(currentDate.toISOString().split('T')[0]);
+              }}
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
+              <span className="text-sm font-medium">
+                {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
+                 new Date(selectedDate).toLocaleDateString('en-GB', { 
+                   day: '2-digit', 
+                   month: '2-digit', 
+                   year: 'numeric' 
+                 })}
+              </span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="center">
+                  <CalendarComponent
+                    mode="single"
+                    selected={new Date(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(date.toISOString().split('T')[0]);
+                      }
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const currentDate = new Date(selectedDate);
+                currentDate.setDate(currentDate.getDate() + 1);
+                setSelectedDate(currentDate.toISOString().split('T')[0]);
+              }}
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </CardContent>
       </Card>
