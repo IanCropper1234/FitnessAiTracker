@@ -680,40 +680,26 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-          <TabsTrigger value="exercises" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Exercise Library</span>
-            <span className="sm:hidden">Exercises</span>
+          <TabsTrigger value="exercises" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Exercise Library">
+            <BookOpen className="h-5 w-5" />
           </TabsTrigger>
-          <TabsTrigger value="workouts" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Workout Sessions</span>
-            <span className="sm:hidden">Workouts</span>
+          <TabsTrigger value="workouts" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Workout Sessions">
+            <Activity className="h-5 w-5" />
           </TabsTrigger>
-          <TabsTrigger value="templates" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Training Templates</span>
-            <span className="sm:hidden">Templates</span>
+          <TabsTrigger value="templates" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Training Templates">
+            <FileText className="h-5 w-5" />
           </TabsTrigger>
-          <TabsTrigger value="mesocycles" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Periodization</span>
-            <span className="sm:hidden">Periods</span>
+          <TabsTrigger value="mesocycles" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Periodization">
+            <Repeat className="h-5 w-5" />
           </TabsTrigger>
-          <TabsTrigger value="progression" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <ChartBar className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Load Progression</span>
-            <span className="sm:hidden">Progress</span>
+          <TabsTrigger value="progression" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Load Progression">
+            <ChartBar className="h-5 w-5" />
           </TabsTrigger>
-          <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <Volume2 className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Volume Landmarks</span>
-            <span className="sm:hidden">Volume</span>
+          <TabsTrigger value="volume" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Volume Landmarks">
+            <Volume2 className="h-5 w-5" />
           </TabsTrigger>
-          <TabsTrigger value="auto-regulation" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap flex items-center gap-1">
-            <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Auto-Regulation</span>
-            <span className="sm:hidden">Auto-Reg</span>
+          <TabsTrigger value="auto-regulation" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Auto-Regulation">
+            <Zap className="h-5 w-5" />
           </TabsTrigger>
         </TabsList>
 
