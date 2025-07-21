@@ -200,7 +200,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tracking-tight flex items-center gap-2 text-[18px] text-center font-semibold">
                   <PlayCircle className="h-5 w-5 text-blue-500" />
                   {activeMesocycle.name}
                 </CardTitle>
