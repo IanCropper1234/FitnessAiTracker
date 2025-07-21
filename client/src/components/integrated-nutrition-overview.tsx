@@ -202,7 +202,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       setBulkMode(false);
       setSelectedLogs([]);
       
-      const formattedDate = TimezoneUtils.formatDateForDisplay(new Date(variables.targetDate));
+      const formattedDate = TimezoneUtils.formatForDisplay(variables.targetDate);
       
       toast({
         title: "Success",
@@ -629,8 +629,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              const yesterday = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
-                              const dateStr = TimezoneUtils.formatDateForAPI(yesterday);
+                              const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
                               handleBulkCopy(dateStr);
                             }}
                           >
@@ -641,8 +640,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              const tomorrow = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
-                              const dateStr = TimezoneUtils.formatDateForAPI(tomorrow);
+                              const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
                               handleBulkCopy(dateStr);
                             }}
                           >
@@ -655,7 +653,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           selected={undefined}
                           onSelect={(date) => {
                             if (date) {
-                              const dateStr = TimezoneUtils.formatDateForAPI(date);
+                              const dateStr = TimezoneUtils.formatDateForStorage(date);
                               handleBulkCopy(dateStr);
                             }
                           }}
