@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus } from 'lucide-react';
+import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useFeature } from '@/hooks/useFeature';
 
@@ -399,6 +399,34 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     });
   };
 
+  const resetSet = (exerciseId: number, setIndex: number) => {
+    setWorkoutData(prev => {
+      const currentSets = prev[exerciseId] || [];
+      const updatedSets = [...currentSets];
+      
+      if (updatedSets[setIndex]) {
+        updatedSets[setIndex] = {
+          ...updatedSets[setIndex],
+          completed: false,
+          actualReps: 0,
+          weight: 0,
+          rpe: 8
+        };
+        
+        toast({
+          title: "Set Reset",
+          description: `Reset Set ${setIndex + 1} for ${currentExercise?.exercise.name}`,
+          duration: 2000,
+        });
+      }
+      
+      return {
+        ...prev,
+        [exerciseId]: updatedSets
+      };
+    });
+  };
+
   const saveAndExit = () => {
     const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
     const totalVolume = Math.round(Object.values(workoutData)
@@ -589,15 +617,31 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-medium">Set {set.setNumber}</span>
-                          {set.completed ? (
-                            <span className="text-emerald-400 text-sm">
-                              {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
-                            </span>
-                          ) : (
-                            <span className="text-foreground/60 text-sm">
-                              Target: {set.targetReps} reps
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {set.completed ? (
+                              <>
+                                <span className="text-emerald-400 text-sm">
+                                  {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    resetSet(currentExercise.id, index);
+                                  }}
+                                  className="w-6 h-6 p-0 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300"
+                                  title="Reset Set"
+                                >
+                                  <RotateCcw className="h-3 w-3" />
+                                </Button>
+                              </>
+                            ) : (
+                              <span className="text-foreground/60 text-sm">
+                                Target: {set.targetReps} reps
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
