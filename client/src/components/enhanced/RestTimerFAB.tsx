@@ -105,11 +105,11 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     >
       {isExpanded ? (
         // Expanded view
-        <div className="bg-background border rounded-lg shadow-lg p-4 min-w-[200px]">
+        <div className="bg-background border border-border rounded-lg shadow-lg p-4 min-w-[200px]">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-orange-500" />
-              <span className="font-medium text-sm">Rest Timer</span>
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="font-medium text-sm text-foreground">Rest Timer</span>
             </div>
             <Button
               size="sm"
@@ -128,7 +128,7 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
               strokeWidth={4}
               showText={false}
             >
-              <span className="text-sm font-bold">{formatTime(timeRemaining)}</span>
+              <span className="text-sm font-bold text-foreground">{formatTime(timeRemaining)}</span>
             </CircularProgress>
           </div>
           
@@ -157,7 +157,7 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         // Collapsed FAB
         <Button
           size="lg"
-          className="rounded-full h-14 w-14 shadow-lg hover:shadow-xl transition-all duration-200 bg-orange-500 hover:bg-orange-600 text-white"
+          className="rounded-full h-14 w-14 shadow-lg hover:shadow-xl transition-all duration-200 bg-primary hover:bg-primary/90 text-primary-foreground border border-border"
           onMouseDown={handleMouseDown}
           onClick={() => setIsExpanded(true)}
         >
@@ -167,7 +167,7 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
               size={32}
               strokeWidth={3}
               showText={false}
-              className="text-white"
+              className="text-primary-foreground"
             >
               <Clock className="h-4 w-4" />
             </CircularProgress>
