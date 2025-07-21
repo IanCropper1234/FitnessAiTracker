@@ -20,9 +20,6 @@ export function TrainingPage({ user }: TrainingPageProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Training</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Track your workouts and build strength with Renaissance Periodization methodology
-            </p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
