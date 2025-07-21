@@ -353,18 +353,18 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           <CardTitle className="flex items-center justify-between">
             <span>{session.name}</span>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                 V2 Enhanced
               </Badge>
               {gestureNavEnabled && (
-                <Badge variant="outline" className="bg-green-50 text-green-700">
+                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
                   👈👉 Swipe
                 </Badge>
               )}
             </div>
           </CardTitle>
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center justify-between text-sm text-foreground/70">
               <span>Exercise {currentExerciseIndex + 1} of {session.exercises.length}</span>
               <span>{completedSets} / {totalSets} sets completed</span>
             </div>
@@ -415,8 +415,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Exercise Instructions */}
-                <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">
-                  <p className="text-sm">{currentExercise.exercise.instructions}</p>
+                <div className="bg-muted/50 p-3 rounded-lg border border-border">
+                  <p className="text-sm text-foreground/80">{currentExercise.exercise.instructions}</p>
                 </div>
 
                 {/* Current Set Input */}
@@ -441,21 +441,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                         key={index}
                         className={`p-3 rounded border cursor-pointer transition-colors ${
                           index === currentSetIndex
-                            ? 'border-blue-500 bg-blue-50'
+                            ? 'border-primary bg-primary/5'
                             : set.completed
-                            ? 'border-green-500 bg-green-50'
-                            : 'border-gray-200 hover:bg-gray-50'
+                            ? 'border-emerald-500/50 bg-emerald-500/5'
+                            : 'border-border hover:bg-accent/50'
                         }`}
                         onClick={() => setCurrentSetIndex(index)}
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-medium">Set {set.setNumber}</span>
                           {set.completed ? (
-                            <span className="text-green-600 text-sm">
+                            <span className="text-emerald-400 text-sm">
                               {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
                             </span>
                           ) : (
-                            <span className="text-gray-500 text-sm">
+                            <span className="text-foreground/60 text-sm">
                               Target: {set.targetReps} reps
                             </span>
                           )}
@@ -484,10 +484,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               </Button>
               
               <div className="text-center">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-foreground/70">
                   Exercise {currentExerciseIndex + 1} of {session.exercises.length}
                 </div>
-                <div className="font-medium">
+                <div className="font-medium text-foreground">
                   {currentExercise?.exercise.name}
                 </div>
               </div>

@@ -241,7 +241,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
             {/* Exercise List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {filteredAvailableExercises.map(exercise => (
-                <Card key={exercise.id} className="hover:bg-gray-50 cursor-pointer">
+                <Card key={exercise.id} className="hover:bg-accent/50 cursor-pointer">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
@@ -251,10 +251,10 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                             {exercise.category}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-foreground/70">
                           {exercise.muscleGroups.join(', ')} • {exercise.equipment}
                         </div>
-                        <div className="text-xs text-gray-500 line-clamp-2">
+                        <div className="text-xs text-foreground/60 line-clamp-2">
                           {exercise.instructions}
                         </div>
                       </div>
@@ -271,7 +271,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
               ))}
               
               {filteredAvailableExercises.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-foreground/60">
                   No exercises found matching your criteria.
                 </div>
               )}
@@ -287,8 +287,8 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
             key={exercise.id}
             className={`transition-all duration-200 cursor-pointer ${
               index === currentExerciseIndex
-                ? 'ring-2 ring-blue-500 bg-blue-50'
-                : 'hover:bg-gray-50'
+                ? 'ring-2 ring-primary bg-primary/5'
+                : 'hover:bg-accent/50'
             } ${draggedIndex === index ? 'opacity-50' : ''}`}
             draggable
             onDragStart={(e) => handleDragStart(e, index)}
@@ -299,7 +299,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 {/* Drag Handle */}
-                <div className="cursor-grab active:cursor-grabbing text-gray-400">
+                <div className="cursor-grab active:cursor-grabbing text-muted-foreground">
                   <GripVertical className="h-5 w-5" />
                 </div>
 
@@ -314,7 +314,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                       {exercise.targetReps} reps
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-foreground/60">
                     {exercise.exercise.muscleGroups.join(', ')} • Rest: {Math.floor(exercise.restPeriod / 60)}min
                   </div>
                 </div>
@@ -325,7 +325,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Trash2 className="h-4 w-4" />
