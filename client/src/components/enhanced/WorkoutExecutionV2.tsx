@@ -19,6 +19,7 @@ import { DraggableExerciseList } from './DraggableExerciseList';
 
 // Import legacy component for fallback
 import WorkoutExecution from '../workout-execution';
+import WorkoutFeedbackDialog from "@/components/workout-feedback-dialog";
 
 interface WorkoutSet {
   setNumber: number;
@@ -97,6 +98,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [sessionStartTime] = useState(Date.now());
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -210,13 +212,24 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
       return response;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
-      toast({
-        title: "Progress Saved",
-        description: "Your workout progress has been saved.",
-      });
-      onComplete();
+      
+      if (variables.isCompleted) {
+        // Workout completed - show feedback dialog
+        toast({
+          title: "Workout Completed!",
+          description: "Great job! Time for auto-regulation feedback.",
+        });
+        setShowFeedback(true);
+      } else {
+        // Just saving progress
+        toast({
+          title: "Progress Saved",
+          description: "Your workout progress has been saved.",
+        });
+        onComplete();
+      }
     },
     onError: (error) => {
       toast({
@@ -642,6 +655,20 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           }}
           position="bottom-left"
           draggable={false}
+        />
+      )}
+
+      {/* WorkoutFeedbackDialog - Critical Missing Component */}
+      {showFeedback && session && (
+        <WorkoutFeedbackDialog
+          isOpen={showFeedback}
+          onClose={() => setShowFeedback(false)}
+          sessionId={parseInt(sessionId, 10)}
+          userId={session.userId}
+          onSubmitComplete={() => {
+            setShowFeedback(false);
+            onComplete();
+          }}
         />
       )}
     </div>
