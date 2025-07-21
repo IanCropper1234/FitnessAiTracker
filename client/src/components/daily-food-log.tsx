@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { Plus, Trash2, Calendar, Zap, Copy, Check, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Calendar, Zap, Copy, Check, ChevronLeft, ChevronRight, ChevronDown, Sunrise, Sun, Moon, Apple, Utensils } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -212,11 +212,11 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
 
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
-      case 'breakfast': return '🌅';
-      case 'lunch': return '☀️';
-      case 'dinner': return '🌙';
-      case 'snack': return '🍎';
-      default: return '🍽️';
+      case 'breakfast': return <Sunrise className="h-4 w-4" />;
+      case 'lunch': return <Sun className="h-4 w-4" />;
+      case 'dinner': return <Moon className="h-4 w-4" />;
+      case 'snack': return <Apple className="h-4 w-4" />;
+      default: return <Utensils className="h-4 w-4" />;
     }
   };
 
@@ -296,8 +296,8 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   };
 
   const getUniqueMealTypes = (logs: any[]) => {
-    const mealTypes = [...new Set(logs?.map(log => log.mealType).filter(Boolean))];
-    return mealTypes;
+    const mealTypesSet = new Set(logs?.map(log => log.mealType).filter(Boolean));
+    return Array.from(mealTypesSet);
   };
 
   if (isLoading) {
@@ -735,7 +735,9 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
             </div>
           ) : (
             <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-              <div className="text-6xl mb-4">🍽️</div>
+              <div className="mb-4">
+                <Utensils className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600" />
+              </div>
               <p className="text-lg font-medium mb-2">No food logged for this date</p>
               <p className="text-sm mb-4">Start tracking your nutrition to see your daily intake</p>
               <Button 

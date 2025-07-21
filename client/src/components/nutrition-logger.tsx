@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { X, Search, Loader2, Utensils, Brain } from "lucide-react";
+import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple } from "lucide-react";
 
 interface NutritionLoggerProps {
   userId: number;
@@ -258,10 +258,30 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                 <SelectValue placeholder="Select meal type (optional)" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600">
-                <SelectItem value="breakfast">🌅 Breakfast</SelectItem>
-                <SelectItem value="lunch">☀️ Lunch</SelectItem>
-                <SelectItem value="dinner">🌙 Dinner</SelectItem>
-                <SelectItem value="snack">🍎 Snack</SelectItem>
+                <SelectItem value="breakfast">
+                  <div className="flex items-center gap-2">
+                    <Sunrise className="h-4 w-4" />
+                    Breakfast
+                  </div>
+                </SelectItem>
+                <SelectItem value="lunch">
+                  <div className="flex items-center gap-2">
+                    <Sun className="h-4 w-4" />
+                    Lunch
+                  </div>
+                </SelectItem>
+                <SelectItem value="dinner">
+                  <div className="flex items-center gap-2">
+                    <Moon className="h-4 w-4" />
+                    Dinner
+                  </div>
+                </SelectItem>
+                <SelectItem value="snack">
+                  <div className="flex items-center gap-2">
+                    <Apple className="h-4 w-4" />
+                    Snack
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

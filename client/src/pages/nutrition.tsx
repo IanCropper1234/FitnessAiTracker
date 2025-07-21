@@ -31,7 +31,12 @@ import {
   Brain,
   User,
   TrendingUp,
-  ShoppingCart
+  ShoppingCart,
+  Sunrise,
+  Sun,
+  Moon,
+  Apple,
+  Utensils
 } from "lucide-react";
 
 interface User {
@@ -91,11 +96,11 @@ export function Nutrition({ user }: NutritionProps) {
 
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
-      case 'breakfast': return '🌅';
-      case 'lunch': return '☀️';
-      case 'dinner': return '🌙';
-      case 'snack': return '🍎';
-      default: return '🍽️';
+      case 'breakfast': return <Sunrise className="h-4 w-4" />;
+      case 'lunch': return <Sun className="h-4 w-4" />;
+      case 'dinner': return <Moon className="h-4 w-4" />;
+      case 'snack': return <Apple className="h-4 w-4" />;
+      default: return <Utensils className="h-4 w-4" />;
     }
   };
 
