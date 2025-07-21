@@ -401,23 +401,23 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       
 
       {/* Macro Summary Cards */}
-      <div className="grid grid-cols-4 gap-2 w-full">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
             <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Calories
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
+          <CardContent className="px-1.5 pb-2">
+            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
               {nutritionSummary?.totalCalories || 0}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
               of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-blue-600 dark:text-blue-400 text-center">
-                Remaining: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
+              <p className="text-xs font-medium text-blue-600 dark:text-blue-400 text-center leading-tight">
+                Left: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
               </p>
             )}
             <Progress 
@@ -433,21 +433,21 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
             <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Protein (g)
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
+          <CardContent className="px-1.5 pb-2">
+            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
               {(nutritionSummary?.totalProtein || 0).toFixed(1)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
               of {Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150).toFixed(1)}g
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-green-600 dark:text-green-400 text-center">
-                Remaining: {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 text-center leading-tight">
+                Left: {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
               </p>
             )}
             <Progress 
@@ -463,21 +463,21 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
             <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Carbs (g)
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
+          <CardContent className="px-1.5 pb-2">
+            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
               {(nutritionSummary?.totalCarbs || 0).toFixed(1)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
               of {Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200).toFixed(1)}g
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-orange-600 dark:text-orange-400 text-center">
-                Remaining: {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
+              <p className="text-xs font-medium text-orange-600 dark:text-orange-400 text-center leading-tight">
+                Left: {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
               </p>
             )}
             <Progress 
@@ -493,21 +493,21 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
             <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
               Fat (g)
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
+          <CardContent className="px-1.5 pb-2">
+            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
               {(nutritionSummary?.totalFat || 0).toFixed(1)}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
               of {Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60).toFixed(1)}g
             </p>
             {dietGoals && (
-              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 text-center">
-                Remaining: {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 text-center leading-tight">
+                Left: {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
               </p>
             )}
             <Progress 
