@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity } from "lucide-react";
+import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User } from "lucide-react";
 import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
@@ -231,17 +231,77 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   });
 
-  // Enable auto-regulation when user has complete profile data
+  // Auto-sync with profile fitness goal changes and enable auto-regulation
   useEffect(() => {
-    if (userProfile && !currentDietGoal) {
+    if (userProfile && currentDietGoal) {
       const hasCompleteData = userProfile.age && userProfile.height && userProfile.activityLevel && 
                                (bodyMetrics?.length > 0 || userProfile.weight);
       
+      // Check if fitness goal mapping needs update
+      const fitnessGoal = userProfile.fitnessGoal;
+      if (fitnessGoal) {
+        let expectedDietGoal = 'maintain';
+        
+        switch (fitnessGoal) {
+          case 'Weight Loss':
+          case 'weight_loss':
+            expectedDietGoal = 'cut';
+            break;
+          case 'Muscle Gain':
+          case 'muscle_gain':
+            expectedDietGoal = 'bulk';
+            break;
+          case 'Maintain Weight':
+          case 'maintain_weight':
+          default:
+            expectedDietGoal = 'maintain';
+            break;
+        }
+        
+        // If current diet goal doesn't match expected from fitness goal, show sync option
+        if (currentDietGoal.goal !== expectedDietGoal && !dietGoal.autoRegulation) {
+          toast({
+            title: "Profile Updated",
+            description: `Your fitness goal (${fitnessGoal.replace('_', ' ')}) suggests ${expectedDietGoal} diet. Click to sync diet goals.`,
+            action: (
+              <Button 
+                size="sm" 
+                onClick={() => {
+                  // Trigger sync by calling profile update API which will auto-sync diet goals
+                  fetch(`/api/user/profile/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      userId,
+                      age: userProfile.age,
+                      weight: bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile.weight,
+                      height: userProfile.height,
+                      activityLevel: userProfile.activityLevel,
+                      fitnessGoal: fitnessGoal,
+                      dietaryRestrictions: []
+                    })
+                  }).then(() => {
+                    queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+                    toast({
+                      title: "Success",
+                      description: "Diet goals synced with fitness goal!"
+                    });
+                  });
+                }}
+              >
+                Sync Now
+              </Button>
+            )
+          });
+        }
+      }
+      
+      // Enable auto-regulation for complete profiles
       if (hasCompleteData && !dietGoal.autoRegulation) {
         setDietGoal(prev => ({ ...prev, autoRegulation: true }));
       }
     }
-  }, [userProfile, bodyMetrics, currentDietGoal, dietGoal.autoRegulation]);
+  }, [userProfile, bodyMetrics, currentDietGoal, dietGoal.autoRegulation, userId, queryClient, toast]);
 
   // Fetch saved meal plans
   const { data: savedMealPlans } = useQuery<SavedMealPlan[]>({
@@ -805,6 +865,32 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Profile Integration Section */}
+              {userProfile?.fitnessGoal && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Profile Integration
+                    </h4>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setLocation('/profile')}
+                      className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600"
+                    >
+                      Edit Profile
+                    </Button>
+                  </div>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <strong>Current Fitness Goal:</strong> {userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    Diet goals are automatically synchronized with your profile's fitness goal setting.
+                  </p>
+                </div>
+              )}
+
               {/* Data Validation Messages */}
               {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
@@ -874,7 +960,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </div>
 
                   <div>
-                    <Label className="text-black dark:text-white">Goal</Label>
+                    <Label className="text-black dark:text-white">Diet Goal</Label>
                     <Select value={dietGoal.goal} onValueChange={(value) => setDietGoal(prev => ({ ...prev, goal: value as any }))}>
                       <SelectTrigger className="border-gray-300 dark:border-gray-600">
                         <SelectValue />
@@ -885,6 +971,37 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         <SelectItem value="maintain">Maintain</SelectItem>
                       </SelectContent>
                     </Select>
+                    {userProfile?.fitnessGoal && (
+                      <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs">
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <Target className="w-3 h-3" />
+                          <span>
+                            Profile Goal: <strong>{userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong>
+                            {(() => {
+                              let expectedGoal = 'maintain';
+                              switch (userProfile.fitnessGoal) {
+                                case 'Weight Loss':
+                                case 'weight_loss':
+                                  expectedGoal = 'cut';
+                                  break;
+                                case 'Muscle Gain':
+                                case 'muscle_gain':
+                                  expectedGoal = 'bulk';
+                                  break;
+                                default:
+                                  expectedGoal = 'maintain';
+                              }
+                              const isMatched = dietGoal.goal === expectedGoal;
+                              return (
+                                <span className={isMatched ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}>
+                                  {isMatched ? ' ✓ Synced' : ` → Suggests ${expectedGoal}`}
+                                </span>
+                              );
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {dietGoal.goal !== 'maintain' && (
