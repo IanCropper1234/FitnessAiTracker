@@ -172,11 +172,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   };
 
   const calculateAdjustmentRecommendation = () => {
-    if (!weeklyGoals || weeklyGoals.length === 0) return null;
+    if (!weeklyGoals || weeklyGoals.length === 0 || !comprehensiveAnalytics) return null;
 
     const latestWeek = weeklyGoals[0];
-    const weightChange = parseFloat(latestWeek.currentWeight || "0") - parseFloat(latestWeek.previousWeight || "0");
     const adherence = parseFloat(latestWeek.adherencePercentage || "0");
+    // Use weight change from comprehensive analytics (actual weight data)
+    const weightChange = comprehensiveAnalytics.overview.weightChange || 0;
+    // Convert to weekly rate (analytics is 14-day period, so divide by 2)
+    const weeklyWeightChange = weightChange / 2;
 
     let recommendation = {
       type: "maintain",
@@ -186,14 +189,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     };
 
     if (dietGoals?.goal === "cut") {
-      if (weightChange > -0.2) { // Less than 0.2kg loss per week
+      if (weeklyWeightChange > -0.2) { // Less than 0.2kg loss per week
         recommendation = {
           type: "decrease",
           message: "Reduce calories for better fat loss",
           calorieChange: -100,
           reason: "Weight loss too slow"
         };
-      } else if (weightChange < -0.8) { // More than 0.8kg loss per week
+      } else if (weeklyWeightChange < -0.8) { // More than 0.8kg loss per week
         recommendation = {
           type: "increase",
           message: "Increase calories to prevent muscle loss",
@@ -202,20 +205,47 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         };
       }
     } else if (dietGoals?.goal === "bulk") {
-      if (weightChange < 0.2) { // Less than 0.2kg gain per week
+      if (weeklyWeightChange < 0.2) { // Less than 0.2kg gain per week
         recommendation = {
           type: "increase",
           message: "Increase calories for muscle growth",
           calorieChange: 100,
           reason: "Weight gain too slow"
         };
-      } else if (weightChange > 0.5) { // More than 0.5kg gain per week
+      } else if (weeklyWeightChange > 0.5) { // More than 0.5kg gain per week
         recommendation = {
           type: "decrease",
           message: "Reduce calories to minimize fat gain",
           calorieChange: -75,
           reason: "Weight gain too fast"
         };
+      }
+    } else if (dietGoals?.goal === "maintain") {
+      // For maintenance, slight adjustments based on weight trends
+      if (weeklyWeightChange > 0.3) { // Gaining weight on maintenance
+        recommendation = {
+          type: "decrease",
+          message: "Slight calorie reduction to maintain weight",
+          calorieChange: -50,
+          reason: "Weight trending upward"
+        };
+      } else if (weeklyWeightChange < -0.3) { // Losing weight on maintenance
+        recommendation = {
+          type: "increase",
+          message: "Slight calorie increase to maintain weight",
+          calorieChange: 50,
+          reason: "Weight trending downward"
+        };
+      } else {
+        // Good weight maintenance but check for muscle gain opportunity
+        if (adherence >= 90 && weeklyWeightChange >= 0.2 && weeklyWeightChange <= 0.4) {
+          recommendation = {
+            type: "increase",
+            message: "Consider lean muscle gain phase",
+            calorieChange: 150,
+            reason: "Good adherence + controlled weight gain = muscle building opportunity"
+          };
+        }
       }
     }
 
