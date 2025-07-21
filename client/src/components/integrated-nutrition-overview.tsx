@@ -25,7 +25,8 @@ import {
   Copy,
   ArrowRight,
   ArrowLeft,
-  GripVertical
+  GripVertical,
+  Check
 } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -34,6 +35,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
@@ -53,6 +55,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
     sourceSection?: string;
   } | null>(null);
   const [copyDate, setCopyDate] = useState('');
+  
+  // Bulk selection state
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
 
   // Fetch nutrition summary for the selected date
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
@@ -137,6 +143,74 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
     }
   });
 
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (logIds: number[]) => {
+      const promises = logIds.map(id => apiRequest("DELETE", `/api/nutrition/log/${id}`));
+      return await Promise.all(promises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      setBulkMode(false);
+      setSelectedLogs([]);
+      toast({
+        title: "Success",
+        description: `${selectedLogs.length} food logs deleted successfully`
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete food logs",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const bulkCopyMutation = useMutation({
+    mutationFn: async ({ logIds, targetDate }: { logIds: number[], targetDate: string }) => {
+      const logsToCreate = nutritionLogs?.filter((log: any) => logIds.includes(log.id));
+      if (!logsToCreate) return;
+      
+      const promises = logsToCreate.map((log: any) => 
+        apiRequest("POST", "/api/nutrition/log", {
+          userId: log.userId,
+          date: targetDate,
+          foodName: log.foodName,
+          quantity: log.quantity,
+          unit: log.unit,
+          calories: log.calories,
+          protein: log.protein,
+          carbs: log.carbs,
+          fat: log.fat,
+          mealType: log.mealType,
+          category: log.category,
+          mealSuitability: log.mealSuitability
+        })
+      );
+      return await Promise.all(promises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      setBulkMode(false);
+      setSelectedLogs([]);
+      toast({
+        title: "Success",
+        description: `${selectedLogs.length} food logs copied successfully`
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to copy food logs",
+        variant: "destructive"
+      });
+    }
+  });
+
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
       case 'breakfast': return <Sunrise className="h-4 w-4" />;
@@ -159,6 +233,37 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       case 'mixed_source': return { label: 'Mixed', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' };
       default: return { label: 'Food', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200' };
     }
+  };
+
+  // Bulk selection functions
+  const toggleSelectAll = () => {
+    if (selectedLogs.length === nutritionLogs?.length) {
+      setSelectedLogs([]);
+    } else {
+      setSelectedLogs(nutritionLogs?.map((log: any) => log.id) || []);
+    }
+  };
+
+  const toggleLogSelection = (logId: number) => {
+    setSelectedLogs(prev => 
+      prev.includes(logId) 
+        ? prev.filter(id => id !== logId)
+        : [...prev, logId]
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedLogs.length === 0) return;
+    
+    if (confirm(`Are you sure you want to delete ${selectedLogs.length} selected food logs?`)) {
+      bulkDeleteMutation.mutate(selectedLogs);
+    }
+  };
+
+  const handleBulkCopy = (targetDate: string) => {
+    if (selectedLogs.length === 0 || !targetDate) return;
+    
+    bulkCopyMutation.mutate({ logIds: selectedLogs, targetDate });
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
@@ -434,21 +539,88 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 }
               </CardDescription>
             </div>
-            <Button 
-              onClick={() => {
-                console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger with date:', selectedDate);
-                if (onShowLogger) {
-                  onShowLogger(selectedDate);
-                }
-              }}
-              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Food
-            </Button>
+            <div className="flex items-center gap-2">
+              {nutritionLogs && nutritionLogs.length > 0 && (
+                <Button
+                  variant={bulkMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setBulkMode(!bulkMode);
+                    setSelectedLogs([]);
+                  }}
+                  className="gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  {bulkMode ? 'Exit Selection' : 'Select Items'}
+                </Button>
+              )}
+              <Button 
+                onClick={() => {
+                  console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger with date:', selectedDate);
+                  if (onShowLogger) {
+                    onShowLogger(selectedDate);
+                  }
+                }}
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Food
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
+          {/* Bulk Operations Controls */}
+          {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
+            <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="select-all"
+                    checked={selectedLogs.length === nutritionLogs.length}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                  <label htmlFor="select-all" className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    Select All ({selectedLogs.length} of {nutritionLogs.length} selected)
+                  </label>
+                </div>
+                {selectedLogs.length > 0 && (
+                  <Button
+                    onClick={handleBulkDelete}
+                    variant="destructive"
+                    size="sm"
+                    disabled={bulkDeleteMutation.isPending}
+                    className="w-fit"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Selected ({selectedLogs.length})
+                  </Button>
+                )}
+              </div>
+              
+              {selectedLogs.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-blue-200 dark:border-blue-600">
+                  <Label htmlFor="bulk-copy-date" className="text-sm font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">
+                    Copy to date:
+                  </Label>
+                  <div className="flex items-center gap-2 flex-1">
+                    <Input
+                      id="bulk-copy-date"
+                      type="date"
+                      className="flex-1"
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          handleBulkCopy(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {mealTypes.map((mealType) => {
               const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType.key) || [];
@@ -514,16 +686,39 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                       return (
                         <div 
                           key={log.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, log)}
-                          className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 cursor-move hover:shadow-sm transition-shadow"
+                          draggable={!bulkMode}
+                          onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
+                          className={`flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow ${
+                            bulkMode 
+                              ? selectedLogs.includes(log.id) 
+                                ? 'ring-2 ring-blue-500 border-blue-500' 
+                                : 'cursor-pointer' 
+                              : 'cursor-move'
+                          }`}
+                          onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
                           <div className="flex items-center gap-2 flex-1">
-                            <GripVertical className="h-4 w-4 text-gray-400" />
+                            {bulkMode ? (
+                              <Checkbox
+                                checked={selectedLogs.includes(log.id)}
+                                onCheckedChange={() => toggleLogSelection(log.id)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                            ) : (
+                              <GripVertical className="h-4 w-4 text-gray-400" />
+                            )}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="font-medium text-black dark:text-white text-sm truncate">
-                                  {log.foodName}
+                                  <span className="sm:hidden">
+                                    {log.foodName.length > 25 ? `${log.foodName.substring(0, 25)}...` : log.foodName}
+                                  </span>
+                                  <span className="hidden sm:block md:hidden">
+                                    {log.foodName.length > 35 ? `${log.foodName.substring(0, 35)}...` : log.foodName}
+                                  </span>
+                                  <span className="hidden md:block">
+                                    {log.foodName.length > 60 ? `${log.foodName.substring(0, 60)}...` : log.foodName}
+                                  </span>
                                 </span>
                                 <Badge className={`${rpCategory.color} text-xs`}>
                                   {rpCategory.label}
