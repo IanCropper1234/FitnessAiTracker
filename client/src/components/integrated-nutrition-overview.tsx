@@ -170,11 +170,18 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
 
   const bulkCopyMutation = useMutation({
     mutationFn: async ({ logIds, targetDate }: { logIds: number[], targetDate: string }) => {
-      const logsToCreate = nutritionLogs?.filter((log: any) => logIds.includes(log.id));
-      if (!logsToCreate) return;
+      console.log('Bulk copy mutation started with:', { logIds, targetDate });
       
-      const promises = logsToCreate.map((log: any) => 
-        apiRequest("POST", "/api/nutrition/log", {
+      const logsToCreate = nutritionLogs?.filter((log: any) => logIds.includes(log.id));
+      console.log('Logs to create:', logsToCreate);
+      
+      if (!logsToCreate || logsToCreate.length === 0) {
+        console.log('No logs found to copy');
+        throw new Error('No logs found to copy');
+      }
+      
+      const promises = logsToCreate.map((log: any) => {
+        const newLogData = {
           userId: log.userId,
           date: targetDate,
           foodName: log.foodName,
@@ -187,9 +194,14 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           mealType: log.mealType,
           category: log.category,
           mealSuitability: log.mealSuitability
-        })
-      );
-      return await Promise.all(promises);
+        };
+        console.log('Creating new log:', newLogData);
+        return apiRequest("POST", "/api/nutrition/log", newLogData);
+      });
+      
+      const results = await Promise.all(promises);
+      console.log('Bulk copy results:', results);
+      return results;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
@@ -261,7 +273,16 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   };
 
   const handleBulkCopy = (targetDate: string) => {
-    if (selectedLogs.length === 0 || !targetDate) return;
+    if (selectedLogs.length === 0 || !targetDate) {
+      console.log('Bulk copy aborted:', { selectedLogsLength: selectedLogs.length, targetDate });
+      return;
+    }
+    
+    console.log('Starting bulk copy:', { 
+      selectedLogs, 
+      targetDate, 
+      selectedLogsData: nutritionLogs?.filter((log: any) => selectedLogs.includes(log.id))
+    });
     
     bulkCopyMutation.mutate({ logIds: selectedLogs, targetDate });
   };
