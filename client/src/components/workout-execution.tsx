@@ -626,9 +626,9 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                       )}
                       
                       {/* Compact 4-column layout for mobile */}
-                      <div className="grid grid-cols-4 gap-2">
-                        <div className="flex flex-col">
-                          <Label className="text-xs font-medium mb-1 text-left">Weight (kg)</Label>
+                      <div className="grid grid-cols-4 gap-2 items-end">
+                        <div className="flex flex-col h-full">
+                          <Label className="text-xs font-medium mb-1 text-left h-5">Weight (kg)</Label>
                           <Input
                             type="text"
                             inputMode="decimal"
@@ -640,12 +640,12 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                               }
                             }}
                             placeholder="0"
-                            className="h-12 text-lg font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-10 text-sm font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         
-                        <div className="flex flex-col">
-                          <Label className="text-xs font-medium mb-1 text-left">Actual Reps</Label>
+                        <div className="flex flex-col h-full">
+                          <Label className="text-xs font-medium mb-1 text-left h-5">Actual Reps</Label>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -657,12 +657,12 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                               }
                             }}
                             placeholder="0"
-                            className="h-12 text-lg font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-10 text-sm font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         
-                        <div className="flex flex-col">
-                          <Label className="text-xs font-medium mb-1 text-left">RPE (1-10)</Label>
+                        <div className="flex flex-col h-full">
+                          <Label className="text-xs font-medium mb-1 text-left h-5">RPE (1-10)</Label>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -674,16 +674,16 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                               }
                             }}
                             placeholder="7"
-                            className="h-12 text-lg font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-10 text-sm font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         
-                        <div className="flex flex-col">
-                          <div className="text-xs font-medium mb-1 opacity-0">Action</div>
+                        <div className="flex flex-col h-full">
+                          <div className="text-xs font-medium mb-1 opacity-0 h-5">Action</div>
                           <Button 
                             onClick={completeSet}
                             disabled={currentSet.completed}
-                            className={`h-12 rounded-md border-2 font-semibold transition-all text-sm overflow-hidden ${
+                            className={`h-10 rounded-md border-2 font-semibold transition-all text-xs overflow-hidden ${
                               currentSet.completed 
                                 ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
                                 : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
