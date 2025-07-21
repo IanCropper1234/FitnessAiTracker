@@ -111,7 +111,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
     .reduce((sum, ex) => sum + ex.rpe, 0) / session.exercises.filter(ex => ex.isCompleted && ex.rpe > 0).length || 0;
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <Card>
         <CardHeader>
@@ -265,7 +265,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                   {actualRepsArray.map((reps, setIndex) => (
                     <div 
                       key={setIndex}
-                      className="flex items-center justify-between p-3 rounded border bg-green-50 border-green-200"
+                      className="flex items-center justify-between p-3 rounded border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50"
                     >
                       <span className="text-sm font-medium">Set {setIndex + 1}</span>
                       <div className="flex items-center gap-4 text-sm">
@@ -273,7 +273,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                         {exerciseRpe > 0 && (
                           <span className="text-muted-foreground">RPE {exerciseRpe}</span>
                         )}
-                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
                       </div>
                     </div>
                   ))}
