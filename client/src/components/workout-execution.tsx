@@ -603,80 +603,118 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           </CardHeader>
           
           <CardContent className="space-y-4">
-            {/* Current Set */}
-            {currentSet && (
-              <div className="bg-muted p-4 rounded-lg">
-                <h4 className="font-medium mb-3">
-                  Set {currentSet.setNumber} of {currentSets.length}
-                  <span className="text-muted-foreground ml-2">
-                    (Target: {currentSet.targetReps} reps)
-                  </span>
-                </h4>
+            {/* Sets Interface */}
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-400 dark:text-gray-500">
+                <div></div>
+                <div className="text-center">REPS</div>
+                <div className="text-center">WEIGHT (LBS)</div>
+              </div>
+              
+              {/* Sets */}
+              <div className="space-y-2">
+                {currentSets.map((set, index) => (
+                  <div 
+                    key={index}
+                    className={`grid grid-cols-3 gap-4 items-center p-3 rounded-lg border transition-all ${
+                      set.completed ? 'bg-green-50 border-green-500 dark:bg-green-950 dark:border-green-500' :
+                      index === currentSetIndex ? 'bg-blue-50 border-blue-500 dark:bg-blue-950 dark:border-blue-500' :
+                      'bg-gray-50 border-gray-200 dark:bg-gray-900 dark:border-gray-700'
+                    }`}
+                  >
+                    {/* Set Number */}
+                    <div className="flex items-center justify-center">
+                      <span className="text-xl font-bold text-gray-600 dark:text-gray-300">
+                        {set.setNumber}
+                      </span>
+                    </div>
+                    
+                    {/* Reps Input */}
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        value={set.actualReps || ''}
+                        onChange={(e) => updateSet(currentExercise.id, index, 'actualReps', parseInt(e.target.value) || 0)}
+                        className="text-center text-lg font-semibold bg-transparent border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                        placeholder="0"
+                      />
+                    </div>
+                    
+                    {/* Weight Input */}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        step="0.5"
+                        value={set.weight ? (set.weight * 2.20462).toFixed(1) : ''}
+                        onChange={(e) => updateSet(currentExercise.id, index, 'weight', (parseFloat(e.target.value) || 0) / 2.20462)}
+                        className="text-center text-lg font-semibold bg-transparent border-gray-300 dark:border-gray-600 focus:border-blue-500"
+                        placeholder="0"
+                      />
+                      {index === currentSetIndex && !set.completed && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => !set.completed && setCurrentSetIndex(index)}
+                          className="p-2 h-8 w-8"
+                        >
+                          <Play className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Add/Remove Set Buttons */}
+              <div className="flex justify-between items-center pt-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => addSet(currentExercise.id)}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Set
+                </Button>
                 
-                {(() => {
-                  const exerciseRec = getExerciseRecommendation(currentExercise.exerciseId);
-                  
-                  return (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>Weight (kg)</Label>
-                          {exerciseRec && (
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                              Recommend: {exerciseRec.recommendedWeight}kg (Week {exerciseRec.week})
-                            </span>
-                          )}
-                        </div>
-                        <Input
-                          type="number"
-                          step="0.5"
-                          value={currentSet.weight || ''}
-                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(e.target.value) || 0)}
-                          placeholder="0"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>Actual Reps</Label>
-                          {exerciseRec && (
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                              Recommend: {exerciseRec.recommendedReps} (Week {exerciseRec.week})
-                            </span>
-                          )}
-                        </div>
-                        <Input
-                          type="number"
-                          value={currentSet.actualReps || ''}
-                          onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(e.target.value) || 0)}
-                          placeholder="0"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>RPE (1-10)</Label>
-                          {exerciseRec && (
-                            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                              Recommend: {exerciseRec.recommendedRpe} (Week {exerciseRec.week})
-                            </span>
-                          )}
-                        </div>
+                {currentSets.length > 1 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => removeSet(currentExercise.id, currentSets.length - 1)}
+                    className="flex items-center gap-1"
+                  >
+                    <X className="h-4 w-4" />
+                    Remove Set
+                  </Button>
+                )}
+              </div>
+              
+              {/* RPE Input for Current Set */}
+              {currentSet && !currentSet.completed && (
+                <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="space-y-1">
+                        <Label className="text-sm font-medium">RPE (1-10)</Label>
                         <Input
                           type="number"
                           min="1"
                           max="10"
                           value={currentSet.rpe || ''}
                           onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(e.target.value) || 7)}
+                          className="w-20 text-center"
                           placeholder="7"
                         />
                       </div>
-                      
-                      <div className="flex items-end">
-                        <Button 
+                    </div>
+                    
+                    <Button 
                       onClick={completeSet}
                       disabled={currentSet.completed}
-                      className="w-full"
+                      size="lg"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       {currentSet.completed ? (
                         <>
@@ -690,79 +728,9 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                         </>
                       )}
                     </Button>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-
-            {/* All Sets Overview */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">All Sets</h4>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => addSet(currentExercise.id)}
-                    className="flex items-center gap-1"
-                  >
-                    <Plus className="h-3 w-3" />
-                    Add Set
-                  </Button>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                {currentSets.map((set, index) => (
-                  <div 
-                    key={index}
-                    className={`flex items-center justify-between p-2 rounded border cursor-pointer hover:bg-muted/50 ${
-                      set.completed ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' :
-                      index === currentSetIndex ? 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800' :
-                      'bg-muted'
-                    }`}
-                    onClick={() => !set.completed && setCurrentSetIndex(index)}
-                    title={!set.completed ? "Click to jump to this set" : "Set completed"}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Set {set.setNumber}</span>
-                      {/* Show delete button for incomplete sets when there are multiple sets */}
-                      {!set.completed && currentSets.length > 1 && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent triggering set selection
-                            removeSet(currentExercise.id, index);
-                          }}
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                          title="Remove this set"
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4 text-sm">
-                      {set.completed ? (
-                        <>
-                          <span>{set.weight}kg × {set.actualReps} reps</span>
-                          <span>RPE: {set.rpe}</span>
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        </>
-                      ) : index === currentSetIndex ? (
-                        <Badge variant="default" size="sm">
-                          Current Set
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Target: {set.targetReps} reps
-                        </span>
-                      )}
-                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
