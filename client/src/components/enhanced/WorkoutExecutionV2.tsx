@@ -497,7 +497,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             <CardTitle className="text-lg sm:text-xl font-bold truncate text-center">
               {session.name}
             </CardTitle>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap text-left ml-[50px] mr-[50px]">
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-xs">
                 V2 Enhanced
               </Badge>
@@ -544,7 +544,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         </CardHeader>
       </Card>
-
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2">
@@ -723,7 +722,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           />
         </TabsContent>
       </Tabs>
-
       {/* Action Buttons */}
       <div className="flex gap-4">
         <Button 
@@ -744,7 +742,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           Complete Workout
         </Button>
       </div>
-
       {/* Enhanced Rest Timer FAB */}
       {restTimerFABEnabled && (
         <RestTimerFAB
@@ -770,7 +767,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           draggable={false}
         />
       )}
-
       {/* WorkoutFeedbackDialog - Critical Missing Component */}
       {showFeedback && session && (
         <WorkoutFeedbackDialog
