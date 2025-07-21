@@ -131,167 +131,177 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       style={fabStyle}
     >
       {isExpanded ? (
-        // Expanded menu bubble view
-        <div className="absolute bottom-16 left-0 flex flex-col-reverse space-y-reverse space-y-3 animate-in slide-in-from-bottom-2 fade-in-0 duration-200">
-          {showCustomTime ? (
-            // Custom time setting bubble
-            <div className="bg-background border border-border rounded-lg shadow-lg p-4 min-w-[220px]">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Settings className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm text-foreground">Custom Rest Time</span>
-                </div>
-                <button
-                  onClick={() => setShowCustomTime(false)}
-                  className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-              
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex items-center gap-1">
-                  <Input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={customMinutes}
-                    onChange={(e) => setCustomMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                    className="w-16 h-8 text-center"
-                  />
-                  <span className="text-xs text-foreground/60">min</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={customSeconds}
-                    onChange={(e) => setCustomSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                    className="w-16 h-8 text-center"
-                  />
-                  <span className="text-xs text-foreground/60">sec</span>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowCustomTime(false)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleCustomTimeSet}
-                  className="flex-1"
-                >
-                  Start
-                </Button>
-              </div>
-            </div>
-          ) : (
-            // Timer display bubble
-            <div className="bg-background border border-border rounded-lg shadow-lg p-4 min-w-[200px]">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm text-foreground">Rest Timer</span>
-                </div>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-center mb-3">
-                <CircularProgress 
-                  progress={progress} 
-                  size={60}
-                  strokeWidth={4}
-                  showText={false}
-                >
-                  <span className="text-sm font-bold text-foreground">{formatTime(timeRemaining)}</span>
-                </CircularProgress>
-              </div>
-              
-              <div className="flex gap-2 mb-3">
-                {onToggle && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={onToggle}
-                    className="flex-1"
-                  >
-                    {isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="default"
-                  onClick={onSkip}
-                  className="flex-1"
-                >
-                  Skip
-                </Button>
-              </div>
-              
-              {/* Quick time presets */}
-              <div className="grid grid-cols-3 gap-1 mb-2">
-                {quickTimes.slice(0, 3).map((preset) => (
-                  <button
-                    key={preset.label}
-                    onClick={() => onCustomTimeSet?.(preset.seconds)}
-                    className="px-2 py-1 text-xs rounded hover:bg-accent text-foreground/70 hover:text-foreground transition-colors"
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-              <div className="grid grid-cols-2 gap-1">
-                {quickTimes.slice(3).map((preset) => (
-                  <button
-                    key={preset.label}
-                    onClick={() => onCustomTimeSet?.(preset.seconds)}
-                    className="px-2 py-1 text-xs rounded hover:bg-accent text-foreground/70 hover:text-foreground transition-colors"
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Settings button */}
-          <button
-            onClick={() => setShowCustomTime(!showCustomTime)}
-            className="flex items-center justify-center w-12 h-12 rounded-full shadow-lg transition-all duration-200 hover:scale-110 bg-background border border-border text-foreground hover:bg-accent"
-            title="Custom Time"
+        // Expanded timer card - centered design
+        <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center p-4" onClick={() => setIsExpanded(false)}>
+          <div 
+            className="bg-background border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm animate-in zoom-in-95 fade-in-0 duration-200"
+            onClick={(e) => e.stopPropagation()}
           >
-            <Settings className="w-5 h-5" />
-          </button>
+            {showCustomTime ? (
+              // Custom time setting view
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-lg text-foreground">Custom Rest Time</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowCustomTime(false)}
+                    className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <div className="text-center">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={customMinutes}
+                      onChange={(e) => setCustomMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                      className="w-20 h-12 text-center text-lg font-mono border-2"
+                    />
+                    <label className="text-sm text-foreground/60 mt-1 block">minutes</label>
+                  </div>
+                  <div className="text-2xl font-bold text-foreground/40">:</div>
+                  <div className="text-center">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={customSeconds}
+                      onChange={(e) => setCustomSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                      className="w-20 h-12 text-center text-lg font-mono border-2"
+                    />
+                    <label className="text-sm text-foreground/60 mt-1 block">seconds</label>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCustomTime(false)}
+                    className="h-12"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCustomTimeSet}
+                    className="h-12 font-semibold"
+                  >
+                    Start Timer
+                  </Button>
+                </div>
+              </>
+            ) : (
+              // Timer display view
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-lg text-foreground">Rest Timer</h3>
+                  </div>
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                
+                <div className="flex items-center justify-center mb-6">
+                  <div className="relative">
+                    <CircularProgress 
+                      progress={progress} 
+                      size={120}
+                      strokeWidth={8}
+                      showText={false}
+                      className="text-primary"
+                    >
+                      <div className="text-center">
+                        <div className="text-3xl font-bold font-mono text-foreground">{formatTime(timeRemaining)}</div>
+                        <div className="text-sm text-foreground/60">remaining</div>
+                      </div>
+                    </CircularProgress>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {onToggle && (
+                    <Button
+                      variant="outline"
+                      onClick={onToggle}
+                      className="h-12 flex items-center gap-2"
+                    >
+                      {isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {isActive ? 'Pause' : 'Resume'}
+                    </Button>
+                  )}
+                  <Button
+                    onClick={onSkip}
+                    className="h-12 flex items-center gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Skip Rest
+                  </Button>
+                </div>
+                
+                {/* Quick time presets */}
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-foreground/70 text-center">Quick Start</div>
+                  <div className="grid grid-cols-5 gap-2">
+                    {quickTimes.map((preset) => (
+                      <button
+                        key={preset.label}
+                        onClick={() => onCustomTimeSet?.(preset.seconds)}
+                        className="h-10 px-2 text-xs font-medium rounded-lg bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-border">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCustomTime(true)}
+                    className="w-full h-10 flex items-center gap-2"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Custom Time
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       ) : (
-        // Collapsed menu bubble FAB (matching menu style)
+        // Collapsed timer button - centered and clean
         <button
           onMouseDown={handleMouseDown}
           onClick={() => setIsExpanded(true)}
-          className="flex items-center justify-center w-14 h-14 rounded-full shadow-xl transition-all duration-300 hover:scale-105 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+          className="flex items-center justify-center w-16 h-16 rounded-full shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-to-br from-black to-gray-800 dark:from-white dark:to-gray-200 text-white dark:text-black hover:shadow-2xl border-2 border-white/20 dark:border-black/20"
         >
           <div className="relative">
-            <CircularProgress 
-              progress={progress} 
-              size={32}
-              strokeWidth={3}
-              showText={false}
-              className="text-current"
-            >
-              <Timer className="h-5 w-5" />
-            </CircularProgress>
+            {timeRemaining > 0 ? (
+              <CircularProgress 
+                progress={progress} 
+                size={36}
+                strokeWidth={3}
+                showText={false}
+                className="text-white dark:text-black"
+              >
+                <div className="text-center">
+                  <div className="text-xs font-bold">{Math.ceil(timeRemaining / 60)}</div>
+                  <div className="text-[8px] opacity-80">min</div>
+                </div>
+              </CircularProgress>
+            ) : (
+              <Timer className="h-6 w-6" />
+            )}
           </div>
         </button>
       )}
