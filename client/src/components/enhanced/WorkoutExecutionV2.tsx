@@ -113,8 +113,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   // Fetch exercise recommendations from mesocycle advance week function
   const { data: recommendations = [] } = useQuery<ExerciseRecommendation[]>({
-    queryKey: ["/api/training/load-progression", session?.userId],
-    enabled: !!session?.userId,
+    queryKey: ["/api/training/exercise-recommendations", sessionId],
+    enabled: !!sessionId,
   });
 
   // Initialize workout data from session
