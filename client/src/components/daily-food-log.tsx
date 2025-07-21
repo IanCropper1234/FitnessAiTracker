@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TimezoneUtils } from "@shared/utils/timezone";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +24,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showCopyMeal, setShowCopyMeal] = useState(false);
   const [copyFromDate, setCopyFromDate] = useState("");
@@ -224,6 +225,25 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
     return mealType?.charAt(0).toUpperCase() + mealType?.slice(1) || 'Meal';
   };
 
+  // Text truncation utility based on device/container width
+  const truncateText = (text: string, maxLength: number = 30) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
+
+  // Responsive max length based on screen size
+  const getMaxFoodNameLength = () => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      if (width < 480) return 25; // Mobile
+      if (width < 768) return 35; // Small tablet
+      if (width < 1024) return 45; // Tablet
+      return 60; // Desktop
+    }
+    return 30; // Default fallback
+  };
+
   const handleQuickAdd = (suggestion: any) => {
     quickAddMutation.mutate({
       foodName: suggestion.foodName,
@@ -384,9 +404,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               variant="ghost"
               size="sm"
               onClick={() => {
-                const currentDate = new Date(selectedDate);
-                currentDate.setDate(currentDate.getDate() - 1);
-                setSelectedDate(currentDate.toISOString().split('T')[0]);
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
               }}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
@@ -395,12 +413,8 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
             
             <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
               <span className="text-sm font-medium">
-                {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
-                 new Date(selectedDate).toLocaleDateString('en-GB', { 
-                   day: '2-digit', 
-                   month: '2-digit', 
-                   year: 'numeric' 
-                 })}
+                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                 TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
               </span>
               <Popover>
                 <PopoverTrigger asChild>
@@ -411,10 +425,10 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                 <PopoverContent className="w-auto p-0" align="center">
                   <CalendarComponent
                     mode="single"
-                    selected={new Date(selectedDate)}
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
                     onSelect={(date) => {
                       if (date) {
-                        setSelectedDate(date.toISOString().split('T')[0]);
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
                       }
                     }}
                     initialFocus
@@ -427,9 +441,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               variant="ghost"
               size="sm"
               onClick={() => {
-                const currentDate = new Date(selectedDate);
-                currentDate.setDate(currentDate.getDate() + 1);
-                setSelectedDate(currentDate.toISOString().split('T')[0]);
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
               }}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
@@ -622,58 +634,76 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
       {/* Food Log */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader>
-          <CardTitle className="text-black dark:text-white">
-            Food Entries for {new Date(selectedDate).toLocaleDateString()}
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-black dark:text-white">
+              Food Entries for {new Date(selectedDate).toLocaleDateString()}
+            </CardTitle>
+            {nutritionLogs && nutritionLogs.length > 0 && (
+              <Button
+                variant={bulkMode ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setBulkMode(!bulkMode);
+                  setSelectedLogs([]);
+                }}
+                className="gap-2"
+              >
+                <Check className="w-4 h-4" />
+                {bulkMode ? 'Exit Selection' : 'Select Items'}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {/* Bulk Operations Controls */}
           {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
-            <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-              <div className="flex items-center justify-between mb-3">
+            <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                 <div className="flex items-center gap-3">
                   <Checkbox
                     id="select-all"
                     checked={selectedLogs.length === nutritionLogs.length}
                     onCheckedChange={toggleSelectAll}
                   />
-                  <label htmlFor="select-all" className="text-sm font-medium">
-                    Select All ({selectedLogs.length} selected)
+                  <label htmlFor="select-all" className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    Select All ({selectedLogs.length} of {nutritionLogs.length} selected)
                   </label>
                 </div>
                 {selectedLogs.length > 0 && (
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleBulkDelete}
-                      variant="destructive"
-                      size="sm"
-                      disabled={bulkDeleteMutation.isPending}
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete ({selectedLogs.length})
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={handleBulkDelete}
+                    variant="destructive"
+                    size="sm"
+                    disabled={bulkDeleteMutation.isPending}
+                    className="w-fit"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Selected ({selectedLogs.length})
+                  </Button>
                 )}
               </div>
               
               {selectedLogs.length > 0 && (
-                <div className="flex items-center gap-3">
-                  <Label htmlFor="copy-to-date" className="text-sm">Copy to:</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-blue-200 dark:border-blue-600">
+                  <Label htmlFor="copy-to-date" className="text-sm font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">
+                    Copy to date:
+                  </Label>
                   <input
                     id="copy-to-date"
                     type="date"
                     value={copyToDate}
                     onChange={(e) => setCopyToDate(e.target.value)}
-                    className="px-2 py-1 text-sm border rounded"
+                    className="px-3 py-2 text-sm border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white flex-1 sm:flex-initial"
                   />
                   <Button
                     onClick={handleBulkCopyToDate}
                     variant="outline"
                     size="sm"
                     disabled={!copyToDate || bulkCopyToDateMutation.isPending}
+                    className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50"
                   >
                     <Copy className="w-4 h-4 mr-2" />
-                    Copy
+                    Copy Selected ({selectedLogs.length})
                   </Button>
                 </div>
               )}
@@ -685,38 +715,54 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               {nutritionLogs.map((log: any) => (
                 <div 
                   key={log.id} 
-                  className={`flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${
-                    bulkMode && selectedLogs.includes(log.id) ? 'ring-2 ring-blue-500' : ''
+                  className={`flex items-start gap-3 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+                    bulkMode && selectedLogs.includes(log.id) 
+                      ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   {bulkMode && (
-                    <div className="mr-3">
+                    <div className="pt-1">
                       <Checkbox
                         checked={selectedLogs.includes(log.id)}
                         onCheckedChange={() => toggleLogSelection(log.id)}
                       />
                     </div>
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">{getMealTypeIcon(log.mealType)}</span>
-                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      <span className="text-lg flex-shrink-0">{getMealTypeIcon(log.mealType)}</span>
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex-shrink-0">
                         {formatMealType(log.mealType)}
                       </span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                      <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
                         {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <div className="font-medium text-black dark:text-white mb-1">
-                      {log.foodName}
+                    <div 
+                      className="font-medium text-black dark:text-white mb-1 break-words" 
+                      title={log.foodName}
+                    >
+                      <span className="block sm:hidden">
+                        {truncateText(log.foodName, 25)}
+                      </span>
+                      <span className="hidden sm:block md:hidden">
+                        {truncateText(log.foodName, 35)}
+                      </span>
+                      <span className="hidden md:block lg:hidden">
+                        {truncateText(log.foodName, 45)}
+                      </span>
+                      <span className="hidden lg:block">
+                        {truncateText(log.foodName, 60)}
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                       {log.quantity} {log.unit} • <span className="font-medium">{Math.round(log.calories)} cal</span>
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex gap-4">
-                      <span>Protein: {Number(log.protein).toFixed(1)}g</span>
-                      <span>Carbs: {Number(log.carbs).toFixed(1)}g</span>
-                      <span>Fat: {Number(log.fat).toFixed(1)}g</span>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-2 sm:gap-4">
+                      <span className="whitespace-nowrap">P: {Number(log.protein).toFixed(1)}g</span>
+                      <span className="whitespace-nowrap">C: {Number(log.carbs).toFixed(1)}g</span>
+                      <span className="whitespace-nowrap">F: {Number(log.fat).toFixed(1)}g</span>
                     </div>
                   </div>
                   {!bulkMode && (
@@ -724,7 +770,7 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                       variant="ghost"
                       size="sm"
                       onClick={() => deleteMutation.mutate(log.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0 mt-1"
                       disabled={deleteMutation.isPending}
                     >
                       <Trash2 className="w-4 h-4" />
