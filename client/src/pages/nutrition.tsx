@@ -52,6 +52,7 @@ export function Nutrition({ user }: NutritionProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
+  const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -136,7 +137,8 @@ export function Nutrition({ user }: NutritionProps) {
           </div>
           <Button 
             onClick={() => {
-              console.log('Log Food button clicked, setting showLogger to true');
+              console.log('Log Food button clicked, setting showLogger to true with today date');
+              setLoggerSelectedDate(today);
               setShowLogger(true);
             }}
             className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
@@ -175,8 +177,9 @@ export function Nutrition({ user }: NutritionProps) {
             <TabsContent value="overview">
               <IntegratedNutritionOverview 
                 userId={user.id} 
-                onShowLogger={() => {
-                  console.log('onShowLogger called from IntegratedNutritionOverview, setting showLogger to true');
+                onShowLogger={(selectedDate) => {
+                  console.log('onShowLogger called from IntegratedNutritionOverview with date:', selectedDate, 'setting showLogger to true');
+                  setLoggerSelectedDate(selectedDate);
                   setShowLogger(true);
                 }}
               />
@@ -209,9 +212,11 @@ export function Nutrition({ user }: NutritionProps) {
           <div style={{ position: 'relative', zIndex: 9999 }}>
             <NutritionLogger 
               userId={user.id}
+              selectedDate={loggerSelectedDate}
               onComplete={() => {
                 console.log('NutritionLogger onComplete called, setting showLogger to false');
                 setShowLogger(false);
+                setLoggerSelectedDate(undefined);
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
               }}

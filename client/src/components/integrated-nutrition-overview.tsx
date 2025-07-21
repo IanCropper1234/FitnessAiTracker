@@ -36,7 +36,7 @@ import { Input } from "@/components/ui/input";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
-  onShowLogger?: () => void;
+  onShowLogger?: (selectedDate?: string) => void;
 }
 
 export function IntegratedNutritionOverview({ userId, onShowLogger }: IntegratedNutritionOverviewProps) {
@@ -443,9 +443,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
             </div>
             <Button 
               onClick={() => {
-                console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger');
+                console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger with date:', selectedDate);
                 if (onShowLogger) {
-                  onShowLogger();
+                  onShowLogger(selectedDate);
                 }
               }}
               className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
