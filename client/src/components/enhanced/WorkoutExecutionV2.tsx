@@ -489,35 +489,57 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto" {...swipeHandlers}>
-      {/* Enhanced Header */}
+      {/* Mobile-Optimized Header */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{session.name}</span>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+        <CardHeader className="pb-4">
+          {/* Top Row - Session Name and Badges */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <CardTitle className="text-lg sm:text-xl font-bold truncate">
+              {session.name}
+            </CardTitle>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-xs">
                 V2 Enhanced
               </Badge>
               {gestureNavEnabled && (
-                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
                   👈👉 Swipe
                 </Badge>
               )}
             </div>
-          </CardTitle>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm text-foreground/70">
-              <span>Exercise {currentExerciseIndex + 1} of {session.exercises.length}</span>
-              <span>{completedSets} / {totalSets} sets completed</span>
+          </div>
+
+          {/* Stats Row - Mobile Stack */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm">
+            <div className="flex items-center justify-between sm:justify-start sm:gap-6">
+              <span className="text-foreground/70">
+                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+              </span>
+              <span className="text-foreground/70">
+                {completedSets} / {totalSets} sets completed
+              </span>
             </div>
+            
+            {/* Progress Percentage */}
+            <div className="text-right">
+              <span className="text-sm font-medium text-primary">
+                {Math.round(progressPercentage)}% Complete
+              </span>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mt-3">
             {circularProgressEnabled ? (
-              <CircularProgress 
-                progress={progressPercentage}
-                size={60}
-                strokeWidth={4}
-              />
+              <div className="flex justify-center">
+                <CircularProgress 
+                  progress={progressPercentage}
+                  size={50}
+                  strokeWidth={4}
+                />
+              </div>
             ) : (
-              <Progress value={progressPercentage} className="w-full" />
+              <Progress value={progressPercentage} className="w-full h-2" />
             )}
           </div>
         </CardHeader>

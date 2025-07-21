@@ -172,12 +172,27 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         )}
 
-        {/* Enhanced 3-Field Input Layout */}
-        <div className="grid grid-cols-3 gap-3">
-          {/* Weight Input with Unit Selection */}
+        {/* Mobile-Optimized Input Layout */}
+        <div className="space-y-4">
+          {/* Weight Input Row with Unit Selection */}
           <div className="space-y-2">
-            <label className="text-xs font-medium text-foreground">Weight</label>
-            <div className="flex gap-1">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-foreground">Weight</label>
+              <Select
+                value={weightUnit}
+                onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
+                disabled={set.completed}
+              >
+                <SelectTrigger className="w-14 h-7 text-xs bg-background border-border text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  <SelectItem value="kg">KG</SelectItem>
+                  <SelectItem value="lbs">lbs</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full">
               {spinnerEnabled ? (
                 <SpinnerInput
                   value={set.weight}
@@ -187,7 +202,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   step={0.5}
                   placeholder="0"
                   disabled={set.completed}
-                  className="flex-1"
+                  className="w-full"
                 />
               ) : (
                 <Input
@@ -199,82 +214,71 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   min="0"
                   max="1000"
                   disabled={set.completed}
-                  className="flex-1 bg-background border-border text-foreground"
+                  className="w-full bg-background border-border text-foreground"
                   inputMode="decimal"
                 />
               )}
-              
-              <Select
-                value={weightUnit}
-                onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
-                disabled={set.completed}
-              >
-                <SelectTrigger className="w-16 bg-background border-border text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  <SelectItem value="kg">KG</SelectItem>
-                  <SelectItem value="lbs">lbs</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
-          {/* Actual Reps Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-foreground">Actual Reps</label>
-            {spinnerEnabled ? (
-              <SpinnerInput
-                value={set.actualReps}
-                onChange={handleRepsChange}
-                min={0}
-                max={50}
-                step={1}
-                placeholder="0"
-                disabled={set.completed}
-              />
-            ) : (
-              <Input
-                type="number"
-                value={set.actualReps || ''}
-                onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
-                placeholder="0"
-                min="0"
-                max="50"
-                disabled={set.completed}
-                className="bg-background border-border text-foreground"
-                inputMode="numeric"
-              />
-            )}
-          </div>
+          {/* Reps and RPE Row */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Actual Reps Input */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-foreground">Actual Reps</label>
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.actualReps}
+                  onChange={handleRepsChange}
+                  min={0}
+                  max={50}
+                  step={1}
+                  placeholder="0"
+                  disabled={set.completed}
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.actualReps || ''}
+                  onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                  min="0"
+                  max="50"
+                  disabled={set.completed}
+                  className="bg-background border-border text-foreground"
+                  inputMode="numeric"
+                />
+              )}
+            </div>
 
-          {/* RPE Input (1-10) */}
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-foreground">RPE (1-10)</label>
-            {spinnerEnabled ? (
-              <SpinnerInput
-                value={set.rpe}
-                onChange={handleRpeChange}
-                min={1}
-                max={10}
-                step={0.5}
-                placeholder="8"
-                disabled={set.completed}
-              />
-            ) : (
-              <Input
-                type="number"
-                value={set.rpe || ''}
-                onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
-                placeholder="8"
-                min="1"
-                max="10"
-                step="0.5"
-                disabled={set.completed}
-                className="bg-background border-border text-foreground"
-                inputMode="decimal"
-              />
-            )}
+            {/* RPE Input (1-10) */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-foreground">RPE (1-10)</label>
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.rpe}
+                  onChange={handleRpeChange}
+                  min={1}
+                  max={10}
+                  step={0.5}
+                  placeholder="8"
+                  disabled={set.completed}
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.rpe || ''}
+                  onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
+                  placeholder="8"
+                  min="1"
+                  max="10"
+                  step="0.5"
+                  disabled={set.completed}
+                  className="bg-background border-border text-foreground"
+                  inputMode="decimal"
+                />
+              )}
+            </div>
           </div>
         </div>
 
