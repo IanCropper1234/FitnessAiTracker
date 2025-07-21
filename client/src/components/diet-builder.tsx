@@ -867,27 +867,29 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             <CardContent className="space-y-6">
               {/* Profile Integration Section */}
               {userProfile?.fitnessGoal && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      Profile Integration
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2 text-sm">
+                      <User className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">Profile Integration</span>
                     </h4>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => setLocation('/profile')}
-                      className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600"
+                      className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600 text-xs px-2 py-1 self-start sm:self-auto"
                     >
-                      Edit Profile
+                      Edit
                     </Button>
                   </div>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    <strong>Current Fitness Goal:</strong> {userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    Diet goals are automatically synchronized with your profile's fitness goal setting.
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      <strong>Goal:</strong> <span className="break-words">{userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      Auto-synced with diet goals
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -973,10 +975,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </Select>
                     {userProfile?.fitnessGoal && (
                       <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs">
-                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                          <Target className="w-3 h-3" />
-                          <span>
-                            Profile Goal: <strong>{userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong>
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                            <Target className="w-3 h-3 flex-shrink-0" />
+                            <span className="truncate">
+                              <strong className="text-gray-800 dark:text-gray-200">
+                                {userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </strong>
+                            </span>
+                          </div>
+                          <div className="text-xs">
                             {(() => {
                               let expectedGoal = 'maintain';
                               switch (userProfile.fitnessGoal) {
@@ -993,12 +1001,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                               }
                               const isMatched = dietGoal.goal === expectedGoal;
                               return (
-                                <span className={isMatched ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}>
-                                  {isMatched ? ' ✓ Synced' : ` → Suggests ${expectedGoal}`}
+                                <span className={isMatched ? 'text-green-600 dark:text-green-400 font-medium' : 'text-orange-600 dark:text-orange-400 font-medium'}>
+                                  {isMatched ? '✓ Synced' : `→ Suggests ${expectedGoal}`}
                                 </span>
                               );
                             })()}
-                          </span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1031,35 +1039,38 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <Label className="text-black dark:text-white text-sm">Protein (g)</Label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <div className="min-w-0">
+                      <Label className="text-black dark:text-white text-xs truncate block">Protein</Label>
                       <Input
                         type="number"
-                        value={dietGoal.targetProtein}
+                        value={Math.round(dietGoal.targetProtein)}
                         onChange={(e) => setDietGoal(prev => ({ ...prev, targetProtein: Number(e.target.value) }))}
                         disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600"
+                        className="border-gray-300 dark:border-gray-600 text-xs h-8"
+                        placeholder="g"
                       />
                     </div>
-                    <div>
-                      <Label className="text-black dark:text-white text-sm">Carbs (g)</Label>
+                    <div className="min-w-0">
+                      <Label className="text-black dark:text-white text-xs truncate block">Carbs</Label>
                       <Input
                         type="number"
-                        value={dietGoal.targetCarbs}
+                        value={Math.round(dietGoal.targetCarbs)}
                         onChange={(e) => setDietGoal(prev => ({ ...prev, targetCarbs: Number(e.target.value) }))}
                         disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600"
+                        className="border-gray-300 dark:border-gray-600 text-xs h-8"
+                        placeholder="g"
                       />
                     </div>
-                    <div>
-                      <Label className="text-black dark:text-white text-sm">Fat (g)</Label>
+                    <div className="min-w-0">
+                      <Label className="text-black dark:text-white text-xs truncate block">Fat</Label>
                       <Input
                         type="number"
-                        value={dietGoal.targetFat}
+                        value={Math.round(dietGoal.targetFat)}
                         onChange={(e) => setDietGoal(prev => ({ ...prev, targetFat: Number(e.target.value) }))}
                         disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600"
+                        className="border-gray-300 dark:border-gray-600 text-xs h-8"
+                        placeholder="g"
                       />
                     </div>
                   </div>
@@ -1067,28 +1078,34 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </div>
 
               {/* Macro Distribution Chart */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h4 className="font-medium text-black dark:text-white mb-3">Macro Distribution</h4>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="text-blue-700 dark:text-blue-300 font-medium">Protein</div>
-                    <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{Number(dietGoal.targetProtein).toFixed(1)}g</div>
-                    <div className="text-sm text-blue-600 dark:text-blue-400">
-                      {Math.round((dietGoal.targetProtein * 4) / dietGoal.targetCalories * 100)}%
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <h4 className="font-medium text-black dark:text-white mb-3 text-sm">Macro Distribution</h4>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg min-w-0">
+                    <div className="text-blue-700 dark:text-blue-300 font-medium text-xs truncate">Protein</div>
+                    <div className="text-lg font-bold text-blue-900 dark:text-blue-100 leading-tight">
+                      {Math.round(Number(dietGoal.targetProtein))}g
+                    </div>
+                    <div className="text-xs text-blue-600 dark:text-blue-400">
+                      {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetProtein * 4) / dietGoal.targetCalories * 100) : 0}%
                     </div>
                   </div>
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div className="text-green-700 dark:text-green-300 font-medium">Carbs</div>
-                    <div className="text-2xl font-bold text-green-900 dark:text-green-100">{Number(dietGoal.targetCarbs).toFixed(1)}g</div>
-                    <div className="text-sm text-green-600 dark:text-green-400">
-                      {Math.round((dietGoal.targetCarbs * 4) / dietGoal.targetCalories * 100)}%
+                  <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg min-w-0">
+                    <div className="text-green-700 dark:text-green-300 font-medium text-xs truncate">Carbs</div>
+                    <div className="text-lg font-bold text-green-900 dark:text-green-100 leading-tight">
+                      {Math.round(Number(dietGoal.targetCarbs))}g
+                    </div>
+                    <div className="text-xs text-green-600 dark:text-green-400">
+                      {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetCarbs * 4) / dietGoal.targetCalories * 100) : 0}%
                     </div>
                   </div>
-                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                    <div className="text-yellow-700 dark:text-yellow-300 font-medium">Fat</div>
-                    <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">{Number(dietGoal.targetFat).toFixed(1)}g</div>
-                    <div className="text-sm text-yellow-600 dark:text-yellow-400">
-                      {Math.round((dietGoal.targetFat * 9) / dietGoal.targetCalories * 100)}%
+                  <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg min-w-0">
+                    <div className="text-yellow-700 dark:text-yellow-300 font-medium text-xs truncate">Fat</div>
+                    <div className="text-lg font-bold text-yellow-900 dark:text-yellow-100 leading-tight">
+                      {Math.round(Number(dietGoal.targetFat))}g
+                    </div>
+                    <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                      {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetFat * 9) / dietGoal.targetCalories * 100) : 0}%
                     </div>
                   </div>
                 </div>
@@ -1096,36 +1113,40 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
               {/* Macro Adjustment Section */}
               {(
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-blue-900 dark:text-blue-100">Macro Adjustments</h4>
-                      <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Fine-tune macro distribution - calories adjust automatically (1% increments)
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-xs text-blue-700 dark:text-blue-300">
-                        Current: {calculateCurrentCalories()}cal
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-3">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div>
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100 text-sm">Macro Adjustments</h4>
+                        <p className="text-xs text-blue-700 dark:text-blue-300">
+                          Fine-tune distribution (1% steps)
+                        </p>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={resetMacroAdjustments}
-                        className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
-                      >
-                        Reset
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                          {Math.round(calculateCurrentCalories())}cal
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={resetMacroAdjustments}
+                          className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 text-xs px-2 py-1"
+                        >
+                          Reset
+                        </Button>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="space-y-2 min-w-0">
                       <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Protein</Label>
-                        <span className="text-xs text-blue-700 dark:text-blue-300">{macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%</span>
+                        <Label className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">Protein</Label>
+                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium ml-1 flex-shrink-0">
+                          {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%
+                        </span>
                       </div>
-                      <div className="px-3">
+                      <div className="px-1">
                         <input
                           type="range"
                           min="-50"
@@ -1133,12 +1154,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           step="1"
                           value={macroAdjustments.protein}
                           onChange={(e) => handleMacroAdjustment('protein', Number(e.target.value))}
-                          className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-800"
+                          className="w-full h-1.5 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-800"
                         />
                       </div>
                       <div className="text-center">
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                          {Number(dietGoal.targetProtein).toFixed(1)}g
+                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                          {Math.round(Number(dietGoal.targetProtein))}g
                         </span>
                         <div className="text-xs text-blue-500 dark:text-blue-400">
                           {Math.round(dietGoal.targetProtein * 4)}cal
@@ -1146,12 +1167,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-2 min-w-0">
                       <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Carbs</Label>
-                        <span className="text-xs text-blue-700 dark:text-blue-300">{macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%</span>
+                        <Label className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">Carbs</Label>
+                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium ml-1 flex-shrink-0">
+                          {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%
+                        </span>
                       </div>
-                      <div className="px-3">
+                      <div className="px-1">
                         <input
                           type="range"
                           min="-50"
@@ -1159,12 +1182,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           step="1"
                           value={macroAdjustments.carbs}
                           onChange={(e) => handleMacroAdjustment('carbs', Number(e.target.value))}
-                          className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer dark:bg-green-800"
+                          className="w-full h-1.5 bg-green-200 rounded-lg appearance-none cursor-pointer dark:bg-green-800"
                         />
                       </div>
                       <div className="text-center">
-                        <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                          {Number(dietGoal.targetCarbs).toFixed(1)}g
+                        <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                          {Math.round(Number(dietGoal.targetCarbs))}g
                         </span>
                         <div className="text-xs text-green-500 dark:text-green-400">
                           {Math.round(dietGoal.targetCarbs * 4)}cal
@@ -1172,12 +1195,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-2 min-w-0">
                       <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium text-blue-900 dark:text-blue-100">Fat</Label>
-                        <span className="text-xs text-blue-700 dark:text-blue-300">{macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%</span>
+                        <Label className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">Fat</Label>
+                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium ml-1 flex-shrink-0">
+                          {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%
+                        </span>
                       </div>
-                      <div className="px-3">
+                      <div className="px-1">
                         <input
                           type="range"
                           min="-50"
@@ -1185,12 +1210,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           step="1"
                           value={macroAdjustments.fat}
                           onChange={(e) => handleMacroAdjustment('fat', Number(e.target.value))}
-                          className="w-full h-2 bg-yellow-200 rounded-lg appearance-none cursor-pointer dark:bg-yellow-800"
+                          className="w-full h-1.5 bg-yellow-200 rounded-lg appearance-none cursor-pointer dark:bg-yellow-800"
                         />
                       </div>
                       <div className="text-center">
-                        <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                          {Number(dietGoal.targetFat).toFixed(1)}g
+                        <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
+                          {Math.round(Number(dietGoal.targetFat))}g
                         </span>
                         <div className="text-xs text-yellow-500 dark:text-yellow-400">
                           {Math.round(dietGoal.targetFat * 9)}cal
@@ -1199,15 +1224,17 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </div>
                   </div>
                   
-                  <div className="text-xs bg-blue-100 dark:bg-blue-900/30 p-3 rounded space-y-1">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-blue-900 dark:text-blue-100">Adjusted Target:</span>
+                  <div className="text-xs bg-blue-100 dark:bg-blue-900/30 p-2 rounded space-y-1">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                      <span className="font-medium text-blue-900 dark:text-blue-100">Current Target:</span>
                       <span className="text-blue-700 dark:text-blue-300 font-semibold">
-                        {dietGoal.targetCalories} calories
+                        {Math.round(dietGoal.targetCalories)} cal
                       </span>
                     </div>
-                    <div className="text-blue-600 dark:text-blue-400">
-                      <strong>Macro Distribution:</strong> Protein {Number(dietGoal.targetProtein).toFixed(1)}g • Carbs {Number(dietGoal.targetCarbs).toFixed(1)}g • Fat {Number(dietGoal.targetFat).toFixed(1)}g
+                    <div className="text-blue-600 dark:text-blue-400 flex flex-wrap gap-2 text-xs">
+                      <span><strong>P:</strong> {Math.round(Number(dietGoal.targetProtein))}g</span>
+                      <span><strong>C:</strong> {Math.round(Number(dietGoal.targetCarbs))}g</span>
+                      <span><strong>F:</strong> {Math.round(Number(dietGoal.targetFat))}g</span>
                     </div>
                   </div>
                 </div>
