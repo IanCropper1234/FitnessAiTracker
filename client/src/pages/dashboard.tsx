@@ -240,10 +240,10 @@ export function Dashboard({ user }: DashboardProps) {
             </CardHeader>
             <CardContent className="px-2 pb-2">
               <div className="text-lg font-bold text-black dark:text-white text-center">
-                {nutritionSummary?.totalCalories || 0}
+                {Math.round(nutritionSummary?.totalCalories || 0)}
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-                /{nutritionSummary?.goalCalories || 2000}
+                /{Math.round(nutritionSummary?.goalCalories || 2000)}
               </p>
               <Progress 
                 value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
@@ -261,10 +261,10 @@ export function Dashboard({ user }: DashboardProps) {
             </CardHeader>
             <CardContent className="px-2 pb-2">
               <div className="text-lg font-bold text-black dark:text-white text-center">
-                {nutritionSummary?.totalProtein || 0}g
+                {Math.round(nutritionSummary?.totalProtein || 0)}g
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-                /{nutritionSummary?.goalProtein || 150}g
+                /{Math.round(nutritionSummary?.goalProtein || 150)}g
               </p>
               <Progress 
                 value={nutritionSummary ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 : 0} 
@@ -299,7 +299,7 @@ export function Dashboard({ user }: DashboardProps) {
             </CardHeader>
             <CardContent className="px-2 pb-2">
               <div className="text-lg font-bold text-black dark:text-white text-center">
-                {nutritionSummary?.adherence || 0}%
+                {Math.round(nutritionSummary?.adherence || 0)}%
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 Overall
