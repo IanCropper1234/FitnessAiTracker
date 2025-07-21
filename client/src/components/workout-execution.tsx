@@ -626,68 +626,76 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                       )}
                       
                       {/* Compact 4-column layout for mobile */}
-                      <div className="grid grid-cols-4 gap-2 items-end">
-                        <div className="space-y-1">
-                          <Label className="text-xs font-medium">Weight (kg)</Label>
+                      <div className="grid grid-cols-4 gap-2">
+                        <div className="flex flex-col">
+                          <Label className="text-xs font-medium mb-1 text-left">Weight (kg)</Label>
                           <Input
-                            type="number"
-                            step="0.5"
+                            type="text"
+                            inputMode="decimal"
                             value={currentSet.weight || ''}
-                            onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(e.target.value) || 0)}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(value) || 0);
+                              }
+                            }}
                             placeholder="0"
-                            className="h-12 text-lg font-semibold text-center border-2"
+                            className="h-12 text-lg font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         
-                        <div className="space-y-1">
-                          <Label className="text-xs font-medium">Actual Reps</Label>
+                        <div className="flex flex-col">
+                          <Label className="text-xs font-medium mb-1 text-left">Actual Reps</Label>
                           <Input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
                             value={currentSet.actualReps || ''}
-                            onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(e.target.value) || 0)}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^\d+$/.test(value)) {
+                                updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(value) || 0);
+                              }
+                            }}
                             placeholder="0"
-                            className="h-12 text-lg font-semibold text-center border-2"
+                            className="h-12 text-lg font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         
-                        <div className="space-y-1">
-                          <Label className="text-xs font-medium">RPE (1-10)</Label>
+                        <div className="flex flex-col">
+                          <Label className="text-xs font-medium mb-1 text-left">RPE (1-10)</Label>
                           <Input
-                            type="number"
-                            min="1"
-                            max="10"
+                            type="text"
+                            inputMode="numeric"
                             value={currentSet.rpe || ''}
-                            onChange={(e) => updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(e.target.value) || 7)}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 10)) {
+                                updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(value) || 7);
+                              }
+                            }}
                             placeholder="7"
-                            className="h-12 text-lg font-semibold text-center border-2"
+                            className="h-12 text-lg font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         
-                        <div className="space-y-1">
-                          <Label className="text-xs font-medium opacity-0">Action</Label>
-                          <div className="h-12 flex items-center">
-                            <Button 
-                              onClick={completeSet}
-                              disabled={currentSet.completed}
-                              className={`w-full h-full rounded-md border-2 font-semibold transition-all ${
-                                currentSet.completed 
-                                  ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
-                                  : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
-                              }`}
-                            >
-                              {currentSet.completed ? (
-                                <div className="flex items-center justify-center text-sm">
-                                  <CheckCircle2 className="h-4 w-4 mr-1" />
-                                  Done
-                                </div>
-                              ) : (
-                                <div className="flex items-center justify-center text-sm">
-                                  <CheckCircle2 className="h-4 w-4 mr-1" />
-                                  Complete
-                                </div>
-                              )}
-                            </Button>
-                          </div>
+                        <div className="flex flex-col">
+                          <div className="text-xs font-medium mb-1 opacity-0">Action</div>
+                          <Button 
+                            onClick={completeSet}
+                            disabled={currentSet.completed}
+                            className={`h-12 rounded-md border-2 font-semibold transition-all text-sm overflow-hidden ${
+                              currentSet.completed 
+                                ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
+                                : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
+                            }`}
+                          >
+                            <div className="flex items-center justify-center gap-1">
+                              <CheckCircle2 className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">
+                                {currentSet.completed ? 'Done' : 'Complete'}
+                              </span>
+                            </div>
+                          </Button>
                         </div>
                       </div>
                     </div>
