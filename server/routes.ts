@@ -2362,7 +2362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
       
-      // Get exercise recommendations for each exercise in the session
+      // Get exercise recommendations for each exercise in the session with set-specific recommendations
       const recommendations = await Promise.all(
         sessionExercises.map(async (exercise) => {
           try {
@@ -2373,7 +2373,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 reps: workoutExercises.actualReps,
                 rpe: workoutExercises.rpe,
                 rir: workoutExercises.rir,
-                date: workoutSessions.date
+                date: workoutSessions.date,
+                setsData: workoutExercises.setsData
               })
               .from(workoutExercises)
               .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
@@ -2386,16 +2387,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
               .orderBy(desc(workoutSessions.date))
               .limit(3);
             
+            // Parse target reps range
+            let minReps = 5, maxReps = 10;
+            if (exercise.targetReps.includes('-')) {
+              const [min, max] = exercise.targetReps.split('-').map(Number);
+              minReps = min || 5;
+              maxReps = max || 10;
+            } else if (exercise.targetReps.includes(',')) {
+              const repsArray = exercise.targetReps.split(',').map(Number);
+              minReps = Math.min(...repsArray);
+              maxReps = Math.max(...repsArray);
+            } else {
+              const targetNum = parseInt(exercise.targetReps) || 8;
+              minReps = Math.max(1, targetNum - 2);
+              maxReps = targetNum + 2;
+            }
+            
             if (recentPerformance.length === 0) {
-              // No previous data, return basic recommendations
+              // No previous data, generate progressive set recommendations
+              const baseWeight = parseFloat(exercise.weight) || 10;
+              const totalSets = parseInt(exercise.sets?.toString() || '3');
+              
+              const setRecommendations = Array.from({ length: totalSets }, (_, index) => {
+                const setNumber = index + 1;
+                
+                // Progressive intensity across sets
+                let setWeight = baseWeight;
+                let setReps = minReps;
+                let setRpe = 7;
+                
+                if (totalSets >= 3) {
+                  // Multi-set progression pattern
+                  if (setNumber === 1) {
+                    // Warmup set - lighter weight, higher reps
+                    setWeight = baseWeight * 0.85;
+                    setReps = Math.min(maxReps, minReps + 2);
+                    setRpe = 6;
+                  } else if (setNumber === totalSets) {
+                    // Final set - work towards failure
+                    setWeight = baseWeight * 1.05;
+                    setReps = minReps;
+                    setRpe = 8.5;
+                  } else {
+                    // Middle sets - progressive loading
+                    const progressFactor = (setNumber - 1) / (totalSets - 1);
+                    setWeight = baseWeight * (0.95 + progressFactor * 0.1);
+                    setReps = Math.round(maxReps - progressFactor * (maxReps - minReps));
+                    setRpe = 7 + progressFactor * 1.5;
+                  }
+                }
+                
+                return {
+                  setNumber,
+                  recommendedWeight: Math.round(setWeight * 4) / 4,
+                  recommendedReps: setReps,
+                  recommendedRpe: Math.round(setRpe * 2) / 2 // Round to 0.5
+                };
+              });
+              
               return {
                 exerciseId: exercise.exerciseId,
                 exerciseName: exercise.exerciseName,
-                recommendedWeight: parseFloat(exercise.weight) || 10,
-                recommendedReps: exercise.targetReps,
-                recommendedRpe: 7,
+                sets: setRecommendations,
                 week: mesocycle.currentWeek,
-                reasoning: `Week ${mesocycle.currentWeek} starting point - no previous data available`
+                reasoning: `Week ${mesocycle.currentWeek} starting point - progressive set structure for ${totalSets} sets`,
+                movementPattern: exercise.movementPattern,
+                primaryMuscle: exercise.primaryMuscle,
+                difficulty: exercise.difficulty
               };
             }
             
@@ -2404,50 +2462,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const avgRpe = recentPerformance.reduce((sum, p) => sum + (p.rpe || 7), 0) / recentPerformance.length;
             const avgRir = recentPerformance.reduce((sum, p) => sum + (p.rir || 2), 0) / recentPerformance.length;
             
-            // Apply load progression algorithm
-            let recommendedWeight = avgWeight;
-            let recommendedReps = exercise.targetReps;
-            let recommendedRpe = 7;
-            let reasoning = '';
-            
             // Week-based progression adjustments
             const weekMultiplier = 1 + (mesocycle.currentWeek - 1) * 0.025; // 2.5% increase per week
+            
+            // Determine base progression
+            let baseWeight = avgWeight;
+            let baseRpe = 7;
+            let reasoning = '';
             
             // RPE-based adjustments
             if (avgRpe >= 8 && avgRpe <= 8.5 && avgRir >= 1 && avgRir <= 2) {
               // Perfect progression zone
               const weightIncrement = exercise.movementPattern === 'compound' ? 2.5 : 1.25;
-              recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
-              recommendedRpe = 8;
-              reasoning = `Week ${mesocycle.currentWeek} progression - perfect RPE/RIR zone, increase weight`;
+              baseWeight = avgWeight + (weightIncrement * weekMultiplier);
+              baseRpe = 8;
+              reasoning = `Week ${mesocycle.currentWeek} progression - perfect RPE/RIR zone, progressive weight increase`;
             } else if (avgRpe < 7 || avgRir > 3) {
               // Too easy - larger increase
               const weightIncrement = exercise.movementPattern === 'compound' ? 5 : 2.5;
-              recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
-              recommendedRpe = 8;
-              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too light, significant increase`;
+              baseWeight = avgWeight + (weightIncrement * weekMultiplier);
+              baseRpe = 8;
+              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too light, significant progressive increase`;
             } else if (avgRpe > 9 || avgRir < 1) {
               // Too hard - maintain or slight decrease
-              recommendedWeight = avgWeight * 0.975; // 2.5% reduction
-              recommendedRpe = 7;
-              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too heavy, slight reduction`;
+              baseWeight = avgWeight * 0.975; // 2.5% reduction
+              baseRpe = 7;
+              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too heavy, progressive deload`;
             } else {
               // Moderate progression
               const weightIncrement = exercise.movementPattern === 'compound' ? 1.25 : 0.625;
-              recommendedWeight = avgWeight + (weightIncrement * weekMultiplier);
-              recommendedRpe = Math.ceil(avgRpe);
-              reasoning = `Week ${mesocycle.currentWeek} progression - moderate increase based on feedback`;
+              baseWeight = avgWeight + (weightIncrement * weekMultiplier);
+              baseRpe = Math.ceil(avgRpe);
+              reasoning = `Week ${mesocycle.currentWeek} progression - moderate progressive increase`;
             }
+            
+            // Generate set-specific recommendations with progression
+            const totalSets = parseInt(exercise.sets?.toString() || '3');
+            const setRecommendations = Array.from({ length: totalSets }, (_, index) => {
+              const setNumber = index + 1;
+              
+              // Progressive intensity across sets
+              let setWeight = baseWeight;
+              let setReps = minReps;
+              let setRpe = baseRpe;
+              
+              if (totalSets >= 3) {
+                // Multi-set progression pattern
+                if (setNumber === 1) {
+                  // First set - slightly lighter for technique
+                  setWeight = baseWeight * 0.925;
+                  setReps = Math.min(maxReps, minReps + 1);
+                  setRpe = Math.max(6, baseRpe - 1);
+                } else if (setNumber === totalSets) {
+                  // Final set - push intensity
+                  setWeight = baseWeight * 1.025;
+                  setReps = minReps;
+                  setRpe = Math.min(9, baseRpe + 0.5);
+                } else {
+                  // Middle sets - progressive loading
+                  const progressFactor = (setNumber - 1) / (totalSets - 1);
+                  setWeight = baseWeight * (0.95 + progressFactor * 0.075);
+                  setReps = Math.round(maxReps - progressFactor * (maxReps - minReps) * 0.6);
+                  setRpe = baseRpe + progressFactor * 0.5;
+                }
+              } else if (totalSets === 2) {
+                // Two-set progression
+                if (setNumber === 1) {
+                  setWeight = baseWeight * 0.95;
+                  setReps = Math.min(maxReps, minReps + 1);
+                  setRpe = baseRpe - 0.5;
+                } else {
+                  setWeight = baseWeight * 1.025;
+                  setReps = minReps;
+                  setRpe = baseRpe + 0.5;
+                }
+              }
+              
+              return {
+                setNumber,
+                recommendedWeight: Math.round(setWeight * 4) / 4, // Round to nearest 0.25kg
+                recommendedReps: Math.max(1, setReps),
+                recommendedRpe: Math.max(6, Math.min(9.5, Math.round(setRpe * 2) / 2)) // Round to 0.5, clamp 6-9.5
+              };
+            });
             
             return {
               exerciseId: exercise.exerciseId,
               exerciseName: exercise.exerciseName,
-              recommendedWeight: Math.round(recommendedWeight * 4) / 4, // Round to nearest 0.25
-              recommendedReps: recommendedReps,
-              recommendedRpe: recommendedRpe,
+              sets: setRecommendations,
               week: mesocycle.currentWeek,
               reasoning: reasoning,
-              // Include exercise library metadata for better recommendations
               movementPattern: exercise.movementPattern,
               primaryMuscle: exercise.primaryMuscle,
               difficulty: exercise.difficulty
@@ -2455,14 +2559,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
           } catch (error) {
             console.error(`Error calculating recommendations for exercise ${exercise.exerciseId}:`, error);
+            // Return a basic set-specific recommendation structure for errors
+            const totalSets = parseInt(exercise.sets?.toString() || '3');
+            const fallbackSets = Array.from({ length: totalSets }, (_, index) => ({
+              setNumber: index + 1,
+              recommendedWeight: parseFloat(exercise.weight || '0') || 10,
+              recommendedReps: 8,
+              recommendedRpe: 7
+            }));
+            
             return {
               exerciseId: exercise.exerciseId,
               exerciseName: exercise.exerciseName,
-              recommendedWeight: parseFloat(exercise.weight) || 10,
-              recommendedReps: exercise.targetReps,
-              recommendedRpe: 7,
+              sets: fallbackSets,
               week: mesocycle.currentWeek,
-              reasoning: `Week ${mesocycle.currentWeek} - using current values (calculation error)`
+              reasoning: `Week ${mesocycle.currentWeek} - using fallback values (calculation error)`,
+              movementPattern: exercise.movementPattern,
+              primaryMuscle: exercise.primaryMuscle,
+              difficulty: exercise.difficulty
             };
           }
         })

@@ -17,20 +17,28 @@ interface WorkoutSet {
   completed: boolean;
 }
 
+interface SetRecommendation {
+  setNumber: number;
+  recommendedWeight: number;
+  recommendedReps: number;
+  recommendedRpe: number;
+}
+
 interface ExerciseRecommendation {
   exerciseId: number;
-  recommendedWeight: number;
-  recommendedReps: string;
-  recommendedRpe: number;
+  exerciseName: string;
+  sets: SetRecommendation[];
   week: number;
   reasoning: string;
-  progressionType?: string;
-  confidence?: number;
+  movementPattern?: string;
+  primaryMuscle?: string;
+  difficulty?: string;
 }
 
 interface EnhancedSetInputProps {
   set: WorkoutSet;
   recommendation?: ExerciseRecommendation;
+  setRecommendation?: SetRecommendation;
   onUpdateSet: (field: keyof WorkoutSet, value: any) => void;
   onCompleteSet: () => void;
   onAddSet?: () => void;
@@ -44,6 +52,7 @@ interface EnhancedSetInputProps {
 export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   set,
   recommendation,
+  setRecommendation,
   onUpdateSet,
   onCompleteSet,
   onAddSet,
@@ -76,17 +85,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleUseRecommendation = () => {
-    if (recommendation) {
-      const convertedWeight = convertWeight(recommendation.recommendedWeight, 'kg', weightUnit);
+    // Use set-specific recommendation if available, otherwise fall back to general recommendation
+    const activeRecommendation = setRecommendation || (recommendation?.sets?.[0]);
+    
+    if (activeRecommendation) {
+      const convertedWeight = convertWeight(activeRecommendation.recommendedWeight, 'kg', weightUnit);
       onUpdateSet('weight', convertedWeight);
-      
-      // Parse recommended reps (e.g., "8-12" -> 8, "10" -> 10)
-      const repsMatch = recommendation.recommendedReps.match(/(\d+)/);
-      if (repsMatch) {
-        onUpdateSet('actualReps', parseInt(repsMatch[1]));
-      }
-      
-      onUpdateSet('rpe', recommendation.recommendedRpe || 8);
+      onUpdateSet('actualReps', activeRecommendation.recommendedReps);
+      onUpdateSet('rpe', activeRecommendation.recommendedRpe);
     }
   };
 
@@ -106,7 +112,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </span>
           </div>
           
-          {recommendation && (
+          {(setRecommendation || recommendation) && (
             <Button
               variant="ghost"
               size="sm"
@@ -119,23 +125,38 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           )}
         </div>
 
-        {/* Recommendation Banner */}
-        {recommendation && showRecommendation && (
+        {/* Set-Specific Recommendation Banner */}
+        {(setRecommendation || recommendation) && showRecommendation && (
           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 space-y-2">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <div className="text-sm font-medium text-emerald-400">
-                  Mesocycle Recommendation (Week {recommendation.week})
+                  {setRecommendation ? `Set ${setRecommendation.setNumber} Recommendation` : `Mesocycle Recommendation`}
+                  {recommendation && (
+                    <span className="text-xs text-emerald-300/70"> (Week {recommendation.week})</span>
+                  )}
                 </div>
                 <div className="text-xs text-emerald-300">
-                  {recommendation.recommendedWeight}kg • {recommendation.recommendedReps} reps • RPE {recommendation.recommendedRpe}
+                  {setRecommendation ? (
+                    <>
+                      {setRecommendation.recommendedWeight}kg • {setRecommendation.recommendedReps} reps • RPE {setRecommendation.recommendedRpe}
+                    </>
+                  ) : recommendation?.sets?.[0] ? (
+                    <>
+                      {recommendation.sets[0].recommendedWeight}kg • {recommendation.sets[0].recommendedReps} reps • RPE {recommendation.sets[0].recommendedRpe}
+                    </>
+                  ) : (
+                    "No specific recommendations available"
+                  )}
                 </div>
-                <div className="text-xs text-emerald-300/80">
-                  {recommendation.reasoning}
-                </div>
-                {recommendation.progressionType && (
+                {recommendation?.reasoning && (
+                  <div className="text-xs text-emerald-300/80">
+                    {recommendation.reasoning}
+                  </div>
+                )}
+                {setRecommendation && (
                   <Badge variant="outline" className="text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
-                    {recommendation.progressionType}
+                    Progressive Set Loading
                   </Badge>
                 )}
               </div>

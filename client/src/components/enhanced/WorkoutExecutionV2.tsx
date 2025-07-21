@@ -53,15 +53,22 @@ interface WorkoutExercise {
   setsData?: WorkoutSet[];
 }
 
+interface SetRecommendation {
+  setNumber: number;
+  recommendedWeight: number;
+  recommendedReps: number;
+  recommendedRpe: number;
+}
+
 interface ExerciseRecommendation {
   exerciseId: number;
-  recommendedWeight: number;
-  recommendedReps: string;
-  recommendedRpe: number;
+  exerciseName: string;
+  sets: SetRecommendation[];
   week: number;
   reasoning: string;
-  progressionType?: string;
-  confidence?: number;
+  movementPattern?: string;
+  primaryMuscle?: string;
+  difficulty?: string;
 }
 
 interface WorkoutSession {
@@ -432,6 +439,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     saveProgressMutation.mutate(progressData);
   };
 
+  const getSetRecommendation = (exerciseId: number, setNumber: number): SetRecommendation | undefined => {
+    const exerciseRec = recommendations.find(rec => rec.exerciseId === exerciseId);
+    if (!exerciseRec?.sets) return undefined;
+    
+    return exerciseRec.sets.find(set => set.setNumber === setNumber);
+  };
+
   const getExerciseRecommendation = (exerciseId: number): ExerciseRecommendation | undefined => {
     return recommendations.find(rec => rec.exerciseId === exerciseId);
   };
@@ -523,6 +537,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   <EnhancedSetInput
                     set={currentSet}
                     recommendation={getExerciseRecommendation(currentExercise.exerciseId)}
+                    setRecommendation={getSetRecommendation(currentExercise.exerciseId, currentSet.setNumber)}
                     onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
                     onCompleteSet={completeSet}
                     onAddSet={() => addSet(currentExercise.id)}
