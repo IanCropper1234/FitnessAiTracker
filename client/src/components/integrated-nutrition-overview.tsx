@@ -202,11 +202,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       setBulkMode(false);
       setSelectedLogs([]);
       
-      const formattedDate = new Date(variables.targetDate).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit', 
-        year: 'numeric'
-      });
+      const formattedDate = TimezoneUtils.formatDateForDisplay(new Date(variables.targetDate));
       
       toast({
         title: "Success",
@@ -633,10 +629,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              const today = new Date();
-                              const yesterday = new Date(today);
-                              yesterday.setDate(today.getDate() - 1);
-                              const dateStr = yesterday.toISOString().split('T')[0];
+                              const yesterday = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
+                              const dateStr = TimezoneUtils.formatDateForAPI(yesterday);
                               handleBulkCopy(dateStr);
                             }}
                           >
@@ -647,10 +641,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              const today = new Date();
-                              const tomorrow = new Date(today);
-                              tomorrow.setDate(today.getDate() + 1);
-                              const dateStr = tomorrow.toISOString().split('T')[0];
+                              const tomorrow = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
+                              const dateStr = TimezoneUtils.formatDateForAPI(tomorrow);
                               handleBulkCopy(dateStr);
                             }}
                           >
@@ -663,7 +655,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           selected={undefined}
                           onSelect={(date) => {
                             if (date) {
-                              const dateStr = date.toISOString().split('T')[0];
+                              const dateStr = TimezoneUtils.formatDateForAPI(date);
                               handleBulkCopy(dateStr);
                             }
                           }}
