@@ -624,7 +624,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                       {/* Compact 4-column layout for mobile */}
                       <div className="grid grid-cols-4 gap-2 items-end">
                         <div className="flex flex-col h-full">
-                          <Label className="text-xs font-medium mb-1 text-left h-5">Weight (kg)</Label>
+                          <Label className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px]">Weight (kg)</Label>
                           <Input
                             type="text"
                             inputMode="decimal"
@@ -641,7 +641,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                         </div>
                         
                         <div className="flex flex-col h-full">
-                          <Label className="text-xs font-medium mb-1 text-left h-5">Actual Reps</Label>
+                          <Label className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px]">Actual Reps</Label>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -658,7 +658,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                         </div>
                         
                         <div className="flex flex-col h-full">
-                          <Label className="text-xs font-medium mb-1 text-left h-5">RPE (1-10)</Label>
+                          <Label className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px]">RPE (1-10)</Label>
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -675,7 +675,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                         </div>
                         
                         <div className="flex flex-col h-full">
-                          <div className="text-xs font-medium mb-1 opacity-0 h-5">Action</div>
+                          <div className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px] opacity-0">Action</div>
                           <Button 
                             onClick={completeSet}
                             disabled={currentSet.completed}
