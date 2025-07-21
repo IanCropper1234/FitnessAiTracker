@@ -683,18 +683,24 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                           <Button 
                             onClick={completeSet}
                             disabled={currentSet.completed}
-                            className={`h-10 rounded-md border-2 font-semibold transition-all text-xs overflow-hidden ${
+                            size="sm"
+                            className={`h-10 w-full rounded-md border-2 font-medium transition-all text-xs px-1 ${
                               currentSet.completed 
                                 ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
                                 : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
                             }`}
                           >
-                            <div className="flex items-center justify-center gap-1">
-                              <CheckCircle2 className="h-3 w-3 flex-shrink-0" />
-                              <span className="truncate">
-                                {currentSet.completed ? 'Done' : 'Complete'}
-                              </span>
-                            </div>
+                            {currentSet.completed ? (
+                              <div className="flex items-center justify-center w-full">
+                                <CheckCircle2 className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <span className="text-xs">Done</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center w-full">
+                                <CheckCircle2 className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <span className="text-xs">Complete</span>
+                              </div>
+                            )}
                           </Button>
                         </div>
                       </div>
