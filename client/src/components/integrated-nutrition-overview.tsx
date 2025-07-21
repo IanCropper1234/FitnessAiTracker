@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { NutritionLogger } from "@/components/nutrition-logger";
+
 import { 
   Plus, 
   Trash2, 
@@ -36,13 +36,14 @@ import { Input } from "@/components/ui/input";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
+  onShowLogger?: () => void;
 }
 
-export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverviewProps) {
+export function IntegratedNutritionOverview({ userId, onShowLogger }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [showLogger, setShowLogger] = useState(false);
+
   const [draggedItem, setDraggedItem] = useState<any>(null);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
   const [copyOperation, setCopyOperation] = useState<{
@@ -442,8 +443,12 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
             </div>
             <Button 
               onClick={() => {
-                console.log('Add Food button clicked in IntegratedNutritionOverview, setting showLogger to true');
-                setShowLogger(true);
+                console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger');
+                if (onShowLogger) {
+                  onShowLogger();
+                } else {
+                  setShowLogger(true);
+                }
               }}
               className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
             >
@@ -694,18 +699,7 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
         </DialogContent>
       </Dialog>
 
-      {/* Nutrition Logger Modal */}
-      {showLogger && (
-        <NutritionLogger 
-          userId={userId}
-          onComplete={() => {
-            setShowLogger(false);
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-            queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-          }}
-        />
-      )}
+
     </div>
   );
 }

@@ -173,7 +173,13 @@ export function Nutrition({ user }: NutritionProps) {
             </TabsList>
 
             <TabsContent value="overview">
-              <IntegratedNutritionOverview userId={user.id} />
+              <IntegratedNutritionOverview 
+                userId={user.id} 
+                onShowLogger={() => {
+                  console.log('onShowLogger called from IntegratedNutritionOverview, setting showLogger to true');
+                  setShowLogger(true);
+                }}
+              />
             </TabsContent>
 
             <TabsContent value="builder">
