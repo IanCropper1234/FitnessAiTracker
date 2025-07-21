@@ -50,17 +50,17 @@ export function MacroChart({
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const percentage = totalCals > 0 ? ((data.value / totalCals) * 100).toFixed(1) : 0;
+      const percentage = totalCals > 0 ? Math.round((data.value / totalCals) * 100) : 0;
       
       return (
         <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="font-medium text-black dark:text-white">{data.name}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {data.grams}g • {Math.round(data.value)} cal ({percentage}%)
+            {Math.round(data.grams)}g • {Math.round(data.value)} cal ({percentage}%)
           </p>
           {data.goal > 0 && (
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              Goal: {data.goal}g
+              Goal: {Math.round(data.goal)}g
             </p>
           )}
         </div>
@@ -86,7 +86,7 @@ export function MacroChart({
         dominantBaseline="central"
         className="text-xs font-medium"
       >
-        {`${(percent * 100).toFixed(0)}%`}
+        {`${Math.round(percent * 100)}%`}
       </text>
     );
   };
@@ -138,14 +138,14 @@ export function MacroChart({
               </span>
             </div>
             <div className="text-lg font-bold text-black dark:text-white">
-              {macro.grams}g
+              {Math.round(macro.grams)}g
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               {Math.round(macro.value)} cal
             </div>
             {macro.goal > 0 && (
               <div className="text-xs text-gray-500 dark:text-gray-500">
-                Goal: {macro.goal}g
+                Goal: {Math.round(macro.goal)}g
               </div>
             )}
           </div>
