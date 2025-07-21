@@ -366,6 +366,15 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [showFeatureShowcase, setShowFeatureShowcase] = useState(false);
   const queryClient = useQueryClient();
 
+  // Fetch user data to check developer settings
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/user', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/auth/user/${userId}`);
+      return response.json();
+    }
+  });
+
   // Handle URL parameters for auto-starting workout sessions
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -666,29 +675,31 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
         </Card>
       </div>
 
-      {/* Header with Feature Manager Button */}
-      <div className="flex items-center justify-between mb-4">
-        <div></div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowFeatureShowcase(true)}
-            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-          >
-            🚀 Demo V2
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowFeatureManager(true)}
-            className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            V2 Features
-          </Button>
+      {/* Header with Feature Manager Button - Only show for developer users */}
+      {userData?.showDeveloperFeatures && (
+        <div className="flex items-center justify-between mb-4">
+          <div></div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFeatureShowcase(true)}
+              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            >
+              🚀 Demo V2
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFeatureManager(true)}
+              className="bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              V2 Features
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">

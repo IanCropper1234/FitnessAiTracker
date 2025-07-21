@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   appleId: text("apple_id"),
   preferredLanguage: text("preferred_language").notNull().default("en"),
   theme: text("theme").notNull().default("dark"),
+  showDeveloperFeatures: boolean("show_developer_features").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

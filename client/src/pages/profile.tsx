@@ -2,15 +2,20 @@ import { UserProfile } from "@/components/user-profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface User {
   id: number;
   email: string;
   name: string;
+  showDeveloperFeatures?: boolean;
 }
 
 interface ProfilePageProps {
@@ -22,6 +27,29 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const [, setLocation] = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
+  const queryClient = useQueryClient();
+
+  // Fetch complete user data including developer settings
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/user', user.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/auth/user/${user.id}`);
+      return response.json();
+    }
+  });
+
+  // Mutation to update developer settings
+  const updateDeveloperSettingsMutation = useMutation({
+    mutationFn: async (showDeveloperFeatures: boolean) => {
+      return apiRequest(`/api/auth/user/${user.id}/developer-settings`, {
+        method: 'PUT',
+        body: { showDeveloperFeatures }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user', user.id] });
+    }
+  });
 
   const handleSignOut = () => {
     if (onSignOut) {
@@ -128,6 +156,42 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                   </Button>
                 </div>
               </div>
+
+              {/* Developer Settings - Only show for specific users */}
+              {userData?.email === 'c0109009@gmail.com' && (
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                      <Code className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-black dark:text-white">Developer Settings</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Advanced features for development</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="developer-features" className="text-sm font-medium">
+                          Show V2 Feature Buttons
+                        </Label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Display Demo V2 and V2 Features buttons in the training tab
+                        </p>
+                      </div>
+                      <Switch
+                        id="developer-features"
+                        checked={userData?.showDeveloperFeatures || false}
+                        onCheckedChange={(checked) => {
+                          updateDeveloperSettingsMutation.mutate(checked);
+                        }}
+                        disabled={updateDeveloperSettingsMutation.isPending}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

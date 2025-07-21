@@ -53,6 +53,15 @@ export class DatabaseStorage implements IStorage {
     return updatedUser || undefined;
   }
 
+  async updateUserDeveloperSettings(id: number, showDeveloperFeatures: boolean): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ showDeveloperFeatures })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser || undefined;
+  }
+
   // User Profiles
   async getUserProfile(userId: number): Promise<UserProfile | undefined> {
     const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));

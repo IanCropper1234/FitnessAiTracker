@@ -241,6 +241,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Auth user data route
+  app.get("/api/auth/user/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Developer settings route
+  app.put("/api/auth/user/:userId/developer-settings", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { showDeveloperFeatures } = req.body;
+      
+      const user = await storage.updateUserDeveloperSettings(userId, showDeveloperFeatures);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Nutrition routes
   app.get("/api/nutrition/summary/:userId", async (req, res) => {
     try {
