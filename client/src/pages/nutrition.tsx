@@ -9,10 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { MacroChart } from "@/components/macro-chart";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { MacroOverview } from "@/components/macro-overview";
-import { DailyFoodLog } from "@/components/daily-food-log";
+import { IntegratedNutritionOverview } from "@/components/integrated-nutrition-overview";
 import { DietBuilder } from "@/components/diet-builder";
 import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
@@ -154,9 +152,6 @@ export function Nutrition({ user }: NutritionProps) {
               <TabsTrigger value="overview" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Overview">
                 <BarChart3 className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger value="foodlog" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Food Log">
-                <FileText className="h-5 w-5" />
-              </TabsTrigger>
               <TabsTrigger value="builder" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Diet Plan">
                 <Target className="h-5 w-5" />
               </TabsTrigger>
@@ -175,11 +170,7 @@ export function Nutrition({ user }: NutritionProps) {
             </TabsList>
 
             <TabsContent value="overview">
-              <MacroOverview userId={user.id} />
-            </TabsContent>
-
-            <TabsContent value="foodlog">
-              <DailyFoodLog userId={user.id} />
+              <IntegratedNutritionOverview userId={user.id} />
             </TabsContent>
 
             <TabsContent value="builder">
