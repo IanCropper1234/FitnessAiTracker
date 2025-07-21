@@ -1,0 +1,109 @@
+以下建議依您「既有 Workout Execution Page 架構」為基礎，說明如何把前一版本的強化方案（對標 RP Training Coach）安全整併，而 **不破壞與其他模組的耦合**。內容分五部分：
+
+1. 差異盤點與相容層  
+2. 資料模型與 API 兼容策略  
+3. 前端元件重構路徑  
+4. 狀態管理／快取協定延伸  
+5. 迭代與回滾機制  
+
+---
+
+## 1. 差異盤點與相容層
+
+| 區域 | 既有功能 | 擴充功能 | 相容建議 |
+|------|----------|----------|----------|
+| Header | 進度條＋倒數卡片 | 進度條改環形、浮動 Rest Timer | 新增 `RestTimerFAB` 不移除原 `RestTimerCard`，以 **feature flag** 決定顯示 |
+| Exercise Overview | 完成狀態、高亮當前 | Accordion 摺疊、卡片環形指示 | 以 `ExerciseCard v2` 取代；保留 `v1` 樣式並以 **prop** 開關 |
+| Set Grid | 4 欄輸入、RPE | Spinner ±、RIR、建議重量 | 將原 `SetRow` 拆成 `SetRowLegacy` 與 `SetRowSpinner`; 透過 `session.features.spinnerSetInput` 動態選擇 |
+| Navigation | ← → 按鈕 | 滑動手勢、拖曳重排 | 手勢由 `react-native-gesture-handler` 註冊，保留按鈕；重排功能放在 **長按菜單**，不干涉按鈕事件 |
+| Save / Complete | Save & Exit, Complete | Summary Step, PR Confetti | 將完成流程包在 `finishWorkout()`，內部依 flag 呼叫 `showSummary()` 或直接 `navigate("SessionList")` |
+
+➜ **重點**：所有「新 UI / 新流程」都以 **可選式元件** 導入，並維持原 props 與事件輸出，確保外層模組（例如日誌、統計、日曆）無須改動。
+
+---
+
+## 2. 資料模型與 API 兼容策略
+
+1. **後向相容欄位**  
+   - 新欄位（`algorithm`, `actual.finishedAt`, `target.restSec`…）均標記為 `optional`。  
+   - 若後端尚未支援，前端以 `null` / 預設值回填。
+
+2. **版本標記**  
+   ```typescript
+   interface WorkoutSession {
+     version: "1.0" | "2.0"   // 1.0 = Legacy, 2.0 = 新功能全開
+   }
+   ```
+   - 建議前端於建立新 Session 時寫入 `2.0`；舊資料維持 `1.0`。
+
+3. **API 路由抽象**  
+   - 以 `@/services/workoutRepository` 封裝 REST / GraphQL 呼叫。  
+   - 在 repo 層做型別轉換：`SetEntryV1 ↔ SetEntryV2`，削減畫面層負擔。
+
+4. **漸進式寫入**  
+   - 新增欄位先只「讀不寫」觀察 1 週。  
+   - 確認後端指標正常再打開寫入旗標。  
+
+---
+
+## 3. 前端元件重構路徑
+
+1. **Atomic Component 先行**  
+   - `SpinnerInput`（± 按鈕＋顯示）  
+   - `CircleProgress`（動作完成度環）  
+   - `RestTimerFAB`（可拖曳、背景通知）  
+
+2. **Container 逐層替換**  
+   - 用 `ExerciseCardV2` 包含上述 atomic。  
+   - `WorkoutScreenV2` 僅在 `session.version === "2.0"` 時掛載；其他情況仍渲染 `WorkoutScreenLegacy`。  
+
+3. **路由保持一致**  
+   - 畫面名稱 `WorkoutExecution` 不變，內部決定渲染版本 → 其他模組的 `navigate("WorkoutExecution", {sessionId})` 毫無改動。  
+
+---
+
+## 4. 狀態管理 & 快取協定延伸
+
+1. **React Query Key 不變**  
+   - `["/api/training/session", sessionId]` 等 key 保持；新欄位落在相同 payload。  
+   - 新增 `queryClient.invalidateQueries(["/api/training/suggestions", exerciseId])` 供建議重量。  
+
+2. **Optimistic Update 延伸**  
+   - `mutationFn` 仍回傳 `Partial<WorkoutSession>`；新欄位缺失時別覆蓋舊值：  
+     ```typescript
+     onMutate: (patch) => {
+       queryClient.setQueryData(["/api/training/session", id], (prev) =>
+         deepmerge(prev, patch, { arrayMerge: overwriteById })
+       )
+     }
+     ```
+
+3. **Rollback**  
+   - 失敗時比對 `version` 欄位，若 mismatch 則退回 `1.0` 視圖，避免新版 UI 與舊資料衝突。  
+
+---
+
+## 5. 迭代 & 回滾機制
+
+1. **Feature Flag 架構**  
+   - 服務端下發 `user.features.workoutExecutionV2 = true/false`。  
+   - 初始化時寫入 `useFeature("workoutExecutionV2")` hook。  
+
+2. **測試分層**  
+   - **單元**：Spinner 長按、RestTimer 倒計時準確性。  
+   - **整合**：`WorkoutScreenV2` 與 `stats` 模組連動（完成後排行榜更新）。  
+   - **回歸**：E2E 保留 Legacy 流程腳本，確保未開旗標的用戶完全不受影響。  
+
+3. **漸進放量**  
+   - 內部 QA → 1% → 10% → 50% → 100%。  
+   - 任一步驟出現 crash / 轉換錯誤，可立即把旗標關閉，全量回到 `WorkoutExecutionLegacy`。  
+
+---
+
+### 小結
+
+• 以 **可插拔、版本化、旗標控制** 為核心原則，把新功能包裝成 V2 元件與資料結構，保持外部模組引用點（Route 名稱、Query Keys、事件回呼）不變。  
+• 所有資料變更都先向後相容地「讀不寫」，等後端與分析管線完成支持再切換為可寫。  
+• 測試與放量機制確保隨時可回滾至舊版，避免影響日誌、統計、課表等現有功能。
+
+依此路線，即可在不斷開其他模組相依的前提下，平滑升級至新一代 Workout Execution Page。若需要具體程式碼範例或旗標 middleware 實作，隨時提出！
