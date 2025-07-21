@@ -160,18 +160,21 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
+    if (!e.dataTransfer || !log) return;
     setDraggedItem(log);
     e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
   };
 
   const handleDrop = (e: React.DragEvent, targetMealType: string) => {
     e.preventDefault();
-    if (draggedItem && draggedItem.mealType !== targetMealType) {
+    if (draggedItem && targetMealType && draggedItem.mealType && draggedItem.mealType !== targetMealType && draggedItem.id) {
       updateMealTypeMutation.mutate({
         logId: draggedItem.id,
         newMealType: targetMealType
