@@ -10,10 +10,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -33,27 +34,10 @@ export function Dashboard({ user }: DashboardProps) {
   const [, setLocation] = useLocation();
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [dateFilter, setDateFilter] = useState<'today' | 'yesterday' | 'custom'>('today');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Helper function to get date based on filter
-  const getFilteredDate = () => {
-    switch (dateFilter) {
-      case 'today':
-        return new Date();
-      case 'yesterday':
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        return yesterday;
-      case 'custom':
-        return selectedDate;
-      default:
-        return new Date();
-    }
-  };
-
-  const currentDate = getFilteredDate();
-  const dateQueryParam = currentDate.toISOString().split('T')[0];
+  const currentDate = new Date(selectedDate);
+  const dateQueryParam = selectedDate;
 
   const { data: nutritionSummary } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id, dateQueryParam],
@@ -125,48 +109,63 @@ export function Dashboard({ user }: DashboardProps) {
             </p>
           </div>
           
-          {/* Date Filter Controls */}
+          {/* Date Navigation Controls */}
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <CalendarIcon className="h-4 w-4" />
-                  {dateFilter === 'today' ? 'Today' : 
-                   dateFilter === 'yesterday' ? 'Yesterday' : 
-                   'Custom'}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setDateFilter('today')}>
-                  Today
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setDateFilter('yesterday')}>
-                  Yesterday
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setDateFilter('custom')}>
-                  Custom Date
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {dateFilter === 'custom' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const currentDate = new Date(selectedDate);
+                currentDate.setDate(currentDate.getDate() - 1);
+                setSelectedDate(currentDate.toISOString().split('T')[0]);
+              }}
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
+              <span className="text-sm font-medium">
+                {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
+                 new Date(selectedDate).toLocaleDateString('en-GB', { 
+                   day: '2-digit', 
+                   month: '2-digit', 
+                   year: 'numeric' 
+                 })}
+              </span>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    {format(selectedDate, "MMM dd, yyyy")}
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <ChevronDown className="h-3 w-3" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Input
-                    type="date"
-                    value={selectedDate.toISOString().split('T')[0]}
-                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                    className="w-auto"
+                <PopoverContent className="w-auto p-0" align="center">
+                  <CalendarComponent
+                    mode="single"
+                    selected={new Date(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(date.toISOString().split('T')[0]);
+                      }
+                    }}
+                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
-            )}
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const currentDate = new Date(selectedDate);
+                currentDate.setDate(currentDate.getDate() + 1);
+                setSelectedDate(currentDate.toISOString().split('T')[0]);
+              }}
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
