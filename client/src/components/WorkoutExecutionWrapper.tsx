@@ -93,21 +93,10 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
       return false;
     }
 
-    // Session doesn't exist or is legacy version
-    if (!session || session.version === "1.0") {
-      console.log('Using V1: Session is legacy version or not found');
-      return false;
-    }
-
-    // Session is V2 and features enabled
-    if (session.version === "2.0") {
-      console.log('Using V2: Session version 2.0 detected');
-      return true;
-    }
-
-    // Default to V1 for safety
-    console.log('Using V1: Default fallback');
-    return false;
+    // If V2 is enabled globally, use V2 regardless of session version
+    // This allows testing V2 features on existing sessions
+    console.log('Using V2: Global V2 feature flag enabled');
+    return true;
   };
 
   const useV2 = shouldUseV2();
@@ -133,7 +122,7 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
   } else {
     return (
       <WorkoutExecution 
-        sessionId={sessionId} 
+        sessionId={parseInt(sessionId, 10)} 
         onComplete={onComplete}
       />
     );

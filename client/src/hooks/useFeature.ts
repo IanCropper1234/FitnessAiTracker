@@ -12,12 +12,12 @@ interface FeatureFlags {
 
 // Default feature flags (can be overridden by user preferences or server)
 const defaultFeatures: FeatureFlags = {
-  workoutExecutionV2: false, // Start with legacy version
-  spinnerSetInput: false,
-  gestureNavigation: false,
-  circularProgress: false,
-  restTimerFAB: false,
-  workoutSummary: false,
+  workoutExecutionV2: true, // Enable V2 by default for testing
+  spinnerSetInput: true,
+  gestureNavigation: true,
+  circularProgress: true,
+  restTimerFAB: true,
+  workoutSummary: true,
 };
 
 // Global feature flag store
@@ -27,7 +27,23 @@ export const useFeature = (featureName: keyof FeatureFlags): boolean => {
   const [isEnabled, setIsEnabled] = useState(globalFeatures[featureName]);
 
   useEffect(() => {
-    setIsEnabled(globalFeatures[featureName]);
+    const handleFeatureUpdate = (event: CustomEvent) => {
+      if (event.detail.featureName === featureName) {
+        setIsEnabled(event.detail.enabled);
+      }
+    };
+
+    const handleFeatureUpdates = () => {
+      setIsEnabled(globalFeatures[featureName]);
+    };
+
+    window.addEventListener('featureFlagUpdated', handleFeatureUpdate as EventListener);
+    window.addEventListener('featureFlagsUpdated', handleFeatureUpdates);
+
+    return () => {
+      window.removeEventListener('featureFlagUpdated', handleFeatureUpdate as EventListener);
+      window.removeEventListener('featureFlagsUpdated', handleFeatureUpdates);
+    };
   }, [featureName]);
 
   return isEnabled;
@@ -37,7 +53,17 @@ export const useFeatures = (): FeatureFlags => {
   const [features, setFeatures] = useState<FeatureFlags>(globalFeatures);
 
   useEffect(() => {
-    setFeatures({ ...globalFeatures });
+    const handleFeatureUpdates = () => {
+      setFeatures({ ...globalFeatures });
+    };
+
+    window.addEventListener('featureFlagsUpdated', handleFeatureUpdates);
+    window.addEventListener('featureFlagUpdated', handleFeatureUpdates);
+
+    return () => {
+      window.removeEventListener('featureFlagsUpdated', handleFeatureUpdates);
+      window.removeEventListener('featureFlagUpdated', handleFeatureUpdates);
+    };
   }, []);
 
   return features;

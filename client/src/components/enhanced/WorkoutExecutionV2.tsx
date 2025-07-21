@@ -103,8 +103,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     queryKey: ["/api/training/session", sessionId],
   });
 
-  // Check if we should use legacy component
-  if (!isV2Enabled || session?.version === "1.0") {
+  // Force V2 when the feature is enabled, regardless of session version
+  if (!isV2Enabled) {
     return <WorkoutExecution sessionId={parseInt(sessionId, 10)} onComplete={onComplete} />;
   }
 
