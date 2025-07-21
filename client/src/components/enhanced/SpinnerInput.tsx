@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Minus, Plus } from 'lucide-react';
+import React from 'react';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Plus, Minus } from "lucide-react";
 
 interface SpinnerInputProps {
   value: number;
@@ -10,40 +10,20 @@ interface SpinnerInputProps {
   max?: number;
   step?: number;
   placeholder?: string;
-  className?: string;
-  inputMode?: 'numeric' | 'decimal';
   disabled?: boolean;
+  className?: string;
 }
 
 export const SpinnerInput: React.FC<SpinnerInputProps> = ({
   value,
   onChange,
   min = 0,
-  max = 999,
+  max = 1000,
   step = 1,
   placeholder = "0",
-  className = "",
-  inputMode = "numeric",
   disabled = false,
+  className = "",
 }) => {
-  const [inputValue, setInputValue] = useState(value.toString());
-
-  useEffect(() => {
-    setInputValue(value.toString());
-  }, [value]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    
-    const numValue = inputMode === 'decimal' ? parseFloat(newValue) : parseInt(newValue);
-    if (!isNaN(numValue) && numValue >= min && numValue <= max) {
-      onChange(numValue);
-    } else if (newValue === '') {
-      onChange(0);
-    }
-  };
-
   const handleIncrement = () => {
     const newValue = Math.min(max, value + step);
     onChange(newValue);
@@ -54,49 +34,45 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
     onChange(newValue);
   };
 
-  const handleInputBlur = () => {
-    const numValue = inputMode === 'decimal' ? parseFloat(inputValue) : parseInt(inputValue);
-    if (isNaN(numValue)) {
-      setInputValue('0');
-      onChange(0);
-    } else {
-      const clampedValue = Math.max(min, Math.min(max, numValue));
-      setInputValue(clampedValue.toString());
-      onChange(clampedValue);
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = parseFloat(e.target.value) || 0;
+    const clampedValue = Math.max(min, Math.min(max, inputValue));
+    onChange(clampedValue);
   };
 
   return (
-    <div className={`flex items-center border rounded-md ${disabled ? 'opacity-50' : ''} ${className}`}>
+    <div className={`flex items-center ${className}`}>
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={handleDecrement}
         disabled={disabled || value <= min}
-        className="h-8 w-8 p-0 border-0 rounded-r-none hover:bg-muted"
+        className="h-10 w-8 p-0 border-r-0 rounded-r-none"
       >
         <Minus className="h-3 w-3" />
       </Button>
       
       <Input
-        type="text"
-        inputMode={inputMode}
-        value={inputValue}
+        type="number"
+        value={value || ''}
         onChange={handleInputChange}
-        onBlur={handleInputBlur}
         placeholder={placeholder}
+        min={min}
+        max={max}
+        step={step}
         disabled={disabled}
-        className="border-0 text-center font-semibold rounded-none h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="h-10 border-x-0 rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        inputMode={step < 1 ? "decimal" : "numeric"}
       />
       
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={handleIncrement}
         disabled={disabled || value >= max}
-        className="h-8 w-8 p-0 border-0 rounded-l-none hover:bg-muted"
+        className="h-10 w-8 p-0 border-l-0 rounded-l-none"
       >
         <Plus className="h-3 w-3" />
       </Button>

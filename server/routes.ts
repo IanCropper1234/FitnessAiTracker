@@ -2664,6 +2664,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reorder exercises in session
+  app.put("/api/training/sessions/:sessionId/exercises/reorder", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const { exercises } = req.body; // Array of { exerciseId, orderIndex }
+      
+      // Update each exercise's order index in the session
+      for (const exerciseUpdate of exercises) {
+        await db
+          .update(workoutExercises)
+          .set({ orderIndex: exerciseUpdate.orderIndex })
+          .where(and(
+            eq(workoutExercises.sessionId, sessionId),
+            eq(workoutExercises.exerciseId, exerciseUpdate.exerciseId)
+          ));
+      }
+      
+      res.json({ 
+        success: true,
+        message: "Exercise order updated successfully"
+      });
+    } catch (error: any) {
+      console.error("Error reordering exercises:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Create additional session in mesocycle
   app.post("/api/training/mesocycles/:mesocycleId/sessions", async (req, res) => {
     try {

@@ -5,19 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Target, ArrowLeft, ArrowRight, Plus, Minus } from 'lucide-react';
+import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useFeature } from '@/hooks/useFeature';
 
 // Enhanced components
 import { RestTimerFAB } from './RestTimerFAB';
-import { ExerciseCardV2 } from './ExerciseCardV2';
-import { SetRowSpinner } from './SetRowSpinner';
 import { CircularProgress } from './CircularProgress';
+import { EnhancedSetInput } from './EnhancedSetInput';
+import { DraggableExerciseList } from './DraggableExerciseList';
 
 // Import legacy component for fallback
-import { WorkoutExecution } from '../workout-execution';
+import WorkoutExecution from '../workout-execution';
 
 interface WorkoutSet {
   setNumber: number;
@@ -28,6 +29,18 @@ interface WorkoutSet {
   completed: boolean;
 }
 
+interface Exercise {
+  id: number;
+  name: string;
+  category: string;
+  muscleGroups: string[];
+  primaryMuscle: string;
+  equipment: string;
+  movementPattern: string;
+  difficulty: string;
+  instructions: string;
+}
+
 interface WorkoutExercise {
   id: number;
   exerciseId: number;
@@ -35,31 +48,8 @@ interface WorkoutExercise {
   sets: number;
   targetReps: string;
   restPeriod: number;
-  exercise: {
-    id: number;
-    name: string;
-    category: string;
-    primaryMuscle: string;
-    equipment?: string;
-    instructions?: string;
-  };
+  exercise: Exercise;
   setsData?: WorkoutSet[];
-}
-
-interface WorkoutSession {
-  id: number;
-  userId: number;
-  name: string;
-  date: string;
-  isCompleted: boolean;
-  exercises: WorkoutExercise[];
-  version: string; // "1.0" or "2.0"
-  features?: {
-    spinnerSetInput?: boolean;
-    gestureNavigation?: boolean;
-    circularProgress?: boolean;
-    restTimerFAB?: boolean;
-  };
 }
 
 interface ExerciseRecommendation {
@@ -69,6 +59,17 @@ interface ExerciseRecommendation {
   recommendedRpe: number;
   week: number;
   reasoning: string;
+  progressionType?: string;
+  confidence?: number;
+}
+
+interface WorkoutSession {
+  id: number;
+  userId: number;
+  name: string;
+  date: string;
+  isCompleted: boolean;
+  exercises: WorkoutExercise[];
 }
 
 interface WorkoutExecutionV2Props {
@@ -82,84 +83,88 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 }) => {
   // Feature flags
   const isV2Enabled = useFeature('workoutExecutionV2');
-  const spinnerInputEnabled = useFeature('spinnerSetInput');
   const gestureNavEnabled = useFeature('gestureNavigation');
-  const circularProgressEnabled = useFeature('circularProgress');
   const restTimerFABEnabled = useFeature('restTimerFAB');
+  const circularProgressEnabled = useFeature('circularProgress');
 
   // State management
-  const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
+  const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
   const [sessionStartTime] = useState(Date.now());
+  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  // Fetch session data
-  const { data: session, isLoading } = useQuery<WorkoutSession>({
-    queryKey: ["/api/training/session", sessionId],
-  });
 
   // Force V2 when the feature is enabled, regardless of session version
   if (!isV2Enabled) {
     return <WorkoutExecution sessionId={parseInt(sessionId, 10)} onComplete={onComplete} />;
   }
 
-  // Fetch exercise recommendations
-  const { data: recommendations = [] } = useQuery<ExerciseRecommendation[]>({
-    queryKey: ["/api/training/exercise-recommendations", sessionId],
-    queryFn: async () => {
-      const data = await apiRequest("GET", `/api/training/exercise-recommendations/${sessionId}`);
-      return Array.isArray(data) ? data : [];
-    },
-    enabled: !!sessionId && !!session
+  // Fetch session data
+  const { data: session, isLoading } = useQuery<WorkoutSession>({
+    queryKey: ["/api/training/session", sessionId],
   });
 
-  // Initialize workout data
+  // Fetch exercise recommendations from mesocycle advance week function
+  const { data: recommendations = [] } = useQuery<ExerciseRecommendation[]>({
+    queryKey: ["/api/training/load-progression", session?.userId],
+    enabled: !!session?.userId,
+  });
+
+  // Initialize workout data from session
   useEffect(() => {
-    if (session && Object.keys(workoutData).length === 0) {
+    if (session?.exercises) {
       console.log('Initializing V2 workout data from session:', session);
+      
       const initialData: Record<number, WorkoutSet[]> = {};
       
       session.exercises.forEach(exercise => {
-        const targetRepsArray = exercise.targetReps.includes('-') 
-          ? [parseInt(exercise.targetReps.split('-')[0])]
-          : exercise.targetReps.split(',').map(r => parseInt(r.trim()));
-        
-        // Check for saved sets data
-        if (exercise.setsData && Array.isArray(exercise.setsData) && exercise.setsData.length > 0) {
+        if (exercise.setsData && exercise.setsData.length > 0) {
+          // Restore from saved sets data
+          console.log(`Restoring saved sets data for exercise ${exercise.exerciseId}:`, exercise.setsData);
           initialData[exercise.id] = exercise.setsData;
         } else {
-          // Create fresh sets
-          initialData[exercise.id] = Array.from({ length: exercise.sets }, (_, i) => ({
-            setNumber: i + 1,
-            targetReps: targetRepsArray[i] || targetRepsArray[0] || 10,
-            actualReps: 0,
-            weight: 0,
-            rpe: 7,
-            completed: false
-          }));
+          // Create default sets
+          const targetRepsNum = parseInt(exercise.targetReps.split('-')[0]) || 8;
+          const defaultSets: WorkoutSet[] = [];
+          
+          for (let i = 0; i < exercise.sets; i++) {
+            defaultSets.push({
+              setNumber: i + 1,
+              targetReps: targetRepsNum,
+              actualReps: 0,
+              weight: 0,
+              rpe: 8,
+              completed: false,
+            });
+          }
+          
+          initialData[exercise.id] = defaultSets;
         }
       });
       
+      console.log('Initialized workout data:', initialData);
       setWorkoutData(initialData);
     }
   }, [session]);
 
-  // Rest timer effect
+  // Rest timer countdown
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isRestTimerActive && restTimeRemaining > 0) {
       interval = setInterval(() => {
-        setRestTimeRemaining(prev => {
+        setRestTimeRemaining((prev) => {
           if (prev <= 1) {
             setIsRestTimerActive(false);
             toast({
               title: "Rest Complete!",
-              description: "Time for your next set.",
+              description: "Time to start your next set.",
+              duration: 3000,
             });
             return 0;
           }
@@ -170,7 +175,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return () => clearInterval(interval);
   }, [isRestTimerActive, restTimeRemaining, toast]);
 
-  // Gesture navigation with feedback
+  // Swipe gesture handlers
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
       if (gestureNavEnabled && currentExerciseIndex < (session?.exercises.length || 0) - 1) {
@@ -251,7 +256,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const completeSet = () => {
-    if (!currentSet.weight || !currentSet.actualReps) {
+    if (!currentSet?.weight || !currentSet?.actualReps) {
       toast({
         title: "Incomplete Set",
         description: "Please enter weight and reps before completing the set.",
@@ -307,8 +312,37 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     saveProgressMutation.mutate(progressData);
   };
 
+  const completeWorkout = () => {
+    const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
+    const totalVolume = Math.round(Object.values(workoutData)
+      .flat()
+      .filter(set => set.completed)
+      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0));
+
+    const progressData = {
+      duration,
+      totalVolume,
+      isCompleted: true,
+      exercises: session.exercises.map(exercise => ({
+        exerciseId: exercise.exerciseId,
+        sets: workoutData[exercise.id] || []
+      }))
+    };
+
+    saveProgressMutation.mutate(progressData);
+  };
+
   const getExerciseRecommendation = (exerciseId: number): ExerciseRecommendation | null => {
     return recommendations.find(rec => rec.exerciseId === exerciseId) || null;
+  };
+
+  const handleExercisesReorder = (newOrder: WorkoutExercise[]) => {
+    // Update current exercise index if needed
+    const currentExerciseId = currentExercise?.id;
+    const newIndex = newOrder.findIndex(ex => ex.id === currentExerciseId);
+    if (newIndex !== -1) {
+      setCurrentExerciseIndex(newIndex);
+    }
   };
 
   return (
@@ -318,122 +352,190 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>{session.name}</span>
-            <Badge variant="outline" className="bg-blue-50 text-blue-700">
-              V2 Enhanced
-            </Badge>
-          </CardTitle>
-          
-          {/* Enhanced Progress Display */}
-          <div className="flex items-center gap-4">
-            {circularProgressEnabled ? (
-              <CircularProgress progress={progressPercentage} size={48} strokeWidth={4}>
-                <span className="text-xs font-bold">{Math.round(progressPercentage)}%</span>
-              </CircularProgress>
-            ) : (
-              <Progress value={progressPercentage} className="flex-1" />
-            )}
-            <div className="text-sm text-muted-foreground">
-              {completedSets} of {totalSets} sets completed
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                V2 Enhanced
+              </Badge>
+              {gestureNavEnabled && (
+                <Badge variant="outline" className="bg-green-50 text-green-700">
+                  👈👉 Swipe
+                </Badge>
+              )}
             </div>
+          </CardTitle>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>Exercise {currentExerciseIndex + 1} of {session.exercises.length}</span>
+              <span>{completedSets} / {totalSets} sets completed</span>
+            </div>
+            {circularProgressEnabled ? (
+              <CircularProgress 
+                progress={progressPercentage}
+                size={60}
+                strokeWidth={4}
+                showPercentage={true}
+              />
+            ) : (
+              <Progress value={progressPercentage} className="w-full" />
+            )}
           </div>
         </CardHeader>
       </Card>
 
-      {/* Enhanced Exercise Overview */}
-      <div className="space-y-3">
-        {session.exercises.map((exercise, index) => (
-          <ExerciseCardV2
-            key={exercise.id}
-            exercise={exercise}
-            workoutSets={workoutData[exercise.id] || []}
-            isCurrentExercise={index === currentExerciseIndex}
-            onSelectExercise={() => {
-              setCurrentExerciseIndex(index);
-              setCurrentSetIndex(0);
-            }}
-          />
-        ))}
-      </div>
+      {/* Enhanced Tabs Interface */}
+      <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="execution" className="flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            Workout Execution
+          </TabsTrigger>
+          <TabsTrigger value="exercises" className="flex items-center gap-2">
+            <ListOrdered className="h-4 w-4" />
+            Exercise Management
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Current Exercise Details */}
-      {currentExercise && currentSet && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              {currentExercise.exercise.name}
-              <Badge variant="outline">
-                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent>
-            {spinnerInputEnabled ? (
-              <SetRowSpinner
-                set={currentSet}
-                recommendation={getExerciseRecommendation(currentExercise.exerciseId) || undefined}
-                onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
-                onCompleteSet={completeSet}
-                isActive={true}
-              />
-            ) : (
-              // Legacy 4-column layout
-              <div className="grid grid-cols-4 gap-2 items-end">
-                {/* Legacy input components would go here */}
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground">Legacy input mode</p>
+        {/* Workout Execution Tab */}
+        <TabsContent value="execution" className="space-y-6 mt-6">
+          {/* Current Exercise Display */}
+          {currentExercise && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div>
+                    <div>{currentExercise.exercise.name}</div>
+                    <div className="text-sm text-muted-foreground font-normal">
+                      {currentExercise.exercise.muscleGroups.join(', ')} • {currentExercise.exercise.equipment}
+                    </div>
+                  </div>
+                  <Badge variant="outline">
+                    {currentExercise.exercise.category}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Exercise Instructions */}
+                <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">
+                  <p className="text-sm">{currentExercise.exercise.instructions}</p>
+                </div>
+
+                {/* Current Set Input */}
+                {currentSet && (
+                  <EnhancedSetInput
+                    set={currentSet}
+                    recommendation={getExerciseRecommendation(currentExercise.exerciseId)}
+                    onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
+                    onCompleteSet={completeSet}
+                    isActive={true}
+                    weightUnit={weightUnit}
+                    onWeightUnitChange={setWeightUnit}
+                  />
+                )}
+
+                {/* All Sets Overview */}
+                <div className="space-y-2">
+                  <h4 className="font-medium">All Sets</h4>
+                  <div className="grid gap-2">
+                    {currentSets.map((set, index) => (
+                      <div
+                        key={index}
+                        className={`p-3 rounded border cursor-pointer transition-colors ${
+                          index === currentSetIndex
+                            ? 'border-blue-500 bg-blue-50'
+                            : set.completed
+                            ? 'border-green-500 bg-green-50'
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
+                        onClick={() => setCurrentSetIndex(index)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">Set {set.setNumber}</span>
+                          {set.completed ? (
+                            <span className="text-green-600 text-sm">
+                              {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500 text-sm">
+                              Target: {set.targetReps} reps
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Enhanced Navigation */}
+          <Card>
+            <CardContent className="flex items-center justify-between gap-4 pt-6">
+              <Button
+                variant="outline"
+                disabled={currentExerciseIndex === 0}
+                onClick={() => {
+                  setCurrentExerciseIndex(currentExerciseIndex - 1);
+                  setCurrentSetIndex(0);
+                }}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Previous
+              </Button>
+              
+              <div className="text-center">
+                <div className="text-sm text-muted-foreground">
+                  Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+                </div>
+                <div className="font-medium">
+                  {currentExercise?.exercise.name}
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              
+              <Button
+                variant="outline"
+                disabled={currentExerciseIndex === session.exercises.length - 1}
+                onClick={() => {
+                  setCurrentExerciseIndex(currentExerciseIndex + 1);
+                  setCurrentSetIndex(0);
+                }}
+              >
+                Next
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Enhanced Navigation */}
-      <Card>
-        <CardContent className="flex items-center justify-between gap-4 pt-6">
-          <Button
-            variant="outline"
-            disabled={currentExerciseIndex === 0}
-            onClick={() => {
-              setCurrentExerciseIndex(currentExerciseIndex - 1);
-              setCurrentSetIndex(0);
-            }}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-          
-          <div className="text-center">
-            <div className="text-sm text-muted-foreground">
-              Exercise {currentExerciseIndex + 1} of {session.exercises.length}
-            </div>
-            <div className="font-medium">
-              {currentExercise?.exercise.name}
-            </div>
-          </div>
-          
-          <Button
-            variant="outline"
-            disabled={currentExerciseIndex === session.exercises.length - 1}
-            onClick={() => {
-              setCurrentExerciseIndex(currentExerciseIndex + 1);
-              setCurrentSetIndex(0);
-            }}
-          >
-            Next
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </CardContent>
-      </Card>
+        {/* Exercise Management Tab */}
+        <TabsContent value="exercises" className="space-y-6 mt-6">
+          <DraggableExerciseList
+            exercises={session.exercises}
+            sessionId={sessionId}
+            currentExerciseIndex={currentExerciseIndex}
+            onExerciseSelect={setCurrentExerciseIndex}
+            onExercisesReorder={handleExercisesReorder}
+          />
+        </TabsContent>
+      </Tabs>
 
       {/* Action Buttons */}
       <div className="flex gap-4">
-        <Button variant="outline" onClick={saveAndExit} className="flex-1">
+        <Button 
+          variant="outline" 
+          onClick={saveAndExit} 
+          className="flex-1"
+          disabled={saveProgressMutation.isPending}
+        >
+          <Save className="h-4 w-4 mr-2" />
           Save & Exit
         </Button>
-        <Button onClick={() => {/* Complete workout logic */}} className="flex-1">
+        <Button 
+          onClick={completeWorkout} 
+          className="flex-1"
+          disabled={saveProgressMutation.isPending}
+        >
+          <CheckCircle className="h-4 w-4 mr-2" />
           Complete Workout
         </Button>
       </div>
