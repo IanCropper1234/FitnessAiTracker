@@ -495,7 +495,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           </p>
         </CardHeader>
       </Card>
-
       {/* Rest Timer */}
       {isRestTimerActive && (
         <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
@@ -510,7 +509,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           </CardContent>
         </Card>
       )}
-
       {/* All Exercises Overview */}
       <Card>
         <CardHeader>
@@ -572,7 +570,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           </div>
         </CardContent>
       </Card>
-
       {/* Current Exercise Details */}
       {currentExercise && (
         <Card>
@@ -624,7 +621,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                           <div>Recommend: {exerciseRec.recommendedWeight}kg | {exerciseRec.recommendedReps} reps | RPE {exerciseRec.recommendedRpe} (Week {exerciseRec.week})</div>
                         </div>
                       )}
-                      
                       {/* Compact 4-column layout for mobile */}
                       <div className="grid grid-cols-4 gap-2 items-end">
                         <div className="flex flex-col h-full">
@@ -684,11 +680,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                             onClick={completeSet}
                             disabled={currentSet.completed}
                             size="sm"
-                            className={`h-10 w-full rounded-md border-2 font-medium transition-all text-xs px-1 ${
-                              currentSet.completed 
-                                ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
-                                : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
-                            }`}
+                            className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-10 w-full rounded-md border-2 font-medium transition-all text-xs px-1 bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700 pl-[4px] pr-[4px] pt-[0px] pb-[0px] ml-[12px] mr-[12px] mt-[0px] mb-[0px]"
                           >
                             {currentSet.completed ? (
                               <div className="flex items-center justify-center w-full">
@@ -780,7 +772,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           </CardContent>
         </Card>
       )}
-
       {/* Exercise Navigation */}
       <Card>
         <CardHeader>
@@ -821,7 +812,6 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
           </div>
         </CardContent>
       </Card>
-
       {/* Action Buttons */}
       <div className="flex gap-4">
         {completedSets === totalSets ? (
