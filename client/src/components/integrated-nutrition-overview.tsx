@@ -628,7 +628,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               return (
                 <div 
                   key={mealType.key}
-                  className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 min-h-[200px]"
+                  className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 min-h-[160px] overflow-hidden"
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, mealType.key)}
                 >
@@ -688,7 +688,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           key={log.id}
                           draggable={!bulkMode}
                           onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
-                          className={`flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow ${
+                          className={`flex items-start gap-2 p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow ${
                             bulkMode 
                               ? selectedLogs.includes(log.id) 
                                 ? 'ring-2 ring-blue-500 border-blue-500' 
@@ -697,7 +697,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           }`}
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
-                          <div className="flex items-center gap-2 flex-1">
+                          {/* Selection/Drag Handle */}
+                          <div className="flex-shrink-0 mt-0.5">
                             {bulkMode ? (
                               <Checkbox
                                 checked={selectedLogs.includes(log.id)}
@@ -707,67 +708,74 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                             ) : (
                               <GripVertical className="h-4 w-4 text-gray-400" />
                             )}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                          </div>
+
+                          {/* Food Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
                                 <span className="font-medium text-black dark:text-white text-sm truncate">
                                   <span className="sm:hidden">
-                                    {log.foodName.length > 25 ? `${log.foodName.substring(0, 25)}...` : log.foodName}
+                                    {log.foodName.length > 18 ? `${log.foodName.substring(0, 18)}...` : log.foodName}
                                   </span>
                                   <span className="hidden sm:block md:hidden">
-                                    {log.foodName.length > 35 ? `${log.foodName.substring(0, 35)}...` : log.foodName}
+                                    {log.foodName.length > 25 ? `${log.foodName.substring(0, 25)}...` : log.foodName}
                                   </span>
                                   <span className="hidden md:block">
-                                    {log.foodName.length > 60 ? `${log.foodName.substring(0, 60)}...` : log.foodName}
+                                    {log.foodName.length > 40 ? `${log.foodName.substring(0, 40)}...` : log.foodName}
                                   </span>
                                 </span>
-                                <Badge className={`${rpCategory.color} text-xs`}>
+                                <Badge className={`${rpCategory.color} text-xs flex-shrink-0`}>
                                   {rpCategory.label}
                                 </Badge>
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                {log.quantity} {log.unit} • {log.calories}cal
-                              </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
-                                P: {log.protein}g • C: {log.carbs}g • F: {log.fat}g
-                              </div>
-                              {log.scheduledTime && (
-                                <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                                  {new Date(`2000-01-01T${log.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                  <MoreVertical className="h-3 w-3" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {mealTypes
-                                  .filter(mt => mt.key !== log.mealType)
-                                  .map(mt => (
+                              
+                              {/* Three-dot menu - aligned to top right */}
+                              <div className="flex-shrink-0">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 flex-shrink-0">
+                                      <MoreVertical className="h-3 w-3" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    {mealTypes
+                                      .filter(mt => mt.key !== log.mealType)
+                                      .map(mt => (
+                                        <DropdownMenuItem
+                                          key={mt.key}
+                                          onClick={() => handleCopyFood(log, mt.key)}
+                                        >
+                                          <Copy className="h-4 w-4 mr-2" />
+                                          Copy to {mt.label}
+                                        </DropdownMenuItem>
+                                      ))
+                                    }
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                      key={mt.key}
-                                      onClick={() => handleCopyFood(log, mt.key)}
+                                      onClick={() => deleteMutation.mutate(log.id)}
+                                      className="text-red-600 hover:text-red-700"
                                     >
-                                      <Copy className="h-4 w-4 mr-2" />
-                                      Copy to {mt.label}
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Delete
                                     </DropdownMenuItem>
-                                  ))
-                                }
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() => deleteMutation.mutate(log.id)}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                            
+                            {/* Nutrition details */}
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                              {log.quantity} {log.unit} • {log.calories}cal
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                              P: {log.protein}g • C: {log.carbs}g • F: {log.fat}g
+                            </div>
+                            {log.scheduledTime && (
+                              <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                {new Date(`2000-01-01T${log.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            )}
                           </div>
                         </div>
                       );
