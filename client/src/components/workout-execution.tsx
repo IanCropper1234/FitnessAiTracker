@@ -541,7 +541,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{exercise.exercise.name}</span>
                       {isCurrentExercise && (
-                        <Badge variant="default" size="sm">Current</Badge>
+                        <Badge variant="default" size="sm" className="pl-[10px] pr-[10px] ml-[10px] mr-[10px]">Current</Badge>
                       )}
                       {isExerciseComplete && (
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
