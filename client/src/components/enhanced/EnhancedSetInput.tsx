@@ -173,7 +173,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         )}
 
         {/* Compact Single-Row Input Layout */}
-        <div className="grid grid-cols-4 gap-2 items-end">
+        <div className="grid grid-cols-4 gap-2 items-end pl-[1px] pr-[1px] pt-[0px] pb-[0px] mt-[8px] mb-[8px] ml-[-35px] mr-[-35px]">
           {/* Weight Input with Unit Selection */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
