@@ -12,13 +12,15 @@ interface TrainingPageProps {
 
 export function TrainingPage({ user }: TrainingPageProps) {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col space-y-2 mb-6">
-          <h1 className="text-3xl font-bold tracking-tight">Training</h1>
-          <p className="text-muted-foreground">
-            Track your workouts and build strength with Renaissance Periodization methodology
-          </p>
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+      <div className="container mx-auto p-4 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Training</h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Track your workouts and build strength with Renaissance Periodization methodology
+            </p>
+          </div>
         </div>
         
         <TrainingDashboard userId={user.id} />
