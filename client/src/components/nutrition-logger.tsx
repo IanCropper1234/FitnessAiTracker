@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { TimezoneUtils } from "@shared/utils/timezone";
 import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple } from "lucide-react";
 
 interface NutritionLoggerProps {
@@ -132,8 +133,8 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       return;
     }
 
-    const finalDate = selectedDate || new Date().toISOString().split('T')[0];
-    console.log('Logging food with selectedDate:', selectedDate, 'finalDate:', finalDate);
+    const finalDate = selectedDate || TimezoneUtils.getCurrentDate();
+    console.log('Logging food with selectedDate:', selectedDate, 'finalDate:', finalDate, 'using timezone-aware date');
     
     const logData = {
       userId,

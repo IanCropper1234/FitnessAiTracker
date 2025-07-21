@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { TimezoneUtils } from "@shared/utils/timezone";
 
 import { 
   Plus, 
@@ -42,7 +43,7 @@ interface IntegratedNutritionOverviewProps {
 export function IntegratedNutritionOverview({ userId, onShowLogger }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
 
   const [draggedItem, setDraggedItem] = useState<any>(null);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
@@ -245,9 +246,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               variant="ghost"
               size="sm"
               onClick={() => {
-                const currentDate = new Date(selectedDate);
-                currentDate.setDate(currentDate.getDate() - 1);
-                setSelectedDate(currentDate.toISOString().split('T')[0]);
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
               }}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
@@ -256,12 +255,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
             
             <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
               <span className="text-sm font-medium">
-                {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
-                 new Date(selectedDate).toLocaleDateString('en-GB', { 
-                   day: '2-digit', 
-                   month: '2-digit', 
-                   year: 'numeric' 
-                 })}
+                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                 TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
               </span>
               <Popover>
                 <PopoverTrigger asChild>
@@ -272,10 +267,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 <PopoverContent className="w-auto p-0" align="center">
                   <CalendarComponent
                     mode="single"
-                    selected={new Date(selectedDate)}
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
                     onSelect={(date) => {
                       if (date) {
-                        setSelectedDate(date.toISOString().split('T')[0]);
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
                       }
                     }}
                     initialFocus
@@ -288,9 +283,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               variant="ghost"
               size="sm"
               onClick={() => {
-                const currentDate = new Date(selectedDate);
-                currentDate.setDate(currentDate.getDate() + 1);
-                setSelectedDate(currentDate.toISOString().split('T')[0]);
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
               }}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >

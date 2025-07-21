@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { TimezoneUtils } from "@shared/utils/timezone";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { IntegratedNutritionOverview } from "@/components/integrated-nutrition-overview";
 import { DietBuilder } from "@/components/diet-builder";
@@ -54,7 +55,7 @@ export function Nutrition({ user }: NutritionProps) {
   const [showLogger, setShowLogger] = useState(false);
   const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = TimezoneUtils.getCurrentDate();
 
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id, today],
