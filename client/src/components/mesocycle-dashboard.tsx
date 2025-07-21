@@ -197,7 +197,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       {/* Current Mesocycle Overview */}
       {activeMesocycle ? (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-col space-y-1.5 p-6 pl-[23px] pr-[23px] pt-[0px] pb-[0px] mt-[6px] mb-[6px]">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="tracking-tight flex items-center gap-2 text-[18px] text-center font-semibold">
