@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple } from "lucide-react";
@@ -65,11 +65,18 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
     }
   });
 
+  const queryClient = useQueryClient();
+  
   const logMutation = useMutation({
     mutationFn: async (data: any) => {
       return await apiRequest("POST", "/api/nutrition/log", data);
     },
     onSuccess: () => {
+      // Invalidate all nutrition-related queries to refresh the food log
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
+      
       toast({
         title: "Success",
         description: "Food logged successfully!"
