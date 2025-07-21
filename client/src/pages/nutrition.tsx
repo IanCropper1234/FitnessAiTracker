@@ -20,7 +20,19 @@ import { AdvancedMacroManagement } from "@/components/advanced-macro-management"
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Trash2, Calendar } from "lucide-react";
+import { 
+  Plus, 
+  Search, 
+  Trash2, 
+  Calendar,
+  BarChart3,
+  FileText,
+  Target,
+  Brain,
+  User,
+  TrendingUp,
+  ShoppingCart
+} from "lucide-react";
 
 interface User {
   id: number;
@@ -133,48 +145,27 @@ export function Nutrition({ user }: NutritionProps) {
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="flex w-full overflow-x-auto scrollbar-hide h-auto p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <TabsTrigger 
-                value="overview" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                Overview
+            <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <TabsTrigger value="overview" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Overview">
+                <BarChart3 className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger 
-                value="foodlog" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                Food Log
+              <TabsTrigger value="foodlog" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Food Log">
+                <FileText className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger 
-                value="builder" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                Diet Plan
+              <TabsTrigger value="builder" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Diet Plan">
+                <Target className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger 
-                value="advanced" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state-active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                RP Coach
+              <TabsTrigger value="advanced" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="RP Coach">
+                <Brain className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger 
-                value="body" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                Body
+              <TabsTrigger value="body" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Body">
+                <User className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger 
-                value="progression" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                Progress
+              <TabsTrigger value="progression" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Progress">
+                <TrendingUp className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger 
-                value="shopping" 
-                className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 rounded-md transition-all whitespace-nowrap"
-              >
-                Shopping
+              <TabsTrigger value="shopping" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Shopping">
+                <ShoppingCart className="h-5 w-5" />
               </TabsTrigger>
             </TabsList>
 
