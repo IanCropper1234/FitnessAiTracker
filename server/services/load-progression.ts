@@ -158,25 +158,12 @@ export class LoadProgression {
 
   /**
    * Get appropriate weight increment based on exercise type and current load
+   * Now supports metric conversion
    */
-  private static getWeightIncrement(exerciseName: string, currentWeight: number): number {
-    const lowerName = exerciseName.toLowerCase();
-    
-    // Compound movements - larger increments
-    if (lowerName.includes('squat') || lowerName.includes('deadlift')) {
-      return currentWeight > 100 ? 5 : 2.5;
-    }
-    if (lowerName.includes('bench') || lowerName.includes('press') || lowerName.includes('row')) {
-      return currentWeight > 60 ? 2.5 : 1.25;
-    }
-    
-    // Isolation movements - smaller increments
-    if (lowerName.includes('curl') || lowerName.includes('extension') || lowerName.includes('raise')) {
-      return currentWeight > 20 ? 1.25 : 0.625;
-    }
-    
-    // Default progression
-    return currentWeight > 40 ? 2.5 : 1.25;
+  private static getWeightIncrement(exerciseName: string, currentWeight: number, unit: 'kg' | 'lbs' = 'kg'): number {
+    // Import the utility function for consistent increment logic
+    const { getWeightIncrement } = require("../../shared/utils/metric-conversion");
+    return getWeightIncrement(exerciseName, currentWeight, unit);
   }
 
   /**

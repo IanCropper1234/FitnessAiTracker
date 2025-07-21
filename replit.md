@@ -8,12 +8,15 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
-### January 21, 2025 - Complete Codebase Analysis & Documentation Update
+### January 21, 2025 - Complete Codebase Analysis & Metric Conversion Enhancement
 ✓ Analyzed complete application architecture including 25+ database tables
 ✓ Documented comprehensive API routing structure with 30+ endpoints
 ✓ Mapped service layer architecture with 10+ specialized business logic services
 ✓ Identified frontend component structure with mobile-first design patterns
 ✓ Documented complete data flow for nutrition, training, and analytics systems
+✓ **NEW**: Created comprehensive metric conversion utilities (KG/LBS support)
+✓ **NEW**: Enhanced database schema with weightUnit field for workout exercises
+✓ **NEW**: Updated load progression service with unit-aware weight increments
 ✓ Updated system architecture documentation with production-ready status
 
 **Key Findings:**
@@ -22,6 +25,7 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 - Service-oriented backend architecture with specialized algorithms
 - Mobile-optimized frontend with comprehensive UI component library
 - Real-time data synchronization using React Query v5
+- **NEW**: Partial metric conversion support identified and enhanced
 
 ## User Preferences
 

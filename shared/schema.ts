@@ -229,6 +229,7 @@ export const workoutExercises = pgTable("workout_exercises", {
   targetRestSec: integer("target_rest_sec"), // Target rest period in seconds
   recommendedWeight: decimal("recommended_weight", { precision: 6, scale: 2 }), // AI recommended weight
   recommendedRpe: integer("recommended_rpe"), // AI recommended RPE
+  weightUnit: text("weight_unit", { enum: ["kg", "lbs"] }).default("kg"), // Weight unit for this exercise
   finishedAt: timestamp("finished_at"), // Individual exercise completion time
 });
 
