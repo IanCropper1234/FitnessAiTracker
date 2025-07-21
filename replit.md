@@ -8,6 +8,15 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 21, 2025 - Developer Access Control System Implementation
+✓ **COMPLETE**: Implemented comprehensive developer access control for V2 feature buttons
+✓ **DATABASE**: Added isDeveloper and showDeveloperFeatures fields to users table schema
+✓ **API**: Created endpoints for fetching user data and updating developer settings
+✓ **FRONTEND**: Updated training dashboard to conditionally show V2 buttons based on user privileges
+✓ **PROFILE**: Enhanced profile page with developer settings toggle (visible only to developer users)
+✓ **SECURITY**: V2 feature buttons ("Demo V2" and "V2 Features") now hidden from regular users
+✓ **USER CONTROL**: Developers can toggle V2 feature visibility in Profile settings
+
 ### July 21, 2025 - UI/UX Redesign & Muscle Group Display Fix
 ✓ **COMPLETE**: Redesigned V2 workout execution interface with mobile-optimized layout
 ✓ **FIXED**: Critical mobile overlay issue - weight input now on separate row with unit selector

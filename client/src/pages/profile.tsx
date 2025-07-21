@@ -41,9 +41,8 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   // Mutation to update developer settings
   const updateDeveloperSettingsMutation = useMutation({
     mutationFn: async (showDeveloperFeatures: boolean) => {
-      return apiRequest(`/api/auth/user/${user.id}/developer-settings`, {
-        method: 'PUT',
-        body: { showDeveloperFeatures }
+      return apiRequest('PUT', `/api/auth/user/${user.id}/developer-settings`, {
+        showDeveloperFeatures
       });
     },
     onSuccess: () => {
