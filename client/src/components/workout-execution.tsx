@@ -541,7 +541,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{exercise.exercise.name}</span>
                       {isCurrentExercise && (
-                        <Badge variant="default" size="sm" className="pl-[10px] pr-[10px] ml-[10px] mr-[10px]">Current</Badge>
+                        <Badge variant="default" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 pl-[10px] pr-[10px] ml-[10px] mr-[10px]">Current</Badge>
                       )}
                       {isExerciseComplete && (
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -557,10 +557,10 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    <Badge variant="outline" size="sm" className="capitalize">
+                    <Badge variant="outline" className="capitalize">
                       {exercise.exercise.category}
                     </Badge>
-                    <Badge variant="secondary" size="sm" className="capitalize">
+                    <Badge variant="secondary" className="capitalize">
                       {exercise.exercise.primaryMuscle.replace('_', ' ')}
                     </Badge>
                   </div>
@@ -754,7 +754,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
                         </>
                       ) : index === currentSetIndex ? (
-                        <Badge variant="default" size="sm">
+                        <Badge variant="default">
                           Current Set
                         </Badge>
                       ) : (
@@ -785,7 +785,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                 setCurrentSetIndex(0);
               }}
             >
-              Previous Exercise
+              ←
             </Button>
             
             <div className="text-center">
@@ -805,7 +805,7 @@ export function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProp
                 setCurrentSetIndex(0);
               }}
             >
-              Next Exercise
+              →
             </Button>
           </div>
         </CardContent>
