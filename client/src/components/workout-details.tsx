@@ -178,7 +178,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                 <p className="text-sm text-muted-foreground">Pump Quality</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
-                <p className="text-lg font-bold text-yellow-600">{feedback.sorenessLevel}/10</p>
+                <p className="text-lg font-bold text-yellow-600">{feedback.muscleSoreness}/10</p>
                 <p className="text-sm text-muted-foreground">Soreness Level</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
@@ -194,7 +194,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                 <p className="text-sm text-muted-foreground">Sleep Quality</p>
               </div>
               <div className="text-center p-3 border rounded-lg">
-                <p className="text-lg font-bold text-orange-600">{feedback.overallRating}/10</p>
+                <p className="text-lg font-bold text-orange-600">{Math.round((feedback.pumpQuality + feedback.energyLevel + feedback.sleepQuality) / 3)}/10</p>
                 <p className="text-sm text-muted-foreground">Overall Rating</p>
               </div>
             </div>
