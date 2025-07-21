@@ -371,6 +371,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/nutrition/log/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedLog = await storage.updateNutritionLog(id, updates);
+      
+      if (!updatedLog) {
+        return res.status(404).json({ message: "Log not found" });
+      }
+
+      res.json(updatedLog);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.post("/api/nutrition/goal/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);

@@ -19,11 +19,20 @@ import {
   Moon,
   Apple,
   Utensils,
-  CalendarIcon
+  CalendarIcon,
+  MoreVertical,
+  Copy,
+  ArrowRight,
+  ArrowLeft,
+  GripVertical
 } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
@@ -34,6 +43,14 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showLogger, setShowLogger] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<any>(null);
+  const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const [copyOperation, setCopyOperation] = useState<{
+    type: 'item' | 'section';
+    data: any;
+    sourceSection?: string;
+  } | null>(null);
+  const [copyDate, setCopyDate] = useState('');
 
   // Fetch nutrition summary for the selected date
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
@@ -85,6 +102,39 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
     }
   });
 
+  const updateMealTypeMutation = useMutation({
+    mutationFn: async ({ logId, newMealType }: { logId: number; newMealType: string }) => {
+      return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { mealType: newMealType });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+    }
+  });
+
+  const copyFoodMutation = useMutation({
+    mutationFn: async (foodData: any) => {
+      return await apiRequest("POST", "/api/nutrition/log", foodData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      toast({
+        title: "Success",
+        description: "Food copied successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to copy food",
+        variant: "destructive"
+      });
+    }
+  });
+
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
       case 'breakfast': return <Sunrise className="h-4 w-4" />;
@@ -108,6 +158,60 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
       default: return { label: 'Food', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200' };
     }
   };
+
+  const handleDragStart = (e: React.DragEvent, log: any) => {
+    setDraggedItem(log);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetMealType: string) => {
+    e.preventDefault();
+    if (draggedItem && draggedItem.mealType !== targetMealType) {
+      updateMealTypeMutation.mutate({
+        logId: draggedItem.id,
+        newMealType: targetMealType
+      });
+    }
+    setDraggedItem(null);
+  };
+
+  const handleCopyFood = (log: any, targetMealType?: string) => {
+    const { id, createdAt, ...foodData } = log;
+    const newFoodData = {
+      ...foodData,
+      userId,
+      date: selectedDate,
+      mealType: targetMealType || log.mealType
+    };
+    copyFoodMutation.mutate(newFoodData);
+  };
+
+  const handleCopySection = (mealType: string, targetDate: string) => {
+    const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
+    
+    mealLogs.forEach((log: any) => {
+      const { id, createdAt, ...foodData } = log;
+      const newFoodData = {
+        ...foodData,
+        userId,
+        date: targetDate,
+        mealType
+      };
+      copyFoodMutation.mutate(newFoodData);
+    });
+  };
+
+  const mealTypes = [
+    { key: 'breakfast', label: 'Breakfast', icon: <Sunrise className="h-4 w-4" /> },
+    { key: 'lunch', label: 'Lunch', icon: <Sun className="h-4 w-4" /> },
+    { key: 'dinner', label: 'Dinner', icon: <Moon className="h-4 w-4" /> },
+    { key: 'snack', label: 'Snack', icon: <Apple className="h-4 w-4" /> }
+  ];
 
   if (summaryLoading || logsLoading) {
     return (
@@ -343,74 +447,192 @@ export function IntegratedNutritionOverview({ userId }: IntegratedNutritionOverv
           </div>
         </CardHeader>
         <CardContent>
-          {nutritionLogs && nutritionLogs.length > 0 ? (
-            <div className="space-y-4">
-              {Object.entries(
-                nutritionLogs.reduce((groups: any, log: any) => {
-                  const mealType = log.mealType || 'general';
-                  if (!groups[mealType]) groups[mealType] = [];
-                  groups[mealType].push(log);
-                  return groups;
-                }, {})
-              ).map(([mealType, logs]: [string, any]) => (
-                <div key={mealType} className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
-                  <div className="flex items-center gap-2 mb-3">
-                    {getMealTypeIcon(mealType)}
-                    <h3 className="font-semibold text-black dark:text-white">
-                      {formatMealType(mealType)}
-                    </h3>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      ({logs.length} item{logs.length !== 1 ? 's' : ''})
-                    </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {mealTypes.map((mealType) => {
+              const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType.key) || [];
+              
+              return (
+                <div 
+                  key={mealType.key}
+                  className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 min-h-[200px]"
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, mealType.key)}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      {mealType.icon}
+                      <h3 className="font-semibold text-black dark:text-white">
+                        {mealType.label}
+                      </h3>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        ({mealLogs.length})
+                      </span>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setCopyOperation({
+                              type: 'section',
+                              data: mealType.key,
+                              sourceSection: mealType.key
+                            });
+                            setShowCopyDialog(true);
+                          }}
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy from date
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setCopyOperation({
+                              type: 'section',
+                              data: mealType.key,
+                              sourceSection: mealType.key
+                            });
+                            setCopyDate('');
+                            setShowCopyDialog(true);
+                          }}
+                        >
+                          <ArrowRight className="h-4 w-4 mr-2" />
+                          Copy to date
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
+                  
                   <div className="space-y-2">
-                    {logs.map((log: any) => {
+                    {mealLogs.map((log: any) => {
                       const rpCategory = getRPCategory(log.category);
                       return (
-                        <div key={log.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium text-black dark:text-white">
-                                {log.foodName}
-                              </span>
-                              <Badge className={rpCategory.color}>
-                                {rpCategory.label}
-                              </Badge>
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              {log.quantity} {log.unit} • {log.calories}cal • P: {log.protein}g • C: {log.carbs}g • F: {log.fat}g
-                            </div>
-                            {log.scheduledTime && (
-                              <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                                Scheduled: {new Date(`2000-01-01T${log.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        <div 
+                          key={log.id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, log)}
+                          className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 cursor-move hover:shadow-sm transition-shadow"
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            <GripVertical className="h-4 w-4 text-gray-400" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-black dark:text-white text-sm truncate">
+                                  {log.foodName}
+                                </span>
+                                <Badge className={`${rpCategory.color} text-xs`}>
+                                  {rpCategory.label}
+                                </Badge>
                               </div>
-                            )}
+                              <div className="text-xs text-gray-600 dark:text-gray-400">
+                                {log.quantity} {log.unit} • {log.calories}cal
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">
+                                P: {log.protein}g • C: {log.carbs}g • F: {log.fat}g
+                              </div>
+                              {log.scheduledTime && (
+                                <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                  {new Date(`2000-01-01T${log.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteMutation.mutate(log.id)}
-                            disabled={deleteMutation.isPending}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          
+                          <div className="flex items-center gap-1">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                  <MoreVertical className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {mealTypes
+                                  .filter(mt => mt.key !== log.mealType)
+                                  .map(mt => (
+                                    <DropdownMenuItem
+                                      key={mt.key}
+                                      onClick={() => handleCopyFood(log, mt.key)}
+                                    >
+                                      <Copy className="h-4 w-4 mr-2" />
+                                      Copy to {mt.label}
+                                    </DropdownMenuItem>
+                                  ))
+                                }
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => deleteMutation.mutate(log.id)}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </div>
                       );
                     })}
+                    
+                    {mealLogs.length === 0 && (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <Utensils className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">No items</p>
+                        <p className="text-xs">Drag items here or use Add Food</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-              <Utensils className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No food logged for this date</p>
-              <p className="text-sm">Click "Add Food" to start tracking your nutrition</p>
-            </div>
-          )}
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
+
+      {/* Copy Dialog */}
+      <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {copyOperation?.type === 'section' ? 'Copy Meal Section' : 'Copy Food Item'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="copyDate">Select Date</Label>
+              <Input
+                id="copyDate"
+                type="date"
+                value={copyDate}
+                onChange={(e) => setCopyDate(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowCopyDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (copyOperation && copyDate) {
+                    if (copyOperation.type === 'section') {
+                      handleCopySection(copyOperation.data, copyDate);
+                    }
+                    setShowCopyDialog(false);
+                    setCopyOperation(null);
+                    setCopyDate('');
+                  }
+                }}
+                disabled={!copyDate}
+              >
+                Copy
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Nutrition Logger Modal */}
       {showLogger && (
