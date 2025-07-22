@@ -872,7 +872,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                                 onClick={(e) => e.stopPropagation()}
                               />
                             ) : (
-                              <GripVertical className="h-4 w-4 text-gray-400" />
+                              <GripVertical className="h-10 w-10 text-gray-400" />
                             )}
                           </div>
 
@@ -997,7 +997,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
         <div className="fixed inset-0 pointer-events-none z-50">
           <div className="relative w-full h-full">
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
-              <GripVertical className="w-4 h-4" />
+              <GripVertical className="w-10 h-10" />
               <span className="text-sm font-medium">
                 Moving: {draggedItem.foodName}
               </span>

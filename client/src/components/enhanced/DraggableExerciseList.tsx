@@ -300,7 +300,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
               <div className="flex items-center gap-3">
                 {/* Drag Handle */}
                 <div className="cursor-grab active:cursor-grabbing text-muted-foreground">
-                  <GripVertical className="h-5 w-5" />
+                  <GripVertical className="h-10 w-10" />
                 </div>
 
                 {/* Exercise Info */}
