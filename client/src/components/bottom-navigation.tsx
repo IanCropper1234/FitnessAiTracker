@@ -155,38 +155,38 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md mx-4 rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700 ml-[0px] mr-[0px]">
+      <DialogContent className="w-[85vw] max-w-sm mx-auto rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700 p-4 sm:p-6">
         <DialogHeader className="text-center">
-          <DialogTitle className="flex items-center justify-center gap-3 text-xl font-medium text-white">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+          <DialogTitle className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl font-medium text-white">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <Plus className="w-4 h-4 text-white" />
             </div>
             Quick Actions
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-3 mt-6">
+        <div className="space-y-2.5 mt-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <button
                 key={action.id}
                 onClick={() => handleActionPress(action.action)}
-                className="w-full flex items-center gap-4 p-4 rounded-lg bg-gray-800/50 hover:bg-gray-700/60 border border-gray-700/30 text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
+                className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-lg bg-gray-800/50 hover:bg-gray-700/60 border border-gray-700/30 text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
               >
-                <div className="w-10 h-10 bg-gray-700/80 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-700/80 rounded-full flex items-center justify-center flex-shrink-0">
                   <Icon className="w-5 h-5 text-gray-300" />
                 </div>
                 <div className="flex flex-col items-start flex-1 min-w-0">
-                  <span className="font-medium text-base text-white">{action.label}</span>
-                  <span className="text-gray-400 text-sm leading-tight">{action.description}</span>
+                  <span className="font-medium text-sm sm:text-base text-white">{action.label}</span>
+                  <span className="text-gray-400 text-xs sm:text-sm leading-tight">{action.description}</span>
                 </div>
               </button>
             );
           })}
         </div>
 
-        <div className="flex justify-center pt-6">
+        <div className="flex justify-center pt-4">
           <button 
             onClick={onClose}
             className="px-6 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
