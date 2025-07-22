@@ -28,9 +28,9 @@ export function TrainingPage({ user }: TrainingPageProps) {
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="p-2"
+              className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-0"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
               <h1 className="text-display">Training</h1>
@@ -41,9 +41,9 @@ export function TrainingPage({ user }: TrainingPageProps) {
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="p-2"
+              className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-0"
             >
-              <Home className="w-6 h-6" />
+              <Home className="w-5 h-5" />
             </Button>
           </div>
         </div>
