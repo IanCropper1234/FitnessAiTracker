@@ -123,7 +123,6 @@ export function MacroChart({
           <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
-
       {/* Macro Summary */}
       <div className="grid grid-cols-3 gap-4 text-center">
         {data.map((macro) => (
@@ -151,9 +150,8 @@ export function MacroChart({
           </div>
         ))}
       </div>
-
       {/* Total Calories */}
-      <div className="text-center pt-2 border-t border-gray-200 dark:border-gray-700">
+      <div className="text-center border-t border-gray-200 dark:border-gray-700 pt-[10px] pb-[10px]">
         <span className="text-sm text-gray-600 dark:text-gray-400">Total: </span>
         <span className="text-lg font-bold text-black dark:text-white">
           {Math.round(totalCals)} calories
