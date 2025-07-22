@@ -123,24 +123,24 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
         </div>
       </div>
       {/* Training Insights */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-          <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Most Active</h4>
-          <p className="text-sm text-blue-700 dark:text-blue-300">
+      <div className="grid grid-cols-3 gap-2 md:gap-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-2 md:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+          <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs md:text-sm">Most Active</h4>
+          <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
             {trainingStats.totalSessions > 10 ? "High frequency trainer" : "Building consistency"}
           </p>
         </div>
         
-        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-          <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">Volume Progress</h4>
-          <p className="text-sm text-green-700 dark:text-green-300">
+        <div className="bg-green-50 dark:bg-green-900/20 p-2 md:p-4 rounded-lg border border-green-200 dark:border-green-800">
+          <h4 className="font-medium text-green-900 dark:text-green-100 mb-1 text-xs md:text-sm">Volume Progress</h4>
+          <p className="text-xs md:text-sm text-green-700 dark:text-green-300">
             {trainingStats.totalVolume > 1000 ? "Strong progression" : "Steady improvement"}
           </p>
         </div>
         
-        <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
-          <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2">Session Length</h4>
-          <p className="text-sm text-purple-700 dark:text-purple-300">
+        <div className="bg-purple-50 dark:bg-purple-900/20 p-2 md:p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+          <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs md:text-sm">Session Length</h4>
+          <p className="text-xs md:text-sm text-purple-700 dark:text-purple-300">
             {trainingStats.averageSessionLength > 60 ? "Thorough workouts" : "Efficient training"}
           </p>
         </div>
