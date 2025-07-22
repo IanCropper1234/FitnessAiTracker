@@ -346,7 +346,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       {/* Date Navigation */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="flex flex-col space-y-1.5 p-6 pl-[10px] pr-[10px] pt-[5px] pb-[5px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
-          <CardTitle className="text-black dark:text-white flex items-center gap-2">
+          <CardTitle className="text-black dark:text-white flex items-center gap-2 pt-[5px] pb-[5px]">
             <CalendarIcon className="w-5 h-5" />
             Nutrition Overview
           </CardTitle>
@@ -403,9 +403,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </CardContent>
       </Card>
-
-      
-
       {/* Macro Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -528,7 +525,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </CardContent>
         </Card>
       </div>
-
       {/* Daily Food Log Section */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader>
@@ -840,7 +836,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </CardContent>
       </Card>
-
       {/* Copy Dialog */}
       <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
         <DialogContent>
@@ -937,8 +932,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </DialogContent>
       </Dialog>
-
-
     </div>
   );
 }
