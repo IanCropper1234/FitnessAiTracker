@@ -125,8 +125,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
       action: () => {
         setLocation("/nutrition");
         onClose();
-      },
-      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+      }
     },
     {
       id: "start-workout",
@@ -136,8 +135,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
       action: () => {
         setLocation("/training");
         onClose();
-      },
-      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+      }
     },
     {
       id: "profile",
@@ -147,8 +145,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
       action: () => {
         setLocation("/profile");
         onClose();
-      },
-      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+      }
     }
   ];
 
@@ -158,43 +155,49 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md mx-4 rounded-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-        <DialogHeader className="text-center">
-          <DialogTitle className="flex items-center justify-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
-            <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
+      <DialogContent className="sm:max-w-md mx-4 rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700">
+        <DialogHeader className="text-center relative">
+          <button
+            onClick={onClose}
+            className="absolute right-0 top-0 p-1 text-gray-400 hover:text-gray-200 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <DialogTitle className="flex items-center justify-center gap-3 text-xl font-medium text-white">
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <Plus className="w-4 h-4 text-white" />
             </div>
             Quick Actions
           </DialogTitle>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
+        <div className="space-y-3 mt-6">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <Button
                 key={action.id}
                 onClick={() => handleActionPress(action.action)}
-                className={`${action.color} text-white h-auto p-4 justify-start gap-4 hover:scale-105 transition-all duration-200`}
+                className="bg-gray-800/60 hover:bg-gray-700/60 text-white h-auto p-4 justify-start gap-4 hover:scale-105 transition-all duration-200 border border-gray-700/50"
                 variant="default"
               >
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <Icon className="w-5 h-5" />
+                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-gray-300" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="font-medium text-base">{action.label}</span>
-                  <span className="text-white/80 text-sm">{action.description}</span>
+                  <span className="font-medium text-base text-white">{action.label}</span>
+                  <span className="text-gray-400 text-sm">{action.description}</span>
                 </div>
               </Button>
             );
           })}
         </div>
 
-        <div className="flex justify-center pt-2">
+        <div className="flex justify-center pt-4">
           <Button 
             onClick={onClose}
             variant="ghost"
-            className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
           >
             Cancel
           </Button>
