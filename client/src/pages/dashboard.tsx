@@ -321,7 +321,7 @@ export function Dashboard({ user }: DashboardProps) {
             </p>
           </div>
           
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
+          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800 mt-[0px] mb-[0px] ml-[15px] mr-[15px]">
             <h4 className="text-green-900 dark:text-green-100 mb-1 text-xs font-medium text-center">Volume Progress</h4>
             <p className="text-xs text-green-700 dark:text-green-300 text-center">
               {trainingStats && trainingStats.totalVolume > 1000 ? "Strong progression" : "Steady improvement"}
