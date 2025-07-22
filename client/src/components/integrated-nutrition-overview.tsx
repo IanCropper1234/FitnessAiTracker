@@ -48,6 +48,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
 
   const [draggedItem, setDraggedItem] = useState<any>(null);
+  const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
+  const [dragPreview, setDragPreview] = useState<{ x: number; y: number } | null>(null);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
   const [copyOperation, setCopyOperation] = useState<{
     type: 'item' | 'section';
@@ -274,27 +276,140 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
-    if (!e.dataTransfer || !log) return;
+    if (!e.dataTransfer || !log || bulkMode) return;
+    
     setDraggedItem(log);
     e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      id: log.id,
+      foodName: log.foodName,
+      mealType: log.mealType
+    }));
+    
+    // Create custom drag image
+    const dragImage = document.createElement('div');
+    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-2 shadow-lg';
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-1000px';
+    dragImage.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+        <span class="text-sm font-medium">${log.foodName}</span>
+      </div>
+    `;
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
+    
+    // Clean up drag image after drag operation
+    setTimeout(() => {
+      document.body.removeChild(dragImage);
+    }, 0);
+
+    // Track cursor position for visual feedback
+    const handleMouseMove = (e: MouseEvent) => {
+      setDragPreview({ x: e.clientX, y: e.clientY });
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    setTimeout(() => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    }, 100);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, targetMealType?: string) => {
     e.preventDefault();
+    
+    if (!draggedItem) return;
+    
     if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
+      // Provide visual feedback based on validity of drop
+      if (targetMealType && draggedItem.mealType !== targetMealType) {
+        e.dataTransfer.dropEffect = 'move';
+        setDragOverTarget(targetMealType);
+      } else {
+        e.dataTransfer.dropEffect = 'none';
+      }
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only clear drag over target if we're leaving the container, not a child element
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setDragOverTarget(null);
     }
   };
 
   const handleDrop = (e: React.DragEvent, targetMealType: string) => {
     e.preventDefault();
-    if (draggedItem && targetMealType && draggedItem.mealType && draggedItem.mealType !== targetMealType && draggedItem.id) {
-      updateMealTypeMutation.mutate({
-        logId: draggedItem.id,
-        newMealType: targetMealType
-      });
+    setDragOverTarget(null);
+    setDragPreview(null);
+    
+    if (!draggedItem || !targetMealType) {
+      setDraggedItem(null);
+      return;
     }
+    
+    // Prevent dropping on same meal type
+    if (draggedItem.mealType === targetMealType) {
+      toast({
+        title: "No Change Needed",
+        description: `${draggedItem.foodName} is already in ${formatMealType(targetMealType)}`,
+        variant: "default"
+      });
+      setDraggedItem(null);
+      return;
+    }
+    
+    // Verify data transfer
+    try {
+      const transferData = e.dataTransfer.getData('text/plain');
+      const parsedData = transferData ? JSON.parse(transferData) : null;
+      
+      if (!parsedData || parsedData.id !== draggedItem.id) {
+        throw new Error('Invalid drag data');
+      }
+    } catch (error) {
+      toast({
+        title: "Drag Error",
+        description: "Failed to move food item. Please try again.",
+        variant: "destructive"
+      });
+      setDraggedItem(null);
+      return;
+    }
+    
+    // Perform the move with success feedback
+    updateMealTypeMutation.mutate({
+      logId: draggedItem.id,
+      newMealType: targetMealType
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Food Moved",
+          description: `${draggedItem.foodName} moved to ${formatMealType(targetMealType)}`,
+        });
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Move Failed",
+          description: error.message || `Failed to move ${draggedItem.foodName}`,
+          variant: "destructive"
+        });
+      }
+    });
+    
     setDraggedItem(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDragOverTarget(null);
+    setDragPreview(null);
   };
 
   const handleCopyFood = (log: any, targetMealType?: string) => {
@@ -550,7 +665,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="gap-1 sm:text-sm px-2 sm:px-3 text-[12px] bg-[#ffffff] text-[#0a0a0a] font-normal"
+                  className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground h-9 rounded-md gap-1 sm:text-sm px-2 sm:px-3 text-[12px] bg-[#ffffff] text-[#0a0a0a] font-normal"
                 >
                   <Check className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">{bulkMode ? 'Exit Selection' : 'Select Items'}</span>
@@ -669,8 +784,15 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               return (
                 <div 
                   key={mealType.key}
-                  className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800 min-h-[160px] overflow-hidden"
-                  onDragOver={handleDragOver}
+                  className={`border rounded-lg p-3 min-h-[160px] overflow-hidden transition-all duration-200 ${
+                    dragOverTarget === mealType.key 
+                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 border-2 shadow-lg scale-[1.02]' 
+                      : draggedItem && draggedItem.mealType !== mealType.key
+                      ? 'bg-green-50 dark:bg-green-900/10 border-green-300 hover:border-green-400'
+                      : 'bg-gray-50 dark:bg-gray-800'
+                  }`}
+                  onDragOver={(e) => handleDragOver(e, mealType.key)}
+                  onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, mealType.key)}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -729,12 +851,15 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           key={log.id}
                           draggable={!bulkMode}
                           onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
-                          className={`flex items-start gap-2 p-3 bg-white dark:bg-gray-900 rounded-md border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow ${
-                            bulkMode 
+                          onDragEnd={handleDragEnd}
+                          className={`flex items-start gap-2 p-3 rounded-md border transition-all duration-200 ${
+                            draggedItem && draggedItem.id === log.id
+                              ? 'opacity-50 scale-95 bg-blue-50 dark:bg-blue-900/20 border-blue-400'
+                              : bulkMode 
                               ? selectedLogs.includes(log.id) 
-                                ? 'ring-2 ring-blue-500 border-blue-500' 
-                                : 'cursor-pointer' 
-                              : 'cursor-move'
+                                ? 'ring-2 ring-blue-500 border-blue-500 bg-white dark:bg-gray-900' 
+                                : 'cursor-pointer bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800' 
+                              : 'cursor-move bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600'
                           }`}
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
@@ -823,10 +948,40 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     })}
                     
                     {mealLogs.length === 0 && (
-                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                        <Utensils className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                        <p className="text-sm">No items</p>
-                        <p className="text-xs">Drag items here or use Add Food</p>
+                      <div className={`text-center py-8 transition-all duration-200 rounded-lg border-2 border-dashed ${
+                        dragOverTarget === mealType.key
+                          ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                          : draggedItem && draggedItem.mealType !== mealType.key
+                          ? 'border-green-400 bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-400'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400'
+                      }`}>
+                        <div className={`transition-transform duration-200 ${
+                          dragOverTarget === mealType.key ? 'scale-110' : ''
+                        }`}>
+                          {dragOverTarget === mealType.key ? (
+                            <>
+                              <div className="w-8 h-8 mx-auto mb-2 bg-blue-500 rounded-full flex items-center justify-center">
+                                <ArrowRight className="w-4 h-4 text-white" />
+                              </div>
+                              <p className="text-sm font-medium">Drop here!</p>
+                              <p className="text-xs">Move to {mealType.label}</p>
+                            </>
+                          ) : draggedItem && draggedItem.mealType !== mealType.key ? (
+                            <>
+                              <div className="w-8 h-8 mx-auto mb-2 bg-green-500 rounded-full flex items-center justify-center">
+                                <Plus className="w-4 h-4 text-white" />
+                              </div>
+                              <p className="text-sm font-medium">Drop zone</p>
+                              <p className="text-xs">Move {draggedItem.foodName} here</p>
+                            </>
+                          ) : (
+                            <>
+                              <Utensils className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                              <p className="text-sm">No items</p>
+                              <p className="text-xs">Drag items here or use Add Food</p>
+                            </>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -836,6 +991,22 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </CardContent>
       </Card>
+
+      {/* Drag Overlay Indicator */}
+      {draggedItem && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          <div className="relative w-full h-full">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
+              <GripVertical className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                Moving: {draggedItem.foodName}
+              </span>
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Copy Dialog */}
       <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
         <DialogContent>
