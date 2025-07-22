@@ -197,11 +197,17 @@ export class AnalyticsService {
 
       const weeklyDataArray = Object.values(weeklyData);
       
+      const totalVolume = sessions.reduce((sum: number, session: any) => sum + parseInt(session.total_volume?.toString() || '0'), 0);
+      const averageWeeklyVolume = weeklyDataArray.length > 0 ? Math.round(totalVolume / weeklyDataArray.length) : 0;
+      
       const summary = {
         totalSessions: sessions.length,
-        totalVolume: sessions.reduce((sum: number, session: any) => sum + parseInt(session.total_volume?.toString() || '0'), 0),
+        totalVolume: totalVolume,
         averageDuration: Math.round(sessions.reduce((sum: number, session: any) => sum + parseInt(session.duration?.toString() || '0'), 0) / sessions.length),
-        weeklyFrequency: Math.round((sessions.length / Math.max(weeklyDataArray.length, 1)) * 10) / 10
+        weeklyFrequency: Math.round((sessions.length / Math.max(weeklyDataArray.length, 1)) * 10) / 10,
+        averageWeeklyVolume: averageWeeklyVolume,
+        averageSessionDuration: Math.round(sessions.reduce((sum: number, session: any) => sum + parseInt(session.duration?.toString() || '0'), 0) / sessions.length),
+        totalDuration: sessions.reduce((sum: number, session: any) => sum + parseInt(session.duration?.toString() || '0'), 0)
       };
 
       return {
@@ -458,7 +464,8 @@ export class AnalyticsService {
         totalTrainingSessions: training.summary.totalSessions || 0,
         totalBodyMetrics: bodyProgress.summary.totalEntries || 0,
         totalFeedbackEntries: feedback.summary.totalFeedback || 0,
-        averageSessionsPerWeek: training.summary.weeklyFrequency || 0
+        averageSessionsPerWeek: training.summary.weeklyFrequency || 0,
+        averageCaloriesPerDay: nutrition.averages.calories || 0
       };
 
       return {
