@@ -173,110 +173,142 @@ export function ReportsPage({ userId }: ReportsPageProps) {
             <TabsTrigger value="progress" className="text-caption">Progress</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
+          {/* Overview Tab - Compact iOS Style with RP Integration */}
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Average Daily Calories */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <Target className="w-4 h-4 mr-2 text-green-600" />
-                    Avg Daily Calories
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{comprehensiveAnalytics?.overview?.averageCaloriesPerDay || 0}</div>
-                  <Badge variant="default" className="text-xs">
-                    {comprehensiveAnalytics?.nutrition?.totalDays || 0} days tracked
-                  </Badge>
-                </CardContent>
+            {/* RP Performance Score Card */}
+            <Card className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950 border-l-4 border-l-blue-500">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-300">RP Performance Score</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Renaissance Periodization Assessment</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                      {Math.round(((comprehensiveAnalytics?.overview?.recoveryScore || 0) + 
+                                   (comprehensiveAnalytics?.nutrition?.adherencePercentage || 0) / 10 + 
+                                   (comprehensiveAnalytics?.training?.consistency || 0) * 10) / 3)}%
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {comprehensiveAnalytics?.overview?.recoveryScore >= 7 ? 'Excellent' : 
+                       comprehensiveAnalytics?.overview?.recoveryScore >= 5 ? 'Good' : 'Needs Work'}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Compact Metrics Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* Nutrition Adherence */}
+              <Card className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <Target className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Nutrition</p>
+                      <p className="text-sm font-semibold">Adherence</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{Math.round(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0)}%</div>
+                    <p className="text-xs text-gray-500">{comprehensiveAnalytics?.nutrition?.totalDays || 0} days</p>
+                  </div>
+                </div>
               </Card>
 
               {/* Training Volume */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <Activity className="w-4 h-4 mr-2 text-blue-600" />
-                    Training Sessions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{comprehensiveAnalytics?.training?.summary?.totalSessions || 0}</div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {comprehensiveAnalytics?.overview?.averageSessionsPerWeek || 0} per week
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Body Progress */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <Scale className="w-4 h-4 mr-2 text-purple-600" />
-                    Weight Change
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {comprehensiveAnalytics?.overview?.weightChange ? 
-                      `${comprehensiveAnalytics.overview.weightChange > 0 ? '+' : ''}${comprehensiveAnalytics.overview.weightChange}kg` : 
-                      "No data"}
+              <Card className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <Activity className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Training</p>
+                      <p className="text-sm font-semibold">Volume</p>
+                    </div>
                   </div>
-                  {comprehensiveAnalytics?.bodyProgress?.progress && (
-                    <Badge variant={comprehensiveAnalytics.bodyProgress.progress.trend === 'loss' ? "default" : "secondary"} className="text-xs">
-                      {comprehensiveAnalytics.bodyProgress.progress.trend === 'gain' ? 'Weight Gain' : 
-                       comprehensiveAnalytics.bodyProgress.progress.trend === 'loss' ? 'Weight Loss' : 'Maintained'}
-                    </Badge>
-                  )}
-                </CardContent>
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{Math.round((comprehensiveAnalytics?.training?.summary?.totalVolume || 0) / 1000)}k</div>
+                    <p className="text-xs text-gray-500">{comprehensiveAnalytics?.training?.summary?.totalSessions || 0} sessions</p>
+                  </div>
+                </div>
               </Card>
 
-              {/* Recovery Score */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center">
-                    <Zap className="w-4 h-4 mr-2 text-orange-600" />
-                    Recovery Score
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{comprehensiveAnalytics?.overview?.recoveryScore || 0}/10</div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Based on feedback data
-                  </p>
-                </CardContent>
+              {/* Body Composition */}
+              <Card className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                      <Scale className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Body</p>
+                      <p className="text-sm font-semibold">Change</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold">
+                      {comprehensiveAnalytics?.overview?.weightChange ? 
+                        `${comprehensiveAnalytics.overview.weightChange > 0 ? '+' : ''}${Math.round(comprehensiveAnalytics.overview.weightChange)}kg` : 
+                        "0kg"}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      {comprehensiveAnalytics?.bodyProgress?.progress?.trend || 'stable'}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Recovery Quality */}
+              <Card className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Recovery</p>
+                      <p className="text-sm font-semibold">Quality</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold">{comprehensiveAnalytics?.overview?.recoveryScore || 0}/10</div>
+                    <p className="text-xs text-gray-500">avg score</p>
+                  </div>
+                </div>
               </Card>
             </div>
 
-            {/* Weekly Summary */}
+            {/* RP Phase Analysis */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <TrendingUp className="w-5 h-5 mr-2" />
-                  Weekly Summary
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  RP Phase Analysis
                 </CardTitle>
-                <CardDescription>
-                  Your performance overview for the selected period
-                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Total Nutrition Logs</span>
-                    <span className="text-sm">{comprehensiveAnalytics?.overview?.totalNutritionLogs || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Training Sessions</span>
-                    <span className="text-sm">{comprehensiveAnalytics?.overview?.totalTrainingSessions || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Body Measurements</span>
-                    <span className="text-sm">{comprehensiveAnalytics?.overview?.totalBodyMetrics || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Feedback Entries</span>
-                    <span className="text-sm">{comprehensiveAnalytics?.overview?.totalFeedbackEntries || 0}</span>
-                  </div>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  <span className="text-sm font-medium">Mesocycle Progress</span>
+                  <Badge variant="outline">{comprehensiveAnalytics?.training?.summary?.totalSessions >= 12 ? 'Complete' : 'In Progress'}</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <span className="text-sm font-medium">Nutrition Phase</span>
+                  <Badge variant="outline">
+                    {comprehensiveAnalytics?.overview?.weightChange > 0 ? 'Bulking' : 
+                     comprehensiveAnalytics?.overview?.weightChange < 0 ? 'Cutting' : 'Maintenance'}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                  <span className="text-sm font-medium">Volume Status</span>
+                  <Badge variant="outline">
+                    {comprehensiveAnalytics?.overview?.recoveryScore >= 7 ? 'Optimal' : 
+                     comprehensiveAnalytics?.overview?.recoveryScore >= 5 ? 'Moderate' : 'Deload Needed'}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
