@@ -207,7 +207,7 @@ export function Dashboard({ user }: DashboardProps) {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 pl-[0px] pr-[0px] pt-[0px] pb-[0px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
             {showTrainingOverview ? (
               <TrainingOverview userId={user.id} date={currentDate} />
             ) : (
