@@ -40,7 +40,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const showBottomNav = user && location !== "/auth";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="min-h-screen bg-white dark:bg-black pb-20">
       <Switch>
         <Route path="/auth">
           <Auth onSuccess={(userData: User) => {

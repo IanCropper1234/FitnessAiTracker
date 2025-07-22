@@ -11,6 +11,11 @@
   display: none;  /* Safari and Chrome */
 }
 
+/* iOS-style safe area support */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
