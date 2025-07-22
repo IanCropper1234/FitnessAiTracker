@@ -554,7 +554,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="gap-1 text-xs sm:text-sm px-2 sm:px-3"
+                  className="gap-1 sm:text-sm px-2 sm:px-3 text-[12px] bg-[#ffffff] text-[#0a0a0a] font-normal"
                 >
                   <Check className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">{bulkMode ? 'Exit Selection' : 'Select Items'}</span>
