@@ -85,7 +85,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
       <div className="min-h-screen bg-white dark:bg-black pb-20 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-gray-300 border-t-black dark:border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading analytics...</p>
+          <p className="text-body-sm text-gray-600 dark:text-gray-400">Loading analytics...</p>
         </div>
       </div>
     );
@@ -97,10 +97,10 @@ export function ReportsPage({ userId }: ReportsPageProps) {
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-black dark:text-white">
+            <h1 className="text-display text-black dark:text-white">
               {t("reports")}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-body-sm text-gray-600 dark:text-gray-400">
               Advanced analytics and progress insights
             </p>
           </div>
@@ -143,10 +143,10 @@ export function ReportsPage({ userId }: ReportsPageProps) {
       <div className="p-4">
         <Tabs value={reportType} onValueChange={setReportType} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-            <TabsTrigger value="nutrition" className="text-xs">Nutrition</TabsTrigger>
-            <TabsTrigger value="training" className="text-xs">Training</TabsTrigger>
-            <TabsTrigger value="progress" className="text-xs">Progress</TabsTrigger>
+            <TabsTrigger value="overview" className="text-caption">Overview</TabsTrigger>
+            <TabsTrigger value="nutrition" className="text-caption">Nutrition</TabsTrigger>
+            <TabsTrigger value="training" className="text-caption">Training</TabsTrigger>
+            <TabsTrigger value="progress" className="text-caption">Progress</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}

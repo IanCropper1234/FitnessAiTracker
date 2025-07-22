@@ -113,7 +113,7 @@ export function Nutrition({ user }: NutritionProps) {
       <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white mx-auto mb-4"></div>
-          <p>Loading nutrition data...</p>
+          <p className="text-body-sm">Loading nutrition data...</p>
         </div>
       </div>
     );
@@ -125,8 +125,8 @@ export function Nutrition({ user }: NutritionProps) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{t("nutrition")} Tracking</h1>
-            <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
+            <h1 className="text-display">{t("nutrition")} Tracking</h1>
+            <p className="text-body-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long', 

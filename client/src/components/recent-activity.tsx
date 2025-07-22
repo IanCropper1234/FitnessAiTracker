@@ -92,8 +92,8 @@ export function RecentActivity({ userId }: RecentActivityProps) {
         <CardContent>
           <div className="text-center py-8 text-gray-600 dark:text-gray-400">
             <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No recent activity</p>
-            <p className="text-sm mt-1">Start logging food or working out to see activity here</p>
+            <p className="text-body">No recent activity</p>
+            <p className="text-body-sm mt-1">Start logging food or working out to see activity here</p>
           </div>
         </CardContent>
       </Card>
@@ -122,14 +122,14 @@ export function RecentActivity({ userId }: RecentActivityProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-black dark:text-white truncate">
+                  <p className="text-body font-medium text-black dark:text-white truncate">
                     {activity.title}
                   </p>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-caption-sm">
                     {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                <p className="text-body-sm text-gray-600 dark:text-gray-400 truncate">
                   {activity.description}
                 </p>
               </div>

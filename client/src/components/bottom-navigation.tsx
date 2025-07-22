@@ -97,9 +97,9 @@ function NavigationItem({ item, isActive, onPress }: NavigationItemProps) {
       }`}>
         <Icon className="w-6 h-6" />
       </div>
-      <span className={`text-xs mt-1 transition-colors duration-200 ${
+      <span className={`text-nav mt-1 transition-colors duration-200 ${
         isActive 
-          ? "text-blue-500 dark:text-blue-400 font-medium" 
+          ? "text-blue-500 dark:text-blue-400" 
           : "text-gray-600 dark:text-gray-400"
       }`}>
         {item.label}
@@ -157,7 +157,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[85vw] max-w-sm mx-auto rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700 p-4 sm:p-6">
         <DialogHeader className="text-center">
-          <DialogTitle className="flex items-center justify-center gap-2 sm:gap-3 text-lg sm:text-xl font-medium text-white">
+          <DialogTitle className="flex items-center justify-center gap-2 sm:gap-3 text-headline text-white">
             <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <Plus className="w-4 h-4 text-white" />
             </div>
@@ -178,8 +178,8 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
                   <Icon className="w-5 h-5 text-gray-300" />
                 </div>
                 <div className="flex flex-col items-start flex-1 min-w-0">
-                  <span className="font-medium text-sm sm:text-base text-white">{action.label}</span>
-                  <span className="text-gray-400 text-xs sm:text-sm leading-tight">{action.description}</span>
+                  <span className="text-body text-white">{action.label}</span>
+                  <span className="text-caption-sm text-gray-400 leading-tight">{action.description}</span>
                 </div>
               </button>
             );
@@ -189,7 +189,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         <div className="flex justify-center pt-4">
           <button 
             onClick={onClose}
-            className="px-6 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
+            className="px-6 py-2 text-body-sm text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
           >
             Cancel
           </button>

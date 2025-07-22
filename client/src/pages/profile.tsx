@@ -174,8 +174,8 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Profile Settings</h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <h1 className="text-display">Profile Settings</h1>
+            <p className="text-body-sm text-gray-600 dark:text-gray-400">
               Manage your personal information and preferences
             </p>
           </div>
@@ -190,8 +190,8 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                   <UserIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-black dark:text-white">{user.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                  <h3 className="text-headline-sm text-black dark:text-white">{user.name}</h3>
+                  <p className="text-body-sm text-gray-600 dark:text-gray-400">{user.email}</p>
                 </div>
               </div>
               <Button
@@ -215,8 +215,8 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                   <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-black dark:text-white">App Settings</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Customize your app preferences</p>
+                  <h3 className="text-headline-sm text-black dark:text-white">App Settings</h3>
+                  <p className="text-body-sm text-gray-600 dark:text-gray-400">Customize your app preferences</p>
                 </div>
               </div>
 

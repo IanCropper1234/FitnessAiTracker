@@ -157,7 +157,7 @@ export function Dashboard({ user }: DashboardProps) {
           </div>
           
           {/* Full Date Display */}
-          <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-sm">
+          <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-body-sm">
             <Calendar className="w-4 h-4" />
             {currentDate.toLocaleDateString('en-US', { 
               weekday: 'long', 
@@ -174,7 +174,7 @@ export function Dashboard({ user }: DashboardProps) {
             <div className="space-y-3">
               {/* First Row - Title with Icon */}
               <div className="flex items-center justify-center">
-                <CardTitle className="text-black dark:text-white flex items-center gap-1.5 text-base">
+                <CardTitle className="text-black dark:text-white flex items-center gap-1.5">
                   {showTrainingOverview ? (
                     <>
                       <Dumbbell className="h-4 w-4 flex-shrink-0" />
@@ -191,7 +191,7 @@ export function Dashboard({ user }: DashboardProps) {
               
               {/* Second Row - Toggle Controls */}
               <div className="flex items-center justify-center space-x-1.5">
-                <Label htmlFor="overview-toggle" className="text-xs text-gray-600 dark:text-gray-400">
+                <Label htmlFor="overview-toggle" className="text-caption text-gray-600 dark:text-gray-400">
                   Nutrition
                 </Label>
                 <Switch
@@ -200,13 +200,13 @@ export function Dashboard({ user }: DashboardProps) {
                   onCheckedChange={setShowTrainingOverview}
                   className="scale-90"
                 />
-                <Label htmlFor="overview-toggle" className="text-xs text-gray-600 dark:text-gray-400">
+                <Label htmlFor="overview-toggle" className="text-caption text-gray-600 dark:text-gray-400">
                   Training
                 </Label>
               </div>
               
               {/* Third Row - Description */}
-              <CardDescription className="text-gray-600 dark:text-gray-400 text-xs text-center">
+              <CardDescription className="text-gray-600 dark:text-gray-400 text-center">
                 {showTrainingOverview ? "Training progress and analytics" : "Today's macro breakdown"}
               </CardDescription>
             </div>
@@ -225,7 +225,7 @@ export function Dashboard({ user }: DashboardProps) {
                   goalFat={nutritionSummary.goalFat}
                 />
               ) : (
-                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
                   No nutrition data yet. Start logging your meals!
                 </div>
               )
@@ -238,7 +238,7 @@ export function Dashboard({ user }: DashboardProps) {
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
               <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Calories
               </CardTitle>
             </CardHeader>
@@ -246,7 +246,7 @@ export function Dashboard({ user }: DashboardProps) {
               <div className="text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.totalCalories || 0)}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 /{Math.round(nutritionSummary?.goalCalories || 2000)}
               </p>
               <Progress 
@@ -259,7 +259,7 @@ export function Dashboard({ user }: DashboardProps) {
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
               <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Protein
               </CardTitle>
             </CardHeader>
@@ -267,7 +267,7 @@ export function Dashboard({ user }: DashboardProps) {
               <div className="text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.totalProtein || 0)}g
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 /{Math.round(nutritionSummary?.goalProtein || 150)}g
               </p>
               <Progress 
@@ -280,7 +280,7 @@ export function Dashboard({ user }: DashboardProps) {
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
               <Activity className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Sessions
               </CardTitle>
             </CardHeader>
@@ -288,7 +288,7 @@ export function Dashboard({ user }: DashboardProps) {
               <div className="text-lg font-bold text-black dark:text-white text-center">
                 {trainingStats?.totalSessions || 0}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 This week
               </p>
             </CardContent>
@@ -297,7 +297,7 @@ export function Dashboard({ user }: DashboardProps) {
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
               <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Adherence
               </CardTitle>
             </CardHeader>
@@ -305,7 +305,7 @@ export function Dashboard({ user }: DashboardProps) {
               <div className="text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.adherence || 0)}%
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 Overall
               </p>
             </CardContent>
