@@ -98,7 +98,7 @@ export function Dashboard({ user }: DashboardProps) {
         {/* Header with Date Selection */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{t("welcome")}, {user.name}</h1>
+            
             <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-[12px] pl-[2px] pr-[2px]">
               <Calendar className="w-4 h-4" />
               {currentDate.toLocaleDateString('en-US', { 
