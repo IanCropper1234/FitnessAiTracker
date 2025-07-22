@@ -137,7 +137,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
         {/* Period and Report Type Selectors */}
         <div className="flex gap-4">
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 pl-[0px] pr-[0px]">
               <Calendar className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
