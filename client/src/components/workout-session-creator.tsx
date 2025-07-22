@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Target, Trash2 } from "lucide-react";
+import { Calendar, Clock, Target, Trash2, Plus, Search, Filter } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Exercise {
@@ -46,6 +48,52 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
 
   const [sessionName, setSessionName] = useState("");
   const [exerciseTemplates, setExerciseTemplates] = useState<ExerciseTemplate[]>([]);
+  
+  // Exercise library state
+  const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+  // Fetch exercises for the library
+  const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
+    queryKey: ['/api/exercises'],
+    enabled: showExerciseLibrary || isOpen,
+  });
+
+  // Filter exercises based on search and category
+  const filteredExercises = exercises.filter(exercise => {
+    const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (exercise.muscleGroups?.some(muscle => 
+                           muscle.toLowerCase().includes(searchTerm.toLowerCase())
+                         ));
+    
+    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+    
+    const alreadyAdded = exerciseTemplates.some(template => template.exerciseId === exercise.id);
+    
+    return matchesSearch && matchesCategory && !alreadyAdded;
+  });
+
+  const categories = ["all", "push", "pull", "legs", "cardio"];
+
+  // Add exercise from library
+  const addExerciseFromLibrary = (exercise: Exercise) => {
+    const newTemplate: ExerciseTemplate = {
+      exerciseId: exercise.id,
+      exercise,
+      sets: 3,
+      targetReps: "8-12",
+      restPeriod: 90,
+      notes: ""
+    };
+    
+    setExerciseTemplates(prev => [...prev, newTemplate]);
+    
+    toast({
+      title: "Exercise Added",
+      description: `${exercise.name} has been added to your workout.`,
+    });
+  };
 
   // Update exercise templates when selectedExercises changes
   useEffect(() => {
@@ -65,10 +113,20 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
     }
   }, [selectedExercises]);
 
+  // Auto-open exercise library if no exercises are available
+  useEffect(() => {
+    if (isOpen && exerciseTemplates.length === 0 && selectedExercises.length === 0) {
+      setShowExerciseLibrary(true);
+    }
+  }, [isOpen, exerciseTemplates.length, selectedExercises.length]);
+
   // Reset form when dialog closes
   useEffect(() => {
     if (!isOpen) {
       setSessionName("");
+      setShowExerciseLibrary(false);
+      setSearchTerm("");
+      setSelectedCategory("all");
     }
   }, [isOpen]);
 
@@ -180,7 +238,105 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
 
           {/* Exercises */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Exercises ({exerciseTemplates.length})</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Exercises ({exerciseTemplates.length})</h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowExerciseLibrary(!showExerciseLibrary)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Exercises
+              </Button>
+            </div>
+
+            {/* Exercise Library */}
+            {showExerciseLibrary && (
+              <Card className="border-dashed">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Search className="h-4 w-4" />
+                    Exercise Library
+                  </CardTitle>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Search exercises..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-8"
+                      />
+                    </div>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger className="w-full sm:w-[140px] h-8">
+                        <Filter className="h-3 w-3 mr-1" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map(category => (
+                          <SelectItem key={category} value={category}>
+                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-64">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {exercisesLoading ? (
+                        <div className="col-span-full text-center py-4 text-muted-foreground">
+                          Loading exercises...
+                        </div>
+                      ) : filteredExercises.length === 0 ? (
+                        <div className="col-span-full text-center py-4 text-muted-foreground">
+                          {searchTerm || selectedCategory !== "all" 
+                            ? "No exercises found matching your filters" 
+                            : "All available exercises have been added"}
+                        </div>
+                      ) : (
+                        filteredExercises.map(exercise => (
+                          <Card key={exercise.id} className="cursor-pointer hover:bg-accent/50 transition-colors">
+                            <CardHeader className="pb-2">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <CardTitle className="text-sm leading-tight">{exercise.name}</CardTitle>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    <Badge variant="outline" className="text-xs px-1 py-0">
+                                      {exercise.category}
+                                    </Badge>
+                                    <Badge variant="secondary" className="text-xs px-1 py-0">
+                                      {exercise.primaryMuscle?.replace('_', ' ')}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  className="h-7 px-2 text-xs shrink-0"
+                                  onClick={() => addExerciseFromLibrary(exercise)}
+                                >
+                                  Add
+                                </Button>
+                              </div>
+                            </CardHeader>
+                            {exercise.equipment && (
+                              <CardContent className="pt-0 pb-2">
+                                <p className="text-xs text-muted-foreground">
+                                  {exercise.equipment}
+                                </p>
+                              </CardContent>
+                            )}
+                          </Card>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            )}
             
             {exerciseTemplates.map((template, index) => (
               <Card key={template.exerciseId} className="relative">
@@ -257,9 +413,11 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
               </Card>
             ))}
 
-            {exerciseTemplates.length === 0 && (
+            {exerciseTemplates.length === 0 && !showExerciseLibrary && (
               <div className="text-center py-8 text-muted-foreground">
-                No exercises selected. Add exercises from the Exercise Library first.
+                <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-lg font-medium mb-1">No exercises selected</p>
+                <p className="text-sm">Click "Add Exercises" to select from the exercise library</p>
               </div>
             )}
           </div>
@@ -271,7 +429,7 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={createWorkoutSessionMutation.isPending || exerciseTemplates.length === 0}
+            disabled={createWorkoutSessionMutation.isPending || exerciseTemplates.length === 0 || !sessionName.trim()}
           >
             {createWorkoutSessionMutation.isPending ? "Creating..." : "Create Session"}
           </Button>
