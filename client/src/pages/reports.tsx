@@ -347,16 +347,16 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                       <Zap className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Average</p>
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Calories</p>
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {Math.round(nutritionAnalytics?.summary?.totalCalories || comprehensiveAnalytics?.nutrition?.summary?.totalCalories || 0)}
+                      {Math.round(nutritionAnalytics?.averages?.calories || comprehensiveAnalytics?.nutrition?.averages?.calories || 0)}
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Avg: {Math.round(nutritionAnalytics?.averages?.calories || comprehensiveAnalytics?.nutrition?.averages?.calories || 0)}/day
+                      per day average
                     </p>
                   </div>
                 </div>
@@ -370,16 +370,16 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                       <Target className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Average</p>
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Protein</p>
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {Math.round(nutritionAnalytics?.summary?.totalProtein || comprehensiveAnalytics?.nutrition?.summary?.totalProtein || 0)}g
+                      {Math.round(nutritionAnalytics?.averages?.protein || comprehensiveAnalytics?.nutrition?.averages?.protein || 0)}g
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Avg: {Math.round(nutritionAnalytics?.averages?.protein || comprehensiveAnalytics?.nutrition?.averages?.protein || 0)}g/day
+                      per day average
                     </p>
                   </div>
                 </div>
@@ -393,16 +393,16 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                       <TrendingUp className="w-5 h-5 text-orange-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Average</p>
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Carbs</p>
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {Math.round(nutritionAnalytics?.summary?.totalCarbs || comprehensiveAnalytics?.nutrition?.summary?.totalCarbs || 0)}g
+                      {Math.round(nutritionAnalytics?.averages?.carbs || comprehensiveAnalytics?.nutrition?.averages?.carbs || 0)}g
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Avg: {Math.round(nutritionAnalytics?.averages?.carbs || comprehensiveAnalytics?.nutrition?.averages?.carbs || 0)}g/day
+                      per day average
                     </p>
                   </div>
                 </div>
@@ -416,16 +416,16 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                       <BarChart3 className="w-5 h-5 text-red-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Average</p>
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Fat</p>
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {Math.round(nutritionAnalytics?.summary?.totalFat || comprehensiveAnalytics?.nutrition?.summary?.totalFat || 0)}g
+                      {Math.round(nutritionAnalytics?.averages?.fat || comprehensiveAnalytics?.nutrition?.averages?.fat || 0)}g
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Avg: {Math.round(nutritionAnalytics?.averages?.fat || comprehensiveAnalytics?.nutrition?.averages?.fat || 0)}g/day
+                      per day average
                     </p>
                   </div>
                 </div>
