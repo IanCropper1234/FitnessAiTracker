@@ -198,65 +198,65 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               </CardContent>
             </Card>
 
-            {/* Compact Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* iOS-Style Metrics Grid */}
+            <div className="grid grid-cols-2 gap-4">
               {/* Nutrition Adherence */}
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                      <Target className="w-4 h-4 text-green-600" />
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <Target className="w-5 h-5 text-green-600" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Nutrition</p>
-                      <p className="text-sm font-semibold">Adherence</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Nutrition</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Adherence</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold">{Math.round(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0)}%</div>
-                    <p className="text-xs text-gray-500">{comprehensiveAnalytics?.nutrition?.totalDays || 0} days</p>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0)}%</div>
+                    <p className="text-xs text-gray-500 mt-1">{comprehensiveAnalytics?.nutrition?.totalDays || 0} days</p>
                   </div>
                 </div>
               </Card>
 
               {/* Training Volume */}
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                      <Activity className="w-4 h-4 text-blue-600" />
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <Activity className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Training</p>
-                      <p className="text-sm font-semibold">Volume</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Training</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Volume</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold">{Math.round((comprehensiveAnalytics?.training?.summary?.totalVolume || 0) / 1000)}k</div>
-                    <p className="text-xs text-gray-500">{comprehensiveAnalytics?.training?.summary?.totalSessions || 0} sessions</p>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{Math.round((comprehensiveAnalytics?.training?.summary?.totalVolume || 0) / 1000)}k</div>
+                    <p className="text-xs text-gray-500 mt-1">{comprehensiveAnalytics?.training?.summary?.totalSessions || 0} sessions</p>
                   </div>
                 </div>
               </Card>
 
               {/* Body Composition */}
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
-                      <Scale className="w-4 h-4 text-purple-600" />
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                      <Scale className="w-5 h-5 text-purple-600" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Body</p>
-                      <p className="text-sm font-semibold">Change</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Body</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Change</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                       {comprehensiveAnalytics?.bodyProgress?.progress?.weightChange ? 
                         `${comprehensiveAnalytics.bodyProgress.progress.weightChange > 0 ? '+' : ''}${Math.round(comprehensiveAnalytics.bodyProgress.progress.weightChange * 10) / 10}kg` : 
                         "0kg"}
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 mt-1">
                       {comprehensiveAnalytics?.bodyProgress?.progress?.trend || 'stable'}
                     </p>
                   </div>
@@ -264,20 +264,20 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               </Card>
 
               {/* Recovery Quality */}
-              <Card className="p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-                      <Zap className="w-4 h-4 text-orange-600" />
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-orange-600" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Recovery</p>
-                      <p className="text-sm font-semibold">Quality</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Recovery</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Quality</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold">{comprehensiveAnalytics?.overview?.recoveryScore || 0}/10</div>
-                    <p className="text-xs text-gray-500">avg score</p>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{comprehensiveAnalytics?.overview?.recoveryScore || 0}/10</div>
+                    <p className="text-xs text-gray-500 mt-1">avg score</p>
                   </div>
                 </div>
               </Card>
