@@ -860,7 +860,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 <Calculator className="w-5 h-5" />
                 Diet Goal & TDEE Calculator
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground text-[12px]">
                 Set your diet goals with automatic TDEE calculation and macro distribution
               </CardDescription>
             </CardHeader>
