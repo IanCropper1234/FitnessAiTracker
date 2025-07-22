@@ -619,4 +619,38 @@
   /* Padding adjustments for narrow screens */
   .px-mobile { padding-left: 8px; padding-right: 8px; }
   .py-mobile { padding-top: 6px; padding-bottom: 6px; }
+  
+  /* iOS Touch Feedback - iPhone SE/12 mini optimized */
+  .ios-touch-feedback {
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease-out;
+  }
+  
+  .ios-touch-feedback:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  
+  /* iOS Navigation Header Styling */
+  @media (max-width: 375px) {
+    .ios-nav-header {
+      padding: 8px 12px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .ios-nav-button {
+      min-height: 44px;
+      min-width: 44px;
+      border-radius: 12px;
+    }
+    
+    .xs\:inline {
+      display: inline;
+    }
+    
+    .ios-backdrop-blur {
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+  }
 }

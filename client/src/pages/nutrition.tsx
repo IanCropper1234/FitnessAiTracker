@@ -126,40 +126,52 @@ export function Nutrition({ user }: NutritionProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-3 py-4 space-y-4 max-w-full">
-        {/* Header with Return Button */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4">
+    <div className="min-h-screen bg-background text-foreground w-full">
+      <div className="w-full px-2 py-4 space-y-4">
+        {/* iOS-optimized Header Navigation for iPhone SE/12 mini */}
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-2 pb-2 mb-4">
+          <div className="flex items-center justify-between">
+            {/* Left: Back to Dashboard */}
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-0"
+              className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-accent rounded-lg ios-touch-feedback"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium hidden xs:inline">Back</span>
             </Button>
-            <div>
-              <h1 className="text-lg sm:text-display font-semibold">{t("nutrition")} Tracking</h1>
-              <p className="text-body-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+            
+            {/* Center: Page Title with Icon */}
+            <div className="flex items-center gap-2 min-w-0">
+              <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+              <h1 className="text-lg font-semibold text-center">Nutrition</h1>
+            </div>
+            
+            {/* Right: Home Button */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="p-2 hover:bg-accent rounded-lg ios-touch-feedback"
+            >
+              <Home className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {/* Date Display - Compact for small screens */}
+          <div className="flex items-center justify-center mt-2">
+            <div className="flex items-center gap-2 px-3 py-1 bg-accent/50 rounded-lg">
+              <Calendar className="w-3 h-3 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">
                 {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                  weekday: 'short',
+                  month: 'short', 
+                  day: 'numeric'
                 })}
-              </p>
+              </span>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setLocation('/dashboard')}
-            className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-0"
-          >
-            <Home className="w-5 h-5" />
-          </Button>
         </div>
 
 
