@@ -126,7 +126,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/nutrition");
         onClose();
       },
-      color: "bg-gray-200 hover:bg-gray-300 dark:bg-gray-200 dark:hover:bg-gray-300 text-gray-900 dark:text-gray-900 border-0"
+      color: "bg-gray-300 hover:bg-gray-200 text-gray-800 border-0"
     },
     {
       id: "start-workout",
@@ -137,7 +137,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/training");
         onClose();
       },
-      color: "bg-transparent hover:bg-gray-700 dark:hover:bg-gray-600 text-gray-300 dark:text-gray-300 border border-gray-600 dark:border-gray-500"
+      color: "bg-transparent hover:bg-gray-700/20 text-gray-300 border border-gray-600"
     },
     {
       id: "profile",
@@ -148,7 +148,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/profile");
         onClose();
       },
-      color: "bg-transparent hover:bg-gray-700 dark:hover:bg-gray-600 text-gray-300 dark:text-gray-300 border border-gray-600 dark:border-gray-500"
+      color: "bg-transparent hover:bg-gray-700/20 text-gray-300 border border-gray-600"
     }
   ];
 
@@ -180,21 +180,21 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   action.id === 'log-food' 
-                    ? 'bg-gray-400 dark:bg-gray-500' 
-                    : 'bg-gray-600 dark:bg-gray-500'
+                    ? 'bg-gray-500' 
+                    : 'bg-gray-600'
                 }`}>
                   <Icon className={`w-5 h-5 ${
                     action.id === 'log-food' 
-                      ? 'text-gray-900 dark:text-gray-900' 
-                      : 'text-gray-300 dark:text-gray-300'
+                      ? 'text-gray-800' 
+                      : 'text-gray-300'
                   }`} />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="font-medium text-base">{action.label}</span>
                   <span className={`text-sm ${
                     action.id === 'log-food' 
-                      ? 'text-gray-700 dark:text-gray-700' 
-                      : 'text-gray-400 dark:text-gray-400'
+                      ? 'text-gray-600' 
+                      : 'text-gray-400'
                   }`}>{action.description}</span>
                 </div>
               </Button>
