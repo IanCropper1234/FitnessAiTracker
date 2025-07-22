@@ -299,8 +299,8 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded-lg">
                   <span className="text-sm font-medium">Nutrition Phase</span>
                   <Badge variant="outline">
-                    {comprehensiveAnalytics?.overview?.weightChange > 0 ? 'Bulking' : 
-                     comprehensiveAnalytics?.overview?.weightChange < 0 ? 'Cutting' : 'Maintenance'}
+                    {comprehensiveAnalytics?.overview?.weightChange < -0.5 ? 'Weight Loss' : 
+                     comprehensiveAnalytics?.overview?.weightChange > 0.5 ? 'Weight Gain' : 'Maintenance'}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">

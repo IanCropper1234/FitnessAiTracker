@@ -453,6 +453,41 @@ export class AnalyticsService {
         this.getFeedbackAnalytics(userId, days)
       ]);
 
+      // Calculate nutrition adherence percentage against targets
+      let adherencePercentage = 0;
+      try {
+        // Get user's nutrition goals
+        const goalsResult = await db.execute(sql`
+          SELECT target_calories, target_protein, target_carbs, target_fat
+          FROM daily_nutrition_goals 
+          WHERE user_id = ${userId}
+          ORDER BY created_at DESC
+          LIMIT 1
+        `);
+        
+        if (goalsResult.rows && goalsResult.rows.length > 0 && nutrition.dailyData.length > 0) {
+          const goals = goalsResult.rows[0] as any;
+          const targetCalories = parseFloat(goals.target_calories?.toString() || '2000');
+          
+          // Calculate adherence for each day with nutrition logs
+          let totalAdherence = 0;
+          let daysWithLogs = 0;
+          
+          nutrition.dailyData.forEach((day: any) => {
+            if (day.calories > 0) {
+              const dailyAdherence = Math.max(0, 100 - Math.abs((day.calories - targetCalories) / targetCalories * 100));
+              totalAdherence += dailyAdherence;
+              daysWithLogs++;
+            }
+          });
+          
+          adherencePercentage = daysWithLogs > 0 ? Math.round(totalAdherence / daysWithLogs) : 0;
+        }
+      } catch (error) {
+        console.error('Error calculating adherence:', error);
+        adherencePercentage = 0;
+      }
+
       // Create comprehensive overview metrics following RP principles
       const overview = {
         nutritionConsistency: nutrition.totalDays > 0 ? Math.round((nutrition.totalLogs / (nutrition.totalDays * 4)) * 100) : 0, // Assuming 4 meals/day target
@@ -468,9 +503,15 @@ export class AnalyticsService {
         averageCaloriesPerDay: nutrition.averages.calories || 0
       };
 
+      // Add nutrition object with adherence percentage
+      const enhancedNutrition = {
+        ...nutrition,
+        adherencePercentage
+      };
+
       return {
         overview,
-        nutrition,
+        nutrition: enhancedNutrition,
         training,
         bodyProgress,
         feedback,
