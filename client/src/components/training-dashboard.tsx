@@ -728,7 +728,12 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
         <TabsContent value="sessions" className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Workout Sessions</h3>
+            <div>
+              <h3 className="text-lg font-semibold">Workout Sessions</h3>
+              <p className="text-sm text-muted-foreground">
+                {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
+              </p>
+            </div>
             <Button onClick={() => setShowSessionCreator(true)}>
               <Plus className="h-4 w-4 mr-2" />
               New Workout

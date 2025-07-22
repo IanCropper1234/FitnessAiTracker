@@ -17,7 +17,7 @@ interface TrainingPageProps {
 
 export function TrainingPage({ user }: TrainingPageProps) {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("sessions");
   
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
