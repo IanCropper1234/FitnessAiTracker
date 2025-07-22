@@ -328,7 +328,7 @@ export function Dashboard({ user }: DashboardProps) {
             </p>
           </div>
           
-          <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-800 mt-[0px] mb-[0px] ml-[15px] mr-[15px]">
             <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs text-center">Session Length</h4>
             <p className="text-xs text-purple-700 dark:text-purple-300 text-center">
               {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough workouts" : "Efficient training"}
