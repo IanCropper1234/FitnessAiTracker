@@ -345,7 +345,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
     <div className="space-y-6">
       {/* Date Navigation */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-        <CardHeader>
+        <CardHeader className="flex flex-col space-y-1.5 p-6 pl-[10px] pr-[10px] pt-[5px] pb-[5px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
           <CardTitle className="text-black dark:text-white flex items-center gap-2">
             <CalendarIcon className="w-5 h-5" />
             Nutrition Overview
