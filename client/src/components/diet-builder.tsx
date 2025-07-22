@@ -830,7 +830,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           </CardDescription>
         </CardHeader>
       </Card>
-
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
@@ -913,7 +912,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                 <div className="space-y-1">
                   <Label className="text-base font-medium text-black dark:text-white">Auto-regulation</Label>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-400 text-[12px]">
                     Automatically adjust calories and macros based on your body data and weight logs
                   </p>
                   {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
