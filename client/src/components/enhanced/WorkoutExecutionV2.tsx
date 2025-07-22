@@ -519,7 +519,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           {/* Progress Bar */}
           <div className="mt-3">
             {circularProgressEnabled ? (
-              <div className="flex justify-center text-[16px] mt-[-35px] mb-[-35px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]">
+              <div className="flex justify-center text-[16px] mt-[-36px] mb-[-36px] ml-[100px] mr-[100px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]">
                 <CircularProgress 
                   progress={progressPercentage}
                   size={50}
