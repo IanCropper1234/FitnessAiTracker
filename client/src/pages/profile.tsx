@@ -169,7 +169,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     setLocation("/auth");
   };
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

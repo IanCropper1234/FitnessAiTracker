@@ -20,7 +20,7 @@ export function TrainingPage({ user }: TrainingPageProps) {
   const [activeTab, setActiveTab] = useState("sessions");
   
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">

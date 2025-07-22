@@ -86,19 +86,19 @@ export function ReportsPage({ userId }: ReportsPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black pb-20 flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground pb-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-gray-300 border-t-black dark:border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-body-sm text-gray-600 dark:text-gray-400">Loading analytics...</p>
+          <div className="w-8 h-8 border-4 border-muted border-t-foreground rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Loading analytics...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black pb-20">
+    <div className="min-h-screen bg-background text-foreground pb-20">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <Button 
