@@ -1,7 +1,6 @@
 import { TrainingDashboard } from "@/components/training-dashboard";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, ArrowLeft, Home } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 import { useLocation } from "wouter";
 import { FloatingTrainingMenu } from "@/components/floating-training-menu";
 import { useState } from "react";
@@ -38,19 +37,6 @@ export function TrainingPage({ user }: TrainingPageProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  Custom
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Today</DropdownMenuItem>
-                <DropdownMenuItem>Yesterday</DropdownMenuItem>
-                <DropdownMenuItem>Custom Date</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Button 
               variant="ghost" 
               size="sm"
