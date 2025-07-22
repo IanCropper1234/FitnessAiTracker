@@ -171,39 +171,42 @@ export function Dashboard({ user }: DashboardProps) {
         {/* Overview Section with Toggle */}
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader>
-            <div className="flex items-center justify-between gap-2 min-w-0">
-              <div className="flex-1 min-w-0">
-                <CardTitle className="text-black dark:text-white flex items-center gap-1.5 text-base truncate">
+            <div className="space-y-2">
+              {/* First Row - Title and Toggle */}
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-black dark:text-white flex items-center gap-1.5 text-base">
                   {showTrainingOverview ? (
                     <>
                       <Dumbbell className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">Training Overview</span>
+                      <span>Training Overview</span>
                     </>
                   ) : (
                     <>
                       <Utensils className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">{t("nutrition")} Overview</span>
+                      <span>{t("nutrition")} Overview</span>
                     </>
                   )}
                 </CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  {showTrainingOverview ? "Training progress and analytics" : "Today's macro breakdown"}
-                </CardDescription>
+                <div className="flex items-center space-x-1.5 flex-shrink-0">
+                  <Label htmlFor="overview-toggle" className="text-xs text-gray-600 dark:text-gray-400">
+                    Nutrition
+                  </Label>
+                  <Switch
+                    id="overview-toggle"
+                    checked={showTrainingOverview}
+                    onCheckedChange={setShowTrainingOverview}
+                    className="scale-90"
+                  />
+                  <Label htmlFor="overview-toggle" className="text-xs text-gray-600 dark:text-gray-400">
+                    Training
+                  </Label>
+                </div>
               </div>
-              <div className="flex items-center space-x-1.5 flex-shrink-0">
-                <Label htmlFor="overview-toggle" className="text-xs text-gray-600 dark:text-gray-400">
-                  Nutrition
-                </Label>
-                <Switch
-                  id="overview-toggle"
-                  checked={showTrainingOverview}
-                  onCheckedChange={setShowTrainingOverview}
-                  className="scale-90"
-                />
-                <Label htmlFor="overview-toggle" className="text-xs text-gray-600 dark:text-gray-400">
-                  Training
-                </Label>
-              </div>
+              
+              {/* Second Row - Description */}
+              <CardDescription className="text-gray-600 dark:text-gray-400 text-xs">
+                {showTrainingOverview ? "Training progress and analytics" : "Today's macro breakdown"}
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent className="p-6 pl-[0px] pr-[0px] pt-[0px] pb-[0px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
