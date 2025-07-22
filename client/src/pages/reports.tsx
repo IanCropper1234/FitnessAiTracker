@@ -252,8 +252,8 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold">
-                      {comprehensiveAnalytics?.overview?.weightChange ? 
-                        `${comprehensiveAnalytics.overview.weightChange > 0 ? '+' : ''}${Math.round(comprehensiveAnalytics.overview.weightChange)}kg` : 
+                      {comprehensiveAnalytics?.bodyProgress?.progress?.weightChange ? 
+                        `${comprehensiveAnalytics.bodyProgress.progress.weightChange > 0 ? '+' : ''}${Math.round(comprehensiveAnalytics.bodyProgress.progress.weightChange * 10) / 10}kg` : 
                         "0kg"}
                     </div>
                     <p className="text-xs text-gray-500">
@@ -299,8 +299,8 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded-lg">
                   <span className="text-sm font-medium">Nutrition Phase</span>
                   <Badge variant="outline">
-                    {comprehensiveAnalytics?.overview?.weightChange < -0.5 ? 'Weight Loss' : 
-                     comprehensiveAnalytics?.overview?.weightChange > 0.5 ? 'Weight Gain' : 'Maintenance'}
+                    {comprehensiveAnalytics?.bodyProgress?.progress?.weightChange < -0.5 ? 'Weight Loss' : 
+                     comprehensiveAnalytics?.bodyProgress?.progress?.weightChange > 0.5 ? 'Weight Gain' : 'Maintenance'}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
