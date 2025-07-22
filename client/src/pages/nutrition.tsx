@@ -129,7 +129,7 @@ export function Nutrition({ user }: NutritionProps) {
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
         {/* iOS-optimized Header Navigation for iPhone SE/12 mini */}
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-2 pb-2 mb-4">
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-2 mt-[-15px] mb-[-15px] pt-[0px] pb-[0px] pl-[15px] pr-[15px] ml-[-8px] mr-[-8px]">
           <div className="flex items-center justify-between">
             {/* Left: Back to Dashboard */}
             <Button 
