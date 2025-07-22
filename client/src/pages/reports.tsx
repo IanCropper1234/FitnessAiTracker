@@ -150,7 +150,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
           </Select>
 
           <Select value={reportType} onValueChange={setReportType}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40 text-left pl-[0px] pr-[0px] ml-[25px] mr-[25px] mt-[0px] mb-[0px] pt-[10px] pb-[10px]">
               <BarChart3 className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
