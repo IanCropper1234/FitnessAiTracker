@@ -130,17 +130,19 @@ export function Nutrition({ user }: NutritionProps) {
       <div className="w-full px-2 py-4 space-y-4">
         {/* iOS-optimized Header Navigation for iPhone SE/12 mini */}
         <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-3 py-3">
-          <div className="flex items-center justify-between h-10">
+          <div className="flex items-center justify-between min-h-[44px]">
             {/* Left: Back to Dashboard */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setLocation('/dashboard')}
-              className="flex items-center gap-1.5 px-2 py-2 h-10 hover:bg-accent rounded-lg ios-touch-feedback"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-medium hidden xs:inline">Back</span>
-            </Button>
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setLocation('/dashboard')}
+                className="flex items-center gap-1.5 px-2 py-2 min-h-[44px] hover:bg-accent rounded-lg ios-touch-feedback"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm font-medium hidden xs:inline">Back</span>
+              </Button>
+            </div>
             
             {/* Center: Page Title with Icon */}
             <div className="flex items-center gap-2 min-w-0 flex-1 justify-center">
@@ -148,15 +150,17 @@ export function Nutrition({ user }: NutritionProps) {
               <h1 className="text-lg font-semibold">Nutrition</h1>
             </div>
             
-            {/* Right: Home Button - Aligned to same height as back button */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setLocation('/dashboard')}
-              className="flex items-center justify-center p-2 h-10 w-10 hover:bg-accent rounded-lg ios-touch-feedback"
-            >
-              <Home className="w-4 h-4" />
-            </Button>
+            {/* Right: Home Button - Perfect alignment match */}
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setLocation('/dashboard')}
+                className="flex items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 hover:bg-accent rounded-lg ios-touch-feedback"
+              >
+                <Home className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
           
           {/* Date Display - Compact for small screens */}
