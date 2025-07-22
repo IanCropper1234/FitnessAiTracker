@@ -314,7 +314,7 @@ export function Dashboard({ user }: DashboardProps) {
 
         {/* Training Insights - Single Row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800 ml-[15px] mr-[15px]">
             <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs text-center">Most Active</h4>
             <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
               {trainingStats && trainingStats.totalSessions > 10 ? "High frequency trainer" : "Building consistency"}
