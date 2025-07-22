@@ -10,22 +10,16 @@ export function BottomNavigation() {
   const [showQuickActions, setShowQuickActions] = useState(false);
   const { t } = useLanguage();
 
-  // iOS-style navigation items (5 main tabs + center action button)
+  // iOS-style navigation items (4 main tabs + center action button)
   const navItems = [
     { path: "/dashboard", icon: Home, label: "Dashboard" },
     { path: "/nutrition", icon: BookOpen, label: "Diary" },
     { path: "/training", icon: Dumbbell, label: "Training" },
     { path: "/reports", icon: BarChart3, label: "Progress" },
-    { path: "/more", icon: MoreHorizontal, label: "More" },
   ];
 
   const handleNavigation = (path: string) => {
-    if (path === "/more") {
-      // Handle "More" tab - could show additional options or navigate to a more page
-      setLocation("/profile");
-    } else {
-      setLocation(path);
-    }
+    setLocation(path);
   };
 
   const handleQuickAction = () => {
@@ -36,7 +30,7 @@ export function BottomNavigation() {
     <>
       {/* iOS-style Bottom Tab Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 z-50 safe-area-pb">
-        <div className="flex items-center justify-center px-1 py-1 max-w-lg mx-auto">
+        <div className="flex items-center justify-center px-2 py-1 max-w-md mx-auto">
           {/* First two navigation items */}
           {navItems.slice(0, 2).map((item) => {
             const isActive = location === item.path;
@@ -58,9 +52,9 @@ export function BottomNavigation() {
             <Plus className="w-6 h-6" />
           </button>
           
-          {/* Last three navigation items */}
+          {/* Last two navigation items */}
           {navItems.slice(2).map((item) => {
-            const isActive = location === item.path || (item.path === "/more" && location === "/profile");
+            const isActive = location === item.path;
             return (
               <NavigationItem 
                 key={item.path}
@@ -94,7 +88,7 @@ function NavigationItem({ item, isActive, onPress }: NavigationItemProps) {
   return (
     <button
       onClick={() => onPress(item.path)}
-      className="flex flex-col items-center justify-center py-2 px-2 min-w-[60px] flex-1 transition-all duration-200"
+      className="flex flex-col items-center justify-center py-2 px-3 min-w-[70px] flex-1 transition-all duration-200"
     >
       <div className={`transition-colors duration-200 ${
         isActive 
