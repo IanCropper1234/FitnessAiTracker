@@ -127,7 +127,7 @@ export function Nutrition({ user }: NutritionProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="w-full px-4 py-4 space-y-4">
+      <div className="container mx-auto px-3 py-4 space-y-4 max-w-full">
         {/* Header with Return Button */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
