@@ -22,7 +22,7 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
 
   const menuItems = [
     { id: "dashboard", icon: Calendar, label: "Today" },
-    { id: "workouts", icon: Dumbbell, label: "Sessions" },
+    { id: "sessions", icon: Dumbbell, label: "Sessions" },
     { id: "exercise-library", icon: Settings, label: "Exercises" },
     { id: "templates", icon: FileText, label: "Templates" },
     { id: "mesocycles", icon: Target, label: "Programs" },

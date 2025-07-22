@@ -727,13 +727,71 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
         </TabsContent>
 
         <TabsContent value="sessions" className="space-y-6">
-          <WorkoutSessions 
-            sessions={workoutSessions} 
-            onExecuteWorkout={setExecutingWorkout}
-            onViewWorkout={setViewingWorkout}
-            onCreateSession={() => setShowSessionCreator(true)}
-            selectedDate={selectedDate}
-          />
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Workout Sessions</h3>
+            <Button onClick={() => setShowSessionCreator(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Workout
+            </Button>
+          </div>
+
+          {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <Dumbbell className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No workouts yet</h3>
+                <p className="text-muted-foreground text-center mb-4">
+                  Start your fitness journey by creating your first workout session.
+                </p>
+                <Button onClick={() => setShowSessionCreator(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create First Workout
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {/* In Progress Sessions */}
+              {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
+                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
+                  </h4>
+                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
+                    <WorkoutSessionCard
+                      key={session.id}
+                      session={session}
+                      onStart={() => setExecutingSessionId(session.id)}
+                      onView={() => setViewingSessionId(session.id)}
+                      onDelete={() => deleteSessionMutation.mutate(session.id)}
+                      onRestart={() => restartSessionMutation.mutate(session.id)}
+                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Completed Sessions */}
+              {Array.isArray(recentSessions) && recentSessions.filter(session => session.isCompleted).length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
+                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
+                  </h4>
+                  {recentSessions.filter(session => session.isCompleted).map((session) => (
+                    <WorkoutSessionCard
+                      key={session.id}
+                      session={session}
+                      onStart={() => setExecutingSessionId(session.id)}
+                      onView={() => setViewingSessionId(session.id)}
+                      onDelete={() => deleteSessionMutation.mutate(session.id)}
+                      onRestart={() => restartSessionMutation.mutate(session.id)}
+                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="exercise-library" className="space-y-6">
@@ -879,73 +937,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           </div>
         </TabsContent>
 
-        <TabsContent value="workouts" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Workout Sessions</h3>
-            <Button onClick={() => setShowSessionCreator(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Workout
-            </Button>
-          </div>
 
-          {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <Dumbbell className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No workouts yet</h3>
-                <p className="text-muted-foreground text-center mb-4">
-                  Start your fitness journey by creating your first workout session.
-                </p>
-                <Button onClick={() => setShowSessionCreator(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create First Workout
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              {/* In Progress Sessions */}
-              {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
-                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
-                  </h4>
-                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
-                    <WorkoutSessionCard
-                      key={session.id}
-                      session={session}
-                      onStart={() => setExecutingSessionId(session.id)}
-                      onView={() => setViewingSessionId(session.id)}
-                      onDelete={() => deleteSessionMutation.mutate(session.id)}
-                      onRestart={() => restartSessionMutation.mutate(session.id)}
-                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Completed Sessions */}
-              {Array.isArray(recentSessions) && recentSessions.filter(session => session.isCompleted).length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
-                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
-                  </h4>
-                  {recentSessions.filter(session => session.isCompleted).map((session) => (
-                    <WorkoutSessionCard
-                      key={session.id}
-                      session={session}
-                      onStart={() => setExecutingSessionId(session.id)}
-                      onView={() => setViewingSessionId(session.id)}
-                      onDelete={() => deleteSessionMutation.mutate(session.id)}
-                      onRestart={() => restartSessionMutation.mutate(session.id)}
-                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </TabsContent>
 
         <TabsContent value="volume" className="space-y-6">
           <VolumeLandmarks />
