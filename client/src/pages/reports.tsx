@@ -316,79 +316,145 @@ export function ReportsPage({ userId }: ReportsPageProps) {
 
           {/* Nutrition Tab */}
           <TabsContent value="nutrition" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Calories</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {nutritionAnalytics?.summary?.totalCalories?.toFixed(0) || comprehensiveAnalytics?.nutrition?.summary?.totalCalories?.toFixed(0) || 0}
+            {/* RP Nutrition Performance Card */}
+            <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 border-l-4 border-l-green-500">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-green-700 dark:text-green-300">Nutrition Performance</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">RP Diet Coach Assessment</p>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Avg: {nutritionAnalytics?.averages?.calories?.toFixed(0) || comprehensiveAnalytics?.nutrition?.averages?.calories?.toFixed(0) || 0}/day
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                      {Math.round(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0)}%
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0) >= 85 ? 'Excellent' : 
+                       (comprehensiveAnalytics?.nutrition?.adherencePercentage || 0) >= 70 ? 'Good' : 'Needs Work'}
+                    </Badge>
                   </div>
-                </CardContent>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* iOS-Style Nutrition Metrics Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Total Calories */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Calories</p>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(nutritionAnalytics?.summary?.totalCalories || comprehensiveAnalytics?.nutrition?.summary?.totalCalories || 0)}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Avg: {Math.round(nutritionAnalytics?.averages?.calories || comprehensiveAnalytics?.nutrition?.averages?.calories || 0)}/day
+                    </p>
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Protein</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">
-                    {nutritionAnalytics?.summary?.totalProtein?.toFixed(0) || comprehensiveAnalytics?.nutrition?.summary?.totalProtein?.toFixed(0) || 0}g
+
+              {/* Total Protein */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <Target className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Protein</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Avg: {nutritionAnalytics?.averages?.protein?.toFixed(0) || comprehensiveAnalytics?.nutrition?.averages?.protein?.toFixed(0) || 0}g/day
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(nutritionAnalytics?.summary?.totalProtein || comprehensiveAnalytics?.nutrition?.summary?.totalProtein || 0)}g
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Avg: {Math.round(nutritionAnalytics?.averages?.protein || comprehensiveAnalytics?.nutrition?.averages?.protein || 0)}g/day
+                    </p>
                   </div>
-                </CardContent>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Carbs</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {nutritionAnalytics?.summary?.totalCarbs?.toFixed(0) || comprehensiveAnalytics?.nutrition?.summary?.totalCarbs?.toFixed(0) || 0}g
+
+              {/* Total Carbs */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Carbs</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Avg: {nutritionAnalytics?.averages?.carbs?.toFixed(0) || comprehensiveAnalytics?.nutrition?.averages?.carbs?.toFixed(0) || 0}g/day
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(nutritionAnalytics?.summary?.totalCarbs || comprehensiveAnalytics?.nutrition?.summary?.totalCarbs || 0)}g
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Avg: {Math.round(nutritionAnalytics?.averages?.carbs || comprehensiveAnalytics?.nutrition?.averages?.carbs || 0)}g/day
+                    </p>
                   </div>
-                </CardContent>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Fat</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-red-600">
-                    {nutritionAnalytics?.summary?.totalFat?.toFixed(0) || comprehensiveAnalytics?.nutrition?.summary?.totalFat?.toFixed(0) || 0}g
+
+              {/* Total Fat */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Fat</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Avg: {nutritionAnalytics?.averages?.fat?.toFixed(0) || comprehensiveAnalytics?.nutrition?.averages?.fat?.toFixed(0) || 0}g/day
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(nutritionAnalytics?.summary?.totalFat || comprehensiveAnalytics?.nutrition?.summary?.totalFat || 0)}g
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Avg: {Math.round(nutritionAnalytics?.averages?.fat || comprehensiveAnalytics?.nutrition?.averages?.fat || 0)}g/day
+                    </p>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             </div>
             
+            {/* RP Nutrition Analysis */}
             <Card>
-              <CardHeader>
-                <CardTitle>Nutrition Summary</CardTitle>
-                <CardDescription>Period overview for the last {selectedPeriod} days</CardDescription>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center">
+                  <Target className="w-4 h-4 mr-2" />
+                  RP Nutrition Analysis
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Days with logs</span>
-                    <span className="text-sm">{nutritionAnalytics?.totalDays || comprehensiveAnalytics?.nutrition?.totalDays || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Total food entries</span>
-                    <span className="text-sm">{nutritionAnalytics?.totalLogs || comprehensiveAnalytics?.nutrition?.totalLogs || 0}</span>
-                  </div>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <span className="text-sm font-medium">Days with logs</span>
+                  <Badge variant="outline">{nutritionAnalytics?.totalDays || comprehensiveAnalytics?.nutrition?.totalDays || 0} days</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  <span className="text-sm font-medium">Total food entries</span>
+                  <Badge variant="outline">{nutritionAnalytics?.totalLogs || comprehensiveAnalytics?.nutrition?.totalLogs || 0} entries</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                  <span className="text-sm font-medium">Adherence Status</span>
+                  <Badge variant="outline">
+                    {(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0) >= 85 ? 'On Track' : 
+                     (comprehensiveAnalytics?.nutrition?.adherencePercentage || 0) >= 70 ? 'Close' : 'Adjust Goals'}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -396,71 +462,137 @@ export function ReportsPage({ userId }: ReportsPageProps) {
 
           {/* Training Tab */}
           <TabsContent value="training" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {trainingAnalytics?.summary?.totalSessions || comprehensiveAnalytics?.training?.summary?.totalSessions || 0}
+            {/* RP Training Performance Card */}
+            <Card className="bg-gradient-to-r from-purple-50 to-orange-50 dark:from-purple-950 dark:to-orange-950 border-l-4 border-l-purple-500">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-purple-700 dark:text-purple-300">Training Performance</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">RP Hypertrophy Assessment</p>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Completed workouts</div>
-                </CardContent>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                      {Math.round((comprehensiveAnalytics?.training?.consistency || 0) * 100)}%
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {(comprehensiveAnalytics?.training?.consistency || 0) >= 0.8 ? 'Excellent' : 
+                       (comprehensiveAnalytics?.training?.consistency || 0) >= 0.6 ? 'Good' : 'Needs Work'}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* iOS-Style Training Metrics Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Total Sessions */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                      <Activity className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Sessions</p>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {trainingAnalytics?.summary?.totalSessions || comprehensiveAnalytics?.training?.summary?.totalSessions || 0}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">completed workouts</p>
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-red-600">
-                    {trainingAnalytics?.summary?.totalVolume?.toFixed(0) || comprehensiveAnalytics?.training?.summary?.totalVolume?.toFixed(0) || 0}
+
+              {/* Total Volume */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Volume</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Sets × reps × weight</div>
-                </CardContent>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round((trainingAnalytics?.summary?.totalVolume || comprehensiveAnalytics?.training?.summary?.totalVolume || 0) / 1000)}k
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">sets × reps × weight</p>
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Duration</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {trainingAnalytics?.summary?.totalDuration?.toFixed(0) || comprehensiveAnalytics?.training?.summary?.totalDuration?.toFixed(0) || 0}
+
+              {/* Total Duration */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Duration</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Minutes trained</div>
-                </CardContent>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(trainingAnalytics?.summary?.totalDuration || comprehensiveAnalytics?.training?.summary?.totalDuration || 0)}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">minutes trained</p>
+                  </div>
+                </div>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Avg Session</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">
-                    {trainingAnalytics?.summary?.averageSessionDuration?.toFixed(0) || comprehensiveAnalytics?.training?.summary?.averageSessionDuration?.toFixed(0) || 0}
+
+              {/* Average Session */}
+              <Card className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Average</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Session</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Minutes per session</div>
-                </CardContent>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {Math.round(trainingAnalytics?.summary?.averageSessionDuration || comprehensiveAnalytics?.training?.summary?.averageSessionDuration || 0)}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">minutes per session</p>
+                  </div>
+                </div>
               </Card>
             </div>
             
+            {/* RP Training Analysis */}
             <Card>
-              <CardHeader>
-                <CardTitle>Training Summary</CardTitle>
-                <CardDescription>Performance overview for the last {selectedPeriod} days</CardDescription>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center">
+                  <Activity className="w-4 h-4 mr-2" />
+                  RP Training Analysis
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Average weekly volume</span>
-                    <span className="text-sm">{trainingAnalytics?.summary?.averageWeeklyVolume?.toFixed(0) || comprehensiveAnalytics?.training?.summary?.averageWeeklyVolume?.toFixed(0) || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                    <span className="text-sm font-medium">Sessions per week</span>
-                    <span className="text-sm">{comprehensiveAnalytics?.overview?.averageSessionsPerWeek || 0}</span>
-                  </div>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between p-2 bg-purple-50 dark:bg-purple-950 rounded-lg">
+                  <span className="text-sm font-medium">Average weekly volume</span>
+                  <Badge variant="outline">{Math.round(trainingAnalytics?.summary?.averageWeeklyVolume || comprehensiveAnalytics?.training?.summary?.averageWeeklyVolume || 0)}</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  <span className="text-sm font-medium">Sessions per week</span>
+                  <Badge variant="outline">{comprehensiveAnalytics?.overview?.averageSessionsPerWeek || 0}</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
+                  <span className="text-sm font-medium">Training Status</span>
+                  <Badge variant="outline">
+                    {(comprehensiveAnalytics?.training?.consistency || 0) >= 0.8 ? 'Consistent' : 
+                     (comprehensiveAnalytics?.training?.consistency || 0) >= 0.6 ? 'Building' : 'Irregular'}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -470,53 +602,142 @@ export function ReportsPage({ userId }: ReportsPageProps) {
           <TabsContent value="progress" className="space-y-4">
             {comprehensiveAnalytics?.bodyProgress?.data?.length > 0 || comprehensiveAnalytics?.feedback?.data?.length > 0 ? (
               <div className="space-y-4">
-                {/* Body Progress Cards */}
-                {comprehensiveAnalytics?.bodyProgress?.progress && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Current Weight</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {comprehensiveAnalytics.bodyProgress.summary.currentWeight?.toFixed(1) || 0}kg
+                {/* RP Progress Performance Card */}
+                <Card className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 border-l-4 border-l-orange-500">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-orange-700 dark:text-orange-300">Progress Performance</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Body Composition & Recovery</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+                          {comprehensiveAnalytics?.overview?.recoveryScore || 0}/10
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {comprehensiveAnalytics.bodyProgress.summary.totalEntries} measurements
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Weight Change</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold text-purple-600">
-                          {comprehensiveAnalytics.bodyProgress.progress.weightChange > 0 ? '+' : ''}
-                          {comprehensiveAnalytics.bodyProgress.progress.weightChange}kg
-                        </div>
-                        <Badge variant={comprehensiveAnalytics.bodyProgress.progress.trend === 'loss' ? "default" : "secondary"} className="text-xs">
-                          {comprehensiveAnalytics.bodyProgress.progress.trend === 'gain' ? 'Weight Gain' : 
-                           comprehensiveAnalytics.bodyProgress.progress.trend === 'loss' ? 'Weight Loss' : 'Maintained'}
+                        <Badge variant="secondary" className="text-xs">
+                          {(comprehensiveAnalytics?.overview?.recoveryScore || 0) >= 7 ? 'Excellent' : 
+                           (comprehensiveAnalytics?.overview?.recoveryScore || 0) >= 5 ? 'Good' : 'Needs Work'}
                         </Badge>
-                      </CardContent>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* iOS-Style Progress Metrics Grid */}
+                {comprehensiveAnalytics?.bodyProgress?.progress && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Current Weight */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                            <Scale className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Current</p>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Weight</p>
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            {Math.round((comprehensiveAnalytics.bodyProgress.summary.currentWeight || 0) * 10) / 10}kg
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {comprehensiveAnalytics.bodyProgress.summary.totalEntries} measurements
+                          </p>
+                        </div>
+                      </div>
                     </Card>
-                    
-                    {comprehensiveAnalytics.bodyProgress.summary.currentBodyFat && (
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium">Body Fat</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold text-orange-600">
-                            {comprehensiveAnalytics.bodyProgress.summary.currentBodyFat?.toFixed(1)}%
+
+                    {/* Weight Change */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                            <TrendingUp className="w-5 h-5 text-purple-600" />
                           </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            {comprehensiveAnalytics.bodyProgress.progress.bodyFatChange > 0 ? '+' : ''}
-                            {comprehensiveAnalytics.bodyProgress.progress.bodyFatChange?.toFixed(1)}% change
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Weight</p>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Change</p>
                           </div>
-                        </CardContent>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            {comprehensiveAnalytics.bodyProgress.progress.weightChange > 0 ? '+' : ''}
+                            {Math.round(comprehensiveAnalytics.bodyProgress.progress.weightChange * 10) / 10}kg
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {comprehensiveAnalytics.bodyProgress.progress.trend === 'gain' ? 'gaining' : 
+                             comprehensiveAnalytics.bodyProgress.progress.trend === 'loss' ? 'losing' : 'stable'}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Recovery Score */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                            <Activity className="w-5 h-5 text-green-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Recovery</p>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Score</p>
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            {comprehensiveAnalytics?.feedback?.summary?.recoveryScore || 0}/10
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">avg recovery</p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Body Fat (if available) */}
+                    {comprehensiveAnalytics.bodyProgress.summary.currentBodyFat ? (
+                      <Card className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
+                              <Target className="w-5 h-5 text-orange-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Body</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Fat</p>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                              {Math.round((comprehensiveAnalytics.bodyProgress.summary.currentBodyFat || 0) * 10) / 10}%
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {comprehensiveAnalytics.bodyProgress.progress.bodyFatChange > 0 ? '+' : ''}
+                              {Math.round((comprehensiveAnalytics.bodyProgress.progress.bodyFatChange || 0) * 10) / 10}% change
+                            </p>
+                          </div>
+                        </div>
+                      </Card>
+                    ) : (
+                      <Card className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                              <Zap className="w-5 h-5 text-red-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Fatigue</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Score</p>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                              {comprehensiveAnalytics?.feedback?.summary?.fatigueScore || 0}/10
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">avg fatigue</p>
+                          </div>
+                        </div>
                       </Card>
                     )}
                   </div>
@@ -525,41 +746,43 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 {/* Auto-Regulation Feedback */}
                 {comprehensiveAnalytics?.feedback?.averages && (
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Auto-Regulation Feedback</CardTitle>
-                      <CardDescription>Average scores for the last {selectedPeriod} days</CardDescription>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base flex items-center">
+                        <Activity className="w-4 h-4 mr-2" />
+                        RP Auto-Regulation Feedback
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <div className="text-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
                           <div className="text-lg font-bold text-green-600">
                             {comprehensiveAnalytics.feedback.averages.pumpQuality}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Pump Quality</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
                           <div className="text-lg font-bold text-blue-600">
                             {comprehensiveAnalytics.feedback.averages.energyLevel}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Energy Level</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
                           <div className="text-lg font-bold text-purple-600">
                             {comprehensiveAnalytics.feedback.averages.sleepQuality}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Quality</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <div className="text-center p-3 bg-orange-50 dark:bg-orange-950 rounded-lg">
                           <div className="text-lg font-bold text-orange-600">
                             {comprehensiveAnalytics.feedback.summary.recoveryScore}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Recovery Score</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <div className="text-center p-3 bg-red-50 dark:bg-red-950 rounded-lg">
                           <div className="text-lg font-bold text-red-600">
                             {comprehensiveAnalytics.feedback.summary.fatigueScore}/10
                           </div>
