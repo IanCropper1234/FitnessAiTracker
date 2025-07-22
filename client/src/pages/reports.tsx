@@ -133,17 +133,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
             </div>
           </div>
 
-          {/* Navigation tabs moved to header */}
-          <div className="mt-3">
-            <Tabs value={reportType} onValueChange={setReportType} className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-                <TabsTrigger value="nutrition" className="text-xs">Nutrition</TabsTrigger>
-                <TabsTrigger value="training" className="text-xs">Training</TabsTrigger>
-                <TabsTrigger value="progress" className="text-xs">Progress</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+          
         </div>
 
         <div className="mt-4">
