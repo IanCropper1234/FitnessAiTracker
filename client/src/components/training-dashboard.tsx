@@ -44,6 +44,7 @@ import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
 import MesocycleDashboard from "./mesocycle-dashboard";
 import TrainingTemplates from "./training-templates";
 import LoadProgressionTracker from "./load-progression-tracker";
+import { TrainingOverview } from "./training-overview";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { FeatureShowcase } from "./enhanced/FeatureShowcase";
 import { Input } from "@/components/ui/input";
@@ -724,6 +725,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </div>
             </CardContent>
           </Card>
+
+          {/* Training Overview with Insights */}
+          <TrainingOverview userId={userId} />
         </TabsContent>
 
         <TabsContent value="sessions" className="space-y-6">

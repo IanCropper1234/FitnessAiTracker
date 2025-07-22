@@ -123,7 +123,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
         </div>
       </div>
       {/* Training Insights */}
-      <div className="grid grid-cols-3 gap-2 md:gap-4">
+      <div className="grid grid-cols-3 gap-2 md:gap-4 min-h-[60px]">
         <div className="bg-blue-50 dark:bg-blue-900/20 p-2 md:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
           <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs md:text-sm">Most Active</h4>
           <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
