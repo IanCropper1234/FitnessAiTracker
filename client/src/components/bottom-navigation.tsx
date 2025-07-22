@@ -175,32 +175,30 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
-              <Button
+              <button
                 key={action.id}
                 onClick={() => handleActionPress(action.action)}
-                className="bg-gray-800/60 hover:bg-gray-700/60 text-white h-auto p-4 justify-start gap-4 hover:scale-105 transition-all duration-200 border border-gray-700/50"
-                variant="default"
+                className="w-full flex items-center gap-4 p-4 rounded-lg bg-gray-800/50 hover:bg-gray-700/60 border border-gray-700/30 text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
               >
-                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-700/80 rounded-full flex items-center justify-center flex-shrink-0">
                   <Icon className="w-5 h-5 text-gray-300" />
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-start flex-1 min-w-0">
                   <span className="font-medium text-base text-white">{action.label}</span>
-                  <span className="text-gray-400 text-sm">{action.description}</span>
+                  <span className="text-gray-400 text-sm leading-tight">{action.description}</span>
                 </div>
-              </Button>
+              </button>
             );
           })}
         </div>
 
-        <div className="flex justify-center pt-4">
-          <Button 
+        <div className="flex justify-center pt-6">
+          <button 
             onClick={onClose}
-            variant="ghost"
-            className="text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+            className="px-6 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
           >
             Cancel
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>
