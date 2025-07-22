@@ -665,7 +665,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground h-9 rounded-md gap-1 sm:text-sm px-2 sm:px-3 text-[12px] bg-[#ffffff] text-[#0a0a0a] font-normal"
+                  className="duration-200 ease-out active:scale-95 shadow-sm hover:shadow-md inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground h-9 rounded-md gap-1 sm:text-sm px-2 sm:px-3 bg-[#ffffff] text-[#0a0a0a] pl-[15px] pr-[15px] font-medium text-[12px] ml-[-5px] mr-[-5px] pt-[0px] pb-[0px] mt-[0px] mb-[0px]"
                 >
                   <Check className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">{bulkMode ? 'Exit Selection' : 'Select Items'}</span>
