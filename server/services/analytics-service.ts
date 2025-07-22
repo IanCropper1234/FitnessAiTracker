@@ -229,7 +229,7 @@ export class AnalyticsService {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
       
-      // Use raw SQL for body metrics
+      // Use raw SQL for body metrics - get ALL metrics to properly calculate weight change
       const result = await db.execute(sql`
         SELECT 
           id,
@@ -247,9 +247,7 @@ export class AnalyticsService {
           created_at
         FROM body_metrics 
         WHERE user_id = ${userId}
-          AND date >= ${startDate.toISOString().split('T')[0]}
-          AND date <= ${endDate.toISOString().split('T')[0]}
-        ORDER BY date DESC
+        ORDER BY date ASC
       `);
 
       const metrics = result.rows || [];
