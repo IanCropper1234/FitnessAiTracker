@@ -126,7 +126,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/nutrition");
         onClose();
       },
-      color: "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
     },
     {
       id: "start-workout",
@@ -137,7 +137,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/training");
         onClose();
       },
-      color: "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
     },
     {
       id: "profile",
@@ -148,7 +148,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/profile");
         onClose();
       },
-      color: "bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600"
+      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
     }
   ];
 
