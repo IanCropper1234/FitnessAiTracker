@@ -489,49 +489,70 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto" {...swipeHandlers}>
-      {/* Mobile-Optimized Header */}
-      <Card>
-        <CardHeader className="pb-4">
-          {/* Top Row - Session Name and Badges */}
-          <CardTitle className="text-lg sm:text-xl font-bold truncate text-center">
+      {/* iOS-Style Header */}
+      <div className="ios-card p-6 space-y-4">
+        {/* Session Title - iOS Large Title Style */}
+        <div className="text-center">
+          <h1 className="text-ios-title1 font-bold text-foreground">
             {session.name}
-          </CardTitle>
+          </h1>
+        </div>
 
-          {/* Stats Row - Mobile Stack */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm">
-            <div className="flex items-center justify-between sm:justify-start sm:gap-6">
-              <span className="text-foreground/70">
-                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
-              </span>
-              <span className="text-foreground/70">
-                {completedSets} / {totalSets} sets completed
-              </span>
-            </div>
-            
-            {/* Progress Percentage */}
-            <div className="text-right">
-              <span className="text-sm font-medium text-primary">
-                {Math.round(progressPercentage)}% Complete
-              </span>
-            </div>
+        {/* Exercise Progress - iOS Style */}
+        <div className="flex items-center justify-between">
+          <div className="text-ios-callout text-muted-foreground">
+            Exercise {currentExerciseIndex + 1} of {session.exercises.length}
           </div>
+          <div className="text-ios-callout font-semibold text-primary">
+            {Math.round(progressPercentage)}% Complete
+          </div>
+        </div>
 
-          {/* Progress Bar */}
-          <div className="mt-3">
-            {circularProgressEnabled ? (
-              <div className="flex justify-center text-[16px] mt-[-36px] mb-[-36px] ml-[100px] mr-[100px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]">
-                <CircularProgress 
-                  progress={progressPercentage}
-                  size={50}
-                  strokeWidth={4}
-                />
+        {/* Progress Indicator - Clean iOS Style */}
+        <div className="space-y-3">
+          {circularProgressEnabled ? (
+            <div className="flex justify-center py-2">
+              <CircularProgress 
+                progress={progressPercentage}
+                size={60}
+                strokeWidth={6}
+              />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Progress value={progressPercentage} className="h-1.5 bg-muted" />
+              <div className="text-center">
+                <span className="text-ios-caption1 text-muted-foreground">
+                  {completedSets} of {totalSets} sets completed
+                </span>
               </div>
-            ) : (
-              <Progress value={progressPercentage} className="w-full h-2" />
-            )}
+            </div>
+          )}
+        </div>
+
+        {/* Current Exercise Info - iOS Style */}
+        {currentExercise && (
+          <div className="bg-muted/30 rounded-xl p-4 border border-border/50">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="text-ios-headline font-semibold text-foreground">
+                  {currentExercise.exercise.name}
+                </h3>
+                <p className="text-ios-footnote text-muted-foreground mt-1">
+                  {currentExercise.exercise.muscleGroups.join(', ')} • {currentExercise.exercise.equipment}
+                </p>
+              </div>
+              <div className="ml-4">
+                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full">
+                  <span className="text-ios-caption1 font-medium">
+                    {currentExercise.exercise.category}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </CardHeader>
-      </Card>
+        )}
+      </div>
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2">
@@ -549,25 +570,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         <TabsContent value="execution" className="space-y-6 mt-6">
           {/* Current Exercise Display */}
           {currentExercise && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div>
-                    <div>{currentExercise.exercise.name}</div>
-                    <div className="text-sm text-muted-foreground font-normal">
-                      {currentExercise.exercise.muscleGroups.join(', ')} • {currentExercise.exercise.equipment}
-                    </div>
-                  </div>
-                  <Badge variant="outline">
-                    {currentExercise.exercise.category}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Exercise Instructions */}
-                <div className="bg-muted/50 p-3 rounded-lg border border-border">
-                  <p className="text-sm text-foreground/80">{currentExercise.exercise.instructions}</p>
-                </div>
+            <div className="ios-card p-6 space-y-6">
+              {/* Exercise Instructions - iOS Style */}
+              <div className="bg-secondary/30 rounded-xl p-4 border border-border/30">
+                <h4 className="text-ios-subhead font-semibold text-foreground mb-2">Instructions</h4>
+                <p className="text-ios-callout text-foreground/80 leading-relaxed">
+                  {currentExercise.exercise.instructions}
+                </p>
+              </div>
 
                 {/* Current Set Input */}
                 {currentSet && (
@@ -583,120 +593,126 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   />
                 )}
 
-                {/* All Sets Overview */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium">All Sets</h4>
-                    {/* Add/Remove Set Buttons */}
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addSet(currentExercise.id)}
-                        className="w-8 h-8 p-0 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
-                        title="Add Set"
+              {/* All Sets Overview - iOS List Style */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-ios-headline font-semibold text-foreground">All Sets</h4>
+                  {/* Add/Remove Set Buttons - iOS Style */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => addSet(currentExercise.id)}
+                      className="ios-touch-feedback w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center"
+                      title="Add Set"
+                    >
+                      <Plus className="h-4 w-4 text-emerald-400" />
+                    </button>
+                    {currentSets.length > 1 && (
+                      <button
+                        onClick={() => removeSet(currentExercise.id, currentSetIndex)}
+                        className="ios-touch-feedback w-8 h-8 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center"
+                        title="Remove Set"
                       >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      {currentSets.length > 1 && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeSet(currentExercise.id, currentSetIndex)}
-                          className="w-8 h-8 p-0 text-red-400 border-red-500/30 bg-red-500/10 hover:bg-red-500/20"
-                          title="Remove Set"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    {currentSets.map((set, index) => (
-                      <div
-                        key={index}
-                        className={`p-3 rounded border cursor-pointer transition-colors ${
-                          index === currentSetIndex
-                            ? 'border-primary bg-primary/5'
-                            : set.completed
-                            ? 'border-emerald-500/50 bg-emerald-500/5'
-                            : 'border-border hover:bg-accent/50'
-                        }`}
-                        onClick={() => setCurrentSetIndex(index)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">Set {set.setNumber}</span>
-                          <div className="flex items-center gap-2">
-                            {set.completed ? (
-                              <>
-                                <span className="text-emerald-400 text-sm">
-                                  {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    resetSet(currentExercise.id, index);
-                                  }}
-                                  className="w-6 h-6 p-0 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300"
-                                  title="Reset Set"
-                                >
-                                  <RotateCcw className="h-3 w-3" />
-                                </Button>
-                              </>
-                            ) : (
-                              <span className="text-foreground/60 text-sm">
-                                Target: {set.targetReps} reps
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                        <Minus className="h-4 w-4 text-red-400" />
+                      </button>
+                    )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <div className="space-y-2">
+                  {currentSets.map((set, index) => (
+                    <div
+                      key={index}
+                      className={`ios-list-item rounded-xl cursor-pointer transition-all ${
+                        index === currentSetIndex
+                          ? 'bg-primary/5 border border-primary/30'
+                          : set.completed
+                          ? 'bg-emerald-500/5 border border-emerald-500/20'
+                          : 'border border-border/30 hover:bg-muted/50'
+                      }`}
+                      onClick={() => setCurrentSetIndex(index)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-ios-callout font-semibold text-foreground">
+                          Set {set.setNumber}
+                        </span>
+                        <div className="flex items-center gap-3">
+                          {set.completed ? (
+                            <>
+                              <span className="text-ios-footnote text-emerald-400 font-medium">
+                                {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  resetSet(currentExercise.id, index);
+                                }}
+                                className="ios-touch-feedback w-6 h-6 rounded-full bg-orange-500/10 flex items-center justify-center"
+                                title="Reset Set"
+                              >
+                                <RotateCcw className="h-3 w-3 text-orange-400" />
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-ios-footnote text-muted-foreground">
+                              Target: {set.targetReps} reps
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Simplified Navigation - Just Arrows and Exercise Names */}
+          {/* iOS-Style Navigation */}
           <div className="flex items-center justify-between gap-4">
-            <Button
-              variant="ghost"
+            <button
               disabled={currentExerciseIndex === 0}
               onClick={() => {
                 setCurrentExerciseIndex(currentExerciseIndex - 1);
                 setCurrentSetIndex(0);
               }}
-              className="flex items-center gap-2 text-sm"
+              className={`ios-touch-feedback flex items-center gap-3 p-3 rounded-xl border border-border/30 flex-1 ${
+                currentExerciseIndex === 0 
+                  ? 'opacity-50 cursor-not-allowed bg-muted/30' 
+                  : 'bg-card hover:bg-muted/50'
+              }`}
             >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="text-foreground/70">Previous</span>
-              {currentExerciseIndex > 0 && (
-                <span className="font-medium">
-                  {session.exercises[currentExerciseIndex - 1]?.exercise.name}
-                </span>
-              )}
-            </Button>
+              <ArrowLeft className="h-5 w-5 text-primary" />
+              <div className="text-left flex-1">
+                <div className="text-ios-caption1 text-muted-foreground">Previous</div>
+                {currentExerciseIndex > 0 && (
+                  <div className="text-ios-footnote font-medium text-foreground truncate">
+                    {session.exercises[currentExerciseIndex - 1]?.exercise.name}
+                  </div>
+                )}
+              </div>
+            </button>
             
-            <Button
-              variant="ghost"
+            <button
               disabled={currentExerciseIndex === session.exercises.length - 1}
               onClick={() => {
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
                 setCurrentSetIndex(0);
               }}
-              className="flex items-center gap-2 text-sm"
+              className={`ios-touch-feedback flex items-center gap-3 p-3 rounded-xl border border-border/30 flex-1 ${
+                currentExerciseIndex === session.exercises.length - 1 
+                  ? 'opacity-50 cursor-not-allowed bg-muted/30' 
+                  : 'bg-card hover:bg-muted/50'
+              }`}
             >
-              {currentExerciseIndex < session.exercises.length - 1 && (
-                <span className="font-medium">
-                  {session.exercises[currentExerciseIndex + 1]?.exercise.name}
-                </span>
-              )}
-              <span className="text-foreground/70">Next</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+              <div className="text-right flex-1">
+                <div className="text-ios-caption1 text-muted-foreground">Next</div>
+                {currentExerciseIndex < session.exercises.length - 1 && (
+                  <div className="text-ios-footnote font-medium text-foreground truncate">
+                    {session.exercises[currentExerciseIndex + 1]?.exercise.name}
+                  </div>
+                )}
+              </div>
+              <ArrowRight className="h-5 w-5 text-primary" />
+            </button>
           </div>
         </TabsContent>
 
@@ -711,25 +727,24 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           />
         </TabsContent>
       </Tabs>
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button 
-          variant="outline" 
+      {/* iOS-Style Action Buttons */}
+      <div className="flex gap-3">
+        <button 
           onClick={saveAndExit} 
-          className="flex-1"
           disabled={saveProgressMutation.isPending}
+          className="ios-touch-feedback flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-4 px-6 rounded-xl border border-border/30 flex items-center justify-center gap-2"
         >
-          <Save className="h-4 w-4 mr-2" />
-          Save & Exit
-        </Button>
-        <Button 
+          <Save className="h-5 w-5" />
+          <span className="text-ios-callout font-medium">Save & Exit</span>
+        </button>
+        <button 
           onClick={completeWorkout} 
-          className="flex-1"
           disabled={saveProgressMutation.isPending}
+          className="ios-touch-feedback flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-4 px-6 rounded-xl flex items-center justify-center gap-2"
         >
-          <CheckCircle className="h-4 w-4 mr-2" />
-          Complete Workout
-        </Button>
+          <CheckCircle className="h-5 w-5" />
+          <span className="text-ios-callout font-medium">Complete Workout</span>
+        </button>
       </div>
       {/* Enhanced Rest Timer FAB */}
       {restTimerFABEnabled && (
