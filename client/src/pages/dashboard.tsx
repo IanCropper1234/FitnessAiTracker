@@ -94,7 +94,7 @@ export function Dashboard({ user }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto p-4 space-y-6">
+      <div className="container mx-auto px-3 py-4 space-y-4 max-w-full">
         {/* Centered Date Selector */}
         <div className="flex flex-col items-center space-y-2">
           {/* Date Navigation Controls */}
@@ -112,7 +112,7 @@ export function Dashboard({ user }: DashboardProps) {
               <ChevronLeft className="h-4 w-4" />
             </Button>
             
-            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[100px] justify-center text-xs sm:text-sm">
               <span className="text-sm font-medium">
                 {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
                  new Date(selectedDate).toLocaleDateString('en-GB', { 
@@ -234,19 +234,19 @@ export function Dashboard({ user }: DashboardProps) {
         </Card>
 
         {/* Quick Stats - Single Row */}
-        <div className="grid grid-cols-4 gap-2 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
               <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Calories
               </CardTitle>
             </CardHeader>
             <CardContent className="px-2 pb-2">
-              <div className="text-lg font-bold text-black dark:text-white text-center">
+              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.totalCalories || 0)}
               </div>
-              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 /{Math.round(nutritionSummary?.goalCalories || 2000)}
               </p>
               <Progress 
@@ -257,17 +257,17 @@ export function Dashboard({ user }: DashboardProps) {
           </Card>
 
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
               <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Protein
               </CardTitle>
             </CardHeader>
             <CardContent className="px-2 pb-2">
-              <div className="text-lg font-bold text-black dark:text-white text-center">
+              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.totalProtein || 0)}g
               </div>
-              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 /{Math.round(nutritionSummary?.goalProtein || 150)}g
               </p>
               <Progress 
@@ -278,34 +278,34 @@ export function Dashboard({ user }: DashboardProps) {
           </Card>
 
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
               <Activity className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Sessions
               </CardTitle>
             </CardHeader>
             <CardContent className="px-2 pb-2">
-              <div className="text-lg font-bold text-black dark:text-white text-center">
+              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
                 {trainingStats?.totalSessions || 0}
               </div>
-              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 This week
               </p>
             </CardContent>
           </Card>
 
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
               <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
                 Adherence
               </CardTitle>
             </CardHeader>
             <CardContent className="px-2 pb-2">
-              <div className="text-lg font-bold text-black dark:text-white text-center">
+              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
                 {Math.round(nutritionSummary?.adherence || 0)}%
               </div>
-              <p className="text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
                 Overall
               </p>
             </CardContent>
@@ -313,24 +313,24 @@ export function Dashboard({ user }: DashboardProps) {
         </div>
 
         {/* Training Insights - Single Row */}
-        <div className="grid grid-cols-3 gap-2 md:gap-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-2 md:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs md:text-sm text-center">Most Active</h4>
-            <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300 pt-[0px] pb-[0px] mt-[20px] mb-[20px] text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs text-center">Most Active</h4>
+            <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
               {trainingStats && trainingStats.totalSessions > 10 ? "High frequency trainer" : "Building consistency"}
             </p>
           </div>
           
-          <div className="bg-green-50 dark:bg-green-900/20 p-2 md:p-4 rounded-lg border border-green-200 dark:border-green-800">
-            <h4 className="text-green-900 dark:text-green-100 mb-1 text-xs md:text-sm font-medium text-center">Volume Progress</h4>
-            <p className="text-xs md:text-sm text-green-700 dark:text-green-300 text-center">
+          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
+            <h4 className="text-green-900 dark:text-green-100 mb-1 text-xs font-medium text-center">Volume Progress</h4>
+            <p className="text-xs text-green-700 dark:text-green-300 text-center">
               {trainingStats && trainingStats.totalVolume > 1000 ? "Strong progression" : "Steady improvement"}
             </p>
           </div>
           
-          <div className="bg-purple-50 dark:bg-purple-900/20 p-2 md:p-4 rounded-lg border border-purple-200 dark:border-purple-800">
-            <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs md:text-sm text-center">Session Length</h4>
-            <p className="text-xs md:text-sm text-purple-700 dark:text-purple-300 mt-[0px] mb-[0px] pt-[15px] pb-[15px] text-center">
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+            <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs text-center">Session Length</h4>
+            <p className="text-xs text-purple-700 dark:text-purple-300 text-center">
               {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough workouts" : "Efficient training"}
             </p>
           </div>

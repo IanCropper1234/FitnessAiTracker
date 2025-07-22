@@ -576,3 +576,22 @@
     padding-right: env(safe-area-inset-right);
   }
 }
+
+/* Mobile-First Responsive Typography for iPhone SE/12 mini (320px-375px) */
+@layer utilities {
+  /* Small screen optimizations */
+  .text-xs-mobile { font-size: 10px; line-height: 1.3; }
+  .text-sm-mobile { font-size: 12px; line-height: 1.3; }
+  .text-base-mobile { font-size: 14px; line-height: 1.3; }
+  .text-lg-mobile { font-size: 16px; line-height: 1.2; }
+  
+  /* Container safety for small screens */
+  .mobile-safe-container {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Padding adjustments for narrow screens */
+  .px-mobile { padding-left: 8px; padding-right: 8px; }
+  .py-mobile { padding-top: 6px; padding-bottom: 6px; }
+}

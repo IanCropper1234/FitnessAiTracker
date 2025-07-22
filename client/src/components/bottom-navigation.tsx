@@ -30,7 +30,7 @@ export function BottomNavigation() {
     <>
       {/* iOS-style Bottom Tab Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-50 safe-area-pb">
-        <div className="flex items-center justify-center px-2 py-1 max-w-md mx-auto">
+        <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto">
           {/* First two navigation items */}
           {navItems.slice(0, 2).map((item) => {
             const isActive = location === item.path;
@@ -47,9 +47,9 @@ export function BottomNavigation() {
           {/* Center Plus Button */}
           <button
             onClick={handleQuickAction}
-            className="flex items-center justify-center w-12 h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 mx-2 my-1"
+            className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 mx-1 sm:mx-2 my-1"
           >
-            <Plus className="w-6 h-6" />
+            <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
           
           {/* Last two navigation items */}
@@ -88,16 +88,16 @@ function NavigationItem({ item, isActive, onPress }: NavigationItemProps) {
   return (
     <button
       onClick={() => onPress(item.path)}
-      className="flex flex-col items-center justify-center py-2 px-3 min-w-[70px] flex-1 transition-all duration-200"
+      className="flex flex-col items-center justify-center py-2 px-2 min-w-[60px] sm:min-w-[70px] flex-1 transition-all duration-200"
     >
       <div className={`transition-colors duration-200 ${
         isActive 
           ? "text-primary" 
           : "text-muted-foreground"
       }`}>
-        <Icon className="w-6 h-6" />
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
-      <span className={`text-xs mt-1 transition-colors duration-200 ${
+      <span className={`text-[10px] sm:text-xs mt-1 transition-colors duration-200 ${
         isActive 
           ? "text-primary font-medium" 
           : "text-muted-foreground"
