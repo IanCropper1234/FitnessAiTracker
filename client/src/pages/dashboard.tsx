@@ -330,7 +330,7 @@ export function Dashboard({ user }: DashboardProps) {
           
           <div className="bg-purple-50 dark:bg-purple-900/20 p-2 md:p-4 rounded-lg border border-purple-200 dark:border-purple-800">
             <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs md:text-sm text-center">Session Length</h4>
-            <p className="text-xs md:text-sm text-purple-700 dark:text-purple-300 text-left mt-[0px] mb-[0px] pt-[15px] pb-[15px]">
+            <p className="text-xs md:text-sm text-purple-700 dark:text-purple-300 mt-[0px] mb-[0px] pt-[15px] pb-[15px] text-center">
               {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough workouts" : "Efficient training"}
             </p>
           </div>
