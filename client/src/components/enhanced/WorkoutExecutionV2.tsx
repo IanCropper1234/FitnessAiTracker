@@ -732,18 +732,18 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         <button 
           onClick={saveAndExit} 
           disabled={saveProgressMutation.isPending}
-          className="ios-touch-feedback flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-4 px-6 rounded-xl border border-border/30 flex items-center justify-center gap-2"
+          className="ios-touch-feedback flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-3 px-4 rounded-xl border border-border/30 flex items-center justify-center gap-2"
         >
-          <Save className="h-5 w-5" />
-          <span className="text-ios-callout font-medium">Save & Exit</span>
+          <Save className="h-4 w-4" />
+          <span className="text-ios-subhead font-medium">Save & Exit</span>
         </button>
         <button 
           onClick={completeWorkout} 
           disabled={saveProgressMutation.isPending}
-          className="ios-touch-feedback flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-4 px-6 rounded-xl flex items-center justify-center gap-2"
+          className="ios-touch-feedback flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-4 rounded-xl flex items-center justify-center gap-2"
         >
-          <CheckCircle className="h-5 w-5" />
-          <span className="text-ios-callout font-medium">Complete Workout</span>
+          <CheckCircle className="h-4 w-4" />
+          <span className="text-ios-subhead font-medium">Complete Workout</span>
         </button>
       </div>
       {/* Enhanced Rest Timer FAB */}
