@@ -133,40 +133,52 @@ export function ReportsPage({ userId }: ReportsPageProps) {
             </div>
           </div>
 
-          {/* Period and Report Type Selectors - Compact for mobile */}
-          <div className="flex gap-3 mt-3 justify-center">
-            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-32">
-                <Calendar className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Last 7 days</SelectItem>
-                <SelectItem value="30">Last 30 days</SelectItem>
-                <SelectItem value="90">Last 3 months</SelectItem>
-                <SelectItem value="365">Last year</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={reportType} onValueChange={setReportType}>
-              <SelectTrigger className="w-40">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="overview">Overview</SelectItem>
-                <SelectItem value="nutrition">Nutrition Focus</SelectItem>
-                <SelectItem value="training">Training Focus</SelectItem>
-                <SelectItem value="progress">Progress Analysis</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Navigation tabs moved to header */}
+          <div className="mt-3">
+            <Tabs value={reportType} onValueChange={setReportType} className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+                <TabsTrigger value="nutrition" className="text-xs">Nutrition</TabsTrigger>
+                <TabsTrigger value="training" className="text-xs">Training</TabsTrigger>
+                <TabsTrigger value="progress" className="text-xs">Progress</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-4">
           <div className="p-4">
+            {/* Period and Report Type Selectors moved to body */}
+            <div className="flex gap-3 mb-6 justify-center">
+              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                <SelectTrigger className="w-32">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">Last 7 days</SelectItem>
+                  <SelectItem value="30">Last 30 days</SelectItem>
+                  <SelectItem value="90">Last 3 months</SelectItem>
+                  <SelectItem value="365">Last year</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={reportType} onValueChange={setReportType}>
+                <SelectTrigger className="w-40">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="overview">Overview</SelectItem>
+                  <SelectItem value="nutrition">Nutrition Focus</SelectItem>
+                  <SelectItem value="training">Training Focus</SelectItem>
+                  <SelectItem value="progress">Progress Analysis</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
         <Tabs value={reportType} onValueChange={setReportType} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="hidden">
             <TabsTrigger value="overview" className="text-caption">Overview</TabsTrigger>
             <TabsTrigger value="nutrition" className="text-caption">Nutrition</TabsTrigger>
             <TabsTrigger value="training" className="text-caption">Training</TabsTrigger>
