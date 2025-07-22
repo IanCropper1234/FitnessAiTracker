@@ -21,7 +21,6 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
   const [isExpanded, setIsExpanded] = useState(false);
 
   const menuItems = [
-    { id: "dashboard", icon: Calendar, label: "Today" },
     { id: "sessions", icon: Dumbbell, label: "Sessions" },
     { id: "exercise-library", icon: Settings, label: "Exercises" },
     { id: "templates", icon: FileText, label: "Templates" },
