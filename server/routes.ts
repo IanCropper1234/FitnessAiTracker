@@ -845,7 +845,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/training/session/complete", async (req, res) => {
     try {
       const sessionData = req.body;
-      const result = await createWorkoutSession(sessionData.userId, sessionData);
+      const result = await createWorkoutSession(sessionData.userId, sessionData.sessionId, sessionData);
       res.json(result);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2112,7 +2112,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Create nutrition log entries for each food in the meal plan
-      const logEntries = mealPlan.foods.map((food: any) => ({
+      const foods = Array.isArray(mealPlan.foods) ? mealPlan.foods : [];
+      const logEntries = foods.map((food: any) => ({
         userId,
         date: new Date(targetDate || new Date()),
         foodName: food.name,

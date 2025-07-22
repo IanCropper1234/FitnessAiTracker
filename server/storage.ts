@@ -201,7 +201,8 @@ export class MemStorage implements IStorage {
       password: user.password || null,
       appleId: user.appleId || null,
       preferredLanguage: user.preferredLanguage || "en",
-      theme: user.theme || "dark"
+      theme: user.theme || "dark",
+      showDeveloperFeatures: user.showDeveloperFeatures || false
     };
     this.users.set(newUser.id, newUser);
     return newUser;
@@ -212,6 +213,15 @@ export class MemStorage implements IStorage {
     if (!existingUser) return undefined;
     
     const updatedUser = { ...existingUser, ...user };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async updateUserDeveloperSettings(id: number, showDeveloperFeatures: boolean): Promise<User | undefined> {
+    const existingUser = this.users.get(id);
+    if (!existingUser) return undefined;
+    
+    const updatedUser = { ...existingUser, showDeveloperFeatures };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
@@ -297,9 +307,11 @@ export class MemStorage implements IStorage {
       ...log, 
       id: this.currentNutritionLogId++, 
       createdAt: new Date(),
+      category: log.category || null,
       mealType: log.mealType || null,
       mealOrder: log.mealOrder || null,
-      scheduledTime: log.scheduledTime || null
+      scheduledTime: log.scheduledTime || null,
+      mealSuitability: log.mealSuitability || null
     };
     this.nutritionLogs.set(newLog.id, newLog);
     return newLog;
@@ -363,18 +375,37 @@ export class MemStorage implements IStorage {
     return this.exercises.get(id);
   }
 
+  async getExerciseByName(name: string): Promise<Exercise | undefined> {
+    return Array.from(this.exercises.values()).find(exercise => exercise.name === name);
+  }
+
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
     const newExercise: Exercise = { 
       ...exercise, 
       id: this.currentExerciseId++,
       muscleGroups: exercise.muscleGroups || null,
       equipment: exercise.equipment || null,
+      movementPattern: exercise.movementPattern || null,
+      difficulty: exercise.difficulty || null,
       instructions: exercise.instructions || null,
       videoUrl: exercise.videoUrl || null,
       translations: exercise.translations || {}
     };
     this.exercises.set(newExercise.id, newExercise);
     return newExercise;
+  }
+
+  async updateExercise(id: number, exercise: Partial<InsertExercise>): Promise<Exercise | undefined> {
+    const existingExercise = this.exercises.get(id);
+    if (!existingExercise) return undefined;
+    
+    const updatedExercise = { ...existingExercise, ...exercise };
+    this.exercises.set(id, updatedExercise);
+    return updatedExercise;
+  }
+
+  async deleteExercise(id: number): Promise<boolean> {
+    return this.exercises.delete(id);
   }
 
   // Workout Sessions
@@ -406,9 +437,15 @@ export class MemStorage implements IStorage {
       ...session, 
       id: this.currentWorkoutSessionId++, 
       createdAt: new Date(),
+      version: session.version || "1.0",
       duration: session.duration || null,
       isCompleted: session.isCompleted || false,
-      totalVolume: session.totalVolume || null
+      totalVolume: session.totalVolume || null,
+      programId: session.programId || null,
+      mesocycleId: session.mesocycleId || null,
+      features: session.features || null,
+      algorithm: session.algorithm || null,
+      actualFinishedAt: session.actualFinishedAt || null
     };
     this.workoutSessions.set(newSession.id, newSession);
     return newSession;
@@ -434,9 +471,16 @@ export class MemStorage implements IStorage {
     const newExercise: WorkoutExercise = { 
       ...exercise, 
       id: this.currentWorkoutExerciseId++,
+      isCompleted: exercise.isCompleted || null,
+      actualReps: exercise.actualReps || null,
       weight: exercise.weight || null,
+      rpe: exercise.rpe || null,
+      rir: exercise.rir || null,
       restPeriod: exercise.restPeriod || null,
-      notes: exercise.notes || null
+      notes: exercise.notes || null,
+      startedAt: exercise.startedAt || null,
+      finishedAt: exercise.finishedAt || null,
+      weightUnit: exercise.weightUnit || null
     };
     this.workoutExercises.set(newExercise.id, newExercise);
     return newExercise;
@@ -500,6 +544,8 @@ export class MemStorage implements IStorage {
       ...metric, 
       id: this.currentBodyMetricId++,
       createdAt: new Date(),
+      weight: metric.weight || null,
+      unit: metric.unit || "metric",
       bodyFatPercentage: metric.bodyFatPercentage || null,
       neck: metric.neck || null,
       chest: metric.chest || null,
@@ -510,6 +556,92 @@ export class MemStorage implements IStorage {
     };
     this.bodyMetrics.set(newMetric.id, newMetric);
     return newMetric;
+  }
+
+  async deleteBodyMetric(id: number): Promise<boolean> {
+    return this.bodyMetrics.delete(id);
+  }
+
+  // Stub implementations for missing interface methods
+  async getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getSavedMealPlans(userId: number): Promise<SavedMealPlan[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getSavedMealPlan(userId: number, planId: number): Promise<SavedMealPlan | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async getSavedMealPlansByType(userId: number, mealType: string): Promise<SavedMealPlan[]> {
+    return []; // Stub for memory storage
+  }
+
+  async createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async deleteSavedMealPlan(id: number): Promise<boolean> {
+    return false; // Stub for memory storage
+  }
+
+  async getMesocycle(id: number): Promise<any | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async getUserMesocycles(userId: number): Promise<any[]> {
+    return []; // Stub for memory storage
+  }
+
+  // Additional stub implementations for missing methods
+  async getFoodCategories(): Promise<FoodCategory[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getFoodItems(): Promise<FoodItem[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getMealPlans(userId: number): Promise<MealPlan[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getWeeklyNutritionGoals(userId: number): Promise<WeeklyNutritionGoal[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getDietPhases(userId: number): Promise<DietPhase[]> {
+    return []; // Stub for memory storage
+  }
+
+  async getActiveDietPhase(userId: number): Promise<DietPhase | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async createDietPhase(phase: InsertDietPhase): Promise<DietPhase> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateDietPhase(id: number, phase: Partial<InsertDietPhase>): Promise<DietPhase | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async getMealTimingPreferences(userId: number): Promise<MealTimingPreference | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async createMealTimingPreferences(preferences: InsertMealTimingPreference): Promise<MealTimingPreference> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined> {
+    return undefined; // Stub for memory storage
   }
 
   async deleteBodyMetric(id: number): Promise<boolean> {
@@ -559,4 +691,4 @@ export class MemStorage implements IStorage {
 
 import { DatabaseStorage } from "./storage-db";
 
-export const storage = new DatabaseStorage();
+export const storage: IStorage = new DatabaseStorage();
