@@ -137,7 +137,7 @@ export function Nutrition({ user }: NutritionProps) {
               onClick={() => setLocation('/dashboard')}
               className="p-2"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-6 h-6" />
             </Button>
             <div>
               <h1 className="text-display">{t("nutrition")} Tracking</h1>
@@ -158,7 +158,7 @@ export function Nutrition({ user }: NutritionProps) {
             onClick={() => setLocation('/dashboard')}
             className="p-2"
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-6 h-6" />
           </Button>
         </div>
 

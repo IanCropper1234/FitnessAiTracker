@@ -180,7 +180,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
               onClick={() => setLocation('/dashboard')}
               className="p-2"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-6 h-6" />
             </Button>
             <div>
               <h1 className="text-display">Profile Settings</h1>
@@ -195,7 +195,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             onClick={() => setLocation('/dashboard')}
             className="p-2"
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-6 h-6" />
           </Button>
         </div>
 
