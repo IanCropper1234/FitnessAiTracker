@@ -145,7 +145,7 @@ export function Nutrition({ user }: NutritionProps) {
             </div>
             
             {/* Center: Page Title with Icon */}
-            <div className="flex items-center gap-2 min-w-0 flex-1 justify-center">
+            <div className="flex items-center gap-2 min-w-0 flex-1 justify-center mt-[0px] mb-[0px] pt-[14px] pb-[14px]">
               <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
               <h1 className="text-lg font-semibold">Nutrition</h1>
             </div>
