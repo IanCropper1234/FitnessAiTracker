@@ -163,19 +163,7 @@ export function Nutrition({ user }: NutritionProps) {
             </div>
           </div>
           
-          {/* Date Display - Compact for small screens */}
-          <div className="flex items-center justify-center pl-[0px] pr-[0px] pt-[0px] pb-[0px] mt-[0px] mb-[0px] ml-[100px] mr-[100px]">
-            <div className="flex items-center gap-2 px-3 py-1 bg-accent/50 rounded-lg mt-[0px] mb-[0px] pt-[0px] pb-[0px]">
-              <Calendar className="w-3 h-3 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'short',
-                  month: 'short', 
-                  day: 'numeric'
-                })}
-              </span>
-            </div>
-          </div>
+          
         </div>
 
 
