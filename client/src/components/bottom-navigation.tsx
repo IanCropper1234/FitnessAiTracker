@@ -155,7 +155,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md mx-4 rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700">
+      <DialogContent className="sm:max-w-md mx-4 rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700 ml-[0px] mr-[0px]">
         <DialogHeader className="text-center">
           <DialogTitle className="flex items-center justify-center gap-3 text-xl font-medium text-white">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
