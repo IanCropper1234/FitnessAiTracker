@@ -126,7 +126,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/nutrition");
         onClose();
       },
-      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+      color: "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
     },
     {
       id: "start-workout",
@@ -137,7 +137,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/training");
         onClose();
       },
-      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+      color: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white border border-gray-400 dark:border-gray-500"
     },
     {
       id: "profile",
@@ -148,7 +148,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/profile");
         onClose();
       },
-      color: "bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+      color: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white border border-gray-400 dark:border-gray-500"
     }
   ];
 
@@ -175,15 +175,15 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
               <Button
                 key={action.id}
                 onClick={() => handleActionPress(action.action)}
-                className={`${action.color} text-white h-auto p-4 justify-start gap-4 hover:scale-105 transition-all duration-200`}
-                variant="default"
+                className={`${action.color} h-auto p-4 justify-start gap-4 hover:scale-105 transition-all duration-200`}
+                variant="outline"
               >
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="font-medium text-base">{action.label}</span>
-                  <span className="text-white/80 text-sm">{action.description}</span>
+                  <span className="text-gray-600 dark:text-gray-300 text-sm">{action.description}</span>
                 </div>
               </Button>
             );
