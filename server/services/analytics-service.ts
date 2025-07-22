@@ -458,8 +458,8 @@ export class AnalyticsService {
       try {
         // Get user's nutrition goals
         const goalsResult = await db.execute(sql`
-          SELECT target_calories, target_protein, target_carbs, target_fat
-          FROM daily_nutrition_goals 
+          SELECT daily_calories, protein, carbs, fat
+          FROM nutrition_goals 
           WHERE user_id = ${userId}
           ORDER BY created_at DESC
           LIMIT 1
@@ -467,7 +467,7 @@ export class AnalyticsService {
         
         if (goalsResult.rows && goalsResult.rows.length > 0 && nutrition.dailyData.length > 0) {
           const goals = goalsResult.rows[0] as any;
-          const targetCalories = parseFloat(goals.target_calories?.toString() || '2000');
+          const targetCalories = parseFloat(goals.daily_calories?.toString() || '2000');
           
           // Calculate adherence for each day with nutrition logs
           let totalAdherence = 0;
