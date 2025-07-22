@@ -96,7 +96,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
 
         {/* Exercise Type Distribution */}
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white">Exercise Distribution</h3>
+          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white text-center">Exercise Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
