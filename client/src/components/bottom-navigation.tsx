@@ -156,13 +156,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md mx-4 rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700">
-        <DialogHeader className="text-center relative">
-          <button
-            onClick={onClose}
-            className="absolute right-0 top-0 p-1 text-gray-400 hover:text-gray-200 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <DialogHeader className="text-center">
           <DialogTitle className="flex items-center justify-center gap-3 text-xl font-medium text-white">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <Plus className="w-4 h-4 text-white" />
