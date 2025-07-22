@@ -493,21 +493,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       <Card>
         <CardHeader className="pb-4">
           {/* Top Row - Session Name and Badges */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <CardTitle className="text-lg sm:text-xl font-bold truncate text-center">
-              {session.name}
-            </CardTitle>
-            <div className="flex items-center gap-2 flex-wrap text-left ml-[50px] mr-[50px]">
-              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-xs">
-                V2 Enhanced
-              </Badge>
-              {gestureNavEnabled && (
-                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
-                  👈👉 Swipe
-                </Badge>
-              )}
-            </div>
-          </div>
+          <CardTitle className="text-lg sm:text-xl font-bold truncate text-center">
+            {session.name}
+          </CardTitle>
 
           {/* Stats Row - Mobile Stack */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm">
