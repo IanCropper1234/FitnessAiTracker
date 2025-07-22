@@ -350,7 +350,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
             <CalendarIcon className="w-5 h-5" />
             Nutrition Overview
           </CardTitle>
-          <CardDescription>Daily nutrition tracking and food log</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center gap-2">
