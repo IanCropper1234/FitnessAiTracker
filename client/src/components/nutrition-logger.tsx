@@ -156,12 +156,12 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   const canLog = (searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-black dark:text-white">{t("log_food")}</CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-400">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <Card className="w-full max-w-lg sm:max-w-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 my-2 sm:my-4 min-h-[calc(100vh-16px)] sm:min-h-0 sm:max-h-[90vh] flex flex-col">
+        <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 flex-shrink-0">
+          <div className="min-w-0 flex-1 mr-3">
+            <CardTitle className="text-black dark:text-white text-lg sm:text-xl font-semibold truncate">{t("log_food")}</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
               Search for food or describe what you ate
             </CardDescription>
           </div>
@@ -169,192 +169,197 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
             variant="ghost"
             size="icon"
             onClick={onComplete}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </CardHeader>
         
-        <CardContent className="space-y-6">
-          {/* Search Mode Toggle */}
-          <div className="flex gap-2">
-            <Button
-              variant={searchMode === 'ai' ? 'default' : 'outline'}
-              onClick={() => setSearchMode('ai')}
-              className={searchMode === 'ai' 
-                ? "bg-black dark:bg-white text-white dark:text-black" 
-                : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              }
-            >
-              <Brain className="w-4 h-4 mr-2" />
-              AI Analysis
-            </Button>
-            <Button
-              variant={searchMode === 'search' ? 'default' : 'outline'}
-              onClick={() => setSearchMode('search')}
-              className={searchMode === 'search' 
-                ? "bg-black dark:bg-white text-white dark:text-black" 
-                : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              }
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Food Database
-            </Button>
-          </div>
-
-          {/* Food Input */}
-          <div className="space-y-2">
-            <Label htmlFor="food-input" className="text-black dark:text-white">
-              {searchMode === 'ai' ? 'Describe your food (e.g., "grilled chicken breast 150g")' : 'Search for food'}
-            </Label>
+        <CardContent className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="space-y-4 sm:space-y-6">
+            {/* Search Mode Toggle */}
             <div className="flex gap-2">
-              <Input
-                id="food-input"
-                value={foodQuery}
-                onChange={(e) => setFoodQuery(e.target.value)}
-                placeholder={searchMode === 'ai' 
-                  ? "2 slices whole wheat bread with peanut butter" 
-                  : "Chicken breast, apple, rice..."
-                }
-                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white"
-                onKeyPress={(e) => e.key === 'Enter' && (searchMode === 'ai' ? handleAIAnalysis() : handleSearch())}
-              />
               <Button
-                onClick={searchMode === 'ai' ? handleAIAnalysis : handleSearch}
-                disabled={isLoading || !foodQuery.trim()}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                variant={searchMode === 'ai' ? 'default' : 'outline'}
+                onClick={() => setSearchMode('ai')}
+                className={`flex-1 text-sm ${searchMode === 'ai' 
+                  ? "bg-black dark:bg-white text-white dark:text-black" 
+                  : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
               >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : searchMode === 'ai' ? (
-                  <Brain className="w-4 h-4" />
-                ) : (
-                  <Search className="w-4 h-4" />
-                )}
+                <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">AI Analysis</span>
+                <span className="sm:hidden">AI</span>
+              </Button>
+              <Button
+                variant={searchMode === 'search' ? 'default' : 'outline'}
+                onClick={() => setSearchMode('search')}
+                className={`flex-1 text-sm ${searchMode === 'search' 
+                  ? "bg-black dark:bg-white text-white dark:text-black" 
+                  : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Food Database</span>
+                <span className="sm:hidden">Database</span>
               </Button>
             </div>
-          </div>
 
-          {/* Quantity and Unit (for search mode) */}
-          {searchMode === 'search' && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="quantity" className="text-black dark:text-white">Quantity</Label>
+            {/* Food Input */}
+            <div className="space-y-2">
+              <Label htmlFor="food-input" className="text-black dark:text-white text-sm font-medium">
+                {searchMode === 'ai' ? 'Describe your food (e.g., "grilled chicken breast 150g")' : 'Search for food'}
+              </Label>
+              <div className="flex gap-2">
                 <Input
-                  id="quantity"
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  min="0.1"
-                  step="0.1"
-                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white"
+                  id="food-input"
+                  value={foodQuery}
+                  onChange={(e) => setFoodQuery(e.target.value)}
+                  placeholder={searchMode === 'ai' 
+                    ? "2 slices whole wheat bread" 
+                    : "Chicken breast, apple..."
+                  }
+                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm flex-1"
+                  onKeyPress={(e) => e.key === 'Enter' && (searchMode === 'ai' ? handleAIAnalysis() : handleSearch())}
                 />
-              </div>
-              <div>
-                <Label htmlFor="unit" className="text-black dark:text-white">Unit</Label>
-                <Select value={unit} onValueChange={setUnit}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
-                    <SelectItem value="serving">serving</SelectItem>
-                    <SelectItem value="g">grams (g)</SelectItem>
-                    <SelectItem value="oz">ounces (oz)</SelectItem>
-                    <SelectItem value="cup">cup</SelectItem>
-                    <SelectItem value="tbsp">tablespoon</SelectItem>
-                    <SelectItem value="tsp">teaspoon</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Button
+                  onClick={searchMode === 'ai' ? handleAIAnalysis : handleSearch}
+                  disabled={isLoading || !foodQuery.trim()}
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 px-3 flex-shrink-0"
+                  size="sm"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                  ) : searchMode === 'ai' ? (
+                    <Brain className="w-3 h-3 sm:w-4 sm:h-4" />
+                  ) : (
+                    <Search className="w-3 h-3 sm:w-4 sm:h-4" />
+                  )}
+                </Button>
               </div>
             </div>
-          )}
 
-          {/* Meal Type */}
-          <div>
-            <Label htmlFor="meal-type" className="text-black dark:text-white">Meal Type</Label>
-            <Select value={mealType} onValueChange={setMealType}>
-              <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white">
-                <SelectValue placeholder="Select meal type (optional)" />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
-                <SelectItem value="breakfast">
-                  <div className="flex items-center gap-2">
-                    <Sunrise className="h-4 w-4" />
-                    Breakfast
-                  </div>
-                </SelectItem>
-                <SelectItem value="lunch">
-                  <div className="flex items-center gap-2">
-                    <Sun className="h-4 w-4" />
-                    Lunch
-                  </div>
-                </SelectItem>
-                <SelectItem value="dinner">
-                  <div className="flex items-center gap-2">
-                    <Moon className="h-4 w-4" />
-                    Dinner
-                  </div>
-                </SelectItem>
-                <SelectItem value="snack">
-                  <div className="flex items-center gap-2">
-                    <Apple className="h-4 w-4" />
-                    Snack
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Quantity and Unit (for search mode) */}
+            {searchMode === 'search' && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="quantity" className="text-black dark:text-white text-sm font-medium">Quantity</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    min="0.1"
+                    step="0.1"
+                    inputMode="decimal"
+                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="unit" className="text-black dark:text-white text-sm font-medium">Unit</Label>
+                  <Select value={unit} onValueChange={setUnit}>
+                    <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
+                      <SelectItem value="serving">serving</SelectItem>
+                      <SelectItem value="g">grams (g)</SelectItem>
+                      <SelectItem value="oz">ounces (oz)</SelectItem>
+                      <SelectItem value="cup">cup</SelectItem>
+                      <SelectItem value="tbsp">tablespoon</SelectItem>
+                      <SelectItem value="tsp">teaspoon</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
 
-          {/* Search Results */}
-          {searchMutation.data && searchMode === 'search' && (
-            <div className="space-y-2">
-              <Label className="text-black dark:text-white">Search Results</Label>
-              <div className="max-h-48 overflow-y-auto space-y-2">
-                {searchMutation.data.map((food: FoodSearchResult, index: number) => (
-                  <div
-                    key={index}
-                    onClick={() => setSelectedFood(food)}
-                    className={`p-3 rounded-lg cursor-pointer border transition-colors ${
-                      selectedFood === food
-                        ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
-                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="font-medium">{food.name}</div>
-                      <div className="flex gap-1">
-                        {food.category && (
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            food.category === 'protein' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                            food.category === 'carb' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
-                            food.category === 'fat' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
-                            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                          }`}>
-                            {food.category.toUpperCase()}
-                          </span>
+            {/* Meal Type */}
+            <div>
+              <Label htmlFor="meal-type" className="text-black dark:text-white text-sm font-medium">Meal Type</Label>
+              <Select value={mealType} onValueChange={setMealType}>
+                <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm mt-1">
+                  <SelectValue placeholder="Select meal type (optional)" />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
+                  <SelectItem value="breakfast">
+                    <div className="flex items-center gap-2">
+                      <Sunrise className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="text-sm">Breakfast</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="lunch">
+                    <div className="flex items-center gap-2">
+                      <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="text-sm">Lunch</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="dinner">
+                    <div className="flex items-center gap-2">
+                      <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="text-sm">Dinner</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="snack">
+                    <div className="flex items-center gap-2">
+                      <Apple className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="text-sm">Snack</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Search Results */}
+            {searchMutation.data && searchMode === 'search' && (
+              <div className="space-y-2">
+                <Label className="text-black dark:text-white text-sm font-medium">Search Results</Label>
+                <div className="max-h-40 sm:max-h-48 overflow-y-auto space-y-2">
+                  {searchMutation.data.map((food: FoodSearchResult, index: number) => (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedFood(food)}
+                      className={`p-2 sm:p-3 rounded-lg cursor-pointer border transition-colors ${
+                        selectedFood === food
+                          ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
+                          : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="font-medium text-sm truncate flex-1 mr-2">{food.name}</div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          {food.category && (
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${
+                              food.category === 'protein' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                              food.category === 'carb' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
+                              food.category === 'fat' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                              'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                            }`}>
+                              {food.category.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-xs sm:text-sm opacity-75 mb-1">
+                        {food.calories} cal • P: {food.protein}g • C: {food.carbs}g • F: {food.fat}g
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs opacity-60 truncate flex-1">{food.servingSize}</div>
+                        {food.mealSuitability && food.mealSuitability.length > 0 && (
+                          <div className="flex gap-1 ml-2">
+                            {food.mealSuitability.slice(0, 1).map((timing, idx) => (
+                              <span key={idx} className="text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                                {timing}
+                              </span>
+                            ))}
+                            {food.mealSuitability.length > 1 && (
+                              <span className="text-xs text-gray-500">+{food.mealSuitability.length - 1}</span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
-                    <div className="text-sm opacity-75">
-                      {food.calories} cal • P: {food.protein}g • C: {food.carbs}g • F: {food.fat}g
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs opacity-60">{food.servingSize}</div>
-                      {food.mealSuitability && food.mealSuitability.length > 0 && (
-                        <div className="flex gap-1">
-                          {food.mealSuitability.slice(0, 2).map((timing, idx) => (
-                            <span key={idx} className="text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
-                              {timing}
-                            </span>
-                          ))}
-                          {food.mealSuitability.length > 2 && (
-                            <span className="text-xs text-gray-500">+{food.mealSuitability.length - 2}</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
@@ -423,27 +428,31 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-4">
-            <Button
-              variant="outline"
-              onClick={onComplete}
-              className="border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleLogFood}
-              disabled={!canLog || isLoading}
-              className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-            >
-              {logMutation.isPending ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Utensils className="w-4 h-4 mr-2" />
-              )}
-              Log Food
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+              <Button
+                variant="outline"
+                onClick={onComplete}
+                className="border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 text-sm px-4 py-2"
+                size="sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleLogFood}
+                disabled={!canLog || isLoading}
+                className="flex-1 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-sm px-4 py-2"
+                size="sm"
+              >
+                {logMutation.isPending ? (
+                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
+                ) : (
+                  <Utensils className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                )}
+                <span className="hidden xs:inline">Log Food</span>
+                <span className="xs:hidden">Log</span>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

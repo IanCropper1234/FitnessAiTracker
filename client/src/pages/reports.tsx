@@ -168,12 +168,6 @@ export function ReportsPage({ userId }: ReportsPageProps) {
             </div>
 
         <Tabs value={reportType} onValueChange={setReportType} className="w-full">
-          <TabsList className="hidden">
-            <TabsTrigger value="overview" className="text-caption">Overview</TabsTrigger>
-            <TabsTrigger value="nutrition" className="text-caption">Nutrition</TabsTrigger>
-            <TabsTrigger value="training" className="text-caption">Training</TabsTrigger>
-            <TabsTrigger value="progress" className="text-caption">Progress</TabsTrigger>
-          </TabsList>
 
           {/* Overview Tab - Compact iOS Style with RP Integration */}
           <TabsContent value="overview" className="space-y-4">
