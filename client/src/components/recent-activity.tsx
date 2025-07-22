@@ -125,7 +125,7 @@ export function RecentActivity({ userId }: RecentActivityProps) {
                   <p className="text-body font-medium text-black dark:text-white truncate">
                     {activity.title}
                   </p>
-                  <Badge variant="outline" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-caption-sm font-normal pl-[9px] pr-[9px]">
+                  <Badge variant="outline" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-caption-sm font-normal pl-[9px] pr-[9px] ml-[-23px] mr-[-23px]">
                     {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
                   </Badge>
                 </div>
