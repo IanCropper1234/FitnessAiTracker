@@ -77,7 +77,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   const { data: feedbackAnalytics } = useQuery({
     queryKey: ['/api/analytics/feedback', userId, selectedPeriod],
     queryFn: async () => {
-      const response = await fetch(`/api/analytics/feedback/${userId}?startDate=${startDate}&endDate=${endDate}`);
+      const response = await fetch(`/api/analytics/feedback/${userId}?days=${selectedPeriod}`);
       if (!response.ok) throw new Error('Failed to fetch feedback analytics');
       return response.json();
     },
@@ -98,7 +98,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="px-4 py-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <Button 

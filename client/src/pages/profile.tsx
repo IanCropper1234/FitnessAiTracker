@@ -170,7 +170,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   };
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto p-4 space-y-6">
+      <div className="w-full px-4 py-4 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
