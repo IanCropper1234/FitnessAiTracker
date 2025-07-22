@@ -47,7 +47,7 @@ export function BottomNavigation() {
           {/* Center Plus Button */}
           <button
             onClick={handleQuickAction}
-            className="flex items-center justify-center w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-105 mx-2 my-1"
+            className="flex items-center justify-center w-12 h-12 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-105 mx-2 my-1"
           >
             <Plus className="w-6 h-6" />
           </button>
@@ -126,7 +126,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/nutrition");
         onClose();
       },
-      color: "bg-green-500 hover:bg-green-600"
+      color: "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
     },
     {
       id: "start-workout",
@@ -137,7 +137,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/training");
         onClose();
       },
-      color: "bg-blue-500 hover:bg-blue-600"
+      color: "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
     },
     {
       id: "profile",
@@ -148,7 +148,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         setLocation("/profile");
         onClose();
       },
-      color: "bg-purple-500 hover:bg-purple-600"
+      color: "bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600"
     }
   ];
 
@@ -158,10 +158,10 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md mx-4 rounded-2xl">
+      <DialogContent className="sm:max-w-md mx-4 rounded-2xl bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
         <DialogHeader className="text-center">
-          <DialogTitle className="flex items-center justify-center gap-2 text-xl font-semibold">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+          <DialogTitle className="flex items-center justify-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
               <Plus className="w-4 h-4 text-white" />
             </div>
             Quick Actions
@@ -194,7 +194,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
           <Button 
             onClick={onClose}
             variant="ghost"
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             Cancel
           </Button>
