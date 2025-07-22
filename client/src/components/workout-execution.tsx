@@ -739,7 +739,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <GripVertical className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                       <span className="font-medium">{exercise.exercise.name}</span>
                       {isCurrentExercise && (
                         <Badge variant="default" className="bg-blue-500 text-white">Current</Badge>
@@ -781,7 +781,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
               }}
             >
               <div className="flex items-center gap-2">
-                <GripVertical className="h-4 w-4 text-blue-500" />
+                <GripVertical className="h-5 w-5 text-blue-500" />
                 <span className="text-sm font-medium">{draggedExercise.exercise.name}</span>
               </div>
               <div className="text-xs text-muted-foreground mt-1 ml-6">
