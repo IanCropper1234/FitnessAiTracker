@@ -95,21 +95,8 @@ export function Dashboard({ user }: DashboardProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <div className="container mx-auto p-4 space-y-6">
-        {/* Header with Date Selection */}
-        <div className="flex items-center justify-between">
-          <div>
-            
-            <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-[12px] pl-[2px] pr-[2px]">
-              <Calendar className="w-4 h-4" />
-              {currentDate.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </p>
-          </div>
-          
+        {/* Centered Date Selector */}
+        <div className="flex flex-col items-center space-y-2">
           {/* Date Navigation Controls */}
           <div className="flex items-center gap-2">
             <Button
@@ -168,6 +155,17 @@ export function Dashboard({ user }: DashboardProps) {
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
+          
+          {/* Full Date Display */}
+          <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-sm">
+            <Calendar className="w-4 h-4" />
+            {currentDate.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
         </div>
 
         {/* Overview Section with Toggle */}
