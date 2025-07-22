@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info } from "lucide-react";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
@@ -173,12 +173,30 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
       <div className="container mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-display">Profile Settings</h1>
-            <p className="text-body-sm text-gray-600 dark:text-gray-400">
-              Manage your personal information and preferences
-            </p>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="p-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-display">Profile Settings</h1>
+              <p className="text-body-sm text-gray-600 dark:text-gray-400">
+                Manage your personal information and preferences
+              </p>
+            </div>
           </div>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setLocation('/dashboard')}
+            className="p-2"
+          >
+            <Home className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* User Info Card */}

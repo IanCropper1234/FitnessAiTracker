@@ -349,9 +349,10 @@ function WorkoutSessionCard({
 
 interface TrainingDashboardProps {
   userId: number;
+  activeTab?: string;
 }
 
-export function TrainingDashboard({ userId }: TrainingDashboardProps) {
+export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingDashboardProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
@@ -359,7 +360,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<string>("workouts");
+
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
   const [showFeatureManager, setShowFeatureManager] = useState(false);
@@ -701,32 +702,41 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
         </div>
       )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-          <TabsTrigger value="exercises" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Exercise Library">
-            <BookOpen className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="workouts" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Workout Sessions">
-            <Activity className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="templates" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Training Templates">
-            <FileText className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="mesocycles" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Periodization">
-            <Repeat className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="progression" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Load Progression">
-            <ChartBar className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="volume" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Volume Landmarks">
-            <MapPin className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="auto-regulation" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Auto-Regulation">
-            <Zap className="h-5 w-5" />
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} className="w-full">
 
-        <TabsContent value="exercises" className="space-y-6">
+        <TabsContent value="dashboard" className="space-y-6">
+          {/* Today's Training Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-black dark:text-white">Today's Training</CardTitle>
+              <CardDescription>Continue your scheduled workout</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-4">
+                <p className="text-gray-600 dark:text-gray-400">No scheduled workout for today</p>
+                <Button 
+                  className="mt-2"
+                  onClick={() => setShowSessionCreator(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Quick Workout
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sessions" className="space-y-6">
+          <WorkoutSessions 
+            sessions={workoutSessions} 
+            onExecuteWorkout={setExecutingWorkout}
+            onViewWorkout={setViewingWorkout}
+            onCreateSession={() => setShowSessionCreator(true)}
+            selectedDate={selectedDate}
+          />
+        </TabsContent>
+
+        <TabsContent value="exercise-library" className="space-y-6">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -872,7 +882,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
         <TabsContent value="workouts" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Workout Sessions</h3>
-            <Button onClick={() => setActiveTab("exercises")}>
+            <Button onClick={() => setShowSessionCreator(true)}>
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
@@ -886,7 +896,7 @@ export function TrainingDashboard({ userId }: TrainingDashboardProps) {
                 <p className="text-muted-foreground text-center mb-4">
                   Start your fitness journey by creating your first workout session.
                 </p>
-                <Button onClick={() => setActiveTab("exercises")}>
+                <Button onClick={() => setShowSessionCreator(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Workout
                 </Button>

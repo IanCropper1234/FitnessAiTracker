@@ -15,8 +15,11 @@ import {
   Scale,
   Zap,
   Clock,
-  Award
+  Award,
+  ArrowLeft,
+  Home
 } from "lucide-react";
+import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 
 interface ReportsPageProps {
@@ -25,6 +28,7 @@ interface ReportsPageProps {
 
 export function ReportsPage({ userId }: ReportsPageProps) {
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
   const [selectedPeriod, setSelectedPeriod] = useState("30");
   const [reportType, setReportType] = useState("overview");
 
@@ -96,18 +100,38 @@ export function ReportsPage({ userId }: ReportsPageProps) {
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-display text-black dark:text-white">
-              {t("reports")}
-            </h1>
-            <p className="text-body-sm text-gray-600 dark:text-gray-400">
-              Advanced analytics and progress insights
-            </p>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="p-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-display text-black dark:text-white">
+                {t("reports")}
+              </h1>
+              <p className="text-body-sm text-gray-600 dark:text-gray-400">
+                Advanced analytics and progress insights
+              </p>
+            </div>
           </div>
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="p-2"
+            >
+              <Home className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Period and Report Type Selectors */}

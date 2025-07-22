@@ -17,8 +17,10 @@ import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
 import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
+import { useLocation } from "wouter";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { 
   Plus, 
   Search, 
@@ -35,7 +37,9 @@ import {
   Sun,
   Moon,
   Apple,
-  Utensils
+  Utensils,
+  ArrowLeft,
+  Home
 } from "lucide-react";
 
 interface User {
@@ -54,6 +58,8 @@ export function Nutrition({ user }: NutritionProps) {
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
   const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
+  const [, setLocation] = useLocation();
+  const [activeTab, setActiveTab] = useState("overview");
 
   const today = TimezoneUtils.getCurrentDate();
 
@@ -122,30 +128,37 @@ export function Nutrition({ user }: NutritionProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <div className="container mx-auto p-4 space-y-6">
-        {/* Header */}
+        {/* Header with Return Button */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-display">{t("nutrition")} Tracking</h1>
-            <p className="text-body-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </p>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="p-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-display">{t("nutrition")} Tracking</h1>
+              <p className="text-body-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </p>
+            </div>
           </div>
           <Button 
-            onClick={() => {
-              console.log('Log Food button clicked, setting showLogger to true with today date');
-              setLoggerSelectedDate(today);
-              setShowLogger(true);
-            }}
-            className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+            variant="ghost" 
+            size="sm"
+            onClick={() => setLocation('/dashboard')}
+            className="p-2"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            {t("log_food")}
+            <Home className="w-4 h-4" />
           </Button>
         </div>
 
@@ -153,27 +166,7 @@ export function Nutrition({ user }: NutritionProps) {
 
         {/* Enhanced Nutrition Module */}
         <div className="mt-8">
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-              <TabsTrigger value="overview" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Overview">
-                <BarChart3 className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="builder" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Diet Plan">
-                <Target className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="advanced" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="RP Coach">
-                <Brain className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="body" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Body">
-                <User className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="progression" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Progress">
-                <TrendingUp className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="shopping" className="flex-shrink-0 px-3 py-3 flex items-center justify-center" title="Shopping">
-                <ShoppingCart className="h-5 w-5" />
-              </TabsTrigger>
-            </TabsList>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
 
             <TabsContent value="overview">
               <IntegratedNutritionOverview 
@@ -224,6 +217,12 @@ export function Nutrition({ user }: NutritionProps) {
             />
           </div>
         )}
+
+        {/* Floating Nutrition Menu */}
+        <FloatingNutritionMenu 
+          onTabSelect={setActiveTab}
+          activeTab={activeTab}
+        />
       </div>
     </div>
   );

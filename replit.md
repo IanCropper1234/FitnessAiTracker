@@ -8,6 +8,17 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 22, 2025 - COMPLETE: Mobile-First Navigation Enhancement & Floating Action Buttons
+✓ **NAVIGATION RESTRUCTURE**: Main menu bar now displays only on dashboard page as requested
+✓ **RETURN BUTTON SYSTEM**: Added ArrowLeft and Home buttons to all secondary pages (Reports, Profile, Training, Nutrition)
+✓ **FLOATING ACTION BUTTONS**: Transformed traditional tab navigation into iOS-style floating expandable menus:
+  - Nutrition page: 6-option expandable menu (Overview, Diet Plan, RP Coach, Body, Progress, Shopping)
+  - Training page: 7-option expandable menu (Today, Sessions, Exercises, Templates, Programs, Progress, Feedback)
+✓ **MOBILE-OPTIMIZED UI**: Floating buttons positioned at bottom-right with smooth animations and color-coded themes
+✓ **PROFESSIONAL DESIGN**: Plus/X icon transformation with rotation effects and contextual button colors (blue for nutrition, orange for training)
+✓ **CONDITIONAL NAVIGATION**: Bottom navigation only renders on dashboard route, maintaining clean secondary page layouts
+✓ **IOS COMPLIANCE**: Navigation patterns follow Apple Human Interface Guidelines for mobile-first user experience
+
 ### July 21, 2025 - COMPLETE: Dashboard Numeric Formatting & UI Polish
 ✓ **FINAL NUMERIC FIXES**: Resolved all remaining decimal formatting issues across entire dashboard
 ✓ **4-COLUMN MACRO SUMMARY**: Fixed calories, protein, and adherence percentage to display as whole numbers
