@@ -161,7 +161,7 @@ export function Nutrition({ user }: NutritionProps) {
           
           {/* Date Display - Compact for small screens */}
           <div className="flex items-center justify-center mt-2">
-            <div className="flex items-center gap-2 px-3 py-1 bg-accent/50 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-1 bg-accent/50 rounded-lg mt-[-5px] mb-[-5px] pt-[12px] pb-[12px]">
               <Calendar className="w-3 h-3 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">
                 {new Date().toLocaleDateString('en-US', { 
