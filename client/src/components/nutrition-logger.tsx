@@ -38,7 +38,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
-  const [mealType, setMealType] = useState('');
+  const [mealType, setMealType] = useState('breakfast');
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
@@ -112,6 +112,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   };
 
   const handleLogFood = () => {
+    if (!mealType.trim()) {
+      toast({
+        title: "Meal Type Required",
+        description: "Please select a meal type before logging food.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     let nutritionData;
     
     if (searchMode === 'ai' && aiAnalyzeMutation.data) {
@@ -146,14 +155,14 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       protein: nutritionData.protein.toString(),
       carbs: nutritionData.carbs.toString(),
       fat: nutritionData.fat.toString(),
-      mealType: mealType || null
+      mealType: mealType
     };
 
     logMutation.mutate(logData);
   };
 
   const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending;
-  const canLog = (searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood;
+  const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
@@ -276,10 +285,14 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
 
             {/* Meal Type */}
             <div>
-              <Label htmlFor="meal-type" className="text-black dark:text-white text-sm font-medium">Meal Type</Label>
+              <Label htmlFor="meal-type" className="text-black dark:text-white text-sm font-medium">
+                Meal Type <span className="text-red-500">*</span>
+              </Label>
               <Select value={mealType} onValueChange={setMealType}>
-                <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white text-sm mt-1">
-                  <SelectValue placeholder="Select meal type (optional)" />
+                <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${
+                  !mealType.trim() ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                }`}>
+                  <SelectValue placeholder="Select meal type (required)" />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 z-[10000]">
                   <SelectItem value="breakfast">
