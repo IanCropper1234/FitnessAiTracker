@@ -113,7 +113,7 @@ export function RecentActivity({ userId }: RecentActivityProps) {
           {displayedActivities.map((activity) => (
             <div 
               key={activity.id}
-              className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer hover:shadow-sm pl-[0px] pr-[0px] pt-[5px] pb-[5px]"
+              className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer hover:shadow-sm px-4 py-3"
               onClick={() => handleActivityClick(activity)}
               title={`Click to go to ${activity.type === 'nutrition' ? 'nutrition' : 'training'} page`}
             >
