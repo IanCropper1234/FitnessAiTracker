@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus } from "lucide-react";
+import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus, GripVertical } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import WorkoutFeedbackDialog from "./workout-feedback-dialog";
 
@@ -85,6 +85,11 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   const [sessionStartTime] = useState(Date.now());
   const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
   const [showFeedback, setShowFeedback] = useState(false);
+  
+  // Drag and drop state
+  const [draggedExercise, setDraggedExercise] = useState<WorkoutExercise | null>(null);
+  const [dragOverTarget, setDragOverTarget] = useState<number | null>(null);
+  const [dragPreview, setDragPreview] = useState<{ x: number; y: number } | null>(null);
 
   // Fetch workout session details
   const { data: session, isLoading } = useQuery<WorkoutSession>({
@@ -233,6 +238,176 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
       });
     },
   });
+
+  // Reorder exercises mutation
+  const reorderExercisesMutation = useMutation({
+    mutationFn: async (newOrder: { exerciseId: number; orderIndex: number }[]) => {
+      return apiRequest("PUT", `/api/training/sessions/${sessionId}/exercises/reorder`, {
+        exercises: newOrder
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      toast({
+        title: "Exercises Reordered",
+        description: "Exercise order has been updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to reorder exercises: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Drag and drop event handlers
+  const handleDragStart = (e: React.DragEvent, exercise: WorkoutExercise, index: number) => {
+    if (!e.dataTransfer || !exercise) return;
+    
+    setDraggedExercise(exercise);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      id: exercise.id,
+      exerciseId: exercise.exerciseId,
+      orderIndex: exercise.orderIndex,
+      name: exercise.exercise.name
+    }));
+    
+    // Create custom drag image
+    const dragImage = document.createElement('div');
+    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-3 shadow-lg max-w-xs';
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-1000px';
+    dragImage.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+        <span class="text-sm font-medium">${exercise.exercise.name}</span>
+      </div>
+      <div class="text-xs text-gray-500 mt-1">${exercise.sets} sets • ${exercise.targetReps} reps</div>
+    `;
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
+    
+    // Clean up drag image after drag operation
+    setTimeout(() => {
+      document.body.removeChild(dragImage);
+    }, 0);
+
+    // Track cursor position for visual feedback
+    const handleMouseMove = (e: MouseEvent) => {
+      setDragPreview({ x: e.clientX, y: e.clientY });
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    setTimeout(() => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    }, 100);
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetIndex?: number) => {
+    e.preventDefault();
+    
+    if (!draggedExercise) return;
+    
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+      if (targetIndex !== undefined) {
+        setDragOverTarget(targetIndex);
+      }
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only clear drag over target if we're leaving the container, not a child element
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setDragOverTarget(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    setDragOverTarget(null);
+    setDragPreview(null);
+    
+    if (!draggedExercise || !session?.exercises) {
+      setDraggedExercise(null);
+      return;
+    }
+    
+    const sourceIndex = session.exercises.findIndex(ex => ex.id === draggedExercise.id);
+    
+    // Prevent dropping on same position
+    if (sourceIndex === targetIndex) {
+      toast({
+        title: "No Change Needed",
+        description: `${draggedExercise.exercise.name} is already in this position`,
+        variant: "default"
+      });
+      setDraggedExercise(null);
+      return;
+    }
+    
+    // Verify data transfer
+    try {
+      const transferData = e.dataTransfer.getData('text/plain');
+      const parsedData = transferData ? JSON.parse(transferData) : null;
+      
+      if (!parsedData || parsedData.id !== draggedExercise.id) {
+        throw new Error('Invalid drag data');
+      }
+    } catch (error) {
+      toast({
+        title: "Drag Error",
+        description: "Failed to reorder exercise. Please try again.",
+        variant: "destructive"
+      });
+      setDraggedExercise(null);
+      return;
+    }
+    
+    // Create new order
+    const newExercises = [...session.exercises];
+    const [draggedExerciseData] = newExercises.splice(sourceIndex, 1);
+    newExercises.splice(targetIndex, 0, draggedExerciseData);
+
+    // Update order indices
+    const reorderedExercises = newExercises.map((exercise, index) => ({
+      ...exercise,
+      orderIndex: index
+    }));
+
+    // Update server
+    const orderUpdate = reorderedExercises.map(exercise => ({
+      exerciseId: exercise.exerciseId,
+      orderIndex: exercise.orderIndex
+    }));
+    
+    reorderExercisesMutation.mutate(orderUpdate);
+    
+    // Update current exercise index if needed
+    if (sourceIndex === currentExerciseIndex) {
+      setCurrentExerciseIndex(targetIndex);
+    } else if (sourceIndex < currentExerciseIndex && targetIndex >= currentExerciseIndex) {
+      setCurrentExerciseIndex(currentExerciseIndex - 1);
+    } else if (sourceIndex > currentExerciseIndex && targetIndex <= currentExerciseIndex) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    }
+    
+    setDraggedExercise(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedExercise(null);
+    setDragOverTarget(null);
+    setDragPreview(null);
+  };
 
   if (isLoading || !session) {
     return (
@@ -509,39 +684,65 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           </CardContent>
         </Card>
       )}
-      {/* All Exercises Overview */}
+      {/* All Exercises Overview with Drag & Drop */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
             Workout Overview
           </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Drag and drop exercises to reorder them
+          </p>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div 
+            className="space-y-3"
+            onDragOver={(e) => handleDragOver(e)}
+            onDragLeave={handleDragLeave}
+          >
             {session.exercises.map((exercise, index) => {
               const exerciseSets = workoutData[exercise.id] || [];
               const completedSetsCount = exerciseSets.filter(set => set.completed).length;
               const totalSetsCount = exerciseSets.length;
               const isCurrentExercise = index === currentExerciseIndex;
               const isExerciseComplete = completedSetsCount === totalSetsCount && totalSetsCount > 0;
+              const isDraggedOver = dragOverTarget === index;
+              const isDragging = draggedExercise?.id === exercise.id;
               
               return (
                 <div
                   key={exercise.id}
-                  className={`p-3 rounded-lg border ${
+                  draggable={true}
+                  onDragStart={(e) => handleDragStart(e, exercise, index)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={(e) => handleDrop(e, index)}
+                  className={`p-3 rounded-lg border transition-all duration-200 cursor-move ${
+                    isDraggedOver ? 'border-blue-400 bg-blue-100 dark:bg-blue-900 scale-102 shadow-lg' : ''
+                  } ${
+                    isDragging ? 'opacity-50 scale-95' : ''
+                  } ${
                     isCurrentExercise 
                       ? 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800' 
                       : isExerciseComplete
                       ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
-                      : 'bg-muted'
+                      : 'bg-muted hover:bg-muted/80'
                   }`}
+                  onClick={() => {
+                    if (!isDragging) {
+                      setCurrentExerciseIndex(index);
+                      setCurrentSetIndex(0);
+                    }
+                  }}
+                  title={isDragging ? "Dragging..." : "Click to jump to this exercise or drag to reorder"}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
+                      <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <span className="font-medium">{exercise.exercise.name}</span>
                       {isCurrentExercise && (
-                        <Badge variant="default" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 pl-[10px] pr-[10px] ml-[10px] mr-[10px]">Current</Badge>
+                        <Badge variant="default" className="bg-blue-500 text-white">Current</Badge>
                       )}
                       {isExerciseComplete && (
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -556,7 +757,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-1 mt-1">
+                  <div className="flex flex-wrap gap-1 mt-1 ml-6">
                     <Badge variant="outline" className="capitalize">
                       {exercise.exercise.category}
                     </Badge>
@@ -568,6 +769,26 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
               );
             })}
           </div>
+
+          {/* Drag Preview */}
+          {dragPreview && draggedExercise && (
+            <div
+              className="fixed pointer-events-none z-50 bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-3 shadow-xl max-w-xs opacity-90"
+              style={{
+                left: dragPreview.x + 10,
+                top: dragPreview.y - 10,
+                transform: 'translate(0, -50%)'
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <GripVertical className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-medium">{draggedExercise.exercise.name}</span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1 ml-6">
+                {draggedExercise.sets} sets • {draggedExercise.targetReps} reps
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
       {/* Current Exercise Details */}
