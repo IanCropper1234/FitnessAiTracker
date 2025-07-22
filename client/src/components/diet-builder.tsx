@@ -818,18 +818,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            Diet Builder
-          </CardTitle>
-          <CardDescription>
-            Comprehensive diet planning with TDEE calculation, meal planning, and auto-regulation
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
