@@ -173,15 +173,15 @@ export function Dashboard({ user }: DashboardProps) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-black dark:text-white flex items-center gap-2">
+                <CardTitle className="text-black dark:text-white flex items-center gap-2 text-lg whitespace-nowrap">
                   {showTrainingOverview ? (
                     <>
-                      <Dumbbell className="h-5 w-5" />
+                      <Dumbbell className="h-4 w-4" />
                       Training Overview
                     </>
                   ) : (
                     <>
-                      <Utensils className="h-5 w-5" />
+                      <Utensils className="h-4 w-4" />
                       {t("nutrition")} Overview
                     </>
                   )}
