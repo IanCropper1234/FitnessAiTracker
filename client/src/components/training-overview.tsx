@@ -57,7 +57,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Weekly Progress Chart */}
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white">Weekly Progress</h3>
+          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white text-center">Weekly Progress</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -122,7 +122,6 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           </ResponsiveContainer>
         </div>
       </div>
-
       {/* Training Insights */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -146,7 +145,6 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           </p>
         </div>
       </div>
-
       {/* Favorite Exercises */}
       {trainingStats.favoriteExercises && trainingStats.favoriteExercises.length > 0 && (
         <div>
