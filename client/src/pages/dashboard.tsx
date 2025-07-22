@@ -93,8 +93,8 @@ export function Dashboard({ user }: DashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-3 py-4 space-y-4 max-w-full">
+    <div className="min-h-screen bg-background text-foreground w-full">
+      <div className="w-full px-2 py-4 space-y-4">
         {/* Centered Date Selector */}
         <div className="flex flex-col items-center space-y-2">
           {/* Date Navigation Controls */}
