@@ -315,22 +315,22 @@ export function Dashboard({ user }: DashboardProps) {
         {/* Training Insights - Single Row */}
         <div className="grid grid-cols-3 gap-2 md:gap-4">
           <div className="bg-blue-50 dark:bg-blue-900/20 p-2 md:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs md:text-sm">Most Active</h4>
-            <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
+            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs md:text-sm text-left">Most Active</h4>
+            <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300 text-left">
               {trainingStats && trainingStats.totalSessions > 10 ? "High frequency trainer" : "Building consistency"}
             </p>
           </div>
           
           <div className="bg-green-50 dark:bg-green-900/20 p-2 md:p-4 rounded-lg border border-green-200 dark:border-green-800">
-            <h4 className="font-medium text-green-900 dark:text-green-100 mb-1 text-xs md:text-sm">Volume Progress</h4>
-            <p className="text-xs md:text-sm text-green-700 dark:text-green-300">
+            <h4 className="font-medium text-green-900 dark:text-green-100 mb-1 text-xs md:text-sm text-left">Volume Progress</h4>
+            <p className="text-xs md:text-sm text-green-700 dark:text-green-300 text-left">
               {trainingStats && trainingStats.totalVolume > 1000 ? "Strong progression" : "Steady improvement"}
             </p>
           </div>
           
           <div className="bg-purple-50 dark:bg-purple-900/20 p-2 md:p-4 rounded-lg border border-purple-200 dark:border-purple-800">
-            <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs md:text-sm">Session Length</h4>
-            <p className="text-xs md:text-sm text-purple-700 dark:text-purple-300">
+            <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs md:text-sm text-left">Session Length</h4>
+            <p className="text-xs md:text-sm text-purple-700 dark:text-purple-300 text-left">
               {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough workouts" : "Efficient training"}
             </p>
           </div>
