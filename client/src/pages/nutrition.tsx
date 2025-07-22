@@ -129,39 +129,39 @@ export function Nutrition({ user }: NutritionProps) {
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
         {/* iOS-optimized Header Navigation for iPhone SE/12 mini */}
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-2 mt-[-15px] mb-[-15px] pt-[0px] pb-[0px] pl-[15px] pr-[15px] ml-[-8px] mr-[-8px]">
-          <div className="flex items-center justify-between">
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-3 py-3">
+          <div className="flex items-center justify-between h-10">
             {/* Left: Back to Dashboard */}
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-accent rounded-lg ios-touch-feedback"
+              className="flex items-center gap-1.5 px-2 py-2 h-10 hover:bg-accent rounded-lg ios-touch-feedback"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-sm font-medium hidden xs:inline">Back</span>
             </Button>
             
             {/* Center: Page Title with Icon */}
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-1 justify-center">
               <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-              <h1 className="text-lg font-semibold text-center">Nutrition</h1>
+              <h1 className="text-lg font-semibold">Nutrition</h1>
             </div>
             
-            {/* Right: Home Button */}
+            {/* Right: Home Button - Aligned to same height as back button */}
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="p-2 hover:bg-accent rounded-lg ios-touch-feedback"
+              className="flex items-center justify-center p-2 h-10 w-10 hover:bg-accent rounded-lg ios-touch-feedback"
             >
               <Home className="w-4 h-4" />
             </Button>
           </div>
           
           {/* Date Display - Compact for small screens */}
-          <div className="flex items-center justify-center mt-2">
-            <div className="flex items-center gap-2 px-3 py-1 bg-accent/50 rounded-lg mt-[-5px] mb-[-5px] pt-[12px] pb-[12px]">
+          <div className="flex items-center justify-center mt-3">
+            <div className="flex items-center gap-2 px-3 py-1 bg-accent/50 rounded-lg">
               <Calendar className="w-3 h-3 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">
                 {new Date().toLocaleDateString('en-US', { 
