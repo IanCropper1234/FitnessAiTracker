@@ -129,47 +129,47 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-4 gap-2 mb-6">
               {/* Overall Trend */}
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center justify-center mb-2">
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-center mb-1">
                   {getTrendIcon(analysis.trend)}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Overall Trend</p>
-                <p className={`font-semibold capitalize ${getTrendColor(analysis.trend)}`}>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Trend</p>
+                <p className={`text-sm font-semibold capitalize ${getTrendColor(analysis.trend)}`}>
                   {analysis.trend}
                 </p>
               </div>
 
               {/* Strength Gain */}
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center justify-center mb-2">
-                  <Target className="h-5 w-5 text-blue-500" />
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-center mb-1">
+                  <Target className="h-4 w-4 text-blue-500" />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Strength Gain</p>
-                <p className={`font-semibold ${analysis.strengthGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Strength</p>
+                <p className={`text-sm font-semibold ${analysis.strengthGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {analysis.strengthGain >= 0 ? '+' : ''}{analysis.strengthGain.toFixed(1)}%
                 </p>
               </div>
 
               {/* Volume Gain */}
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center justify-center mb-2">
-                  <TrendingUp className="h-5 w-5 text-purple-500" />
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-center mb-1">
+                  <TrendingUp className="h-4 w-4 text-purple-500" />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Volume Gain</p>
-                <p className={`font-semibold ${analysis.volumeGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Volume</p>
+                <p className={`text-sm font-semibold ${analysis.volumeGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {analysis.volumeGain >= 0 ? '+' : ''}{analysis.volumeGain.toFixed(1)}%
                 </p>
               </div>
 
               {/* Consistency */}
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center justify-center mb-2">
-                  <Award className="h-5 w-5 text-orange-500" />
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-center mb-1">
+                  <Award className="h-4 w-4 text-orange-500" />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Consistency</p>
-                <p className={`font-semibold ${analysis.consistencyScore >= 0.8 ? 'text-green-600' : analysis.consistencyScore >= 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Consistency</p>
+                <p className={`text-sm font-semibold ${analysis.consistencyScore >= 0.8 ? 'text-green-600' : analysis.consistencyScore >= 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
                   {(analysis.consistencyScore * 100).toFixed(0)}%
                 </p>
               </div>

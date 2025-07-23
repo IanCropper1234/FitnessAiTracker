@@ -127,6 +127,17 @@ function WorkoutSessionsWithBulkActions({
     },
   });
 
+  // Restart session mutation
+  const restartSessionMutation = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/restart`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
+    },
+  });
+
   const handleSelectAll = () => {
     if (selectedSessions.length === sessions.length) {
       setSelectedSessions([]);
@@ -270,7 +281,7 @@ function WorkoutSessionCard({
               />
             )}
             <div>
-              <CardTitle className="text-[16px] font-medium">{session.name}</CardTitle>
+              <CardTitle className="text-headline text-[16px] font-medium">{session.name}</CardTitle>
               <CardDescription className="text-muted-foreground text-[14px]">
                 {new Date(session.date).toLocaleDateString()}
               </CardDescription>
@@ -600,7 +611,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
   if (executingSessionId && !viewingSessionId) {
     return (
       <WorkoutExecutionWrapper
-        sessionId={executingSessionId}
+        sessionId={executingSessionId.toString()}
         onComplete={() => setExecutingSessionId(null)}
       />
     );
