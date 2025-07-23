@@ -656,7 +656,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 }
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
               {nutritionLogs && nutritionLogs.length > 0 && (
                 <Button
                   variant={bulkMode ? "default" : "outline"}
@@ -665,9 +665,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="duration-200 ease-out active:scale-95 shadow-sm hover:shadow-md inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground h-9 rounded-md gap-1 sm:text-sm px-2 sm:px-3 bg-[#ffffff] text-[#0a0a0a] pl-[15px] pr-[15px] font-medium text-[12px] ml-[-5px] mr-[-5px] pt-[0px] pb-[0px] mt-[0px] mb-[0px]"
+                  className="text-xs flex-shrink-0"
                 >
-                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Check className="w-3 h-3 mr-1" />
                   <span className="hidden sm:inline">{bulkMode ? 'Exit Selection' : 'Select Items'}</span>
                   <span className="sm:hidden">{bulkMode ? 'Exit' : 'Select'}</span>
                 </Button>
@@ -679,11 +679,12 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     onShowLogger(selectedDate);
                   }
                 }}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-xs sm:text-sm px-2 sm:px-3 pl-[20px] pr-[20px] ml-[100px] mr-[100px]"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs flex-shrink-0"
                 size="sm"
               >
-                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                Add Food
+                <Plus className="w-3 h-3 mr-1" />
+                <span className="hidden xs:inline">Add Food</span>
+                <span className="xs:hidden">Add</span>
               </Button>
             </div>
           </div>
