@@ -218,7 +218,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   });
 
   // Fetch current diet goal
-  const { data: currentDietGoal, refetch: refetchDietGoal } = useQuery<DietGoal>({
+  const { data: currentDietGoal } = useQuery<DietGoal>({
     queryKey: ['/api/diet-goals', userId],
     queryFn: async () => {
       const response = await fetch(`/api/diet-goals/${userId}`);
@@ -230,13 +230,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       }
     }
   });
-
-  // Ensure Diet Builder always shows the latest data from the same source as Nutrition Overview
-  useEffect(() => {
-    if (currentDietGoal) {
-      setDietGoal(currentDietGoal);
-    }
-  }, [currentDietGoal]);
 
   // Auto-sync with profile fitness goal changes and enable auto-regulation
   useEffect(() => {
