@@ -10,7 +10,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { TimezoneUtils } from "@shared/utils/timezone";
-import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple } from "lucide-react";
+import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan } from "lucide-react";
+import { BarcodeScanner } from "./barcode-scanner";
 
 interface NutritionLoggerProps {
   userId: number;
@@ -42,6 +43,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
 
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
@@ -109,6 +111,21 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   const handleAIAnalysis = () => {
     if (!foodQuery.trim()) return;
     aiAnalyzeMutation.mutate(foodQuery);
+  };
+
+  const handleBarcodeSuccess = (foodData: any) => {
+    setSelectedFood({
+      name: foodData.name,
+      calories: foodData.calories,
+      protein: foodData.protein,
+      carbs: foodData.carbs,
+      fat: foodData.fat,
+      servingSize: foodData.serving_size,
+      category: foodData.category,
+      mealSuitability: foodData.mealSuitability
+    });
+    setFoodQuery(foodData.name);
+    setSearchMode('search'); // Switch to search mode to show the found food
   };
 
   const handleLogFood = () => {
@@ -211,6 +228,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                 <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Food Database</span>
                 <span className="sm:hidden">Database</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowBarcodeScanner(true)}
+                className="border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-2 sm:px-3"
+                title="Scan Barcode"
+              >
+                <Scan className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline ml-1 sm:ml-2">Scan</span>
               </Button>
             </div>
 
@@ -469,6 +495,13 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
           </div>
         </CardContent>
       </Card>
+      
+      {/* Barcode Scanner */}
+      <BarcodeScanner
+        isOpen={showBarcodeScanner}
+        onClose={() => setShowBarcodeScanner(false)}
+        onScanSuccess={handleBarcodeSuccess}
+      />
     </div>
   );
 }

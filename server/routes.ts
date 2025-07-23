@@ -643,7 +643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced Food search routes with RP categorization
+  // Enhanced Food search with Open Food Facts + USDA FoodData Central integration
   app.get("/api/food/search", async (req, res) => {
     try {
       const query = req.query.q as string;
@@ -656,48 +656,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
 
-      // Search Open Food Facts API
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=20&fields=product_name,brands,nutriments,serving_size,code`;
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`Open Food Facts API returned ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Transform and categorize foods using RP methodology
-      const foods = await Promise.all(data.products?.map(async (product: any) => {
-        const calories = Math.round(product.nutriments?.['energy-kcal_100g'] || 0);
-        const protein = Math.round(product.nutriments?.['proteins_100g'] || 0);
-        const carbs = Math.round(product.nutriments?.['carbohydrates_100g'] || 0);
-        const fat = Math.round(product.nutriments?.['fat_100g'] || 0);
-        
-        if (calories === 0) return null;
-        
-        // Apply RP categorization logic
-        const foodCategory = categorizeFoodByRP(calories, protein, carbs, fat);
-        const suitability = getMealSuitability(foodCategory, protein, carbs, fat);
-        
-        return {
-          id: product.code || `off_${Date.now()}_${Math.random()}`,
-          name: product.product_name || 'Unknown Product',
-          brand: product.brands,
-          calories,
-          protein,
-          carbs,
-          fat,
-          serving_size: product.serving_size || '100g',
-          barcode: product.code,
-          source: 'openfoodfacts',
-          category: foodCategory,
-          mealSuitability: suitability
-        };
-      }) || []);
+      // Search both APIs concurrently
+      const [openFoodFactsResults, usdaResults] = await Promise.allSettled([
+        searchOpenFoodFacts(query),
+        searchUSDAFoodData(query)
+      ]);
 
-      // Filter out null values and apply category/meal type filters
-      let filteredFoods = foods.filter(food => food !== null);
+      let allFoods: any[] = [];
+
+      // Process Open Food Facts results
+      if (openFoodFactsResults.status === 'fulfilled') {
+        allFoods.push(...openFoodFactsResults.value);
+      } else {
+        console.error('Open Food Facts search failed:', openFoodFactsResults.reason);
+      }
+
+      // Process USDA results
+      if (usdaResults.status === 'fulfilled') {
+        allFoods.push(...usdaResults.value);
+      } else {
+        console.error('USDA FoodData search failed:', usdaResults.reason);
+      }
+
+      // Apply category/meal type filters
+      let filteredFoods = allFoods;
       
       if (category) {
         filteredFoods = filteredFoods.filter(food => food.category === category);
@@ -709,26 +691,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
       }
 
-      console.log(`Returning ${filteredFoods.length} enhanced foods with RP categorization`);
-      res.json(filteredFoods);
+      // Sort by relevance and limit results
+      const sortedFoods = filteredFoods
+        .sort((a, b) => {
+          // Prioritize exact matches, then USDA (more accurate), then Open Food Facts
+          const aExact = a.name.toLowerCase().includes(query.toLowerCase()) ? 1 : 0;
+          const bExact = b.name.toLowerCase().includes(query.toLowerCase()) ? 1 : 0;
+          if (aExact !== bExact) return bExact - aExact;
+          
+          const aUSDA = a.source === 'usda' ? 1 : 0;
+          const bUSDA = b.source === 'usda' ? 1 : 0;
+          return bUSDA - aUSDA;
+        })
+        .slice(0, 30);
+
+      console.log(`Returning ${sortedFoods.length} foods from combined search (${openFoodFactsResults.status === 'fulfilled' ? openFoodFactsResults.value.length : 0} OFF + ${usdaResults.status === 'fulfilled' ? usdaResults.value.length : 0} USDA)`);
+      res.json(sortedFoods);
     } catch (error: any) {
       console.error('Enhanced food search error:', error);
       res.json([]);
     }
   });
 
+  // Helper function for Open Food Facts search
+  async function searchOpenFoodFacts(query: string) {
+    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=15&fields=product_name,brands,nutriments,serving_size,code`;
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Open Food Facts API returned ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Transform and categorize foods using RP methodology
+    const foods = await Promise.all(data.products?.map(async (product: any) => {
+      const calories = Math.round(product.nutriments?.['energy-kcal_100g'] || 0);
+      const protein = Math.round(product.nutriments?.['proteins_100g'] || 0);
+      const carbs = Math.round(product.nutriments?.['carbohydrates_100g'] || 0);
+      const fat = Math.round(product.nutriments?.['fat_100g'] || 0);
+      
+      if (calories === 0) return null;
+      
+      // Apply RP categorization logic
+      const foodCategory = categorizeFoodByRP(calories, protein, carbs, fat);
+      const suitability = getMealSuitability(foodCategory, protein, carbs, fat);
+      
+      return {
+        id: product.code || `off_${Date.now()}_${Math.random()}`,
+        name: product.product_name || 'Unknown Product',
+        brand: product.brands,
+        calories,
+        protein,
+        carbs,
+        fat,
+        serving_size: product.serving_size || '100g',
+        barcode: product.code,
+        source: 'openfoodfacts',
+        category: foodCategory,
+        mealSuitability: suitability
+      };
+    }) || []);
+
+    return foods.filter(food => food !== null);
+  }
+
+  // Helper function for USDA FoodData Central search
+  async function searchUSDAFoodData(query: string) {
+    const apiKey = 'ei8k1PRVVKgTotTTOf12HbZEUndz5UUAO8ilo8j5';
+    const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&dataType=Foundation,SR%20Legacy&pageSize=15&api_key=${apiKey}`;
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`USDA FoodData API returned ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Transform USDA foods to our format
+    const foods = data.foods?.map((food: any) => {
+      // Extract nutrients from USDA format
+      const nutrients = food.foodNutrients || [];
+      const energyNutrient = nutrients.find((n: any) => n.nutrientId === 1008 || n.nutrientName?.includes('Energy')); // Energy (kcal)
+      const proteinNutrient = nutrients.find((n: any) => n.nutrientId === 1003 || n.nutrientName?.includes('Protein'));
+      const carbNutrient = nutrients.find((n: any) => n.nutrientId === 1005 || n.nutrientName?.includes('Carbohydrate'));
+      const fatNutrient = nutrients.find((n: any) => n.nutrientId === 1004 || n.nutrientName?.includes('Total lipid'));
+      
+      const calories = Math.round(energyNutrient?.value || 0);
+      const protein = Math.round(proteinNutrient?.value || 0);
+      const carbs = Math.round(carbNutrient?.value || 0);
+      const fat = Math.round(fatNutrient?.value || 0);
+      
+      if (calories === 0) return null;
+      
+      // Apply RP categorization logic
+      const foodCategory = categorizeFoodByRP(calories, protein, carbs, fat);
+      const suitability = getMealSuitability(foodCategory, protein, carbs, fat);
+      
+      return {
+        id: `usda_${food.fdcId}`,
+        name: food.description || 'Unknown Food',
+        brand: food.brandOwner || food.brandName,
+        calories,
+        protein,
+        carbs,
+        fat,
+        serving_size: '100g',
+        source: 'usda',
+        category: foodCategory,
+        mealSuitability: suitability,
+        fdcId: food.fdcId
+      };
+    }) || [];
+
+    return foods.filter((food: any) => food !== null);
+  }
+
+  // Enhanced barcode lookup with Open Food Facts integration
   app.get("/api/food/barcode/:barcode", async (req, res) => {
     try {
       const barcode = req.params.barcode;
-      const food = getFoodByBarcode(barcode);
       
-      if (!food) {
-        return res.status(404).json({ message: "Food not found" });
+      console.log('Barcode lookup for:', barcode);
+      
+      // Search Open Food Facts by barcode
+      const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`Open Food Facts API returned ${response.status}`);
       }
+      
+      const data = await response.json();
+      
+      if (!data.product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      const product = data.product;
+      const calories = Math.round(product.nutriments?.['energy-kcal_100g'] || 0);
+      const protein = Math.round(product.nutriments?.['proteins_100g'] || 0);
+      const carbs = Math.round(product.nutriments?.['carbohydrates_100g'] || 0);
+      const fat = Math.round(product.nutriments?.['fat_100g'] || 0);
+      
+      if (calories === 0) {
+        return res.status(404).json({ message: "No nutritional data available" });
+      }
+      
+      // Apply RP categorization logic
+      const foodCategory = categorizeFoodByRP(calories, protein, carbs, fat);
+      const suitability = getMealSuitability(foodCategory, protein, carbs, fat);
+      
+      const foodData = {
+        id: product.code || barcode,
+        name: product.product_name || 'Unknown Product',
+        brand: product.brands,
+        calories,
+        protein,
+        carbs,
+        fat,
+        serving_size: product.serving_size || '100g',
+        barcode: product.code,
+        source: 'openfoodfacts',
+        category: foodCategory,
+        mealSuitability: suitability,
+        images: {
+          front: product.image_front_url,
+          nutrition: product.image_nutrition_url
+        }
+      };
 
-      res.json(food);
+      console.log('Barcode lookup successful:', foodData.name);
+      res.json(foodData);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error('Barcode lookup error:', error);
+      res.status(500).json({ message: "Failed to lookup barcode" });
     }
   });
 

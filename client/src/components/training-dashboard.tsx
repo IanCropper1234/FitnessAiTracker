@@ -271,7 +271,7 @@ function WorkoutSessionCard({
             )}
             <div>
               <CardTitle className="text-lg">{session.name}</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground text-[14px]">
                 {new Date(session.date).toLocaleDateString()}
               </CardDescription>
             </div>
