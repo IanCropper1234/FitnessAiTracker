@@ -48,7 +48,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
         size="sm"
         onClick={handleDecrement}
         disabled={disabled || value <= min}
-        className="h-10 w-8 p-0 border-r-0 rounded-r-none bg-background border-border text-foreground hover:bg-accent"
+        className="h-10 w-6 p-0 border-r-0 rounded-r-none bg-background border-border text-foreground hover:bg-accent"
       >
         <Minus className="h-3 w-3" />
       </Button>
@@ -72,7 +72,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
         size="sm"
         onClick={handleIncrement}
         disabled={disabled || value >= max}
-        className="h-10 w-8 p-0 border-l-0 rounded-l-none bg-background border-border text-foreground hover:bg-accent"
+        className="h-10 w-6 p-0 border-l-0 rounded-l-none bg-background border-border text-foreground hover:bg-accent"
       >
         <Plus className="h-3 w-3" />
       </Button>
