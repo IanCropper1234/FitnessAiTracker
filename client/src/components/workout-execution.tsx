@@ -86,10 +86,14 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
   const [showFeedback, setShowFeedback] = useState(false);
   
-  // Drag and drop state
+  // Drag and drop state (iOS compatible)
   const [draggedExercise, setDraggedExercise] = useState<WorkoutExercise | null>(null);
   const [dragOverTarget, setDragOverTarget] = useState<number | null>(null);
   const [dragPreview, setDragPreview] = useState<{ x: number; y: number } | null>(null);
+  
+  // iOS Safari drag and drop polyfill state
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
 
   // Fetch workout session details
   const { data: session, isLoading } = useQuery<WorkoutSession>({
@@ -262,7 +266,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
     },
   });
 
-  // Drag and drop event handlers
+  // Drag and drop event handlers (iOS compatible)
   const handleDragStart = (e: React.DragEvent, exercise: WorkoutExercise, index: number) => {
     if (!e.dataTransfer || !exercise) return;
     
@@ -275,9 +279,9 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
       name: exercise.exercise.name
     }));
     
-    // Create custom drag image
+    // Create custom drag image for better iOS compatibility
     const dragImage = document.createElement('div');
-    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-3 shadow-lg max-w-xs';
+    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-2 shadow-lg';
     dragImage.style.position = 'absolute';
     dragImage.style.top = '-1000px';
     dragImage.innerHTML = `
@@ -285,7 +289,6 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
         <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
         <span class="text-sm font-medium">${exercise.exercise.name}</span>
       </div>
-      <div class="text-xs text-gray-500 mt-1">${exercise.sets} sets • ${exercise.targetReps} reps</div>
     `;
     document.body.appendChild(dragImage);
     e.dataTransfer.setDragImage(dragImage, 0, 0);
@@ -312,9 +315,12 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
     if (!draggedExercise) return;
     
     if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
-      if (targetIndex !== undefined) {
+      // Provide visual feedback based on validity of drop for iOS compatibility
+      if (targetIndex !== undefined && draggedExercise) {
+        e.dataTransfer.dropEffect = 'move';
         setDragOverTarget(targetIndex);
+      } else {
+        e.dataTransfer.dropEffect = 'none';
       }
     }
   };
@@ -718,6 +724,67 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                   onDragEnd={handleDragEnd}
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDrop={(e) => handleDrop(e, index)}
+                  onTouchStart={(e) => {
+                    // iOS Safari touch event support for drag and drop
+                    const touch = e.touches[0];
+                    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+                    setDraggedExercise(exercise);
+                    setIsTouchDragging(true);
+                  }}
+                  onTouchMove={(e) => {
+                    if (!isTouchDragging || !touchStartPos || !draggedExercise) return;
+                    e.preventDefault();
+                    
+                    const touch = e.touches[0];
+                    const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+                    const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+                    
+                    // Start visual drag feedback after moving 10px
+                    if (deltaX > 10 || deltaY > 10) {
+                      setDragPreview({ x: touch.clientX, y: touch.clientY });
+                      
+                      // Find element under touch point
+                      const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                      const exerciseElement = elementBelow?.closest('[data-exercise-index]');
+                      
+                      if (exerciseElement) {
+                        const targetIndex = parseInt(exerciseElement.getAttribute('data-exercise-index') || '0');
+                        setDragOverTarget(targetIndex);
+                      }
+                    }
+                  }}
+                  onTouchEnd={(e) => {
+                    if (!isTouchDragging || !draggedExercise) return;
+                    
+                    const touch = e.changedTouches[0];
+                    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                    const exerciseElement = elementBelow?.closest('[data-exercise-index]');
+                    
+                    if (exerciseElement && dragOverTarget !== null) {
+                      const targetIndex = parseInt(exerciseElement.getAttribute('data-exercise-index') || '0');
+                      // Simulate drop event
+                      const fakeEvent = {
+                        preventDefault: () => {},
+                        dataTransfer: {
+                          getData: () => JSON.stringify({
+                            id: draggedExercise.id,
+                            exerciseId: draggedExercise.exerciseId,
+                            orderIndex: draggedExercise.orderIndex,
+                            name: draggedExercise.exercise.name
+                          })
+                        }
+                      } as any;
+                      handleDrop(fakeEvent, targetIndex);
+                    }
+                    
+                    // Reset touch state
+                    setIsTouchDragging(false);
+                    setTouchStartPos(null);
+                    setDraggedExercise(null);
+                    setDragOverTarget(null);
+                    setDragPreview(null);
+                  }}
+                  data-exercise-index={index}
                   className={`p-3 rounded-lg border transition-all duration-200 cursor-move ${
                     isDraggedOver ? 'border-blue-400 bg-blue-100 dark:bg-blue-900 scale-102 shadow-lg' : ''
                   } ${
