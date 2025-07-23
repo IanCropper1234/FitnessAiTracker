@@ -621,7 +621,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
-
       {/* Training Stats Cards */}
       <div className="grid grid-cols-3 gap-2 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -675,7 +674,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           </CardContent>
         </Card>
       </div>
-
       {/* Header with Feature Manager Button - Only show for developer users */}
       {userData?.showDeveloperFeatures && (
         <div className="flex items-center justify-between mb-4">
@@ -701,7 +699,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           </div>
         </div>
       )}
-
       <Tabs value={activeTab} className="w-full">
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -759,7 +756,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               {/* In Progress Sessions */}
               {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
                 <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
+                  <h4 className="text-md text-blue-600 dark:text-blue-400 font-medium pl-[20px] pr-[20px]">
                     In Progress ({recentSessions.filter(session => !session.isCompleted).length})
                   </h4>
                   {recentSessions.filter(session => !session.isCompleted).map((session) => (
@@ -1012,7 +1009,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           <LoadProgressionTracker userId={userId} />
         </TabsContent>
       </Tabs>
-
       {/* Workout Session Creator Dialog */}
       <WorkoutSessionCreator
         selectedExercises={selectedExercises}
@@ -1020,7 +1016,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
         onClose={() => setShowSessionCreator(false)}
         onSuccess={handleSessionCreated}
       />
-
       {/* Workout Execution Modal */}
       {executingSessionId && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
@@ -1053,13 +1048,11 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           </div>
         </div>
       )}
-
       {/* Feature Flag Manager Modal */}
       <FeatureFlagManager 
         isOpen={showFeatureManager}
         onClose={() => setShowFeatureManager(false)}
       />
-
       {/* Feature Showcase Modal */}
       <FeatureShowcase
         isVisible={showFeatureShowcase}
