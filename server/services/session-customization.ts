@@ -219,7 +219,7 @@ export class SessionCustomization {
     let recommendedSets = 3; // Default
     if (landmarks.length > 0) {
       const avgMev = landmarks.reduce((sum, l) => sum + l.mev, 0) / landmarks.length;
-      const avgRecovery = landmarks.reduce((sum, l) => sum + l.recoveryLevel, 0) / landmarks.length;
+      const avgRecovery = landmarks.reduce((sum, l) => sum + (l.recoveryLevel || 5), 0) / landmarks.length;
       
       // Adjust based on recovery level
       if (avgRecovery < 5) {
@@ -267,8 +267,8 @@ export class SessionCustomization {
       .where(
         and(
           eq(workoutSessions.mesocycleId, mesocycleId),
-          sql`DATE(${workoutSessions.date}) > DATE(${baseSession!.date})`,
-          sql`EXTRACT(DOW FROM ${workoutSessions.date}) = EXTRACT(DOW FROM ${baseSession!.date})`
+          sql`${workoutSessions.date}::date > ${baseSession!.date}::date`,
+          sql`EXTRACT(DOW FROM ${workoutSessions.date}::timestamp) = EXTRACT(DOW FROM ${baseSession!.date}::timestamp)`
         )
       );
     
