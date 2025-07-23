@@ -654,7 +654,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                             </>
                           ) : (
                             <span className="text-ios-footnote text-muted-foreground">
-                              Target: {set.targetReps} reps
+                              Target: {getSetRecommendation(currentExercise.exerciseId, set.setNumber)?.recommendedReps || set.targetReps} reps
+                              {getSetRecommendation(currentExercise.exerciseId, set.setNumber) && (
+                                <span className="text-xs text-emerald-400 ml-1">(Rec)</span>
+                              )}
                             </span>
                           )}
                         </div>

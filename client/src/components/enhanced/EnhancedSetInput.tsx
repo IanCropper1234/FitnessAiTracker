@@ -108,7 +108,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               Set {set.setNumber}
             </Badge>
             <span className="text-sm text-foreground/70">
-              Target: {set.targetReps} reps
+              Target: {setRecommendation?.recommendedReps || set.targetReps} reps
+              {setRecommendation && (
+                <span className="text-xs text-emerald-400 ml-1">(Rec)</span>
+              )}
             </span>
           </div>
           
