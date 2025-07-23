@@ -54,7 +54,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
       case "increase": return "text-green-600 bg-green-50 border-green-200";
       case "decrease": return "text-yellow-600 bg-yellow-50 border-yellow-200";
       case "deload": return "text-red-600 bg-red-50 border-red-200";
-      default: return "text-blue-600 bg-blue-50 border-blue-200";
+      default: return "text-indigo-600 bg-indigo-50 border-indigo-200 dark:text-indigo-400 dark:bg-indigo-950 dark:border-indigo-800";
     }
   };
 
@@ -71,7 +71,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
     switch (trend) {
       case "improving": return "text-green-600";
       case "declining": return "text-red-600";
-      default: return "text-blue-600";
+      default: return "text-indigo-600 dark:text-indigo-400";
     }
   };
 
