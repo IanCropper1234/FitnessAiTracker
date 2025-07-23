@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Info, Plus, Minus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Check, Info, Plus, Minus, Scale } from "lucide-react";
 import { useFeature } from "@/hooks/useFeature";
 import { SpinnerInput } from "./SpinnerInput";
 
@@ -47,6 +50,8 @@ interface EnhancedSetInputProps {
   canRemoveSet?: boolean;
   weightUnit?: 'kg' | 'lbs';
   onWeightUnitChange?: (unit: 'kg' | 'lbs') => void;
+  userId?: number;
+  isBodyWeightExercise?: boolean;
 }
 
 export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
@@ -61,9 +66,23 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   canRemoveSet = false,
   weightUnit = 'kg',
   onWeightUnitChange,
+  userId = 1,
+  isBodyWeightExercise = false,
 }) => {
   const spinnerEnabled = useFeature('spinnerSetInput');
   const [showRecommendation, setShowRecommendation] = useState(false);
+  const [useBodyWeight, setUseBodyWeight] = useState(false);
+
+  // Fetch user's latest body weight
+  const { data: bodyMetrics = [] } = useQuery<any[]>({
+    queryKey: [`/api/body-metrics/${userId}`],
+    enabled: useBodyWeight,
+  });
+
+  // Get latest body weight data
+  const latestBodyWeight = bodyMetrics.length > 0 ? bodyMetrics[0] : null;
+  const bodyWeightValue = latestBodyWeight?.weight ? parseFloat(latestBodyWeight.weight) : 0;
+  const bodyWeightUnit = latestBodyWeight?.unit === 'imperial' ? 'lbs' : 'kg';
 
   const convertWeight = (weight: number, fromUnit: 'kg' | 'lbs', toUnit: 'kg' | 'lbs'): number => {
     if (fromUnit === toUnit) return weight;
@@ -73,7 +92,28 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleWeightChange = (value: number) => {
-    onUpdateSet('weight', value);
+    if (!useBodyWeight) {
+      onUpdateSet('weight', value);
+    }
+  };
+
+  // Handle body weight toggle
+  const handleBodyWeightToggle = (enabled: boolean) => {
+    setUseBodyWeight(enabled);
+    
+    if (enabled && bodyWeightValue > 0) {
+      // Convert body weight to current exercise weight unit if needed
+      const convertedWeight = convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit);
+      onUpdateSet('weight', Math.round(convertedWeight * 100) / 100);
+    }
+  };
+
+  // Calculate effective weight to display
+  const getEffectiveWeight = (): number => {
+    if (useBodyWeight && bodyWeightValue > 0) {
+      return Math.round(convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit) * 100) / 100;
+    }
+    return set.weight;
   };
 
   const handleRepsChange = (value: number) => {
@@ -177,48 +217,89 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Mobile-Optimized Input Layout */}
         <div className="space-y-4">
-          {/* Weight Input Row with Unit Selection */}
+          {/* Weight Input Row with Unit Selection and Body Weight Toggle */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium text-foreground">Weight</label>
-              <Select
-                value={weightUnit}
-                onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
-                disabled={set.completed}
-              >
-                <SelectTrigger className="w-20 h-9 text-sm bg-background border-border text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  <SelectItem value="kg">KG</SelectItem>
-                  <SelectItem value="lbs">lbs</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                {/* Body Weight Toggle */}
+                {isBodyWeightExercise && (
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="body-weight-toggle" className="text-xs text-foreground/70">
+                      <Scale className="h-3 w-3 inline mr-1" />
+                      Body Weight
+                    </Label>
+                    <Switch
+                      id="body-weight-toggle"
+                      checked={useBodyWeight}
+                      onCheckedChange={handleBodyWeightToggle}
+                      disabled={set.completed || !bodyWeightValue}
+                      className="scale-75"
+                    />
+                  </div>
+                )}
+                
+                {/* Unit Selector */}
+                <Select
+                  value={weightUnit}
+                  onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
+                  disabled={set.completed}
+                >
+                  <SelectTrigger className="w-20 h-9 text-sm bg-background border-border text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border">
+                    <SelectItem value="kg">KG</SelectItem>
+                    <SelectItem value="lbs">lbs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            
+            {/* Body Weight Info Banner */}
+            {useBodyWeight && bodyWeightValue > 0 && (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2">
+                <div className="flex items-center gap-2 text-xs text-blue-400">
+                  <Scale className="h-3 w-3" />
+                  <span>
+                    Using body weight: {getEffectiveWeight()}{weightUnit}
+                    {bodyWeightUnit !== weightUnit && (
+                      <span className="text-blue-300/70 ml-1">
+                        (converted from {bodyWeightValue}{bodyWeightUnit})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
+            
             <div className="w-full">
               {spinnerEnabled ? (
                 <SpinnerInput
-                  value={set.weight}
+                  value={getEffectiveWeight()}
                   onChange={handleWeightChange}
                   min={0}
                   max={1000}
                   step={0.5}
                   placeholder="0"
-                  disabled={set.completed}
-                  className="w-full"
+                  disabled={set.completed || useBodyWeight}
+                  className={`w-full ${useBodyWeight ? 'bg-muted text-muted-foreground' : ''}`}
                 />
               ) : (
                 <Input
                   type="number"
-                  value={set.weight || ''}
+                  value={getEffectiveWeight() || ''}
                   onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
                   placeholder="0"
                   step="0.5"
                   min="0"
                   max="1000"
-                  disabled={set.completed}
-                  className="w-full bg-background border-border text-foreground"
+                  disabled={set.completed || useBodyWeight}
+                  className={`w-full bg-background border-border text-foreground ${
+                    useBodyWeight ? 'bg-muted text-muted-foreground cursor-not-allowed' : ''
+                  }`}
                   inputMode="decimal"
+                  readOnly={useBodyWeight}
                 />
               )}
             </div>
