@@ -84,15 +84,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   const bodyWeightValue = latestBodyWeight?.weight ? parseFloat(latestBodyWeight.weight) : 0;
   const bodyWeightUnit = latestBodyWeight?.unit === 'imperial' ? 'lbs' : 'kg';
 
-  // Debug logging
-  console.log('EnhancedSetInput debug:', {
-    isBodyWeightExercise,
-    bodyMetrics: bodyMetrics.length,
-    bodyWeightValue,
-    bodyWeightUnit,
-    toggleDisabled: set.completed || !bodyWeightValue
-  });
-
   const convertWeight = (weight: number, fromUnit: 'kg' | 'lbs', toUnit: 'kg' | 'lbs'): number => {
     if (fromUnit === toUnit) return weight;
     if (fromUnit === 'kg' && toUnit === 'lbs') return weight * 2.20462;
@@ -138,8 +129,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     const activeRecommendation = setRecommendation || (recommendation?.sets?.[0]);
     
     if (activeRecommendation) {
-      const convertedWeight = convertWeight(activeRecommendation.recommendedWeight, 'kg', weightUnit);
-      onUpdateSet('weight', convertedWeight);
+      // Only update weight if body weight toggle is not enabled
+      if (!useBodyWeight) {
+        const convertedWeight = convertWeight(activeRecommendation.recommendedWeight, 'kg', weightUnit);
+        onUpdateSet('weight', convertedWeight);
+      }
+      
       onUpdateSet('actualReps', activeRecommendation.recommendedReps);
       onUpdateSet('rpe', activeRecommendation.recommendedRpe);
     }
