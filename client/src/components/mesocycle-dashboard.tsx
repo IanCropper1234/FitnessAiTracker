@@ -297,7 +297,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                     ) : (
                       <div className="flex items-center gap-1 text-orange-600">
                         <Clock className="h-4 w-4" />
-                        <span className="text-sm font-medium">Complete remaining sessions</span>
+                        <span className="text-sm font-medium text-[#cccaca]">Complete remaining sessions</span>
                       </div>
                     )}
                   </div>
