@@ -8,6 +8,18 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 23, 2025 - COMPLETE: App Branding Update & Nutrition Facts Popup
+✓ **APP BRANDING UPDATE**: Updated app name from "RP Coach" to "Advance Macro" in floating nutrition menu
+✓ **NUTRITION FACTS POPUP**: Added comprehensive click-to-popup nutrition facts functionality
+✓ **DETAILED NUTRITION DISPLAY**: Food item names now clickable showing:
+  - Food name and RP category badge
+  - Total calories with large display
+  - Macronutrient breakdown with visual progress bars
+  - Calorie breakdown by macro type (protein/carbs/fat)
+  - Serving size and meal timing information
+✓ **VISUAL ENHANCEMENTS**: Added hover effects and visual progress bars showing macro percentage contribution
+✓ **USER EXPERIENCE**: Enhanced food log interaction with professional nutrition facts presentation
+
 ### July 23, 2025 - COMPLETE: Enhanced AI Nutrition Analysis with Expert System Prompt
 ✓ **COMPREHENSIVE AI UPGRADE**: Dramatically improved AI nutrition analysis function with expert-level system prompt
 ✓ **EXPERT METHODOLOGY**: Implemented detailed nutritional analysis methodology including:
