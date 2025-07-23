@@ -37,6 +37,11 @@ export interface IStorage {
   createNutritionGoal(goal: InsertNutritionGoal): Promise<NutritionGoal>;
   updateNutritionGoal(userId: number, goal: Partial<InsertNutritionGoal>): Promise<NutritionGoal | undefined>;
   
+  // Diet Goals
+  getDietGoal(userId: number): Promise<any | undefined>;
+  createDietGoal(goal: any): Promise<any>;
+  updateDietGoal(userId: number, goal: any): Promise<any | undefined>;
+  
   // Nutrition Logs
   getNutritionLogs(userId: number, date?: Date): Promise<NutritionLog[]>;
   getNutritionLogsInRange(userId: number, startDate: Date, endDate: Date): Promise<NutritionLog[]>;
@@ -675,6 +680,19 @@ export class MemStorage implements IStorage {
 
   async deleteSavedMealPlan(id: number): Promise<boolean> {
     return false;
+  }
+
+  // Diet Goals
+  async getDietGoal(userId: number): Promise<any | undefined> {
+    return undefined; // Stub for memory storage
+  }
+
+  async createDietGoal(goal: any): Promise<any> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateDietGoal(userId: number, goal: any): Promise<any | undefined> {
+    return undefined; // Stub for memory storage
   }
 
   // Mesocycles

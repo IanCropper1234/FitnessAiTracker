@@ -16,7 +16,10 @@ export interface NutritionSummary {
 
 export async function getNutritionSummary(userId: number, date: Date): Promise<NutritionSummary> {
   const logs = await storage.getNutritionLogs(userId, date);
-  const goal = await storage.getNutritionGoal(userId);
+  
+  // Try to get diet goals first (the correct source), fallback to nutrition goals
+  const dietGoal = await storage.getDietGoal(userId);
+  const nutritionGoal = await storage.getNutritionGoal(userId);
 
   const totals = logs.reduce((acc, log) => ({
     totalCalories: acc.totalCalories + Number(log.calories),
@@ -30,10 +33,11 @@ export async function getNutritionSummary(userId: number, date: Date): Promise<N
     totalFat: 0,
   });
 
-  const goalCalories = goal?.dailyCalories || 2000;
-  const goalProtein = Number(goal?.protein) || 150;
-  const goalCarbs = Number(goal?.carbs) || 200;
-  const goalFat = Number(goal?.fat) || 70;
+  // Prioritize diet goals for macro targets since they're the primary source
+  const goalCalories = dietGoal?.targetCalories ? Number(dietGoal.targetCalories) : (nutritionGoal?.dailyCalories || 2000);
+  const goalProtein = dietGoal?.targetProtein ? Number(dietGoal.targetProtein) : (Number(nutritionGoal?.protein) || 150);
+  const goalCarbs = dietGoal?.targetCarbs ? Number(dietGoal.targetCarbs) : (Number(nutritionGoal?.carbs) || 200);
+  const goalFat = dietGoal?.targetFat ? Number(dietGoal.targetFat) : (Number(nutritionGoal?.fat) || 70);
 
   const adherence = Math.min(100, Math.round((totals.totalCalories / goalCalories) * 100));
 
