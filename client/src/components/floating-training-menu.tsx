@@ -83,7 +83,7 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
           w-12 h-12 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
-          ios-touch-feedback border-2
+          ios-touch-feedback border-2 flex items-center justify-center p-0
           ${isExpanded 
             ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
             : "bg-orange-600 hover:bg-orange-700 text-white border-orange-500/30 hover:scale-105"
