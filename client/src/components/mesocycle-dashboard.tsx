@@ -281,7 +281,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               {activeMesocycle && (
                 <div className="flex items-center justify-between p-3 dark:bg-gray-800 rounded-lg text-[17px] bg-[#3c81f6]">
                   <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <p className="text-sm font-medium text-[#cccaca]">
                       Week {activeMesocycle.currentWeek} Progress
                     </p>
                     <p className="text-xs dark:text-gray-400 text-[#fafbff]">
