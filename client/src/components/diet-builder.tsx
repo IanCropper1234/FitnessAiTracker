@@ -956,11 +956,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                   <div>
                     <Label className="text-black dark:text-white">Diet Goal</Label>
-                    <Select value={dietGoal.goal} onValueChange={(value) => setDietGoal(prev => ({ 
-                      ...prev, 
-                      goal: value as any,
-                      weeklyWeightTarget: value === 'maintain' ? 0 : prev.weeklyWeightTarget
-                    }))}>
+                    <Select value={dietGoal.goal} onValueChange={(value) => {
+                      const getDefaultWeightTarget = (goal: string) => {
+                        switch (goal) {
+                          case 'cut': return -0.5; // Default 0.5kg loss per week
+                          case 'bulk': return 0.3; // Default 0.3kg gain per week
+                          case 'maintain': return 0; // No weight change
+                          default: return 0;
+                        }
+                      };
+                      
+                      setDietGoal(prev => ({ 
+                        ...prev, 
+                        goal: value as any,
+                        weeklyWeightTarget: getDefaultWeightTarget(value)
+                      }));
+                    }}>
                       <SelectTrigger className="border-gray-300 dark:border-gray-600">
                         <SelectValue />
                       </SelectTrigger>
