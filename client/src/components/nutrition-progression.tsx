@@ -332,7 +332,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                 Avg Calories
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-5 text-left ml-[-15px] mr-[-15px] pl-[25px] pr-[25px] pt-[14px] pb-[14px] mt-[0px] mb-[0px]">
               <div className="text-2xl font-bold text-black dark:text-white">
                 {Math.round(summary.avgCalories)}
               </div>
