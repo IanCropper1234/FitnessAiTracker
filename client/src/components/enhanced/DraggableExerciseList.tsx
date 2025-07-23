@@ -10,6 +10,7 @@ import { GripVertical, Plus, Trash2, Search, Filter } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
 
 interface Exercise {
   id: number;
@@ -52,7 +53,6 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
   onExerciseAdd,
   onExerciseDelete,
 }) => {
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [exerciseFilter, setExerciseFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -136,46 +136,30 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
     },
   });
 
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
+  // Mobile-friendly drag and drop
+  const { getDragHandleProps, getItemClassName } = useMobileDragDrop({
+    items: exercises,
+    onReorder: (newExercises) => {
+      // Update order indices
+      const reorderedExercises = newExercises.map((exercise, index) => ({
+        ...exercise,
+        orderIndex: index
+      }));
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
+      // Call parent callback
+      onExercisesReorder?.(reorderedExercises);
 
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    
-    if (draggedIndex === null || draggedIndex === dropIndex) {
-      setDraggedIndex(null);
-      return;
-    }
-
-    const newExercises = [...exercises];
-    const [draggedExercise] = newExercises.splice(draggedIndex, 1);
-    newExercises.splice(dropIndex, 0, draggedExercise);
-
-    // Update order indices
-    const reorderedExercises = newExercises.map((exercise, index) => ({
-      ...exercise,
-      orderIndex: index
-    }));
-
-    // Call parent callback
-    onExercisesReorder?.(reorderedExercises);
-
-    // Update server
-    const orderUpdate = reorderedExercises.map(exercise => ({
-      exerciseId: exercise.exerciseId,
-      orderIndex: exercise.orderIndex
-    }));
-    
-    reorderExercisesMutation.mutate(orderUpdate);
-    setDraggedIndex(null);
-  };
+      // Update server
+      const orderUpdate = reorderedExercises.map(exercise => ({
+        exerciseId: exercise.exerciseId,
+        orderIndex: exercise.orderIndex
+      }));
+      
+      reorderExercisesMutation.mutate(orderUpdate);
+    },
+    getItemId: (exercise) => exercise.id,
+    isDisabled: false,
+  });
 
   const handleAddExercise = (exerciseId: number) => {
     addExerciseMutation.mutate(exerciseId);
@@ -285,15 +269,15 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
         {exercises.map((exercise, index) => (
           <Card
             key={exercise.id}
-            className={`transition-all duration-200 cursor-pointer ${
-              index === currentExerciseIndex
-                ? 'ring-2 ring-primary bg-primary/5'
-                : 'hover:bg-accent/50'
-            } ${draggedIndex === index ? 'opacity-50' : ''}`}
-            draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index)}
+            className={getItemClassName(
+              index,
+              `transition-all duration-200 cursor-pointer ${
+                index === currentExerciseIndex
+                  ? 'ring-2 ring-primary bg-primary/5'
+                  : 'hover:bg-accent/50'
+              }`
+            )}
+            {...getDragHandleProps(index)}
             onClick={() => onExerciseSelect(index)}
           >
             <CardContent className="p-4">

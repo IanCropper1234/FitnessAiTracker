@@ -14,10 +14,188 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
 
 interface DailyFoodLogProps {
   userId: number;
 }
+
+interface FoodLog {
+  id: number;
+  foodName: string;
+  quantity: number;
+  unit: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  mealType: string;
+  date: string;
+}
+
+interface DraggableFoodColumnsProps {
+  nutritionLogs: FoodLog[];
+  selectedLogs: number[];
+  bulkMode: boolean;
+  onToggleLogSelection: (logId: number) => void;
+  onDeleteLog: (logId: number) => void;
+  onUpdateMealType: (logId: number, newMealType: string) => void;
+  isDeletePending: boolean;
+  isUpdatePending: boolean;
+}
+
+function DraggableFoodColumns({
+  nutritionLogs,
+  selectedLogs,
+  bulkMode,
+  onToggleLogSelection,
+  onDeleteLog,
+  onUpdateMealType,
+  isDeletePending,
+  isUpdatePending,
+}: DraggableFoodColumnsProps) {
+  const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+  
+  const getMealTypeLogs = (mealType: string) => {
+    return nutritionLogs.filter(log => log.mealType === mealType);
+  };
+
+  const { getDragHandleProps, getItemClassName } = useMobileDragDrop({
+    items: nutritionLogs,
+    onReorder: (newLogs) => {
+      // Handle cross-meal-type drops
+      const updatedLogs = [...newLogs];
+      // The actual meal type updating will be handled by the drop zones
+    },
+    getItemId: (log) => log.id,
+    isDisabled: bulkMode,
+  });
+
+  const handleMealTypeDrop = (logId: number, newMealType: string) => {
+    const log = nutritionLogs.find(l => l.id === logId);
+    if (log && log.mealType !== newMealType) {
+      onUpdateMealType(logId, newMealType);
+    }
+  };
+
+  const FoodItem = ({ log, index }: { log: FoodLog; index: number }) => (
+    <div
+      className={getItemClassName(
+        index,
+        `flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+          bulkMode && selectedLogs.includes(log.id) 
+            ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+        }`
+      )}
+      {...(bulkMode ? {} : getDragHandleProps(index))}
+      onDragStart={(e) => {
+        if (!bulkMode) {
+          e.dataTransfer.setData('text/plain', log.id.toString());
+        }
+      }}
+    >
+      {bulkMode && (
+        <div className="pt-1">
+          <Checkbox
+            checked={selectedLogs.includes(log.id)}
+            onCheckedChange={() => onToggleLogSelection(log.id)}
+          />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
+            {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        </div>
+        <div 
+          className="font-medium text-black dark:text-white mb-1 break-words text-sm" 
+          title={log.foodName}
+        >
+          <span className="block sm:hidden">
+            {truncateText(log.foodName, 20)}
+          </span>
+          <span className="hidden sm:block">
+            {truncateText(log.foodName, 30)}
+          </span>
+        </div>
+        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+          {log.quantity} {log.unit} • <span className="font-medium">{Math.round(log.calories)} cal</span>
+        </div>
+        <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-1">
+          <span>P: {Number(log.protein).toFixed(1)}g</span>
+          <span>C: {Number(log.carbs).toFixed(1)}g</span>
+          <span>F: {Number(log.fat).toFixed(1)}g</span>
+        </div>
+      </div>
+      {!bulkMode && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDeleteLog(log.id)}
+          className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0 mt-1 h-8 w-8 p-0"
+          disabled={isDeletePending}
+        >
+          <Trash2 className="w-3 h-3" />
+        </Button>
+      )}
+    </div>
+  );
+
+  const MealColumn = ({ mealType }: { mealType: string }) => {
+    const logs = getMealTypeLogs(mealType);
+    
+    return (
+      <div 
+        className="flex-1 min-w-0 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+        onDrop={(e) => {
+          e.preventDefault();
+          const logId = parseInt(e.dataTransfer.getData('text/plain'));
+          if (logId) {
+            handleMealTypeDrop(logId, mealType);
+          }
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        }}
+      >
+        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <span className="text-lg">{getMealTypeIcon(mealType)}</span>
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {formatMealType(mealType)}
+          </span>
+          <Badge variant="outline" className="text-xs">
+            {logs.length}
+          </Badge>
+        </div>
+        
+        <div className="space-y-2 min-h-[100px]">
+          {logs.length > 0 ? (
+            logs.map((log, index) => (
+              <FoodItem key={log.id} log={log} index={nutritionLogs.indexOf(log)} />
+            ))
+          ) : (
+            <div className="text-center py-6 text-gray-400 dark:text-gray-500 text-xs">
+              {bulkMode ? "No items" : "Drop food items here or tap to add"}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
+      {mealTypes.map((mealType) => (
+        <MealColumn key={mealType} mealType={mealType} />
+      ))}
+    </div>
+  );
+}
+
+
 
 export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   const { t } = useTranslation();
@@ -32,6 +210,30 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
   const [bulkMode, setBulkMode] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
+
+  // Mutation to update meal type for food logs
+  const updateMealTypeMutation = useMutation({
+    mutationFn: async ({ logId, newMealType }: { logId: number; newMealType: string }) => {
+      return apiRequest("PUT", `/api/nutrition/logs/${logId}/meal-type`, {
+        mealType: newMealType
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      toast({
+        title: "Meal moved successfully",
+        description: "Food item has been moved to the new meal.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to move food item: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
 
   const { data: nutritionLogs, isLoading } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, selectedDate],
@@ -717,74 +919,18 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
           )}
 
           {nutritionLogs && nutritionLogs.length > 0 ? (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {nutritionLogs.map((log: any) => (
-                <div 
-                  key={log.id} 
-                  className={`flex items-start gap-3 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
-                    bulkMode && selectedLogs.includes(log.id) 
-                      ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {bulkMode && (
-                    <div className="pt-1">
-                      <Checkbox
-                        checked={selectedLogs.includes(log.id)}
-                        onCheckedChange={() => toggleLogSelection(log.id)}
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg flex-shrink-0">{getMealTypeIcon(log.mealType)}</span>
-                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex-shrink-0">
-                        {formatMealType(log.mealType)}
-                      </span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
-                        {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <div 
-                      className="font-medium text-black dark:text-white mb-1 break-words" 
-                      title={log.foodName}
-                    >
-                      <span className="block sm:hidden">
-                        {truncateText(log.foodName, 25)}
-                      </span>
-                      <span className="hidden sm:block md:hidden">
-                        {truncateText(log.foodName, 35)}
-                      </span>
-                      <span className="hidden md:block lg:hidden">
-                        {truncateText(log.foodName, 45)}
-                      </span>
-                      <span className="hidden lg:block">
-                        {truncateText(log.foodName, 60)}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      {log.quantity} {log.unit} • <span className="font-medium">{Math.round(log.calories)} cal</span>
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-2 sm:gap-4">
-                      <span className="whitespace-nowrap">P: {Number(log.protein).toFixed(1)}g</span>
-                      <span className="whitespace-nowrap">C: {Number(log.carbs).toFixed(1)}g</span>
-                      <span className="whitespace-nowrap">F: {Number(log.fat).toFixed(1)}g</span>
-                    </div>
-                  </div>
-                  {!bulkMode && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(log.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0 mt-1"
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
+            <DraggableFoodColumns 
+              nutritionLogs={nutritionLogs}
+              selectedLogs={selectedLogs}
+              bulkMode={bulkMode}
+              onToggleLogSelection={toggleLogSelection}
+              onDeleteLog={(logId) => deleteMutation.mutate(logId)}
+              onUpdateMealType={(logId, newMealType) => 
+                updateMealTypeMutation.mutate({ logId, newMealType })
+              }
+              isDeletePending={deleteMutation.isPending}
+              isUpdatePending={updateMealTypeMutation.isPending}
+            />
           ) : (
             <div className="text-center py-12 text-gray-600 dark:text-gray-400">
               <div className="mb-4">
@@ -820,3 +966,26 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
     </div>
   );
 }
+
+// Helper functions
+const truncateText = (text: string, maxLength: number) => {
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};
+
+const getMealTypeIcon = (mealType: string) => {
+  const icons = {
+    breakfast: <Sunrise className="w-4 h-4" />,
+    lunch: <Sun className="w-4 h-4" />,
+    dinner: <Moon className="w-4 h-4" />,
+    snack: <Apple className="w-4 h-4" />,
+  };
+  return icons[mealType as keyof typeof icons] || <Utensils className="w-4 h-4" />;
+};
+
+const formatMealType = (mealType: string) => {
+  return mealType.charAt(0).toUpperCase() + mealType.slice(1);
+};
+
+const getUniqueMealTypes = (logs: any[]) => {
+  return Array.from(new Set(logs.map(log => log.mealType)));
+};

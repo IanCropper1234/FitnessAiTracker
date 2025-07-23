@@ -515,6 +515,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update meal type for nutrition log (specific endpoint for drag-and-drop)
+  app.put("/api/nutrition/logs/:id/meal-type", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { mealType } = req.body;
+      
+      if (!mealType) {
+        return res.status(400).json({ message: "Meal type is required" });
+      }
+      
+      const updatedLog = await storage.updateNutritionLog(id, { mealType });
+      
+      if (!updatedLog) {
+        return res.status(404).json({ message: "Log not found" });
+      }
+
+      res.json(updatedLog);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.post("/api/nutrition/goal/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
