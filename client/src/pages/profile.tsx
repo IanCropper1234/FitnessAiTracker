@@ -169,10 +169,10 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     setLocation("/auth");
   };
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground ios-pwa-container">
       <div className="container mx-auto p-4 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+        {/* iOS PWA Header with Safe Area Support */}
+        <div className="flex items-center justify-between ios-pwa-header">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 

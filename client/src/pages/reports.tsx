@@ -96,10 +96,10 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20 w-full">
-      <div className="w-full px-2 py-4 space-y-4">
-        {/* iOS-optimized Header Navigation for iPhone SE/12 mini */}
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20 -mx-2 px-3 py-3 mt-[-15px] mb-[-15px] pt-[0px] pb-[0px]">
+    <div className="min-h-screen bg-background text-foreground pb-20 w-full ios-pwa-container">
+      <div className="w-full px-2 space-y-4">
+        {/* iOS PWA Header Navigation with Safe Area Support */}
+        <div className="ios-sticky-header bg-background/95 border-b border-border/20 -mx-2 px-3 py-3 ml-[-8px] mr-[-8px] mb-4">
           <div className="flex items-center justify-between min-h-[44px]">
             {/* Left: Back to Dashboard */}
             <div className="flex items-center">
