@@ -500,7 +500,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       <div className="ios-card p-6 space-y-4 pl-[24px] pr-[24px] mt-[0px] mb-[0px] ml-[0px] mr-[0px] pt-[2px] pb-[2px]">
         {/* Session Title - iOS Large Title Style */}
         <div className="text-center">
-          <h1 className="text-ios-title1 font-bold text-foreground">
+          <h1 className="text-foreground text-[16px] font-medium mt-[15px] mb-[15px]">
             {session.name}
           </h1>
         </div>
