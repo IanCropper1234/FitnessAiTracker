@@ -176,50 +176,48 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         <div className="space-y-4">
           {/* Weight Input Row with Unit Selection */}
           <div className="space-y-2">
-            <label className="text-xs font-medium text-foreground">Weight</label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0">
-                {spinnerEnabled ? (
-                  <SpinnerInput
-                    value={set.weight}
-                    onChange={handleWeightChange}
-                    min={0}
-                    max={1000}
-                    step={0.5}
-                    placeholder="0"
-                    disabled={set.completed}
-                    className="w-full"
-                  />
-                ) : (
-                  <Input
-                    type="number"
-                    value={set.weight || ''}
-                    onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    step="0.5"
-                    min="0"
-                    max="1000"
-                    disabled={set.completed}
-                    className="w-full h-8 bg-background border-border text-foreground text-sm"
-                    inputMode="decimal"
-                  />
-                )}
-              </div>
-              <div className="w-12 flex-shrink-0">
-                <Select
-                  value={weightUnit}
-                  onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-foreground">Weight</label>
+              <Select
+                value={weightUnit}
+                onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
+                disabled={set.completed}
+              >
+                <SelectTrigger className="w-14 h-7 text-xs bg-background border-border text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  <SelectItem value="kg">KG</SelectItem>
+                  <SelectItem value="lbs">lbs</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full">
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.weight}
+                  onChange={handleWeightChange}
+                  min={0}
+                  max={1000}
+                  step={0.5}
+                  placeholder="0"
                   disabled={set.completed}
-                >
-                  <SelectTrigger className="w-full h-8 text-xs bg-background border-border text-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
-                    <SelectItem value="kg">KG</SelectItem>
-                    <SelectItem value="lbs">lbs</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  className="w-full"
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.weight || ''}
+                  onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
+                  placeholder="0"
+                  step="0.5"
+                  min="0"
+                  max="1000"
+                  disabled={set.completed}
+                  className="w-full bg-background border-border text-foreground"
+                  inputMode="decimal"
+                />
+              )}
             </div>
           </div>
 
@@ -247,7 +245,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   min="0"
                   max="50"
                   disabled={set.completed}
-                  className="h-8 bg-background border-border text-foreground text-sm"
+                  className="bg-background border-border text-foreground"
                   inputMode="numeric"
                 />
               )}
@@ -276,7 +274,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   max="10"
                   step="0.5"
                   disabled={set.completed}
-                  className="h-8 bg-background border-border text-foreground text-sm"
+                  className="bg-background border-border text-foreground"
                   inputMode="decimal"
                 />
               )}
