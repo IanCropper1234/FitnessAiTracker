@@ -912,19 +912,47 @@ export class MesocyclePeriodization {
 
       // Add exercises with volume adjustments and auto-progression
       for (const exercise of baseExercises) {
-        // Apply volume adjustments based on muscle groups
+        // Apply volume adjustments based on muscle groups using RP methodology
         let adjustedSets = exercise.sets;
         
-        // Calculate adjusted sets based on volume progressions
-        const volumeProgression = volumeAdjustments.find(va => 
-          // This would need muscle group mapping for more sophisticated adjustment
-          va.week === week
-        );
+        // Get muscle groups for this exercise to apply volume adjustments
+        const exerciseMuscleGroups = await db
+          .select({
+            muscleGroupId: exerciseMuscleMapping.muscleGroupId,
+            role: exerciseMuscleMapping.role
+          })
+          .from(exerciseMuscleMapping)
+          .where(eq(exerciseMuscleMapping.exerciseId, exercise.exerciseId));
 
-        if (volumeProgression) {
-          // Apply volume adjustment (RP progression)
-          const progressionFactor = week === 1 ? 1.0 : 1.0 + ((week - 1) * 0.1); // 10% progression per week
-          adjustedSets = Math.round(exercise.sets * progressionFactor);
+
+
+        if (exerciseMuscleGroups.length > 0) {
+          // Apply volume progression based on primary muscle group
+          const primaryMuscleGroup = exerciseMuscleGroups.find(emg => emg.role === 'primary') 
+            || exerciseMuscleGroups[0];
+          
+          const volumeProgression = volumeAdjustments.find(va => 
+            va.muscleGroupId === primaryMuscleGroup.muscleGroupId
+          );
+
+          if (volumeProgression) {
+            // Calculate set adjustment based on RP volume progression
+            const baselineVolume = Math.max(adjustedSets, 1); // Minimum 1 set
+            
+            // Apply RP progression: adjust sets based on target volume for muscle group
+            if (volumeProgression.phase === 'accumulation') {
+              // Progressive volume increase during accumulation
+              adjustedSets = Math.min(volumeProgression.targetSets, baselineVolume + Math.ceil((week - 1) * 0.5));
+            } else if (volumeProgression.phase === 'intensification') {
+              // Peak volume during intensification
+              adjustedSets = volumeProgression.targetSets;
+            } else if (volumeProgression.phase === 'deload') {
+              // Reduced volume during deload
+              adjustedSets = Math.max(Math.round(baselineVolume * 0.7), 1);
+            }
+            
+            console.log(`📊 Exercise ${exercise.exerciseId}: ${exercise.sets} → ${adjustedSets} sets (${volumeProgression.phase} phase, muscle group ${volumeProgression.muscleGroupName})`);
+          }
         }
 
         // Get the latest completed exercise data for auto-progression
