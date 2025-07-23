@@ -221,64 +221,63 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
           </div>
 
-          {/* Reps and RPE Row */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* Actual Reps Input */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">Actual Reps</label>
-              {spinnerEnabled ? (
-                <SpinnerInput
-                  value={set.actualReps}
-                  onChange={handleRepsChange}
-                  min={0}
-                  max={50}
-                  step={1}
-                  placeholder="0"
-                  disabled={set.completed}
-                />
-              ) : (
-                <Input
-                  type="number"
-                  value={set.actualReps || ''}
-                  onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
-                  placeholder="0"
-                  min="0"
-                  max="50"
-                  disabled={set.completed}
-                  className="bg-background border-border text-foreground"
-                  inputMode="numeric"
-                />
-              )}
-            </div>
+          {/* Actual Reps Input Row */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-foreground">Actual Reps</label>
+            {spinnerEnabled ? (
+              <SpinnerInput
+                value={set.actualReps}
+                onChange={handleRepsChange}
+                min={0}
+                max={50}
+                step={1}
+                placeholder="0"
+                disabled={set.completed}
+                className="w-full"
+              />
+            ) : (
+              <Input
+                type="number"
+                value={set.actualReps || ''}
+                onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
+                placeholder="0"
+                min="0"
+                max="50"
+                disabled={set.completed}
+                className="w-full bg-background border-border text-foreground"
+                inputMode="numeric"
+              />
+            )}
+          </div>
 
-            {/* RPE Input (1-10) */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">RPE (1-10)</label>
-              {spinnerEnabled ? (
-                <SpinnerInput
-                  value={set.rpe}
-                  onChange={handleRpeChange}
-                  min={1}
-                  max={10}
-                  step={0.5}
-                  placeholder="8"
-                  disabled={set.completed}
-                />
-              ) : (
-                <Input
-                  type="number"
-                  value={set.rpe || ''}
-                  onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
-                  placeholder="8"
-                  min="1"
-                  max="10"
-                  step="0.5"
-                  disabled={set.completed}
-                  className="bg-background border-border text-foreground"
-                  inputMode="decimal"
-                />
-              )}
-            </div>
+          {/* RPE Input Row */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-foreground">RPE (1-10)</label>
+            {spinnerEnabled ? (
+              <SpinnerInput
+                value={set.rpe}
+                onChange={handleRpeChange}
+                min={1}
+                max={10}
+                step={0.5}
+                placeholder="8"
+                disabled={set.completed}
+                className="w-full"
+              />
+            ) : (
+              <Input
+                type="number"
+                value={set.rpe || ''}
+                onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
+                placeholder="8"
+                min="1"
+                max="10"
+                step="0.5"
+                disabled={set.completed}
+                className="w-full bg-background border-border text-foreground"
+                inputMode="decimal"
+              />
+            )}
           </div>
         </div>
 
