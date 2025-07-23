@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,8 +75,9 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
       setIsAddingMetric(false);
+      // Reset form data - the useEffect will automatically set the date to the latest metric date
       setFormData({
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0], // This will be updated by useEffect
         weight: '',
         bodyFatPercentage: '',
         neck: '',
@@ -166,6 +167,16 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
   };
 
   const latestMetric = getLatestMetric();
+
+  // Update form date to latest metric date when metrics are available
+  useEffect(() => {
+    if (latestMetric && !isAddingMetric) {
+      setFormData(prev => ({
+        ...prev,
+        date: new Date(latestMetric.date).toISOString().split('T')[0]
+      }));
+    }
+  }, [latestMetric, isAddingMetric]);
 
   if (isLoading) {
     return (
