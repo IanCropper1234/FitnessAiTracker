@@ -95,6 +95,15 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     },
   });
 
+  // Get workout sessions to check completion status
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['/api/training/sessions', userId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/training/sessions/${userId}`);
+      return response.json();
+    },
+  });
+
   // Update mesocycle mutation (pause/restart/modify)
   const updateMesocycleMutation = useMutation({
     mutationFn: async ({ id, updateData }: { id: number; updateData: any }) => {
@@ -144,6 +153,35 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   });
 
   const activeMesocycle = mesocycles.find((m: Mesocycle) => m.isActive);
+
+  // Check if all current week sessions are completed
+  const canAdvanceWeek = (mesocycle: Mesocycle | undefined) => {
+    if (!mesocycle || !sessions.length) return false;
+    
+    // Get sessions for the current mesocycle and current week
+    const currentWeekSessions = sessions.filter((session: any) => 
+      session.mesocycleId === mesocycle.id && 
+      session.name.includes(`Week ${mesocycle.currentWeek}`)
+    );
+    
+    // Return true only if all current week sessions are completed
+    return currentWeekSessions.length > 0 && currentWeekSessions.every((session: any) => session.isCompleted);
+  };
+
+  // Get current week session completion status
+  const getCurrentWeekStatus = (mesocycle: Mesocycle | undefined) => {
+    if (!mesocycle || !sessions.length) return { completed: 0, total: 0 };
+    
+    const currentWeekSessions = sessions.filter((session: any) => 
+      session.mesocycleId === mesocycle.id && 
+      session.name.includes(`Week ${mesocycle.currentWeek}`)
+    );
+    
+    const completed = currentWeekSessions.filter((session: any) => session.isCompleted).length;
+    const total = currentWeekSessions.length;
+    
+    return { completed, total };
+  };
 
   const handlePauseMesocycle = (mesocycleId: number) => {
     updateMesocycleMutation.mutate({
@@ -239,13 +277,41 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 </div>
               </div>
 
+              {/* Week Completion Status */}
+              {activeMesocycle && (
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Week {activeMesocycle.currentWeek} Progress
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {getCurrentWeekStatus(activeMesocycle).completed} of {getCurrentWeekStatus(activeMesocycle).total} sessions completed
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {canAdvanceWeek(activeMesocycle) ? (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span className="text-sm font-medium">Ready to advance</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-orange-600">
+                        <Clock className="h-4 w-4" />
+                        <span className="text-sm font-medium">Complete remaining sessions</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Mesocycle Controls */}
               <div className="flex flex-wrap gap-2 pt-2">
                 <Button
                   size="sm"
                   onClick={() => handleAdvanceWeek(activeMesocycle.id)}
-                  disabled={advanceWeekMutation.isPending}
+                  disabled={advanceWeekMutation.isPending || !canAdvanceWeek(activeMesocycle)}
                   className="flex items-center gap-2"
+                  title={!canAdvanceWeek(activeMesocycle) ? "Complete all current week sessions to advance" : ""}
                 >
                   <TrendingUp className="h-4 w-4" />
                   {advanceWeekMutation.isPending ? "Advancing..." : "Advance Week"}
