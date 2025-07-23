@@ -52,7 +52,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
             return (
               <div
                 key={item.id}
-                className="animate-in slide-in-from-bottom-3 duration-200 ease-out"
+                className="animate-in slide-in-from-bottom-3 duration-200 ease-out flex justify-end"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Button
@@ -61,15 +61,15 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
                   onClick={() => handleItemClick(item.id)}
                   className={`
                     flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
-                    transition-all duration-200 ios-touch-feedback min-w-[110px] justify-start
+                    transition-all duration-200 ios-touch-feedback min-w-[110px] justify-start h-10
                     ${isActive 
                       ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30" 
                       : "bg-white/90 dark:bg-gray-800/90 text-black dark:text-white hover:bg-white dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700/50"
                     }
                   `}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-blue-600 dark:text-blue-400"}`} />
-                  <span className="text-xs font-medium whitespace-nowrap">{item.label}</span>
+                  <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-white" : "text-blue-600 dark:text-blue-400"}`} />
+                  <span className="text-xs font-medium whitespace-nowrap leading-none">{item.label}</span>
                 </Button>
               </div>
             );
