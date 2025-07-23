@@ -35,43 +35,62 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {/* Expanded Menu Items */}
+    <div className="fixed bottom-20 right-4 z-50">
+      {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
-        <div className="absolute bottom-16 right-0 space-y-2 animate-in slide-in-from-bottom-5 duration-200">
-          {menuItems.map((item) => {
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+
+      {/* Expanded Menu Items - iOS optimized for iPhone SE/12 mini */}
+      {isExpanded && (
+        <div className="absolute bottom-16 right-0 space-y-2 animate-in slide-in-from-bottom-5 duration-300 ease-out">
+          {menuItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
-              <Button
+              <div
                 key={item.id}
-                variant={isActive ? "default" : "secondary"}
-                size="sm"
-                onClick={() => handleItemClick(item.id)}
-                className={`w-full justify-start gap-3 shadow-lg ${
-                  isActive 
-                    ? "bg-black dark:bg-white text-white dark:text-black" 
-                    : "bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
+                className="animate-in slide-in-from-bottom-3 duration-200 ease-out"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
-                <Icon className="w-4 h-4" />
-                <span className="text-button whitespace-nowrap">{item.label}</span>
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleItemClick(item.id)}
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
+                    transition-all duration-200 ios-touch-feedback min-w-[110px] justify-start
+                    ${isActive 
+                      ? "bg-orange-600 hover:bg-orange-700 text-white border-orange-500/30" 
+                      : "bg-white/90 dark:bg-gray-800/90 text-black dark:text-white hover:bg-white dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700/50"
+                    }
+                  `}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-orange-600 dark:text-orange-400"}`} />
+                  <span className="text-xs font-medium whitespace-nowrap">{item.label}</span>
+                </Button>
+              </div>
             );
           })}
         </div>
       )}
 
-      {/* Main FAB */}
+      {/* Main FAB - iOS optimized */}
       <Button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`w-14 h-14 rounded-full shadow-lg transition-all duration-200 ${
-          isExpanded 
-            ? "bg-red-600 hover:bg-red-700 text-white rotate-45" 
-            : "bg-orange-600 hover:bg-orange-700 text-white"
-        }`}
+        className={`
+          w-12 h-12 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
+          ios-touch-feedback border-2
+          ${isExpanded 
+            ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
+            : "bg-orange-600 hover:bg-orange-700 text-white border-orange-500/30 hover:scale-105"
+          }
+        `}
       >
-        {isExpanded ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+        <Plus className="w-5 h-5 transition-transform duration-300" />
       </Button>
     </div>
   );
