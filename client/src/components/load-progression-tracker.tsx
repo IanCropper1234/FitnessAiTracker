@@ -132,12 +132,12 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
             <div className="grid grid-cols-4 gap-2 mb-6">
               {/* Overall Trend */}
               <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
-                <div className="flex items-center justify-center mb-1 h-6">
+                <div className="flex items-center justify-center mb-1 h-5">
                   {getTrendIcon(analysis.trend)}
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
-                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-tight">Trend</p>
-                  <p className={`text-sm font-semibold capitalize truncate ${getTrendColor(analysis.trend)}`}>
+                  <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-tight">Trend</p>
+                  <p className={`text-xs font-semibold capitalize ${getTrendColor(analysis.trend)}`}>
                     {analysis.trend}
                   </p>
                 </div>
@@ -145,12 +145,12 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
 
               {/* Strength Gain */}
               <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
-                <div className="flex items-center justify-center mb-1 h-6">
-                  <Target className="h-4 w-4 text-blue-500" />
+                <div className="flex items-center justify-center mb-1 h-5">
+                  <Target className="h-3.5 w-3.5 text-blue-500" />
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
-                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-tight">Strength</p>
-                  <p className={`text-sm font-semibold truncate ${analysis.strengthGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-tight">Strength</p>
+                  <p className={`text-xs font-semibold ${analysis.strengthGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {analysis.strengthGain >= 0 ? '+' : ''}{analysis.strengthGain.toFixed(1)}%
                   </p>
                 </div>
@@ -158,12 +158,12 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
 
               {/* Volume Gain */}
               <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
-                <div className="flex items-center justify-center mb-1 h-6">
-                  <TrendingUp className="h-4 w-4 text-purple-500" />
+                <div className="flex items-center justify-center mb-1 h-5">
+                  <TrendingUp className="h-3.5 w-3.5 text-purple-500" />
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
-                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-tight">Volume</p>
-                  <p className={`text-sm font-semibold truncate ${analysis.volumeGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-tight">Volume</p>
+                  <p className={`text-xs font-semibold ${analysis.volumeGain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {analysis.volumeGain >= 0 ? '+' : ''}{analysis.volumeGain.toFixed(1)}%
                   </p>
                 </div>
@@ -171,12 +171,12 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
 
               {/* Consistency */}
               <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
-                <div className="flex items-center justify-center mb-1 h-6">
-                  <Award className="h-4 w-4 text-orange-500" />
+                <div className="flex items-center justify-center mb-1 h-5">
+                  <Award className="h-3.5 w-3.5 text-orange-500" />
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
-                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-tight">Consistency</p>
-                  <p className={`text-sm font-semibold truncate ${analysis.consistencyScore >= 0.8 ? 'text-green-600' : analysis.consistencyScore >= 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-tight">Consistency</p>
+                  <p className={`text-xs font-semibold ${analysis.consistencyScore >= 0.8 ? 'text-green-600' : analysis.consistencyScore >= 0.6 ? 'text-yellow-600' : 'text-red-600'}`}>
                     {(analysis.consistencyScore * 100).toFixed(0)}%
                   </p>
                 </div>
