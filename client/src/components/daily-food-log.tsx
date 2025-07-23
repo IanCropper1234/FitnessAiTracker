@@ -354,37 +354,39 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
               </div>
             </div>
             
-            {/* Responsive Button Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {quickAddSuggestions && quickAddSuggestions.length > 0 && (
+            {/* Button Layout with Add Food aligned right */}
+            <div className="flex items-center justify-between">
+              <div className="flex flex-wrap gap-2">
+                {quickAddSuggestions && quickAddSuggestions.length > 0 && (
+                  <Button 
+                    onClick={() => setShowQuickAdd(!showQuickAdd)}
+                    variant="outline"
+                    size="sm"
+                    className="border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 text-xs sm:text-sm"
+                  >
+                    <Zap className="w-4 h-4 mr-1 sm:mr-2" />
+                    Quick Add
+                  </Button>
+                )}
                 <Button 
-                  onClick={() => setShowQuickAdd(!showQuickAdd)}
+                  onClick={() => setShowCopyMeal(!showCopyMeal)}
                   variant="outline"
                   size="sm"
-                  className="border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 text-xs sm:text-sm"
+                  className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs sm:text-sm"
                 >
-                  <Zap className="w-4 h-4 mr-1 sm:mr-2" />
-                  Quick Add
+                  <Copy className="w-4 h-4 mr-1 sm:mr-2" />
+                  Copy Meals
                 </Button>
-              )}
-              <Button 
-                onClick={() => setShowCopyMeal(!showCopyMeal)}
-                variant="outline"
-                size="sm"
-                className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs sm:text-sm"
-              >
-                <Copy className="w-4 h-4 mr-1 sm:mr-2" />
-                Copy Meals
-              </Button>
-              <Button 
-                onClick={() => setBulkMode(!bulkMode)}
-                variant={bulkMode ? "destructive" : "outline"}
-                size="sm"
-                className="text-xs sm:text-sm"
-              >
-                <Check className="w-4 h-4 mr-1 sm:mr-2" />
-                {bulkMode ? "Exit Bulk" : "Bulk Edit"}
-              </Button>
+                <Button 
+                  onClick={() => setBulkMode(!bulkMode)}
+                  variant={bulkMode ? "destructive" : "outline"}
+                  size="sm"
+                  className="text-xs sm:text-sm"
+                >
+                  <Check className="w-4 h-4 mr-1 sm:mr-2" />
+                  {bulkMode ? "Exit Bulk" : "Bulk Edit"}
+                </Button>
+              </div>
               <Button 
                 onClick={() => setShowLogger(true)}
                 className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-xs sm:text-sm"
