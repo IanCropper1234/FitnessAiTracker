@@ -41,7 +41,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
   };
 
   return (
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-center justify-center ${className}`}>
       <Button
         type="button"
         variant="outline"
