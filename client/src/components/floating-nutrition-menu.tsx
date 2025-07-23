@@ -60,8 +60,8 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
                   size="sm"
                   onClick={() => handleItemClick(item.id)}
                   className={`
-                    flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
-                    transition-all duration-200 ios-touch-feedback w-[120px] justify-start h-10
+                    flex items-center gap-3 px-4 py-2.5 rounded-full shadow-xl backdrop-blur-md border
+                    transition-all duration-200 ios-touch-feedback w-[130px] justify-start h-11
                     ${isActive 
                       ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30" 
                       : "bg-white/90 dark:bg-gray-800/90 text-black dark:text-white hover:bg-white dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700/50"
