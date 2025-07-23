@@ -183,7 +183,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                 disabled={set.completed}
               >
-                <SelectTrigger className="w-14 h-7 text-xs bg-background border-border text-foreground">
+                <SelectTrigger className="w-20 h-9 text-sm bg-background border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border">
