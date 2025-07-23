@@ -284,7 +284,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Week {activeMesocycle.currentWeek} Progress
                     </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                    <p className="text-xs dark:text-gray-400 text-[#fafbff]">
                       {getCurrentWeekStatus(activeMesocycle).completed} of {getCurrentWeekStatus(activeMesocycle).total} sessions completed
                     </p>
                   </div>
