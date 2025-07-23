@@ -776,7 +776,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               {/* Completed Sessions */}
               {Array.isArray(recentSessions) && recentSessions.filter(session => session.isCompleted).length > 0 && (
                 <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400">
+                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400 pl-[20px] pr-[20px]">
                     Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
                   </h4>
                   {recentSessions.filter(session => session.isCompleted).map((session) => (
