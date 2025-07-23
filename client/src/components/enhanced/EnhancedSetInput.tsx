@@ -239,7 +239,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 {/* Body Weight Toggle */}
                 {isBodyWeightExercise && (
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="body-weight-toggle" className="text-xs text-foreground/70">
+                    <Label htmlFor="body-weight-toggle" className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-xs text-foreground/70 font-medium pl-[20px] pr-[20px] text-center ml-[0px] mr-[0px] pt-[0px] pb-[0px]">
                       <Scale className="h-3 w-3 inline mr-1" />
                       Body Weight
                     </Label>
