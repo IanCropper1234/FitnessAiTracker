@@ -41,16 +41,16 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
   };
 
   return (
-    <div className={`flex items-center w-full max-w-full overflow-hidden ${className}`}>
+    <div className={`flex items-center w-full ${className}`}>
       <Button
         type="button"
         variant="outline"
         size="sm"
         onClick={handleDecrement}
         disabled={disabled || value <= min}
-        className="h-10 w-8 p-0 border-r-0 rounded-r-none bg-background border-border text-foreground hover:bg-accent flex-shrink-0"
+        className="h-8 w-6 p-0 border-r-0 rounded-r-none bg-background border-border text-foreground hover:bg-accent flex-shrink-0"
       >
-        <Minus className="h-3 w-3" />
+        <Minus className="h-2.5 w-2.5" />
       </Button>
       
       <Input
@@ -62,7 +62,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
         max={max}
         step={step}
         disabled={disabled}
-        className="h-10 border-x-0 rounded-none text-center bg-background border-border text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none flex-1 min-w-0 max-w-[calc(100%-4rem)]"
+        className="h-8 border-x-0 rounded-none text-center bg-background border-border text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none flex-1 min-w-12 text-sm px-1"
         inputMode={step < 1 ? "decimal" : "numeric"}
       />
       
@@ -72,9 +72,9 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
         size="sm"
         onClick={handleIncrement}
         disabled={disabled || value >= max}
-        className="h-10 w-8 p-0 border-l-0 rounded-l-none bg-background border-border text-foreground hover:bg-accent flex-shrink-0"
+        className="h-8 w-6 p-0 border-l-0 rounded-l-none bg-background border-border text-foreground hover:bg-accent flex-shrink-0"
       >
-        <Plus className="h-3 w-3" />
+        <Plus className="h-2.5 w-2.5" />
       </Button>
     </div>
   );
