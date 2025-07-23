@@ -107,7 +107,6 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
           </p>
         </CardHeader>
       </Card>
-
       {/* Fatigue Analysis */}
       {fatigueAnalysis && (
         <Card>
@@ -215,7 +214,6 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
           </CardContent>
         </Card>
       )}
-
       {/* Volume Recommendations */}
       {recommendations.length > 0 && (
         <Card>
@@ -234,7 +232,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
                 const Icon = getRecommendationIcon(rec.recommendation);
                 return (
                   <Card key={rec.muscleGroupId} className={`border ${getRecommendationColor(rec.recommendation)}`}>
-                    <CardContent className="p-4">
+                    <CardContent className="p-4 bg-[#111418]">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
@@ -275,7 +273,6 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
           </CardContent>
         </Card>
       )}
-
       {/* How It Works Section */}
       <Card>
         <Collapsible open={isExplanationOpen} onOpenChange={setIsExplanationOpen}>
@@ -301,7 +298,6 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
           </CollapsibleContent>
         </Collapsible>
       </Card>
-
       {/* No Data Message */}
       {recommendations.length === 0 && !fatigueAnalysis && (
         <Card>
