@@ -286,7 +286,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
                 variant={timeframe === days ? "default" : "outline"}
                 size="sm"
                 onClick={() => setTimeframe(days)}
-                className="flex-shrink-0 whitespace-nowrap"
+                className="flex-shrink-0 whitespace-nowrap pl-[5px] pr-[5px] pt-[8px] pb-[8px]"
               >
                 {days} days
               </Button>
