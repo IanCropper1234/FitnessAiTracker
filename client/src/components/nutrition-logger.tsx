@@ -229,15 +229,6 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                 <span className="hidden sm:inline">Food Database</span>
                 <span className="sm:hidden">Database</span>
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowBarcodeScanner(true)}
-                className="border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-2 sm:px-3"
-                title="Scan Barcode"
-              >
-                <Scan className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline ml-1 sm:ml-2">Scan</span>
-              </Button>
             </div>
 
             {/* Food Input */}
@@ -270,6 +261,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                   ) : (
                     <Search className="w-3 h-3 sm:w-4 sm:h-4" />
                   )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowBarcodeScanner(true)}
+                  className="border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-3 flex-shrink-0"
+                  size="sm"
+                  title="Scan Barcode"
+                >
+                  <Scan className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </div>
             </div>
