@@ -355,45 +355,49 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
             </div>
             
             {/* Button Layout with Add Food aligned right */}
-            <div className="flex items-center justify-between">
-              <div className="flex flex-wrap gap-2">
+            <div className="flex items-center justify-between gap-3 w-full">
+              <div className="flex flex-wrap gap-2 flex-1 min-w-0">
                 {quickAddSuggestions && quickAddSuggestions.length > 0 && (
                   <Button 
                     onClick={() => setShowQuickAdd(!showQuickAdd)}
                     variant="outline"
                     size="sm"
-                    className="border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 text-xs sm:text-sm"
+                    className="border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 text-xs flex-shrink-0"
                   >
-                    <Zap className="w-4 h-4 mr-1 sm:mr-2" />
-                    Quick Add
+                    <Zap className="w-3 h-3 mr-1" />
+                    <span className="hidden sm:inline">Quick Add</span>
+                    <span className="sm:hidden">Quick</span>
                   </Button>
                 )}
                 <Button 
                   onClick={() => setShowCopyMeal(!showCopyMeal)}
                   variant="outline"
                   size="sm"
-                  className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs sm:text-sm"
+                  className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs flex-shrink-0"
                 >
-                  <Copy className="w-4 h-4 mr-1 sm:mr-2" />
-                  Copy Meals
+                  <Copy className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Copy Meals</span>
+                  <span className="sm:hidden">Copy</span>
                 </Button>
                 <Button 
                   onClick={() => setBulkMode(!bulkMode)}
                   variant={bulkMode ? "destructive" : "outline"}
                   size="sm"
-                  className="text-xs sm:text-sm"
+                  className="text-xs flex-shrink-0"
                 >
-                  <Check className="w-4 h-4 mr-1 sm:mr-2" />
-                  {bulkMode ? "Exit Bulk" : "Bulk Edit"}
+                  <Check className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">{bulkMode ? "Exit Bulk" : "Bulk Edit"}</span>
+                  <span className="sm:hidden">{bulkMode ? "Exit" : "Select"}</span>
                 </Button>
               </div>
               <Button 
                 onClick={() => setShowLogger(true)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-xs sm:text-sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs flex-shrink-0"
                 size="sm"
               >
-                <Plus className="w-4 h-4 mr-1 sm:mr-2" />
-                Add Food
+                <Plus className="w-3 h-3 mr-1" />
+                <span className="hidden xs:inline">Add Food</span>
+                <span className="xs:hidden">Add</span>
               </Button>
             </div>
             
