@@ -177,8 +177,8 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           {/* Weight Input Row with Unit Selection */}
           <div className="space-y-2">
             <label className="text-xs font-medium text-foreground">Weight</label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0 max-w-[calc(100%-5rem)]">
                 {spinnerEnabled ? (
                   <SpinnerInput
                     value={set.weight}
@@ -205,19 +205,21 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   />
                 )}
               </div>
-              <Select
-                value={weightUnit}
-                onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
-                disabled={set.completed}
-              >
-                <SelectTrigger className="w-16 h-10 text-xs bg-background border-border text-foreground flex-shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  <SelectItem value="kg">KG</SelectItem>
-                  <SelectItem value="lbs">lbs</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="w-16 flex-shrink-0">
+                <Select
+                  value={weightUnit}
+                  onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
+                  disabled={set.completed}
+                >
+                  <SelectTrigger className="w-full h-10 text-xs bg-background border-border text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border">
+                    <SelectItem value="kg">KG</SelectItem>
+                    <SelectItem value="lbs">lbs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 

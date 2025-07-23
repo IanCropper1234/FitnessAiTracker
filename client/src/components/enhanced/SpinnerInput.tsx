@@ -41,7 +41,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
   };
 
   return (
-    <div className={`flex items-center w-full ${className}`}>
+    <div className={`flex items-center w-full max-w-full overflow-hidden ${className}`}>
       <Button
         type="button"
         variant="outline"
@@ -62,7 +62,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
         max={max}
         step={step}
         disabled={disabled}
-        className="h-10 border-x-0 rounded-none text-center bg-background border-border text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none flex-1 min-w-0"
+        className="h-10 border-x-0 rounded-none text-center bg-background border-border text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none flex-1 min-w-0 max-w-[calc(100%-4rem)]"
         inputMode={step < 1 ? "decimal" : "numeric"}
       />
       
