@@ -750,7 +750,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   };
 
   const handleSaveDietGoal = () => {
-    saveDietGoalMutation.mutate(dietGoal);
+    // Ensure weeklyWeightTarget is 0 for maintain goals
+    const goalToSave = {
+      ...dietGoal,
+      weeklyWeightTarget: dietGoal.goal === 'maintain' ? 0 : dietGoal.weeklyWeightTarget
+    };
+    saveDietGoalMutation.mutate(goalToSave);
   };
 
   const loadMealPlan = (plan: SavedMealPlan) => {
@@ -951,7 +956,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                   <div>
                     <Label className="text-black dark:text-white">Diet Goal</Label>
-                    <Select value={dietGoal.goal} onValueChange={(value) => setDietGoal(prev => ({ ...prev, goal: value as any }))}>
+                    <Select value={dietGoal.goal} onValueChange={(value) => setDietGoal(prev => ({ 
+                      ...prev, 
+                      goal: value as any,
+                      weeklyWeightTarget: value === 'maintain' ? 0 : prev.weeklyWeightTarget
+                    }))}>
                       <SelectTrigger className="border-gray-300 dark:border-gray-600">
                         <SelectValue />
                       </SelectTrigger>
