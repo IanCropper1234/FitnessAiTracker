@@ -2855,7 +2855,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               isDeload = true;
               reasoning = `Week ${mesocycle.currentWeek} deload - previous RPE ${avgRpe.toFixed(1)} too high, reducing weight for recovery`;
             } else {
-              // Moderate progression
+              // Moderate progression (RPE 7-8, RIR 2-3)
               const weightIncrement = exercise.movementPattern === 'compound' ? 1.25 : 0.625;
               baseWeight = avgWeight + (weightIncrement * weekMultiplier);
               baseRpe = Math.ceil(avgRpe);
@@ -2891,8 +2891,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               } else if (totalSets >= 3) {
                 // Multi-set progression pattern
                 if (setNumber === 1) {
-                  // First set - slightly lighter for technique
-                  setWeight = baseWeight * 0.925;
+                  // First set - use base progressed weight for main work
+                  setWeight = baseWeight;
                   setReps = Math.min(maxReps, minReps + 1);
                   setRpe = Math.max(6, baseRpe - 1);
                 } else if (setNumber === totalSets) {
