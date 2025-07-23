@@ -78,11 +78,11 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
       )}
 
       {/* Main FAB - iOS optimized */}
-      <Button
+      <div
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
           w-12 h-12 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
-          ios-touch-feedback border-2
+          ios-touch-feedback border-2 flex items-center justify-center cursor-pointer
           ${isExpanded 
             ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
             : "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30 hover:scale-105"
@@ -90,7 +90,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
         `}
       >
         <Plus className="w-5 h-5 transition-transform duration-300" />
-      </Button>
+      </div>
     </div>
   );
 }
