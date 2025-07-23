@@ -145,7 +145,7 @@ export function MacroChart({
               {Math.round(macro.value)} cal
             </div>
             {macro.goal > 0 && (
-              <div className="text-xs dark:text-gray-500 font-semibold text-[#3c81f6]">
+              <div className="text-xs font-semibold text-[#3c81f6]">
                 Goal: {Math.round(macro.goal)}g
               </div>
             )}
