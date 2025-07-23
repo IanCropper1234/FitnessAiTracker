@@ -159,44 +159,44 @@
 }
 
 .dark {
-  /* iOS Dark Mode Colors */
-  --background: hsl(220, 13%, 10%);
-  --foreground: hsl(0, 0%, 92%);
-  --card: hsl(220, 13%, 16%);
-  --card-foreground: hsl(0, 0%, 92%);
-  --popover: hsl(220, 13%, 13%);
-  --popover-foreground: hsl(0, 0%, 92%);
-  --primary: hsl(211, 86%, 65%);
-  --primary-foreground: hsl(220, 13%, 10%);
-  --secondary: hsl(220, 13%, 18%);
-  --secondary-foreground: hsl(0, 0%, 92%);
-  --muted: hsl(220, 13%, 18%);
-  --muted-foreground: hsl(220, 5%, 68%);
-  --accent: hsl(220, 13%, 18%);
-  --accent-foreground: hsl(0, 0%, 92%);
-  --destructive: hsl(1, 79%, 65%);
-  --destructive-foreground: hsl(220, 13%, 10%);
-  --border: hsl(220, 13%, 20%);
-  --input: hsl(220, 13%, 18%);
-  --ring: hsl(211, 86%, 65%);
+  /* Enhanced iOS Dark Mode Colors with Better Contrast */
+  --background: hsl(220, 15%, 8%);
+  --foreground: hsl(0, 0%, 95%);
+  --card: hsl(220, 15%, 15%);
+  --card-foreground: hsl(0, 0%, 95%);
+  --popover: hsl(220, 15%, 12%);
+  --popover-foreground: hsl(0, 0%, 95%);
+  --primary: hsl(211, 90%, 62%);
+  --primary-foreground: hsl(220, 15%, 8%);
+  --secondary: hsl(220, 15%, 22%);
+  --secondary-foreground: hsl(0, 0%, 95%);
+  --muted: hsl(220, 15%, 20%);
+  --muted-foreground: hsl(220, 8%, 72%);
+  --accent: hsl(220, 15%, 22%);
+  --accent-foreground: hsl(0, 0%, 95%);
+  --destructive: hsl(1, 85%, 68%);
+  --destructive-foreground: hsl(220, 15%, 8%);
+  --border: hsl(220, 15%, 28%);
+  --input: hsl(220, 15%, 20%);
+  --ring: hsl(211, 90%, 62%);
   --radius: 0.75rem;
   
-  /* iOS System Colors - Dark Mode */
-  --ios-bg-primary: hsl(220, 13%, 10%);
-  --ios-bg-secondary: hsl(220, 13%, 13%);
-  --ios-bg-tertiary: hsl(220, 13%, 16%);
-  --ios-bg-grouped: hsl(220, 13%, 8%);
-  --ios-text-primary: hsl(0, 0%, 92%);
-  --ios-text-secondary: hsl(220, 5%, 68%);
-  --ios-text-tertiary: hsl(220, 5%, 48%);
-  --ios-blue: hsl(211, 86%, 65%);
-  --ios-blue-light: hsl(211, 86%, 20%);
-  --ios-green: hsl(142, 76%, 45%);
-  --ios-orange: hsl(28, 86%, 60%);
-  --ios-red: hsl(1, 79%, 65%);
-  --ios-separator: hsl(220, 13%, 20%);
-  --ios-fill: hsl(220, 13%, 18%);
-  --ios-fill-secondary: hsl(220, 13%, 22%);
+  /* Enhanced iOS System Colors - Dark Mode */
+  --ios-bg-primary: hsl(220, 15%, 8%);
+  --ios-bg-secondary: hsl(220, 15%, 12%);
+  --ios-bg-tertiary: hsl(220, 15%, 15%);
+  --ios-bg-grouped: hsl(220, 15%, 6%);
+  --ios-text-primary: hsl(0, 0%, 95%);
+  --ios-text-secondary: hsl(220, 8%, 72%);
+  --ios-text-tertiary: hsl(220, 8%, 52%);
+  --ios-blue: hsl(211, 90%, 62%);
+  --ios-blue-light: hsl(211, 90%, 25%);
+  --ios-green: hsl(142, 80%, 48%);
+  --ios-orange: hsl(28, 90%, 65%);
+  --ios-red: hsl(1, 85%, 68%);
+  --ios-separator: hsl(220, 15%, 28%);
+  --ios-fill: hsl(220, 15%, 20%);
+  --ios-fill-secondary: hsl(220, 15%, 25%);
 }
 
 @layer base {
@@ -315,6 +315,27 @@
     background: var(--ring);
   }
 
+  /* Enhanced Spacing Utilities */
+  .spacing-section {
+    @apply space-y-6;
+  }
+
+  .spacing-card {
+    @apply space-y-4;
+  }
+
+  .spacing-form {
+    @apply space-y-4;
+  }
+
+  .spacing-tight {
+    @apply space-y-2;
+  }
+
+  .spacing-loose {
+    @apply space-y-8;
+  }
+
   /* iOS-style animations and interactions */
   @keyframes slideUp {
     from {
@@ -428,26 +449,43 @@
     @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
   }
 
-  /* Button variants */
+  /* Enhanced Button Variants */
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md border border-border/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-ghost {
-    @apply hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply hover:bg-muted hover:text-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
 
-  /* Card styles */
+  /* Enhanced Input Styles */
+  .input-enhanced {
+    @apply bg-input border-2 border-border/60 rounded-xl px-4 py-3 text-[15px] placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all duration-200 hover:border-border/80;
+  }
+
+  .input-ghost {
+    @apply bg-transparent border border-border/40 rounded-lg px-3 py-2 text-[14px] placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:bg-muted/30 transition-all duration-200;
+  }
+
+  /* Enhanced Card Styles */
   .card-elevated {
-    @apply bg-card border border-border shadow-lg rounded-xl;
+    @apply bg-card border-2 border-border/60 shadow-lg hover:shadow-xl rounded-xl backdrop-blur-sm transition-all duration-200;
   }
 
   .card-surface {
-    @apply bg-card border border-border rounded-xl;
+    @apply bg-card border-2 border-border/60 rounded-xl hover:shadow-md transition-all duration-200;
+  }
+
+  .card-subtle {
+    @apply bg-card/80 border border-border/40 rounded-xl backdrop-blur-sm hover:bg-card transition-all duration-200;
+  }
+
+  .card-interactive {
+    @apply bg-card border-2 border-border/60 rounded-xl hover:shadow-lg hover:border-border/80 cursor-pointer transition-all duration-200 active:scale-[0.99];
   }
 
   /* Glass effect */
