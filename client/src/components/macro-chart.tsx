@@ -7,6 +7,7 @@ interface MacroChartProps {
   goalProtein?: number;
   goalCarbs?: number;
   goalFat?: number;
+  goalCalories?: number;
 }
 
 export function MacroChart({ 
@@ -15,7 +16,8 @@ export function MacroChart({
   fat, 
   goalProtein = 0, 
   goalCarbs = 0, 
-  goalFat = 0 
+  goalFat = 0,
+  goalCalories = 0 
 }: MacroChartProps) {
   // Calculate calories from macros (4 cal/g protein, 4 cal/g carbs, 9 cal/g fat)
   const proteinCals = protein * 4;
@@ -152,10 +154,19 @@ export function MacroChart({
       </div>
       {/* Total Calories */}
       <div className="text-center border-t border-gray-200 dark:border-gray-700 pt-[10px] pb-[10px]">
-        <span className="text-sm text-gray-600 dark:text-gray-400">Total: </span>
-        <span className="text-lg font-bold text-black dark:text-white">
-          {Math.round(totalCals)} calories
-        </span>
+        <div className="flex flex-col gap-1">
+          <div>
+            <span className="text-sm text-gray-600 dark:text-gray-400">Total: </span>
+            <span className="text-lg font-bold text-black dark:text-white">
+              {Math.round(totalCals)} calories
+            </span>
+          </div>
+          {goalCalories > 0 && (
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Goal: {Math.round(goalCalories)} cal • {totalCals > 0 ? Math.round((totalCals / goalCalories) * 100) : 0}%
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
