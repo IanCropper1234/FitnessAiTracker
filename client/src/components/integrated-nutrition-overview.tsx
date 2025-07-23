@@ -461,7 +461,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       {/* Date Navigation */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="flex flex-col space-y-1.5 p-6 pl-[10px] pr-[10px] pt-[5px] pb-[5px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
-          <CardTitle className="text-black dark:text-white flex items-center gap-2 pt-[5px] pb-[5px]">
+          <CardTitle className="text-black dark:text-white flex items-center gap-2 pt-[5px] pb-[5px] pl-[85px] pr-[85px]">
             <CalendarIcon className="w-5 h-5" />
             Nutrition Overview
           </CardTitle>
@@ -991,7 +991,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </CardContent>
       </Card>
-
       {/* Drag Overlay Indicator */}
       {draggedItem && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -1006,7 +1005,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </div>
       )}
-
       {/* Copy Dialog */}
       <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
         <DialogContent>
