@@ -292,7 +292,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium">Chart Type:</label>
               <Select value={chartType} onValueChange={(value: any) => setChartType(value)}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-32 ml-[5px] mr-[5px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -393,7 +393,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             {chartType === 'macros' && 'Track protein, carbs, and fat intake'}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-5 text-left ml-[-15px] mr-[-15px] pl-[25px] pr-[25px] pt-[14px] pb-[14px] mt-[0px] mb-[0px]">
           {renderChart()}
         </CardContent>
       </Card>
