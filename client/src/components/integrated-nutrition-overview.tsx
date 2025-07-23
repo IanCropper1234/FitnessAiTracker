@@ -906,7 +906,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                                     {log.foodName.length > 40 ? `${log.foodName.substring(0, 40)}...` : log.foodName}
                                   </span>
                                 </span>
-                                <Badge className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-normal transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-primary/80 text-gray-800 dark:bg-gray-900 dark:text-gray-200 text-xs flex-shrink-0 pl-[10px] pr-[10px] ml-[-5px] mr-[-5px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] bg-[#479bf5]">
+                                <Badge className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-normal transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-primary/80 text-gray-800 dark:bg-gray-900 dark:text-gray-200 text-xs flex-shrink-0 pl-[10px] pr-[10px] ml-[-5px] mr-[-5px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] bg-[#4499f5]">
                                   {rpCategory.label}
                                 </Badge>
                               </div>
