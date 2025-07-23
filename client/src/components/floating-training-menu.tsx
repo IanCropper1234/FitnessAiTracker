@@ -79,11 +79,11 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
       )}
 
       {/* Main FAB - iOS optimized */}
-      <Button
+      <div
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
           w-12 h-12 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
-          ios-touch-feedback border-2 flex items-center justify-center p-0
+          ios-touch-feedback border-2 flex items-center justify-center cursor-pointer
           ${isExpanded 
             ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
             : "bg-orange-600 hover:bg-orange-700 text-white border-orange-500/30 hover:scale-105"
@@ -91,7 +91,7 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
         `}
       >
         <Plus className="w-5 h-5 transition-transform duration-300" />
-      </Button>
+      </div>
     </div>
   );
 }
