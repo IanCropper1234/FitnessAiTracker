@@ -84,6 +84,16 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   const bodyWeightValue = latestBodyWeight?.weight ? parseFloat(latestBodyWeight.weight) : 0;
   const bodyWeightUnit = latestBodyWeight?.unit === 'imperial' ? 'lbs' : 'kg';
 
+  // Debug: Log when component renders to see toggle conditions
+  if (isBodyWeightExercise) {
+    console.log('Body weight exercise detected:', {
+      isBodyWeightExercise,
+      hasBodyWeightData: bodyWeightValue > 0,
+      toggleShouldShow: isBodyWeightExercise && bodyWeightValue > 0,
+      setCompleted: set.completed
+    });
+  }
+
   const convertWeight = (weight: number, fromUnit: 'kg' | 'lbs', toUnit: 'kg' | 'lbs'): number => {
     if (fromUnit === toUnit) return weight;
     if (fromUnit === 'kg' && toUnit === 'lbs') return weight * 2.20462;
