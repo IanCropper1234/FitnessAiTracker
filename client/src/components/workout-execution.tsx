@@ -268,6 +268,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
 
   // Drag and drop event handlers (iOS compatible)
   const handleDragStart = (e: React.DragEvent, exercise: WorkoutExercise, index: number) => {
+    console.log('Drag start triggered:', exercise.exercise.name, 'at index', index);
     if (!e.dataTransfer || !exercise) return;
     
     setDraggedExercise(exercise);
@@ -338,11 +339,13 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   };
 
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    console.log('Drop triggered at target index:', targetIndex, 'dragged exercise:', draggedExercise?.exercise.name);
     e.preventDefault();
     setDragOverTarget(null);
     setDragPreview(null);
     
     if (!draggedExercise || !session?.exercises) {
+      console.log('Early return - missing data:', { draggedExercise: !!draggedExercise, hasExercises: !!session?.exercises });
       setDraggedExercise(null);
       return;
     }
@@ -726,6 +729,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                   onDrop={(e) => handleDrop(e, index)}
                   onTouchStart={(e) => {
                     // iOS Safari touch event support for drag and drop
+                    console.log('Touch start on:', exercise.exercise.name);
                     const touch = e.touches[0];
                     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
                     setDraggedExercise(exercise);
@@ -760,8 +764,11 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                     const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
                     const exerciseElement = elementBelow?.closest('[data-exercise-index]');
                     
+                    console.log('Touch end - element below:', elementBelow, 'exercise element:', exerciseElement, 'drag over target:', dragOverTarget);
+                    
                     if (exerciseElement && dragOverTarget !== null) {
                       const targetIndex = parseInt(exerciseElement.getAttribute('data-exercise-index') || '0');
+                      console.log('Touch drop - target index:', targetIndex);
                       // Simulate drop event
                       const fakeEvent = {
                         preventDefault: () => {},
