@@ -578,13 +578,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           {/* Current Exercise Display */}
           {currentExercise && (
             <div className="ios-card p-6 space-y-6">
-              {/* Exercise Instructions - iOS Style */}
-              <div className="bg-secondary/30 rounded-xl p-4 border border-border/30">
-                <h4 className="text-ios-subhead font-semibold text-foreground mb-2">Instructions</h4>
-                <p className="text-ios-callout text-foreground/80 leading-relaxed">
-                  {currentExercise.exercise.instructions}
-                </p>
-              </div>
+              
 
                 {/* Current Set Input */}
                 {currentSet && (
