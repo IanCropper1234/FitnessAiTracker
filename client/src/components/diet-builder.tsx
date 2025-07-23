@@ -258,41 +258,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             break;
         }
         
-        // If current diet goal doesn't match expected from fitness goal, show sync option
-        if (currentDietGoal.goal !== expectedDietGoal && !dietGoal.autoRegulation) {
-          toast({
-            title: "Profile Updated",
-            description: `Your fitness goal (${fitnessGoal.replace('_', ' ')}) suggests ${expectedDietGoal} diet. Click to sync diet goals.`,
-            action: (
-              <Button 
-                size="sm" 
-                onClick={() => {
-                  // Trigger sync by calling profile update API which will auto-sync diet goals
-                  fetch(`/api/user/profile/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      userId,
-                      age: userProfile.age,
-                      weight: bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile.weight,
-                      height: userProfile.height,
-                      activityLevel: userProfile.activityLevel,
-                      fitnessGoal: fitnessGoal,
-                      dietaryRestrictions: []
-                    })
-                  }).then(() => {
-                    queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
-                    toast({
-                      title: "Success",
-                      description: "Diet goals synced with fitness goal!"
-                    });
-                  });
-                }}
-              >
-                Sync Now
-              </Button>
-            )
-          });
+        // If current diet goal doesn't match expected, immediately sync the display to show the correct goal
+        if (currentDietGoal.goal !== expectedDietGoal) {
+          // Update the local state to show the expected goal that matches user's fitness goal
+          setDietGoal(prev => ({ 
+            ...prev, 
+            goal: expectedDietGoal as any,
+            weeklyWeightTarget: expectedDietGoal === 'cut' ? -0.5 : expectedDietGoal === 'bulk' ? 0.3 : 0
+          }));
         }
       }
       
