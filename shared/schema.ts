@@ -191,6 +191,7 @@ export const exercises = pgTable("exercises", {
   instructions: text("instructions"),
   videoUrl: text("video_url"),
   translations: jsonb("translations"), // multilingual names
+  isBodyWeight: boolean("is_body_weight").default(false), // true for exercises using body weight only
 });
 
 export const workoutSessions = pgTable("workout_sessions", {

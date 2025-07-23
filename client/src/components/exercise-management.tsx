@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, X } from "lucide-react";
@@ -25,6 +26,7 @@ interface Exercise {
   difficulty: string;
   instructions: string;
   translations: Record<string, string>;
+  isBodyWeight?: boolean;
 }
 
 interface ExerciseFormData {
@@ -36,6 +38,7 @@ interface ExerciseFormData {
   movementPattern: string;
   difficulty: string;
   instructions: string;
+  isBodyWeight: boolean;
 }
 
 const CATEGORIES = ["push", "pull", "legs", "core", "cardio"];
@@ -73,6 +76,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
     movementPattern: exercise?.movementPattern || "",
     difficulty: exercise?.difficulty || "intermediate",
     instructions: exercise?.instructions || "",
+    isBodyWeight: exercise?.isBodyWeight || false,
   });
 
   const createExerciseMutation = useMutation({
@@ -132,6 +136,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
       movementPattern: "",
       difficulty: "intermediate",
       instructions: "",
+      isBodyWeight: false,
     });
   };
 
@@ -273,6 +278,22 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isBodyWeight"
+                  checked={formData.isBodyWeight}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isBodyWeight: checked }))}
+                />
+                <Label htmlFor="isBodyWeight" className="text-sm font-medium">
+                  Body Weight Exercise
+                </Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Check this if the exercise uses only body weight (no external weight required)
+              </p>
             </div>
           </div>
 

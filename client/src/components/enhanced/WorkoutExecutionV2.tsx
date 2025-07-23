@@ -40,6 +40,7 @@ interface Exercise {
   movementPattern: string;
   difficulty: string;
   instructions: string;
+  isBodyWeight?: boolean;
 }
 
 interface WorkoutExercise {
@@ -478,24 +479,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return recommendations.find(rec => rec.exerciseId === exerciseId);
   };
 
-  // Determine if exercise is body weight based
+  // Determine if exercise is body weight based using database field
   const isBodyWeightExercise = (exercise: Exercise): boolean => {
-    const bodyWeightExercises = [
-      'pull-ups', 'pullups', 'pull_ups', 'chin-ups', 'chinups', 'chin_ups',
-      'push-ups', 'pushups', 'push_ups', 'dips', 'muscle-ups', 'muscleups', 'muscle_ups',
-      'pistol squats', 'handstand push-ups', 'plank', 'burpees', 'jumping jacks',
-      'mountain climbers', 'bodyweight squats', 'lunges', 'calf raises'
-    ];
-    
-    const exerciseName = exercise.name.toLowerCase().replace(/\s+/g, '_');
-    const isBodyWeight = bodyWeightExercises.some(bwExercise => 
-      exerciseName.includes(bwExercise.replace(/[-_]/g, '')) ||
-      exerciseName.includes(bwExercise) ||
-      exercise.equipment === 'bodyweight' ||
-      exercise.equipment === 'pull_up_bar'
-    );
-    
-    return isBodyWeight;
+    // Use the isBodyWeight field from the database if available
+    return exercise.isBodyWeight === true;
   };
 
   const handleExercisesReorder = (newOrder: WorkoutExercise[]) => {
