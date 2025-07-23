@@ -2832,6 +2832,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             let baseRpe = 7;
             let reasoning = '';
             
+            // Track if this is a deload scenario for different set progression pattern
+            let isDeload = false;
+            
             // RPE-based adjustments
             if (avgRpe >= 8 && avgRpe <= 8.5 && avgRir >= 1 && avgRir <= 2) {
               // Perfect progression zone
@@ -2847,9 +2850,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
               reasoning = `Week ${mesocycle.currentWeek} progression - previous load too light, significant progressive increase`;
             } else if (avgRpe > 9 || avgRir < 1) {
               // Too hard - maintain or slight decrease
-              baseWeight = avgWeight * 0.975; // 2.5% reduction
+              baseWeight = avgWeight * 0.95; // 5% reduction for more effective deload
               baseRpe = 7;
-              reasoning = `Week ${mesocycle.currentWeek} progression - previous load too heavy, progressive deload`;
+              isDeload = true;
+              reasoning = `Week ${mesocycle.currentWeek} deload - previous RPE ${avgRpe.toFixed(1)} too high, reducing weight for recovery`;
             } else {
               // Moderate progression
               const weightIncrement = exercise.movementPattern === 'compound' ? 1.25 : 0.625;
@@ -2868,7 +2872,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
               let setReps = minReps;
               let setRpe = baseRpe;
               
-              if (totalSets >= 3) {
+              if (isDeload) {
+                // Deload pattern - minimal variation, focus on technique
+                if (setNumber === 1) {
+                  setWeight = baseWeight * 0.975; // Very light reduction for technique
+                  setReps = Math.min(maxReps, minReps + 2); // Higher reps for form
+                  setRpe = Math.max(6, baseRpe - 1);
+                } else if (setNumber === totalSets) {
+                  setWeight = baseWeight; // Use base deloaded weight
+                  setReps = minReps;
+                  setRpe = baseRpe;
+                } else {
+                  // Middle sets - consistent deloaded weight
+                  setWeight = baseWeight * 0.99;
+                  setReps = Math.round((minReps + maxReps) / 2);
+                  setRpe = baseRpe;
+                }
+              } else if (totalSets >= 3) {
                 // Multi-set progression pattern
                 if (setNumber === 1) {
                   // First set - slightly lighter for technique
@@ -2890,13 +2910,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               } else if (totalSets === 2) {
                 // Two-set progression
                 if (setNumber === 1) {
-                  setWeight = baseWeight * 0.95;
+                  setWeight = baseWeight * (isDeload ? 0.975 : 0.95);
                   setReps = Math.min(maxReps, minReps + 1);
                   setRpe = baseRpe - 0.5;
                 } else {
-                  setWeight = baseWeight * 1.025;
+                  setWeight = baseWeight * (isDeload ? 1 : 1.025);
                   setReps = minReps;
-                  setRpe = baseRpe + 0.5;
+                  setRpe = baseRpe + (isDeload ? 0 : 0.5);
                 }
               }
               
