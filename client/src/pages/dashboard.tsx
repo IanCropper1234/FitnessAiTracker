@@ -223,7 +223,6 @@ export function Dashboard({ user }: DashboardProps) {
                   goalProtein={nutritionSummary.goalProtein}
                   goalCarbs={nutritionSummary.goalCarbs}
                   goalFat={nutritionSummary.goalFat}
-                  goalCalories={nutritionSummary.goalCalories}
                 />
               ) : (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
