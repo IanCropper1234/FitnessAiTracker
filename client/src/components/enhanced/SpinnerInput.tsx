@@ -62,7 +62,7 @@ export const SpinnerInput: React.FC<SpinnerInputProps> = ({
         max={max}
         step={step}
         disabled={disabled}
-        className="h-10 border-x-0 rounded-none text-center bg-background border-border text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="h-10 w-16 border-x-0 rounded-none text-center bg-background border-border text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         inputMode={step < 1 ? "decimal" : "numeric"}
       />
       
