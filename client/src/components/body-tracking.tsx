@@ -518,139 +518,133 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
         </Card>
       )}
 
-      {/* Metrics History - Timeline Design */}
+      {/* Metrics History - Compact Timeline */}
       <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-xl font-bold">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+            <TrendingUp className="w-4 h-4 text-blue-600" />
             Progress Timeline
           </CardTitle>
-          <CardDescription>Your body measurement history and trends</CardDescription>
         </CardHeader>
         <CardContent>
           {metrics && metrics.length > 0 ? (
-            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 max-h-[500px] overflow-y-auto">
               {metrics.map((metric, index) => (
                 <div key={metric.id} className="relative">
                   {/* Timeline Line */}
                   {index !== metrics.length - 1 && (
-                    <div className="absolute left-6 top-16 w-0.5 h-16 bg-gradient-to-b from-blue-300 to-gray-200 dark:from-blue-600 dark:to-gray-600"></div>
+                    <div className="absolute left-4 top-10 w-0.5 h-8 bg-gradient-to-b from-blue-300 to-gray-200 dark:from-blue-600 dark:to-gray-600"></div>
                   )}
                   
                   {/* Timeline Entry */}
-                  <div className="flex gap-4 group">
+                  <div className="flex gap-3 group">
                     {/* Timeline Dot */}
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                      <Calendar className="w-5 h-5 text-white" />
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-150">
+                      <Calendar className="w-3.5 h-3.5 text-white" />
                     </div>
                     
                     {/* Content Card */}
-                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200 group-hover:border-blue-200 dark:group-hover:border-blue-700">
-                      <div className="p-5">
+                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-150 group-hover:border-blue-200 dark:group-hover:border-blue-700">
+                      <div className="p-3">
                         {/* Header */}
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-3">
                           <div>
-                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                               {new Date(metric.date).toLocaleDateString('en-US', { 
-                                weekday: 'short',
-                                year: 'numeric',
                                 month: 'short',
-                                day: 'numeric'
+                                day: 'numeric',
+                                year: '2-digit'
                               })}
                             </h4>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {index === 0 ? 'Latest entry' : `${index + 1} entries ago`}
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {index === 0 ? 'Latest' : `${index + 1} ago`}
                             </p>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => deleteMetricMutation.mutate(metric.id)}
-                            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-opacity duration-200"
+                            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-opacity duration-150 h-6 w-6 p-0"
                             disabled={deleteMetricMutation.isPending}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
 
-                        {/* Metrics Grid */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* Metrics Grid - Compact */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                           {metric.weight && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-100 dark:border-blue-800">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Scale className="w-4 h-4 text-blue-600" />
-                                <span className="text-xs font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">Weight</span>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-md p-2 border border-blue-100 dark:border-blue-800">
+                              <div className="flex items-center gap-1 mb-1">
+                                <Scale className="w-3 h-3 text-blue-600" />
+                                <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Weight</span>
                               </div>
-                              <p className="text-lg font-bold text-blue-800 dark:text-blue-200">
-                                {metric.weight} <span className="text-sm font-normal">{formatUnit('weight')}</span>
+                              <p className="text-sm font-bold text-blue-800 dark:text-blue-200">
+                                {metric.weight}<span className="text-xs font-normal ml-1">{formatUnit('weight')}</span>
                               </p>
                             </div>
                           )}
 
                           {metric.bodyFatPercentage && (
-                            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 border border-orange-100 dark:border-orange-800">
-                              <div className="flex items-center gap-2 mb-1">
-                                <TrendingUp className="w-4 h-4 text-orange-600" />
-                                <span className="text-xs font-medium text-orange-700 dark:text-orange-300 uppercase tracking-wide">Body Fat</span>
+                            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-md p-2 border border-orange-100 dark:border-orange-800">
+                              <div className="flex items-center gap-1 mb-1">
+                                <TrendingUp className="w-3 h-3 text-orange-600" />
+                                <span className="text-xs font-medium text-orange-700 dark:text-orange-300">Body Fat</span>
                               </div>
-                              <p className="text-lg font-bold text-orange-800 dark:text-orange-200">
+                              <p className="text-sm font-bold text-orange-800 dark:text-orange-200">
                                 {metric.bodyFatPercentage}%
                               </p>
                             </div>
                           )}
 
                           {metric.waist && (
-                            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-100 dark:border-green-800">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Target className="w-4 h-4 text-green-600" />
-                                <span className="text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wide">Waist</span>
+                            <div className="bg-green-50 dark:bg-green-900/20 rounded-md p-2 border border-green-100 dark:border-green-800">
+                              <div className="flex items-center gap-1 mb-1">
+                                <Target className="w-3 h-3 text-green-600" />
+                                <span className="text-xs font-medium text-green-700 dark:text-green-300">Waist</span>
                               </div>
-                              <p className="text-lg font-bold text-green-800 dark:text-green-200">
-                                {metric.waist} <span className="text-sm font-normal">{formatUnit('measurement')}</span>
+                              <p className="text-sm font-bold text-green-800 dark:text-green-200">
+                                {metric.waist}<span className="text-xs font-normal ml-1">{formatUnit('measurement')}</span>
                               </p>
                             </div>
                           )}
 
                           {metric.chest && (
-                            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3 border border-purple-100 dark:border-purple-800">
-                              <div className="flex items-center gap-2 mb-1">
-                                <User className="w-4 h-4 text-purple-600" />
-                                <span className="text-xs font-medium text-purple-700 dark:text-purple-300 uppercase tracking-wide">Chest</span>
+                            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-md p-2 border border-purple-100 dark:border-purple-800">
+                              <div className="flex items-center gap-1 mb-1">
+                                <User className="w-3 h-3 text-purple-600" />
+                                <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Chest</span>
                               </div>
-                              <p className="text-lg font-bold text-purple-800 dark:text-purple-200">
-                                {metric.chest} <span className="text-sm font-normal">{formatUnit('measurement')}</span>
+                              <p className="text-sm font-bold text-purple-800 dark:text-purple-200">
+                                {metric.chest}<span className="text-xs font-normal ml-1">{formatUnit('measurement')}</span>
                               </p>
                             </div>
                           )}
                         </div>
 
-                        {/* Additional Measurements */}
+                        {/* Additional Measurements - Compact */}
                         {(metric.neck || metric.hips || metric.thigh || metric.bicep) && (
-                          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                          <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                            <div className="flex flex-wrap gap-2 text-xs">
                               {metric.neck && (
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">Neck</p>
-                                  <p className="font-medium text-gray-700 dark:text-gray-300">{metric.neck} {formatUnit('measurement')}</p>
-                                </div>
+                                <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-700 dark:text-gray-300">
+                                  Neck: {metric.neck}{formatUnit('measurement')}
+                                </span>
                               )}
                               {metric.hips && (
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">Hips</p>
-                                  <p className="font-medium text-gray-700 dark:text-gray-300">{metric.hips} {formatUnit('measurement')}</p>
-                                </div>
+                                <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-700 dark:text-gray-300">
+                                  Hips: {metric.hips}{formatUnit('measurement')}
+                                </span>
                               )}
                               {metric.thigh && (
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">Thigh</p>
-                                  <p className="font-medium text-gray-700 dark:text-gray-300">{metric.thigh} {formatUnit('measurement')}</p>
-                                </div>
+                                <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-700 dark:text-gray-300">
+                                  Thigh: {metric.thigh}{formatUnit('measurement')}
+                                </span>
                               )}
                               {metric.bicep && (
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">Bicep</p>
-                                  <p className="font-medium text-gray-700 dark:text-gray-300">{metric.bicep} {formatUnit('measurement')}</p>
-                                </div>
+                                <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-700 dark:text-gray-300">
+                                  Bicep: {metric.bicep}{formatUnit('measurement')}
+                                </span>
                               )}
                             </div>
                           </div>
