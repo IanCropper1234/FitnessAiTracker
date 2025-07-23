@@ -853,6 +853,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+                  
                   <div className="space-y-2">
                     {mealLogs.map((log: any) => {
                       const rpCategory = getRPCategory(log.category);
@@ -885,6 +886,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                               <GripVertical className="h-4 w-4 text-gray-400" />
                             )}
                           </div>
+
                           {/* Food Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2 mb-1">
@@ -906,7 +908,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                                     {log.foodName.length > 40 ? `${log.foodName.substring(0, 40)}...` : log.foodName}
                                   </span>
                                 </span>
-                                <Badge className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-normal transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-primary/80 text-gray-800 dark:bg-gray-900 dark:text-gray-200 text-xs flex-shrink-0 pl-[10px] pr-[10px] ml-[-5px] mr-[-5px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] bg-[#4197f5]">
+                                <Badge className={`${rpCategory.color} text-xs flex-shrink-0`}>
                                   {rpCategory.label}
                                 </Badge>
                               </div>
@@ -1116,6 +1118,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </DialogContent>
       </Dialog>
+      
       {/* Nutrition Facts Dialog */}
       <Dialog open={showNutritionDialog} onOpenChange={setShowNutritionDialog}>
         <DialogContent className="max-w-md">

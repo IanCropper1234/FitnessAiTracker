@@ -22,7 +22,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   const menuItems = [
     { id: "overview", icon: BarChart3, label: "Overview" },
     { id: "builder", icon: Target, label: "Diet Plan" },
-    { id: "advanced", icon: Brain, label: "Advance Macro" },
+    { id: "advanced", icon: Brain, label: "RP Coach" },
     { id: "body", icon: User, label: "Body" },
     { id: "progression", icon: TrendingUp, label: "Progress" },
     { id: "shopping", icon: ShoppingCart, label: "Shopping" },
@@ -45,14 +45,14 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
 
       {/* Expanded Menu Items - iOS optimized for iPhone SE/12 mini */}
       {isExpanded && (
-        <div className="absolute bottom-16 right-0 space-y-2 animate-in slide-in-from-bottom-5 duration-300 ease-out flex flex-col items-end">
+        <div className="absolute bottom-16 right-0 space-y-2 animate-in slide-in-from-bottom-5 duration-300 ease-out">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <div
                 key={item.id}
-                className="animate-in slide-in-from-bottom-3 duration-200 ease-out w-full"
+                className="animate-in slide-in-from-bottom-3 duration-200 ease-out"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Button
@@ -60,16 +60,16 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
                   size="sm"
                   onClick={() => handleItemClick(item.id)}
                   className={`
-                    flex items-center gap-3 px-4 py-2.5 rounded-full shadow-xl backdrop-blur-md border
-                    transition-all duration-200 ios-touch-feedback w-[130px] justify-start h-11
+                    flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
+                    transition-all duration-200 ios-touch-feedback min-w-[110px] justify-start
                     ${isActive 
                       ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30" 
                       : "bg-white/90 dark:bg-gray-800/90 text-black dark:text-white hover:bg-white dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700/50"
                     }
                   `}
                 >
-                  <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-white" : "text-blue-600 dark:text-blue-400"}`} />
-                  <span className="text-xs font-medium whitespace-nowrap leading-none">{item.label}</span>
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-blue-600 dark:text-blue-400"}`} />
+                  <span className="text-xs font-medium whitespace-nowrap">{item.label}</span>
                 </Button>
               </div>
             );
