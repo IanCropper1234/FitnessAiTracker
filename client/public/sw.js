@@ -1,5 +1,5 @@
 // Service Worker for FitAI PWA - iOS Compatible
-const CACHE_NAME = 'fitai-v1.1.0';
+const CACHE_NAME = 'fitai-v1.2.0';
 const urlsToCache = [
   '/',
   '/manifest.json',

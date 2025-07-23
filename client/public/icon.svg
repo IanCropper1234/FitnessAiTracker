@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="#3b82f6"/>
+  
+  <!-- FitAI Text -->
+  <text x="256" y="200" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">Fit</text>
+  <text x="256" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#fbbf24" text-anchor="middle">AI</text>
+  
+  <!-- Fitness Icon - Dumbbell -->
+  <g transform="translate(256, 340)">
+    <!-- Dumbbell body -->
+    <rect x="-60" y="-8" width="120" height="16" rx="8" fill="white"/>
+    <!-- Left weight -->
+    <rect x="-80" y="-24" width="32" height="48" rx="4" fill="white"/>
+    <!-- Right weight -->
+    <rect x="48" y="-24" width="32" height="48" rx="4" fill="white"/>
+  </g>
+  
+  <!-- AI Circuit Pattern -->
+  <g transform="translate(256, 120)" opacity="0.3">
+    <circle cx="-40" cy="0" r="8" fill="white"/>
+    <circle cx="40" cy="0" r="8" fill="white"/>
+    <circle cx="0" cy="-30" r="8" fill="white"/>
+    <line x1="-40" y1="0" x2="40" y2="0" stroke="white" stroke-width="2"/>
+    <line x1="0" y1="-30" x2="-40" y2="0" stroke="white" stroke-width="2"/>
+    <line x1="0" y1="-30" x2="40" y2="0" stroke="white" stroke-width="2"/>
+  </g>
+</svg>
