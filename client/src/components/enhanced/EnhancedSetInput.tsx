@@ -73,16 +73,25 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [useBodyWeight, setUseBodyWeight] = useState(false);
 
-  // Fetch user's latest body weight
+  // Fetch user's latest body weight (always fetch to check availability)
   const { data: bodyMetrics = [] } = useQuery<any[]>({
     queryKey: [`/api/body-metrics/${userId}`],
-    enabled: useBodyWeight,
+    enabled: isBodyWeightExercise, // Only fetch for body weight exercises
   });
 
   // Get latest body weight data
   const latestBodyWeight = bodyMetrics.length > 0 ? bodyMetrics[0] : null;
   const bodyWeightValue = latestBodyWeight?.weight ? parseFloat(latestBodyWeight.weight) : 0;
   const bodyWeightUnit = latestBodyWeight?.unit === 'imperial' ? 'lbs' : 'kg';
+
+  // Debug logging
+  console.log('EnhancedSetInput debug:', {
+    isBodyWeightExercise,
+    bodyMetrics: bodyMetrics.length,
+    bodyWeightValue,
+    bodyWeightUnit,
+    toggleDisabled: set.completed || !bodyWeightValue
+  });
 
   const convertWeight = (weight: number, fromUnit: 'kg' | 'lbs', toUnit: 'kg' | 'lbs'): number => {
     if (fromUnit === toUnit) return weight;
