@@ -279,7 +279,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
               {/* Week Completion Status */}
               {activeMesocycle && (
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-between p-3 dark:bg-gray-800 rounded-lg text-[17px] bg-[#3c81f6]">
                   <div>
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Week {activeMesocycle.currentWeek} Progress
@@ -379,7 +379,6 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </CardContent>
         </Card>
       )}
-
       {/* Recommendations */}
       {recommendations && (
         <Tabs defaultValue="volume" className="w-full">
@@ -515,7 +514,6 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </TabsContent>
         </Tabs>
       )}
-
       {/* Mesocycle History */}
       {mesocycles.length > 0 && (
         <Card>
@@ -556,7 +554,6 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </CardContent>
         </Card>
       )}
-
       {/* Global Action Bar */}
       <Card>
         <CardContent className="pt-6">
@@ -571,7 +568,6 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </div>
         </CardContent>
       </Card>
-
       {/* Program Builder Dialog */}
       <MesocycleProgramBuilder
         isOpen={showProgramBuilder}
