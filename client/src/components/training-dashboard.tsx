@@ -734,7 +734,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
               </p>
             </div>
-            <Button onClick={() => setShowSessionCreator(true)} className="pl-[10px] pr-[10px]">
+            <Button onClick={() => setShowSessionCreator(true)} className="mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
