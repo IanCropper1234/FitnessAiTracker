@@ -58,6 +58,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   } | null>(null);
   const [copyDate, setCopyDate] = useState('');
   
+  // Nutrition facts dialog state
+  const [showNutritionDialog, setShowNutritionDialog] = useState(false);
+  const [selectedNutritionItem, setSelectedNutritionItem] = useState<any>(null);
+  
   // Bulk selection state
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
@@ -410,6 +414,12 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
     setDraggedItem(null);
     setDragOverTarget(null);
     setDragPreview(null);
+  };
+
+  // Handle opening nutrition facts dialog
+  const handleShowNutritionFacts = (log: any) => {
+    setSelectedNutritionItem(log);
+    setShowNutritionDialog(true);
   };
 
   const handleCopyFood = (log: any, targetMealType?: string) => {
@@ -880,8 +890,14 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           {/* Food Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2 mb-1">
-                              <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <span className="font-medium text-black dark:text-white text-sm truncate">
+                              <div 
+                                className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleShowNutritionFacts(log);
+                                }}
+                              >
+                                <span className="font-medium text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-sm truncate transition-colors">
                                   <span className="sm:hidden">
                                     {log.foodName.length > 18 ? `${log.foodName.substring(0, 18)}...` : log.foodName}
                                   </span>
@@ -1100,6 +1116,129 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Nutrition Facts Dialog */}
+      <Dialog open={showNutritionDialog} onOpenChange={setShowNutritionDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span>Nutrition Facts</span>
+            </DialogTitle>
+          </DialogHeader>
+          {selectedNutritionItem && (
+            <div className="space-y-4">
+              {/* Food Name and Category */}
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-semibold text-black dark:text-white">
+                  {selectedNutritionItem.foodName}
+                </h3>
+                <div className="flex justify-center gap-2">
+                  <Badge className={`${getRPCategory(selectedNutritionItem.category).color} text-xs`}>
+                    {getRPCategory(selectedNutritionItem.category).label}
+                  </Badge>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {selectedNutritionItem.quantity} {selectedNutritionItem.unit}
+                  </span>
+                </div>
+              </div>
+
+              {/* Main Nutrition Info */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
+                <div className="text-center border-b border-gray-200 dark:border-gray-600 pb-3">
+                  <div className="text-2xl font-bold text-black dark:text-white">
+                    {Math.round(selectedNutritionItem.calories)} <span className="text-base font-normal">calories</span>
+                  </div>
+                </div>
+                
+                {/* Macronutrients */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-black dark:text-white">Protein</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                      {Math.round(selectedNutritionItem.protein)}g
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full" 
+                      style={{ 
+                        width: `${Math.min(100, (selectedNutritionItem.protein * 4 / selectedNutritionItem.calories) * 100)}%` 
+                      }}
+                    ></div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-black dark:text-white">Carbohydrates</span>
+                    <span className="text-green-600 dark:text-green-400 font-semibold">
+                      {Math.round(selectedNutritionItem.carbs)}g
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full" 
+                      style={{ 
+                        width: `${Math.min(100, (selectedNutritionItem.carbs * 4 / selectedNutritionItem.calories) * 100)}%` 
+                      }}
+                    ></div>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-black dark:text-white">Fat</span>
+                    <span className="text-yellow-600 dark:text-yellow-400 font-semibold">
+                      {Math.round(selectedNutritionItem.fat)}g
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-yellow-500 h-2 rounded-full" 
+                      style={{ 
+                        width: `${Math.min(100, (selectedNutritionItem.fat * 9 / selectedNutritionItem.calories) * 100)}%` 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Calorie Breakdown */}
+                <div className="bg-white dark:bg-gray-900 rounded p-3 mt-4">
+                  <h4 className="font-medium text-black dark:text-white mb-2 text-sm">Calorie Breakdown</h4>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="text-center">
+                      <div className="text-blue-600 dark:text-blue-400 font-semibold">
+                        {Math.round(selectedNutritionItem.protein * 4)}
+                      </div>
+                      <div className="text-gray-500">Protein</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-green-600 dark:text-green-400 font-semibold">
+                        {Math.round(selectedNutritionItem.carbs * 4)}
+                      </div>
+                      <div className="text-gray-500">Carbs</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-yellow-600 dark:text-yellow-400 font-semibold">
+                        {Math.round(selectedNutritionItem.fat * 9)}
+                      </div>
+                      <div className="text-gray-500">Fat</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                {selectedNutritionItem.scheduledTime && (
+                  <div className="text-center text-sm text-blue-600 dark:text-blue-400">
+                    Scheduled: {new Date(`2000-01-01T${selectedNutritionItem.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                )}
+
+                {/* Meal Type */}
+                <div className="text-center text-xs text-gray-500">
+                  Logged as: {selectedNutritionItem.mealType.charAt(0).toUpperCase() + selectedNutritionItem.mealType.slice(1)}
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
