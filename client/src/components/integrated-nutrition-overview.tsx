@@ -486,7 +486,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               </span>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Button variant="ghost" size="sm" className="h-6 w-4 p-0">
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </PopoverTrigger>
