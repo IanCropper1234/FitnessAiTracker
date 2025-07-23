@@ -916,90 +916,77 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                           <div>Recommend: {exerciseRec.recommendedWeight}kg | {exerciseRec.recommendedReps} reps | RPE {exerciseRec.recommendedRpe} (Week {exerciseRec.week})</div>
                         </div>
                       )}
-                      {/* Responsive layout: stacked on mobile, grid on desktop */}
-                      <div className="space-y-4">
-                        {/* Weight and Unit on separate row */}
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-1 sm:gap-2">
-                          <div className="flex flex-col space-y-2">
-                            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300">Weight</Label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="text"
-                                inputMode="decimal"
-                                value={currentSet.weight || ''}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                                    updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(value) || 0);
-                                  }
-                                }}
-                                placeholder="0"
-                                className="h-12 text-center text-lg font-semibold border-2 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              />
-                              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 px-2">kg</span>
-                            </div>
-                          </div>
+                      {/* Compact 4-column layout for mobile */}
+                      <div className="grid grid-cols-4 gap-2 items-end">
+                        <div className="flex flex-col h-full">
+                          <Label className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px]">Weight (kg)</Label>
+                          <Input
+                            type="text"
+                            inputMode="decimal"
+                            value={currentSet.weight || ''}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                updateSet(currentExercise.id, currentSetIndex, 'weight', parseFloat(value) || 0);
+                              }
+                            }}
+                            placeholder="0"
+                            className="h-10 text-sm font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
                         </div>
-
-                        {/* Reps and RPE row */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="flex flex-col space-y-2">
-                            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300">Actual Reps</Label>
-                            <Input
-                              type="text"
-                              inputMode="numeric"
-                              value={currentSet.actualReps || ''}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === '' || /^\d+$/.test(value)) {
-                                  updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(value) || 0);
-                                }
-                              }}
-                              placeholder="0"
-                              className="h-12 text-center text-lg font-semibold border-2 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-                          </div>
-                          
-                          <div className="flex flex-col space-y-2">
-                            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300">RPE (1-10)</Label>
-                            <Input
-                              type="text"
-                              inputMode="numeric"
-                              value={currentSet.rpe || ''}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 10)) {
-                                  updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(value) || 7);
-                                }
-                              }}
-                              placeholder="7"
-                              className="h-12 text-center text-lg font-semibold border-2 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-                          </div>
+                        
+                        <div className="flex flex-col h-full">
+                          <Label className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px]">Actual Reps</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={currentSet.actualReps || ''}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^\d+$/.test(value)) {
+                                updateSet(currentExercise.id, currentSetIndex, 'actualReps', parseInt(value) || 0);
+                              }
+                            }}
+                            placeholder="0"
+                            className="h-10 text-sm font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
                         </div>
-
-                        {/* Complete Set button on separate row */}
-                        <div className="flex justify-center pt-2">
+                        
+                        <div className="flex flex-col h-full">
+                          <Label className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px]">RPE (1-10)</Label>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            value={currentSet.rpe || ''}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 10)) {
+                                updateSet(currentExercise.id, currentSetIndex, 'rpe', parseInt(value) || 7);
+                              }
+                            }}
+                            placeholder="7"
+                            className="h-10 text-sm font-semibold text-center border-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                        </div>
+                        
+                        <div className="flex flex-col h-full">
+                          <div className="text-xs font-medium text-left h-5 mt-[15px] mb-[15px] opacity-0">Action</div>
                           <Button 
                             onClick={completeSet}
                             disabled={currentSet.completed}
-                            size="lg"
-                            className={`w-full max-w-sm h-14 text-base font-semibold rounded-lg transition-all duration-200 ${
+                            className={`h-10 w-full rounded-md border-2 font-medium transition-all p-1 ${
                               currentSet.completed 
-                                ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white shadow-lg' 
-                                : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:shadow-lg'
+                                ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
+                                : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
                             }`}
                           >
-                            <CheckCircle2 className="h-5 w-5 mr-2" />
-                            {currentSet.completed ? 'Set Complete' : 'Complete Set'}
+                            <div className="flex flex-col items-center justify-center h-full">
+                              <CheckCircle2 className="h-3 w-3" />
+                              <span className="text-[10px] leading-none mt-0.5">
+                                {currentSet.completed ? 'Done' : 'Set'}
+                              </span>
+                            </div>
                           </Button>
-                        </div>
-
-                        {/* Helper text */}
-                        <div className="text-center">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Enter Weight, Reps & RPE
-                          </p>
                         </div>
                       </div>
                     </div>
