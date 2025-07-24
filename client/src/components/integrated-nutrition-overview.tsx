@@ -652,21 +652,13 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
       </div>
       {/* Daily Food Log Section */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-        <CardHeader className="pb-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <CardTitle className="font-semibold tracking-tight text-black dark:text-white flex items-center gap-2 text-sm sm:text-base">
-                <Utensils className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">Daily Food Log</span>
-              </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400 text-xs">
-                {selectedDate === new Date().toISOString().split('T')[0] 
-                  ? 'Today'
-                  : new Date(selectedDate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })
-                }
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-1.5 flex-shrink-0 min-w-0">
+        <CardHeader className="pb-2 pt-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="font-medium text-black dark:text-white flex items-center gap-1.5 text-sm">
+              <Utensils className="w-3 h-3 flex-shrink-0" />
+              <span>Daily Food Log</span>
+            </CardTitle>
+            <div className="flex items-center gap-1 flex-shrink-0">
               {nutritionLogs && nutritionLogs.length > 0 && (
                 <Button
                   variant={bulkMode ? "default" : "outline"}
@@ -675,11 +667,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="text-xs flex-shrink-0 h-7 px-2"
+                  className="text-xs h-6 px-1.5"
                 >
-                  <Check className="w-3 h-3 mr-1" />
-                  <span className="hidden sm:inline">{bulkMode ? 'Exit' : 'Select'}</span>
-                  <span className="sm:hidden">✓</span>
+                  <Check className="w-3 h-3" />
                 </Button>
               )}
               <Button 
@@ -689,28 +679,26 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     onShowLogger(selectedDate);
                   }
                 }}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs flex-shrink-0 h-7 px-2"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-6 px-1.5"
                 size="sm"
               >
-                <Plus className="w-3 h-3 mr-1" />
-                <span className="hidden xs:inline">Add</span>
-                <span className="xs:hidden">+</span>
+                <Plus className="w-3 h-3" />
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 px-4 pb-4">
           {/* Bulk Operations Controls */}
           {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
-            <div className="mb-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
+            <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded border border-blue-200 dark:border-blue-700">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1.5">
                   <Checkbox
                     id="select-all"
                     checked={selectedLogs.length === nutritionLogs.length}
                     onCheckedChange={toggleSelectAll}
                   />
-                  <label htmlFor="select-all" className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                  <label htmlFor="select-all" className="text-[10px] font-medium text-blue-800 dark:text-blue-200">
                     All ({selectedLogs.length}/{nutritionLogs.length})
                   </label>
                 </div>
@@ -720,108 +708,102 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     variant="destructive"
                     size="sm"
                     disabled={bulkDeleteMutation.isPending}
-                    className="w-fit h-7 px-2 text-xs"
+                    className="h-6 px-1.5 text-[10px]"
                   >
-                    <Trash2 className="w-3 h-3 mr-1" />
-                    Delete ({selectedLogs.length})
+                    <Trash2 className="w-3 h-3" />
                   </Button>
                 )}
               </div>
               
               {selectedLogs.length > 0 && (
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-2 border-t border-blue-200 dark:border-blue-600">
-                  <Label className="text-xs font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">
-                    Copy to:
-                  </Label>
-                  <div className="flex items-center gap-1 flex-1">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          className="justify-start text-left font-normal flex-1 bg-white dark:bg-gray-800 h-7 text-xs"
-                        >
-                          <CalendarIcon className="mr-1 h-3 w-3" />
-                          Select date
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <div className="flex items-center justify-between p-2 border-b">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
-                              handleBulkCopy(dateStr);
-                            }}
-                            className="text-xs h-7"
-                          >
-                            <ChevronLeft className="h-3 w-3 mr-1" />
-                            Yesterday
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
-                              handleBulkCopy(dateStr);
-                            }}
-                            className="text-xs h-7"
-                          >
-                            Tomorrow
-                            <ChevronRight className="h-3 w-3 ml-1" />
-                          </Button>
-                        </div>
-                        <CalendarComponent
-                          mode="single"
-                          selected={undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              const dateStr = TimezoneUtils.formatDateForStorage(date);
-                              handleBulkCopy(dateStr);
-                            }
+                <div className="flex items-center gap-1 pt-1 border-t border-blue-200 dark:border-blue-600">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 h-6 text-[10px]"
+                      >
+                        <CalendarIcon className="mr-1 h-3 w-3" />
+                        Copy to date
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <div className="flex items-center justify-between p-2 border-b">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
+                            handleBulkCopy(dateStr);
                           }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                          className="text-xs h-6"
+                        >
+                          <ChevronLeft className="h-3 w-3 mr-1" />
+                          Yesterday
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
+                            handleBulkCopy(dateStr);
+                          }}
+                          className="text-xs h-6"
+                        >
+                          Tomorrow
+                          <ChevronRight className="h-3 w-3 ml-1" />
+                        </Button>
+                      </div>
+                      <CalendarComponent
+                        mode="single"
+                        selected={undefined}
+                        onSelect={(date) => {
+                          if (date) {
+                            const dateStr = TimezoneUtils.formatDateForStorage(date);
+                            handleBulkCopy(dateStr);
+                          }
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               )}
             </div>
           )}
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+          <div className="space-y-0">
             {mealTypes.map((mealType) => {
               const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType.key) || [];
               
               return (
                 <div 
                   key={mealType.key}
-                  className={`border rounded-lg p-2 min-h-[140px] overflow-hidden transition-all duration-200 ${
+                  className={`border-b border-gray-200 dark:border-gray-700 last:border-b-0 overflow-hidden transition-all duration-200 ${
                     dragOverTarget === mealType.key 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 border-2 shadow-lg scale-[1.02]' 
+                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400' 
                       : draggedItem && draggedItem.mealType !== mealType.key
-                      ? 'bg-green-50 dark:bg-green-900/10 border-green-300 hover:border-green-400'
-                      : 'bg-gray-50 dark:bg-gray-800'
+                      ? 'bg-green-50 dark:bg-green-900/10 border-green-300'
+                      : 'bg-transparent'
                   }`}
                   onDragOver={(e) => handleDragOver(e, mealType.key)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, mealType.key)}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1.5">
-                      {mealType.icon}
-                      <h3 className="font-semibold text-black dark:text-white text-sm">
+                  {/* Meal Header */}
+                  <div className="flex items-center justify-between py-3 px-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-black dark:text-white text-lg">
                         {mealType.label}
                       </h3>
-                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         ({mealLogs.length})
                       </span>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                          <MoreVertical className="h-3 w-3" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -856,7 +838,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     </DropdownMenu>
                   </div>
                   
-                  <div className="space-y-1.5">
+                  {/* Food Items */}
+                  <div className="pb-3">
                     {mealLogs.map((log: any) => {
                       const rpCategory = getRPCategory(log.category);
                       return (
@@ -865,19 +848,19 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           draggable={!bulkMode}
                           onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
                           onDragEnd={handleDragEnd}
-                          className={`flex items-start gap-1.5 p-2 rounded-md border transition-all duration-200 ${
+                          className={`flex items-center gap-3 py-2 px-0 transition-all duration-200 ${
                             draggedItem && draggedItem.id === log.id
-                              ? 'opacity-50 scale-95 bg-blue-50 dark:bg-blue-900/20 border-blue-400'
+                              ? 'opacity-50 scale-95 bg-blue-50 dark:bg-blue-900/20'
                               : bulkMode 
                               ? selectedLogs.includes(log.id) 
-                                ? 'ring-2 ring-blue-500 border-blue-500 bg-white dark:bg-gray-900' 
-                                : 'cursor-pointer bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800' 
-                              : 'cursor-move bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600'
+                                ? 'ring-2 ring-blue-500 bg-white dark:bg-gray-900' 
+                                : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' 
+                              : 'cursor-move hover:bg-gray-50 dark:hover:bg-gray-800'
                           }`}
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
                           {/* Selection/Drag Handle */}
-                          <div className="flex-shrink-0 mt-0.5">
+                          <div className="flex-shrink-0">
                             {bulkMode ? (
                               <Checkbox
                                 checked={selectedLogs.includes(log.id)}
@@ -885,122 +868,109 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                                 onClick={(e) => e.stopPropagation()}
                               />
                             ) : (
-                              <GripVertical className="h-3 w-3 text-gray-400" />
+                              <GripVertical className="h-4 w-4 text-gray-400" />
                             )}
                           </div>
 
                           {/* Food Content */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-1 mb-1">
-                              <div 
-                                className="flex items-center gap-1 min-w-0 flex-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleShowNutritionFacts(log);
-                                }}
-                              >
-                                <span className="font-medium text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-xs truncate transition-colors">
-                                  <span className="sm:hidden">
-                                    {log.foodName.length > 12 ? `${log.foodName.substring(0, 12)}...` : log.foodName}
-                                  </span>
-                                  <span className="hidden sm:block md:hidden">
-                                    {log.foodName.length > 16 ? `${log.foodName.substring(0, 16)}...` : log.foodName}
-                                  </span>
-                                  <span className="hidden md:block">
-                                    {log.foodName.length > 20 ? `${log.foodName.substring(0, 20)}...` : log.foodName}
-                                  </span>
-                                </span>
-                                <Badge className={`${rpCategory.color} text-[10px] px-1 py-0 h-4 flex-shrink-0`}>
-                                  {rpCategory.label}
-                                </Badge>
+                            <div 
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShowNutritionFacts(log);
+                              }}
+                            >
+                              <div className="font-medium text-black dark:text-white text-sm mb-1 truncate">
+                                {log.foodName}
                               </div>
-                              
-                              {/* Three-dot menu - aligned to top right */}
-                              <div className="flex-shrink-0">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0 flex-shrink-0">
-                                      <MoreVertical className="h-3 w-3" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    {mealTypes
-                                      .filter(mt => mt.key !== log.mealType)
-                                      .map(mt => (
-                                        <DropdownMenuItem
-                                          key={mt.key}
-                                          onClick={() => handleCopyFood(log, mt.key)}
-                                        >
-                                          <Copy className="h-4 w-4 mr-2" />
-                                          Copy to {mt.label}
-                                        </DropdownMenuItem>
-                                      ))
-                                    }
-                                    <DropdownMenuSeparator />
+                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                                {log.quantity} {log.unit}, {log.calories} calories
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Three-dot menu */}
+                          <div className="flex-shrink-0">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {mealTypes
+                                  .filter(mt => mt.key !== log.mealType)
+                                  .map(mt => (
                                     <DropdownMenuItem
-                                      onClick={() => deleteMutation.mutate(log.id)}
-                                      className="text-red-600 hover:text-red-700"
+                                      key={mt.key}
+                                      onClick={() => handleCopyFood(log, mt.key)}
                                     >
-                                      <Trash2 className="h-4 w-4 mr-2" />
-                                      Delete
+                                      <Copy className="h-4 w-4 mr-2" />
+                                      Copy to {mt.label}
                                     </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </div>
-                            
-                            {/* Nutrition details */}
-                            <div className="text-[10px] text-gray-600 dark:text-gray-400">
-                              {log.quantity} {log.unit} • {log.calories}cal
-                            </div>
-                            <div className="text-[10px] text-gray-600 dark:text-gray-400">
-                              P: {log.protein}g • C: {log.carbs}g • F: {log.fat}g
-                            </div>
-                            {log.scheduledTime && (
-                              <div className="text-[10px] text-blue-600 dark:text-blue-400 mt-0.5">
-                                {new Date(`2000-01-01T${log.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </div>
-                            )}
+                                  ))
+                                }
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => deleteMutation.mutate(log.id)}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       );
                     })}
                     
                     {mealLogs.length === 0 && (
-                      <div className={`text-center py-6 transition-all duration-200 rounded-lg border-2 border-dashed ${
-                        dragOverTarget === mealType.key
-                          ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                          : draggedItem && draggedItem.mealType !== mealType.key
-                          ? 'border-green-400 bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-400'
-                          : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400'
-                      }`}>
-                        <div className={`transition-transform duration-200 ${
-                          dragOverTarget === mealType.key ? 'scale-110' : ''
-                        }`}>
+                      <div className="py-4">
+                        <button 
+                          onClick={() => {
+                            if (onShowLogger) {
+                              onShowLogger(selectedDate);
+                            }
+                          }}
+                          className={`w-full text-left py-3 px-0 transition-all duration-200 ${
+                            dragOverTarget === mealType.key
+                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                              : draggedItem && draggedItem.mealType !== mealType.key
+                              ? 'bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-400'
+                              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                          }`}
+                        >
                           {dragOverTarget === mealType.key ? (
-                            <>
-                              <div className="w-6 h-6 mx-auto mb-1 bg-blue-500 rounded-full flex items-center justify-center">
+                            <div className="flex items-center gap-3">
+                              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                                 <ArrowRight className="w-3 h-3 text-white" />
                               </div>
-                              <p className="text-xs font-medium">Drop here!</p>
-                              <p className="text-[10px]">Move to {mealType.label}</p>
-                            </>
+                              <div>
+                                <div className="text-sm font-medium">Drop here!</div>
+                                <div className="text-xs opacity-75">Move to {mealType.label}</div>
+                              </div>
+                            </div>
                           ) : draggedItem && draggedItem.mealType !== mealType.key ? (
-                            <>
-                              <div className="w-6 h-6 mx-auto mb-1 bg-green-500 rounded-full flex items-center justify-center">
+                            <div className="flex items-center gap-3">
+                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                                 <Plus className="w-3 h-3 text-white" />
                               </div>
-                              <p className="text-xs font-medium">Drop zone</p>
-                              <p className="text-[10px]">Move {draggedItem.foodName} here</p>
-                            </>
+                              <div>
+                                <div className="text-sm font-medium">Drop zone</div>
+                                <div className="text-xs opacity-75">Move {draggedItem.foodName} here</div>
+                              </div>
+                            </div>
                           ) : (
-                            <>
-                              <Utensils className="w-6 h-6 mx-auto mb-1 opacity-30" />
-                              <p className="text-xs">No items</p>
-                              <p className="text-[10px]">Drag items here or use Add Food</p>
-                            </>
+                            <div>
+                              <div className="text-blue-500 text-lg font-medium">ADD FOOD</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                Swipe right to add meal
+                              </div>
+                            </div>
                           )}
-                        </div>
+                        </button>
                       </div>
                     )}
                   </div>
