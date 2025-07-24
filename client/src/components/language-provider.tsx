@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 type Language = "en" | "es" | "ja" | "zh-CN" | "de" | "zh-TW";
 
