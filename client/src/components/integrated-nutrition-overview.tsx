@@ -467,186 +467,187 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Date Navigation */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-        <CardHeader className="flex flex-col space-y-1.5 p-6 pl-[10px] pr-[10px] pt-[5px] pb-[5px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
-          <CardTitle className="text-black dark:text-white flex items-center justify-center gap-2 whitespace-nowrap">
-            <CalendarIcon className="w-5 h-5" />
-            Nutrition Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
-              }}
-              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-black dark:text-white flex items-center gap-1.5 text-sm whitespace-nowrap">
+              <CalendarIcon className="w-4 h-4" />
+              Nutrition Overview
+            </CardTitle>
             
-            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
-              <span className="text-sm font-medium">
-                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                 TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
-              </span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-4 p-0">
-                    <ChevronDown className="h-3 w-3" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="center">
-                  <CalendarComponent
-                    mode="single"
-                    selected={TimezoneUtils.parseUserDate(selectedDate)}
-                    onSelect={(date) => {
-                      if (date) {
-                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                      }
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
+                }}
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
+              
+              <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded text-xs font-medium min-w-[80px] justify-center">
+                <span>
+                  {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                   TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
+                </span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
+                      <ChevronDown className="h-2 w-2" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="center">
+                    <CalendarComponent
+                      mode="single"
+                      selected={TimezoneUtils.parseUserDate(selectedDate)}
+                      onSelect={(date) => {
+                        if (date) {
+                          setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
+                }}
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <ChevronRight className="h-3 w-3" />
+              </Button>
             </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
-              }}
-              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
           </div>
         </CardContent>
       </Card>
       {/* Macro Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Calories
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-1.5 pb-2">
-            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
-              {nutritionSummary?.totalCalories || 0}
+          <CardContent className="p-2">
+            <div className="text-center">
+              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Calories
+              </div>
+              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+                {nutritionSummary?.totalCalories || 0}
+              </div>
+              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+                of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
+              </div>
+              {dietGoals && (
+                <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 mb-1">
+                  Left: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
+                </div>
+              )}
+              <Progress 
+                value={dietGoals 
+                  ? (nutritionSummary?.totalCalories || 0) / Number(dietGoals.targetCalories) * 100 
+                  : nutritionSummary 
+                    ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 
+                    : 0
+                } 
+                className="h-1"
+              />
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
-              of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
-            </p>
-            {dietGoals && (
-              <p className="text-xs font-medium text-blue-600 dark:text-blue-400 text-center leading-tight">
-                Left: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
-              </p>
-            )}
-            <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalCalories || 0) / Number(dietGoals.targetCalories) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 
-                  : 0
-              } 
-              className="mt-1 h-1"
-            />
           </CardContent>
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Protein (g)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-1.5 pb-2">
-            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
-              {Math.round(nutritionSummary?.totalProtein || 0)}
+          <CardContent className="p-2">
+            <div className="text-center">
+              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Protein (g)
+              </div>
+              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+                {Math.round(nutritionSummary?.totalProtein || 0)}
+              </div>
+              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+                of {Math.round(Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150))}g
+              </div>
+              {dietGoals && (
+                <div className="text-[10px] font-medium text-green-600 dark:text-green-400 mb-1">
+                  Left: {Math.round(Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)))}g
+                </div>
+              )}
+              <Progress 
+                value={dietGoals 
+                  ? (nutritionSummary?.totalProtein || 0) / Number(dietGoals.targetProtein) * 100 
+                  : nutritionSummary 
+                    ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 
+                    : 0
+                } 
+                className="h-1"
+              />
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
-              of {Math.round(Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150))}g
-            </p>
-            {dietGoals && (
-              <p className="text-xs font-medium text-green-600 dark:text-green-400 text-center leading-tight">
-                Left: {Math.round(Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)))}g
-              </p>
-            )}
-            <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalProtein || 0) / Number(dietGoals.targetProtein) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 
-                  : 0
-              } 
-              className="mt-1 h-1"
-            />
           </CardContent>
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Carbs (g)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-1.5 pb-2">
-            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
-              {Math.round(nutritionSummary?.totalCarbs || 0)}
+          <CardContent className="p-2">
+            <div className="text-center">
+              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Carbs (g)
+              </div>
+              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+                {Math.round(nutritionSummary?.totalCarbs || 0)}
+              </div>
+              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+                of {Math.round(Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200))}g
+              </div>
+              {dietGoals && (
+                <div className="text-[10px] font-medium text-orange-600 dark:text-orange-400 mb-1">
+                  Left: {Math.round(Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)))}g
+                </div>
+              )}
+              <Progress 
+                value={dietGoals 
+                  ? (nutritionSummary?.totalCarbs || 0) / Number(dietGoals.targetCarbs) * 100 
+                  : nutritionSummary 
+                    ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 
+                    : 0
+                } 
+                className="h-1"
+              />
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
-              of {Math.round(Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200))}g
-            </p>
-            {dietGoals && (
-              <p className="text-xs font-medium text-orange-600 dark:text-orange-400 text-center leading-tight">
-                Left: {Math.round(Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)))}g
-              </p>
-            )}
-            <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalCarbs || 0) / Number(dietGoals.targetCarbs) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 
-                  : 0
-              } 
-              className="mt-1 h-1"
-            />
           </CardContent>
         </Card>
 
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1.5">
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Fat (g)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-1.5 pb-2">
-            <div className="text-base md:text-lg font-bold text-black dark:text-white text-center">
-              {Math.round(nutritionSummary?.totalFat || 0)}
+          <CardContent className="p-2">
+            <div className="text-center">
+              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Fat (g)
+              </div>
+              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+                {Math.round(nutritionSummary?.totalFat || 0)}
+              </div>
+              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+                of {Math.round(Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60))}g
+              </div>
+              {dietGoals && (
+                <div className="text-[10px] font-medium text-purple-600 dark:text-purple-400 mb-1">
+                  Left: {Math.round(Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)))}g
+                </div>
+              )}
+              <Progress 
+                value={dietGoals 
+                  ? (nutritionSummary?.totalFat || 0) / Number(dietGoals.targetFat) * 100 
+                  : nutritionSummary 
+                    ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 
+                    : 0
+                } 
+                className="h-1"
+              />
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-tight">
-              of {Math.round(Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60))}g
-            </p>
-            {dietGoals && (
-              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 text-center leading-tight">
-                Left: {Math.round(Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)))}g
-              </p>
-            )}
-            <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalFat || 0) / Number(dietGoals.targetFat) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 
-                  : 0
-              } 
-              className="mt-1 h-1"
-            />
           </CardContent>
         </Card>
       </div>
