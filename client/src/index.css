@@ -424,6 +424,71 @@
     border-bottom: none;
   }
 
+  /* Calendar Component Fixes */
+  .rdp {
+    --rdp-cell-size: 36px;
+    --rdp-accent-color: hsl(221, 83%, 53%);
+    --rdp-background-color: hsl(0, 0%, 100%);
+    --rdp-accent-color-dark: hsl(221, 83%, 53%);
+    --rdp-background-color-dark: hsl(222, 84%, 5%);
+  }
+
+  .dark .rdp {
+    --rdp-accent-color: hsl(221, 83%, 53%);
+    --rdp-background-color: hsl(222, 84%, 5%);
+  }
+
+  /* Fix oversized selected date indicator */
+  .rdp-day_selected {
+    background-color: var(--rdp-accent-color) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    font-weight: 500 !important;
+  }
+
+  .rdp-day_selected:hover {
+    background-color: var(--rdp-accent-color) !important;
+    opacity: 0.9 !important;
+  }
+
+  /* Fix calendar cell sizing */
+  .rdp-cell {
+    width: var(--rdp-cell-size) !important;
+    height: var(--rdp-cell-size) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .rdp-day {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .rdp-day:hover {
+    background-color: hsl(var(--muted)) !important;
+  }
+
+  .rdp-day_today {
+    background-color: hsl(var(--accent)) !important;
+    color: hsl(var(--accent-foreground)) !important;
+    font-weight: 500 !important;
+  }
+
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
