@@ -28,7 +28,7 @@ import {
   GripVertical,
   Check
 } from "lucide-react";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { IOSDateSelector } from "@/components/ios-date-selector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -527,15 +527,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                       </Button>
                     </div>
                   </div>
-                  <CalendarComponent
-                    mode="single"
-                    selected={TimezoneUtils.parseUserDate(selectedDate)}
-                    onSelect={(date) => {
-                      if (date) {
-                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                      }
-                    }}
-                    initialFocus
+                  <IOSDateSelector
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
                   />
                 </PopoverContent>
               </Popover>
@@ -770,16 +764,11 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           <ChevronRight className="h-3 w-3 ml-1" />
                         </Button>
                       </div>
-                      <CalendarComponent
-                        mode="single"
-                        selected={undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            const dateStr = TimezoneUtils.formatDateForStorage(date);
-                            handleBulkCopy(dateStr);
-                          }
+                      <IOSDateSelector
+                        selectedDate={selectedDate}
+                        onDateChange={(dateStr) => {
+                          handleBulkCopy(dateStr);
                         }}
-                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>
@@ -1048,15 +1037,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={copyDate ? new Date(copyDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setCopyDate(date.toISOString().split('T')[0]);
-                        }
-                      }}
-                      initialFocus
+                    <IOSDateSelector
+                      selectedDate={copyDate || selectedDate}
+                      onDateChange={setCopyDate}
                     />
                   </PopoverContent>
                 </Popover>

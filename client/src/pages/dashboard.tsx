@@ -15,7 +15,7 @@ import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, Chevr
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { IOSDateSelector } from "@/components/ios-date-selector";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { TimezoneUtils } from "@shared/utils/timezone";
