@@ -265,7 +265,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
       </div>
 
       {/* Draggable Exercise List */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {exercises.map((exercise, index) => (
           <Card
             key={exercise.id}
@@ -280,26 +280,28 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
             {...getDragHandleProps(index)}
             onClick={() => onExerciseSelect(index)}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2.5">
                 {/* Drag Handle */}
-                <div className="cursor-grab active:cursor-grabbing text-muted-foreground">
-                  <GripVertical className="h-5 w-5" />
+                <div className="cursor-grab active:cursor-grabbing text-muted-foreground flex-shrink-0">
+                  <GripVertical className="h-4 w-4" />
                 </div>
 
                 {/* Exercise Info */}
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{exercise.exercise.name}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {exercise.sets} sets
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {exercise.targetReps} reps
-                    </Badge>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="font-medium text-sm truncate">{exercise.exercise.name}</span>
+                    <div className="flex gap-1 flex-shrink-0">
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        {exercise.sets}s
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        {exercise.targetReps}r
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="text-sm text-foreground/60">
-                    {exercise.exercise.muscleGroups.join(', ')} • Rest: {Math.floor(exercise.restPeriod / 60)}min
+                  <div className="text-xs text-foreground/60 truncate">
+                    {exercise.exercise.muscleGroups.join(', ')} • {Math.floor(exercise.restPeriod / 60)}min
                   </div>
                 </div>
 
@@ -309,10 +311,10 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 h-8 w-8 p-0 flex-shrink-0"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -342,8 +344,8 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
 
       {exercises.length === 0 && (
         <Card>
-          <CardContent className="p-8 text-center">
-            <div className="text-muted-foreground">
+          <CardContent className="p-6 text-center">
+            <div className="text-sm text-muted-foreground">
               No exercises in this workout. Click "Add Exercise" to get started.
             </div>
           </CardContent>
