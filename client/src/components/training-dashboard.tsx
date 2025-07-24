@@ -782,19 +782,22 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             <div className="space-y-3">
               {/* Current Mesocycle Status */}
               {currentMesocycle && (
-                <div className="bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-800 dark:to-slate-700 border border-slate-600 dark:border-slate-600 rounded-lg p-2.5 mx-2">
+                <div className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 border-2 border-emerald-500/30 dark:border-emerald-400/40 rounded-lg p-3 mx-2 shadow-lg dark:shadow-xl">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse flex-shrink-0"></div>
-                      <span className="text-xs font-medium text-white truncate">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="relative">
+                        <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
+                      </div>
+                      <span className="text-sm font-semibold text-white truncate">
                         {currentMesocycle.name}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-slate-300 flex-shrink-0">
-                      <span className="bg-slate-600/70 px-1.5 py-0.5 rounded text-xs font-medium">
-                        {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
+                    <div className="flex items-center gap-2 text-xs flex-shrink-0">
+                      <span className="bg-slate-700 dark:bg-slate-600 border border-slate-500 dark:border-slate-400 px-2 py-1 rounded font-bold text-slate-100 dark:text-white shadow-md">
+                        Week {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
                       </span>
-                      <span className="bg-emerald-600/80 px-1.5 py-0.5 rounded text-xs font-medium text-white capitalize">
+                      <span className="bg-emerald-600 dark:bg-emerald-500 border border-emerald-400 dark:border-emerald-300 px-2 py-1 rounded font-bold text-white uppercase tracking-wide shadow-md">
                         {currentMesocycle.phase || 'Active'}
                       </span>
                     </div>
