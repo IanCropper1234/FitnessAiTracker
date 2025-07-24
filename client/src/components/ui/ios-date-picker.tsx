@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown, X, Check } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
@@ -16,6 +16,47 @@ export function IOSDatePicker({
   className = ""
 }: IOSDatePickerProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
+
+  // Update temp date when selectedDate prop changes
+  useEffect(() => {
+    setTempSelectedDate(selectedDate);
+  }, [selectedDate]);
+
+  // Parse current date
+  const currentDate = TimezoneUtils.parseUserDate(tempSelectedDate);
+  const currentDay = currentDate.getDate();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  // Generate date options
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+
+  const handleDateChange = (day: number, month: number, year: number) => {
+    try {
+      const newDate = new Date(year, month, day);
+      if (newDate.getMonth() === month) { // Valid date
+        setTempSelectedDate(TimezoneUtils.formatDateForStorage(newDate));
+      }
+    } catch (error) {
+      console.warn('Invalid date:', { day, month, year });
+    }
+  };
+
+  const handleConfirm = () => {
+    onDateChange(tempSelectedDate);
+    setShowDatePicker(false);
+  };
+
+  const handleCancel = () => {
+    setTempSelectedDate(selectedDate); // Reset to original
+    setShowDatePicker(false);
+  };
 
   const sizeClasses = {
     sm: {
@@ -52,7 +93,9 @@ export function IOSDatePicker({
   };
 
   const handleTodaySelect = () => {
-    onDateChange(TimezoneUtils.getCurrentDate());
+    const today = TimezoneUtils.getCurrentDate();
+    setTempSelectedDate(today);
+    onDateChange(today);
     setShowDatePicker(false);
   };
 
@@ -93,20 +136,23 @@ export function IOSDatePicker({
 
       {/* iOS-Style Date Picker Modal */}
       {showDatePicker && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center">
+        <div 
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          style={{ touchAction: 'none' }} // Prevent background scrolling
+        >
           <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <button
-                onClick={() => setShowDatePicker(false)}
-                className="ios-touch-feedback p-2 text-foreground/60 hover:text-foreground"
+                onClick={handleCancel}
+                className="ios-touch-feedback p-2 text-foreground/60 hover:text-foreground touch-target"
               >
                 <X className="h-5 w-5" />
               </button>
               <h3 className="text-lg font-semibold text-foreground">Change Date</h3>
               <button
-                onClick={() => setShowDatePicker(false)}
-                className="ios-touch-feedback p-2 text-blue-500 hover:text-blue-600"
+                onClick={handleConfirm}
+                className="ios-touch-feedback p-2 text-blue-500 hover:text-blue-600 touch-target"
               >
                 <Check className="h-5 w-5" />
               </button>
@@ -116,59 +162,71 @@ export function IOSDatePicker({
             <div className="p-4 text-center border-b border-border">
               <button
                 onClick={handleTodaySelect}
-                className="text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors"
+                className="text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors touch-target"
               >
                 Today
               </button>
             </div>
 
             {/* Date Picker Wheels */}
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
               <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="space-y-3">
+                {/* Days */}
+                <div className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Day</div>
-                  <div className="space-y-2">
-                    {[22, 23, 24, 25, 26].map((day) => (
-                      <div 
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
+                    {days.map((day) => (
+                      <button
                         key={day}
-                        className={`text-xl py-2 ${
-                          day === 24 ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
+                        onClick={() => handleDateChange(day, currentMonth, currentYear)}
+                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
+                          day === currentDay 
+                            ? 'bg-blue-500 text-white font-semibold' 
+                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
                         }`}
                       >
                         {day}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
                 
-                <div className="space-y-3">
+                {/* Months */}
+                <div className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Month</div>
-                  <div className="space-y-2">
-                    {['May', 'June', 'July', 'August', 'September'].map((month) => (
-                      <div 
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
+                    {months.map((month, index) => (
+                      <button
                         key={month}
-                        className={`text-xl py-2 ${
-                          month === 'July' ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
+                        onClick={() => handleDateChange(currentDay, index, currentYear)}
+                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
+                          index === currentMonth 
+                            ? 'bg-blue-500 text-white font-semibold' 
+                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
                         }`}
                       >
                         {month}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
                 
-                <div className="space-y-3">
+                {/* Years */}
+                <div className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Year</div>
-                  <div className="space-y-2">
-                    {[2023, 2024, 2025, 2026, 2027].map((year) => (
-                      <div 
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
+                    {years.map((year) => (
+                      <button
                         key={year}
-                        className={`text-xl py-2 ${
-                          year === 2025 ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
+                        onClick={() => handleDateChange(currentDay, currentMonth, year)}
+                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
+                          year === currentYear 
+                            ? 'bg-blue-500 text-white font-semibold' 
+                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
                         }`}
                       >
                         {year}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
