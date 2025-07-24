@@ -11,13 +11,10 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown, ChevronLeft, ChevronRight, X, Check } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
 interface User {
@@ -37,7 +34,6 @@ export function Dashboard({ user }: DashboardProps) {
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
@@ -93,41 +89,11 @@ export function Dashboard({ user }: DashboardProps) {
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
         {/* Compact Date Selector */}
-        <div className="flex items-center justify-center py-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => {
-                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
-              }}
-              className="ios-touch-feedback p-1.5 text-foreground/60 hover:text-foreground transition-colors"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            
-            <button
-              onClick={() => setShowDatePicker(true)}
-              className="ios-touch-feedback flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-accent/50 transition-colors"
-            >
-              <span className="text-lg font-medium text-foreground">
-                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                 TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
-                   day: '2-digit', 
-                   month: '2-digit'
-                 })}
-              </span>
-              <ChevronDown className="h-4 w-4 text-foreground/50" />
-            </button>
-            
-            <button
-              onClick={() => {
-                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
-              }}
-              className="ios-touch-feedback p-1.5 text-foreground/60 hover:text-foreground transition-colors"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+        <IOSDatePicker 
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+          size="md"
+        />
 
         {/* Overview Section with Toggle */}
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -353,143 +319,7 @@ export function Dashboard({ user }: DashboardProps) {
           />
         )}
 
-        {/* iOS-Style Date Picker Modal */}
-        {showDatePicker && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center touch-target">
-            <div 
-              className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <button
-                  onClick={() => setShowDatePicker(false)}
-                  className="ios-touch-feedback touch-target p-2 text-foreground/60 hover:text-foreground"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-                <h3 className="text-lg font-semibold text-foreground">Change Date</h3>
-                <button
-                  onClick={() => setShowDatePicker(false)}
-                  className="ios-touch-feedback touch-target p-2 text-blue-500 hover:text-blue-600"
-                >
-                  <Check className="h-5 w-5" />
-                </button>
-              </div>
 
-              {/* Today Button */}
-              <div className="p-4 text-center border-b border-border">
-                <button
-                  onClick={() => {
-                    setSelectedDate(TimezoneUtils.getCurrentDate());
-                    setShowDatePicker(false);
-                  }}
-                  className="ios-touch-feedback touch-target text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors py-2 px-4 rounded-lg"
-                >
-                  Today
-                </button>
-              </div>
-
-              {/* Quick Date Selection */}
-              <div className="p-4 max-h-80 overflow-y-auto ios-scroll">
-                <div className="space-y-3">
-                  {/* Recent Dates */}
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-foreground/60 mb-3">Quick Select</h4>
-                    
-                    {/* Yesterday */}
-                    <button
-                      onClick={() => {
-                        const yesterday = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
-                        setSelectedDate(yesterday);
-                        setShowDatePicker(false);
-                      }}
-                      className="ios-touch-feedback touch-target w-full text-left py-3 px-4 rounded-lg hover:bg-accent/50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-foreground font-medium">Yesterday</span>
-                        <span className="text-foreground/60 text-sm">
-                          {TimezoneUtils.parseUserDate(TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1))
-                            .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    </button>
-
-                    {/* Tomorrow */}
-                    <button
-                      onClick={() => {
-                        const tomorrow = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
-                        setSelectedDate(tomorrow);
-                        setShowDatePicker(false);
-                      }}
-                      className="ios-touch-feedback touch-target w-full text-left py-3 px-4 rounded-lg hover:bg-accent/50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-foreground font-medium">Tomorrow</span>
-                        <span className="text-foreground/60 text-sm">
-                          {TimezoneUtils.parseUserDate(TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1))
-                            .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    </button>
-
-                    {/* This Week */}
-                    <div className="mt-4 space-y-2">
-                      <h4 className="text-sm font-medium text-foreground/60 mb-3">This Week</h4>
-                      {Array.from({ length: 7 }, (_, i) => {
-                        const date = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), i - 3);
-                        const isSelected = date === selectedDate;
-                        const isToday = TimezoneUtils.isToday(date);
-                        
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => {
-                              setSelectedDate(date);
-                              setShowDatePicker(false);
-                            }}
-                            className={`ios-touch-feedback touch-target w-full text-left py-3 px-4 rounded-lg transition-colors ${
-                              isSelected ? 'bg-blue-500/20 border-blue-500/50 border' : 'hover:bg-accent/50'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className={`font-medium ${isSelected ? 'text-blue-600' : 'text-foreground'}`}>
-                                {isToday ? 'Today' : TimezoneUtils.parseUserDate(date).toLocaleDateString('en-US', { weekday: 'long' })}
-                              </span>
-                              <span className={`text-sm ${isSelected ? 'text-blue-500' : 'text-foreground/60'}`}>
-                                {TimezoneUtils.parseUserDate(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Calendar Fallback */}
-              <div className="border-t border-border p-4">
-                <CalendarComponent
-                  mode="single"
-                  selected={TimezoneUtils.parseUserDate(selectedDate)}
-                  onSelect={(date) => {
-                    if (date) {
-                      setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                      setShowDatePicker(false);
-                    }
-                  }}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Home Indicator */}
-              <div className="flex justify-center pb-2">
-                <div className="w-16 h-1 bg-foreground/20 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
