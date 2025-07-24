@@ -495,67 +495,51 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto" {...swipeHandlers}>
-      {/* iOS-Style Header */}
-      <div className="ios-card p-4 space-y-3">
-        {/* Session Title - iOS Large Title Style */}
-        <div className="text-center">
-          <h1 className="text-foreground text-sm font-medium">
-            {session.name}
-          </h1>
-        </div>
-
-        {/* Exercise Progress - iOS Style */}
+    <div className="space-y-3 max-w-4xl mx-auto" {...swipeHandlers}>
+      {/* Minimalist Compact Header */}
+      <div className="ios-card p-2 space-y-2">
+        {/* Single Line Summary - Minimalist Approach */}
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">
-            Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="text-xs text-muted-foreground">
+              {currentExerciseIndex + 1}/{session.exercises.length}
+            </span>
+            <span className="text-xs font-medium text-primary">
+              {Math.round(progressPercentage)}%
+            </span>
+            {currentExercise && (
+              <span className="text-xs font-medium text-foreground truncate">
+                {currentExercise.exercise.name}
+              </span>
+            )}
           </div>
-          <div className="text-xs font-semibold text-primary">
-            {Math.round(progressPercentage)}% Complete
-          </div>
+          <button
+            onClick={() => setCircularProgressEnabled(!circularProgressEnabled)}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            {circularProgressEnabled ? 'Bar' : 'Circle'}
+          </button>
         </div>
 
-        {/* Progress Indicator - Clean iOS Style */}
-        <div className="space-y-2">
-          {circularProgressEnabled ? (
-            <div className="flex justify-center py-1">
-              <CircularProgress 
-                progress={progressPercentage}
-                size={50}
-                strokeWidth={5}
-              />
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              <Progress value={progressPercentage} className="h-1 bg-muted" />
-              <div className="text-center">
-                <span className="text-xs text-muted-foreground">
-                  {completedSets} of {totalSets} sets completed
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Current Exercise Info - iOS Style */}
-        {currentExercise && (
-          <div className="bg-muted/30 rounded-lg p-3 border border-border/50">
+        {/* Compact Progress Indicator */}
+        {circularProgressEnabled ? (
+          <div className="flex justify-center py-1">
+            <CircularProgress 
+              progress={progressPercentage}
+              size={40}
+              strokeWidth={4}
+            />
+          </div>
+        ) : (
+          <div className="space-y-1">
+            <Progress value={progressPercentage} className="h-1.5 bg-muted" />
             <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-foreground truncate">
-                  {currentExercise.exercise.name}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {currentExercise.exercise.muscleGroups.join(', ')} • {currentExercise.exercise.equipment}
-                </p>
-              </div>
-              <div className="ml-3 flex-shrink-0">
-                <div className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                  <span className="text-xs font-medium">
-                    {currentExercise.exercise.category}
-                  </span>
-                </div>
-              </div>
+              <span className="text-xs text-muted-foreground">
+                {session.name}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {completedSets}/{totalSets} sets
+              </span>
             </div>
           </div>
         )}
@@ -574,10 +558,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         </TabsList>
 
         {/* Workout Execution Tab */}
-        <TabsContent value="execution" className="space-y-4 mt-4">
+        <TabsContent value="execution" className="space-y-3 mt-3">
           {/* Current Exercise Display */}
           {currentExercise && (
-            <div className="ios-card p-3 space-y-3">
+            <div className="ios-card p-2 space-y-2">
               {/* Current Set Input */}
               {currentSet && (
                 <EnhancedSetInput
@@ -594,20 +578,20 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 />
               )}
 
-              {/* All Sets Overview - Enhanced User-Friendly Design */}
-              <div className="space-y-3">
+              {/* All Sets Overview - Compact Design */}
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-semibold text-foreground">Sets Progress</h4>
-                    <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-xs font-semibold text-foreground">Sets</h4>
+                    <div className="text-xs text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
                       {currentSets.filter(s => s.completed).length}/{currentSets.length}
                     </div>
                   </div>
-                  {/* Add/Remove Set Buttons - Enhanced Style */}
-                  <div className="flex items-center gap-2">
+                  {/* Add/Remove Set Buttons - Compact Style */}
+                  <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => addSet(currentExercise.id)}
-                      className="ios-touch-feedback flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/20"
+                      className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/20"
                       title="Add Set"
                     >
                       <Plus className="h-3 w-3" />
@@ -616,7 +600,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                     {currentSets.length > 1 && (
                       <button
                         onClick={() => removeSet(currentExercise.id, currentSetIndex)}
-                        className="ios-touch-feedback flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20"
+                        className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20"
                         title="Remove Set"
                       >
                         <Minus className="h-3 w-3" />
@@ -626,14 +610,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   </div>
                 </div>
                 
-                {/* Sets Grid - Optimized for Quick Selection */}
-                <div className="grid grid-cols-1 gap-2">
+                {/* Sets Grid - Compact Mobile Layout */}
+                <div className="grid grid-cols-1 gap-1.5">
                   {currentSets.map((set, index) => (
                     <div
                       key={index}
-                      className={`p-3 rounded-xl cursor-pointer transition-all duration-200 border-2 ${
+                      className={`p-2 rounded-lg cursor-pointer transition-all duration-200 border ${
                         index === currentSetIndex
-                          ? 'bg-primary/10 border-primary shadow-sm ring-1 ring-primary/20'
+                          ? 'bg-primary/10 border-primary shadow-sm'
                           : set.completed
                           ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
                           : 'bg-card border-border/50 hover:bg-muted/30 hover:border-border'
@@ -642,9 +626,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                     >
                       <div className="flex items-center justify-between">
                         {/* Set Info - Left Side */}
-                        <div className="flex items-center gap-3">
-                          {/* Set Number Badge */}
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                        <div className="flex items-center gap-2">
+                          {/* Set Number Badge - Compact */}
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                             index === currentSetIndex
                               ? 'bg-primary text-primary-foreground'
                               : set.completed
@@ -654,31 +638,31 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                             {set.setNumber}
                           </div>
                           
-                          {/* Set Status */}
+                          {/* Set Status - Compact */}
                           <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               {set.completed ? (
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-0.5">
                                   <CheckCircle className="h-3 w-3 text-emerald-500" />
-                                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                                    Completed
+                                  <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                    Done
                                   </span>
                                 </div>
                               ) : index === currentSetIndex ? (
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-0.5">
                                   <Target className="h-3 w-3 text-primary" />
-                                  <span className="text-sm font-medium text-primary">
-                                    Current Set
+                                  <span className="text-xs font-medium text-primary">
+                                    Active
                                   </span>
                                 </div>
                               ) : (
-                                <span className="text-sm text-muted-foreground">
+                                <span className="text-xs text-muted-foreground">
                                   Pending
                                 </span>
                               )}
                             </div>
-                            {/* Target/Actual Reps */}
-                            <div className="text-xs text-muted-foreground">
+                            {/* Target/Actual Reps - Compact */}
+                            <div className="text-xs text-muted-foreground leading-tight">
                               {set.completed ? (
                                 `${set.weight}${weightUnit} × ${set.actualReps} reps @ RPE ${set.rpe}`
                               ) : (
@@ -693,15 +677,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                           </div>
                         </div>
 
-                        {/* Action Buttons - Right Side */}
-                        <div className="flex items-center gap-1">
+                        {/* Action Buttons - Right Side - Compact */}
+                        <div className="flex items-center gap-0.5">
                           {set.completed && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 resetSet(currentExercise.id, index);
                               }}
-                              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-600 hover:bg-orange-500/20"
+                              className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-orange-500/10 border border-orange-500/30 text-orange-600 hover:bg-orange-500/20"
                               title="Reset Set"
                             >
                               <RotateCcw className="h-3 w-3" />
@@ -709,7 +693,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                             </button>
                           )}
                           {index === currentSetIndex && !set.completed && (
-                            <div className="text-xs text-primary font-medium bg-primary/10 px-2 py-1 rounded-lg">
+                            <div className="text-xs text-primary font-medium bg-primary/10 px-1.5 py-0.5 rounded-md">
                               Active
                             </div>
                           )}
