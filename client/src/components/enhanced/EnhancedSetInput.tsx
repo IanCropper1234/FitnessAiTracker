@@ -151,7 +151,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
   return (
     <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
-      <CardContent className="p-2 space-y-1.5">
+      <CardContent className="p-1.5 space-y-1">
         {/* Optimized Set Header - Single Line */}
         <div className="flex items-center justify-between min-h-[24px]">
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
@@ -210,7 +210,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Conditional Rendering: Show input only for active sets, compact view for completed */}
         {!set.completed && isActive ? (
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {/* Body Weight Info - Shows only when active */}
             {useBodyWeight && bodyWeightValue > 0 && (
               <div className="bg-blue-500/10 border border-blue-500/20 rounded p-1">
@@ -222,7 +222,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             )}
             
             {/* Flexible Grid with Auto-Sizing and Visual Separators */}
-            <div className="grid gap-3" style={{ gridTemplateColumns: '45% 25% 30%' }}>
+            <div className="grid gap-1.5" style={{ gridTemplateColumns: '40% 22% 28%', gridGap: '0.375rem' }}>
               {/* Weight Section - 45% width for decimals + unit */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
@@ -245,19 +245,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     step="0.5"
                     min="0"
                     max="1000"
-                    className={`h-8 text-sm border-0 bg-transparent pr-10 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    className={`h-7 text-sm border-0 bg-transparent pr-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
                     disabled={useBodyWeight}
                     readOnly={useBodyWeight}
                     inputMode="decimal"
                   />
                   {/* Inline Unit Selector with Visual Separator */}
-                  <div className="absolute right-0 top-0 h-8 flex items-center">
-                    <div className="h-4 w-px bg-border mr-2"></div>
+                  <div className="absolute right-0 top-0 h-7 flex items-center">
+                    <div className="h-3 w-px bg-border mr-1"></div>
                     <Select
                       value={weightUnit}
                       onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                     >
-                      <SelectTrigger className="w-8 h-8 border-0 bg-transparent text-xs p-0">
+                      <SelectTrigger className="w-7 h-7 border-0 bg-transparent text-xs p-0">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -280,7 +280,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     placeholder="0"
                     min="0"
                     max="50"
-                    className="h-8 text-sm border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="h-7 text-sm border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     inputMode="numeric"
                   />
                 </div>
@@ -294,7 +294,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     value={set.rpe ? set.rpe.toString() : ""}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
-                    <SelectTrigger className="h-8 text-sm border-0 bg-transparent">
+                    <SelectTrigger className="h-7 text-sm border-0 bg-transparent">
                       <SelectValue placeholder="0" />
                     </SelectTrigger>
                     <SelectContent>
