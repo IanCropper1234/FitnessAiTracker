@@ -594,72 +594,124 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 />
               )}
 
-              {/* All Sets Overview - iOS List Style */}
-              <div className="space-y-2">
+              {/* All Sets Overview - Enhanced User-Friendly Design */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-semibold text-foreground">All Sets</h4>
-                  {/* Add/Remove Set Buttons - iOS Style */}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-foreground">Sets Progress</h4>
+                    <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                      {currentSets.filter(s => s.completed).length}/{currentSets.length}
+                    </div>
+                  </div>
+                  {/* Add/Remove Set Buttons - Enhanced Style */}
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => addSet(currentExercise.id)}
-                      className="ios-touch-feedback w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center"
+                      className="ios-touch-feedback flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/20"
                       title="Add Set"
                     >
-                      <Plus className="h-3 w-3 text-emerald-400" />
+                      <Plus className="h-3 w-3" />
+                      <span className="text-xs font-medium">Add</span>
                     </button>
                     {currentSets.length > 1 && (
                       <button
                         onClick={() => removeSet(currentExercise.id, currentSetIndex)}
-                        className="ios-touch-feedback w-6 h-6 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center"
+                        className="ios-touch-feedback flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20"
                         title="Remove Set"
                       >
-                        <Minus className="h-3 w-3 text-red-400" />
+                        <Minus className="h-3 w-3" />
+                        <span className="text-xs font-medium">Remove</span>
                       </button>
                     )}
                   </div>
                 </div>
                 
-                <div className="space-y-1">
+                {/* Sets Grid - Optimized for Quick Selection */}
+                <div className="grid grid-cols-1 gap-2">
                   {currentSets.map((set, index) => (
                     <div
                       key={index}
-                      className={`p-2.5 rounded-lg cursor-pointer transition-all ${
+                      className={`p-3 rounded-xl cursor-pointer transition-all duration-200 border-2 ${
                         index === currentSetIndex
-                          ? 'bg-primary/5 border border-primary/30'
+                          ? 'bg-primary/10 border-primary shadow-sm ring-1 ring-primary/20'
                           : set.completed
-                          ? 'bg-emerald-500/5 border border-emerald-500/20'
-                          : 'border border-border/30 hover:bg-muted/50'
+                          ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
+                          : 'bg-card border-border/50 hover:bg-muted/30 hover:border-border'
                       }`}
                       onClick={() => setCurrentSetIndex(index)}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-foreground">
-                          Set {set.setNumber}
-                        </span>
-                        <div className="flex items-center gap-1.5">
-                          {set.completed ? (
-                            <>
-                              <span className="text-xs text-emerald-400 font-medium">
-                                {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
-                              </span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  resetSet(currentExercise.id, index);
-                                }}
-                                className="ios-touch-feedback w-4 h-4 rounded-full bg-orange-500/10 flex items-center justify-center"
-                                title="Reset Set"
-                              >
-                                <RotateCcw className="h-2.5 w-2.5 text-orange-400" />
-                              </button>
-                            </>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              Target: {getSetRecommendation(currentExercise.exerciseId, set.setNumber)?.recommendedReps || set.targetReps} reps
-                              {getSetRecommendation(currentExercise.exerciseId, set.setNumber) && (
-                                <span className="text-xs text-emerald-400 ml-1">(Rec)</span>
+                        {/* Set Info - Left Side */}
+                        <div className="flex items-center gap-3">
+                          {/* Set Number Badge */}
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                            index === currentSetIndex
+                              ? 'bg-primary text-primary-foreground'
+                              : set.completed
+                              ? 'bg-emerald-500 text-white'
+                              : 'bg-muted text-muted-foreground'
+                          }`}>
+                            {set.setNumber}
+                          </div>
+                          
+                          {/* Set Status */}
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              {set.completed ? (
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="h-3 w-3 text-emerald-500" />
+                                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                                    Completed
+                                  </span>
+                                </div>
+                              ) : index === currentSetIndex ? (
+                                <div className="flex items-center gap-1">
+                                  <Target className="h-3 w-3 text-primary" />
+                                  <span className="text-sm font-medium text-primary">
+                                    Current Set
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">
+                                  Pending
+                                </span>
                               )}
-                            </span>
+                            </div>
+                            {/* Target/Actual Reps */}
+                            <div className="text-xs text-muted-foreground">
+                              {set.completed ? (
+                                `${set.weight}${weightUnit} × ${set.actualReps} reps @ RPE ${set.rpe}`
+                              ) : (
+                                <>
+                                  Target: {getSetRecommendation(currentExercise.exerciseId, set.setNumber)?.recommendedReps || set.targetReps} reps
+                                  {getSetRecommendation(currentExercise.exerciseId, set.setNumber) && (
+                                    <span className="text-emerald-500 ml-1 font-medium">(Recommended)</span>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons - Right Side */}
+                        <div className="flex items-center gap-1">
+                          {set.completed && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                resetSet(currentExercise.id, index);
+                              }}
+                              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-600 hover:bg-orange-500/20"
+                              title="Reset Set"
+                            >
+                              <RotateCcw className="h-3 w-3" />
+                              <span className="text-xs font-medium">Reset</span>
+                            </button>
+                          )}
+                          {index === currentSetIndex && !set.completed && (
+                            <div className="text-xs text-primary font-medium bg-primary/10 px-2 py-1 rounded-lg">
+                              Active
+                            </div>
                           )}
                         </div>
                       </div>
