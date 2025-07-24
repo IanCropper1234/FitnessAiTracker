@@ -51,6 +51,18 @@ import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+// Edit session schema
+const editSessionSchema = z.object({
+  name: z.string().min(1, "Session name is required").max(100, "Session name must be less than 100 characters"),
+});
+
+type EditSessionForm = z.infer<typeof editSessionSchema>;
 
 interface Exercise {
   id: number;
@@ -106,6 +118,17 @@ function WorkoutSessionsWithBulkActions({
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  // Edit session mutation
+  const editSessionMutation = useMutation({
+    mutationFn: async ({ sessionId, updates }: { sessionId: number; updates: { name: string } }) => {
+      const response = await apiRequest('PUT', `/api/training/sessions/${sessionId}`, updates);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
+    },
+  });
 
   // Bulk delete mutation
   const bulkDeleteMutation = useMutation({
@@ -227,6 +250,7 @@ function WorkoutSessionsWithBulkActions({
             onView={() => onViewSession(session.id)}
             onDelete={() => bulkDeleteMutation.mutate([session.id])}
             onRestart={() => restartSessionMutation.mutate(session.id)}
+            onEdit={(sessionId, updates) => editSessionMutation.mutate({ sessionId, updates })}
             onDuplicate={() => {
               // TODO: Implement duplicate functionality
               toast({
@@ -252,6 +276,7 @@ interface WorkoutSessionCardProps {
   onDelete: () => void;
   onRestart: () => void;
   onDuplicate: () => void;
+  onEdit: (sessionId: number, updates: { name: string }) => void;
   showCheckbox?: boolean;
   isSelected?: boolean;
   onSelect?: () => void;
@@ -264,10 +289,39 @@ function WorkoutSessionCard({
   onDelete, 
   onRestart, 
   onDuplicate,
+  onEdit,
   showCheckbox = false,
   isSelected = false,
   onSelect
 }: WorkoutSessionCardProps) {
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const editForm = useForm<EditSessionForm>({
+    resolver: zodResolver(editSessionSchema),
+    defaultValues: {
+      name: session.name,
+    },
+  });
+
+  // Reset form when session changes or dialog opens
+  useEffect(() => {
+    if (editDialogOpen) {
+      editForm.reset({
+        name: session.name,
+      });
+    }
+  }, [editDialogOpen, session.name, editForm]);
+
+  const handleEditSubmit = (data: EditSessionForm) => {
+    onEdit(session.id, data);
+    setEditDialogOpen(false);
+    toast({
+      title: "Session Updated",
+      description: "Session name has been updated successfully",
+    });
+  };
+
   return (
     <Card className="p-3">
       {/* Compact Header Section */}
@@ -307,6 +361,10 @@ function WorkoutSessionCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+                <Settings className="h-3.5 w-3.5 mr-2" />
+                Edit Session
+              </DropdownMenuItem>
               {!session.isCompleted && (
                 <DropdownMenuItem onClick={onRestart}>
                   <RotateCcw className="h-3.5 w-3.5 mr-2" />
@@ -359,6 +417,38 @@ function WorkoutSessionCard({
           View Details
         </Button>
       )}
+
+      {/* Edit Session Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Session</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(handleEditSubmit)} className="space-y-4">
+              <FormField
+                control={editForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Session Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter session name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Save Changes</Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
@@ -842,7 +932,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 </div>
               </div>
 
-              {/* Compact Grid Sessions */}
+              {/* Sessions with Edit/Delete Functionality */}
               <div className="px-1">
                 {(() => {
                   const filteredSessions = Array.isArray(recentSessions) ? recentSessions.filter(session => {
@@ -881,74 +971,12 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   }
 
                   return (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {filteredSessions.map((session) => (
-                        <div
-                          key={session.id}
-                          className={`relative p-3 rounded-lg border transition-all duration-200 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${
-                            session.isCompleted
-                              ? 'bg-white/60 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 backdrop-blur-sm'
-                              : 'bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 backdrop-blur-sm'
-                          }`}
-                        >
-                          {/* Session Header */}
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="min-w-0 flex-1">
-                              <h5 className="text-sm font-medium truncate text-gray-900 dark:text-gray-100">
-                                {session.name}
-                              </h5>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                {new Date(session.date).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                              session.isCompleted 
-                                ? 'bg-emerald-500 dark:bg-emerald-400' 
-                                : 'bg-blue-500 dark:bg-blue-400 animate-pulse'
-                            }`} />
-                          </div>
-
-                          {/* Session Stats */}
-                          <div className="space-y-1.5 mb-3">
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-500 dark:text-gray-400">Duration</span>
-                              <span className="font-medium text-gray-900 dark:text-gray-100">{session.duration || 0}min</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-500 dark:text-gray-400">Volume</span>
-                              <span className="font-medium text-gray-900 dark:text-gray-100">{session.totalVolume || 0}kg</span>
-                            </div>
-                          </div>
-
-                          {/* Action Button */}
-                          <button
-                            onClick={() => {
-                              if (session.isCompleted) {
-                                setViewingSessionId(session.id);
-                              } else {
-                                setExecutingSessionId(session.id);
-                              }
-                            }}
-                            className="w-full py-2 px-3 rounded-md text-xs font-medium transition-all duration-200 active:scale-95 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
-                          >
-                            {session.isCompleted ? 'View' : 'Continue'}
-                          </button>
-
-                          {/* Three Dots Menu */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Add menu logic here
-                            }}
-                            className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          >
-                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full mt-0.5"></div>
-                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full mt-0.5"></div>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                    <WorkoutSessionsWithBulkActions
+                      sessions={filteredSessions}
+                      onStartSession={(sessionId) => setExecutingSessionId(sessionId)}
+                      onViewSession={(sessionId) => setViewingSessionId(sessionId)}
+                      userId={userId}
+                    />
                   );
                 })()}
               </div>

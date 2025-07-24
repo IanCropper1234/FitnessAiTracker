@@ -1375,6 +1375,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update workout session (edit session name and other properties)
+  app.put("/api/training/sessions/:sessionId", async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const updates = req.body;
+      
+      if (isNaN(sessionId)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+      }
+      
+      // Update session with provided data
+      const updatedSession = await storage.updateWorkoutSession(sessionId, updates);
+      
+      if (!updatedSession) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+      
+      res.json(updatedSession);
+    } catch (error: any) {
+      console.error('Error updating session:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Restart workout session (reset progress but keep structure)
   app.post("/api/training/sessions/:sessionId/restart", async (req, res) => {
     try {
