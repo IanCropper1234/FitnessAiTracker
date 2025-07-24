@@ -298,28 +298,28 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
                     <SelectTrigger className="h-8 text-sm border-0 bg-transparent">
-                      <SelectValue placeholder="RPE" />
+                      <SelectValue placeholder="0" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">RPE 1</SelectItem>
-                      <SelectItem value="1.5">RPE 1.5</SelectItem>
-                      <SelectItem value="2">RPE 2</SelectItem>
-                      <SelectItem value="2.5">RPE 2.5</SelectItem>
-                      <SelectItem value="3">RPE 3</SelectItem>
-                      <SelectItem value="3.5">RPE 3.5</SelectItem>
-                      <SelectItem value="4">RPE 4</SelectItem>
-                      <SelectItem value="4.5">RPE 4.5</SelectItem>
-                      <SelectItem value="5">RPE 5</SelectItem>
-                      <SelectItem value="5.5">RPE 5.5</SelectItem>
-                      <SelectItem value="6">RPE 6</SelectItem>
-                      <SelectItem value="6.5">RPE 6.5</SelectItem>
-                      <SelectItem value="7">RPE 7</SelectItem>
-                      <SelectItem value="7.5">RPE 7.5</SelectItem>
-                      <SelectItem value="8">RPE 8</SelectItem>
-                      <SelectItem value="8.5">RPE 8.5</SelectItem>
-                      <SelectItem value="9">RPE 9</SelectItem>
-                      <SelectItem value="9.5">RPE 9.5</SelectItem>
-                      <SelectItem value="10">RPE 10</SelectItem>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="1.5">1.5</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="2.5">2.5</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                      <SelectItem value="3.5">3.5</SelectItem>
+                      <SelectItem value="4">4</SelectItem>
+                      <SelectItem value="4.5">4.5</SelectItem>
+                      <SelectItem value="5">5</SelectItem>
+                      <SelectItem value="5.5">5.5</SelectItem>
+                      <SelectItem value="6">6</SelectItem>
+                      <SelectItem value="6.5">6.5</SelectItem>
+                      <SelectItem value="7">7</SelectItem>
+                      <SelectItem value="7.5">7.5</SelectItem>
+                      <SelectItem value="8">8</SelectItem>
+                      <SelectItem value="8.5">8.5</SelectItem>
+                      <SelectItem value="9">9</SelectItem>
+                      <SelectItem value="9.5">9.5</SelectItem>
+                      <SelectItem value="10">10</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
