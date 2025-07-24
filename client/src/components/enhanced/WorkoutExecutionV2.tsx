@@ -629,25 +629,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               </div>
             </div>
 
-            {/* Current Exercise Details */}
-            {currentExercise && (
-              <div className="bg-muted/20 rounded-lg p-2.5 border border-border/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-muted-foreground truncate">
-                      {currentExercise.exercise.muscleGroups.join(', ')} • {currentExercise.exercise.equipment}
-                    </p>
-                  </div>
-                  <div className="ml-2 flex-shrink-0">
-                    <div className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                      <span className="text-xs font-medium">
-                        {currentExercise.exercise.category}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
