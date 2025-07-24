@@ -140,20 +140,20 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
             {showCustomTime ? (
               // Custom time setting view
               <>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg text-foreground">Custom Rest Time</h3>
+                    <Settings className="h-4 w-4 text-primary" />
+                    <h3 className="font-medium text-base text-foreground">Custom Rest Time</h3>
                   </div>
                   <button
                     onClick={() => setShowCustomTime(false)}
-                    className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                    className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
                 
-                <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="flex items-center justify-center gap-3 mb-4">
                   <div className="text-center">
                     <Input
                       type="number"
@@ -161,11 +161,11 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                       max="59"
                       value={customMinutes}
                       onChange={(e) => setCustomMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                      className="w-20 h-12 text-center text-lg font-mono border-2"
+                      className="w-16 h-10 text-center text-base font-mono border"
                     />
-                    <label className="text-sm text-foreground/60 mt-1 block">minutes</label>
+                    <label className="text-xs text-foreground/60 mt-1 block">min</label>
                   </div>
-                  <div className="text-2xl font-bold text-foreground/40">:</div>
+                  <div className="text-lg font-bold text-foreground/40">:</div>
                   <div className="text-center">
                     <Input
                       type="number"
@@ -173,23 +173,23 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                       max="59"
                       value={customSeconds}
                       onChange={(e) => setCustomSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                      className="w-20 h-12 text-center text-lg font-mono border-2"
+                      className="w-16 h-10 text-center text-base font-mono border"
                     />
-                    <label className="text-sm text-foreground/60 mt-1 block">seconds</label>
+                    <label className="text-xs text-foreground/60 mt-1 block">sec</label>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
                     onClick={() => setShowCustomTime(false)}
-                    className="h-12"
+                    className="h-10 text-sm"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleCustomTimeSet}
-                    className="h-12 font-semibold"
+                    className="h-10 font-medium text-sm"
                   >
                     Start Timer
                   </Button>
@@ -198,65 +198,65 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
             ) : (
               // Timer display view
               <>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg text-foreground">Rest Timer</h3>
+                    <Clock className="h-4 w-4 text-primary" />
+                    <h3 className="font-medium text-base text-foreground">Rest Timer</h3>
                   </div>
                   <button
                     onClick={() => setIsExpanded(false)}
-                    className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                    className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
                 
-                <div className="flex items-center justify-center mb-6">
+                <div className="flex items-center justify-center mb-4">
                   <div className="relative">
                     <CircularProgress 
                       progress={progress} 
-                      size={120}
-                      strokeWidth={8}
+                      size={100}
+                      strokeWidth={6}
                       showText={false}
                       className="text-primary"
                     >
                       <div className="text-center">
-                        <div className="text-3xl font-bold font-mono text-foreground">{formatTime(timeRemaining)}</div>
-                        <div className="text-sm text-foreground/60">remaining</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{formatTime(timeRemaining)}</div>
+                        <div className="text-xs text-foreground/60">remaining</div>
                       </div>
                     </CircularProgress>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   {onToggle && (
                     <Button
                       variant="outline"
                       onClick={onToggle}
-                      className="h-12 flex items-center gap-2"
+                      className="h-10 flex items-center gap-1.5 text-sm"
                     >
-                      {isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {isActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                       {isActive ? 'Pause' : 'Resume'}
                     </Button>
                   )}
                   <Button
                     onClick={onSkip}
-                    className="h-12 flex items-center gap-2"
+                    className="h-10 flex items-center gap-1.5 text-sm"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                     Skip Rest
                   </Button>
                 </div>
                 
                 {/* Quick time presets */}
-                <div className="space-y-2">
-                  <div className="text-sm font-medium text-foreground/70 text-center">Quick Start</div>
-                  <div className="grid grid-cols-5 gap-2">
+                <div className="space-y-1.5">
+                  <div className="text-xs font-medium text-foreground/70 text-center">Quick Start</div>
+                  <div className="grid grid-cols-5 gap-1.5">
                     {quickTimes.map((preset) => (
                       <button
                         key={preset.label}
                         onClick={() => onCustomTimeSet?.(preset.seconds)}
-                        className="h-10 px-2 text-xs font-medium rounded-lg bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
+                        className="h-8 px-1.5 text-xs font-medium rounded-md bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
                       >
                         {preset.label}
                       </button>
@@ -264,13 +264,13 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   </div>
                 </div>
                 
-                <div className="mt-4 pt-4 border-t border-border">
+                <div className="mt-3 pt-3 border-t border-border">
                   <Button
                     variant="outline"
                     onClick={() => setShowCustomTime(true)}
-                    className="w-full h-10 flex items-center gap-2"
+                    className="w-full h-8 flex items-center gap-1.5 text-sm"
                   >
-                    <Settings className="h-4 w-4" />
+                    <Settings className="h-3.5 w-3.5" />
                     Custom Time
                   </Button>
                 </div>
@@ -279,28 +279,28 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
           </div>
         </div>
       ) : (
-        // Collapsed timer button - centered and clean
+        // Collapsed timer button - compact and device-optimized
         <button
           onMouseDown={handleMouseDown}
           onClick={() => setIsExpanded(true)}
-          className="flex items-center justify-center w-16 h-16 rounded-full shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-to-br from-black to-gray-800 dark:from-white dark:to-gray-200 text-white dark:text-black hover:shadow-2xl border-2 border-white/20 dark:border-black/20"
+          className="flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-br from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 text-white dark:text-gray-900 hover:shadow-xl border border-gray-200/40 dark:border-gray-700/40"
         >
           <div className="relative">
             {timeRemaining > 0 ? (
               <CircularProgress 
                 progress={progress} 
-                size={36}
-                strokeWidth={3}
+                size={32}
+                strokeWidth={2.5}
                 showText={false}
-                className="text-white dark:text-black"
+                className="text-white dark:text-gray-900"
               >
                 <div className="text-center">
-                  <div className="text-xs font-bold">{Math.ceil(timeRemaining / 60)}</div>
-                  <div className="text-[8px] opacity-80">min</div>
+                  <div className="text-[10px] font-semibold">{Math.ceil(timeRemaining / 60)}</div>
+                  <div className="text-[7px] opacity-75">min</div>
                 </div>
               </CircularProgress>
             ) : (
-              <Timer className="h-6 w-6" />
+              <Timer className="h-5 w-5" />
             )}
           </div>
         </button>
