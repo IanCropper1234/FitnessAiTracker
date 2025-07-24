@@ -837,7 +837,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  
                   {/* Food Items */}
                   <div className="pb-3">
                     {mealLogs.map((log: any) => {
@@ -934,13 +933,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                               onShowLogger(selectedDate);
                             }
                           }}
-                          className={`w-full text-left py-3 px-0 transition-all duration-200 ${
-                            dragOverTarget === mealType.key
-                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                              : draggedItem && draggedItem.mealType !== mealType.key
-                              ? 'bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-400'
-                              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                          }`}
+                          className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px]"
                         >
                           {dragOverTarget === mealType.key ? (
                             <div className="flex items-center gap-3">
@@ -1090,7 +1083,6 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
           </div>
         </DialogContent>
       </Dialog>
-      
       {/* Nutrition Facts Dialog */}
       <Dialog open={showNutritionDialog} onOpenChange={setShowNutritionDialog}>
         <DialogContent className="max-w-md">
