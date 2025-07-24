@@ -609,25 +609,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               </h1>
             </div>
 
-            {/* Detailed Progress */}
-            <div className="space-y-2">
-              {circularProgressEnabled ? (
-                <div className="flex justify-center">
-                  <CircularProgress 
-                    progress={progressPercentage}
-                    size={40}
-                    strokeWidth={4}
-                  />
-                </div>
-              ) : (
-                <Progress value={progressPercentage} className="h-1.5 bg-muted" />
-              )}
-              <div className="text-center">
-                <span className="text-xs text-muted-foreground">
-                  {completedSets} of {totalSets} sets completed
-                </span>
-              </div>
-            </div>
+            
 
             
           </div>
