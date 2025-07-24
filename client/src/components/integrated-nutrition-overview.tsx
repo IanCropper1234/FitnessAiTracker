@@ -477,29 +477,29 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               Nutrition Overview
             </CardTitle>
             
-            <div className="flex items-center gap-0.5 flex-shrink-0">
+            <div className="flex items-center gap-0 flex-shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
                 }}
-                className="h-5 w-5 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
+                className="h-4 w-4 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
               >
-                <ChevronLeft className="h-2.5 w-2.5" />
+                <ChevronLeft className="h-2 w-2" />
               </Button>
               
               <Popover>
                 <PopoverTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="h-5 px-1.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-0.5 max-w-[90px] justify-center"
+                    className="h-4 px-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-0.5 max-w-[70px] justify-center"
                   >
-                    <span className="truncate text-[11px]">
+                    <span className="truncate text-[10px]">
                       {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                        TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
                     </span>
-                    <ChevronDown className="h-2 w-2 flex-shrink-0" />
+                    <ChevronDown className="h-1.5 w-1.5 flex-shrink-0" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="center">
@@ -522,9 +522,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
                 }}
-                className="h-5 w-5 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
+                className="h-4 w-4 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
               >
-                <ChevronRight className="h-2.5 w-2.5" />
+                <ChevronRight className="h-2 w-2" />
               </Button>
             </div>
           </div>
