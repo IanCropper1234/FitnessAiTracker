@@ -121,7 +121,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   const handleInputFocus = () => {
     setInputFocused(true);
-    setHeaderVisible(false); // Auto-hide during input
+    // Only auto-hide if header is not expanded
+    if (!headerExpanded) {
+      setHeaderVisible(false);
+    }
   };
 
   const handleInputBlur = () => {
@@ -523,7 +526,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       {/* Dynamic Responsive Header - Collapsible + Sticky + Floating */}
       <div 
         className={`
-          fixed top-0 left-0 right-0 z-50 mx-auto max-w-4xl
+          fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl z-50
           transition-all duration-300 ease-in-out
           ${headerVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}
           ${inputFocused ? 'backdrop-blur-sm bg-background/80' : 'bg-background/95 backdrop-blur-md'}
@@ -532,8 +535,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       >
         {/* Sticky Smart Bar - Always Visible Minimal Header */}
         <div 
-          className="flex items-center justify-between p-3 cursor-pointer"
-          onClick={toggleHeaderExpansion}
+          className={`
+            flex items-center justify-between p-3 cursor-pointer
+            transition-colors duration-200
+            ${headerExpanded ? 'bg-muted/10' : 'hover:bg-muted/20'}
+          `}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleHeaderExpansion();
+          }}
         >
           {/* Left: Current Exercise + Set Counter */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -570,6 +580,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               </svg>
             </div>
           </div>
+          
+          {/* Collapsed State Indicator */}
+          {!headerExpanded && (
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
+              <div className="w-8 h-1 bg-muted-foreground/30 rounded-full"></div>
+            </div>
+          )}
         </div>
 
         {/* Collapsible Expanded Content */}
@@ -631,7 +648,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       </div>
 
       {/* Spacer to prevent content from hiding under fixed header */}
-      <div className={`transition-all duration-300 ${headerVisible ? (headerExpanded ? 'h-32' : 'h-16') : 'h-0'}`}></div>
+      <div className={`transition-all duration-300 ${headerVisible ? (headerExpanded ? 'h-44' : 'h-20') : 'h-0'}`}></div>
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2">
