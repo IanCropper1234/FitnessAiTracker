@@ -664,6 +664,20 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Rest Timer */}
+      {isRestTimerActive && (
+        <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
+          <CardContent className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-yellow-600" />
+              <span className="font-medium">Rest Time: {formatTime(restTimeRemaining)}</span>
+            </div>
+            <Button size="sm" variant="outline" onClick={skipRest}>
+              Skip Rest
+            </Button>
+          </CardContent>
+        </Card>
+      )}
       {/* Session Header */}
       <Card>
         <CardHeader>
@@ -679,20 +693,6 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           </p>
         </CardHeader>
       </Card>
-      {/* Rest Timer */}
-      {isRestTimerActive && (
-        <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-yellow-600" />
-              <span className="font-medium">Rest Time: {formatTime(restTimeRemaining)}</span>
-            </div>
-            <Button size="sm" variant="outline" onClick={skipRest}>
-              Skip Rest
-            </Button>
-          </CardContent>
-        </Card>
-      )}
       {/* All Exercises Overview with Drag & Drop */}
       <Card>
         <CardHeader>
