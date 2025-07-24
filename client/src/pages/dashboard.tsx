@@ -94,20 +94,18 @@ export function Dashboard({ user }: DashboardProps) {
         {/* Centered Date Selector */}
         <div className="flex flex-col items-center space-y-2">
           {/* Date Navigation Controls */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="flex items-center justify-center gap-6 py-4">
+            <button
               onClick={() => {
                 setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
               }}
-              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="touch-target ios-touch-feedback p-2 text-foreground/70 hover:text-foreground transition-colors"
             >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+              <ChevronLeft className="h-6 w-6" />
+            </button>
             
-            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[100px] justify-center text-xs sm:text-sm">
-              <span className="text-sm font-medium">
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-medium text-foreground">
                 {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                  TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
                    day: '2-digit', 
@@ -117,9 +115,9 @@ export function Dashboard({ user }: DashboardProps) {
               </span>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <ChevronDown className="h-3 w-3" />
-                  </Button>
+                  <button className="ios-touch-feedback p-1 text-foreground/50 hover:text-foreground transition-colors">
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="center">
                   <CalendarComponent
@@ -136,16 +134,14 @@ export function Dashboard({ user }: DashboardProps) {
               </Popover>
             </div>
             
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => {
                 setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
               }}
-              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="touch-target ios-touch-feedback p-2 text-foreground/70 hover:text-foreground transition-colors"
             >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              <ChevronRight className="h-6 w-6" />
+            </button>
           </div>
           
           {/* Full Date Display */}
