@@ -635,7 +635,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       </div>
 
       {/* Spacer to prevent content from hiding under fixed header */}
-      <div className={`transition-all duration-300 ${headerVisible ? (headerExpanded ? 'h-44' : 'h-20') : 'h-0'}`}></div>
+      <div className={`transition-all duration-300 ${headerVisible ? (headerExpanded ? 'h-44' : 'h-16') : 'h-0'}`}></div>
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2">
