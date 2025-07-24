@@ -1,0 +1,19 @@
+arning: Cannot update a component (`Toaster`) while rendering a different component (`WorkoutExecutionV2`). To locate the bad setState() call inside `WorkoutExecutionV2`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render
+    at WorkoutExecutionV2 (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/enhanced/WorkoutExecutionV2.tsx:34:3)
+    at WorkoutExecutionWrapper (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/WorkoutExecutionWrapper.tsx:24:3)
+    at TrainingDashboard (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/training-dashboard.tsx:648:37)
+    at div
+    at div
+    at div
+    at TrainingPage (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/pages/training.tsx:24:32)
+    at Route (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=38c15b8c:323:16)
+    at Switch (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=38c15b8c:379:17)
+    at div
+    at AppRouter (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/App.tsx?v=xZLp00MH3dX9QE7fzc3fL:34:22)
+    at div
+    at Provider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=38c15b8c:38:15)
+    at TooltipProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=38c15b8c:63:5)
+    at LanguageProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/language-provider.tsx:226:36)
+    at ThemeProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/theme-provider.tsx:20:33)
+    at QueryClientProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=38c15b8c:2805:3)
+    at App (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/App.tsx?v=xZLp00MH3dX9QE7fzc3fL:183:27)
