@@ -1,0 +1,15 @@
+FitAI PWA: Running in Safari - can be installed via Share > Add to Home Screen
+training:110 FitAI PWA: ServiceWorker registered successfully
+training:149 FitAI PWA: Install prompt available
+auth:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+training-dashboard.tsx:561 Date change triggered: null
+training-dashboard.tsx:572 Fetching stats for date: all dates
+training-dashboard.tsx:592 Fetching sessions for date: all dates
+training-dashboard.tsx:599 Received 4 sessions for all dates: (4) [{…}, {…}, {…}, {…}]0: {id: 305, userId: 1, programId: null, mesocycleId: 68, date: '2025-07-31T07:51:09.387Z', …}1: {id: 304, userId: 1, programId: null, mesocycleId: 68, date: '2025-07-30T07:51:09.387Z', …}2: {id: 303, userId: 1, programId: null, mesocycleId: 68, date: '2025-07-24T07:51:09.387Z', …}3: {id: 302, userId: 1, programId: null, mesocycleId: 68, date: '2025-07-23T07:51:09.387Z', …}length: 4[[Prototype]]: Array(0)
+training-dashboard.tsx:577 Stats for all dates: {totalSessions: 2, totalVolume: 3280, averageSessionLength: 1, favoriteExercises: Array(0), weeklyProgress: Array(1)}averageSessionLength: 1favoriteExercises: []totalSessions: 2totalVolume: 3280weeklyProgress: [{…}][[Prototype]]: Object
+mesocycle-dashboard.tsx:158 Mesocycles data: {id: 68, userId: 1, programId: null, templateId: 1392, name: 'test332', …}createdAt: "2025-07-23T07:51:09.391Z"currentWeek: 2endDate: "2025-08-20T07:51:09.387Z"id: 68isActive: truename: "test332"phase: "accumulation"programId: nullstartDate: "2025-07-23T07:51:09.387Z"templateId: 1392totalWeeks: 4userId: 1[[Prototype]]: Object
+mesocycle-dashboard.tsx:159 Active mesocycle found: undefined
+mesocycle-dashboard.tsx:158 Mesocycles data: {id: 68, userId: 1, programId: null, templateId: 1392, name: 'test332', …}createdAt: "2025-07-23T07:51:09.391Z"currentWeek: 2endDate: "2025-08-20T07:51:09.387Z"id: 68isActive: truename: "test332"phase: "accumulation"programId: nullstartDate: "2025-07-23T07:51:09.387Z"templateId: 1392totalWeeks: 4userId: 1[[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
+mesocycle-dashboard.tsx:159 Active mesocycle found: undefined
+mesocycle-dashboard.tsx:158 Mesocycles data: {id: 68, userId: 1, programId: null, templateId: 1392, name: 'test332', …}createdAt: "2025-07-23T07:51:09.391Z"currentWeek: 2endDate: "2025-08-20T07:51:09.387Z"id: 68isActive: truename: "test332"phase: "accumulation"programId: nullstartDate: "2025-07-23T07:51:09.387Z"templateId: 1392totalWeeks: 4userId: 1[[Prototype]]: Object
+mesocycle-dashboard.tsx:159 Active mesocycle found: undefined

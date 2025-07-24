@@ -82,7 +82,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     queryKey: ['/api/training/mesocycles', userId],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/training/mesocycles/${userId}`);
-      return response.json();
+      const data = await response.json();
+      console.log('Raw mesocycles API response:', data);
+      return Array.isArray(data) ? data : [data];
     },
   });
 
@@ -152,10 +154,13 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     },
   });
 
-  const activeMesocycle = Array.isArray(mesocycles) ? mesocycles.find((m: Mesocycle) => m.isActive) : undefined;
+  // Ensure mesocycles is always an array and find active one
+  const mesocycleArray = Array.isArray(mesocycles) ? mesocycles : [mesocycles].filter(Boolean);
+  const activeMesocycle = mesocycleArray.find((m: Mesocycle) => m?.isActive === true);
   
   // Debug logging
   console.log('Mesocycles data:', mesocycles);
+  console.log('Mesocycle array:', mesocycleArray);
   console.log('Active mesocycle found:', activeMesocycle);
 
   // Check if all current week sessions are completed
