@@ -511,6 +511,17 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
     }
   });
 
+  // Fetch current mesocycle information
+  const { data: currentMesocycle } = useQuery({
+    queryKey: ["/api/mesocycles", userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/mesocycles/${userId}`);
+      const data = await response.json();
+      // Return the active mesocycle (first one should be active)
+      return Array.isArray(data) && data.length > 0 ? data.find(m => m.isActive) || data[0] : null;
+    }
+  });
+
   // Group exercises by category
   const exercisesByCategory = exercises.reduce((acc, exercise) => {
     if (!acc[exercise.category]) {
@@ -769,6 +780,28 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             </Card>
           ) : (
             <div className="space-y-6">
+              {/* Current Mesocycle Status */}
+              {currentMesocycle && (
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mx-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                        {currentMesocycle.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-purple-600 dark:text-purple-400">
+                      <span className="bg-purple-100 dark:bg-purple-900/40 px-2 py-1 rounded-full">
+                        Week {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
+                      </span>
+                      <span className="bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded-full capitalize">
+                        {currentMesocycle.phase || 'Active'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* In Progress Sessions */}
               {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
                 <div className="space-y-4">
