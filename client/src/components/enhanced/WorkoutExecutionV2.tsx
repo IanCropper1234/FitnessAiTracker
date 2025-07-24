@@ -94,7 +94,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const isV2Enabled = useFeature('workoutExecutionV2');
   const gestureNavEnabled = useFeature('gestureNavigation');
   const restTimerFABEnabled = useFeature('restTimerFAB');
-  const circularProgressEnabled = useFeature('circularProgress');
+  const circularProgressFeature = useFeature('circularProgress');
+  
+  // Local state for progress display
+  const [circularProgressEnabled, setCircularProgressEnabled] = useState(circularProgressFeature);
 
   // State management
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -706,23 +709,23 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             </div>
           )}
 
-          {/* iOS-Style Navigation */}
-          <div className="flex items-center justify-between gap-3">
+          {/* Compact Navigation */}
+          <div className="grid grid-cols-2 gap-2">
             <button
               disabled={currentExerciseIndex === 0}
               onClick={() => {
                 setCurrentExerciseIndex(currentExerciseIndex - 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-touch-feedback flex items-center gap-2 p-2.5 rounded-lg border border-border/30 flex-1 ${
+              className={`ios-touch-feedback flex items-center gap-1.5 p-2 rounded-lg border border-border/30 ${
                 currentExerciseIndex === 0 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
               }`}
             >
-              <ArrowLeft className="h-4 w-4 text-primary" />
+              <ArrowLeft className="h-3.5 w-3.5 text-primary" />
               <div className="text-left flex-1 min-w-0">
-                <div className="text-xs text-muted-foreground">Previous</div>
+                <div className="text-xs text-muted-foreground">Prev</div>
                 {currentExerciseIndex > 0 && (
                   <div className="text-xs font-medium text-foreground truncate">
                     {session.exercises[currentExerciseIndex - 1]?.exercise.name}
@@ -737,7 +740,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-touch-feedback flex items-center gap-2 p-2.5 rounded-lg border border-border/30 flex-1 ${
+              className={`ios-touch-feedback flex items-center gap-1.5 p-2 rounded-lg border border-border/30 ${
                 currentExerciseIndex === session.exercises.length - 1 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
@@ -751,7 +754,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   </div>
                 )}
               </div>
-              <ArrowRight className="h-4 w-4 text-primary" />
+              <ArrowRight className="h-3.5 w-3.5 text-primary" />
             </button>
           </div>
         </TabsContent>
@@ -767,24 +770,51 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           />
         </TabsContent>
       </Tabs>
-      {/* iOS-Style Action Buttons */}
-      <div className="flex gap-2">
-        <button 
-          onClick={saveAndExit} 
-          disabled={saveProgressMutation.isPending}
-          className="ios-touch-feedback flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2.5 px-3 rounded-lg border border-border/30 flex items-center justify-center gap-1.5"
-        >
-          <Save className="h-4 w-4" />
-          <span className="text-sm font-medium">Save & Exit</span>
-        </button>
-        <button 
-          onClick={completeWorkout} 
-          disabled={saveProgressMutation.isPending}
-          className="ios-touch-feedback flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5"
-        >
-          <CheckCircle className="h-4 w-4" />
-          <span className="text-sm font-medium">Complete Workout</span>
-        </button>
+      {/* Compact Mobile Action Section */}
+      <div className="ios-card p-2">
+        {/* Quick Stats Bar */}
+        <div className="flex items-center justify-between mb-2 pb-2 border-b border-border/30">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span>{completedSets}/{totalSets} sets</span>
+            <span>•</span>
+            <span>{Math.round(progressPercentage)}% done</span>
+            <span>•</span>
+            <span>{Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min</span>
+          </div>
+          <div className="text-xs font-medium text-primary">
+            {session.exercises.length - currentExerciseIndex - 1} exercises left
+          </div>
+        </div>
+        
+        {/* Compact Action Buttons */}
+        <div className="grid grid-cols-2 gap-2">
+          <button 
+            onClick={saveAndExit} 
+            disabled={saveProgressMutation.isPending}
+            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 px-2 rounded-lg border border-border/30 flex items-center justify-center gap-1 transition-colors"
+          >
+            <Save className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Save & Exit</span>
+          </button>
+          <button 
+            onClick={completeWorkout} 
+            disabled={saveProgressMutation.isPending}
+            className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-2 rounded-lg flex items-center justify-center gap-1 transition-colors"
+          >
+            <CheckCircle className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Complete Workout</span>
+          </button>
+        </div>
+        
+        {/* Loading indicator */}
+        {saveProgressMutation.isPending && (
+          <div className="mt-2 text-center">
+            <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <div className="w-3 h-3 border border-primary border-t-transparent rounded-full animate-spin"></div>
+              Saving...
+            </div>
+          </div>
+        )}
       </div>
       {/* Enhanced Rest Timer FAB */}
       {restTimerFABEnabled && (
