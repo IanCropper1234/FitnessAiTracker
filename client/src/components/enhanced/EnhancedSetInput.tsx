@@ -224,9 +224,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             )}
             
-            {/* Three-Column Grid: Weight | Reps | RPE */}
-            <div className="grid grid-cols-3 gap-1.5">
-              {/* Weight Column */}
+            {/* Flexible Grid with Auto-Sizing and Visual Separators */}
+            <div className="grid gap-3" style={{ gridTemplateColumns: '45% 25% 30%' }}>
+              {/* Weight Section - 45% width for decimals + unit */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-foreground">Weight</label>
@@ -239,91 +239,90 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     />
                   )}
                 </div>
-                <div className="relative">
-                  {spinnerEnabled ? (
-                    <SpinnerInput
-                      value={getEffectiveWeight()}
-                      onChange={handleWeightChange}
-                      min={0}
-                      max={1000}
-                      step={0.5}
-                      placeholder="0"
-                      disabled={useBodyWeight}
-                      className={`w-full h-8 text-sm pr-8 ${useBodyWeight ? 'bg-muted text-muted-foreground' : ''}`}
-                    />
-                  ) : (
-                    <Input
-                      type="number"
-                      value={getEffectiveWeight() || ''}
-                      onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
-                      placeholder="0"
-                      className={`w-full h-8 text-sm pr-8 ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
-                      disabled={useBodyWeight}
-                      readOnly={useBodyWeight}
-                    />
-                  )}
-                  {/* Inline Unit Selector */}
-                  <Select
-                    value={weightUnit}
-                    onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
-                  >
-                    <SelectTrigger className="absolute right-0 top-0 w-7 h-8 border-0 bg-transparent text-xs p-0">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="kg">kg</SelectItem>
-                      <SelectItem value="lbs">lb</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="relative bg-background border border-border/50 rounded-md">
+                  <Input
+                    type="number"
+                    value={getEffectiveWeight() || ''}
+                    onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
+                    placeholder="0"
+                    step="0.5"
+                    min="0"
+                    max="1000"
+                    className={`h-8 text-sm border-0 bg-transparent pr-10 ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    disabled={useBodyWeight}
+                    readOnly={useBodyWeight}
+                    inputMode="decimal"
+                  />
+                  {/* Inline Unit Selector with Visual Separator */}
+                  <div className="absolute right-0 top-0 h-8 flex items-center">
+                    <div className="h-4 w-px bg-border mr-2"></div>
+                    <Select
+                      value={weightUnit}
+                      onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
+                    >
+                      <SelectTrigger className="w-8 h-8 border-0 bg-transparent text-xs p-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="kg">kg</SelectItem>
+                        <SelectItem value="lbs">lb</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
-              {/* Reps Column */}
+              {/* Reps Section - 25% width for integers */}
               <div className="space-y-1">
                 <label className="text-xs font-medium text-foreground">Reps</label>
-                {spinnerEnabled ? (
-                  <SpinnerInput
-                    value={set.actualReps}
-                    onChange={handleRepsChange}
-                    min={0}
-                    max={50}
-                    step={1}
-                    placeholder="0"
-                    className="w-full h-8 text-sm"
-                  />
-                ) : (
+                <div className="relative bg-background border border-border/50 rounded-md">
                   <Input
                     type="number"
                     value={set.actualReps || ''}
                     onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
                     placeholder="0"
-                    className="w-full h-8 text-sm"
+                    min="0"
+                    max="50"
+                    className="h-8 text-sm border-0 bg-transparent text-center"
+                    inputMode="numeric"
                   />
-                )}
+                </div>
               </div>
 
-              {/* RPE Column */}
+              {/* RPE Section - 30% width for dropdown */}
               <div className="space-y-1">
                 <label className="text-xs font-medium text-foreground">RPE</label>
-                {spinnerEnabled ? (
-                  <SpinnerInput
-                    value={set.rpe}
-                    onChange={handleRpeChange}
-                    min={1}
-                    max={10}
-                    step={0.5}
-                    placeholder="8"
-                    className="w-full h-8 text-sm"
-                  />
-                ) : (
-                  <Input
-                    type="number"
-                    value={set.rpe || ''}
-                    onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
-                    placeholder="8"
-                    className="w-full h-8 text-sm"
-                  />
-                )}
+                <div className="relative bg-background border border-border/50 rounded-md">
+                  <Select
+                    value={set.rpe ? set.rpe.toString() : ""}
+                    onValueChange={(value) => handleRpeChange(parseFloat(value))}
+                  >
+                    <SelectTrigger className="h-8 text-sm border-0 bg-transparent">
+                      <SelectValue placeholder="RPE" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">RPE 1</SelectItem>
+                      <SelectItem value="1.5">RPE 1.5</SelectItem>
+                      <SelectItem value="2">RPE 2</SelectItem>
+                      <SelectItem value="2.5">RPE 2.5</SelectItem>
+                      <SelectItem value="3">RPE 3</SelectItem>
+                      <SelectItem value="3.5">RPE 3.5</SelectItem>
+                      <SelectItem value="4">RPE 4</SelectItem>
+                      <SelectItem value="4.5">RPE 4.5</SelectItem>
+                      <SelectItem value="5">RPE 5</SelectItem>
+                      <SelectItem value="5.5">RPE 5.5</SelectItem>
+                      <SelectItem value="6">RPE 6</SelectItem>
+                      <SelectItem value="6.5">RPE 6.5</SelectItem>
+                      <SelectItem value="7">RPE 7</SelectItem>
+                      <SelectItem value="7.5">RPE 7.5</SelectItem>
+                      <SelectItem value="8">RPE 8</SelectItem>
+                      <SelectItem value="8.5">RPE 8.5</SelectItem>
+                      <SelectItem value="9">RPE 9</SelectItem>
+                      <SelectItem value="9.5">RPE 9.5</SelectItem>
+                      <SelectItem value="10">RPE 10</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
