@@ -381,6 +381,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
   const [showFeatureManager, setShowFeatureManager] = useState(false);
   const [showFeatureShowcase, setShowFeatureShowcase] = useState(false);
+  const [sessionFilter, setSessionFilter] = useState<'active' | 'completed' | 'all'>('active');
   const queryClient = useQueryClient();
 
   // Fetch user data to check developer settings
@@ -779,25 +780,25 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-3">
-              {/* Current Mesocycle Status */}
+            <div className="space-y-4">
+              {/* Sticky Mesocycle Status */}
               {currentMesocycle && (
-                <div className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 border-2 border-emerald-500/30 dark:border-emerald-400/40 rounded-lg p-3 mx-2 shadow-lg dark:shadow-xl">
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-slate-900 to-slate-800 border-2 border-emerald-500/30 rounded-lg p-2.5 mx-1 shadow-lg backdrop-blur-sm">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="relative">
-                        <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-                        <div className="absolute inset-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
+                        <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
                       </div>
-                      <span className="text-sm font-semibold text-white truncate">
+                      <span className="text-xs font-semibold text-white truncate">
                         {currentMesocycle.name}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs flex-shrink-0">
-                      <span className="bg-slate-700 dark:bg-slate-600 border border-slate-500 dark:border-slate-400 px-2 py-1 rounded font-bold text-slate-100 dark:text-white shadow-md">
-                        Week {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
+                    <div className="flex items-center gap-1.5 text-xs flex-shrink-0">
+                      <span className="bg-slate-700 px-1.5 py-0.5 rounded font-bold text-slate-100">
+                        {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
                       </span>
-                      <span className="bg-emerald-600 dark:bg-emerald-500 border border-emerald-400 dark:border-emerald-300 px-2 py-1 rounded font-bold text-white uppercase tracking-wide shadow-md">
+                      <span className="bg-emerald-600 px-1.5 py-0.5 rounded font-bold text-white uppercase text-xs">
                         {currentMesocycle.phase || 'Active'}
                       </span>
                     </div>
@@ -805,48 +806,154 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 </div>
               )}
 
-              {/* In Progress Sessions */}
-              {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
-                <div className="space-y-3">
-                  <h4 className="text-sm text-blue-600 dark:text-blue-400 font-medium px-3 mt-2">
-                    In Progress ({recentSessions.filter(session => !session.isCompleted).length})
-                  </h4>
-                  {recentSessions
-                    .filter(session => !session.isCompleted)
-                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                    .map((session) => (
-                    <WorkoutSessionCard
-                      key={session.id}
-                      session={session}
-                      onStart={() => setExecutingSessionId(session.id)}
-                      onView={() => setViewingSessionId(session.id)}
-                      onDelete={() => deleteSessionMutation.mutate(session.id)}
-                      onRestart={() => restartSessionMutation.mutate(session.id)}
-                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
-                    />
-                  ))}
+              {/* Session Filter Tabs */}
+              <div className="px-2">
+                <div className="flex gap-1 bg-muted/30 p-1 rounded-lg">
+                  <button
+                    onClick={() => setSessionFilter('active')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+                      sessionFilter === 'active'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Active ({Array.isArray(recentSessions) ? recentSessions.filter(s => !s.isCompleted).length : 0})
+                  </button>
+                  <button
+                    onClick={() => setSessionFilter('completed')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+                      sessionFilter === 'completed'
+                        ? 'bg-green-600 text-white shadow-md'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Done ({Array.isArray(recentSessions) ? recentSessions.filter(s => s.isCompleted).length : 0})
+                  </button>
+                  <button
+                    onClick={() => setSessionFilter('all')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+                      sessionFilter === 'all'
+                        ? 'bg-slate-600 text-white shadow-md'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    All ({Array.isArray(recentSessions) ? recentSessions.length : 0})
+                  </button>
                 </div>
-              )}
+              </div>
 
-              {/* Completed Sessions */}
-              {Array.isArray(recentSessions) && recentSessions.filter(session => session.isCompleted).length > 0 && (
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold text-green-600 dark:text-green-400 px-3 mt-2">
-                    Completed ({recentSessions.filter(session => session.isCompleted).length})
-                  </h4>
-                  {recentSessions.filter(session => session.isCompleted).map((session) => (
-                    <WorkoutSessionCard
-                      key={session.id}
-                      session={session}
-                      onStart={() => setExecutingSessionId(session.id)}
-                      onView={() => setViewingSessionId(session.id)}
-                      onDelete={() => deleteSessionMutation.mutate(session.id)}
-                      onRestart={() => restartSessionMutation.mutate(session.id)}
-                      onDuplicate={() => duplicateSessionMutation.mutate(session.id)}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Compact Grid Sessions */}
+              <div className="px-2">
+                {(() => {
+                  const filteredSessions = Array.isArray(recentSessions) ? recentSessions.filter(session => {
+                    if (sessionFilter === 'active') return !session.isCompleted;
+                    if (sessionFilter === 'completed') return session.isCompleted;
+                    return true; // 'all'
+                  }).sort((a, b) => {
+                    // Sort active sessions by date (earliest first), completed by date (newest first)
+                    if (!a.isCompleted && !b.isCompleted) {
+                      return new Date(a.date).getTime() - new Date(b.date).getTime();
+                    }
+                    if (a.isCompleted && b.isCompleted) {
+                      return new Date(b.date).getTime() - new Date(a.date).getTime();
+                    }
+                    return a.isCompleted ? 1 : -1; // Active sessions first
+                  }) : [];
+
+                  if (filteredSessions.length === 0) {
+                    return (
+                      <div className="text-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          {sessionFilter === 'active' && 'No active sessions'}
+                          {sessionFilter === 'completed' && 'No completed sessions'}
+                          {sessionFilter === 'all' && 'No sessions found'}
+                        </div>
+                        <Button 
+                          onClick={() => setShowSessionCreator(true)} 
+                          size="sm" 
+                          className="mt-3"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Start Workout
+                        </Button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {filteredSessions.map((session) => (
+                        <div
+                          key={session.id}
+                          className={`relative p-3 rounded-lg border-2 transition-all duration-200 hover:shadow-lg ${
+                            session.isCompleted
+                              ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800'
+                              : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800'
+                          }`}
+                        >
+                          {/* Session Header */}
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="min-w-0 flex-1">
+                              <h5 className="text-xs font-semibold truncate">
+                                {session.name}
+                              </h5>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(session.date).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                              session.isCompleted ? 'bg-green-500' : 'bg-blue-500 animate-pulse'
+                            }`} />
+                          </div>
+
+                          {/* Session Stats */}
+                          <div className="space-y-1 mb-3">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">Duration</span>
+                              <span className="font-medium">{session.duration || 0}min</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">Volume</span>
+                              <span className="font-medium">{session.totalVolume || 0}kg</span>
+                            </div>
+                          </div>
+
+                          {/* Action Button */}
+                          <button
+                            onClick={() => {
+                              if (session.isCompleted) {
+                                setViewingSessionId(session.id);
+                              } else {
+                                setExecutingSessionId(session.id);
+                              }
+                            }}
+                            className={`w-full py-2 px-3 rounded-md text-xs font-semibold transition-colors ${
+                              session.isCompleted
+                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }`}
+                          >
+                            {session.isCompleted ? 'View' : 'Continue'}
+                          </button>
+
+                          {/* Three Dots Menu */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Add menu logic here
+                            }}
+                            className="absolute top-2 right-2 p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                          >
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                            <div className="w-1 h-1 bg-current rounded-full mt-0.5"></div>
+                            <div className="w-1 h-1 bg-current rounded-full mt-0.5"></div>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           )}
         </TabsContent>
