@@ -513,15 +513,12 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
   // Fetch current mesocycle information
   const { data: currentMesocycle } = useQuery({
-    queryKey: ["/api/mesocycles", userId],
+    queryKey: ["/api/training/mesocycles", userId],
     queryFn: async () => {
-      const response = await fetch(`/api/mesocycles/${userId}`);
+      const response = await fetch(`/api/training/mesocycles/${userId}`);
       const data = await response.json();
-      console.log('Mesocycle data received:', data);
       // Return the active mesocycle (first one should be active)
-      const mesocycle = Array.isArray(data) && data.length > 0 ? data.find(m => m.isActive) || data[0] : null;
-      console.log('Selected mesocycle:', mesocycle);
-      return mesocycle;
+      return Array.isArray(data) && data.length > 0 ? data.find(m => m.isActive) || data[0] : null;
     }
   });
 
@@ -782,39 +779,33 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-3">
               {/* Current Mesocycle Status */}
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mx-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                      {currentMesocycle ? currentMesocycle.name : 'Loading mesocycle...'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-purple-600 dark:text-purple-400">
-                    {currentMesocycle ? (
-                      <>
-                        <span className="bg-purple-100 dark:bg-purple-900/40 px-2 py-1 rounded-full">
-                          Week {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
-                        </span>
-                        <span className="bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded-full capitalize">
-                          {currentMesocycle.phase || 'Active'}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="bg-gray-100 dark:bg-gray-900/40 px-2 py-1 rounded-full">
-                        Debug: {currentMesocycle === null ? 'null' : currentMesocycle === undefined ? 'undefined' : 'loading'}
+              {currentMesocycle && (
+                <div className="bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-800 dark:to-slate-700 border border-slate-600 dark:border-slate-600 rounded-lg p-2.5 mx-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse flex-shrink-0"></div>
+                      <span className="text-xs font-medium text-white truncate">
+                        {currentMesocycle.name}
                       </span>
-                    )}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-300 flex-shrink-0">
+                      <span className="bg-slate-600/70 px-1.5 py-0.5 rounded text-xs font-medium">
+                        {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
+                      </span>
+                      <span className="bg-emerald-600/80 px-1.5 py-0.5 rounded text-xs font-medium text-white capitalize">
+                        {currentMesocycle.phase || 'Active'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* In Progress Sessions */}
               {Array.isArray(recentSessions) && recentSessions.filter(session => !session.isCompleted).length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="text-md text-blue-600 dark:text-blue-400 font-medium pl-[20px] pr-[20px]">
+                <div className="space-y-3">
+                  <h4 className="text-sm text-blue-600 dark:text-blue-400 font-medium px-3 mt-2">
                     In Progress ({recentSessions.filter(session => !session.isCompleted).length})
                   </h4>
                   {recentSessions
@@ -836,9 +827,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
               {/* Completed Sessions */}
               {Array.isArray(recentSessions) && recentSessions.filter(session => session.isCompleted).length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="text-md font-semibold text-green-600 dark:text-green-400 pl-[20px] pr-[20px]">
-                    Recent Completed Sessions ({recentSessions.filter(session => session.isCompleted).length})
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-green-600 dark:text-green-400 px-3 mt-2">
+                    Completed ({recentSessions.filter(session => session.isCompleted).length})
                   </h4>
                   {recentSessions.filter(session => session.isCompleted).map((session) => (
                     <WorkoutSessionCard
