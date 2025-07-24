@@ -426,7 +426,7 @@
 
   /* Calendar Component Fixes */
   .rdp {
-    --rdp-cell-size: 36px;
+    --rdp-cell-size: 32px;
     --rdp-accent-color: hsl(221, 83%, 53%);
     --rdp-background-color: hsl(0, 0%, 100%);
     --rdp-accent-color-dark: hsl(221, 83%, 53%);
@@ -442,15 +442,16 @@
   .rdp-day_selected {
     background-color: transparent !important;
     color: var(--rdp-accent-color) !important;
-    border: 2px solid var(--rdp-accent-color) !important;
+    border: 1.5px solid var(--rdp-accent-color) !important;
     border-radius: 50% !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 24px !important;
+    height: 24px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     margin: 0 auto !important;
     font-weight: 600 !important;
+    font-size: 12px !important;
     box-shadow: none !important;
     outline: none !important;
   }
@@ -478,13 +479,13 @@
   }
 
   .rdp-day {
-    width: 32px !important;
-    height: 32px !important;
+    width: 24px !important;
+    height: 24px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 14px !important;
+    font-size: 12px !important;
     font-weight: normal !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -519,15 +520,16 @@
   .rdp button[aria-selected="true"] {
     background-color: transparent !important;
     color: var(--rdp-accent-color) !important;
-    border: 2px solid var(--rdp-accent-color) !important;
+    border: 1.5px solid var(--rdp-accent-color) !important;
     border-radius: 50% !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 24px !important;
+    height: 24px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     margin: 0 auto !important;
     font-weight: 600 !important;
+    font-size: 12px !important;
     box-shadow: none !important;
     outline: none !important;
   }
