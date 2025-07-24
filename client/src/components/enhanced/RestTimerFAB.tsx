@@ -1,56 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Clock, Timer, Settings, X, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Clock, Play, Pause, X, Settings, Timer } from 'lucide-react';
-import { CircularProgress } from './CircularProgress';
 import { Input } from '@/components/ui/input';
+import { CircularProgress } from './CircularProgress';
 
 interface RestTimerFABProps {
-  isActive: boolean;
   timeRemaining: number;
   totalTime: number;
+  isActive: boolean;
+  defaultRestPeriod: number;
   onSkip: () => void;
   onToggle?: () => void;
   onCustomTimeSet?: (seconds: number) => void;
-  defaultRestPeriod?: number; // Rest Period from template/session
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
   draggable?: boolean;
 }
 
-export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
-  isActive,
+const RestTimerFAB: React.FC<RestTimerFABProps> = ({
   timeRemaining,
   totalTime,
+  isActive,
+  defaultRestPeriod,
   onSkip,
   onToggle,
   onCustomTimeSet,
-  defaultRestPeriod = 120,
-  position = 'bottom-right',
-  draggable = true,
+  draggable = true
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [fabPosition, setFabPosition] = useState<{ x: number; y: number } | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCustomTime, setShowCustomTime] = useState(false);
-  const [customMinutes, setCustomMinutes] = useState(Math.floor(defaultRestPeriod / 60));
-  const [customSeconds, setCustomSeconds] = useState(defaultRestPeriod % 60);
-
-  // Position classes based on prop
-  const getPositionClass = () => {
-    if (fabPosition) return '';
-    
-    switch (position) {
-      case 'bottom-right':
-        return 'bottom-4 right-4';
-      case 'bottom-left':
-        return 'bottom-4 left-4';
-      case 'top-right':
-        return 'top-4 right-4';
-      case 'top-left':
-        return 'top-4 left-4';
-      default:
-        return 'bottom-4 right-4';
-    }
-  };
+  const [customMinutes, setCustomMinutes] = useState(3);
+  const [customSeconds, setCustomSeconds] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [fabPosition, setFabPosition] = useState<{ x: number; y: number } | null>(null);
 
   // Format time to mm:ss
   const formatTime = (seconds: number) => {
@@ -160,13 +140,11 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const fabSize = 64;
-    const margin = 8;
+    const margin = 12;
     
     // Find the closest edge
     const distanceToLeft = fabPosition.x;
     const distanceToRight = viewportWidth - fabPosition.x - fabSize;
-    const distanceToTop = fabPosition.y;
-    const distanceToBottom = viewportHeight - fabPosition.y - fabSize;
     
     // Snap to the closest horizontal edge with safe margin
     let newX = fabPosition.x;
@@ -187,47 +165,41 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     return null;
   }
 
-  // Smart positioning with overflow prevention and safe boundaries
-  const getSmartPosition = () => {
-    if (!fabPosition) return {};
+  // Get safe positioning with overflow prevention
+  const getSafePosition = () => {
+    // Default position when not dragged
+    if (!fabPosition) {
+      return {
+        bottom: '1rem',
+        right: '1rem',
+        position: 'fixed' as const,
+      };
+    }
     
-    // Get viewport dimensions with safety margins
+    // Safe boundaries for dragged position
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const fabSize = 64; // w-16 h-16 = 64px
-    const safeMargin = 8; // Minimum distance from edges
+    const fabSize = 64; // 16 * 4 (w-16 h-16)
+    const margin = 12; // Safe margin from edges
     
-    // Calculate safe boundaries to prevent overflow
-    const minX = safeMargin;
-    const minY = safeMargin;
-    const maxX = Math.max(safeMargin, viewportWidth - fabSize - safeMargin);
-    const maxY = Math.max(safeMargin, viewportHeight - fabSize - safeMargin);
-    
-    // Constrain position within safe boundaries
-    const constrainedX = Math.max(minX, Math.min(maxX, fabPosition.x));
-    const constrainedY = Math.max(minY, Math.min(maxY, fabPosition.y));
+    // Constrain within safe boundaries
+    const safeX = Math.max(margin, Math.min(viewportWidth - fabSize - margin, fabPosition.x));
+    const safeY = Math.max(margin, Math.min(viewportHeight - fabSize - margin, fabPosition.y));
     
     return {
       position: 'fixed' as const,
-      left: `${constrainedX}px`,
-      top: `${constrainedY}px`,
-      transform: 'none',
-      zIndex: 50,
+      left: `${safeX}px`,
+      top: `${safeY}px`,
+      bottom: 'auto',
+      right: 'auto',
     };
   };
 
-  const fabStyle = fabPosition ? getSmartPosition() : {};
-
   return (
-    <div
-      className={`fixed z-50 transition-all duration-300 ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
-      } ${!fabPosition ? getPositionClass() : ''}`}
-      style={fabStyle}
-    >
-      {isExpanded ? (
-        // Expanded timer card - centered design
-        <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center p-4" onClick={() => setIsExpanded(false)}>
+    <>
+      {/* Expanded timer modal */}
+      {isExpanded && (
+        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={() => setIsExpanded(false)}>
           <div 
             className="bg-background border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm animate-in zoom-in-95 fade-in-0 duration-200"
             onClick={(e) => e.stopPropagation()}
@@ -373,72 +345,78 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
             )}
           </div>
         </div>
-      ) : (
-        // Collapsed timer button - minimalist pulsing ring design with overflow prevention
-        <button
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onClick={() => setIsExpanded(true)}
-          className="relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 group touch-manipulation select-none"
-        >
-          {/* Outer pulsing ring when active */}
-          {timeRemaining > 0 && (
-            <div className="absolute inset-0 rounded-full bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" />
-          )}
-          
-          {/* Main button with glassmorphism effect */}
-          <div className="relative w-12 h-12 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center">
-            {timeRemaining > 0 ? (
-              // Active timer with modern ring progress
-              <div className="relative">
-                <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
-                  {/* Background circle */}
-                  <circle
-                    cx="16"
-                    cy="16"
-                    r="14"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    fill="none"
-                    className="text-gray-300/30 dark:text-gray-600/30"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    cx="16"
-                    cy="16"
-                    r="14"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    className="text-blue-500 dark:text-blue-400 transition-all duration-300"
-                    strokeDasharray={`${88 * progress / 100} 88`}
-                  />
-                </svg>
-                {/* Time display with better typography */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-[11px] font-bold text-gray-900 dark:text-white leading-none">
-                    {Math.ceil(timeRemaining / 60)}
-                  </div>
-                  <div className="text-[7px] text-gray-600 dark:text-gray-300 leading-none">
-                    min
-                  </div>
+      )}
+      
+      {/* Floating Action Button with Overflow Prevention */}
+      <button
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onClick={() => !isDragging && setIsExpanded(true)}
+        className={`fixed z-40 transition-all duration-300 ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        } relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:scale-105 active:scale-95 group touch-manipulation select-none`}
+        style={getSafePosition()}
+      >
+        {/* Outer pulsing ring when active */}
+        {timeRemaining > 0 && (
+          <div className="absolute inset-0 rounded-full bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" />
+        )}
+        
+        {/* Main button with glassmorphism effect */}
+        <div className="relative w-12 h-12 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center">
+          {timeRemaining > 0 ? (
+            // Active timer with modern ring progress
+            <div className="relative">
+              <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
+                {/* Background circle */}
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="14"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                  className="text-gray-300/30 dark:text-gray-600/30"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="14"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  className="text-blue-500 dark:text-blue-400 transition-all duration-300"
+                  strokeDasharray={`${88 * progress / 100} 88`}
+                />
+              </svg>
+              {/* Time display with better typography */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="text-[11px] font-bold text-gray-900 dark:text-white leading-none">
+                  {Math.ceil(timeRemaining / 60)}
+                </div>
+                <div className="text-[7px] text-gray-600 dark:text-gray-300 leading-none">
+                  min
                 </div>
               </div>
-            ) : (
-              // Inactive state with modern timer icon
-              <div className="relative">
-                <Timer className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                {/* Subtle indicator dot */}
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            )}
-          </div>
-          
-          {/* Hover glow effect */}
-          <div className="absolute inset-0 rounded-full bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" />
-        </button>
-      )}
-    </div>
+            </div>
+          ) : (
+            // Inactive state with modern timer icon
+            <div className="relative">
+              <Timer className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+              {/* Subtle indicator dot */}
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
+        </div>
+        
+        {/* Hover glow effect */}
+        <div className="absolute inset-0 rounded-full bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" />
+      </button>
+    </>
   );
 };
+
+export { RestTimerFAB };
+export default RestTimerFAB;

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React from "react";
 
 type Language = "en" | "es" | "ja" | "zh-CN" | "de" | "zh-TW";
 
@@ -8,7 +8,7 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = React.createContext<LanguageContextType | undefined>(undefined);
 
 // Simple translation map
 const translations: Record<Language, Record<string, string>> = {
@@ -219,7 +219,7 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
+  const [language, setLanguageState] = React.useState<Language>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("fitai-language") as Language;
       if (stored && translations[stored]) return stored;
@@ -254,7 +254,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext);
+  const context = React.useContext(LanguageContext);
   if (!context) {
     throw new Error("useLanguage must be used within a LanguageProvider");
   }

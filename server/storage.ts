@@ -394,7 +394,8 @@ export class MemStorage implements IStorage {
       difficulty: exercise.difficulty || null,
       instructions: exercise.instructions || null,
       videoUrl: exercise.videoUrl || null,
-      translations: exercise.translations || {}
+      translations: exercise.translations || {},
+      isBodyWeight: exercise.isBodyWeight || null
     };
     this.exercises.set(newExercise.id, newExercise);
     return newExercise;
@@ -483,7 +484,6 @@ export class MemStorage implements IStorage {
       rir: exercise.rir || null,
       restPeriod: exercise.restPeriod || null,
       notes: exercise.notes || null,
-      startedAt: exercise.startedAt || null,
       finishedAt: exercise.finishedAt || null,
       weightUnit: exercise.weightUnit || null
     };
