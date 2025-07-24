@@ -592,6 +592,20 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   };
 
   const completeWorkout = () => {
+    // Validation: Check if all sets are completed
+    const allSets = Object.values(workoutData).flat();
+    const completedSets = allSets.filter(set => set.completed);
+    const incompleteSets = allSets.filter(set => !set.completed);
+    
+    if (incompleteSets.length > 0) {
+      toast({
+        title: "Cannot Complete Workout",
+        description: `Please complete all ${incompleteSets.length} remaining set(s) before finishing the workout.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60); // minutes
     const totalVolume = Math.round(Object.values(workoutData)
       .flat()
