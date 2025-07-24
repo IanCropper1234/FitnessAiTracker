@@ -50,8 +50,6 @@ interface EnhancedSetInputProps {
   onWeightUnitChange?: (unit: 'kg' | 'lbs') => void;
   userId?: number;
   isBodyWeightExercise?: boolean;
-  onInputFocus?: () => void;
-  onInputBlur?: () => void;
 }
 
 export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
@@ -68,8 +66,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   onWeightUnitChange,
   userId = 1,
   isBodyWeightExercise = false,
-  onInputFocus,
-  onInputBlur,
 }) => {
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [useBodyWeight, setUseBodyWeight] = useState(false);
@@ -245,8 +241,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     type="number"
                     value={getEffectiveWeight() || ''}
                     onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
-                    onFocus={onInputFocus}
-                    onBlur={onInputBlur}
                     placeholder="0"
                     step="0.5"
                     min="0"
@@ -262,10 +256,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     <Select
                       value={weightUnit}
                       onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
-                      onOpenChange={(open) => {
-                        if (open) onInputFocus?.();
-                        else onInputBlur?.();
-                      }}
                     >
                       <SelectTrigger className="w-7 h-7 border-0 bg-transparent text-xs p-0">
                         <SelectValue />
@@ -287,8 +277,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     type="number"
                     value={set.actualReps || ''}
                     onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
-                    onFocus={onInputFocus}
-                    onBlur={onInputBlur}
                     placeholder="0"
                     min="0"
                     max="50"
@@ -305,10 +293,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   <Select
                     value={set.rpe ? set.rpe.toString() : ""}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
-                    onOpenChange={(open) => {
-                      if (open) onInputFocus?.();
-                      else onInputBlur?.();
-                    }}
                   >
                     <SelectTrigger className="h-7 text-sm border-0 bg-transparent">
                       <SelectValue placeholder="0" />

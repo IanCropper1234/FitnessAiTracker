@@ -107,36 +107,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
   const [showFeedback, setShowFeedback] = useState(false);
-  const [headerExpanded, setHeaderExpanded] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(true);
-  const [inputFocused, setInputFocused] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  // Header behavior utilities
-  const toggleHeaderExpansion = () => {
-    setHeaderExpanded(!headerExpanded);
-  };
-
-  const handleInputFocus = () => {
-    setInputFocused(true);
-    // Only auto-hide if header is not expanded
-    if (!headerExpanded) {
-      setHeaderVisible(false);
-    }
-  };
-
-  const handleInputBlur = () => {
-    setInputFocused(false);
-    setHeaderVisible(true); // Show again when input loses focus
-  };
-
-  const handleScreenTap = () => {
-    if (!headerVisible && !inputFocused) {
-      setHeaderVisible(true); // Tap anywhere to reveal header
-    }
-  };
 
   // Force V2 when the feature is enabled, regardless of session version
   if (!isV2Enabled) {
@@ -522,120 +495,71 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto" {...swipeHandlers} onClick={handleScreenTap}>
-      {/* Dynamic Responsive Header - Collapsible + Sticky + Floating */}
-      <div 
-        className={`
-          fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl z-50
-          transition-all duration-300 ease-in-out
-          ${headerVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}
-          ${headerExpanded 
-            ? (inputFocused ? 'backdrop-blur-sm bg-background/80 border-b border-border/50 shadow-sm' : 'bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm')
-            : 'bg-transparent'
-          }
-        `}
-      >
-        {/* Sticky Smart Bar - Always Visible Minimal Header */}
-        <div 
-          className={`
-            flex items-center justify-between p-3 cursor-pointer
-            transition-colors duration-200
-            ${headerExpanded 
-              ? 'bg-muted/10' 
-              : 'bg-background/90 backdrop-blur-md hover:bg-background/95 border-b border-border/20'
-            }
-          `}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleHeaderExpansion();
-          }}
-        >
-          {/* Left: Current Exercise + Set Counter */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-xs font-bold text-primary-foreground">
-                  {currentSetIndex + 1}
-                </span>
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-sm font-semibold text-foreground truncate">
-                  {currentExercise?.exercise.name || 'No exercise'}
-                </h3>
-                <div className="text-xs text-muted-foreground">
-                  Set {currentSetIndex + 1} of {currentSets.length}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Progress + Expand Icon */}
-          <div className="flex items-center gap-2">
-            <div className="text-right">
-              <div className="text-sm font-semibold text-primary">
-                {Math.round(progressPercentage)}%
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {currentExerciseIndex + 1}/{session.exercises.length}
-              </div>
-            </div>
-            <div className={`transform transition-transform duration-200 ${headerExpanded ? 'rotate-180' : ''}`}>
-              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-          
-          {/* Collapsed State Indicator */}
-          {!headerExpanded && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
-              <div className="w-8 h-1 bg-muted-foreground/30 rounded-full"></div>
-            </div>
-          )}
+    <div className="space-y-4 max-w-4xl mx-auto" {...swipeHandlers}>
+      {/* iOS-Style Header */}
+      <div className="ios-card p-4 space-y-3">
+        {/* Session Title - iOS Large Title Style */}
+        <div className="text-center">
+          <h1 className="text-foreground text-sm font-medium">
+            {session.name}
+          </h1>
         </div>
 
-        {/* Collapsible Expanded Content */}
-        <div 
-          className={`
-            overflow-hidden transition-all duration-300 ease-in-out
-            ${headerExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
-          `}
-        >
-          <div className={`px-3 pb-3 space-y-3 transition-all duration-300 ${headerExpanded ? 'border-t border-border/30' : ''}`}>
-            {/* Session Info */}
-            <div className="text-center pt-2">
-              <h1 className="text-foreground text-sm font-medium">
-                {session.name}
-              </h1>
-            </div>
+        {/* Exercise Progress - iOS Style */}
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-muted-foreground">
+            Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+          </div>
+          <div className="text-xs font-semibold text-primary">
+            {Math.round(progressPercentage)}% Complete
+          </div>
+        </div>
 
-            {/* Detailed Progress */}
-            <div className="space-y-2">
-              {circularProgressEnabled ? (
-                <div className="flex justify-center">
-                  <CircularProgress 
-                    progress={progressPercentage}
-                    size={40}
-                    strokeWidth={4}
-                  />
-                </div>
-              ) : (
-                <Progress value={progressPercentage} className="h-1.5 bg-muted" />
-              )}
+        {/* Progress Indicator - Clean iOS Style */}
+        <div className="space-y-2">
+          {circularProgressEnabled ? (
+            <div className="flex justify-center py-1">
+              <CircularProgress 
+                progress={progressPercentage}
+                size={50}
+                strokeWidth={5}
+              />
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <Progress value={progressPercentage} className="h-1 bg-muted" />
               <div className="text-center">
                 <span className="text-xs text-muted-foreground">
                   {completedSets} of {totalSets} sets completed
                 </span>
               </div>
             </div>
-
-            
-          </div>
+          )}
         </div>
-      </div>
 
-      {/* Spacer to prevent content from hiding under fixed header */}
-      <div className={`transition-all duration-300 ${headerVisible ? (headerExpanded ? 'h-44' : 'h-16') : 'h-0'}`}></div>
+        {/* Current Exercise Info - iOS Style */}
+        {currentExercise && (
+          <div className="bg-muted/30 rounded-lg p-3 border border-border/50">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-foreground truncate">
+                  {currentExercise.exercise.name}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  {currentExercise.exercise.muscleGroups.join(', ')} • {currentExercise.exercise.equipment}
+                </p>
+              </div>
+              <div className="ml-3 flex-shrink-0">
+                <div className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-medium">
+                    {currentExercise.exercise.category}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-2">
@@ -667,8 +591,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   onWeightUnitChange={setWeightUnit}
                   userId={session?.userId || 1}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
-                  onInputFocus={handleInputFocus}
-                  onInputBlur={handleInputBlur}
                 />
               )}
 
