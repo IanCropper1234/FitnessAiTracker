@@ -1,5 +1,4 @@
 import * as React from "react";
-const { createContext, useContext, useEffect, useState } = React;
 
 type Theme = "light" | "dark";
 
@@ -9,10 +8,10 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = React.createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
+  const [theme, setThemeState] = React.useState<Theme>(() => {
     // Check system preference first
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("fitai-theme") as Theme;
@@ -23,7 +22,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return "dark";
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
@@ -46,7 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
+  const context = React.useContext(ThemeContext);
   if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
