@@ -25,6 +25,7 @@ import {
   Plus, 
   Search, 
   Trash2, 
+  Calendar,
   BarChart3,
   FileText,
   Target,

@@ -10,6 +10,7 @@ import { TimezoneUtils } from "@shared/utils/timezone";
 import { 
   Plus, 
   Trash2, 
+  Calendar, 
   ChevronLeft, 
   ChevronRight, 
   ChevronDown,
@@ -27,8 +28,8 @@ import {
   GripVertical,
   Check
 } from "lucide-react";
-import { IOSDatePicker } from "@/components/ui/ios-date-picker";
-
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -477,12 +478,67 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 Nutrition Overview
               </CardTitle>
               
-              <IOSDatePicker 
-                selectedDate={selectedDate}
-                onDateChange={setSelectedDate}
-                size="sm"
-                className="flex-shrink-0"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="h-6 px-2 text-xs font-medium rounded-full dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex-shrink-0 bg-[#479bf5] text-[#030303]"
+                  >
+                    <span className="text-[11px]">
+                      {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                       TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
+                    </span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <div className="p-2 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
+                        }}
+                        className="h-8 px-3 text-xs"
+                      >
+                        <ChevronLeft className="h-3 w-3 mr-1" />
+                        Yesterday
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedDate(TimezoneUtils.getCurrentDate());
+                        }}
+                        className="h-8 px-3 text-xs font-medium"
+                      >
+                        Today
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
+                        }}
+                        className="h-8 px-3 text-xs"
+                      >
+                        Tomorrow
+                        <ChevronRight className="h-3 w-3 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                  <CalendarComponent
+                    mode="single"
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                      }
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </CardContent>
@@ -677,44 +733,56 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               
               {selectedLogs.length > 0 && (
                 <div className="flex items-center gap-1 pt-1 border-t border-blue-200 dark:border-blue-600">
-                  <div className="flex-1 flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
-                        handleBulkCopy(dateStr);
-                      }}
-                      className="text-xs h-6 px-2"
-                    >
-                      <ChevronLeft className="h-3 w-3 mr-1" />
-                      Yesterday
-                    </Button>
-                    
-                    <IOSDatePicker 
-                      selectedDate={TimezoneUtils.getCurrentDate()}
-                      onDateChange={(date) => {
-                        if (date) {
-                          handleBulkCopy(date);
-                        }
-                      }}
-                      size="sm"
-                      className="flex-1"
-                    />
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
-                        handleBulkCopy(dateStr);
-                      }}
-                      className="text-xs h-6 px-2"
-                    >
-                      Tomorrow
-                      <ChevronRight className="h-3 w-3 ml-1" />
-                    </Button>
-                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 h-6 text-[10px]"
+                      >
+                        <CalendarIcon className="mr-1 h-3 w-3" />
+                        Copy to date
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <div className="flex items-center justify-between p-2 border-b">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
+                            handleBulkCopy(dateStr);
+                          }}
+                          className="text-xs h-6"
+                        >
+                          <ChevronLeft className="h-3 w-3 mr-1" />
+                          Yesterday
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
+                            handleBulkCopy(dateStr);
+                          }}
+                          className="text-xs h-6"
+                        >
+                          Tomorrow
+                          <ChevronRight className="h-3 w-3 ml-1" />
+                        </Button>
+                      </div>
+                      <CalendarComponent
+                        mode="single"
+                        selected={undefined}
+                        onSelect={(date) => {
+                          if (date) {
+                            const dateStr = TimezoneUtils.formatDateForStorage(date);
+                            handleBulkCopy(dateStr);
+                          }
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               )}
             </div>
@@ -962,12 +1030,36 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 
-                <IOSDatePicker 
-                  selectedDate={copyDate || TimezoneUtils.getCurrentDate()}
-                  onDateChange={setCopyDate}
-                  size="sm"
-                  className="flex-1"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex-1 justify-between h-8 px-3 py-1 text-sm"
+                    >
+                      {copyDate 
+                        ? new Date(copyDate).toLocaleDateString('en-GB', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric' 
+                          })
+                        : 'Select date'
+                      }
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={copyDate ? new Date(copyDate) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          setCopyDate(date.toISOString().split('T')[0]);
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 
                 <Button
                   variant="outline"
