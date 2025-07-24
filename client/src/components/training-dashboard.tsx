@@ -827,11 +827,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   </button>
                   <button
                     onClick={() => setSessionFilter('all')}
-                    className={`flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 ${
-                      sessionFilter === 'all'
-                        ? 'bg-foreground dark:bg-foreground text-background dark:text-background shadow-sm scale-[0.98]'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50 dark:hover:bg-background/50'
-                    }`}
+                    className="flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 bg-foreground dark:bg-foreground dark:text-background shadow-sm scale-[0.98] text-[#1c1c1c]"
                   >
                     All ({Array.isArray(recentSessions) ? recentSessions.length : 0})
                   </button>
