@@ -1,5 +1,4 @@
-import React from "react";
-const { createContext, useContext, useEffect, useState } = React;
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -12,26 +11,33 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    // Check system preference first
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("fitai-theme") as Theme;
-      if (stored) return stored;
-      
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
-    return "dark";
-  });
+  const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    localStorage.setItem("fitai-theme", theme);
+    // Initialize theme on mount
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("fitai-theme") as Theme;
+      if (stored) {
+        setThemeState(stored);
+        return;
+      }
+      
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setThemeState(prefersDark ? "dark" : "light");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const root = window.document.documentElement;
+      root.classList.remove("light", "dark");
+      root.classList.add(theme);
+      localStorage.setItem("fitai-theme", theme);
+    }
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState(theme === "light" ? "dark" : "light");
+    setThemeState(prev => prev === "light" ? "dark" : "light");
   };
 
   const setTheme = (newTheme: Theme) => {
