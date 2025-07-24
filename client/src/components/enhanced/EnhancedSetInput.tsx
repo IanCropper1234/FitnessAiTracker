@@ -154,15 +154,15 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
   return (
     <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
-      <CardContent className="p-4 space-y-4">
-        {/* Set Header */}
+      <CardContent className="p-3 space-y-3">
+        {/* Compact Set Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Badge variant={set.completed ? "default" : "outline"} className="bg-primary text-primary-foreground">
+            <Badge variant={set.completed ? "default" : "outline"} className="bg-primary text-primary-foreground text-xs px-2 py-0.5">
               Set {set.setNumber}
             </Badge>
-            <span className="text-sm text-foreground/70">
-              Target: {setRecommendation?.recommendedReps || set.targetReps} reps
+            <span className="text-xs text-foreground/70">
+              Target: {setRecommendation?.recommendedReps || set.targetReps}
               {setRecommendation && (
                 <span className="text-xs text-emerald-400 ml-1">(Rec)</span>
               )}
@@ -174,54 +174,49 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => setShowRecommendation(!showRecommendation)}
-              className="text-xs text-foreground hover:bg-accent"
+              className="text-xs text-foreground hover:bg-accent h-7 px-2"
             >
               <Info className="h-3 w-3 mr-1" />
-              Rec
+              Info
             </Button>
           )}
         </div>
 
-        {/* Set-Specific Recommendation Banner */}
+        {/* Compact Recommendation Banner */}
         {(setRecommendation || recommendation) && showRecommendation && (
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 space-y-2">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2 space-y-1.5">
             <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <div className="text-sm font-medium text-emerald-400">
-                  {setRecommendation ? `Set ${setRecommendation.setNumber} Recommendation` : `Mesocycle Recommendation`}
+              <div className="space-y-1 flex-1 min-w-0">
+                <div className="text-xs font-medium text-emerald-400">
+                  {setRecommendation ? `Set ${setRecommendation.setNumber}` : `Mesocycle`} Rec
                   {recommendation && (
-                    <span className="text-xs text-emerald-300/70"> (Week {recommendation.week})</span>
+                    <span className="text-xs text-emerald-300/70"> (W{recommendation.week})</span>
                   )}
                 </div>
                 <div className="text-xs text-emerald-300">
                   {setRecommendation ? (
                     <>
-                      {setRecommendation.recommendedWeight}kg • {setRecommendation.recommendedReps} reps • RPE {setRecommendation.recommendedRpe}
+                      {setRecommendation.recommendedWeight}kg • {setRecommendation.recommendedReps}r • RPE {setRecommendation.recommendedRpe}
                     </>
                   ) : recommendation?.sets?.[0] ? (
                     <>
-                      {recommendation.sets[0].recommendedWeight}kg • {recommendation.sets[0].recommendedReps} reps • RPE {recommendation.sets[0].recommendedRpe}
+                      {recommendation.sets[0].recommendedWeight}kg • {recommendation.sets[0].recommendedReps}r • RPE {recommendation.sets[0].recommendedRpe}
                     </>
                   ) : (
-                    "No specific recommendations available"
+                    "No recommendations"
                   )}
                 </div>
                 {recommendation?.reasoning && (
-                  <div className="text-xs text-emerald-300/80">
+                  <div className="text-xs text-emerald-300/80 truncate">
                     {recommendation.reasoning}
                   </div>
-                )}
-                {setRecommendation && (
-                  <Badge variant="outline" className="text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
-                    Progressive Set Loading
-                  </Badge>
                 )}
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleUseRecommendation}
-                className="text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/30"
+                className="text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/30 h-6 px-2 ml-2 flex-shrink-0"
               >
                 Use
               </Button>
@@ -229,19 +224,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         )}
 
-        {/* Mobile-Optimized Input Layout */}
-        <div className="space-y-4">
-          {/* Weight Input Row with Unit Selection and Body Weight Toggle */}
-          <div className="space-y-2">
+        {/* Compact Mobile Input Layout */}
+        <div className="space-y-3">
+          {/* Weight Section */}
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium text-foreground">Weight</label>
-              <div className="flex items-center gap-2">
-                {/* Body Weight Toggle */}
+              <div className="flex items-center gap-1.5">
+                {/* Body Weight Toggle - Compact */}
                 {isBodyWeightExercise && (
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="body-weight-toggle" className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-xs text-foreground/70 font-medium pl-[20px] pr-[20px] text-center ml-[0px] mr-[0px] pt-[0px] pb-[0px]">
-                      <Scale className="h-3 w-3 inline mr-1" />
-                      Body Weight
+                  <div className="flex items-center gap-1.5">
+                    <Label htmlFor="body-weight-toggle" className="text-xs text-foreground/70 font-medium flex items-center gap-1">
+                      <Scale className="h-3 w-3" />
+                      Body
                     </Label>
                     <Switch
                       id="body-weight-toggle"
@@ -253,13 +248,13 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   </div>
                 )}
                 
-                {/* Unit Selector */}
+                {/* Compact Unit Selector */}
                 <Select
                   value={weightUnit}
                   onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                   disabled={set.completed}
                 >
-                  <SelectTrigger className="w-20 h-9 text-sm bg-background border-border text-foreground">
+                  <SelectTrigger className="w-16 h-8 text-xs bg-background border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-border">
@@ -270,16 +265,16 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             </div>
             
-            {/* Body Weight Info Banner */}
+            {/* Compact Body Weight Info */}
             {useBodyWeight && bodyWeightValue > 0 && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2">
-                <div className="flex items-center gap-2 text-xs text-blue-400">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-1.5">
+                <div className="flex items-center gap-1.5 text-xs text-blue-400">
                   <Scale className="h-3 w-3" />
                   <span>
-                    Using body weight: {getEffectiveWeight()}{weightUnit}
+                    Body: {getEffectiveWeight()}{weightUnit}
                     {bodyWeightUnit !== weightUnit && (
                       <span className="text-blue-300/70 ml-1">
-                        (converted from {bodyWeightValue}{bodyWeightUnit})
+                        (from {bodyWeightValue}{bodyWeightUnit})
                       </span>
                     )}
                   </span>
@@ -287,6 +282,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             )}
             
+            {/* Weight Input */}
             <div className="w-full">
               {spinnerEnabled ? (
                 <SpinnerInput
@@ -297,7 +293,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   step={0.5}
                   placeholder="0"
                   disabled={set.completed || useBodyWeight}
-                  className={`w-full ${useBodyWeight ? 'bg-muted text-muted-foreground' : ''}`}
+                  className={`w-full h-9 ${useBodyWeight ? 'bg-muted text-muted-foreground' : ''}`}
                 />
               ) : (
                 <Input
@@ -309,7 +305,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   min="0"
                   max="1000"
                   disabled={set.completed || useBodyWeight}
-                  className={`w-full bg-background border-border text-foreground ${
+                  className={`w-full h-9 bg-background border-border text-foreground ${
                     useBodyWeight ? 'bg-muted text-muted-foreground cursor-not-allowed' : ''
                   }`}
                   inputMode="decimal"
@@ -319,72 +315,75 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
           </div>
 
-          {/* Actual Reps Input Row */}
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-foreground">Actual Reps</label>
-            {spinnerEnabled ? (
-              <SpinnerInput
-                value={set.actualReps}
-                onChange={handleRepsChange}
-                min={0}
-                max={50}
-                step={1}
-                placeholder="0"
-                disabled={set.completed}
-                className="w-full"
-              />
-            ) : (
-              <Input
-                type="number"
-                value={set.actualReps || ''}
-                onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
-                placeholder="0"
-                min="0"
-                max="50"
-                disabled={set.completed}
-                className="w-full bg-background border-border text-foreground"
-                inputMode="numeric"
-              />
-            )}
-          </div>
+          {/* Reps and RPE - Side by Side for Space Efficiency */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Actual Reps */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground">Reps</label>
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.actualReps}
+                  onChange={handleRepsChange}
+                  min={0}
+                  max={50}
+                  step={1}
+                  placeholder="0"
+                  disabled={set.completed}
+                  className="w-full h-9"
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.actualReps || ''}
+                  onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                  min="0"
+                  max="50"
+                  disabled={set.completed}
+                  className="w-full h-9 bg-background border-border text-foreground"
+                  inputMode="numeric"
+                />
+              )}
+            </div>
 
-          {/* RPE Input Row */}
-          <div className="space-y-2">
-            <label className="text-xs font-medium text-foreground">RPE (1-10)</label>
-            {spinnerEnabled ? (
-              <SpinnerInput
-                value={set.rpe}
-                onChange={handleRpeChange}
-                min={1}
-                max={10}
-                step={0.5}
-                placeholder="8"
-                disabled={set.completed}
-                className="w-full"
-              />
-            ) : (
-              <Input
-                type="number"
-                value={set.rpe || ''}
-                onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
-                placeholder="8"
-                min="1"
-                max="10"
-                step="0.5"
-                disabled={set.completed}
-                className="w-full bg-background border-border text-foreground"
-                inputMode="decimal"
-              />
-            )}
+            {/* RPE */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground">RPE</label>
+              {spinnerEnabled ? (
+                <SpinnerInput
+                  value={set.rpe}
+                  onChange={handleRpeChange}
+                  min={1}
+                  max={10}
+                  step={0.5}
+                  placeholder="8"
+                  disabled={set.completed}
+                  className="w-full h-9"
+                />
+              ) : (
+                <Input
+                  type="number"
+                  value={set.rpe || ''}
+                  onChange={(e) => handleRpeChange(parseFloat(e.target.value) || 0)}
+                  placeholder="8"
+                  min="1"
+                  max="10"
+                  step="0.5"
+                  disabled={set.completed}
+                  className="w-full h-9 bg-background border-border text-foreground"
+                  inputMode="decimal"
+                />
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Complete Set Button */}
+        {/* Compact Complete Set Button */}
         {!set.completed && isActive && (
           <Button
             onClick={onCompleteSet}
             disabled={!isSetValid}
-            className="w-full"
+            className="w-full h-10"
             variant={isSetValid ? "default" : "secondary"}
           >
             {isSetValid ? (
@@ -398,12 +397,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </Button>
         )}
 
-        {/* Completed Set Display */}
+        {/* Compact Completed Set Display */}
         {set.completed && (
-          <div className="flex items-center justify-center p-2 bg-emerald-500/10 border border-emerald-500/20 rounded">
-            <Check className="h-4 w-4 text-emerald-400 mr-2" />
-            <span className="text-sm text-emerald-300 font-medium">
-              Completed: {set.weight}{weightUnit} × {set.actualReps} reps @ RPE {set.rpe}
+          <div className="flex items-center justify-center p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+            <Check className="h-3 w-3 text-emerald-400 mr-2" />
+            <span className="text-xs text-emerald-300 font-medium">
+              ✓ {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
             </span>
           </div>
         )}
