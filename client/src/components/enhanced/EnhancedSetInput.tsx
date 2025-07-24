@@ -154,7 +154,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
   return (
     <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
-      <CardContent className="p-3 space-y-3">
+      <CardContent className="p-2.5 space-y-2">
         {/* Compact Set Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -224,20 +224,17 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         )}
 
-        {/* Compact Mobile Input Layout */}
-        <div className="space-y-3">
-          {/* Weight Section */}
-          <div className="space-y-1.5">
+        {/* Ultra-Compact Mobile Input Layout - No Overflow Design */}
+        <div className="space-y-2">
+          {/* Single Row: Weight + Unit + Body Weight Toggle */}
+          <div className="space-y-1">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium text-foreground">Weight</label>
-              <div className="flex items-center gap-1.5">
-                {/* Body Weight Toggle - Compact */}
+              <div className="flex items-center gap-1">
+                {/* Body Weight Toggle - Ultra Compact */}
                 {isBodyWeightExercise && (
-                  <div className="flex items-center gap-1.5">
-                    <Label htmlFor="body-weight-toggle" className="text-xs text-foreground/70 font-medium flex items-center gap-1">
-                      <Scale className="h-3 w-3" />
-                      Body
-                    </Label>
+                  <div className="flex items-center gap-1">
+                    <Scale className="h-3 w-3 text-foreground/70" />
                     <Switch
                       id="body-weight-toggle"
                       checked={useBodyWeight}
@@ -248,13 +245,13 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   </div>
                 )}
                 
-                {/* Compact Unit Selector */}
+                {/* Compact Unit Badge */}
                 <Select
                   value={weightUnit}
                   onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                   disabled={set.completed}
                 >
-                  <SelectTrigger className="w-16 h-8 text-xs bg-background border-border text-foreground">
+                  <SelectTrigger className="w-12 h-7 text-xs bg-background border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-border">
@@ -265,60 +262,51 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             </div>
             
-            {/* Compact Body Weight Info */}
+            {/* Body Weight Info - Ultra Compact */}
             {useBodyWeight && bodyWeightValue > 0 && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-1.5">
-                <div className="flex items-center gap-1.5 text-xs text-blue-400">
-                  <Scale className="h-3 w-3" />
-                  <span>
-                    Body: {getEffectiveWeight()}{weightUnit}
-                    {bodyWeightUnit !== weightUnit && (
-                      <span className="text-blue-300/70 ml-1">
-                        (from {bodyWeightValue}{bodyWeightUnit})
-                      </span>
-                    )}
-                  </span>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded p-1">
+                <div className="flex items-center gap-1 text-xs text-blue-400">
+                  <Scale className="h-2.5 w-2.5" />
+                  <span>Body: {getEffectiveWeight()}{weightUnit}</span>
                 </div>
               </div>
             )}
             
             {/* Weight Input */}
-            <div className="w-full">
-              {spinnerEnabled ? (
-                <SpinnerInput
-                  value={getEffectiveWeight()}
-                  onChange={handleWeightChange}
-                  min={0}
-                  max={1000}
-                  step={0.5}
-                  placeholder="0"
-                  disabled={set.completed || useBodyWeight}
-                  className={`w-full h-9 ${useBodyWeight ? 'bg-muted text-muted-foreground' : ''}`}
-                />
-              ) : (
-                <Input
-                  type="number"
-                  value={getEffectiveWeight() || ''}
-                  onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
-                  placeholder="0"
-                  step="0.5"
-                  min="0"
-                  max="1000"
-                  disabled={set.completed || useBodyWeight}
-                  className={`w-full h-9 bg-background border-border text-foreground ${
-                    useBodyWeight ? 'bg-muted text-muted-foreground cursor-not-allowed' : ''
-                  }`}
-                  inputMode="decimal"
-                  readOnly={useBodyWeight}
-                />
-              )}
-            </div>
+            {spinnerEnabled ? (
+              <SpinnerInput
+                value={getEffectiveWeight()}
+                onChange={handleWeightChange}
+                min={0}
+                max={1000}
+                step={0.5}
+                placeholder="0"
+                disabled={set.completed || useBodyWeight}
+                className={`w-full h-8 text-sm ${useBodyWeight ? 'bg-muted text-muted-foreground' : ''}`}
+              />
+            ) : (
+              <Input
+                type="number"
+                value={getEffectiveWeight() || ''}
+                onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
+                placeholder="0"
+                step="0.5"
+                min="0"
+                max="1000"
+                disabled={set.completed || useBodyWeight}
+                className={`w-full h-8 text-sm bg-background border-border text-foreground ${
+                  useBodyWeight ? 'bg-muted text-muted-foreground cursor-not-allowed' : ''
+                }`}
+                inputMode="decimal"
+                readOnly={useBodyWeight}
+              />
+            )}
           </div>
 
-          {/* Reps and RPE - Side by Side for Space Efficiency */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Reps and RPE - Ultra Compact Side by Side */}
+          <div className="grid grid-cols-2 gap-2">
             {/* Actual Reps */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label className="text-xs font-medium text-foreground">Reps</label>
               {spinnerEnabled ? (
                 <SpinnerInput
@@ -329,7 +317,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   step={1}
                   placeholder="0"
                   disabled={set.completed}
-                  className="w-full h-9"
+                  className="w-full h-8 text-sm"
                 />
               ) : (
                 <Input
@@ -340,14 +328,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   min="0"
                   max="50"
                   disabled={set.completed}
-                  className="w-full h-9 bg-background border-border text-foreground"
+                  className="w-full h-8 text-sm bg-background border-border text-foreground"
                   inputMode="numeric"
                 />
               )}
             </div>
 
             {/* RPE */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label className="text-xs font-medium text-foreground">RPE</label>
               {spinnerEnabled ? (
                 <SpinnerInput
@@ -358,7 +346,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   step={0.5}
                   placeholder="8"
                   disabled={set.completed}
-                  className="w-full h-9"
+                  className="w-full h-8 text-sm"
                 />
               ) : (
                 <Input
@@ -370,7 +358,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   max="10"
                   step="0.5"
                   disabled={set.completed}
-                  className="w-full h-9 bg-background border-border text-foreground"
+                  className="w-full h-8 text-sm bg-background border-border text-foreground"
                   inputMode="decimal"
                 />
               )}
@@ -378,17 +366,17 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         </div>
 
-        {/* Compact Complete Set Button */}
+        {/* Ultra-Compact Complete Set Button */}
         {!set.completed && isActive && (
           <Button
             onClick={onCompleteSet}
             disabled={!isSetValid}
-            className="w-full h-10"
+            className="w-full h-8 text-sm"
             variant={isSetValid ? "default" : "secondary"}
           >
             {isSetValid ? (
               <>
-                <Check className="h-4 w-4 mr-2" />
+                <Check className="h-3 w-3 mr-1.5" />
                 Complete Set
               </>
             ) : (
@@ -397,10 +385,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </Button>
         )}
 
-        {/* Compact Completed Set Display */}
+        {/* Ultra-Compact Completed Set Display */}
         {set.completed && (
-          <div className="flex items-center justify-center p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-            <Check className="h-3 w-3 text-emerald-400 mr-2" />
+          <div className="flex items-center justify-center p-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
+            <Check className="h-3 w-3 text-emerald-400 mr-1.5" />
             <span className="text-xs text-emerald-300 font-medium">
               ✓ {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
             </span>
