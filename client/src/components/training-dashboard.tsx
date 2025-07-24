@@ -184,64 +184,63 @@ function WorkoutSessionsWithBulkActions({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Bulk Actions Header */}
-      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-        <div className="flex items-center gap-4">
-          <Button
-            variant={bulkDeleteMode ? "destructive" : "outline"}
-            size="sm"
-            onClick={() => {
-              setBulkDeleteMode(!bulkDeleteMode);
-              setSelectedSessions([]);
-            }}
-          >
-            {bulkDeleteMode ? (
-              <>
-                <X className="h-4 w-4 mr-2" />
-                Cancel
-              </>
-            ) : (
-              <>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Bulk Delete
-              </>
-            )}
-          </Button>
-
-          {bulkDeleteMode && (
+    <div className="space-y-3">
+      {/* Compact Bulk Actions Header */}
+      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+        <Button
+          variant={bulkDeleteMode ? "destructive" : "outline"}
+          size="sm"
+          className="h-8 px-3 text-xs"
+          onClick={() => {
+            setBulkDeleteMode(!bulkDeleteMode);
+            setSelectedSessions([]);
+          }}
+        >
+          {bulkDeleteMode ? (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSelectAll}
-              >
-                {selectedSessions.length === sessions.length ? "Deselect All" : "Select All"}
-              </Button>
-              
-              {selectedSessions.length > 0 && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleBulkDelete}
-                  disabled={bulkDeleteMutation.isPending}
-                >
-                  Delete {selectedSessions.length} Session{selectedSessions.length !== 1 ? 's' : ''}
-                </Button>
-              )}
+              <X className="h-3 w-3 mr-1" />
+              Cancel
+            </>
+          ) : (
+            <>
+              <Trash2 className="h-3 w-3 mr-1" />
+              Bulk Delete
             </>
           )}
-        </div>
+        </Button>
 
         {bulkDeleteMode && (
-          <p className="text-sm text-muted-foreground">
-            {selectedSessions.length} of {sessions.length} selected
-          </p>
+          <div className="flex items-center gap-2 flex-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-2 text-xs"
+              onClick={handleSelectAll}
+            >
+              {selectedSessions.length === sessions.length ? "Deselect All" : "Select All"}
+            </Button>
+            
+            {selectedSessions.length > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-8 px-2 text-xs"
+                onClick={handleBulkDelete}
+                disabled={bulkDeleteMutation.isPending}
+              >
+                Delete ({selectedSessions.length})
+              </Button>
+            )}
+            
+            <span className="text-xs text-muted-foreground ml-auto">
+              {selectedSessions.length}/{sessions.length}
+            </span>
+          </div>
         )}
       </div>
 
       {/* Sessions Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {sessions.map((session) => (
           <WorkoutSessionCard
             key={session.id}
