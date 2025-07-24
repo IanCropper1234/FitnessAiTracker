@@ -477,30 +477,22 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               Nutrition Overview
             </CardTitle>
             
-            <div className="flex items-center gap-0 flex-shrink-0 min-w-0">
-              <Button
-                variant="ghost"
-                size="sm"
+            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 flex-shrink-0 min-w-0">
+              <button
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
                 }}
-                className="h-4 w-3 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
+                className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded flex-shrink-0"
               >
-                <ChevronLeft className="h-1.5 w-1.5" />
-              </Button>
+                <ChevronLeft className="h-2 w-2 text-gray-600 dark:text-gray-300" />
+              </button>
               
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="h-4 px-0.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-0 max-w-[60px] justify-center min-w-0"
-                  >
-                    <span className="truncate text-[9px]">
-                      {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                       TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
-                    </span>
-                    <ChevronDown className="h-1 w-1 flex-shrink-0 ml-0.5" />
-                  </Button>
+                  <button className="px-1 py-0 text-[8px] font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 max-w-[50px] truncate">
+                    {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                     TimezoneUtils.formatForDisplay(selectedDate, 'en-GB').split(' ')[0]}
+                  </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="center">
                   <CalendarComponent
@@ -516,16 +508,14 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 </PopoverContent>
               </Popover>
               
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
                 }}
-                className="h-4 w-3 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
+                className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded flex-shrink-0"
               >
-                <ChevronRight className="h-1.5 w-1.5" />
-              </Button>
+                <ChevronRight className="h-2 w-2 text-gray-600 dark:text-gray-300" />
+              </button>
             </div>
           </div>
         </CardContent>
