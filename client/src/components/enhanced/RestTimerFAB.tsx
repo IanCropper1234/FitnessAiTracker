@@ -167,10 +167,10 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
 
   // Get safe positioning with overflow prevention
   const getSafePosition = () => {
-    // Default position when not dragged
+    // Default position when not dragged - aligned with floating training menu
     if (!fabPosition) {
       return {
-        bottom: '1rem',
+        bottom: '5rem', // Match floating training menu (bottom-20 = 5rem)
         left: '1rem',
         position: 'fixed' as const,
       };
