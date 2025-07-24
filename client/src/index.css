@@ -512,6 +512,50 @@
     font-weight: 500 !important;
   }
 
+  /* Additional selectors to ensure all calendar instances are styled correctly */
+  .rdp .rdp-day_selected,
+  [data-selected] .rdp-day_selected,
+  .rdp button[data-selected],
+  .rdp button[aria-selected="true"] {
+    background-color: transparent !important;
+    color: var(--rdp-accent-color) !important;
+    border: 2px solid var(--rdp-accent-color) !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  /* Override any button styling for calendar days */
+  .rdp button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .rdp button:hover:not([data-selected]):not([aria-selected="true"]) {
+    background-color: hsl(var(--muted)) !important;
+    border: none !important;
+  }
+
+  .rdp button[data-selected]:hover,
+  .rdp button[aria-selected="true"]:hover {
+    background-color: transparent !important;
+    border-color: var(--rdp-accent-color) !important;
+    color: var(--rdp-accent-color) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
