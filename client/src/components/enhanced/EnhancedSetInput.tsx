@@ -8,8 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Check, Info, Plus, Minus, Scale } from "lucide-react";
-import { useFeature } from "@/hooks/useFeature";
-import { SpinnerInput } from "./SpinnerInput";
 
 interface WorkoutSet {
   setNumber: number;
@@ -69,7 +67,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   userId = 1,
   isBodyWeightExercise = false,
 }) => {
-  const spinnerEnabled = useFeature('spinnerSetInput');
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [useBodyWeight, setUseBodyWeight] = useState(false);
 
@@ -248,7 +245,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     step="0.5"
                     min="0"
                     max="1000"
-                    className={`h-8 text-sm border-0 bg-transparent pr-10 ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    className={`h-8 text-sm border-0 bg-transparent pr-10 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
                     disabled={useBodyWeight}
                     readOnly={useBodyWeight}
                     inputMode="decimal"
@@ -283,7 +280,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     placeholder="0"
                     min="0"
                     max="50"
-                    className="h-8 text-sm border-0 bg-transparent text-center"
+                    className="h-8 text-sm border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     inputMode="numeric"
                   />
                 </div>
