@@ -477,19 +477,19 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               Nutrition Overview
             </CardTitle>
             
-            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 flex-shrink-0 min-w-0">
+            <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-sm px-0.5 py-0 h-5 flex-shrink-0 min-w-0">
               <button
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
                 }}
-                className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded flex-shrink-0"
+                className="h-4 w-4 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded flex-shrink-0"
               >
-                <ChevronLeft className="h-2 w-2 text-gray-600 dark:text-gray-300" />
+                <ChevronLeft className="h-2.5 w-2.5 text-gray-600 dark:text-gray-300" />
               </button>
               
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="px-1 py-0 text-[8px] font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 max-w-[50px] truncate">
+                  <button className="px-1 py-0 text-[9px] font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 max-w-[40px] truncate h-4">
                     {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                      TimezoneUtils.formatForDisplay(selectedDate, 'en-GB').split(' ')[0]}
                   </button>
@@ -512,9 +512,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
                 }}
-                className="h-3 w-3 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded flex-shrink-0"
+                className="h-4 w-4 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded flex-shrink-0"
               >
-                <ChevronRight className="h-2 w-2 text-gray-600 dark:text-gray-300" />
+                <ChevronRight className="h-2.5 w-2.5 text-gray-600 dark:text-gray-300" />
               </button>
             </div>
           </div>
@@ -671,10 +671,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     onShowLogger(selectedDate);
                   }
                 }}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-6 px-1.5"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-[9px] h-5 px-1"
                 size="sm"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-2.5 h-2.5" />
               </Button>
             </div>
           </div>
