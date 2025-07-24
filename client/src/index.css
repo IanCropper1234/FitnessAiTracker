@@ -438,10 +438,11 @@
     --rdp-background-color: hsl(222, 84%, 5%);
   }
 
-  /* Fix oversized selected date indicator */
+  /* Fix oversized selected date indicator - Clean visual indicator */
   .rdp-day_selected {
-    background-color: var(--rdp-accent-color) !important;
-    color: white !important;
+    background-color: transparent !important;
+    color: var(--rdp-accent-color) !important;
+    border: 2px solid var(--rdp-accent-color) !important;
     border-radius: 50% !important;
     width: 32px !important;
     height: 32px !important;
@@ -449,12 +450,22 @@
     align-items: center !important;
     justify-content: center !important;
     margin: 0 auto !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 
   .rdp-day_selected:hover {
-    background-color: var(--rdp-accent-color) !important;
-    opacity: 0.9 !important;
+    background-color: transparent !important;
+    border-color: var(--rdp-accent-color) !important;
+    color: var(--rdp-accent-color) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .rdp-day_selected:focus {
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   /* Fix calendar cell sizing */
@@ -477,10 +488,22 @@
     font-weight: normal !important;
     margin: 0 !important;
     padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 
   .rdp-day:hover {
     background-color: hsl(var(--muted)) !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .rdp-day:focus {
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   .rdp-day_today {
