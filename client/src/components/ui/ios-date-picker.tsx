@@ -99,6 +99,17 @@ export function IOSDatePicker({
     setShowDatePicker(false);
   };
 
+  // When opening the picker, if no date is selected or it's not today, default to today
+  const handleOpenPicker = () => {
+    const today = TimezoneUtils.getCurrentDate();
+    if (!selectedDate || selectedDate === '') {
+      setTempSelectedDate(today);
+    } else {
+      setTempSelectedDate(selectedDate);
+    }
+    setShowDatePicker(true);
+  };
+
   return (
     <>
       {/* Compact Date Selector */}
@@ -112,7 +123,7 @@ export function IOSDatePicker({
           </button>
           
           <button
-            onClick={() => setShowDatePicker(true)}
+            onClick={handleOpenPicker}
             className={`ios-touch-feedback flex items-center gap-1.5 ${classes.datePicker} rounded-lg hover:bg-accent/50 transition-colors`}
           >
             <span className={`${classes.text} font-medium text-foreground`}>
