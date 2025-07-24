@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { TimezoneUtils } from "@shared/utils/timezone";
 
 interface User {
   id: number;
@@ -35,9 +36,9 @@ export function Dashboard({ user }: DashboardProps) {
   const [, setLocation] = useLocation();
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
 
-  const currentDate = new Date(selectedDate);
+  const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
 
   const { data: nutritionSummary } = useQuery({
@@ -65,12 +66,7 @@ export function Dashboard({ user }: DashboardProps) {
     }
   });
 
-  const today = new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
+  const today = TimezoneUtils.formatForDisplay(selectedDate, 'en-US');
 
   // Smart Start Workout function
   const handleStartWorkout = () => {
@@ -103,9 +99,7 @@ export function Dashboard({ user }: DashboardProps) {
               variant="ghost"
               size="sm"
               onClick={() => {
-                const currentDate = new Date(selectedDate);
-                currentDate.setDate(currentDate.getDate() - 1);
-                setSelectedDate(currentDate.toISOString().split('T')[0]);
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
               }}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
@@ -114,8 +108,8 @@ export function Dashboard({ user }: DashboardProps) {
             
             <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[100px] justify-center text-xs sm:text-sm">
               <span className="text-sm font-medium">
-                {selectedDate === new Date().toISOString().split('T')[0] ? 'Today' : 
-                 new Date(selectedDate).toLocaleDateString('en-GB', { 
+                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                 TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
                    day: '2-digit', 
                    month: '2-digit', 
                    year: 'numeric' 
@@ -130,10 +124,10 @@ export function Dashboard({ user }: DashboardProps) {
                 <PopoverContent className="w-auto p-0" align="center">
                   <CalendarComponent
                     mode="single"
-                    selected={new Date(selectedDate)}
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
                     onSelect={(date) => {
                       if (date) {
-                        setSelectedDate(date.toISOString().split('T')[0]);
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
                       }
                     }}
                     initialFocus
@@ -146,9 +140,7 @@ export function Dashboard({ user }: DashboardProps) {
               variant="ghost"
               size="sm"
               onClick={() => {
-                const currentDate = new Date(selectedDate);
-                currentDate.setDate(currentDate.getDate() + 1);
-                setSelectedDate(currentDate.toISOString().split('T')[0]);
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
               }}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
@@ -159,12 +151,7 @@ export function Dashboard({ user }: DashboardProps) {
           {/* Full Date Display */}
           <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-body-sm">
             <Calendar className="w-4 h-4" />
-            {currentDate.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
+            {TimezoneUtils.formatForDisplay(selectedDate, 'en-US')}
           </p>
         </div>
 
