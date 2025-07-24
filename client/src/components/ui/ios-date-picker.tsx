@@ -137,7 +137,7 @@ export function IOSDatePicker({
       {/* iOS-Style Date Picker Modal */}
       {showDatePicker && (
         <div 
-          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          className="fixed inset-0 z-[9999] bg-black/50 flex items-end justify-center"
           style={{ touchAction: 'none' }} // Prevent background scrolling
         >
           <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl">
