@@ -692,31 +692,35 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           </CardContent>
         </Card>
       )}
-      {/* Session Header */}
+      {/* Compact Session Header */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{session.name}</span>
-            <Badge variant="outline">
-              Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between mb-2">
+            <CardTitle className="text-lg leading-tight">{session.name}</CardTitle>
+            <Badge variant="outline" className="text-xs">
+              {currentExerciseIndex + 1}/{session.exercises.length}
             </Badge>
-          </CardTitle>
-          <Progress value={progressPercentage} className="w-full" />
-          <p className="text-sm text-muted-foreground">
-            {completedSets} of {totalSets} sets completed ({Math.round(progressPercentage)}%)
-          </p>
+          </div>
+          <div className="space-y-1">
+            <Progress value={progressPercentage} className="w-full h-2" />
+            <p className="text-xs text-muted-foreground">
+              {completedSets}/{totalSets} sets ({Math.round(progressPercentage)}%)
+            </p>
+          </div>
         </CardHeader>
       </Card>
-      {/* All Exercises Overview with Drag & Drop */}
+      {/* Compact Exercises Overview */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Workout Overview
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Drag and drop exercises to reorder them
-          </p>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Target className="h-4 w-4" />
+              Workout Overview
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Drag to reorder
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <div 
@@ -879,30 +883,32 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           )}
         </CardContent>
       </Card>
-      {/* Current Exercise Details */}
+      {/* Compact Current Exercise */}
       {currentExercise && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              {currentExercise.exercise.name}
-              <Badge variant="outline">
-                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between mb-2">
+              <CardTitle className="flex items-center gap-2 text-base leading-tight">
+                <Target className="h-4 w-4" />
+                {currentExercise.exercise.name}
+              </CardTitle>
+              <Badge variant="outline" className="text-xs">
+                {currentExerciseIndex + 1}/{session.exercises.length}
               </Badge>
-            </CardTitle>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="capitalize">
+            </div>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              <Badge variant="outline" className="text-xs capitalize">
                 {currentExercise.exercise.category}
               </Badge>
-              <Badge variant="secondary" className="capitalize">
+              <Badge variant="secondary" className="text-xs capitalize">
                 {currentExercise.exercise.primaryMuscle.replace('_', ' ')}
               </Badge>
-              <Badge variant="outline">
+              <Badge variant="outline" className="text-xs">
                 {currentExercise.exercise.equipment?.replace('_', ' ')}
               </Badge>
             </div>
             {currentExercise.exercise.instructions && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground leading-tight">
                 {currentExercise.exercise.instructions}
               </p>
             )}
@@ -1079,42 +1085,43 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           </CardContent>
         </Card>
       )}
-      {/* Exercise Navigation */}
+      {/* Compact Navigation */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Exercise Navigation</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between gap-4">
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between gap-3">
             <Button
               variant="outline"
+              size="sm"
               disabled={currentExerciseIndex === 0}
               onClick={() => {
                 setCurrentExerciseIndex(currentExerciseIndex - 1);
                 setCurrentSetIndex(0);
               }}
+              className="px-3"
             >
-              ←
+              ← Prev
             </Button>
             
-            <div className="text-center">
-              <div className="text-sm text-muted-foreground">
-                Exercise {currentExerciseIndex + 1} of {session.exercises.length}
+            <div className="text-center flex-1">
+              <div className="text-xs text-muted-foreground">
+                {currentExerciseIndex + 1}/{session.exercises.length}
               </div>
-              <div className="font-medium">
+              <div className="text-sm font-medium leading-tight">
                 {currentExercise?.exercise.name}
               </div>
             </div>
             
             <Button
               variant="outline"
+              size="sm"
               disabled={currentExerciseIndex === session.exercises.length - 1}
               onClick={() => {
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
                 setCurrentSetIndex(0);
               }}
+              className="px-3"
             >
-              →
+              Next →
             </Button>
           </div>
         </CardContent>

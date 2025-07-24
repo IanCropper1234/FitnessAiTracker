@@ -512,9 +512,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   return (
-    <div className="space-y-3 max-w-4xl mx-auto" {...swipeHandlers}>
-      {/* Minimalist Compact Header */}
-      <div className="ios-card p-2 space-y-2">
+    <div className="space-y-2 max-w-4xl mx-auto" {...swipeHandlers}>
+      {/* Ultra-Compact Header */}
+      <div className="ios-card p-2 space-y-1.5">
         {/* Single Line Summary - Minimalist Approach */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -575,10 +575,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         </TabsList>
 
         {/* Workout Execution Tab */}
-        <TabsContent value="execution" className="space-y-3 mt-3">
+        <TabsContent value="execution" className="space-y-2 mt-2">
           {/* Current Exercise Display */}
           {currentExercise && (
-            <div className="ios-card p-2 space-y-2">
+            <div className="ios-card p-1.5 space-y-1.5">
               {/* Current Set Input */}
               {currentSet && (
                 <EnhancedSetInput
@@ -595,8 +595,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 />
               )}
 
-              {/* All Sets Overview - Compact Design */}
-              <div className="space-y-2">
+              {/* All Sets Overview - Ultra Compact */}
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <h4 className="text-xs font-semibold text-foreground">Sets</h4>
@@ -723,15 +723,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             </div>
           )}
 
-          {/* Compact Navigation */}
-          <div className="grid grid-cols-2 gap-2">
+          {/* Ultra Compact Navigation */}
+          <div className="grid grid-cols-2 gap-1.5">
             <button
               disabled={currentExerciseIndex === 0}
               onClick={() => {
                 setCurrentExerciseIndex(currentExerciseIndex - 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-touch-feedback flex items-center gap-1.5 p-2 rounded-lg border border-border/30 ${
+              className={`ios-touch-feedback flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
                 currentExerciseIndex === 0 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
@@ -754,7 +754,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-touch-feedback flex items-center gap-1.5 p-2 rounded-lg border border-border/30 ${
+              className={`ios-touch-feedback flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
                 currentExerciseIndex === session.exercises.length - 1 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
@@ -774,7 +774,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         </TabsContent>
 
         {/* Exercise Management Tab */}
-        <TabsContent value="exercises" className="space-y-4 mt-4">
+        <TabsContent value="exercises" className="space-y-2 mt-2">
           <DraggableExerciseList
             exercises={session.exercises}
             sessionId={sessionId}
@@ -784,10 +784,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           />
         </TabsContent>
       </Tabs>
-      {/* Compact Mobile Action Section */}
-      <div className="ios-card p-2">
+      {/* Ultra Compact Action Section */}
+      <div className="ios-card p-1.5">
         {/* Quick Stats Bar */}
-        <div className="flex items-center justify-between mb-2 pb-2 border-b border-border/30">
+        <div className="flex items-center justify-between mb-1.5 pb-1.5 border-b border-border/30">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span>{completedSets}/{totalSets} sets</span>
             <span>•</span>
@@ -800,12 +800,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         </div>
         
-        {/* Compact Action Buttons */}
-        <div className="grid grid-cols-2 gap-2">
+        {/* Ultra Compact Action Buttons */}
+        <div className="grid grid-cols-2 gap-1.5">
           <button 
             onClick={saveAndExit} 
             disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 px-2 rounded-lg border border-border/30 flex items-center justify-center gap-1 transition-colors"
+            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5 rounded-lg border border-border/30 flex items-center justify-center gap-1 transition-colors"
           >
             <Save className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Save & Exit</span>
@@ -813,7 +813,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           <button 
             onClick={completeWorkout} 
             disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-2 rounded-lg flex items-center justify-center gap-1 transition-colors"
+            className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors"
           >
             <CheckCircle className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Complete Workout</span>
