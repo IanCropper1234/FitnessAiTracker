@@ -512,9 +512,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   return (
-    <div className="space-y-2 max-w-4xl mx-auto" {...swipeHandlers}>
+    <div className="space-y-2 max-w-4xl mx-auto ios-list-scroll animated-element" {...swipeHandlers}>
       {/* Ultra-Compact Header */}
-      <div className="ios-card p-2 space-y-1.5">
+      <div className="ios-card p-2 space-y-1.5 animated-element">
         {/* Single Line Summary - Minimalist Approach */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -532,7 +532,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
           <button
             onClick={() => setCircularProgressEnabled(!circularProgressEnabled)}
-            className="text-xs text-muted-foreground hover:text-foreground"
+            className="text-xs text-muted-foreground hover:text-foreground ios-touch-feedback touch-target"
           >
             {circularProgressEnabled ? 'Bar' : 'Circle'}
           </button>
@@ -731,7 +731,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 setCurrentExerciseIndex(currentExerciseIndex - 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-touch-feedback flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
+              className={`ios-button touch-target flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
                 currentExerciseIndex === 0 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
@@ -754,7 +754,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-touch-feedback flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
+              className={`ios-button touch-target flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
                 currentExerciseIndex === session.exercises.length - 1 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'

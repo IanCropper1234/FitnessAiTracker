@@ -378,9 +378,17 @@
     }
   }
 
-  /* iOS Touch Feedback */
+  /* iOS Touch Feedback - Enhanced with Touch Action Properties */
   .ios-touch-feedback {
     transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation; /* Prevent zoom on double-tap */
+    -webkit-touch-callout: none; /* Disable iOS callout menu */
+    -webkit-user-select: none; /* Prevent text selection */
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Ensure minimum touch target size */
+    min-height: 44px;
+    min-width: 44px;
   }
 
   .ios-touch-feedback:active {
@@ -682,15 +690,79 @@
   .px-mobile { padding-left: 8px; padding-right: 8px; }
   .py-mobile { padding-top: 6px; padding-bottom: 6px; }
   
-  /* iOS Touch Feedback - iPhone SE/12 mini optimized */
-  .ios-touch-feedback {
-    -webkit-tap-highlight-color: transparent;
-    transition: all 0.2s ease-out;
+  /* iOS Scroll Physics Implementation */
+  .scrollable-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
   }
   
-  .ios-touch-feedback:active {
-    transform: scale(0.95);
-    opacity: 0.8;
+  /* Draggable Elements - Vertical scroll only */
+  .draggable-element {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Long Press Interactions */
+  .long-press-target {
+    -webkit-touch-callout: default;
+  }
+  
+  /* iOS Input Optimizations */
+  .ios-input {
+    -webkit-appearance: none;
+    font-size: 16px; /* Prevent zoom on focus in iOS Safari */
+    touch-action: manipulation;
+  }
+  
+  /* Touch Target Compliance */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Hardware Acceleration for Animations */
+  .animated-element {
+    will-change: transform, opacity;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+  
+  /* iOS-Style List Scrolling */
+  .ios-list-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+    touch-action: pan-y;
+  }
+  
+  /* Workout Execution Specific Touch Optimizations */
+  .workout-input {
+    -webkit-appearance: none;
+    font-size: 16px;
+    touch-action: manipulation;
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Enhanced Button Touch Targets */
+  .ios-button {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  
+  /* Floating Action Button Optimizations */
+  .fab-touch {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 56px; /* Larger for FAB elements */
+    min-width: 56px;
   }
   
   /* iOS Navigation Header Styling */

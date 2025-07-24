@@ -214,7 +214,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   </div>
                   <button
                     onClick={() => setShowCustomTime(false)}
-                    className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                    className="ios-button touch-target flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -272,7 +272,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   </div>
                   <button
                     onClick={() => setIsExpanded(false)}
-                    className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                    className="ios-button touch-target flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -323,7 +323,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                       <button
                         key={preset.label}
                         onClick={() => onCustomTimeSet?.(preset.seconds)}
-                        className="h-8 px-1.5 text-xs font-medium rounded-md bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
+                        className="ios-button touch-target px-1.5 text-xs font-medium rounded-md bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
                       >
                         {preset.label}
                       </button>
@@ -354,7 +354,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         onClick={() => !isDragging && setIsExpanded(true)}
         className={`fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        } relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:scale-105 active:scale-95 group touch-manipulation select-none`}
+        } relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
         style={getSafePosition()}
       >
         {/* Outer pulsing ring when active */}

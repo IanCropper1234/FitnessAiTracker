@@ -62,7 +62,7 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
                   onClick={() => handleItemClick(item.id)}
                   className={`
                     flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
-                    transition-all duration-200 ios-touch-feedback min-w-[110px] justify-start
+                    transition-all duration-200 ios-button touch-target min-w-[110px] justify-start
                     ${isActive 
                       ? "bg-orange-600 hover:bg-orange-700 text-white border-orange-500/30" 
                       : "bg-white/90 dark:bg-gray-800/90 text-black dark:text-white hover:bg-white dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700/50"
@@ -82,8 +82,8 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
       <div
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
-          w-12 h-12 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
-          ios-touch-feedback border-2 flex items-center justify-center cursor-pointer
+          w-14 h-14 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
+          fab-touch border-2 flex items-center justify-center cursor-pointer
           ${isExpanded 
             ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
             : "bg-orange-600 hover:bg-orange-700 text-white border-orange-500/30 hover:scale-105"

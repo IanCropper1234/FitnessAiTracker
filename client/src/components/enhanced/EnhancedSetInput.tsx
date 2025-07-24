@@ -171,7 +171,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => setShowRecommendation(!showRecommendation)}
-              className="h-6 w-6 p-0 flex-shrink-0"
+              className="ios-touch-feedback touch-target p-0 flex-shrink-0"
             >
               <Info className="h-3 w-3" />
             </Button>
@@ -200,7 +200,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleUseRecommendation}
-                className="text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/30 h-6 px-2 flex-shrink-0"
+                className="ios-touch-feedback touch-target text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/30 px-2 flex-shrink-0"
               >
                 Use
               </Button>
@@ -245,7 +245,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     step="0.5"
                     min="0"
                     max="1000"
-                    className={`h-7 text-sm border-0 bg-transparent pr-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    className={`workout-input h-7 text-sm border-0 bg-transparent pr-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
                     disabled={useBodyWeight}
                     readOnly={useBodyWeight}
                     inputMode="decimal"
@@ -280,7 +280,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     placeholder="0"
                     min="0"
                     max="50"
-                    className="h-7 text-sm border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="workout-input h-7 text-sm border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     inputMode="numeric"
                   />
                 </div>
@@ -330,7 +330,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <Button
             onClick={onCompleteSet}
             disabled={!isSetValid}
-            className="w-full h-8 text-sm"
+            className="ios-button touch-target w-full text-sm"
             variant={isSetValid ? "default" : "secondary"}
           >
             {isSetValid ? (
