@@ -81,11 +81,17 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     { label: 'Default', seconds: defaultRestPeriod }
   ];
 
-  // Handle mouse/touch drag events
+  // Handle mouse/touch drag events with improved positioning
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!draggable) return;
     
     setIsDragging(true);
+    
+    // Get current position or default to current element position
+    const rect = e.currentTarget.getBoundingClientRect();
+    const currentX = fabPosition?.x ?? rect.left;
+    const currentY = fabPosition?.y ?? rect.top;
+    
     const startX = e.clientX;
     const startY = e.clientY;
     
@@ -94,13 +100,14 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       const deltaY = e.clientY - startY;
       
       setFabPosition({
-        x: deltaX,
-        y: deltaY,
+        x: currentX + deltaX,
+        y: currentY + deltaY,
       });
     };
     
     const handleMouseUp = () => {
       setIsDragging(false);
+      snapToEdge();
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -109,25 +116,113 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
+  // Touch support for mobile devices
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!draggable) return;
+    
+    e.preventDefault();
+    setIsDragging(true);
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const currentX = fabPosition?.x ?? rect.left;
+    const currentY = fabPosition?.y ?? rect.top;
+    
+    const touch = e.touches[0];
+    const startX = touch.clientX;
+    const startY = touch.clientY;
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      
+      setFabPosition({
+        x: currentX + deltaX,
+        y: currentY + deltaY,
+      });
+    };
+    
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      snapToEdge();
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+    
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  };
+
+  // Smart edge snapping for better device positioning
+  const snapToEdge = () => {
+    if (!fabPosition) return;
+    
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const fabSize = 64;
+    const margin = 8;
+    
+    // Find the closest edge
+    const distanceToLeft = fabPosition.x;
+    const distanceToRight = viewportWidth - fabPosition.x - fabSize;
+    const distanceToTop = fabPosition.y;
+    const distanceToBottom = viewportHeight - fabPosition.y - fabSize;
+    
+    // Snap to the closest horizontal edge with safe margin
+    let newX = fabPosition.x;
+    if (distanceToLeft < distanceToRight) {
+      newX = margin; // Snap to left edge
+    } else {
+      newX = Math.max(margin, viewportWidth - fabSize - margin); // Snap to right edge
+    }
+    
+    // Keep vertical position but ensure it's within bounds
+    const newY = Math.max(margin, Math.min(viewportHeight - fabSize - margin, fabPosition.y));
+    
+    setFabPosition({ x: newX, y: newY });
+  };
+
   // Auto-hide when not active
   if (!isActive && timeRemaining === 0) {
     return null;
   }
 
-  const fabStyle = fabPosition 
-    ? {
-        transform: `translate(${fabPosition.x}px, ${fabPosition.y}px)`,
-        position: 'fixed' as const,
-        bottom: '1rem',
-        right: '1rem',
-      }
-    : {};
+  // Smart positioning with overflow prevention and safe boundaries
+  const getSmartPosition = () => {
+    if (!fabPosition) return {};
+    
+    // Get viewport dimensions with safety margins
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const fabSize = 64; // w-16 h-16 = 64px
+    const safeMargin = 8; // Minimum distance from edges
+    
+    // Calculate safe boundaries to prevent overflow
+    const minX = safeMargin;
+    const minY = safeMargin;
+    const maxX = Math.max(safeMargin, viewportWidth - fabSize - safeMargin);
+    const maxY = Math.max(safeMargin, viewportHeight - fabSize - safeMargin);
+    
+    // Constrain position within safe boundaries
+    const constrainedX = Math.max(minX, Math.min(maxX, fabPosition.x));
+    const constrainedY = Math.max(minY, Math.min(maxY, fabPosition.y));
+    
+    return {
+      position: 'fixed' as const,
+      left: `${constrainedX}px`,
+      top: `${constrainedY}px`,
+      transform: 'none',
+      zIndex: 50,
+    };
+  };
+
+  const fabStyle = fabPosition ? getSmartPosition() : {};
 
   return (
     <div
-      className={`fixed z-50 ${getPositionClass()} transition-all duration-300 ${
+      className={`fixed z-50 transition-all duration-300 ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
-      }`}
+      } ${!fabPosition ? getPositionClass() : ''}`}
       style={fabStyle}
     >
       {isExpanded ? (
@@ -279,11 +374,12 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
           </div>
         </div>
       ) : (
-        // Collapsed timer button - minimalist pulsing ring design
+        // Collapsed timer button - minimalist pulsing ring design with overflow prevention
         <button
           onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
           onClick={() => setIsExpanded(true)}
-          className="relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 group"
+          className="relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 group touch-manipulation select-none"
         >
           {/* Outer pulsing ring when active */}
           {timeRemaining > 0 && (
