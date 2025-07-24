@@ -529,8 +529,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl z-50
           transition-all duration-300 ease-in-out
           ${headerVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}
-          ${inputFocused ? 'backdrop-blur-sm bg-background/80' : 'bg-background/95 backdrop-blur-md'}
-          border-b border-border/50 shadow-sm
+          ${headerExpanded 
+            ? (inputFocused ? 'backdrop-blur-sm bg-background/80 border-b border-border/50 shadow-sm' : 'bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm')
+            : 'bg-transparent'
+          }
         `}
       >
         {/* Sticky Smart Bar - Always Visible Minimal Header */}
@@ -538,7 +540,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           className={`
             flex items-center justify-between p-3 cursor-pointer
             transition-colors duration-200
-            ${headerExpanded ? 'bg-muted/10' : 'hover:bg-muted/20'}
+            ${headerExpanded 
+              ? 'bg-muted/10' 
+              : 'bg-background/90 backdrop-blur-md hover:bg-background/95 border-b border-border/20'
+            }
           `}
           onClick={(e) => {
             e.stopPropagation();
@@ -596,7 +601,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             ${headerExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
           `}
         >
-          <div className="px-3 pb-3 space-y-3 border-t border-border/30">
+          <div className={`px-3 pb-3 space-y-3 transition-all duration-300 ${headerExpanded ? 'border-t border-border/30' : ''}`}>
             {/* Session Info */}
             <div className="text-center pt-2">
               <h1 className="text-foreground text-sm font-medium">
