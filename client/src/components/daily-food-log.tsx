@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { IOSDatePicker } from "@/components/ui/ios-date-picker";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
 
 interface DailyFoodLogProps {
@@ -606,11 +607,55 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <IOSDatePicker 
-            selectedDate={selectedDate}
-            onDateChange={setSelectedDate}
-            size="md"
-          />
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
+              }}
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-gray-800 rounded-md min-w-[120px] justify-center">
+              <span className="text-sm font-medium">
+                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                 TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
+              </span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="center">
+                  <CalendarComponent
+                    mode="single"
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                      }
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
+              }}
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
