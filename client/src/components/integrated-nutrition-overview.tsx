@@ -679,56 +679,44 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               
               {selectedLogs.length > 0 && (
                 <div className="flex items-center gap-1 pt-1 border-t border-blue-200 dark:border-blue-600">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        className="flex-1 h-6 text-[10px]"
-                      >
-                        <CalendarIcon className="mr-1 h-3 w-3" />
-                        Copy to date
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <div className="flex items-center justify-between p-2 border-b">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
-                            handleBulkCopy(dateStr);
-                          }}
-                          className="text-xs h-6"
-                        >
-                          <ChevronLeft className="h-3 w-3 mr-1" />
-                          Yesterday
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
-                            handleBulkCopy(dateStr);
-                          }}
-                          className="text-xs h-6"
-                        >
-                          Tomorrow
-                          <ChevronRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                      <div className="p-2">
-                        <IOSDatePicker 
-                          selectedDate={TimezoneUtils.getCurrentDate()}
-                          onDateChange={(date) => {
-                            if (date) {
-                              handleBulkCopy(date);
-                            }
-                          }}
-                          size="sm"
-                        />
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                  <div className="flex-1 flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
+                        handleBulkCopy(dateStr);
+                      }}
+                      className="text-xs h-6 px-2"
+                    >
+                      <ChevronLeft className="h-3 w-3 mr-1" />
+                      Yesterday
+                    </Button>
+                    
+                    <IOSDatePicker 
+                      selectedDate={TimezoneUtils.getCurrentDate()}
+                      onDateChange={(date) => {
+                        if (date) {
+                          handleBulkCopy(date);
+                        }
+                      }}
+                      size="sm"
+                      className="flex-1"
+                    />
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
+                        handleBulkCopy(dateStr);
+                      }}
+                      className="text-xs h-6 px-2"
+                    >
+                      Tomorrow
+                      <ChevronRight className="h-3 w-3 ml-1" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
