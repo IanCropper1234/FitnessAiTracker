@@ -807,27 +807,35 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               )}
 
               {/* Session Filter Tabs */}
-              <div className="px-2">
-                <div className="flex gap-1 bg-muted/50 dark:bg-muted/30 p-1 rounded-xl backdrop-blur-sm">
+              <div className="px-1">
+                <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5 rounded-lg backdrop-blur-sm">
                   <button
                     onClick={() => setSessionFilter('active')}
-                    className="flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 dark:bg-blue-600 text-white shadow-sm scale-[0.98] bg-[#479bf5]"
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
+                      sessionFilter === 'active'
+                        ? 'bg-blue-500 dark:bg-blue-600 text-white shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
+                    }`}
                   >
                     Active ({Array.isArray(recentSessions) ? recentSessions.filter(s => !s.isCompleted).length : 0})
                   </button>
                   <button
                     onClick={() => setSessionFilter('completed')}
-                    className={`flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 ${
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
                       sessionFilter === 'completed'
-                        ? 'bg-green-500 dark:bg-green-600 text-white shadow-sm scale-[0.98]'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50 dark:hover:bg-background/50'
+                        ? 'bg-emerald-500 dark:bg-emerald-600 text-white shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
                     }`}
                   >
                     Done ({Array.isArray(recentSessions) ? recentSessions.filter(s => s.isCompleted).length : 0})
                   </button>
                   <button
                     onClick={() => setSessionFilter('all')}
-                    className="flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 bg-foreground dark:bg-foreground dark:text-background shadow-sm scale-[0.98] text-[#1c1c1c]"
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
+                      sessionFilter === 'all'
+                        ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
+                    }`}
                   >
                     All ({Array.isArray(recentSessions) ? recentSessions.length : 0})
                   </button>
@@ -835,7 +843,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </div>
 
               {/* Compact Grid Sessions */}
-              <div className="px-2">
+              <div className="px-1">
                 {(() => {
                   const filteredSessions = Array.isArray(recentSessions) ? recentSessions.filter(session => {
                     if (sessionFilter === 'active') return !session.isCompleted;
@@ -854,8 +862,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
                   if (filteredSessions.length === 0) {
                     return (
-                      <div className="text-center py-8">
-                        <div className="text-muted-foreground text-sm">
+                      <div className="text-center py-6">
+                        <div className="text-gray-500 dark:text-gray-400 text-sm">
                           {sessionFilter === 'active' && 'No active sessions'}
                           {sessionFilter === 'completed' && 'No completed sessions'}
                           {sessionFilter === 'all' && 'No sessions found'}
@@ -863,9 +871,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                         <Button 
                           onClick={() => setShowSessionCreator(true)} 
                           size="sm" 
-                          className="mt-3"
+                          className="mt-2"
                         >
-                          <Plus className="h-4 w-4 mr-2" />
+                          <Plus className="h-4 w-4 mr-1" />
                           Start Workout
                         </Button>
                       </div>
@@ -873,42 +881,42 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   }
 
                   return (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {filteredSessions.map((session) => (
                         <div
                           key={session.id}
-                          className={`relative p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] ${
+                          className={`relative p-3 rounded-lg border transition-all duration-200 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${
                             session.isCompleted
-                              ? 'bg-card dark:bg-card border-border dark:border-border shadow-sm'
-                              : 'bg-card dark:bg-card border-border dark:border-border shadow-sm'
+                              ? 'bg-white/60 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 backdrop-blur-sm'
+                              : 'bg-white/80 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 backdrop-blur-sm'
                           }`}
                         >
                           {/* Session Header */}
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start justify-between mb-2">
                             <div className="min-w-0 flex-1">
-                              <h5 className="text-sm font-medium truncate text-foreground">
+                              <h5 className="text-sm font-medium truncate text-gray-900 dark:text-gray-100">
                                 {session.name}
                               </h5>
-                              <p className="text-xs text-muted-foreground mt-0.5">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                 {new Date(session.date).toLocaleDateString()}
                               </p>
                             </div>
-                            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                               session.isCompleted 
-                                ? 'bg-green-500 dark:bg-green-400' 
+                                ? 'bg-emerald-500 dark:bg-emerald-400' 
                                 : 'bg-blue-500 dark:bg-blue-400 animate-pulse'
                             }`} />
                           </div>
 
                           {/* Session Stats */}
-                          <div className="space-y-2 mb-4">
+                          <div className="space-y-1.5 mb-3">
                             <div className="flex justify-between text-xs">
-                              <span className="text-muted-foreground">Duration</span>
-                              <span className="font-medium text-foreground">{session.duration || 0}min</span>
+                              <span className="text-gray-500 dark:text-gray-400">Duration</span>
+                              <span className="font-medium text-gray-900 dark:text-gray-100">{session.duration || 0}min</span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="text-muted-foreground">Volume</span>
-                              <span className="font-medium text-foreground">{session.totalVolume || 0}kg</span>
+                              <span className="text-gray-500 dark:text-gray-400">Volume</span>
+                              <span className="font-medium text-gray-900 dark:text-gray-100">{session.totalVolume || 0}kg</span>
                             </div>
                           </div>
 
@@ -921,7 +929,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                                 setExecutingSessionId(session.id);
                               }
                             }}
-                            className="w-full py-2.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
+                            className="w-full py-2 px-3 rounded-md text-xs font-medium transition-all duration-200 active:scale-95 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
                           >
                             {session.isCompleted ? 'View' : 'Continue'}
                           </button>
@@ -932,11 +940,11 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                               e.stopPropagation();
                               // Add menu logic here
                             }}
-                            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-muted dark:hover:bg-muted transition-colors"
+                            className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                           >
-                            <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
-                            <div className="w-1 h-1 bg-muted-foreground rounded-full mt-0.5"></div>
-                            <div className="w-1 h-1 bg-muted-foreground rounded-full mt-0.5"></div>
+                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full mt-0.5"></div>
+                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full mt-0.5"></div>
                           </button>
                         </div>
                       ))}
