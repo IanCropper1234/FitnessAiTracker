@@ -925,11 +925,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                                 setExecutingSessionId(session.id);
                               }
                             }}
-                            className={`w-full py-2.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 ${
-                              session.isCompleted
-                                ? 'bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white'
-                                : 'bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white'
-                            }`}
+                            className="w-full py-2.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white bg-[#479bf5]"
                           >
                             {session.isCompleted ? 'View' : 'Continue'}
                           </button>
