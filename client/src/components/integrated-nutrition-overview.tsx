@@ -694,7 +694,8 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                     onShowLogger(selectedDate);
                   }
                 }}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-6 px-1.5"
+                className="text-xs h-6 px-1.5"
+                style={{ backgroundColor: '#479bf5', color: '#030303' }}
                 size="sm"
               >
                 <Plus className="w-3 h-3" />
