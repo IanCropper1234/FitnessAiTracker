@@ -171,7 +171,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     if (!fabPosition) {
       return {
         bottom: '1rem',
-        right: '1rem',
+        left: '1rem',
         position: 'fixed' as const,
       };
     }
