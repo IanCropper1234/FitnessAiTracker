@@ -10,7 +10,6 @@ import { TimezoneUtils } from "@shared/utils/timezone";
 import { 
   Plus, 
   Trash2, 
-  Calendar, 
   ChevronLeft, 
   ChevronRight, 
   ChevronDown,
