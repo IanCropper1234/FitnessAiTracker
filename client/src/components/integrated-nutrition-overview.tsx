@@ -28,6 +28,7 @@ import {
   GripVertical,
   Check
 } from "lucide-react";
+import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
@@ -478,67 +479,12 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 Nutrition Overview
               </CardTitle>
               
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    className="h-6 px-2 text-xs font-medium rounded-full dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex-shrink-0 bg-[#479bf5] text-[#030303]"
-                  >
-                    <span className="text-[11px]">
-                      {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                       TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
-                    </span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
-                  <div className="p-2 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
-                        }}
-                        className="h-8 px-3 text-xs"
-                      >
-                        <ChevronLeft className="h-3 w-3 mr-1" />
-                        Yesterday
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedDate(TimezoneUtils.getCurrentDate());
-                        }}
-                        className="h-8 px-3 text-xs font-medium"
-                      >
-                        Today
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
-                        }}
-                        className="h-8 px-3 text-xs"
-                      >
-                        Tomorrow
-                        <ChevronRight className="h-3 w-3 ml-1" />
-                      </Button>
-                    </div>
-                  </div>
-                  <CalendarComponent
-                    mode="single"
-                    selected={TimezoneUtils.parseUserDate(selectedDate)}
-                    onSelect={(date) => {
-                      if (date) {
-                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                      }
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <IOSDatePicker 
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
+                size="sm"
+                className="flex-shrink-0"
+              />
             </div>
           </div>
         </CardContent>
