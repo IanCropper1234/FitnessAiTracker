@@ -477,43 +477,44 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
               Nutrition Overview
             </CardTitle>
             
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 flex-shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
                 }}
-                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
               >
                 <ChevronLeft className="h-3 w-3" />
               </Button>
               
-              <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 dark:bg-gray-800 rounded text-xs font-medium min-w-[80px] justify-center">
-                <span>
-                  {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                   TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
-                </span>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
-                      <ChevronDown className="h-2 w-2" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="center">
-                    <CalendarComponent
-                      mode="single"
-                      selected={TimezoneUtils.parseUserDate(selectedDate)}
-                      onSelect={(date) => {
-                        if (date) {
-                          setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                        }
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="h-6 px-2 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-0.5 max-w-[100px] justify-center"
+                  >
+                    <span className="truncate">
+                      {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                       TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
+                    </span>
+                    <ChevronDown className="h-2 w-2 flex-shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="center">
+                  <CalendarComponent
+                    mode="single"
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                      }
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
               
               <Button
                 variant="ghost"
@@ -521,7 +522,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
                 }}
-                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
               >
                 <ChevronRight className="h-3 w-3" />
               </Button>
