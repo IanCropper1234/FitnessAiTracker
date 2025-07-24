@@ -716,17 +716,17 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                           <ChevronRight className="h-3 w-3 ml-1" />
                         </Button>
                       </div>
-                      <CalendarComponent
-                        mode="single"
-                        selected={undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            const dateStr = TimezoneUtils.formatDateForStorage(date);
-                            handleBulkCopy(dateStr);
-                          }
-                        }}
-                        initialFocus
-                      />
+                      <div className="p-2">
+                        <IOSDatePicker 
+                          selectedDate={TimezoneUtils.getCurrentDate()}
+                          onDateChange={(date) => {
+                            if (date) {
+                              handleBulkCopy(date);
+                            }
+                          }}
+                          size="sm"
+                        />
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -976,36 +976,12 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="flex-1 justify-between h-8 px-3 py-1 text-sm"
-                    >
-                      {copyDate 
-                        ? new Date(copyDate).toLocaleDateString('en-GB', { 
-                            day: '2-digit', 
-                            month: '2-digit', 
-                            year: 'numeric' 
-                          })
-                        : 'Select date'
-                      }
-                      <ChevronDown className="h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={copyDate ? new Date(copyDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setCopyDate(date.toISOString().split('T')[0]);
-                        }
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <IOSDatePicker 
+                  selectedDate={copyDate || TimezoneUtils.getCurrentDate()}
+                  onDateChange={setCopyDate}
+                  size="sm"
+                  className="flex-1"
+                />
                 
                 <Button
                   variant="outline"
