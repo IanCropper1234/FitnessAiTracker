@@ -279,30 +279,68 @@ export const RestTimerFAB: React.FC<RestTimerFABProps> = ({
           </div>
         </div>
       ) : (
-        // Collapsed timer button - compact and device-optimized
+        // Collapsed timer button - minimalist pulsing ring design
         <button
           onMouseDown={handleMouseDown}
           onClick={() => setIsExpanded(true)}
-          className="flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] bg-gradient-to-br from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 text-white dark:text-gray-900 hover:shadow-xl border border-gray-200/40 dark:border-gray-700/40"
+          className="relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 group"
         >
-          <div className="relative">
+          {/* Outer pulsing ring when active */}
+          {timeRemaining > 0 && (
+            <div className="absolute inset-0 rounded-full bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" />
+          )}
+          
+          {/* Main button with glassmorphism effect */}
+          <div className="relative w-12 h-12 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center">
             {timeRemaining > 0 ? (
-              <CircularProgress 
-                progress={progress} 
-                size={32}
-                strokeWidth={2.5}
-                showText={false}
-                className="text-white dark:text-gray-900"
-              >
-                <div className="text-center">
-                  <div className="text-[10px] font-semibold">{Math.ceil(timeRemaining / 60)}</div>
-                  <div className="text-[7px] opacity-75">min</div>
+              // Active timer with modern ring progress
+              <div className="relative">
+                <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
+                  {/* Background circle */}
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="14"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                    className="text-gray-300/30 dark:text-gray-600/30"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="14"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    className="text-blue-500 dark:text-blue-400 transition-all duration-300"
+                    strokeDasharray={`${88 * progress / 100} 88`}
+                  />
+                </svg>
+                {/* Time display with better typography */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-[11px] font-bold text-gray-900 dark:text-white leading-none">
+                    {Math.ceil(timeRemaining / 60)}
+                  </div>
+                  <div className="text-[7px] text-gray-600 dark:text-gray-300 leading-none">
+                    min
+                  </div>
                 </div>
-              </CircularProgress>
+              </div>
             ) : (
-              <Timer className="h-5 w-5" />
+              // Inactive state with modern timer icon
+              <div className="relative">
+                <Timer className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                {/* Subtle indicator dot */}
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
             )}
           </div>
+          
+          {/* Hover glow effect */}
+          <div className="absolute inset-0 rounded-full bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" />
         </button>
       )}
     </div>
