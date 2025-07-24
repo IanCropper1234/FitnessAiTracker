@@ -355,20 +355,23 @@ export function Dashboard({ user }: DashboardProps) {
 
         {/* iOS-Style Date Picker Modal */}
         {showDatePicker && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center">
-            <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl">
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center touch-target">
+            <div 
+              className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <button
                   onClick={() => setShowDatePicker(false)}
-                  className="ios-touch-feedback p-2 text-foreground/60 hover:text-foreground"
+                  className="ios-touch-feedback touch-target p-2 text-foreground/60 hover:text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>
                 <h3 className="text-lg font-semibold text-foreground">Change Date</h3>
                 <button
                   onClick={() => setShowDatePicker(false)}
-                  className="ios-touch-feedback p-2 text-blue-500 hover:text-blue-600"
+                  className="ios-touch-feedback touch-target p-2 text-blue-500 hover:text-blue-600"
                 >
                   <Check className="h-5 w-5" />
                 </button>
@@ -381,63 +384,103 @@ export function Dashboard({ user }: DashboardProps) {
                     setSelectedDate(TimezoneUtils.getCurrentDate());
                     setShowDatePicker(false);
                   }}
-                  className="text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors"
+                  className="ios-touch-feedback touch-target text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors py-2 px-4 rounded-lg"
                 >
                   Today
                 </button>
               </div>
 
-              {/* Date Picker Wheels */}
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="space-y-3">
-                    <div className="text-foreground/60 text-sm font-medium">Day</div>
-                    <div className="space-y-2">
-                      {[22, 23, 24, 25, 26].map((day) => (
-                        <div 
-                          key={day}
-                          className={`text-xl py-2 ${
-                            day === 24 ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
-                          }`}
-                        >
-                          {day}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="text-foreground/60 text-sm font-medium">Month</div>
-                    <div className="space-y-2">
-                      {['May', 'June', 'July', 'August', 'September'].map((month) => (
-                        <div 
-                          key={month}
-                          className={`text-xl py-2 ${
-                            month === 'July' ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
-                          }`}
-                        >
-                          {month}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="text-foreground/60 text-sm font-medium">Year</div>
-                    <div className="space-y-2">
-                      {[2023, 2024, 2025, 2026, 2027].map((year) => (
-                        <div 
-                          key={year}
-                          className={`text-xl py-2 ${
-                            year === 2025 ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
-                          }`}
-                        >
-                          {year}
-                        </div>
-                      ))}
+              {/* Quick Date Selection */}
+              <div className="p-4 max-h-80 overflow-y-auto ios-scroll">
+                <div className="space-y-3">
+                  {/* Recent Dates */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-foreground/60 mb-3">Quick Select</h4>
+                    
+                    {/* Yesterday */}
+                    <button
+                      onClick={() => {
+                        const yesterday = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
+                        setSelectedDate(yesterday);
+                        setShowDatePicker(false);
+                      }}
+                      className="ios-touch-feedback touch-target w-full text-left py-3 px-4 rounded-lg hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-foreground font-medium">Yesterday</span>
+                        <span className="text-foreground/60 text-sm">
+                          {TimezoneUtils.parseUserDate(TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1))
+                            .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* Tomorrow */}
+                    <button
+                      onClick={() => {
+                        const tomorrow = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
+                        setSelectedDate(tomorrow);
+                        setShowDatePicker(false);
+                      }}
+                      className="ios-touch-feedback touch-target w-full text-left py-3 px-4 rounded-lg hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-foreground font-medium">Tomorrow</span>
+                        <span className="text-foreground/60 text-sm">
+                          {TimezoneUtils.parseUserDate(TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1))
+                            .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* This Week */}
+                    <div className="mt-4 space-y-2">
+                      <h4 className="text-sm font-medium text-foreground/60 mb-3">This Week</h4>
+                      {Array.from({ length: 7 }, (_, i) => {
+                        const date = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), i - 3);
+                        const isSelected = date === selectedDate;
+                        const isToday = TimezoneUtils.isToday(date);
+                        
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => {
+                              setSelectedDate(date);
+                              setShowDatePicker(false);
+                            }}
+                            className={`ios-touch-feedback touch-target w-full text-left py-3 px-4 rounded-lg transition-colors ${
+                              isSelected ? 'bg-blue-500/20 border-blue-500/50 border' : 'hover:bg-accent/50'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className={`font-medium ${isSelected ? 'text-blue-600' : 'text-foreground'}`}>
+                                {isToday ? 'Today' : TimezoneUtils.parseUserDate(date).toLocaleDateString('en-US', { weekday: 'long' })}
+                              </span>
+                              <span className={`text-sm ${isSelected ? 'text-blue-500' : 'text-foreground/60'}`}>
+                                {TimezoneUtils.parseUserDate(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Calendar Fallback */}
+              <div className="border-t border-border p-4">
+                <CalendarComponent
+                  mode="single"
+                  selected={TimezoneUtils.parseUserDate(selectedDate)}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                      setShowDatePicker(false);
+                    }
+                  }}
+                  className="w-full"
+                />
               </div>
 
               {/* Home Indicator */}

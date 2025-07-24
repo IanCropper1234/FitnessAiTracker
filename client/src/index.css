@@ -737,6 +737,14 @@
     scroll-behavior: smooth;
     touch-action: pan-y;
   }
+
+  /* iOS Scroll for Date Picker Modal */
+  .ios-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    touch-action: pan-y;
+  }
   
   /* Workout Execution Specific Touch Optimizations */
   .workout-input {
