@@ -58,7 +58,10 @@ export function WorkoutSession({ userId, sessionName, exercises, onComplete }: W
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async (workoutData: any) => {
-      return apiRequest("POST", "/api/training/session/complete", workoutData);
+      return apiRequest("/api/training/session/complete", {
+        method: "POST",
+        body: JSON.stringify(workoutData),
+      });
     },
     onSuccess: () => {
       toast({
@@ -109,29 +112,6 @@ export function WorkoutSession({ userId, sessionName, exercises, onComplete }: W
   };
 
   const completeWorkout = () => {
-    // Check if all sets are completed before allowing workout completion
-    const allSets = Object.values(sessionData).flat();
-    const completedSets = allSets.filter(set => set.completed);
-    const incompleteSets = allSets.filter(set => !set.completed);
-    
-    if (incompleteSets.length > 0) {
-      // Find which exercises have incomplete sets
-      const incompleteExercises = exercises.filter(exercise => {
-        const exerciseSets = sessionData[exercise.id] || [];
-        return exerciseSets.some(set => !set.completed);
-      });
-      
-      const exerciseNames = incompleteExercises.map(ex => ex.name).join(', ');
-      
-      toast({
-        title: "Cannot Complete Workout",
-        description: `Please complete all sets before finishing. Incomplete exercises: ${exerciseNames}`,
-        variant: "destructive",
-        duration: 5000,
-      });
-      return;
-    }
-
     const duration = Math.round((Date.now() - sessionStartTime) / 60000); // minutes
     const totalVolume = Object.values(sessionData).flat()
       .reduce((sum, set) => sum + (set.completed ? set.reps * set.weight : 0), 0);

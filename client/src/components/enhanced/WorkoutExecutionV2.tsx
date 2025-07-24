@@ -452,29 +452,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const completeWorkout = () => {
-    // Check if all sets are completed before allowing workout completion
-    const allSets = Object.values(workoutData).flat();
-    const completedSets = allSets.filter(set => set.completed);
-    const incompleteSets = allSets.filter(set => !set.completed);
-    
-    if (incompleteSets.length > 0) {
-      // Find which exercises have incomplete sets
-      const incompleteExercises = session.exercises.filter(exercise => {
-        const exerciseSets = workoutData[exercise.id] || [];
-        return exerciseSets.some(set => !set.completed);
-      });
-      
-      const exerciseNames = incompleteExercises.map(ex => ex.exercise.name).join(', ');
-      
-      toast({
-        title: "Cannot Complete Workout",
-        description: `Please complete all sets before finishing. Incomplete exercises: ${exerciseNames}`,
-        variant: "destructive",
-        duration: 5000,
-      });
-      return;
-    }
-
     const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
     const totalVolume = Math.round(Object.values(workoutData)
       .flat()

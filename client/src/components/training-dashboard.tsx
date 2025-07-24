@@ -426,25 +426,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/restart`);
       return response.json();
     },
-    onSuccess: (data, sessionId) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
-      queryClient.invalidateQueries({ queryKey: ["/api/training/stats", userId] });
-      
-      // Show success toast
-      toast({
-        title: "Session Restarted",
-        description: "All progress data and feedback have been cleared. You can now start the workout fresh.",
-      });
-      
-      // Automatically start executing the restarted session
-      setExecutingSessionId(sessionId);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Restart Failed",
-        description: error.message || "Failed to restart session. Please try again.",
-        variant: "destructive",
-      });
     },
   });
 
@@ -952,61 +935,17 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                           </button>
 
                           {/* Three Dots Menu */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <button
-                                onClick={(e) => e.stopPropagation()}
-                                className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                              >
-                                <MoreVertical className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                              </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40">
-                              {session.isCompleted ? (
-                                <>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      restartSessionMutation.mutate(session.id);
-                                    }}
-                                    disabled={restartSessionMutation.isPending}
-                                    className="flex items-center gap-2"
-                                  >
-                                    <RotateCcw className="w-4 h-4" />
-                                    {restartSessionMutation.isPending ? "Restarting..." : "Restart"}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => duplicateSessionMutation.mutate(session.id)}
-                                    disabled={duplicateSessionMutation.isPending}
-                                    className="flex items-center gap-2"
-                                  >
-                                    <Copy className="w-4 h-4" />
-                                    {duplicateSessionMutation.isPending ? "Duplicating..." : "Duplicate"}
-                                  </DropdownMenuItem>
-                                </>
-                              ) : (
-                                <DropdownMenuItem
-                                  onClick={() => duplicateSessionMutation.mutate(session.id)}
-                                  disabled={duplicateSessionMutation.isPending}
-                                  className="flex items-center gap-2"
-                                >
-                                  <Copy className="w-4 h-4" />
-                                  {duplicateSessionMutation.isPending ? "Duplicating..." : "Duplicate"}
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  if (confirm('Are you sure you want to delete this session? This action cannot be undone.')) {
-                                    deleteSessionMutation.mutate(session.id);
-                                  }
-                                }}
-                                disabled={deleteSessionMutation.isPending}
-                                className="flex items-center gap-2 text-red-600 dark:text-red-400"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                {deleteSessionMutation.isPending ? "Deleting..." : "Delete"}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Add menu logic here
+                            }}
+                            className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full mt-0.5"></div>
+                            <div className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full mt-0.5"></div>
+                          </button>
                         </div>
                       ))}
                     </div>

@@ -152,16 +152,16 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     },
   });
 
-  const activeMesocycle = Array.isArray(mesocycles) ? mesocycles.find((m: Mesocycle) => m.isActive) : undefined;
+  const activeMesocycle = mesocycles.find((m: Mesocycle) => m.isActive);
 
   // Check if all current week sessions are completed
   const canAdvanceWeek = (mesocycle: Mesocycle | undefined) => {
-    if (!mesocycle || !Array.isArray(sessions) || sessions.length === 0) return false;
+    if (!mesocycle || !sessions.length) return false;
     
     // Get sessions for the current mesocycle and current week
     const currentWeekSessions = sessions.filter((session: any) => 
       session.mesocycleId === mesocycle.id && 
-      session.name?.includes(`Week ${mesocycle.currentWeek}`)
+      session.name.includes(`Week ${mesocycle.currentWeek}`)
     );
     
     // Return true only if all current week sessions are completed
@@ -170,11 +170,11 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
   // Get current week session completion status
   const getCurrentWeekStatus = (mesocycle: Mesocycle | undefined) => {
-    if (!mesocycle || !Array.isArray(sessions) || sessions.length === 0) return { completed: 0, total: 0 };
+    if (!mesocycle || !sessions.length) return { completed: 0, total: 0 };
     
     const currentWeekSessions = sessions.filter((session: any) => 
       session.mesocycleId === mesocycle.id && 
-      session.name?.includes(`Week ${mesocycle.currentWeek}`)
+      session.name.includes(`Week ${mesocycle.currentWeek}`)
     );
     
     const completed = currentWeekSessions.filter((session: any) => session.isCompleted).length;
@@ -515,7 +515,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
         </Tabs>
       )}
       {/* Mesocycle History */}
-      {Array.isArray(mesocycles) && mesocycles.length > 0 && (
+      {mesocycles.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Mesocycle History</CardTitle>
