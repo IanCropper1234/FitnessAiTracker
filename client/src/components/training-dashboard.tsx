@@ -775,7 +775,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   <h4 className="text-md text-blue-600 dark:text-blue-400 font-medium pl-[20px] pr-[20px]">
                     In Progress ({recentSessions.filter(session => !session.isCompleted).length})
                   </h4>
-                  {recentSessions.filter(session => !session.isCompleted).map((session) => (
+                  {recentSessions
+                    .filter(session => !session.isCompleted)
+                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .map((session) => (
                     <WorkoutSessionCard
                       key={session.id}
                       session={session}
