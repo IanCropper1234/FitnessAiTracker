@@ -783,22 +783,22 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             <div className="space-y-4">
               {/* Sticky Mesocycle Status */}
               {currentMesocycle && (
-                <div className="sticky top-0 z-10 bg-gradient-to-r from-slate-900 to-slate-800 border-2 border-emerald-500/30 rounded-lg p-2.5 mx-1 shadow-lg backdrop-blur-sm">
+                <div className="sticky top-0 z-10 bg-card/95 dark:bg-card/95 border border-border/50 rounded-xl p-3 mx-2 shadow-sm backdrop-blur-md">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="relative">
-                        <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
-                        <div className="absolute inset-0 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
+                        <div className="w-2.5 h-2.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 w-2.5 h-2.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-ping opacity-75"></div>
                       </div>
-                      <span className="text-xs font-semibold text-white truncate">
+                      <span className="text-sm font-medium text-foreground truncate">
                         {currentMesocycle.name}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs flex-shrink-0">
-                      <span className="bg-slate-700 px-1.5 py-0.5 rounded font-bold text-slate-100">
+                    <div className="flex items-center gap-2 text-xs flex-shrink-0">
+                      <span className="bg-muted dark:bg-muted px-2 py-1 rounded-md font-medium text-muted-foreground">
                         {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
                       </span>
-                      <span className="bg-emerald-600 px-1.5 py-0.5 rounded font-bold text-white uppercase text-xs">
+                      <span className="bg-blue-500 dark:bg-blue-600 px-2 py-1 rounded-md font-medium text-white uppercase">
                         {currentMesocycle.phase || 'Active'}
                       </span>
                     </div>
@@ -808,33 +808,33 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
               {/* Session Filter Tabs */}
               <div className="px-2">
-                <div className="flex gap-1 bg-muted/30 p-1 rounded-lg">
+                <div className="flex gap-1 bg-muted/50 dark:bg-muted/30 p-1 rounded-xl backdrop-blur-sm">
                   <button
                     onClick={() => setSessionFilter('active')}
-                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+                    className={`flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 ${
                       sessionFilter === 'active'
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-blue-500 dark:bg-blue-600 text-white shadow-sm scale-[0.98]'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50 dark:hover:bg-background/50'
                     }`}
                   >
                     Active ({Array.isArray(recentSessions) ? recentSessions.filter(s => !s.isCompleted).length : 0})
                   </button>
                   <button
                     onClick={() => setSessionFilter('completed')}
-                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+                    className={`flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 ${
                       sessionFilter === 'completed'
-                        ? 'bg-green-600 text-white shadow-md'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-green-500 dark:bg-green-600 text-white shadow-sm scale-[0.98]'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50 dark:hover:bg-background/50'
                     }`}
                   >
                     Done ({Array.isArray(recentSessions) ? recentSessions.filter(s => s.isCompleted).length : 0})
                   </button>
                   <button
                     onClick={() => setSessionFilter('all')}
-                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+                    className={`flex-1 px-3 py-2.5 text-xs font-medium rounded-lg transition-all duration-300 ${
                       sessionFilter === 'all'
-                        ? 'bg-slate-600 text-white shadow-md'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-foreground dark:bg-foreground text-background dark:text-background shadow-sm scale-[0.98]'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50 dark:hover:bg-background/50'
                     }`}
                   >
                     All ({Array.isArray(recentSessions) ? recentSessions.length : 0})
@@ -885,36 +885,38 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                       {filteredSessions.map((session) => (
                         <div
                           key={session.id}
-                          className={`relative p-3 rounded-lg border-2 transition-all duration-200 hover:shadow-lg ${
+                          className={`relative p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] ${
                             session.isCompleted
-                              ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800'
-                              : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800'
+                              ? 'bg-card dark:bg-card border-border dark:border-border shadow-sm'
+                              : 'bg-card dark:bg-card border-border dark:border-border shadow-sm'
                           }`}
                         >
                           {/* Session Header */}
-                          <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-start justify-between mb-3">
                             <div className="min-w-0 flex-1">
-                              <h5 className="text-xs font-semibold truncate">
+                              <h5 className="text-sm font-medium truncate text-foreground">
                                 {session.name}
                               </h5>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 {new Date(session.date).toLocaleDateString()}
                               </p>
                             </div>
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                              session.isCompleted ? 'bg-green-500' : 'bg-blue-500 animate-pulse'
+                            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                              session.isCompleted 
+                                ? 'bg-green-500 dark:bg-green-400' 
+                                : 'bg-blue-500 dark:bg-blue-400 animate-pulse'
                             }`} />
                           </div>
 
                           {/* Session Stats */}
-                          <div className="space-y-1 mb-3">
+                          <div className="space-y-2 mb-4">
                             <div className="flex justify-between text-xs">
                               <span className="text-muted-foreground">Duration</span>
-                              <span className="font-medium">{session.duration || 0}min</span>
+                              <span className="font-medium text-foreground">{session.duration || 0}min</span>
                             </div>
                             <div className="flex justify-between text-xs">
                               <span className="text-muted-foreground">Volume</span>
-                              <span className="font-medium">{session.totalVolume || 0}kg</span>
+                              <span className="font-medium text-foreground">{session.totalVolume || 0}kg</span>
                             </div>
                           </div>
 
@@ -927,10 +929,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                                 setExecutingSessionId(session.id);
                               }
                             }}
-                            className={`w-full py-2 px-3 rounded-md text-xs font-semibold transition-colors ${
+                            className={`w-full py-2.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 ${
                               session.isCompleted
-                                ? 'bg-green-600 hover:bg-green-700 text-white'
-                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                ? 'bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white'
+                                : 'bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white'
                             }`}
                           >
                             {session.isCompleted ? 'View' : 'Continue'}
@@ -942,11 +944,11 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                               e.stopPropagation();
                               // Add menu logic here
                             }}
-                            className="absolute top-2 right-2 p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-muted dark:hover:bg-muted transition-colors"
                           >
-                            <div className="w-1 h-1 bg-current rounded-full"></div>
-                            <div className="w-1 h-1 bg-current rounded-full mt-0.5"></div>
-                            <div className="w-1 h-1 bg-current rounded-full mt-0.5"></div>
+                            <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                            <div className="w-1 h-1 bg-muted-foreground rounded-full mt-0.5"></div>
+                            <div className="w-1 h-1 bg-muted-foreground rounded-full mt-0.5"></div>
                           </button>
                         </div>
                       ))}
