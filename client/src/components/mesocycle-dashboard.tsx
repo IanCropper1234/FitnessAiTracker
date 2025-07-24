@@ -153,6 +153,10 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   });
 
   const activeMesocycle = Array.isArray(mesocycles) ? mesocycles.find((m: Mesocycle) => m.isActive) : undefined;
+  
+  // Debug logging
+  console.log('Mesocycles data:', mesocycles);
+  console.log('Active mesocycle found:', activeMesocycle);
 
   // Check if all current week sessions are completed
   const canAdvanceWeek = (mesocycle: Mesocycle | undefined) => {
