@@ -343,64 +343,69 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       
       const newSets = [...currentSets, newSet];
       
-      toast({
-        title: "Set Added",
-        description: `Added Set ${newSet.setNumber} to ${currentExercise?.exercise.name}`,
-        duration: 2000,
-      });
-      
       return {
         ...prev,
         [exerciseId]: newSets
       };
     });
+    
+    // Toast outside of state setter
+    setTimeout(() => {
+      toast({
+        title: "Set Added",
+        description: `Added Set ${workoutData[exerciseId]?.length || 1} to ${currentExercise?.exercise.name}`,
+        duration: 2000,
+      });
+    }, 0);
   };
 
   const removeSet = (exerciseId: number, setIndex: number) => {
-    setWorkoutData(prev => {
-      const currentSets = prev[exerciseId] || [];
-      if (currentSets.length <= 1) {
-        toast({
-          title: "Cannot Remove Set",
-          description: "Each exercise must have at least one set.",
-          variant: "destructive",
-        });
-        return prev;
-      }
+    const currentSets = workoutData[exerciseId] || [];
+    
+    if (currentSets.length <= 1) {
+      toast({
+        title: "Cannot Remove Set",
+        description: "Each exercise must have at least one set.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      const setToRemove = currentSets[setIndex];
-      if (setToRemove?.completed) {
-        toast({
-          title: "Cannot Remove Completed Set",
-          description: "You cannot remove a completed set.",
-          variant: "destructive",
-        });
-        return prev;
-      }
+    const setToRemove = currentSets[setIndex];
+    if (setToRemove?.completed) {
+      toast({
+        title: "Cannot Remove Completed Set",
+        description: "You cannot remove a completed set.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      const newSets = currentSets.filter((_, i) => i !== setIndex).map((set, i) => ({
-        ...set,
-        setNumber: i + 1
-      }));
-      
-      // Adjust current set index if needed
-      if (setIndex <= currentSetIndex && currentSetIndex > 0) {
-        setCurrentSetIndex(currentSetIndex - 1);
-      } else if (setIndex < currentSets.length - 1 && currentSetIndex >= newSets.length) {
-        setCurrentSetIndex(newSets.length - 1);
-      }
-      
+    const newSets = currentSets.filter((_, i) => i !== setIndex).map((set, i) => ({
+      ...set,
+      setNumber: i + 1
+    }));
+    
+    setWorkoutData(prev => ({
+      ...prev,
+      [exerciseId]: newSets
+    }));
+    
+    // Adjust current set index if needed
+    if (setIndex <= currentSetIndex && currentSetIndex > 0) {
+      setCurrentSetIndex(currentSetIndex - 1);
+    } else if (setIndex < currentSets.length - 1 && currentSetIndex >= newSets.length) {
+      setCurrentSetIndex(newSets.length - 1);
+    }
+    
+    // Toast outside of state setter
+    setTimeout(() => {
       toast({
         title: "Set Removed",
         description: `Removed set from ${currentExercise?.exercise.name}`,
         duration: 2000,
       });
-      
-      return {
-        ...prev,
-        [exerciseId]: newSets
-      };
-    });
+    }, 0);
   };
 
   const resetSet = (exerciseId: number, setIndex: number) => {
