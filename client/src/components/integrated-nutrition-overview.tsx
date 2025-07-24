@@ -482,7 +482,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 <PopoverTrigger asChild>
                   <Button 
                     variant="outline" 
-                    className="h-6 px-2 text-xs font-medium rounded-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex-shrink-0"
+                    className="h-6 px-2 text-xs font-medium rounded-full dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex-shrink-0 bg-[#479bf5] text-[#030303]"
                   >
                     <span className="text-[11px]">
                       {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
