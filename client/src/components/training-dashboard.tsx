@@ -925,7 +925,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                                 setExecutingSessionId(session.id);
                               }
                             }}
-                            className="w-full py-2.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white bg-[#479bf5]"
+                            className="w-full py-2.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 active:scale-95 bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
                           >
                             {session.isCompleted ? 'View' : 'Continue'}
                           </button>
