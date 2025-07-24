@@ -2375,8 +2375,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const userMesocycles = await storage.getUserMesocycles(userId);
       
-      console.log('Mesocycles fetched for user', userId, ':', JSON.stringify(userMesocycles, null, 2));
-      
       res.json(userMesocycles);
     } catch (error) {
       console.error("Error fetching mesocycles:", error);
