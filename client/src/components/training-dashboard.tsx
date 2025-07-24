@@ -269,91 +269,96 @@ function WorkoutSessionCard({
   onSelect
 }: WorkoutSessionCardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex items-start gap-3">
-            {showCheckbox && (
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={onSelect}
-                className="mt-1"
-              />
-            )}
-            <div>
-              <CardTitle className="text-headline text-[16px] font-medium">{session.name}</CardTitle>
-              <CardDescription className="text-muted-foreground text-[14px]">
-                {new Date(session.date).toLocaleDateString()}
-              </CardDescription>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {session.isCompleted && (
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-            )}
-            <Badge variant={session.isCompleted ? "default" : "secondary"}>
-              {session.isCompleted ? "Completed" : "In Progress"}
-            </Badge>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {!session.isCompleted && (
-                  <DropdownMenuItem onClick={onRestart}>
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Restart Session
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={onDuplicate}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Duplicate Session
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDelete} className="text-destructive">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Session
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Duration</p>
-            <p className="text-lg font-semibold">{session.duration || 0} min</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Total Volume</p>
-            <p className="text-lg font-semibold">{session.totalVolume || 0} kg</p>
+    <Card className="p-3">
+      {/* Compact Header Section */}
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex items-start gap-2 flex-1 min-w-0">
+          {showCheckbox && (
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={onSelect}
+              className="mt-0.5 flex-shrink-0"
+            />
+          )}
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-medium text-foreground truncate">{session.name}</h3>
+            <p className="text-xs text-muted-foreground">
+              {new Date(session.date).toLocaleDateString()}
+            </p>
           </div>
         </div>
         
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          {!session.isCompleted ? (
-            <Button 
-              onClick={onStart}
-              className="flex-1"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              Continue Workout
-            </Button>
-          ) : (
-            <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={onView}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Details
-            </Button>
+        {/* Compact Status & Actions */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {session.isCompleted && (
+            <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
           )}
+          <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${
+            session.isCompleted 
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
+              : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+          }`}>
+            {session.isCompleted ? "Done" : "Active"}
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <MoreVertical className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {!session.isCompleted && (
+                <DropdownMenuItem onClick={onRestart}>
+                  <RotateCcw className="h-3.5 w-3.5 mr-2" />
+                  Restart Session
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={onDuplicate}>
+                <Copy className="h-3.5 w-3.5 mr-2" />
+                Duplicate Session
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDelete} className="text-destructive">
+                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                Delete Session
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </CardContent>
+      </div>
+
+      {/* Compact Stats Row */}
+      <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 pb-2 border-b border-border/50">
+        <div className="flex items-center gap-3">
+          <span>{session.duration || 0}min</span>
+          <span>•</span>
+          <span>{session.totalVolume || 0}kg</span>
+        </div>
+        <div className="text-xs font-medium">
+          {session.isCompleted ? "Completed" : "In Progress"}
+        </div>
+      </div>
+
+      {/* Compact Action Button */}
+      {!session.isCompleted ? (
+        <Button 
+          onClick={onStart}
+          className="w-full h-8 text-xs"
+          size="sm"
+        >
+          <Play className="h-3 w-3 mr-1.5" />
+          Continue Workout
+        </Button>
+      ) : (
+        <Button 
+          variant="outline" 
+          className="w-full h-8 text-xs"
+          size="sm"
+          onClick={onView}
+        >
+          <BarChart3 className="h-3 w-3 mr-1.5" />
+          View Details
+        </Button>
+      )}
     </Card>
   );
 }
