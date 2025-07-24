@@ -484,18 +484,18 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
                 }}
-                className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
+                className="h-5 w-5 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
               >
-                <ChevronLeft className="h-3 w-3" />
+                <ChevronLeft className="h-2.5 w-2.5" />
               </Button>
               
               <Popover>
                 <PopoverTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="h-6 px-2 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-0.5 max-w-[100px] justify-center"
+                    className="h-5 px-1.5 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-0.5 max-w-[90px] justify-center"
                   >
-                    <span className="truncate">
+                    <span className="truncate text-[11px]">
                       {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                        TimezoneUtils.formatForDisplay(selectedDate, 'en-GB')}
                     </span>
@@ -522,9 +522,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 onClick={() => {
                   setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
                 }}
-                className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
+                className="h-5 w-5 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
               >
-                <ChevronRight className="h-3 w-3" />
+                <ChevronRight className="h-2.5 w-2.5" />
               </Button>
             </div>
           </div>
