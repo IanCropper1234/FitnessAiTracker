@@ -15,7 +15,7 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
-import { workoutExercises, workoutSessions, exercises } from "@shared/schema";
+import { workoutExercises, workoutSessions, exercises, autoRegulationFeedback, loadProgressionTracking } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
 
 // Auto-progression algorithm for workout sessions
@@ -1375,34 +1375,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update workout session (edit session name and other properties)
-  app.put("/api/training/sessions/:sessionId", async (req, res) => {
+  // Restart workout session (reset progress but keep structure)
+  app.post("/api/training/sessions/:sessionId/restart", async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
-      const updates = req.body;
       
       if (isNaN(sessionId)) {
         return res.status(400).json({ message: "Invalid session ID" });
       }
       
-      // Update session with provided data
-      const updatedSession = await storage.updateWorkoutSession(sessionId, updates);
-      
-      if (!updatedSession) {
-        return res.status(404).json({ message: "Session not found" });
-      }
-      
-      res.json(updatedSession);
-    } catch (error: any) {
-      console.error('Error updating session:', error);
-      res.status(400).json({ message: error.message });
-    }
-  });
-
-  // Restart workout session (reset progress but keep structure)
-  app.post("/api/training/sessions/:sessionId/restart", async (req, res) => {
-    try {
-      const sessionId = parseInt(req.params.sessionId);
+      console.log('Restarting session ID:', sessionId);
       
       // Reset session to incomplete and clear progress data
       const updatedSession = await storage.updateWorkoutSession(sessionId, {
@@ -1414,8 +1396,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Reset all exercise results for this session
       await storage.resetWorkoutSessionProgress(sessionId);
       
-      res.json(updatedSession);
+      // Clear auto-regulation feedback for this session
+      try {
+        await db.delete(autoRegulationFeedback).where(eq(autoRegulationFeedback.sessionId, sessionId));
+        console.log('Auto-regulation feedback cleared for session:', sessionId);
+      } catch (feedbackError) {
+        console.warn('Failed to clear auto-regulation feedback:', feedbackError);
+        // Don't fail the restart if feedback deletion fails
+      }
+      
+      // Clear load progression tracking for this session
+      try {
+        await db.delete(loadProgressionTracking).where(eq(loadProgressionTracking.sessionId, sessionId));
+        console.log('Load progression tracking cleared for session:', sessionId);
+      } catch (progressionError) {
+        console.warn('Failed to clear load progression tracking:', progressionError);
+        // Don't fail the restart if progression deletion fails
+      }
+      
+      console.log('Session restart completed successfully:', sessionId);
+      res.json({
+        ...updatedSession,
+        message: "Session restarted successfully. All progress data and feedback have been cleared."
+      });
     } catch (error: any) {
+      console.error('Error restarting session:', error);
       res.status(400).json({ message: error.message });
     }
   });
