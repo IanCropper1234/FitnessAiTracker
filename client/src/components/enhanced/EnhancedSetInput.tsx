@@ -221,11 +221,11 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             )}
             
-            {/* Flexible Grid with Auto-Sizing and Visual Separators */}
-            <div className="grid gap-1.5" style={{ gridTemplateColumns: '40% 22% 28%', gridGap: '0.375rem' }}>
-              {/* Weight Section - 45% width for decimals + unit */}
+            {/* iOS-Optimized Grid with Equal Height and Proper Alignment */}
+            <div className="grid grid-cols-3 gap-2">
+              {/* Weight Section - Equal width with proper iOS sizing */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between min-h-[16px]">
                   <label className="text-xs font-medium text-foreground">Weight</label>
                   {isBodyWeightExercise && (
                     <Switch
@@ -236,7 +236,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     />
                   )}
                 </div>
-                <div className="relative bg-background border border-border/50 rounded-md">
+                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Input
                     type="number"
                     value={getEffectiveWeight() || ''}
@@ -245,19 +245,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     step="0.5"
                     min="0"
                     max="1000"
-                    className={`workout-input h-7 text-sm border-0 bg-transparent pr-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    className={`workout-input h-9 text-sm border-0 bg-transparent pr-10 text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
                     disabled={useBodyWeight}
                     readOnly={useBodyWeight}
                     inputMode="decimal"
                   />
                   {/* Inline Unit Selector with Visual Separator */}
-                  <div className="absolute right-0 top-0 h-7 flex items-center">
-                    <div className="h-3 w-px bg-border mr-1"></div>
+                  <div className="absolute right-0 top-0 h-9 flex items-center">
+                    <div className="h-4 w-px bg-border mr-1"></div>
                     <Select
                       value={weightUnit}
                       onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                     >
-                      <SelectTrigger className="w-7 h-7 border-0 bg-transparent text-xs p-0">
+                      <SelectTrigger className="w-8 h-9 border-0 bg-transparent text-xs p-0 touch-target">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -269,10 +269,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 </div>
               </div>
 
-              {/* Reps Section - 25% width for integers */}
+              {/* Reps Section - Equal width with consistent height */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-foreground">Reps</label>
-                <div className="relative bg-background border border-border/50 rounded-md">
+                <div className="min-h-[16px] flex items-center">
+                  <label className="text-xs font-medium text-foreground">Reps</label>
+                </div>
+                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Input
                     type="number"
                     value={set.actualReps || ''}
@@ -280,21 +282,23 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     placeholder="0"
                     min="0"
                     max="50"
-                    className="workout-input h-7 text-sm border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="workout-input h-9 text-sm border-0 bg-transparent text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     inputMode="numeric"
                   />
                 </div>
               </div>
 
-              {/* RPE Section - 30% width for dropdown */}
+              {/* RPE Section - Equal width with consistent height */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-foreground">RPE</label>
-                <div className="relative bg-background border border-border/50 rounded-md">
+                <div className="min-h-[16px] flex items-center">
+                  <label className="text-xs font-medium text-foreground">RPE</label>
+                </div>
+                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Select
                     value={set.rpe ? set.rpe.toString() : ""}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
-                    <SelectTrigger className="h-7 text-sm border-0 bg-transparent">
+                    <SelectTrigger className="h-9 text-sm border-0 bg-transparent touch-target">
                       <SelectValue placeholder="0" />
                     </SelectTrigger>
                     <SelectContent>
