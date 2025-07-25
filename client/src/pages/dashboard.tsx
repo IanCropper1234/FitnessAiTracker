@@ -393,48 +393,102 @@ export function Dashboard({ user }: DashboardProps) {
                   <div className="space-y-3">
                     <div className="text-foreground/60 text-sm font-medium">Day</div>
                     <div className="space-y-2">
-                      {[22, 23, 24, 25, 26].map((day) => (
-                        <div 
-                          key={day}
-                          className={`text-xl py-2 ${
-                            day === 24 ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
-                          }`}
-                        >
-                          {day}
-                        </div>
-                      ))}
+                      {(() => {
+                        const currentDate = new Date(selectedDate);
+                        const currentDay = currentDate.getDate();
+                        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+                        
+                        // Show 2 days before and after current day
+                        const startDay = Math.max(1, currentDay - 2);
+                        const endDay = Math.min(daysInMonth, currentDay + 2);
+                        const days = [];
+                        for (let i = startDay; i <= endDay; i++) {
+                          days.push(i);
+                        }
+                        
+                        return days.map((day) => (
+                          <button 
+                            key={day}
+                            onClick={() => {
+                              const newDate = new Date(selectedDate);
+                              newDate.setDate(day);
+                              setSelectedDate(newDate.toISOString().split('T')[0]);
+                            }}
+                            className={`w-full text-xl py-2 px-1 rounded-lg transition-all ios-touch-feedback ${
+                              day === currentDay ? 'bg-accent text-foreground font-semibold' : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        ));
+                      })()}
                     </div>
                   </div>
                   
                   <div className="space-y-3">
                     <div className="text-foreground/60 text-sm font-medium">Month</div>
                     <div className="space-y-2">
-                      {['May', 'June', 'July', 'August', 'September'].map((month) => (
-                        <div 
-                          key={month}
-                          className={`text-xl py-2 ${
-                            month === 'July' ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
-                          }`}
-                        >
-                          {month}
-                        </div>
-                      ))}
+                      {(() => {
+                        const currentDate = new Date(selectedDate);
+                        const currentMonth = currentDate.getMonth();
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        
+                        // Show 2 months before and after current month
+                        const startMonth = Math.max(0, currentMonth - 2);
+                        const endMonth = Math.min(11, currentMonth + 2);
+                        const monthsToShow = [];
+                        for (let i = startMonth; i <= endMonth; i++) {
+                          monthsToShow.push({ index: i, name: months[i] });
+                        }
+                        
+                        return monthsToShow.map((month) => (
+                          <button 
+                            key={month.index}
+                            onClick={() => {
+                              const newDate = new Date(selectedDate);
+                              newDate.setMonth(month.index);
+                              setSelectedDate(newDate.toISOString().split('T')[0]);
+                            }}
+                            className={`w-full text-xl py-2 px-1 rounded-lg transition-all ios-touch-feedback ${
+                              month.index === currentMonth ? 'bg-accent text-foreground font-semibold' : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
+                            }`}
+                          >
+                            {month.name}
+                          </button>
+                        ));
+                      })()}
                     </div>
                   </div>
                   
                   <div className="space-y-3">
                     <div className="text-foreground/60 text-sm font-medium">Year</div>
                     <div className="space-y-2">
-                      {[2023, 2024, 2025, 2026, 2027].map((year) => (
-                        <div 
-                          key={year}
-                          className={`text-xl py-2 ${
-                            year === 2025 ? 'bg-accent text-foreground font-semibold rounded-lg' : 'text-foreground/60'
-                          }`}
-                        >
-                          {year}
-                        </div>
-                      ))}
+                      {(() => {
+                        const currentDate = new Date(selectedDate);
+                        const currentYear = currentDate.getFullYear();
+                        
+                        // Show 2 years before and after current year
+                        const years = [];
+                        for (let i = currentYear - 2; i <= currentYear + 2; i++) {
+                          years.push(i);
+                        }
+                        
+                        return years.map((year) => (
+                          <button 
+                            key={year}
+                            onClick={() => {
+                              const newDate = new Date(selectedDate);
+                              newDate.setFullYear(year);
+                              setSelectedDate(newDate.toISOString().split('T')[0]);
+                            }}
+                            className={`w-full text-xl py-2 px-1 rounded-lg transition-all ios-touch-feedback ${
+                              year === currentYear ? 'bg-accent text-foreground font-semibold' : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
+                            }`}
+                          >
+                            {year}
+                          </button>
+                        ));
+                      })()}
                     </div>
                   </div>
                 </div>
