@@ -230,8 +230,6 @@ export function IOSDatePicker({
             {/* Date Picker Wheels */}
             <div className="px-4 py-6 overflow-x-hidden" style={{ touchAction: 'pan-y' }}>
               <div className="grid grid-cols-3 gap-2 text-center relative max-w-full">
-                {/* Center line indicator - properly aligned with button centers */}
-                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-[44px] bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-0 mx-1 rounded-lg"></div>
                 
                 {/* Days */}
                 <div ref={dayScrollRef} className="flex flex-col items-center min-w-0">
