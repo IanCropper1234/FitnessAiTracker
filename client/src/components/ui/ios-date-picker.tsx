@@ -228,67 +228,103 @@ export function IOSDatePicker({
             </div>
 
             {/* Date Picker Wheels */}
-            <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
-              <div className="grid grid-cols-3 gap-4 text-center relative items-center">
-                {/* Center line indicator */}
-                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10"></div>
-                {/* Days */}
-                <div ref={dayScrollRef} className="space-y-2 flex flex-col items-center">
-                  <div className="text-foreground/60 text-sm font-medium text-center">Day</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
-                    {days.map((day) => (
-                      <button
-                        key={day}
-                        onClick={() => handleDateChange(day, currentMonth, currentYear)}
-                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
-                          day === currentDay 
-                            ? 'bg-blue-500 text-white font-semibold' 
-                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
-                        }`}
-                      >
-                        {day}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            <div className="px-4 pb-6" style={{ touchAction: 'pan-y' }}>
+              <div className="relative">
+                {/* Center line indicator - positioned absolutely to overlay perfectly */}
+                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-20 mx-4"></div>
                 
-                {/* Months */}
-                <div ref={monthScrollRef} className="space-y-2 flex flex-col items-center">
-                  <div className="text-foreground/60 text-sm font-medium text-center">Month</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
-                    {months.map((month, index) => (
-                      <button
-                        key={month}
-                        onClick={() => handleDateChange(currentDay, index, currentYear)}
-                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
-                          index === currentMonth 
-                            ? 'bg-blue-500 text-white font-semibold' 
-                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
-                        }`}
-                      >
-                        {month}
-                      </button>
-                    ))}
+                <div className="grid grid-cols-3 gap-6">
+                  {/* Days */}
+                  <div className="flex flex-col items-center">
+                    <div className="text-foreground/60 text-sm font-medium mb-4 text-center">Day</div>
+                    <div 
+                      ref={dayScrollRef} 
+                      className="relative max-h-48 overflow-y-auto w-full flex flex-col items-center date-picker-wheel" 
+                      style={{ 
+                        touchAction: 'pan-y',
+                        scrollSnapType: 'y mandatory'
+                      }}
+                    >
+                      {/* Padding spacers for center alignment */}
+                      <div className="h-20"></div>
+                      {days.map((day) => (
+                        <button
+                          key={day}
+                          onClick={() => handleDateChange(day, currentMonth, currentYear)}
+                          className={`w-16 h-12 text-lg font-medium rounded-lg transition-all duration-200 flex items-center justify-center touch-target ${
+                            day === currentDay 
+                              ? 'bg-blue-500 text-white font-bold shadow-lg scale-105' 
+                              : 'text-foreground/70 hover:bg-accent/50'
+                          }`}
+                          style={{ scrollSnapAlign: 'center' }}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                      <div className="h-20"></div>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Years */}
-                <div ref={yearScrollRef} className="space-y-2 flex flex-col items-center">
-                  <div className="text-foreground/60 text-sm font-medium text-center">Year</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
-                    {years.map((year) => (
-                      <button
-                        key={year}
-                        onClick={() => handleDateChange(currentDay, currentMonth, year)}
-                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
-                          year === currentYear 
-                            ? 'bg-blue-500 text-white font-semibold' 
-                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
-                        }`}
-                      >
-                        {year}
-                      </button>
-                    ))}
+                  
+                  {/* Months */}
+                  <div className="flex flex-col items-center">
+                    <div className="text-foreground/60 text-sm font-medium mb-4 text-center">Month</div>
+                    <div 
+                      ref={monthScrollRef} 
+                      className="relative max-h-48 overflow-y-auto w-full flex flex-col items-center date-picker-wheel" 
+                      style={{ 
+                        touchAction: 'pan-y',
+                        scrollSnapType: 'y mandatory'
+                      }}
+                    >
+                      {/* Padding spacers for center alignment */}
+                      <div className="h-20"></div>
+                      {months.map((month, index) => (
+                        <button
+                          key={month}
+                          onClick={() => handleDateChange(currentDay, index, currentYear)}
+                          className={`w-20 h-12 text-lg font-medium rounded-lg transition-all duration-200 flex items-center justify-center touch-target ${
+                            index === currentMonth 
+                              ? 'bg-blue-500 text-white font-bold shadow-lg scale-105' 
+                              : 'text-foreground/70 hover:bg-accent/50'
+                          }`}
+                          style={{ scrollSnapAlign: 'center' }}
+                        >
+                          {month}
+                        </button>
+                      ))}
+                      <div className="h-20"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Years */}
+                  <div className="flex flex-col items-center">
+                    <div className="text-foreground/60 text-sm font-medium mb-4 text-center">Year</div>
+                    <div 
+                      ref={yearScrollRef} 
+                      className="relative max-h-48 overflow-y-auto w-full flex flex-col items-center date-picker-wheel" 
+                      style={{ 
+                        touchAction: 'pan-y',
+                        scrollSnapType: 'y mandatory'
+                      }}
+                    >
+                      {/* Padding spacers for center alignment */}
+                      <div className="h-20"></div>
+                      {years.map((year) => (
+                        <button
+                          key={year}
+                          onClick={() => handleDateChange(currentDay, currentMonth, year)}
+                          className={`w-16 h-12 text-lg font-medium rounded-lg transition-all duration-200 flex items-center justify-center touch-target ${
+                            year === currentYear 
+                              ? 'bg-blue-500 text-white font-bold shadow-lg scale-105' 
+                              : 'text-foreground/70 hover:bg-accent/50'
+                          }`}
+                          style={{ scrollSnapAlign: 'center' }}
+                        >
+                          {year}
+                        </button>
+                      ))}
+                      <div className="h-20"></div>
+                    </div>
                   </div>
                 </div>
               </div>
