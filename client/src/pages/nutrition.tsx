@@ -167,7 +167,7 @@ export function Nutrition({ user }: NutritionProps) {
 
         {/* Compact Date Selector - Only show on overview tab */}
         {activeTab === "overview" && (
-          <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
+          <div className="flex items-center justify-center py-1 mt-[-20px] mb-[-20px] pt-[0px] pb-[0px]">
             <div className="flex items-center gap-1">
               <button
                 onClick={() => {
