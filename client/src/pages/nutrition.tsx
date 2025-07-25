@@ -165,48 +165,50 @@ export function Nutrition({ user }: NutritionProps) {
           </div>
         </div>
 
-        {/* Compact Date Selector */}
-        <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => {
-                const previousDay = TimezoneUtils.addDays(selectedDate, -1);
-                setSelectedDate(previousDay);
-                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
-              }}
-              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
-            >
-              <ChevronLeft className="h-3 w-3" />
-            </button>
-            
-            <button
-              onClick={() => setShowDatePicker(true)}
-              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
-            >
-              <span className="text-xs font-medium text-foreground">
-                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                 TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
-                   day: '2-digit', 
-                   month: '2-digit'
-                 })}
-              </span>
-              <ChevronDown className="h-3 w-3 text-foreground/50" />
-            </button>
-            
-            <button
-              onClick={() => {
-                const nextDay = TimezoneUtils.addDays(selectedDate, 1);
-                setSelectedDate(nextDay);
-                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
-              }}
-              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
-            >
-              <ChevronRight className="h-3 w-3" />
-            </button>
+        {/* Compact Date Selector - Only show on overview tab */}
+        {activeTab === "overview" && (
+          <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => {
+                  const previousDay = TimezoneUtils.addDays(selectedDate, -1);
+                  setSelectedDate(previousDay);
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+                }}
+                className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </button>
+              
+              <button
+                onClick={() => setShowDatePicker(true)}
+                className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
+              >
+                <span className="text-xs font-medium text-foreground">
+                  {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                   TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
+                     day: '2-digit', 
+                     month: '2-digit'
+                   })}
+                </span>
+                <ChevronDown className="h-3 w-3 text-foreground/50" />
+              </button>
+              
+              <button
+                onClick={() => {
+                  const nextDay = TimezoneUtils.addDays(selectedDate, 1);
+                  setSelectedDate(nextDay);
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+                }}
+                className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+              >
+                <ChevronRight className="h-3 w-3" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Enhanced Nutrition Module */}
         <div className="mt-4">
