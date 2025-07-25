@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User } from "lucide-react";
 import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
@@ -92,26 +92,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
   const [searchMode, setSearchMode] = useState<'database' | 'ai'>('database');
   const [selectedMealType, setSelectedMealType] = useState<string>("breakfast");
-  
-  // Accordion state for iOS compact layout
-  const [expandedSections, setExpandedSections] = useState<{
-    dietGoal: boolean;
-    mealTiming: boolean;
-    mealBuilder: boolean;
-    savedPlans: boolean;
-  }>({
-    dietGoal: true, // Start with first section expanded
-    mealTiming: false,
-    mealBuilder: false,
-    savedPlans: false
-  });
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
   
   // Diet Goal State - Initialize with auto-regulation off until data is available
   const [dietGoal, setDietGoal] = useState<DietGoal>({
@@ -815,453 +795,32 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const isLoading = isSearchLoading || aiAnalyzeMutation.isPending;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       
-      {/* iOS Compact Accordion Layout */}
-      <div className="space-y-3">
+      {/* Main Tabs */}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="diet-goal" className="flex items-center gap-2">
+            <Calculator className="w-4 h-4" />
+            Diet Goal
+          </TabsTrigger>
+          <TabsTrigger value="meal-timing" className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Meal Timing
+          </TabsTrigger>
+          <TabsTrigger value="meal-builder" className="flex items-center gap-2">
+            <ShoppingCart className="w-4 h-4" />
+            Meal Builder
+          </TabsTrigger>
+          <TabsTrigger value="saved-plans" className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Saved Plans
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Diet Goal Section */}
-        <Card className="overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 touch-target"
-            onClick={() => toggleSection('dietGoal')}
-          >
-            <div className="flex items-center gap-2">
-              <Calculator className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span className="font-medium text-black dark:text-white text-sm">Diet Goal & TDEE</span>
-              {currentDietGoal && (
-                <Badge variant="outline" className="text-xs">
-                  {Math.round(currentDietGoal.targetCalories)} cal
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {dietGoal.autoRegulation && (
-                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 text-xs">
-                  Auto
-                </Badge>
-              )}
-              {expandedSections.dietGoal ? (
-                <ChevronUp className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
-          </div>
-          
-          {expandedSections.dietGoal && (
-            <div className="border-t border-gray-200 dark:border-gray-700">
-              <CardContent className="p-3 space-y-3">
-                {/* Profile Integration Section - Compact */}
-                {userProfile?.fitnessGoal && (
-                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <User className="w-3 h-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                        <span className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">
-                          {userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </span>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setLocation('/profile')}
-                        className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600 text-xs px-2 py-1 h-6"
-                      >
-                        Edit
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Data Validation Messages - Compact */}
-                {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
-                  <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                    <p className="text-xs text-yellow-700 dark:text-yellow-300 mb-1">
-                      Complete profile for TDEE calculation:
-                    </p>
-                    <div className="text-xs text-yellow-600 dark:text-yellow-400 space-y-0.5">
-                      {!userProfile?.age && <div>• Age missing</div>}
-                      {!userProfile?.height && <div>• Height missing</div>}
-                      {!userProfile?.activityLevel && <div>• Activity level missing</div>}
-                      {(!bodyMetrics?.length && !userProfile?.weight) && <div>• Weight missing</div>}
-                    </div>
-                  </div>
-                )}
-
-                {/* Auto-regulation Toggle - Compact */}
-                <div className="flex items-center justify-between p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <div className="min-w-0">
-                    <Label className="text-sm font-medium text-black dark:text-white">Auto-regulation</Label>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Auto-adjust based on body data
-                    </p>
-                  </div>
-                  <Switch
-                    checked={dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight)}
-                    onCheckedChange={(checked) => {
-                      if (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) {
-                        toast({
-                          title: "Profile Incomplete",
-                          description: "Please complete your profile data first to enable auto-regulation.",
-                          variant: "destructive"
-                        });
-                        return;
-                      }
-                      setDietGoal(prev => ({ ...prev, autoRegulation: checked }));
-                    }}
-                    disabled={!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)}
-                  />
-                </div>
-
-                {/* TDEE and Goal Settings - Compact Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-xs text-black dark:text-white">TDEE</Label>
-                      <Input
-                        type="number"
-                        value={dietGoal.tdee}
-                        onChange={(e) => setDietGoal(prev => ({ ...prev, tdee: Number(e.target.value) }))}
-                        disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600 h-8 text-sm"
-                      />
-                      {dietGoal.autoRegulation && (
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          Auto: {userProfile?.age}y, {bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight}kg
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label className="text-xs text-black dark:text-white">Target Calories</Label>
-                      <Input
-                        type="number"
-                        value={dietGoal.targetCalories}
-                        onChange={(e) => setDietGoal(prev => ({ ...prev, targetCalories: Number(e.target.value) }))}
-                        disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600 h-8 text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-xs text-black dark:text-white">Diet Goal</Label>
-                      <Select value={dietGoal.goal} onValueChange={(value) => {
-                        const getDefaultWeightTarget = (goal: string) => {
-                          switch (goal) {
-                            case 'cut': return -0.5;
-                            case 'bulk': return 0.3;
-                            case 'maintain': return 0;
-                            default: return 0;
-                          }
-                        };
-                        setDietGoal(prev => ({ 
-                          ...prev, 
-                          goal: value as any,
-                          weeklyWeightTarget: getDefaultWeightTarget(value)
-                        }));
-                      }}>
-                        <SelectTrigger className="border-gray-300 dark:border-gray-600 h-8 text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cut">Cut (Fat Loss)</SelectItem>
-                          <SelectItem value="bulk">Bulk (Muscle Gain)</SelectItem>
-                          <SelectItem value="maintain">Maintain</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {dietGoal.goal !== 'maintain' && (
-                      <div>
-                        <Label className="text-xs text-black dark:text-white">Weekly Weight Target (kg)</Label>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          value={dietGoal.weeklyWeightTarget || ''}
-                          onChange={(e) => setDietGoal(prev => ({ ...prev, weeklyWeightTarget: Number(e.target.value) }))}
-                          placeholder={dietGoal.goal === 'cut' ? '-0.5' : '0.3'}
-                          className="border-gray-300 dark:border-gray-600 h-8 text-sm"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Macro Inputs - Compact 3-column */}
-                <div className="grid grid-cols-3 gap-1.5">
-                  <div className="min-w-0">
-                    <Label className="text-xs text-black dark:text-white truncate block">Protein</Label>
-                    <Input
-                      type="number"
-                      value={Math.round(dietGoal.targetProtein)}
-                      onChange={(e) => setDietGoal(prev => ({ ...prev, targetProtein: Number(e.target.value) }))}
-                      disabled={dietGoal.autoRegulation}
-                      className="border-gray-300 dark:border-gray-600 text-xs h-7"
-                      placeholder="g"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <Label className="text-xs text-black dark:text-white truncate block">Carbs</Label>
-                    <Input
-                      type="number"
-                      value={Math.round(dietGoal.targetCarbs)}
-                      onChange={(e) => setDietGoal(prev => ({ ...prev, targetCarbs: Number(e.target.value) }))}
-                      disabled={dietGoal.autoRegulation}
-                      className="border-gray-300 dark:border-gray-600 text-xs h-7"
-                      placeholder="g"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <Label className="text-xs text-black dark:text-white truncate block">Fat</Label>
-                    <Input
-                      type="number"
-                      value={Math.round(dietGoal.targetFat)}
-                      onChange={(e) => setDietGoal(prev => ({ ...prev, targetFat: Number(e.target.value) }))}
-                      disabled={dietGoal.autoRegulation}
-                      className="border-gray-300 dark:border-gray-600 text-xs h-7"
-                      placeholder="g"
-                    />
-                  </div>
-                </div>
-
-                {/* Macro Distribution Chart - Compact */}
-                <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <h4 className="font-medium text-black dark:text-white mb-2 text-xs">Macro Distribution</h4>
-                  <div className="grid grid-cols-3 gap-1.5 text-center">
-                    <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded min-w-0">
-                      <div className="text-blue-700 dark:text-blue-300 font-medium text-xs truncate">Protein</div>
-                      <div className="text-sm font-bold text-blue-900 dark:text-blue-100 leading-tight">
-                        {Math.round(Number(dietGoal.targetProtein))}g
-                      </div>
-                      <div className="text-xs text-blue-600 dark:text-blue-400">
-                        {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetProtein * 4) / dietGoal.targetCalories * 100) : 0}%
-                      </div>
-                    </div>
-                    <div className="p-1.5 bg-green-50 dark:bg-green-900/20 rounded min-w-0">
-                      <div className="text-green-700 dark:text-green-300 font-medium text-xs truncate">Carbs</div>
-                      <div className="text-sm font-bold text-green-900 dark:text-green-100 leading-tight">
-                        {Math.round(Number(dietGoal.targetCarbs))}g
-                      </div>
-                      <div className="text-xs text-green-600 dark:text-green-400">
-                        {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetCarbs * 4) / dietGoal.targetCalories * 100) : 0}%
-                      </div>
-                    </div>
-                    <div className="p-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded min-w-0">
-                      <div className="text-yellow-700 dark:text-yellow-300 font-medium text-xs truncate">Fat</div>
-                      <div className="text-sm font-bold text-yellow-900 dark:text-yellow-100 leading-tight">
-                        {Math.round(Number(dietGoal.targetFat))}g
-                      </div>
-                      <div className="text-xs text-yellow-600 dark:text-yellow-400">
-                        {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetFat * 9) / dietGoal.targetCalories * 100) : 0}%
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Save Button - Compact */}
-                <Button 
-                  onClick={handleSaveDietGoal}
-                  disabled={saveDietGoalMutation.isPending}
-                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-8 text-sm"
-                >
-                  {saveDietGoalMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-3 h-3 mr-2" />
-                      Save Diet Goal
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </div>
-          )}
-        </Card>
-
-        {/* Meal Timing Section */}
-        <Card className="overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 touch-target"
-            onClick={() => toggleSection('mealTiming')}
-          >
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              <span className="font-medium text-black dark:text-white text-sm">Meal Timing</span>
-              {mealTimingPreferences && (
-                <Badge variant="outline" className="text-xs">
-                  {mealTimingPreferences.mealsPerDay} meals
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {mealTimingPreferences?.workoutTime && (
-                <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 text-xs">
-                  Workout
-                </Badge>
-              )}
-              {expandedSections.mealTiming ? (
-                <ChevronUp className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
-          </div>
-          
-          {expandedSections.mealTiming && (
-            <div className="border-t border-gray-200 dark:border-gray-700">
-              <CardContent className="p-3 space-y-3">
-                {!mealTimingPreferences ? (
-                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                    <h4 className="font-medium text-yellow-900 dark:text-yellow-100 text-sm mb-1">
-                      Meal Timing Not Configured
-                    </h4>
-                    <p className="text-xs text-yellow-700 dark:text-yellow-300 mb-2">
-                      Set up meal timing preferences in your profile to generate personalized schedules.
-                    </p>
-                    <Button
-                      onClick={() => setLocation('/profile')}
-                      className="bg-yellow-600 hover:bg-yellow-700 text-white h-7 text-xs"
-                      size="sm"
-                    >
-                      <Settings className="w-3 h-3 mr-1" />
-                      Configure Timing
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {/* Today's Schedule - Compact */}
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <h4 className="font-medium text-black dark:text-white mb-2 text-xs flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        Today's Schedule
-                      </h4>
-                      <div className="space-y-1.5">
-                        {generateMealSchedule().map((meal, index) => (
-                          <div key={index} className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${
-                                meal.type === 'pre-workout' ? 'bg-orange-500' :
-                                meal.type === 'post-workout' ? 'bg-green-500' :
-                                'bg-blue-500'
-                              }`}></div>
-                              <span className="font-medium text-black dark:text-white">{meal.scheduledTime}</span>
-                              <span className="text-gray-600 dark:text-gray-400">{meal.description}</span>
-                            </div>
-                            <Badge className={`text-xs ${
-                              meal.type === 'pre-workout' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300' :
-                              meal.type === 'post-workout' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
-                              'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                            }`}>
-                              {meal.type === 'pre-workout' ? 'Pre' :
-                               meal.type === 'post-workout' ? 'Post' :
-                               'Regular'}
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Macro Distribution Preview - Compact */}
-                    {currentDietGoal && (
-                      <div className="p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-xs flex items-center gap-1">
-                          <Target className="w-3 h-3" />
-                          Macro Distribution Preview
-                        </h4>
-                        <div className="space-y-1">
-                          {distributeMacrosAcrossMeals().slice(0, 3).map((meal, index) => (
-                            <div key={index} className="flex items-center justify-between text-xs">
-                              <span className="text-blue-700 dark:text-blue-300 font-medium truncate flex-1 mr-2">
-                                {meal.scheduledTime}
-                              </span>
-                              <div className="flex items-center gap-1 text-xs">
-                                <span className="text-blue-600 dark:text-blue-400">{Math.round(meal.targetCalories)}cal</span>
-                                <span className="text-green-600 dark:text-green-400">{Number(meal.targetProtein).toFixed(0)}P</span>
-                                <span className="text-orange-600 dark:text-orange-400">{Number(meal.targetCarbs).toFixed(0)}C</span>
-                                <span className="text-purple-600 dark:text-purple-400">{Number(meal.targetFat).toFixed(0)}F</span>
-                              </div>
-                            </div>
-                          ))}
-                          {distributeMacrosAcrossMeals().length > 3 && (
-                            <div className="text-xs text-blue-500 dark:text-blue-400 text-center">
-                              +{distributeMacrosAcrossMeals().length - 3} more meals...
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Workout Integration - Compact */}
-                    {mealTimingPreferences.workoutTime && (
-                      <div className="p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                        <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2">
-                            <Activity className="w-3 h-3 text-orange-600 dark:text-orange-400" />
-                            <span className="font-medium text-orange-900 dark:text-orange-100">
-                              Workout: {mealTimingPreferences.workoutTime}
-                            </span>
-                          </div>
-                          <div className="text-orange-700 dark:text-orange-300 text-xs">
-                            {mealTimingPreferences.preWorkoutMeals} pre • {mealTimingPreferences.postWorkoutMeals} post
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Quick Action */}
-                    <Button
-                      onClick={() => setLocation('/profile')}
-                      variant="outline"
-                      className="w-full h-7 text-xs"
-                    >
-                      <Settings className="w-3 h-3 mr-1" />
-                      Adjust Timing Preferences
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </div>
-          )}
-        </Card>
-
-        {/* Meal Builder Section */}
-        <Card className="overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 touch-target"
-            onClick={() => toggleSection('mealBuilder')}
-          >
-            <div className="flex items-center gap-2">
-              <ShoppingCart className="w-4 h-4 text-green-600 dark:text-green-400" />
-              <span className="font-medium text-black dark:text-white text-sm">Meal Builder</span>
-              {selectedFoods.length > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {selectedFoods.length} foods
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {totals.calories > 0 && (
-                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 text-xs">
-                  {totals.calories} cal
-                </Badge>
-              )}
-              {expandedSections.mealBuilder ? (
-                <ChevronUp className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
-          </div>
-          
-          {expandedSections.mealBuilder && (
-            <div className="border-t border-gray-200 dark:border-gray-700">
-              <CardContent className="p-3 space-y-3">
+        {/* Diet Goal Tab */}
+        <TabsContent value="diet-goal" className="space-y-6">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="w-5 h-5" />
@@ -2337,137 +1896,24 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                             <Plus className="w-4 h-4 mr-2" />
                             Log Meal
                           </Button>
-        {/* Saved Plans Section */}
-        <Card className="overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 touch-target"
-            onClick={() => toggleSection('savedPlans')}
-          >
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <span className="font-medium text-black dark:text-white text-sm">Saved Plans</span>
-              {savedMealPlans && savedMealPlans.length > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {savedMealPlans.length} plans
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {expandedSections.savedPlans ? (
-                <ChevronUp className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
-          </div>
-          
-          {expandedSections.savedPlans && (
-            <div className="border-t border-gray-200 dark:border-gray-700">
-              <CardContent className="p-3">
-                {!savedMealPlans || savedMealPlans.length === 0 ? (
-                  <div className="text-center py-4">
-                    <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                      No saved meal plans yet. Create your first plan in Meal Builder.
-                    </p>
-                    <Button 
-                      onClick={() => toggleSection('mealBuilder')}
-                      className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 h-7 text-xs"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      Create Plan
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {savedMealPlans.slice(0, 3).map((plan) => (
-                      <div key={plan.id} className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
-                        <div className="flex items-start justify-between mb-1">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-black dark:text-white text-sm truncate">{plan.name}</h4>
-                            <Badge variant="outline" className="text-xs mt-0.5 capitalize">
-                              {plan.mealType}
-                            </Badge>
-                          </div>
-                          <div className="flex gap-0.5 ml-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => loadMealPlan(plan)}
-                              className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 h-6 px-1.5"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => deleteMealPlan(plan.id)}
-                              disabled={deleteMealPlanMutation.isPending}
-                              className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20 h-6 px-1.5"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-4 gap-1 mb-2 text-xs">
-                          <div className="text-center p-1 bg-blue-50 dark:bg-blue-900/20 rounded">
-                            <div className="font-medium text-blue-900 dark:text-blue-100">{plan.totalCalories}</div>
-                            <div className="text-xs text-blue-600 dark:text-blue-400">cal</div>
-                          </div>
-                          <div className="text-center p-1 bg-green-50 dark:bg-green-900/20 rounded">
-                            <div className="font-medium text-green-900 dark:text-green-100">{plan.totalProtein}g</div>
-                            <div className="text-xs text-green-600 dark:text-green-400">P</div>
-                          </div>
-                          <div className="text-center p-1 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-                            <div className="font-medium text-yellow-900 dark:text-yellow-100">{plan.totalCarbs}g</div>
-                            <div className="text-xs text-yellow-600 dark:text-yellow-400">C</div>
-                          </div>
-                          <div className="text-center p-1 bg-orange-50 dark:bg-orange-900/20 rounded">
-                            <div className="font-medium text-orange-900 dark:text-orange-100">{plan.totalFat}g</div>
-                            <div className="text-xs text-orange-600 dark:text-orange-400">F</div>
-                          </div>
-                        </div>
-
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                          {plan.foods.length} foods: {plan.foods.slice(0, 2).map(f => f.name).join(', ')}
-                          {plan.foods.length > 2 && ` +${plan.foods.length - 2} more`}
-                        </div>
-
-                        <div className="flex gap-1">
-                          <Button
-                            onClick={() => handleLogMealPlan(plan)}
-                            disabled={logMealPlanMutation.isPending}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white h-6 text-xs"
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Log
-                          </Button>
                           <Button
                             onClick={() => loadMealPlan(plan)}
                             variant="outline"
-                            className="flex-1 border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 h-6 text-xs"
+                            className="flex-1 border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                           >
-                            <Edit className="w-3 h-3 mr-1" />
-                            Edit
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Plan
                           </Button>
                         </div>
-                      </div>
-                    ))}
-                    
-                    {savedMealPlans.length > 3 && (
-                      <div className="text-xs text-gray-500 text-center py-1">
-                        +{savedMealPlans.length - 3} more plans available
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </div>
-          )}
-        </Card>
-
-      </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
