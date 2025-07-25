@@ -355,8 +355,15 @@ export function Dashboard({ user }: DashboardProps) {
 
         {/* iOS-Style Date Picker Modal */}
         {showDatePicker && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center">
-            <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl">
+          <div 
+            className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+            onWheel={(e) => e.preventDefault()}
+            onTouchMove={(e) => e.preventDefault()}>
+            <div 
+              className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl"
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+            >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <button

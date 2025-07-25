@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -44,31 +44,34 @@ export function IOSDateSelector({ selectedDate, onDateChange, className = "" }: 
   };
   
   const [dateWheels, setDateWheels] = useState<DateWheel>(generateDateWheels(currentDate));
+  const dayWheelRef = useRef<HTMLDivElement>(null);
+  const monthWheelRef = useRef<HTMLDivElement>(null);
+  const yearWheelRef = useRef<HTMLDivElement>(null);
   
-  // Generate day options (surrounding current day)
-  const generateDayOptions = (month: number, year: number, selectedDay: number) => {
+  // Generate full day options for scrolling
+  const generateDayOptions = (month: number, year: number) => {
     const daysInMonth = new Date(year, month, 0).getDate();
     const options = [];
-    
-    // Show 2 days before and after selected day
-    for (let i = Math.max(1, selectedDay - 2); i <= Math.min(daysInMonth, selectedDay + 2); i++) {
+    for (let i = 1; i <= daysInMonth; i++) {
       options.push(i);
     }
-    
     return options;
   };
   
   // Generate month options
-  const generateMonthOptions = (selectedMonth: number) => {
+  const generateMonthOptions = () => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const options = [];
-    
-    // Show 2 months before and after
-    for (let i = Math.max(0, selectedMonth - 3); i <= Math.min(11, selectedMonth + 1); i++) {
-      options.push({ value: i + 1, label: months[i] });
+    return months.map((month, index) => ({ value: index + 1, label: month }));
+  };
+  
+  // Generate year options
+  const generateYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+      years.push(i);
     }
-    
-    return options;
+    return years;
   };
   
   // Navigate dates
@@ -88,8 +91,50 @@ export function IOSDateSelector({ selectedDate, onDateChange, className = "" }: 
     onDateChange(newDate.toISOString().split('T')[0]);
   };
   
-  const dayOptions = generateDayOptions(dateWheels.month, dateWheels.year, dateWheels.day);
-  const monthOptions = generateMonthOptions(dateWheels.month - 1);
+  const dayOptions = generateDayOptions(dateWheels.month, dateWheels.year);
+  const monthOptions = generateMonthOptions();
+  const yearOptions = generateYearOptions();
+  
+  // Handle scroll events and prevent background scroll
+  useEffect(() => {
+    if (showDatePicker) {
+      document.body.style.overflow = 'hidden';
+      
+      // Center the current selected values in each wheel
+      const centerSelectedValues = () => {
+        const centerOption = (container: HTMLDivElement | null, selectedIndex: number) => {
+          if (container) {
+            const itemHeight = 40; // Each item is h-10 (40px)
+            const containerHeight = 160; // h-40 (160px)
+            const scrollTop = selectedIndex * itemHeight - (containerHeight / 2) + (itemHeight / 2);
+            container.scrollTop = Math.max(0, scrollTop);
+          }
+        };
+
+        if (dayWheelRef.current) {
+          const selectedDayIndex = dayOptions.findIndex(day => day === dateWheels.day);
+          centerOption(dayWheelRef.current, selectedDayIndex);
+        }
+        
+        if (monthWheelRef.current) {
+          const selectedMonthIndex = monthOptions.findIndex(month => month.value === dateWheels.month);
+          centerOption(monthWheelRef.current, selectedMonthIndex);
+        }
+        
+        if (yearWheelRef.current) {
+          const selectedYearIndex = yearOptions.findIndex(year => year === dateWheels.year);
+          centerOption(yearWheelRef.current, selectedYearIndex);
+        }
+      };
+
+      // Center values on open
+      setTimeout(centerSelectedValues, 100);
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showDatePicker, dateWheels, dayOptions, monthOptions, yearOptions]);
   
   return (
     <>
@@ -122,73 +167,117 @@ export function IOSDateSelector({ selectedDate, onDateChange, className = "" }: 
       
       {/* iOS-Style Date Picker Modal */}
       <Dialog open={showDatePicker} onOpenChange={setShowDatePicker}>
-        <DialogContent className="ios-card max-w-sm mx-auto">
+        <DialogContent className="ios-card max-w-sm mx-auto" onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-center text-foreground">Select Date</DialogTitle>
           </DialogHeader>
           
-          {/* Date Wheels */}
-          <div className="p-6 space-y-6">
-            <div className="grid grid-cols-3 gap-4 text-center">
+          {/* iOS-Style Scrollable Date Wheels */}
+          <div className="p-4 space-y-4">
+            <div className="grid grid-cols-3 gap-2 text-center">
               {/* Day Wheel */}
-              <div className="space-y-3">
-                <div className="text-foreground/60 text-sm font-medium">Day</div>
-                <div className="space-y-2">
-                  {dayOptions.map((day) => (
-                    <button
-                      key={day}
-                      onClick={() => handleDateWheelChange('day', day)}
-                      className={`w-full text-xl py-2 px-1 rounded-lg transition-all ${
-                        day === dateWheels.day
-                          ? 'bg-accent text-foreground font-semibold'
-                          : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
+              <div className="space-y-2">
+                <div className="text-foreground/60 text-xs font-medium">Day</div>
+                <div 
+                  ref={dayWheelRef}
+                  className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
+                  style={{
+                    scrollSnapType: 'y mandatory',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                  onScroll={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <div className="py-16"> {/* Padding for center alignment */}
+                    {dayOptions.map((day) => (
+                      <div
+                        key={day}
+                        onClick={() => handleDateWheelChange('day', day)}
+                        className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
+                          day === dateWheels.day
+                            ? 'text-foreground font-semibold text-lg'
+                            : 'text-foreground/40 text-base hover:text-foreground/70'
+                        }`}
+                        style={{ scrollSnapAlign: 'center' }}
+                      >
+                        {day}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               
               {/* Month Wheel */}
-              <div className="space-y-3">
-                <div className="text-foreground/60 text-sm font-medium">Month</div>
-                <div className="space-y-2">
-                  {monthOptions.map((month) => (
-                    <button
-                      key={month.value}
-                      onClick={() => handleDateWheelChange('month', month.value)}
-                      className={`w-full text-xl py-2 px-1 rounded-lg transition-all ${
-                        month.value === dateWheels.month
-                          ? 'bg-accent text-foreground font-semibold'
-                          : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
-                      }`}
-                    >
-                      {month.label}
-                    </button>
-                  ))}
+              <div className="space-y-2">
+                <div className="text-foreground/60 text-xs font-medium">Month</div>
+                <div 
+                  ref={monthWheelRef}
+                  className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
+                  style={{
+                    scrollSnapType: 'y mandatory',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                  onScroll={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <div className="py-16">
+                    {monthOptions.map((month) => (
+                      <div
+                        key={month.value}
+                        onClick={() => handleDateWheelChange('month', month.value)}
+                        className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
+                          month.value === dateWheels.month
+                            ? 'text-foreground font-semibold text-lg'
+                            : 'text-foreground/40 text-base hover:text-foreground/70'
+                        }`}
+                        style={{ scrollSnapAlign: 'center' }}
+                      >
+                        {month.label}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               
               {/* Year Wheel */}
-              <div className="space-y-3">
-                <div className="text-foreground/60 text-sm font-medium">Year</div>
-                <div className="space-y-2">
-                  {[dateWheels.year - 1, dateWheels.year, dateWheels.year + 1].map((year) => (
-                    <button
-                      key={year}
-                      onClick={() => handleDateWheelChange('year', year)}
-                      className={`w-full text-xl py-2 px-1 rounded-lg transition-all ${
-                        year === dateWheels.year
-                          ? 'bg-accent text-foreground font-semibold'
-                          : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
-                      }`}
-                    >
-                      {year}
-                    </button>
-                  ))}
+              <div className="space-y-2">
+                <div className="text-foreground/60 text-xs font-medium">Year</div>
+                <div 
+                  ref={yearWheelRef}
+                  className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
+                  style={{
+                    scrollSnapType: 'y mandatory',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                  onScroll={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <div className="py-16">
+                    {yearOptions.map((year) => (
+                      <div
+                        key={year}
+                        onClick={() => handleDateWheelChange('year', year)}
+                        className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
+                          year === dateWheels.year
+                            ? 'text-foreground font-semibold text-lg'
+                            : 'text-foreground/40 text-base hover:text-foreground/70'
+                        }`}
+                        style={{ scrollSnapAlign: 'center' }}
+                      >
+                        {year}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </div>
+            
+            {/* Center Selection Lines */}
+            <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <div className="h-10 border-t border-b border-foreground/10 bg-accent/5"></div>
             </div>
             
             {/* Quick Navigation */}
