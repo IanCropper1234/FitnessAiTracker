@@ -123,7 +123,7 @@ export function useMobileDragDrop<T>({
 
       // Prevent default touch behaviors during drag
       e.preventDefault();
-    }, 50); // 50ms long press
+    }, 25); // 25ms long press for more responsive mobile interactions
   }, [isDisabled]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
