@@ -353,183 +353,193 @@ export function Dashboard({ user }: DashboardProps) {
           />
         )}
 
-        {/* iOS-Style Date Picker Modal */}
+        {/* Modern Mobile Date Picker */}
         {showDatePicker && (
           <div 
-            className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
-            onWheel={(e) => e.preventDefault()}
-            onTouchMove={(e) => e.preventDefault()}>
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowDatePicker(false)}
+          >
             <div 
-              className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl"
-              onWheel={(e) => e.stopPropagation()}
-              onTouchMove={(e) => e.stopPropagation()}
+              className="bg-background border border-border rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <button
-                  onClick={() => setShowDatePicker(false)}
-                  className="ios-touch-feedback p-2 text-foreground/60 hover:text-foreground"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-                <h3 className="text-lg font-semibold text-foreground">Change Date</h3>
-                <button
-                  onClick={() => setShowDatePicker(false)}
-                  className="ios-touch-feedback p-2 text-blue-500 hover:text-blue-600"
-                >
-                  <Check className="h-5 w-5" />
-                </button>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">Select Date</h3>
+                    <p className="text-white/80 text-sm">Choose your preferred date</p>
+                  </div>
+                  <div className="bg-white/20 rounded-full p-2">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                </div>
               </div>
 
-              {/* Today Button */}
-              <div className="p-4 text-center border-b border-border">
-                <button
-                  onClick={() => {
-                    setSelectedDate(TimezoneUtils.getCurrentDate());
-                    setShowDatePicker(false);
-                  }}
-                  className="text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors"
-                >
-                  Today
-                </button>
+              {/* Quick Actions */}
+              <div className="p-4 border-b border-border">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => {
+                      const yesterday = new Date(selectedDate);
+                      yesterday.setDate(yesterday.getDate() - 1);
+                      setSelectedDate(yesterday.toISOString().split('T')[0]);
+                      setShowDatePicker(false);
+                    }}
+                    className="p-3 bg-muted/50 hover:bg-muted rounded-xl text-center transition-all ios-touch-feedback"
+                  >
+                    <div className="text-xs font-medium text-foreground/60">Yesterday</div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {(() => {
+                        const yesterday = new Date(selectedDate);
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        return yesterday.getDate();
+                      })()}
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setSelectedDate(TimezoneUtils.getCurrentDate());
+                      setShowDatePicker(false);
+                    }}
+                    className="p-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-xl text-center transition-all ios-touch-feedback"
+                  >
+                    <div className="text-xs font-medium text-blue-600">Today</div>
+                    <div className="text-sm font-bold text-blue-600">
+                      {new Date().getDate()}
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      const tomorrow = new Date(selectedDate);
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      setSelectedDate(tomorrow.toISOString().split('T')[0]);
+                      setShowDatePicker(false);
+                    }}
+                    className="p-3 bg-muted/50 hover:bg-muted rounded-xl text-center transition-all ios-touch-feedback"
+                  >
+                    <div className="text-xs font-medium text-foreground/60">Tomorrow</div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {(() => {
+                        const tomorrow = new Date(selectedDate);
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        return tomorrow.getDate();
+                      })()}
+                    </div>
+                  </button>
+                </div>
               </div>
 
-              {/* iOS-Style Scrollable Date Wheels */}
-              <div className="p-4 space-y-4 relative">
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  {/* Day Wheel */}
-                  <div className="space-y-2">
-                    <div className="text-foreground/60 text-xs font-medium">Day</div>
-                    <div 
-                      className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
-                      style={{
-                        scrollSnapType: 'y mandatory',
-                        WebkitOverflowScrolling: 'touch'
+              {/* Date Grid Selector */}
+              <div className="p-4">
+                <div className="space-y-4">
+                  {/* Month/Year Header */}
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() => {
+                        const newDate = new Date(selectedDate);
+                        newDate.setMonth(newDate.getMonth() - 1);
+                        setSelectedDate(newDate.toISOString().split('T')[0]);
                       }}
-                      onScroll={(e) => e.stopPropagation()}
-                      onWheel={(e) => e.stopPropagation()}
-                      onTouchMove={(e) => e.stopPropagation()}
+                      className="p-2 hover:bg-muted rounded-lg transition-colors ios-touch-feedback"
                     >
-                      <div className="py-16">
-                        {(() => {
-                          const currentDate = new Date(selectedDate);
-                          const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-                          const days = [];
-                          for (let i = 1; i <= daysInMonth; i++) {
-                            days.push(i);
-                          }
-                          return days.map((day) => (
-                            <div
-                              key={day}
-                              onClick={() => {
-                                const newDate = new Date(selectedDate);
-                                newDate.setDate(day);
-                                setSelectedDate(newDate.toISOString().split('T')[0]);
-                              }}
-                              className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
-                                day === currentDate.getDate()
-                                  ? 'text-foreground font-semibold text-lg'
-                                  : 'text-foreground/40 text-base hover:text-foreground/70'
-                              }`}
-                              style={{ scrollSnapAlign: 'center' }}
-                            >
-                              {day}
-                            </div>
-                          ));
-                        })()}
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-foreground">
+                        {new Date(selectedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Month Wheel */}
-                  <div className="space-y-2">
-                    <div className="text-foreground/60 text-xs font-medium">Month</div>
-                    <div 
-                      className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
-                      style={{
-                        scrollSnapType: 'y mandatory',
-                        WebkitOverflowScrolling: 'touch'
+                    
+                    <button
+                      onClick={() => {
+                        const newDate = new Date(selectedDate);
+                        newDate.setMonth(newDate.getMonth() + 1);
+                        setSelectedDate(newDate.toISOString().split('T')[0]);
                       }}
-                      onScroll={(e) => e.stopPropagation()}
-                      onWheel={(e) => e.stopPropagation()}
-                      onTouchMove={(e) => e.stopPropagation()}
+                      className="p-2 hover:bg-muted rounded-lg transition-colors ios-touch-feedback"
                     >
-                      <div className="py-16">
-                        {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
-                          <div
-                            key={index}
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* Calendar Grid */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {/* Day Headers */}
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+                      <div key={index} className="text-center text-xs font-medium text-foreground/60 p-2">
+                        {day}
+                      </div>
+                    ))}
+                    
+                    {/* Calendar Days */}
+                    {(() => {
+                      const currentDate = new Date(selectedDate);
+                      const year = currentDate.getFullYear();
+                      const month = currentDate.getMonth();
+                      const firstDay = new Date(year, month, 1).getDay();
+                      const daysInMonth = new Date(year, month + 1, 0).getDate();
+                      const selectedDay = currentDate.getDate();
+                      const today = new Date();
+                      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+                      
+                      const days = [];
+                      
+                      // Empty cells for days before the first day of the month
+                      for (let i = 0; i < firstDay; i++) {
+                        days.push(<div key={`empty-${i}`} className="h-10"></div>);
+                      }
+                      
+                      // Days of the month
+                      for (let day = 1; day <= daysInMonth; day++) {
+                        const isSelected = day === selectedDay;
+                        const isToday = isCurrentMonth && day === today.getDate();
+                        
+                        days.push(
+                          <button
+                            key={day}
                             onClick={() => {
                               const newDate = new Date(selectedDate);
-                              newDate.setMonth(index);
+                              newDate.setDate(day);
                               setSelectedDate(newDate.toISOString().split('T')[0]);
+                              setShowDatePicker(false);
                             }}
-                            className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
-                              index === new Date(selectedDate).getMonth()
-                                ? 'text-foreground font-semibold text-lg'
-                                : 'text-foreground/40 text-base hover:text-foreground/70'
+                            className={`h-10 w-10 rounded-xl text-sm font-medium transition-all ios-touch-feedback ${
+                              isSelected
+                                ? 'bg-blue-500 text-white shadow-lg scale-105'
+                                : isToday
+                                ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                                : 'hover:bg-muted text-foreground'
                             }`}
-                            style={{ scrollSnapAlign: 'center' }}
                           >
-                            {month}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                            {day}
+                          </button>
+                        );
+                      }
+                      
+                      return days;
+                    })()}
                   </div>
-                  
-                  {/* Year Wheel */}
-                  <div className="space-y-2">
-                    <div className="text-foreground/60 text-xs font-medium">Year</div>
-                    <div 
-                      className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
-                      style={{
-                        scrollSnapType: 'y mandatory',
-                        WebkitOverflowScrolling: 'touch'
-                      }}
-                      onScroll={(e) => e.stopPropagation()}
-                      onWheel={(e) => e.stopPropagation()}
-                      onTouchMove={(e) => e.stopPropagation()}
-                    >
-                      <div className="py-16">
-                        {(() => {
-                          const currentYear = new Date().getFullYear();
-                          const years = [];
-                          for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-                            years.push(i);
-                          }
-                          return years.map((year) => (
-                            <div
-                              key={year}
-                              onClick={() => {
-                                const newDate = new Date(selectedDate);
-                                newDate.setFullYear(year);
-                                setSelectedDate(newDate.toISOString().split('T')[0]);
-                              }}
-                              className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
-                                year === new Date(selectedDate).getFullYear()
-                                  ? 'text-foreground font-semibold text-lg'
-                                  : 'text-foreground/40 text-base hover:text-foreground/70'
-                              }`}
-                              style={{ scrollSnapAlign: 'center' }}
-                            >
-                              {year}
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Center Selection Lines */}
-                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <div className="h-10 border-t border-b border-foreground/10 bg-accent/5"></div>
                 </div>
               </div>
 
-              {/* Home Indicator */}
-              <div className="flex justify-center pb-2">
-                <div className="w-16 h-1 bg-foreground/20 rounded-full"></div>
+              {/* Footer */}
+              <div className="p-4 bg-muted/20 flex justify-end gap-2">
+                <button
+                  onClick={() => setShowDatePicker(false)}
+                  className="px-4 py-2 text-foreground/60 hover:text-foreground transition-colors ios-touch-feedback"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => setShowDatePicker(false)}
+                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-all ios-touch-feedback"
+                >
+                  Done
+                </button>
               </div>
             </div>
           </div>
