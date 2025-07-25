@@ -73,59 +73,59 @@ function DietGoalsCard({ userId }: { userId: number }) {
   const weeklyTarget = parseFloat(dietGoals?.weeklyWeightTarget || "0");
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="w-5 h-5" />
-          Diet Goals
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-          <div className="text-sm">
-            <p className="text-blue-800 dark:text-blue-200">
-              Your diet goals are automatically set based on your fitness goal: <strong>{fitnessGoal}</strong>
-            </p>
-            <p className="text-blue-700 dark:text-blue-300 mt-1">
-              When you change your fitness goal in the profile below, your diet goals will update automatically.
-            </p>
+    <Card className="ios-smooth-transform">
+      <CardContent className="p-4 space-y-3">
+        {/* Compact Header */}
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </div>
+          <h3 className="text-sm font-semibold text-black dark:text-white">Diet Goals</h3>
+        </div>
+
+        {/* Compact Info Banner */}
+        <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+          <Info className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+          <p className="text-xs text-blue-800 dark:text-blue-200">
+            Auto-set for <strong>{fitnessGoal}</strong> goal
+          </p>
         </div>
 
         {dietGoals && (
-          <div className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-3">
+            {/* Goal Summary - Compact Row */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Current Goal</label>
-                <p className={`text-lg font-semibold ${getGoalColor(dietGoals.goal)}`}>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Goal</label>
+                <p className={`text-sm font-semibold ${getGoalColor(dietGoals.goal)}`}>
                   {getGoalDescription(dietGoals.goal)}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Weekly Weight Target</label>
-                <p className="text-lg font-semibold text-black dark:text-white">
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Weekly Target</label>
+                <p className="text-sm font-semibold text-black dark:text-white">
                   {weeklyTarget > 0 ? `+${weeklyTarget}kg` : weeklyTarget < 0 ? `${weeklyTarget}kg` : '0kg'}
                 </p>
               </div>
             </div>
             
-            <div className="grid grid-cols-4 gap-4 pt-2 border-t border-gray-200 dark:border-gray-700">
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Calories</p>
-                <p className="text-lg font-bold text-black dark:text-white">{dietGoals.targetCalories}</p>
+            {/* Macro Grid - Compact Design */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2.5 text-center">
+                <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Calories</p>
+                <p className="text-sm font-bold text-black dark:text-white">{Math.round(Number(dietGoals.targetCalories))}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Protein</p>
-                <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{dietGoals.targetProtein}g</p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2.5 text-center">
+                <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Protein</p>
+                <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{Math.round(Number(dietGoals.targetProtein))}g</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Carbs</p>
-                <p className="text-lg font-bold text-orange-600 dark:text-orange-400">{dietGoals.targetCarbs}g</p>
+              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2.5 text-center">
+                <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Carbs</p>
+                <p className="text-sm font-bold text-orange-600 dark:text-orange-400">{Math.round(Number(dietGoals.targetCarbs))}g</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Fat</p>
-                <p className="text-lg font-bold text-green-600 dark:text-green-400">{dietGoals.targetFat}g</p>
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-2.5 text-center">
+                <p className="text-xs font-medium text-green-600 dark:text-green-400">Fat</p>
+                <p className="text-sm font-bold text-green-600 dark:text-green-400">{Math.round(Number(dietGoals.targetFat))}g</p>
               </div>
             </div>
           </div>
