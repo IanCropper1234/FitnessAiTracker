@@ -130,6 +130,13 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to move food item",
+        variant: "destructive"
+      });
     }
   });
 
@@ -286,6 +293,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
+    console.log('Drag start triggered for:', log.foodName, 'from meal type:', log.mealType);
     if (!e.dataTransfer || !log || bulkMode) return;
     
     setDraggedItem(log);
@@ -355,17 +363,20 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
   };
 
   const handleDrop = (e: React.DragEvent, targetMealType: string) => {
+    console.log('Drop triggered - moving', draggedItem?.foodName, 'to', targetMealType);
     e.preventDefault();
     setDragOverTarget(null);
     setDragPreview(null);
     
     if (!draggedItem || !targetMealType) {
+      console.log('Early return - missing data:', { draggedItem: !!draggedItem, targetMealType });
       setDraggedItem(null);
       return;
     }
     
     // Prevent dropping on same meal type
     if (draggedItem.mealType === targetMealType) {
+      console.log('Same meal type drop prevented');
       toast({
         title: "No Change Needed",
         description: `${draggedItem.foodName} is already in ${formatMealType(targetMealType)}`,
@@ -394,17 +405,20 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     }
     
     // Perform the move with success feedback
+    console.log('Calling updateMealTypeMutation with:', { logId: draggedItem.id, newMealType: targetMealType });
     updateMealTypeMutation.mutate({
       logId: draggedItem.id,
       newMealType: targetMealType
     }, {
       onSuccess: () => {
+        console.log('Move successful');
         toast({
           title: "Food Moved",
           description: `${draggedItem.foodName} moved to ${formatMealType(targetMealType)}`,
         });
       },
       onError: (error: any) => {
+        console.error('Move failed:', error);
         toast({
           title: "Move Failed",
           description: error.message || `Failed to move ${draggedItem.foodName}`,
