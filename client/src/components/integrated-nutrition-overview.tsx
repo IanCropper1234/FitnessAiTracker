@@ -511,33 +511,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
 
   return (
     <div className="space-y-3">
-      {/* Date Navigation */}
-      <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-between w-full">
-              <CardTitle className="text-black dark:text-white flex items-center gap-1.5 text-sm">
-                <CalendarIcon className="w-4 h-4" />
-                Nutrition Overview
-              </CardTitle>
-              
-              <button
-                onClick={onDatePickerOpen}
-                className="ios-touch-feedback flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-accent/50 transition-colors"
-              >
-                <span className="text-sm font-medium text-foreground">
-                  {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                   TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
-                     day: '2-digit', 
-                     month: '2-digit'
-                   })}
-                </span>
-                <ChevronDown className="h-4 w-4 text-foreground/50" />
-              </button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      
       {/* Macro Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 w-full">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
