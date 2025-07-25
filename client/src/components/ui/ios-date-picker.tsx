@@ -160,42 +160,7 @@ export function IOSDatePicker({
 
   return (
     <>
-      {/* Hidden Original Compact Date Selector */}
-      <div className="hidden">
-        <div className={`flex items-center justify-center py-2 ${className}`}>
-          <div className={`flex items-center ${classes.container}`}>
-            <button
-              onClick={handlePreviousDay}
-              className={`ios-touch-feedback ${classes.button} text-foreground/60 hover:text-foreground transition-colors`}
-            >
-              <ChevronLeft className={classes.arrow} />
-            </button>
-            
-            <button
-              onClick={() => setShowDatePicker(true)}
-              className={`ios-touch-feedback flex items-center gap-1.5 ${classes.datePicker} rounded-lg hover:bg-accent/50 transition-colors`}
-            >
-              <span className={`${classes.text} font-medium text-foreground`}>
-                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                 TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
-                   day: '2-digit', 
-                   month: '2-digit'
-                 })}
-              </span>
-              <ChevronDown className="h-4 w-4 text-foreground/50" />
-            </button>
-            
-            <button
-              onClick={handleNextDay}
-              className={`ios-touch-feedback ${classes.button} text-foreground/60 hover:text-foreground transition-colors`}
-            >
-              <ChevronRight className={classes.arrow} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Compact Top Date Selector - Smaller Size */}
+      {/* Compact Date Selector - Top Position */}
       <div className="flex items-center justify-center py-1">
         <div className="flex items-center gap-1">
           <button
