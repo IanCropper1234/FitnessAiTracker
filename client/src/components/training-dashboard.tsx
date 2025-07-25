@@ -46,6 +46,7 @@ import TrainingTemplates from "./training-templates";
 import LoadProgressionTracker from "./load-progression-tracker";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { FeatureShowcase } from "./enhanced/FeatureShowcase";
+import { LoadingState, WorkoutSessionSkeleton, DashboardCardSkeleton } from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";

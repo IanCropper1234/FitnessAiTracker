@@ -18,6 +18,7 @@ import { NutritionProgression } from "@/components/nutrition-progression";
 import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
+import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -122,11 +123,8 @@ export function Nutrition({ user }: NutritionProps) {
 
   if (summaryLoading || logsLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white mx-auto mb-4"></div>
-          <p className="text-body-sm">Loading nutrition data...</p>
-        </div>
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center content-container">
+        <LoadingState message="Loading nutrition data..." type="spinner" />
       </div>
     );
   }

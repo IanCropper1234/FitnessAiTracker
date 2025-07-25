@@ -15,6 +15,7 @@ import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, Chevr
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
+import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
 interface User {
@@ -87,8 +88,8 @@ export function Dashboard({ user }: DashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground w-full">
-      <div className="w-full px-2 py-4 space-y-4">
+    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
+      <div className="content-container section-spacing">
         {/* Compact Date Selector */}
         <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
           <div className="flex items-center gap-1">
@@ -199,29 +200,39 @@ export function Dashboard({ user }: DashboardProps) {
         </Card>
 
         {/* Quick Stats - Single Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Calories
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {Math.round(nutritionSummary?.totalCalories || 0)}
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                /{Math.round(nutritionSummary?.goalCalories || 2000)}
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
-                className="mt-1 h-1"
-              />
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full card-spacing">
+          {!nutritionSummary ? (
+            // Loading skeletons for quick stats
+            <>
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+            </>
+          ) : (
+            <>
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
+                <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
+                  <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1 transition-colors duration-200" />
+                  <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+                    Calories
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-2 pb-2">
+                  <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
+                    {Math.round(nutritionSummary?.totalCalories || 0)}
+                  </div>
+                  <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+                    /{Math.round(nutritionSummary?.goalCalories || 2000)}
+                  </p>
+                  <Progress 
+                    value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
+                    className="mt-1 h-1"
+                  />
+                </CardContent>
+              </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
             <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
               <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
               <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
@@ -275,6 +286,8 @@ export function Dashboard({ user }: DashboardProps) {
               </p>
             </CardContent>
           </Card>
+            </>
+          )}
         </div>
 
         {/* Training Insights - Single Row */}
