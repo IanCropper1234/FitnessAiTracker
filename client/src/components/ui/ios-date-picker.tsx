@@ -229,13 +229,13 @@ export function IOSDatePicker({
 
             {/* Date Picker Wheels */}
             <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
-              <div className="grid grid-cols-3 gap-4 text-center relative">
+              <div className="grid grid-cols-3 gap-4 text-center relative items-center">
                 {/* Center line indicator */}
                 <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10"></div>
                 {/* Days */}
-                <div ref={dayScrollRef} className="space-y-2">
-                  <div className="text-foreground/60 text-sm font-medium">Day</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
+                <div ref={dayScrollRef} className="space-y-2 flex flex-col items-center">
+                  <div className="text-foreground/60 text-sm font-medium text-center">Day</div>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
                     {days.map((day) => (
                       <button
                         key={day}
@@ -253,9 +253,9 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Months */}
-                <div ref={monthScrollRef} className="space-y-2">
-                  <div className="text-foreground/60 text-sm font-medium">Month</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
+                <div ref={monthScrollRef} className="space-y-2 flex flex-col items-center">
+                  <div className="text-foreground/60 text-sm font-medium text-center">Month</div>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
                     {months.map((month, index) => (
                       <button
                         key={month}
@@ -273,9 +273,9 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Years */}
-                <div ref={yearScrollRef} className="space-y-2">
-                  <div className="text-foreground/60 text-sm font-medium">Year</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
+                <div ref={yearScrollRef} className="space-y-2 flex flex-col items-center">
+                  <div className="text-foreground/60 text-sm font-medium text-center">Year</div>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
                     {years.map((year) => (
                       <button
                         key={year}
