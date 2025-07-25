@@ -171,31 +171,29 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground ios-pwa-container">
       <div className="container mx-auto p-4 space-y-6">
-        {/* iOS PWA Header with Safe Area Support */}
-        <div className="flex items-center justify-between ios-pwa-header">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setLocation('/dashboard')}
-              className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-0"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-display">Profile Settings</h1>
-              <p className="text-body-sm text-gray-600 dark:text-gray-400">
-                Manage your personal information and preferences
-              </p>
-            </div>
-          </div>
+        {/* Ultra-Compact Header - Consistent with Training/Nutrition */}
+        <div className="h-11 flex items-center justify-between px-1 ios-smooth-transform">
           <Button 
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/dashboard')}
-            className="h-9 w-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 p-0"
+            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
-            <Home className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          
+          <div className="flex items-center gap-2 flex-1 justify-center">
+            <UserIcon className="w-4 h-4 text-foreground/70" />
+            <h1 className="text-sm font-semibold text-foreground truncate">Profile</h1>
+          </div>
+          
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setLocation('/dashboard')}
+            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
+          >
+            <Home className="w-4 h-4" />
           </Button>
         </div>
 
