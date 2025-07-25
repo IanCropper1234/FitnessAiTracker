@@ -394,110 +394,136 @@ export function Dashboard({ user }: DashboardProps) {
                 </button>
               </div>
 
-              {/* Date Picker Wheels */}
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="space-y-3">
-                    <div className="text-foreground/60 text-sm font-medium">Day</div>
-                    <div className="space-y-2">
-                      {(() => {
-                        const currentDate = new Date(selectedDate);
-                        const currentDay = currentDate.getDate();
-                        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-                        
-                        // Show 2 days before and after current day
-                        const startDay = Math.max(1, currentDay - 2);
-                        const endDay = Math.min(daysInMonth, currentDay + 2);
-                        const days = [];
-                        for (let i = startDay; i <= endDay; i++) {
-                          days.push(i);
-                        }
-                        
-                        return days.map((day) => (
-                          <button 
-                            key={day}
-                            onClick={() => {
-                              const newDate = new Date(selectedDate);
-                              newDate.setDate(day);
-                              setSelectedDate(newDate.toISOString().split('T')[0]);
-                            }}
-                            className={`w-full text-xl py-2 px-1 rounded-lg transition-all ios-touch-feedback ${
-                              day === currentDay ? 'bg-accent text-foreground font-semibold' : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
-                            }`}
-                          >
-                            {day}
-                          </button>
-                        ));
-                      })()}
+              {/* iOS-Style Scrollable Date Wheels */}
+              <div className="p-4 space-y-4 relative">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  {/* Day Wheel */}
+                  <div className="space-y-2">
+                    <div className="text-foreground/60 text-xs font-medium">Day</div>
+                    <div 
+                      className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
+                      style={{
+                        scrollSnapType: 'y mandatory',
+                        WebkitOverflowScrolling: 'touch'
+                      }}
+                      onScroll={(e) => e.stopPropagation()}
+                      onWheel={(e) => e.stopPropagation()}
+                      onTouchMove={(e) => e.stopPropagation()}
+                    >
+                      <div className="py-16">
+                        {(() => {
+                          const currentDate = new Date(selectedDate);
+                          const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+                          const days = [];
+                          for (let i = 1; i <= daysInMonth; i++) {
+                            days.push(i);
+                          }
+                          return days.map((day) => (
+                            <div
+                              key={day}
+                              onClick={() => {
+                                const newDate = new Date(selectedDate);
+                                newDate.setDate(day);
+                                setSelectedDate(newDate.toISOString().split('T')[0]);
+                              }}
+                              className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
+                                day === currentDate.getDate()
+                                  ? 'text-foreground font-semibold text-lg'
+                                  : 'text-foreground/40 text-base hover:text-foreground/70'
+                              }`}
+                              style={{ scrollSnapAlign: 'center' }}
+                            >
+                              {day}
+                            </div>
+                          ));
+                        })()}
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="text-foreground/60 text-sm font-medium">Month</div>
-                    <div className="space-y-2">
-                      {(() => {
-                        const currentDate = new Date(selectedDate);
-                        const currentMonth = currentDate.getMonth();
-                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                        
-                        // Show 2 months before and after current month
-                        const startMonth = Math.max(0, currentMonth - 2);
-                        const endMonth = Math.min(11, currentMonth + 2);
-                        const monthsToShow = [];
-                        for (let i = startMonth; i <= endMonth; i++) {
-                          monthsToShow.push({ index: i, name: months[i] });
-                        }
-                        
-                        return monthsToShow.map((month) => (
-                          <button 
-                            key={month.index}
+                  {/* Month Wheel */}
+                  <div className="space-y-2">
+                    <div className="text-foreground/60 text-xs font-medium">Month</div>
+                    <div 
+                      className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
+                      style={{
+                        scrollSnapType: 'y mandatory',
+                        WebkitOverflowScrolling: 'touch'
+                      }}
+                      onScroll={(e) => e.stopPropagation()}
+                      onWheel={(e) => e.stopPropagation()}
+                      onTouchMove={(e) => e.stopPropagation()}
+                    >
+                      <div className="py-16">
+                        {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
+                          <div
+                            key={index}
                             onClick={() => {
                               const newDate = new Date(selectedDate);
-                              newDate.setMonth(month.index);
+                              newDate.setMonth(index);
                               setSelectedDate(newDate.toISOString().split('T')[0]);
                             }}
-                            className={`w-full text-xl py-2 px-1 rounded-lg transition-all ios-touch-feedback ${
-                              month.index === currentMonth ? 'bg-accent text-foreground font-semibold' : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
+                            className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
+                              index === new Date(selectedDate).getMonth()
+                                ? 'text-foreground font-semibold text-lg'
+                                : 'text-foreground/40 text-base hover:text-foreground/70'
                             }`}
+                            style={{ scrollSnapAlign: 'center' }}
                           >
-                            {month.name}
-                          </button>
-                        ));
-                      })()}
+                            {month}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="text-foreground/60 text-sm font-medium">Year</div>
-                    <div className="space-y-2">
-                      {(() => {
-                        const currentDate = new Date(selectedDate);
-                        const currentYear = currentDate.getFullYear();
-                        
-                        // Show 2 years before and after current year
-                        const years = [];
-                        for (let i = currentYear - 2; i <= currentYear + 2; i++) {
-                          years.push(i);
-                        }
-                        
-                        return years.map((year) => (
-                          <button 
-                            key={year}
-                            onClick={() => {
-                              const newDate = new Date(selectedDate);
-                              newDate.setFullYear(year);
-                              setSelectedDate(newDate.toISOString().split('T')[0]);
-                            }}
-                            className={`w-full text-xl py-2 px-1 rounded-lg transition-all ios-touch-feedback ${
-                              year === currentYear ? 'bg-accent text-foreground font-semibold' : 'text-foreground/60 hover:text-foreground hover:bg-accent/30'
-                            }`}
-                          >
-                            {year}
-                          </button>
-                        ));
-                      })()}
+                  {/* Year Wheel */}
+                  <div className="space-y-2">
+                    <div className="text-foreground/60 text-xs font-medium">Year</div>
+                    <div 
+                      className="h-40 overflow-y-scroll scrollbar-hide scroll-smooth"
+                      style={{
+                        scrollSnapType: 'y mandatory',
+                        WebkitOverflowScrolling: 'touch'
+                      }}
+                      onScroll={(e) => e.stopPropagation()}
+                      onWheel={(e) => e.stopPropagation()}
+                      onTouchMove={(e) => e.stopPropagation()}
+                    >
+                      <div className="py-16">
+                        {(() => {
+                          const currentYear = new Date().getFullYear();
+                          const years = [];
+                          for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+                            years.push(i);
+                          }
+                          return years.map((year) => (
+                            <div
+                              key={year}
+                              onClick={() => {
+                                const newDate = new Date(selectedDate);
+                                newDate.setFullYear(year);
+                                setSelectedDate(newDate.toISOString().split('T')[0]);
+                              }}
+                              className={`h-10 flex items-center justify-center cursor-pointer transition-all ${
+                                year === new Date(selectedDate).getFullYear()
+                                  ? 'text-foreground font-semibold text-lg'
+                                  : 'text-foreground/40 text-base hover:text-foreground/70'
+                              }`}
+                              style={{ scrollSnapAlign: 'center' }}
+                            >
+                              {year}
+                            </div>
+                          ));
+                        })()}
+                      </div>
                     </div>
                   </div>
+                </div>
+                
+                {/* Center Selection Lines */}
+                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <div className="h-10 border-t border-b border-foreground/10 bg-accent/5"></div>
                 </div>
               </div>
 
