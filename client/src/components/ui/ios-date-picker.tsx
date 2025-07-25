@@ -193,55 +193,54 @@ export function IOSDatePicker({
         </div>
       </div>
 
-      {/* Compact iOS Date Picker Modal - Top Positioned */}
+      {/* iOS-Style Date Picker Modal */}
       {showDatePicker && (
         <div 
-          className="fixed inset-0 z-50 bg-black/30 flex items-start justify-center pt-16"
-          style={{ touchAction: 'none' }}
+          className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+          style={{ touchAction: 'none' }} // Prevent background scrolling
         >
-          <div className="bg-background w-full max-w-sm mx-4 rounded-xl shadow-2xl border border-border">
-            {/* Compact Header */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
               <button
                 onClick={handleCancel}
-                className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground touch-target"
+                className="ios-touch-feedback p-2 text-foreground/60 hover:text-foreground touch-target"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
-              <h3 className="text-sm font-semibold text-foreground">Select Date</h3>
+              <h3 className="text-lg font-semibold text-foreground">Change Date</h3>
               <button
                 onClick={handleConfirm}
-                className="ios-touch-feedback p-1 text-blue-500 hover:text-blue-600 touch-target"
+                className="ios-touch-feedback p-2 text-blue-500 hover:text-blue-600 touch-target"
               >
-                <Check className="h-4 w-4" />
+                <Check className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Compact Today Button */}
-            <div className="px-3 py-2 text-center border-b border-border">
+            {/* Today Button */}
+            <div className="p-4 text-center border-b border-border">
               <button
                 onClick={handleTodaySelect}
-                className="text-blue-500 font-medium text-sm hover:text-blue-600 transition-colors touch-target"
+                className="text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors touch-target"
               >
                 Today
               </button>
             </div>
 
-            {/* Compact Date Picker Wheels */}
-            <div className="p-3" style={{ touchAction: 'pan-y' }}>
-              <div className="grid grid-cols-3 gap-2 text-center relative">
-                {/* Center line indicator - smaller */}
-                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-8 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10"></div>
-                
+            {/* Date Picker Wheels */}
+            <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
+              <div className="grid grid-cols-3 gap-4 text-center relative">
+                {/* Center line indicator */}
+                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10"></div>
                 {/* Days */}
-                <div ref={dayScrollRef} className="space-y-1">
-                  <div className="text-foreground/60 text-xs font-medium">Day</div>
-                  <div className="max-h-24 overflow-y-auto space-y-0.5 date-picker-wheel py-6" style={{ touchAction: 'pan-y' }}>
+                <div ref={dayScrollRef} className="space-y-2">
+                  <div className="text-foreground/60 text-sm font-medium">Day</div>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
                     {days.map((day) => (
                       <button
                         key={day}
                         onClick={() => handleDateChange(day, currentMonth, currentYear)}
-                        className={`w-full text-sm py-1 px-1 rounded transition-colors touch-target ${
+                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
                           day === currentDay 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
@@ -254,34 +253,34 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Months */}
-                <div ref={monthScrollRef} className="space-y-1">
-                  <div className="text-foreground/60 text-xs font-medium">Month</div>
-                  <div className="max-h-24 overflow-y-auto space-y-0.5 date-picker-wheel py-6" style={{ touchAction: 'pan-y' }}>
+                <div ref={monthScrollRef} className="space-y-2">
+                  <div className="text-foreground/60 text-sm font-medium">Month</div>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
                     {months.map((month, index) => (
                       <button
                         key={month}
                         onClick={() => handleDateChange(currentDay, index, currentYear)}
-                        className={`w-full text-xs py-1 px-1 rounded transition-colors touch-target ${
+                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
                           index === currentMonth 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
                         }`}
                       >
-                        {month.substring(0, 3)}
+                        {month}
                       </button>
                     ))}
                   </div>
                 </div>
                 
                 {/* Years */}
-                <div ref={yearScrollRef} className="space-y-1">
-                  <div className="text-foreground/60 text-xs font-medium">Year</div>
-                  <div className="max-h-24 overflow-y-auto space-y-0.5 date-picker-wheel py-6" style={{ touchAction: 'pan-y' }}>
+                <div ref={yearScrollRef} className="space-y-2">
+                  <div className="text-foreground/60 text-sm font-medium">Year</div>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
                     {years.map((year) => (
                       <button
                         key={year}
                         onClick={() => handleDateChange(currentDay, currentMonth, year)}
-                        className={`w-full text-sm py-1 px-1 rounded transition-colors touch-target ${
+                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
                           year === currentYear 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
@@ -295,9 +294,9 @@ export function IOSDatePicker({
               </div>
             </div>
 
-            {/* Compact Home Indicator */}
-            <div className="flex justify-center pb-1">
-              <div className="w-12 h-0.5 bg-foreground/20 rounded-full"></div>
+            {/* Home Indicator */}
+            <div className="flex justify-center pb-2">
+              <div className="w-16 h-1 bg-foreground/20 rounded-full"></div>
             </div>
           </div>
         </div>
