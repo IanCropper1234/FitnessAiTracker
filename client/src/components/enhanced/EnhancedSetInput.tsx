@@ -224,7 +224,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             {/* iOS-Optimized Grid with Equal Height and Proper Alignment */}
             <div className="grid grid-cols-3 gap-2">
               {/* Weight Section - Equal width with proper iOS sizing */}
-              <div className="space-y-1">
+              <div className="space-y-1 pt-[0px] pb-[0px] mt-[-9px] mb-[-9px]">
                 <div className="flex items-center justify-between min-h-[16px]">
                   <label className="text-xs font-medium text-foreground">Weight</label>
                   {isBodyWeightExercise && (
