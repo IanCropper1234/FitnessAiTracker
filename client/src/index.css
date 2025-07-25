@@ -814,4 +814,63 @@
       -webkit-backdrop-filter: blur(10px);
     }
   }
+
+  /* Enhanced iOS Drag and Drop */
+  .ios-drag-item {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .ios-drag-active {
+    transform: scale(1.05) translateZ(0);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+    z-index: 100;
+  }
+
+  .ios-drag-placeholder {
+    background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+    border: 2px dashed #3b82f6;
+    border-radius: 8px;
+    animation: pulse-drag 1.5s ease-in-out infinite;
+  }
+
+  .dark .ios-drag-placeholder {
+    background: linear-gradient(90deg, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%);
+    border-color: #60a5fa;
+  }
+
+  @keyframes pulse-drag {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+  }
+
+  .ios-drag-ghost {
+    opacity: 0.3;
+    transform: scale(0.95);
+    filter: blur(1px);
+  }
+
+  /* List item shift animations */
+  .list-item-shift-up {
+    transform: translateY(-4px);
+    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .list-item-shift-down {
+    transform: translateY(4px);
+    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* iOS haptic feedback simulation */
+  .ios-haptic-feedback {
+    animation: haptic-tap 0.1s ease-out;
+  }
+
+  @keyframes haptic-tap {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.98); }
+    100% { transform: scale(1); }
+  }
 }

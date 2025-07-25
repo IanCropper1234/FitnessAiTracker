@@ -56,6 +56,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
   const [draggedItem, setDraggedItem] = useState<any>(null);
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
   const [dragPreview, setDragPreview] = useState<{ x: number; y: number } | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isDraggingActive, setIsDraggingActive] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
   const [copyOperation, setCopyOperation] = useState<{
     type: 'item' | 'section';
@@ -297,6 +300,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     if (!e.dataTransfer || !log || bulkMode) return;
     
     setDraggedItem(log);
+    setIsDraggingActive(true);
+    setDragStartY(e.clientY);
+    
+    // iOS-specific optimizations
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', JSON.stringify({
       id: log.id,
@@ -304,21 +311,30 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
       mealType: log.mealType
     }));
     
-    // Create custom drag image
+    // Create a custom drag image for better iOS experience
     const dragImage = document.createElement('div');
-    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-2 shadow-lg';
-    dragImage.style.position = 'absolute';
-    dragImage.style.top = '-1000px';
     dragImage.innerHTML = `
-      <div class="flex items-center gap-2">
-        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-        <span class="text-sm font-medium">${log.foodName}</span>
+      <div style="
+        background: #2563eb; 
+        color: white; 
+        padding: 8px 12px; 
+        border-radius: 8px; 
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      ">
+        <span style="width: 12px; height: 12px; background: rgba(255,255,255,0.3); border-radius: 2px;"></span>
+        ${log.foodName}
       </div>
     `;
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-9999px';
     document.body.appendChild(dragImage);
     e.dataTransfer.setDragImage(dragImage, 0, 0);
     
-    // Clean up drag image after drag operation
+    // Clean up drag image after a short delay
     setTimeout(() => {
       document.body.removeChild(dragImage);
     }, 0);
@@ -334,19 +350,23 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     }, 100);
   };
 
-  const handleDragOver = (e: React.DragEvent, targetMealType?: string) => {
+  const handleDragOver = (e: React.DragEvent, targetMealType: string, index?: number) => {
     e.preventDefault();
     
-    if (!draggedItem) return;
+    if (!draggedItem || targetMealType === draggedItem.mealType) return;
+    
+    setDragOverTarget(targetMealType);
+    if (typeof index !== 'undefined') {
+      setDragOverIndex(index);
+    }
     
     if (e.dataTransfer) {
-      // Provide visual feedback based on validity of drop
-      if (targetMealType && draggedItem.mealType !== targetMealType) {
-        e.dataTransfer.dropEffect = 'move';
-        setDragOverTarget(targetMealType);
-      } else {
-        e.dataTransfer.dropEffect = 'none';
-      }
+      e.dataTransfer.dropEffect = 'move';
+    }
+    
+    // Add haptic feedback for iOS (if supported)
+    if (navigator.vibrate && Math.abs(e.clientY - dragStartY) > 10) {
+      navigator.vibrate(10);
     }
   };
 
@@ -434,6 +454,9 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     setDraggedItem(null);
     setDragOverTarget(null);
     setDragPreview(null);
+    setDragOverIndex(null);
+    setIsDraggingActive(false);
+    setDragStartY(0);
   };
 
   // Handle opening nutrition facts dialog
@@ -767,13 +790,28 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
               return (
                 <div 
                   key={mealType.key}
-                  className={`border-b border-gray-200 dark:border-gray-700 last:border-b-0 overflow-hidden transition-all duration-200 ${
-                    dragOverTarget === mealType.key 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400' 
+                  className={`
+                    border-b border-gray-200 dark:border-gray-700 last:border-b-0 overflow-hidden 
+                    transition-all duration-300 ios-drag-item
+                    ${dragOverTarget === mealType.key 
+                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400 ring-2 ring-blue-300 ios-drag-active' 
                       : draggedItem && draggedItem.mealType !== mealType.key
-                      ? 'bg-green-50 dark:bg-green-900/10 border-green-300'
+                      ? 'bg-green-50 dark:bg-green-900/10 border-green-300 opacity-90'
                       : 'bg-transparent'
-                  }`}
+                    }
+                    ${isDraggingActive && dragOverTarget !== mealType.key 
+                      ? 'opacity-80 scale-[0.99]' 
+                      : ''
+                    }
+                  `}
+                  style={{
+                    transform: `translateZ(${dragOverTarget === mealType.key ? '5px' : '0'}) ${
+                      dragOverTarget === mealType.key ? 'scale(1.01)' : 'scale(1)'
+                    }`,
+                    boxShadow: dragOverTarget === mealType.key 
+                      ? '0 4px 15px rgba(37, 99, 235, 0.1)' 
+                      : undefined
+                  }}
                   onDragOver={(e) => handleDragOver(e, mealType.key)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, mealType.key)}
@@ -827,23 +865,41 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                   </div>
                   {/* Food Items */}
                   <div className="pb-3">
-                    {mealLogs.map((log: any) => {
+                    {mealLogs.map((log: any, index: number) => {
                       const rpCategory = getRPCategory(log.category);
+                      const isCurrentlyDragged = draggedItem && draggedItem.id === log.id;
+                      const isDragTarget = dragOverTarget === mealType.key && dragOverIndex === index;
+                      const shouldShift = isDraggingActive && dragOverTarget === mealType.key && !isCurrentlyDragged;
+                      
                       return (
                         <div 
                           key={log.id}
                           draggable={!bulkMode}
                           onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
                           onDragEnd={handleDragEnd}
-                          className={`flex items-center gap-3 py-2 px-0 transition-all duration-200 ${
-                            draggedItem && draggedItem.id === log.id
-                              ? 'opacity-50 scale-95 bg-blue-50 dark:bg-blue-900/20'
+                          onDragOver={(e) => !bulkMode && handleDragOver(e, mealType.key, index)}
+                          style={{
+                            transform: shouldShift ? 'translateY(4px)' : 'translateY(0)',
+                            transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                            touchAction: 'manipulation',
+                            WebkitTouchCallout: 'none',
+                            WebkitUserSelect: 'none',
+                            userSelect: 'none'
+                          }}
+                          className={`
+                            flex items-center gap-3 py-2 px-0 
+                            ios-touch-feedback ios-button touch-target
+                            ${isCurrentlyDragged
+                              ? 'opacity-30 scale-95 bg-blue-50 dark:bg-blue-900/20 shadow-lg z-10' 
+                              : isDragTarget
+                              ? 'bg-green-100 dark:bg-green-900/30 border-green-400 border-2 border-dashed transform translate-y-1'
                               : bulkMode 
                               ? selectedLogs.includes(log.id) 
-                                ? 'ring-2 ring-blue-500 bg-white dark:bg-gray-900' 
+                                ? 'ring-2 ring-blue-500 bg-white dark:bg-gray-900 transform scale-[1.02]' 
                                 : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' 
-                              : 'cursor-move hover:bg-gray-50 dark:hover:bg-gray-800'
-                          }`}
+                              : 'cursor-move hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-[0.98]'
+                            }
+                          `}
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
                           {/* Selection/Drag Handle */}
