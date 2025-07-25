@@ -165,28 +165,28 @@ export function IOSDatePicker({
         <div className="flex items-center gap-1">
           <button
             onClick={handlePreviousDay}
-            className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+            className="ios-touch-feedback p-1 text-blue-500/70 hover:text-blue-500 transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
           >
             <ChevronLeft className="h-3 w-3" />
           </button>
           
           <button
             onClick={() => setShowDatePicker(true)}
-            className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
+            className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-colors"
           >
-            <span className="text-xs font-medium text-foreground">
+            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
               {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
                  day: '2-digit', 
                  month: '2-digit'
                })}
             </span>
-            <ChevronDown className="h-3 w-3 text-foreground/50" />
+            <ChevronDown className="h-3 w-3 text-blue-500/70" />
           </button>
           
           <button
             onClick={handleNextDay}
-            className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+            className="ios-touch-feedback p-1 text-blue-500/70 hover:text-blue-500 transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
           >
             <ChevronRight className="h-3 w-3" />
           </button>
@@ -204,7 +204,7 @@ export function IOSDatePicker({
             <div className="flex items-center justify-between p-4 border-b border-border">
               <button
                 onClick={handleCancel}
-                className="ios-touch-feedback p-2 text-foreground/60 hover:text-foreground touch-target"
+                className="ios-touch-feedback p-2 text-red-500 hover:text-red-600 touch-target"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -222,13 +222,13 @@ export function IOSDatePicker({
               <div className="flex items-center gap-1">
                 <button
                   onClick={handlePreviousDay}
-                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+                  className="ios-touch-feedback p-1 text-blue-500/70 hover:text-blue-500 transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
                 >
                   <ChevronLeft className="h-3 w-3" />
                 </button>
                 
-                <div className="flex items-center gap-1 px-3 py-1 rounded-md bg-accent/20">
-                  <span className="text-sm font-medium text-foreground">
+                <div className="flex items-center gap-1 px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950/20">
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
                     {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                      TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
                        day: '2-digit', 
@@ -240,7 +240,7 @@ export function IOSDatePicker({
                 
                 <button
                   onClick={handleNextDay}
-                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+                  className="ios-touch-feedback p-1 text-blue-500/70 hover:text-blue-500 transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
                 >
                   <ChevronRight className="h-3 w-3" />
                 </button>
@@ -272,7 +272,7 @@ export function IOSDatePicker({
                         className={`w-full text-base py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center ${
                           day === currentDay 
                             ? 'bg-blue-500 text-white font-semibold' 
-                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-950/10 hover:text-blue-600 dark:hover:text-blue-400'
                         }`}
                       >
                         {day}
@@ -292,7 +292,7 @@ export function IOSDatePicker({
                         className={`w-full text-sm py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center truncate ${
                           index === currentMonth 
                             ? 'bg-blue-500 text-white font-semibold' 
-                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-950/10 hover:text-blue-600 dark:hover:text-blue-400'
                         }`}
                         title={month}
                       >
@@ -313,7 +313,7 @@ export function IOSDatePicker({
                         className={`w-full text-base py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center ${
                           year === currentYear 
                             ? 'bg-blue-500 text-white font-semibold' 
-                            : 'text-foreground/70 hover:bg-accent hover:text-foreground'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-950/10 hover:text-blue-600 dark:hover:text-blue-400'
                         }`}
                       >
                         {year}
