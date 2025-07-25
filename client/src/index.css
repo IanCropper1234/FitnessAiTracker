@@ -315,26 +315,6 @@
     background: var(--ring);
   }
 
-  /* Hide scrollbar utility */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* iOS Date Picker Wheel Styling */
-  .date-picker-wheel {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .date-picker-wheel::-webkit-scrollbar {
-    display: none;
-  }
-
   /* Enhanced Spacing Utilities */
   .spacing-section {
     @apply space-y-6;
