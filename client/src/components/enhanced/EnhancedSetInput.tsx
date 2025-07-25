@@ -221,18 +221,18 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             )}
             
-            {/* iOS-Optimized Grid with Equal Height and Proper Alignment */}
+            {/* iOS-Optimized Grid with Perfect Alignment */}
             <div className="grid grid-cols-3 gap-2">
-              {/* Weight Section - Equal width with proper iOS sizing */}
-              <div className="space-y-1 pt-[0px] pb-[0px] mt-[-9px] mb-[-9px]">
-                <div className="flex items-center justify-between min-h-[16px]">
+              {/* Weight Section - Aligned label height */}
+              <div className="space-y-1">
+                <div className="h-5 flex items-center justify-between">
                   <label className="text-xs font-medium text-foreground">Weight</label>
                   {isBodyWeightExercise && (
                     <Switch
                       checked={useBodyWeight}
                       onCheckedChange={handleBodyWeightToggle}
                       disabled={!bodyWeightValue}
-                      className="scale-75"
+                      className="scale-75 -mt-0.5"
                     />
                   )}
                 </div>
@@ -269,9 +269,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 </div>
               </div>
 
-              {/* Reps Section - Equal width with consistent height */}
+              {/* Reps Section - Fixed label height */}
               <div className="space-y-1">
-                <div className="min-h-[16px] flex items-center">
+                <div className="h-5 flex items-center">
                   <label className="text-xs font-medium text-foreground">Reps</label>
                 </div>
                 <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
@@ -288,9 +288,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 </div>
               </div>
 
-              {/* RPE Section - Equal width with consistent height */}
+              {/* RPE Section - Fixed label height */}
               <div className="space-y-1">
-                <div className="min-h-[16px] flex items-center">
+                <div className="h-5 flex items-center">
                   <label className="text-xs font-medium text-foreground">RPE</label>
                 </div>
                 <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
