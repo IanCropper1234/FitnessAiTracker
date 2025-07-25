@@ -40,7 +40,10 @@ import {
   Apple,
   Utensils,
   ArrowLeft,
-  Home
+  Home,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown
 } from "lucide-react";
 
 interface User {
