@@ -11,7 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
@@ -34,6 +34,7 @@ export function Dashboard({ user }: DashboardProps) {
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
@@ -89,11 +90,47 @@ export function Dashboard({ user }: DashboardProps) {
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
         {/* Compact Date Selector */}
-        <IOSDatePicker 
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          size="md"
-        />
+        <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                const previousDay = TimezoneUtils.addDays(selectedDate, -1);
+                setSelectedDate(previousDay);
+                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
+              }}
+              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+            >
+              <ChevronLeft className="h-3 w-3" />
+            </button>
+            
+            <button
+              onClick={() => setShowDatePicker(true)}
+              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
+            >
+              <span className="text-xs font-medium text-foreground">
+                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                 TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
+                   day: '2-digit', 
+                   month: '2-digit'
+                 })}
+              </span>
+              <ChevronDown className="h-3 w-3 text-foreground/50" />
+            </button>
+            
+            <button
+              onClick={() => {
+                const nextDay = TimezoneUtils.addDays(selectedDate, 1);
+                setSelectedDate(nextDay);
+                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
+              }}
+              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+            >
+              <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
 
         {/* Overview Section with Toggle */}
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -319,6 +356,20 @@ export function Dashboard({ user }: DashboardProps) {
           />
         )}
 
+        {/* iOS Date Picker Modal */}
+        <IOSDatePicker 
+          selectedDate={selectedDate}
+          onDateChange={(newDate) => {
+            setSelectedDate(newDate);
+            setShowDatePicker(false);
+            // Invalidate queries to refresh data for the new date
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+            queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
+          }}
+          size="lg"
+          showDatePicker={showDatePicker}
+          setShowDatePicker={setShowDatePicker}
+        />
 
       </div>
     </div>
