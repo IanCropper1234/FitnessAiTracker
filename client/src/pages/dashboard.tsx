@@ -92,7 +92,7 @@ export function Dashboard({ user }: DashboardProps) {
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
         {/* Ultra-Compact iOS Date Header */}
-        <div className="flex items-center justify-center py-1">
+        <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] pl-[0px] pr-[0px] mt-[-12px] mb-[-12px]">
           <button
             onClick={() => setSelectedDate(TimezoneUtils.addDays(selectedDate, -1))}
             className="ios-button touch-target p-2 text-foreground/60 active:text-foreground active:scale-95 transition-all duration-150"
