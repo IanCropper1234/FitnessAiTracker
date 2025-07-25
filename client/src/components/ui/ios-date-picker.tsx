@@ -228,19 +228,20 @@ export function IOSDatePicker({
             </div>
 
             {/* Date Picker Wheels */}
-            <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
-              <div className="grid grid-cols-3 gap-4 text-center relative items-center">
+            <div className="px-4 py-6 overflow-x-hidden" style={{ touchAction: 'pan-y' }}>
+              <div className="grid grid-cols-3 gap-2 text-center relative max-w-full">
                 {/* Center line indicator */}
-                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10"></div>
+                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10 mx-2"></div>
+                
                 {/* Days */}
-                <div ref={dayScrollRef} className="space-y-2 flex flex-col items-center">
-                  <div className="text-foreground/60 text-sm font-medium text-center">Day</div>
+                <div ref={dayScrollRef} className="flex flex-col items-center min-w-0">
+                  <div className="text-foreground/60 text-xs font-medium text-center mb-2">Day</div>
                   <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
                     {days.map((day) => (
                       <button
                         key={day}
                         onClick={() => handleDateChange(day, currentMonth, currentYear)}
-                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
+                        className={`w-full text-base py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center ${
                           day === currentDay 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
@@ -253,18 +254,19 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Months */}
-                <div ref={monthScrollRef} className="space-y-2 flex flex-col items-center">
-                  <div className="text-foreground/60 text-sm font-medium text-center">Month</div>
+                <div ref={monthScrollRef} className="flex flex-col items-center min-w-0">
+                  <div className="text-foreground/60 text-xs font-medium text-center mb-2">Month</div>
                   <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
                     {months.map((month, index) => (
                       <button
                         key={month}
                         onClick={() => handleDateChange(currentDay, index, currentYear)}
-                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
+                        className={`w-full text-sm py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center truncate ${
                           index === currentMonth 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
                         }`}
+                        title={month}
                       >
                         {month}
                       </button>
@@ -273,14 +275,14 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Years */}
-                <div ref={yearScrollRef} className="space-y-2 flex flex-col items-center">
-                  <div className="text-foreground/60 text-sm font-medium text-center">Year</div>
+                <div ref={yearScrollRef} className="flex flex-col items-center min-w-0">
+                  <div className="text-foreground/60 text-xs font-medium text-center mb-2">Year</div>
                   <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12 w-full" style={{ touchAction: 'pan-y' }}>
                     {years.map((year) => (
                       <button
                         key={year}
                         onClick={() => handleDateChange(currentDay, currentMonth, year)}
-                        className={`w-full text-lg py-2 px-2 rounded-lg transition-colors touch-target ${
+                        className={`w-full text-base py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center ${
                           year === currentYear 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
