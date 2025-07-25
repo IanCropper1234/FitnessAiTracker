@@ -11,13 +11,10 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
 interface User {
@@ -91,60 +88,12 @@ export function Dashboard({ user }: DashboardProps) {
   return (
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
-        {/* Minimal iOS Date Header */}
-        <div className="flex items-center justify-center gap-4 py-1">
-          <button
-            onClick={() => setSelectedDate(TimezoneUtils.addDays(selectedDate, -1))}
-            className="ios-button touch-target p-1.5 text-foreground/50 active:text-foreground active:scale-95 transition-all duration-150"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-          </button>
-          
-          <div className="flex flex-col items-center space-y-0">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="ios-button touch-target flex items-center gap-0.5 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-md active:scale-98 transition-all duration-150">
-                  <span className="text-sm font-medium text-foreground">
-                    {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                     TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
-                       month: 'short',
-                       day: 'numeric'
-                     })}
-                  </span>
-                  <ChevronDown className="h-2.5 w-2.5 text-foreground/30 ml-0.5" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 shadow-xl border-0 bg-white dark:bg-gray-900 rounded-2xl" align="center">
-                <CalendarComponent
-                  mode="single"
-                  selected={TimezoneUtils.parseUserDate(selectedDate)}
-                  onSelect={(date) => {
-                    if (date) {
-                      setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                    }
-                  }}
-                  initialFocus
-                  className="rounded-2xl"
-                />
-              </PopoverContent>
-            </Popover>
-            
-            <span className="text-[10px] text-foreground/35 font-normal leading-none mt-0.5">
-              {TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
-                weekday: 'short',
-                month: 'short', 
-                day: 'numeric'
-              })}
-            </span>
-          </div>
-          
-          <button
-            onClick={() => setSelectedDate(TimezoneUtils.addDays(selectedDate, 1))}
-            className="ios-button touch-target p-1.5 text-foreground/50 active:text-foreground active:scale-95 transition-all duration-150"
-          >
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        {/* Compact Date Selector */}
+        <IOSDatePicker 
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+          size="md"
+        />
 
         {/* Overview Section with Toggle */}
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -369,6 +318,8 @@ export function Dashboard({ user }: DashboardProps) {
             }}
           />
         )}
+
+
       </div>
     </div>
   );
