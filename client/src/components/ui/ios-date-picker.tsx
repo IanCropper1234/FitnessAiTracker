@@ -160,8 +160,8 @@ export function IOSDatePicker({
 
   return (
     <>
-      {/* Compact Date Selector - Top Position */}
-      <div className="flex items-center justify-center py-1">
+      {/* Compact Date Selector - Top Position (Hidden) */}
+      <div className="hidden flex items-center justify-center py-1">
         <div className="flex items-center gap-1">
           <button
             onClick={handlePreviousDay}
