@@ -252,6 +252,36 @@ export function IOSDatePicker({
               </button>
             </div>
 
+            {/* Top Compact Date Selector */}
+            <div className="flex items-center justify-center py-2 border-b border-border">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={handlePreviousDay}
+                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </button>
+                
+                <div className="flex items-center gap-1 px-3 py-1 rounded-md bg-accent/20">
+                  <span className="text-sm font-medium text-foreground">
+                    {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                     TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
+                       day: '2-digit', 
+                       month: '2-digit',
+                       year: 'numeric'
+                     })}
+                  </span>
+                </div>
+                
+                <button
+                  onClick={handleNextDay}
+                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+                >
+                  <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+
             {/* Today Button */}
             <div className="p-4 text-center border-b border-border">
               <button
