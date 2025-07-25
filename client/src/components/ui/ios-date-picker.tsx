@@ -47,24 +47,34 @@ export function IOSDatePicker({
     if (showDatePicker) {
       const scrollToCenter = (element: HTMLElement, targetIndex: number) => {
         const container = element.querySelector('.date-picker-wheel');
-        if (container) {
+        if (container && targetIndex >= 0) {
           const buttons = container.querySelectorAll('button');
           const targetButton = buttons[targetIndex];
           if (targetButton) {
+            // Calculate the position to center the button in the container
             const containerHeight = container.clientHeight;
             const buttonHeight = targetButton.clientHeight;
-            const scrollTop = targetButton.offsetTop - (containerHeight / 2) + (buttonHeight / 2);
-            container.scrollTo({ top: scrollTop, behavior: 'smooth' });
+            const buttonTop = targetButton.offsetTop;
+            const scrollTop = buttonTop - (containerHeight / 2) + (buttonHeight / 2);
+            
+            // Ensure we don't scroll beyond the container bounds
+            const maxScrollTop = container.scrollHeight - containerHeight;
+            const finalScrollTop = Math.max(0, Math.min(scrollTop, maxScrollTop));
+            
+            container.scrollTo({ top: finalScrollTop, behavior: 'smooth' });
           }
         }
       };
 
-      // Small delay to ensure DOM is rendered
+      // Delay to ensure DOM is fully rendered and layout is complete
       setTimeout(() => {
         if (dayScrollRef.current) scrollToCenter(dayScrollRef.current, currentDay - 1);
         if (monthScrollRef.current) scrollToCenter(monthScrollRef.current, currentMonth);
-        if (yearScrollRef.current) scrollToCenter(yearScrollRef.current, years.indexOf(currentYear));
-      }, 100);
+        if (yearScrollRef.current) {
+          const yearIndex = years.indexOf(currentYear);
+          scrollToCenter(yearScrollRef.current, yearIndex);
+        }
+      }, 150);
     }
   }, [showDatePicker, currentDay, currentMonth, currentYear, years]);
 
@@ -205,7 +215,7 @@ export function IOSDatePicker({
                 {/* Days */}
                 <div ref={dayScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Day</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-16" style={{ touchAction: 'pan-y' }}>
                     {days.map((day) => (
                       <button
                         key={day}
@@ -225,7 +235,7 @@ export function IOSDatePicker({
                 {/* Months */}
                 <div ref={monthScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Month</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-16" style={{ touchAction: 'pan-y' }}>
                     {months.map((month, index) => (
                       <button
                         key={month}
@@ -245,7 +255,7 @@ export function IOSDatePicker({
                 {/* Years */}
                 <div ref={yearScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Year</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-16" style={{ touchAction: 'pan-y' }}>
                     {years.map((year) => (
                       <button
                         key={year}
