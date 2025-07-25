@@ -166,7 +166,7 @@ export function Nutrition({ user }: NutritionProps) {
         </div>
 
         {/* Compact Date Selector */}
-        <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[6px] mb-[6px]">
+        <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
           <div className="flex items-center gap-1">
             <button
               onClick={() => {
