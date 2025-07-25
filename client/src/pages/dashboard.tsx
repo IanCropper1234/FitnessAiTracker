@@ -91,48 +91,45 @@ export function Dashboard({ user }: DashboardProps) {
   return (
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
-        {/* Centered Date Selector */}
-        <div className="flex flex-col items-center space-y-2">
-          {/* Date Navigation Controls */}
-          <div className="flex items-center justify-center gap-6 py-4">
+        {/* Compact iOS Date Selector */}
+        <div className="flex flex-col items-center py-2">
+          {/* Top Row - Navigation Controls */}
+          <div className="flex items-center justify-center gap-8">
             <button
               onClick={() => {
                 setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
               }}
               className="touch-target ios-touch-feedback p-2 text-foreground/70 hover:text-foreground transition-colors"
             >
-              <ChevronLeft className="h-6 w-6" />
+              <ChevronLeft className="h-5 w-5" />
             </button>
             
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-medium text-foreground">
-                {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                 TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
-                   day: '2-digit', 
-                   month: '2-digit', 
-                   year: 'numeric' 
-                 })}
-              </span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="ios-touch-feedback p-1 text-foreground/50 hover:text-foreground transition-colors">
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="center">
-                  <CalendarComponent
-                    mode="single"
-                    selected={TimezoneUtils.parseUserDate(selectedDate)}
-                    onSelect={(date) => {
-                      if (date) {
-                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                      }
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="ios-touch-feedback flex items-center gap-1 px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                  <span className="text-lg font-semibold text-foreground">
+                    {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                     TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
+                       month: 'short',
+                       day: 'numeric'
+                     })}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-foreground/50" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="center">
+                <CalendarComponent
+                  mode="single"
+                  selected={TimezoneUtils.parseUserDate(selectedDate)}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
             
             <button
               onClick={() => {
@@ -140,14 +137,18 @@ export function Dashboard({ user }: DashboardProps) {
               }}
               className="touch-target ios-touch-feedback p-2 text-foreground/70 hover:text-foreground transition-colors"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-5 w-5" />
             </button>
           </div>
           
-          {/* Full Date Display */}
-          <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2 text-body-sm">
-            <Calendar className="w-4 h-4" />
-            {TimezoneUtils.formatForDisplay(selectedDate, 'en-US')}
+          {/* Bottom Row - Subtitle Date */}
+          <p className="text-sm text-foreground/60 mt-1">
+            {TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
+              weekday: 'short',
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            })}
           </p>
         </div>
 
