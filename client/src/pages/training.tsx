@@ -22,39 +22,36 @@ export function TrainingPage({ user }: TrainingPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
       <div className="w-full px-2 space-y-4">
-        {/* iOS PWA Header Navigation with Safe Area Support */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/20 -mx-2 px-3 py-3 ml-[-8px] mr-[-8px] mb-4">
-          <div className="flex items-center justify-between min-h-[44px]">
-            {/* Left: Back to Dashboard */}
-            <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setLocation('/dashboard')}
-                className="flex items-center gap-1.5 px-2 py-2 min-h-[44px] hover:bg-accent rounded-lg ios-touch-feedback"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-sm font-medium hidden xs:inline">Back</span>
-              </Button>
-            </div>
+        {/* Ultra-Compact iOS Header */}
+        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-6">
+          <div className="flex items-center justify-between h-[44px]">
+            {/* Left: Back Arrow Only */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
             
-            {/* Center: Page Title with Icon */}
-            <div className="flex items-center gap-2 min-w-0 flex-1 justify-center ml-[50px] mr-[50px] pl-[0px] pr-[0px] mt-[0px] mb-[0px] pt-[0px] pb-[0px]">
+            {/* Center: Compact Title with Icon */}
+            <div className="flex items-center gap-1.5 min-w-0">
               <Dumbbell className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
-              <h1 className="text-lg font-semibold">Training</h1>
+              <h1 className="text-base font-semibold">Training</h1>
             </div>
             
-            {/* Right: Home Button - Perfect alignment match */}
-            <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setLocation('/dashboard')}
-                className="flex items-center justify-center min-h-[44px] min-w-[44px] px-2 py-2 hover:bg-accent rounded-lg ios-touch-feedback"
-              >
-                <Home className="w-4 h-4" />
-              </Button>
-            </div>
+            {/* Right: Context Menu */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback opacity-50"
+              disabled
+            >
+              <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
+              <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
+              <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
+            </Button>
           </div>
         </div>
         

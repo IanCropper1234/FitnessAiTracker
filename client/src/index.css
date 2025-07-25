@@ -823,6 +823,51 @@
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
+  /* Ultra-Compact iOS Header Enhancement */
+  .ios-sticky-header {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* iOS 17 Style Compact Buttons */
+  .ios-compact-button {
+    transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .ios-compact-button:hover {
+    transform: scale(0.98);
+  }
+
+  .ios-compact-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Ultra-Compact Title Styling */
+  .ios-compact-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  /* Context Menu Three Dots */
+  .ios-context-dots {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .ios-context-dots div {
+    width: 4px;
+    height: 4px;
+    background-color: currentColor;
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+
   .ios-drag-active {
     transform: scale(1.05) translateZ(0);
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
