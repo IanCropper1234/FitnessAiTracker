@@ -197,23 +197,26 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
           </Button>
         </div>
 
-        {/* User Info Card */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+        {/* User Info Card - Mobile-Optimized Layout */}
+        <Card className="ios-smooth-transform">
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              {/* User Info Row */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <UserIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                  <UserIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </div>
-                <div>
-                  <h3 className="text-headline-sm text-black dark:text-white">{user.name}</h3>
-                  <p className="text-body-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-black dark:text-white truncate">{user.name}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
                 </div>
               </div>
+              
+              {/* Sign Out Button - Full Width on Mobile */}
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                className="border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 pl-[7px] pr-[7px] pt-[7px] pb-[7px] mt-[0px] mb-[0px] ml-[6px] mr-[6px]"
+                className="w-full border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 ios-button touch-target"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
@@ -222,29 +225,30 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
           </CardContent>
         </Card>
 
-        {/* App Settings Card */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        {/* App Settings Card - Optimized Mobile Layout */}
+        <Card className="ios-smooth-transform">
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
-                <div>
-                  <h3 className="text-headline-sm text-black dark:text-white">App Settings</h3>
-                  <p className="text-body-sm text-gray-600 dark:text-gray-400">Customize your app preferences</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-black dark:text-white">App Settings</h3>
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              {/* Settings Grid - Stack on mobile, side-by-side on larger screens */}
+              <div className="space-y-4">
                 {/* Language Selector */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-black dark:text-white flex items-center gap-2">
-                    <Globe className="w-4 h-4" />
+                  <label className="text-xs font-medium text-black dark:text-white flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5" />
                     Language
                   </label>
                   <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full h-9 ios-touch-feedback touch-target">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -260,51 +264,48 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
 
                 {/* Theme Toggle */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-black dark:text-white flex items-center gap-2">
-                    {theme === "light" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  <label className="text-xs font-medium text-black dark:text-white flex items-center gap-2">
+                    {theme === "light" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
                     Theme
                   </label>
                   <Button
                     onClick={toggleTheme}
                     variant="outline"
-                    className="w-full justify-start"
+                    className="w-full justify-start h-9 ios-button touch-target"
                   >
                     {theme === "light" ? (
                       <>
-                        <Moon className="w-4 h-4 mr-2" />
-                        Switch to Dark Mode
+                        <Moon className="w-3.5 h-3.5 mr-2" />
+                        Dark Mode
                       </>
                     ) : (
                       <>
-                        <Sun className="w-4 h-4 mr-2" />
-                        Switch to Light Mode
+                        <Sun className="w-3.5 h-3.5 mr-2" />
+                        Light Mode
                       </>
                     )}
                   </Button>
                 </div>
               </div>
 
-              {/* Developer Settings - Only show for specific users */}
+              {/* Developer Settings - Compact Design */}
               {userData?.email === 'c0109009@gmail.com' && (
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-                      <Code className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Code className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-black dark:text-white">Developer Settings</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Advanced features for development</p>
-                    </div>
+                    <h3 className="text-xs font-semibold text-black dark:text-white">Developer</h3>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="developer-features" className="text-sm font-medium">
-                          Show V2 Feature Buttons
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <Label htmlFor="developer-features" className="text-xs font-medium text-black dark:text-white">
+                          Show V2 Features
                         </Label>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Display Demo V2 and V2 Features buttons in the training tab
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                          Display V2 buttons in training
                         </p>
                       </div>
                       <Switch
@@ -314,6 +315,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                           updateDeveloperSettingsMutation.mutate(checked);
                         }}
                         disabled={updateDeveloperSettingsMutation.isPending}
+                        className="flex-shrink-0"
                       />
                     </div>
                   </div>
