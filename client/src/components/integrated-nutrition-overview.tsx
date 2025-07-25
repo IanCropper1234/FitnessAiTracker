@@ -41,12 +41,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface IntegratedNutritionOverviewProps {
   userId: number;
   onShowLogger?: (selectedDate?: string) => void;
+  onDatePickerOpen?: () => void;
+  selectedDate?: string;
 }
 
-export function IntegratedNutritionOverview({ userId, onShowLogger }: IntegratedNutritionOverviewProps) {
+export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
+  const [internalSelectedDate, setInternalSelectedDate] = useState(TimezoneUtils.getCurrentDate());
+  
+  // Use external selectedDate if provided, otherwise use internal state
+  const selectedDate = externalSelectedDate || internalSelectedDate;
 
   const [draggedItem, setDraggedItem] = useState<any>(null);
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
@@ -479,12 +484,19 @@ export function IntegratedNutritionOverview({ userId, onShowLogger }: Integrated
                 Nutrition Overview
               </CardTitle>
               
-              <IOSDatePicker 
-                selectedDate={selectedDate}
-                onDateChange={setSelectedDate}
-                size="sm"
-                className="flex-shrink-0"
-              />
+              <button
+                onClick={onDatePickerOpen}
+                className="ios-touch-feedback flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-accent/50 transition-colors"
+              >
+                <span className="text-sm font-medium text-foreground">
+                  {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                   TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
+                     day: '2-digit', 
+                     month: '2-digit'
+                   })}
+                </span>
+                <ChevronDown className="h-4 w-4 text-foreground/50" />
+              </button>
             </div>
           </div>
         </CardContent>

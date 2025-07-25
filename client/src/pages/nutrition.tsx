@@ -17,6 +17,7 @@ import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
 import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
+import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { useLocation } from "wouter";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -60,6 +61,8 @@ export function Nutrition({ user }: NutritionProps) {
   const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
 
   const today = TimezoneUtils.getCurrentDate();
 
@@ -175,11 +178,13 @@ export function Nutrition({ user }: NutritionProps) {
             <TabsContent value="overview">
               <IntegratedNutritionOverview 
                 userId={user.id} 
+                selectedDate={selectedDate}
                 onShowLogger={(selectedDate) => {
                   console.log('onShowLogger called from IntegratedNutritionOverview with date:', selectedDate, 'setting showLogger to true');
                   setLoggerSelectedDate(selectedDate);
                   setShowLogger(true);
                 }}
+                onDatePickerOpen={() => setShowDatePicker(true)}
               />
             </TabsContent>
 
@@ -221,6 +226,21 @@ export function Nutrition({ user }: NutritionProps) {
             />
           </div>
         )}
+
+        {/* iOS Date Picker Modal */}
+        <IOSDatePicker 
+          selectedDate={selectedDate}
+          onDateChange={(newDate) => {
+            setSelectedDate(newDate);
+            setShowDatePicker(false);
+            // Invalidate queries to refresh data for the new date
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+          }}
+          size="lg"
+          showDatePicker={showDatePicker}
+          setShowDatePicker={setShowDatePicker}
+        />
 
         {/* Floating Nutrition Menu */}
         <FloatingNutritionMenu 

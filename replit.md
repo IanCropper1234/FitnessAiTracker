@@ -8,6 +8,14 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 24, 2025 - COMPLETE: iOS Date Picker Bottom Modal Implementation
+✓ **ARCHITECTURE REFACTOR**: Moved IOSDatePicker from embedded component to body-level modal in Nutrition page
+✓ **EXTERNAL STATE MANAGEMENT**: Modified IOSDatePicker to accept external showDatePicker and setShowDatePicker props for full-screen modal control
+✓ **BODY-LEVEL MODAL**: Implemented iOS-style bottom sheet modal using `fixed inset-0 z-50 bg-black/50 flex items-end justify-center` pattern
+✓ **COMPONENT INTEGRATION**: Updated IntegratedNutritionOverview to trigger external date picker via onDatePickerOpen callback
+✓ **STATE SYNCHRONIZATION**: Centralized selectedDate state in Nutrition page with proper query invalidation for data refresh
+✓ **TOUCH OPTIMIZATION**: Applied same iOS modal styling with proper touch-action and mobile-optimized layout
+
 ### July 24, 2025 - COMPLETE: Functional iOS Date Picker Implementation
 ✓ **CRITICAL FIX**: Resolved non-functional date selection in IOSDatePicker modal
 ✓ **INTERACTIVE DATE WHEELS**: Created fully functional day/month/year selection wheels with real date changes

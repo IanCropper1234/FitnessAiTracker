@@ -7,15 +7,23 @@ interface IOSDatePickerProps {
   onDateChange: (date: string) => void;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  showDatePicker?: boolean;
+  setShowDatePicker?: (show: boolean) => void;
 }
 
 export function IOSDatePicker({ 
   selectedDate, 
   onDateChange, 
   size = 'md',
-  className = ""
+  className = "",
+  showDatePicker: externalShowDatePicker,
+  setShowDatePicker: externalSetShowDatePicker
 }: IOSDatePickerProps) {
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [internalShowDatePicker, setInternalShowDatePicker] = useState(false);
+  
+  // Use external state if provided, otherwise use internal state
+  const showDatePicker = externalShowDatePicker !== undefined ? externalShowDatePicker : internalShowDatePicker;
+  const setShowDatePicker = externalSetShowDatePicker || setInternalShowDatePicker;
   const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
   
   // Refs for scrolling to current date
