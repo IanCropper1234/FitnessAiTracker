@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown, X, Check } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
@@ -17,6 +17,11 @@ export function IOSDatePicker({
 }: IOSDatePickerProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
+  
+  // Refs for scrolling to current date
+  const dayScrollRef = useRef<HTMLDivElement>(null);
+  const monthScrollRef = useRef<HTMLDivElement>(null);
+  const yearScrollRef = useRef<HTMLDivElement>(null);
 
   // Update temp date when selectedDate prop changes
   useEffect(() => {
@@ -36,6 +41,32 @@ export function IOSDatePicker({
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
   const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+
+  // Scroll to center current date when picker opens
+  useEffect(() => {
+    if (showDatePicker) {
+      const scrollToCenter = (element: HTMLElement, targetIndex: number) => {
+        const container = element.querySelector('.date-picker-wheel');
+        if (container) {
+          const buttons = container.querySelectorAll('button');
+          const targetButton = buttons[targetIndex];
+          if (targetButton) {
+            const containerHeight = container.clientHeight;
+            const buttonHeight = targetButton.clientHeight;
+            const scrollTop = targetButton.offsetTop - (containerHeight / 2) + (buttonHeight / 2);
+            container.scrollTo({ top: scrollTop, behavior: 'smooth' });
+          }
+        }
+      };
+
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        if (dayScrollRef.current) scrollToCenter(dayScrollRef.current, currentDay - 1);
+        if (monthScrollRef.current) scrollToCenter(monthScrollRef.current, currentMonth);
+        if (yearScrollRef.current) scrollToCenter(yearScrollRef.current, years.indexOf(currentYear));
+      }, 100);
+    }
+  }, [showDatePicker, currentDay, currentMonth, currentYear, years]);
 
   const handleDateChange = (day: number, month: number, year: number) => {
     try {
@@ -172,7 +203,7 @@ export function IOSDatePicker({
             <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
               <div className="grid grid-cols-3 gap-4 text-center">
                 {/* Days */}
-                <div className="space-y-2">
+                <div ref={dayScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Day</div>
                   <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
                     {days.map((day) => (
@@ -192,7 +223,7 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Months */}
-                <div className="space-y-2">
+                <div ref={monthScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Month</div>
                   <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
                     {months.map((month, index) => (
@@ -212,7 +243,7 @@ export function IOSDatePicker({
                 </div>
                 
                 {/* Years */}
-                <div className="space-y-2">
+                <div ref={yearScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Year</div>
                   <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel" style={{ touchAction: 'pan-y' }}>
                     {years.map((year) => (
