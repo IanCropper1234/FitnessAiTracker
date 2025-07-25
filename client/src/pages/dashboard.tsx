@@ -91,65 +91,63 @@ export function Dashboard({ user }: DashboardProps) {
   return (
     <div className="min-h-screen bg-background text-foreground w-full">
       <div className="w-full px-2 py-4 space-y-4">
-        {/* Compact iOS Date Selector */}
-        <div className="flex flex-col items-center py-2">
-          {/* Top Row - Navigation Controls */}
-          <div className="flex items-center justify-center gap-8">
+        {/* iOS Compact Date Selector */}
+        <div className="flex flex-col items-center space-y-1 py-3">
+          {/* Navigation Row */}
+          <div className="flex items-center justify-center gap-12">
             <button
-              onClick={() => {
-                setSelectedDate(TimezoneUtils.addDays(selectedDate, -1));
-              }}
-              className="touch-target ios-touch-feedback p-2 text-foreground/70 hover:text-foreground transition-colors"
+              onClick={() => setSelectedDate(TimezoneUtils.addDays(selectedDate, -1))}
+              className="ios-button touch-target p-3 -m-1 text-foreground/70 active:text-foreground active:scale-95 transition-all duration-150"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="ios-touch-feedback flex items-center gap-1 px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                  <span className="text-lg font-semibold text-foreground">
-                    {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
-                     TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
-                       month: 'short',
-                       day: 'numeric'
-                     })}
-                  </span>
-                  <ChevronDown className="h-4 w-4 text-foreground/50" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="center">
-                <CalendarComponent
-                  mode="single"
-                  selected={TimezoneUtils.parseUserDate(selectedDate)}
-                  onSelect={(date) => {
-                    if (date) {
-                      setSelectedDate(TimezoneUtils.formatDateForStorage(date));
-                    }
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="flex flex-col items-center space-y-0.5">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="ios-button touch-target flex items-center gap-1.5 px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl active:scale-98 transition-all duration-150">
+                    <span className="text-xl font-semibold text-foreground tracking-tight">
+                      {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
+                       TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
+                         month: 'short',
+                         day: 'numeric'
+                       })}
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 text-foreground/40" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 shadow-xl border-0 bg-white dark:bg-gray-900 rounded-2xl" align="center">
+                  <CalendarComponent
+                    mode="single"
+                    selected={TimezoneUtils.parseUserDate(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(TimezoneUtils.formatDateForStorage(date));
+                      }
+                    }}
+                    initialFocus
+                    className="rounded-2xl"
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              {/* Subtitle */}
+              <span className="text-xs font-medium text-foreground/50 tracking-wide">
+                {TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
+                  weekday: 'short',
+                  month: 'short', 
+                  day: 'numeric'
+                })}
+              </span>
+            </div>
             
             <button
-              onClick={() => {
-                setSelectedDate(TimezoneUtils.addDays(selectedDate, 1));
-              }}
-              className="touch-target ios-touch-feedback p-2 text-foreground/70 hover:text-foreground transition-colors"
+              onClick={() => setSelectedDate(TimezoneUtils.addDays(selectedDate, 1))}
+              className="ios-button touch-target p-3 -m-1 text-foreground/70 active:text-foreground active:scale-95 transition-all duration-150"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
-          
-          {/* Bottom Row - Subtitle Date */}
-          <p className="text-sm text-foreground/60 mt-1">
-            {TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-US', { 
-              weekday: 'short',
-              month: 'short', 
-              day: 'numeric',
-              year: 'numeric'
-            })}
-          </p>
         </div>
 
         {/* Overview Section with Toggle */}
