@@ -99,23 +99,23 @@ export function Dashboard({ user }: DashboardProps) {
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                 queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
               }}
-              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className="ios-touch-feedback ios-smooth-transform p-1 text-foreground/60 hover:text-foreground transition-all duration-200 rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
             >
-              <ChevronLeft className="h-3 w-3" />
+              <ChevronLeft className="h-3 w-3 transition-transform duration-150" />
             </button>
             
             <button
               onClick={() => setShowDatePicker(true)}
-              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
+              className="ios-touch-feedback ios-smooth-transform flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-all duration-200 active:scale-98"
             >
-              <span className="text-xs font-medium text-foreground">
+              <span className="text-xs font-medium text-foreground transition-colors duration-150">
                 {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                  TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
                    day: '2-digit', 
                    month: '2-digit'
                  })}
               </span>
-              <ChevronDown className="h-3 w-3 text-foreground/50" />
+              <ChevronDown className="h-3 w-3 text-foreground/50 transition-transform duration-150" />
             </button>
             
             <button
@@ -125,9 +125,9 @@ export function Dashboard({ user }: DashboardProps) {
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                 queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
               }}
-              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className="ios-touch-feedback ios-smooth-transform p-1 text-foreground/60 hover:text-foreground transition-all duration-200 rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
             >
-              <ChevronRight className="h-3 w-3" />
+              <ChevronRight className="h-3 w-3 transition-transform duration-150" />
             </button>
           </div>
         </div>

@@ -40,28 +40,40 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const showBottomNav = user && location === "/dashboard";
 
   return (
-    <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav ? 'pb-20' : 'pb-4'}`}>
+    <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
         <Route path="/auth">
-          <Auth onSuccess={(userData: User) => {
-            setUser(userData);
-            setLocation("/dashboard");
-          }} />
+          <div className="page-enter ios-animation">
+            <Auth onSuccess={(userData: User) => {
+              setUser(userData);
+              setLocation("/dashboard");
+            }} />
+          </div>
         </Route>
         <Route path="/dashboard">
-          {user ? <Dashboard user={user} /> : <div>Loading...</div>}
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <Dashboard user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
         </Route>
         <Route path="/nutrition">
-          {user ? <Nutrition user={user} /> : <div>Loading...</div>}
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <Nutrition user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
         </Route>
         <Route path="/training">
-          {user ? <TrainingPage user={user} /> : <div>Loading...</div>}
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <TrainingPage user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
         </Route>
         <Route path="/reports">
-          {user ? <ReportsPage userId={user.id} /> : <div>Loading...</div>}
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <ReportsPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
         </Route>
         <Route path="/profile">
-          {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div>Loading...</div>}
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
         </Route>
         <Route>
           <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">

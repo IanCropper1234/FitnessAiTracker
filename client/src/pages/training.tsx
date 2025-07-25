@@ -30,27 +30,27 @@ export function TrainingPage({ user }: TrainingPageProps) {
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
             </Button>
             
             {/* Center: Compact Title with Icon */}
             <div className="flex items-center gap-1.5 min-w-0">
-              <Dumbbell className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
-              <h1 className="text-base font-semibold">Training</h1>
+              <Dumbbell className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 transition-colors duration-200" />
+              <h1 className="text-base font-semibold transition-colors duration-200">Training</h1>
             </div>
             
             {/* Right: Context Menu */}
             <Button 
               variant="ghost" 
               size="sm"
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback opacity-50"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback button-press-animation opacity-50"
               disabled
             >
-              <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
-              <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
-              <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
+              <div className="w-1 h-1 bg-current rounded-full mx-0.5 transition-all duration-150"></div>
+              <div className="w-1 h-1 bg-current rounded-full mx-0.5 transition-all duration-150"></div>
+              <div className="w-1 h-1 bg-current rounded-full mx-0.5 transition-all duration-150"></div>
             </Button>
           </div>
         </div>

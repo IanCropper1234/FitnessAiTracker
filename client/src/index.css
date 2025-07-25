@@ -16,6 +16,153 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* iOS-optimized animations and transitions */
+.ios-animation {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+.ios-smooth-transform {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  -webkit-transform: translateZ(0);
+}
+
+/* iOS spring animations */
+@keyframes ios-scale-in {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ios-scale-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes ios-slide-up {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ios-slide-down {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes ios-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes ios-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* iOS-style page transitions */
+.page-enter {
+  animation: ios-scale-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.page-exit {
+  animation: ios-scale-out 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Modal transitions */
+.modal-overlay-enter {
+  animation: ios-fade-in 0.3s ease-out forwards;
+}
+
+.modal-overlay-exit {
+  animation: ios-fade-out 0.25s ease-in forwards;
+}
+
+.modal-content-enter {
+  animation: ios-slide-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.modal-content-exit {
+  animation: ios-slide-down 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Enhanced form element animations */
+.input-focus-animation {
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: transform, box-shadow, border-color;
+}
+
+.input-focus-animation:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.button-press-animation {
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+}
+
+.button-press-animation:active {
+  transform: scale(0.97) translateZ(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Card hover animations */
+.card-hover-animation {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+}
+
+.card-hover-animation:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Tab transition animations */
+.tab-enter {
+  animation: ios-fade-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.tab-exit {
+  animation: ios-fade-out 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
