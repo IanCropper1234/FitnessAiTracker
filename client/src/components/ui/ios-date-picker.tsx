@@ -45,36 +45,46 @@ export function IOSDatePicker({
   // Scroll to center current date when picker opens
   useEffect(() => {
     if (showDatePicker) {
-      const scrollToCenter = (element: HTMLElement, targetIndex: number) => {
-        const container = element.querySelector('.date-picker-wheel');
-        if (container && targetIndex >= 0) {
-          const buttons = container.querySelectorAll('button');
-          const targetButton = buttons[targetIndex];
-          if (targetButton) {
-            // Calculate the position to center the button in the container
-            const containerHeight = container.clientHeight;
-            const buttonHeight = targetButton.clientHeight;
-            const buttonTop = targetButton.offsetTop;
-            const scrollTop = buttonTop - (containerHeight / 2) + (buttonHeight / 2);
-            
-            // Ensure we don't scroll beyond the container bounds
-            const maxScrollTop = container.scrollHeight - containerHeight;
-            const finalScrollTop = Math.max(0, Math.min(scrollTop, maxScrollTop));
-            
-            container.scrollTo({ top: finalScrollTop, behavior: 'smooth' });
-          }
-        }
+      const scrollToCenter = (container: HTMLElement, targetIndex: number) => {
+        if (!container || targetIndex < 0) return;
+        
+        const wheel = container.querySelector('.date-picker-wheel') as HTMLElement;
+        if (!wheel) return;
+        
+        const buttons = wheel.querySelectorAll('button');
+        const targetButton = buttons[targetIndex] as HTMLElement;
+        if (!targetButton) return;
+
+        // Use scrollIntoView with precise centering
+        targetButton.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
       };
 
-      // Delay to ensure DOM is fully rendered and layout is complete
-      setTimeout(() => {
-        if (dayScrollRef.current) scrollToCenter(dayScrollRef.current, currentDay - 1);
-        if (monthScrollRef.current) scrollToCenter(monthScrollRef.current, currentMonth);
-        if (yearScrollRef.current) {
-          const yearIndex = years.indexOf(currentYear);
-          scrollToCenter(yearScrollRef.current, yearIndex);
-        }
-      }, 150);
+      // Multiple attempts with increasing delays to ensure DOM is ready
+      const attemptCentering = (attempt = 0) => {
+        if (attempt > 3) return; // Give up after 4 attempts
+        
+        const delay = attempt === 0 ? 100 : attempt * 150;
+        
+        setTimeout(() => {
+          try {
+            if (dayScrollRef.current) scrollToCenter(dayScrollRef.current, currentDay - 1);
+            if (monthScrollRef.current) scrollToCenter(monthScrollRef.current, currentMonth);
+            if (yearScrollRef.current) {
+              const yearIndex = years.indexOf(currentYear);
+              scrollToCenter(yearScrollRef.current, yearIndex);
+            }
+          } catch (error) {
+            // If centering fails, try again with a longer delay
+            attemptCentering(attempt + 1);
+          }
+        }, delay);
+      };
+
+      attemptCentering();
     }
   }, [showDatePicker, currentDay, currentMonth, currentYear, years]);
 
@@ -211,11 +221,13 @@ export function IOSDatePicker({
 
             {/* Date Picker Wheels */}
             <div className="p-6 space-y-6" style={{ touchAction: 'pan-y' }}>
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-3 gap-4 text-center relative">
+                {/* Center line indicator */}
+                <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-blue-500/10 border-y border-blue-500/30 pointer-events-none z-10"></div>
                 {/* Days */}
                 <div ref={dayScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Day</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-16" style={{ touchAction: 'pan-y' }}>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
                     {days.map((day) => (
                       <button
                         key={day}
@@ -235,7 +247,7 @@ export function IOSDatePicker({
                 {/* Months */}
                 <div ref={monthScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Month</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-16" style={{ touchAction: 'pan-y' }}>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
                     {months.map((month, index) => (
                       <button
                         key={month}
@@ -255,7 +267,7 @@ export function IOSDatePicker({
                 {/* Years */}
                 <div ref={yearScrollRef} className="space-y-2">
                   <div className="text-foreground/60 text-sm font-medium">Year</div>
-                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-16" style={{ touchAction: 'pan-y' }}>
+                  <div className="max-h-40 overflow-y-auto space-y-1 date-picker-wheel py-12" style={{ touchAction: 'pan-y' }}>
                     {years.map((year) => (
                       <button
                         key={year}
