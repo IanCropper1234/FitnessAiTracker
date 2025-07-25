@@ -175,23 +175,23 @@ export function Nutrition({ user }: NutritionProps) {
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
               }}
-              className="ios-touch-feedback p-1 text-blue-500/70 hover:text-blue-500 transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
             >
               <ChevronLeft className="h-3 w-3" />
             </button>
             
             <button
               onClick={() => setShowDatePicker(true)}
-              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-colors"
+              className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
             >
-              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+              <span className="text-xs font-medium text-foreground">
                 {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                  TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
                    day: '2-digit', 
                    month: '2-digit'
                  })}
               </span>
-              <ChevronDown className="h-3 w-3 text-blue-500/70" />
+              <ChevronDown className="h-3 w-3 text-foreground/50" />
             </button>
             
             <button
@@ -201,7 +201,7 @@ export function Nutrition({ user }: NutritionProps) {
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                 queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
               }}
-              className="ios-touch-feedback p-1 text-blue-500/70 hover:text-blue-500 transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+              className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
             >
               <ChevronRight className="h-3 w-3" />
             </button>
