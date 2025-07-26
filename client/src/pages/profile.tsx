@@ -1,15 +1,16 @@
 import { UserProfile } from "@/components/user-profile";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home } from "lucide-react";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
 
 interface User {
   id: number;
@@ -30,6 +31,139 @@ interface DietGoals {
   targetCarbs: string;
   targetFat: string;
   weeklyWeightTarget: string;
+}
+
+// Activity & Goals Card Component
+function ActivityGoalsCard({ userId }: { userId: number }) {
+  const queryClient = useQueryClient();
+  
+  // Fetch user profile data
+  const { data: userData, isLoading } = useQuery({
+    queryKey: ['/api/user/profile', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile/${userId}`);
+      return response.json();
+    }
+  });
+
+  const [profileData, setProfileData] = useState({
+    activityLevel: '',
+    fitnessGoal: ''
+  });
+
+  // Initialize profile data from fetched data
+  useEffect(() => {
+    if (userData?.profile) {
+      setProfileData({
+        activityLevel: userData.profile.activityLevel || '',
+        fitnessGoal: userData.profile.fitnessGoal || ''
+      });
+    }
+  }, [userData]);
+
+  // Mutation to update profile
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest('PUT', `/api/user/profile/${userId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
+    }
+  });
+
+  const handleSaveProfile = () => {
+    updateProfileMutation.mutate(profileData);
+  };
+
+  if (isLoading) return null;
+
+  return (
+    <Card className="ios-smooth-transform">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Activity className="w-5 h-5" />
+          Activity & Goals
+        </CardTitle>
+        <CardDescription>
+          Your activity level and fitness goals for personalized recommendations
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label className="text-black dark:text-white">Activity Level *</Label>
+          <Select 
+            value={profileData.activityLevel} 
+            onValueChange={(value) => setProfileData(prev => ({ ...prev, activityLevel: value }))}
+          >
+            <SelectTrigger className="border-gray-300 dark:border-gray-600">
+              <SelectValue placeholder="Select activity level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sedentary">Sedentary (Office job, little exercise)</SelectItem>
+              <SelectItem value="lightly_active">Lightly Active (Light exercise 1-3 days/week)</SelectItem>
+              <SelectItem value="moderately_active">Moderately Active (Moderate exercise 3-5 days/week)</SelectItem>
+              <SelectItem value="very_active">Very Active (Hard exercise 6-7 days/week)</SelectItem>
+              <SelectItem value="extremely_active">Extremely Active (Very hard exercise, physical job)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-black dark:text-white">Fitness Goal *</Label>
+          <Select 
+            value={profileData.fitnessGoal} 
+            onValueChange={(value) => setProfileData(prev => ({ ...prev, fitnessGoal: value }))}
+          >
+            <SelectTrigger className="border-gray-300 dark:border-gray-600">
+              <SelectValue placeholder="Select fitness goal" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="weight_loss">Weight Loss</SelectItem>
+              <SelectItem value="muscle_gain">Muscle Gain</SelectItem>
+              <SelectItem value="maintenance">Maintenance</SelectItem>
+              <SelectItem value="body_recomposition">Body Recomposition</SelectItem>
+              <SelectItem value="strength">Strength Gain</SelectItem>
+              <SelectItem value="endurance">Endurance Improvement</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Activity Level Descriptions */}
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Activity Level Guide</h4>
+          <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+            <li><strong>Sedentary:</strong> Desk job, minimal physical activity</li>
+            <li><strong>Lightly Active:</strong> Light exercise or sports 1-3 days/week</li>
+            <li><strong>Moderately Active:</strong> Moderate exercise 3-5 days/week</li>
+            <li><strong>Very Active:</strong> Hard exercise 6-7 days a week</li>
+            <li><strong>Extremely Active:</strong> Very hard exercise, physical job, or training twice a day</li>
+          </ul>
+        </div>
+
+        {/* Save Button */}
+        <div className="flex justify-end">
+          <Button
+            onClick={handleSaveProfile}
+            disabled={updateProfileMutation.isPending}
+            size="sm"
+            className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+          >
+            {updateProfileMutation.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function DietGoalsCard({ userId }: { userId: number }) {
@@ -324,6 +458,9 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Activity & Goals Card - Moved Above Diet Goals */}
+        <ActivityGoalsCard userId={user.id} />
 
         {/* Diet Goals Card */}
         <DietGoalsCard userId={user.id} />
