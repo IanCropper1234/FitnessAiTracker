@@ -7,8 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { LanguageProvider, useLanguage } from "@/components/language-provider";
 import { BottomNavigation } from "@/components/bottom-navigation";
-import { FloatingTrainingMenu } from "@/components/floating-training-menu";
-import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
@@ -30,8 +28,6 @@ interface User {
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
-  const [trainingActiveTab, setTrainingActiveTab] = useState("sessions");
-  const [nutritionActiveTab, setNutritionActiveTab] = useState("overview");
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -43,8 +39,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   }, [user, location, setLocation]);
 
   const showBottomNav = user && location === "/dashboard";
-  const showTrainingFAB = user && location === "/training";
-  const showNutritionFAB = user && location === "/nutrition";
 
   return (
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav ? 'pb-20' : 'pb-4'} theme-transition`}>
@@ -64,7 +58,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/nutrition">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <Nutrition user={user} activeTab={nutritionActiveTab} setActiveTab={setNutritionActiveTab} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <Nutrition user={user} /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/add-food">
@@ -74,7 +68,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/training">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <TrainingPage user={user} activeTab={trainingActiveTab} setActiveTab={setTrainingActiveTab} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <TrainingPage user={user} /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/reports">
@@ -103,20 +97,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       </Switch>
       
       {showBottomNav && <BottomNavigation />}
-      
-      {/* Render floating menus at App level to avoid stacking context issues */}
-      {showTrainingFAB && (
-        <FloatingTrainingMenu 
-          onTabSelect={setTrainingActiveTab}
-          activeTab={trainingActiveTab}
-        />
-      )}
-      {showNutritionFAB && (
-        <FloatingNutritionMenu 
-          onTabSelect={setNutritionActiveTab}
-          activeTab={nutritionActiveTab}
-        />
-      )}
     </div>
   );
 }

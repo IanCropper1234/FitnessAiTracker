@@ -22,6 +22,7 @@ import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { 
   Plus, 
   Search, 
@@ -54,17 +55,16 @@ interface User {
 
 interface NutritionProps {
   user: User;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
 }
 
-export function Nutrition({ user, activeTab, setActiveTab }: NutritionProps) {
+export function Nutrition({ user }: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
   const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
   const [, setLocation] = useLocation();
+  const [activeTab, setActiveTab] = useState("overview");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
 
@@ -279,8 +279,13 @@ export function Nutrition({ user, activeTab, setActiveTab }: NutritionProps) {
           setShowDatePicker={setShowDatePicker}
         />
 
-
       </div>
+      
+      {/* Floating Nutrition Menu - positioned outside all containers */}
+      <FloatingNutritionMenu 
+        onTabSelect={setActiveTab}
+        activeTab={activeTab}
+      />
     </div>
   );
 }

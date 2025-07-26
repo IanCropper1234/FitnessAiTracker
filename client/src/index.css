@@ -272,6 +272,25 @@
   margin-bottom: 16px;
 }
 
+/* Floating menu positioning - iOS Safari optimized */
+.floating-menu-container {
+  position: fixed !important;
+  -webkit-position: fixed !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  will-change: auto !important;
+  /* Ensure it's not affected by parent transforms or overflow */
+  contain: layout style paint !important;
+  isolation: isolate !important;
+  /* iOS specific viewport handling */
+  -webkit-overflow-scrolling: auto !important;
+  overflow: visible !important;
+}
+
 .element-spacing {
   margin-bottom: 12px;
 }
@@ -1050,21 +1069,6 @@
     -webkit-tap-highlight-color: transparent;
     min-height: 56px; /* Larger for FAB elements */
     min-width: 56px;
-  }
-  
-  /* Force fixed positioning for floating elements - unified approach */
-  .floating-fixed {
-    position: fixed !important;
-    z-index: 9999 !important;
-    /* Create new stacking context to prevent interference */
-    isolation: isolate;
-    /* Prevent transform inheritance from parent containers */
-    transform: translate3d(0, 0, 0) !important;
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    /* Prevent scrolling issues */
-    contain: layout style paint;
   }
   
   /* iOS Navigation Header Styling */
