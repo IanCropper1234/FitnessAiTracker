@@ -360,6 +360,40 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
+            {/* Search Results */}
+            {searchMutation.data && searchMode === 'search' && (
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Search Results</Label>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {searchMutation.data.map((food: any, index: number) => (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedFood(food)}
+                      className={`p-2 border rounded-lg cursor-pointer transition-colors ios-touch-feedback touch-target ${
+                        selectedFood?.name === food.name 
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                          : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{food.name}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {Math.round(food.calories)}cal • {Math.round(food.protein)}g protein
+                          </p>
+                        </div>
+                        {food.category && (
+                          <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
+                            {food.category}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Food History Section */}
             {Array.isArray(foodHistory) && foodHistory.length > 0 && (
               <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
@@ -416,40 +450,6 @@ export function AddFood({ user }: AddFoodProps) {
                       <p className="text-xs">No matching foods found in your history</p>
                     </div>
                   )}
-                </div>
-              </div>
-            )}
-
-            {/* Search Results */}
-            {searchMutation.data && searchMode === 'search' && (
-              <div className="space-y-2">
-                <Label className="text-xs font-medium">Search Results</Label>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {searchMutation.data.map((food: any, index: number) => (
-                    <div
-                      key={index}
-                      onClick={() => setSelectedFood(food)}
-                      className={`p-2 border rounded-lg cursor-pointer transition-colors ios-touch-feedback touch-target ${
-                        selectedFood?.name === food.name 
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                          : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium truncate">{food.name}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {Math.round(food.calories)}cal • {Math.round(food.protein)}g protein
-                          </p>
-                        </div>
-                        {food.category && (
-                          <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
-                            {food.category}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
             )}
