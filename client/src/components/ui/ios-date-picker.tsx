@@ -36,6 +36,33 @@ export function IOSDatePicker({
     setTempSelectedDate(selectedDate);
   }, [selectedDate]);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (showDatePicker) {
+      // Store current scroll position
+      const scrollY = window.scrollY;
+      
+      // Lock body scroll
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      
+      // Cleanup function to restore scroll
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.overflow = '';
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [showDatePicker]);
+
   // Parse current date
   const currentDate = TimezoneUtils.parseUserDate(tempSelectedDate);
   const currentDay = currentDate.getDate();
