@@ -352,7 +352,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onClick={() => !isDragging && setIsExpanded(true)}
-        className={`floating-fixed scroll-fixed z-40 transition-all duration-300 ${
+        className={`floating-fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
         style={getSafePosition()}

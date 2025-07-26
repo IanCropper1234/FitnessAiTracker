@@ -1052,23 +1052,19 @@
     min-width: 56px;
   }
   
-  /* Force fixed positioning for floating elements */
+  /* Force fixed positioning for floating elements - unified approach */
   .floating-fixed {
     position: fixed !important;
     z-index: 9999 !important;
-    transform: none !important; /* Prevent transform inheritance */
     /* Create new stacking context to prevent interference */
-    will-change: auto;
-    contain: layout style paint;
-  }
-  
-  /* Ensure floating elements stay fixed during scroll */
-  .scroll-fixed {
-    position: fixed !important;
-    /* Prevent parent transforms from affecting position */
-    transform: translateZ(0) !important;
+    isolation: isolate;
+    /* Prevent transform inheritance from parent containers */
+    transform: translate3d(0, 0, 0) !important;
+    will-change: transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    /* Prevent scrolling issues */
+    contain: layout style paint;
   }
   
   /* iOS Navigation Header Styling */
