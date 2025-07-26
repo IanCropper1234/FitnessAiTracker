@@ -2,8 +2,6 @@ import { TrainingDashboard } from "@/components/training-dashboard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home, Dumbbell } from "lucide-react";
 import { useLocation } from "wouter";
-import { FloatingTrainingMenu } from "@/components/floating-training-menu";
-import { useState } from "react";
 
 interface User {
   id: number;
@@ -13,11 +11,14 @@ interface User {
 
 interface TrainingPageProps {
   user: User;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-export function TrainingPage({ user }: TrainingPageProps) {
+export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }: TrainingPageProps) {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("sessions");
+  const activeTab = externalActiveTab || "sessions";
+  const setActiveTab = onTabChange || (() => {});
   
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
@@ -55,15 +56,9 @@ export function TrainingPage({ user }: TrainingPageProps) {
           </div>
         </div>
         
-        <div className="mt-8">
+        <div className="mt-8 mb-32">
           <TrainingDashboard userId={user.id} activeTab={activeTab} />
         </div>
-
-        {/* Floating Training Menu */}
-        <FloatingTrainingMenu 
-          onTabSelect={setActiveTab}
-          activeTab={activeTab}
-        />
       </div>
     </div>
   );

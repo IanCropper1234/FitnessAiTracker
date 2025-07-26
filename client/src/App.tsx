@@ -8,6 +8,7 @@ import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { LanguageProvider, useLanguage } from "@/components/language-provider";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
+import { FloatingTrainingMenu } from "@/components/floating-training-menu";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
@@ -30,6 +31,7 @@ interface User {
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
   const [activeNutritionTab, setActiveNutritionTab] = useState("overview");
+  const [activeTrainingTab, setActiveTrainingTab] = useState("sessions");
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -42,9 +44,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 
   const showBottomNav = user && location === "/dashboard";
   const showNutritionMenu = user && location === "/nutrition";
+  const showTrainingMenu = user && location === "/training";
 
   return (
-    <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
+    <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu || showTrainingMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
         <Route path="/auth">
           <div className="page-enter ios-animation">
@@ -71,7 +74,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/training">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <TrainingPage user={user} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <TrainingPage user={user} activeTab={activeTrainingTab} onTabChange={setActiveTrainingTab} /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/reports">
@@ -101,6 +104,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       
       {showBottomNav && <BottomNavigation />}
       {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
+      {showTrainingMenu && <FloatingTrainingMenu onTabSelect={setActiveTrainingTab} activeTab={activeTrainingTab} />}
     </div>
   );
 }
