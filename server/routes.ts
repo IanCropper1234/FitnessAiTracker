@@ -653,7 +653,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           AND food_name IS NOT NULL
         GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability
         HAVING COUNT(*) >= 1
-        ORDER BY COUNT(*) DESC, MAX(date) DESC
+        ORDER BY MAX(date) DESC, COUNT(*) DESC
         LIMIT 50
       `);
       
