@@ -10,7 +10,6 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
-import { AddFood } from "./pages/add-food";
 import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
@@ -28,7 +27,6 @@ interface User {
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
-
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -43,65 +41,54 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 
   return (
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav ? 'pb-20' : 'pb-4'} theme-transition`}>
-      {location === "/auth" && (
-        <div className="page-enter ios-animation">
-          <Auth onSuccess={(userData: User) => {
-            setUser(userData);
-            setLocation("/dashboard");
-          }} />
-        </div>
-      )}
-      
-      {location === "/dashboard" && (
-        <div className="page-enter ios-animation ios-smooth-transform">
-          {user ? <Dashboard user={user} /> : <div className="animate-pulse">Loading...</div>}
-        </div>
-      )}
-      
-      {location === "/nutrition" && (
-        <div className="page-enter ios-animation ios-smooth-transform">
-          {user ? <Nutrition user={user} /> : <div className="animate-pulse">Loading...</div>}
-        </div>
-      )}
-      
-      {location === "/add-food" && (
-        <div className="page-enter ios-animation ios-smooth-transform">
-          {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
-        </div>
-      )}
-      
-      {location === "/training" && (
-        <div className="page-enter ios-animation ios-smooth-transform">
-          {user ? <TrainingPage user={user} /> : <div className="animate-pulse">Loading...</div>}
-        </div>
-      )}
-      
-      {location === "/reports" && (
-        <div className="page-enter ios-animation ios-smooth-transform">
-          {user ? <ReportsPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
-        </div>
-      )}
-      
-      {location === "/profile" && (
-        <div className="page-enter ios-animation ios-smooth-transform">
-          {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div className="animate-pulse">Loading...</div>}
-        </div>
-      )}
-      
-      {!["/auth", "/dashboard", "/nutrition", "/add-food", "/training", "/reports", "/profile"].includes(location) && (
-        <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">404 - Page Not Found</h1>
-            <p className="mb-4">Location: {location}</p>
-            <Button 
-              onClick={() => setLocation("/dashboard")}
-              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-            >
-              Go to Dashboard
-            </Button>
+      <Switch>
+        <Route path="/auth">
+          <div className="page-enter ios-animation">
+            <Auth onSuccess={(userData: User) => {
+              setUser(userData);
+              setLocation("/dashboard");
+            }} />
           </div>
-        </div>
-      )}
+        </Route>
+        <Route path="/dashboard">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <Dashboard user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/nutrition">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <Nutrition user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/training">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <TrainingPage user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/reports">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <ReportsPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/profile">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route>
+          <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold mb-4">404 - Page Not Found</h1>
+              <Button 
+                onClick={() => setLocation("/dashboard")}
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        </Route>
+      </Switch>
       
       {showBottomNav && <BottomNavigation />}
     </div>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { 
   BarChart3,
@@ -19,7 +18,6 @@ interface FloatingNutritionMenuProps {
 
 export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutritionMenuProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [, setLocation] = useLocation();
 
   const menuItems = [
     { id: "overview", icon: BarChart3, label: "Overview" },
@@ -48,31 +46,6 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
       {/* Expanded Menu Items - iOS optimized for iPhone SE/12 mini */}
       {isExpanded && (
         <div className="absolute bottom-16 right-0 space-y-2 modal-content-enter ios-smooth-transform">
-          {/* Add Food Button */}
-          <div
-            className="ios-scale-in ios-smooth-transform"
-            style={{ 
-              animationDelay: '0ms',
-              animation: `ios-scale-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0ms forwards`
-            }}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setLocation('/add-food');
-                setIsExpanded(false);
-              }}
-              className="flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
-                transition-all duration-200 ios-touch-feedback ios-smooth-transform min-w-[110px] justify-start
-                hover:scale-105 active:scale-95
-                bg-green-600 hover:bg-green-700 text-white border-green-500/30"
-            >
-              <Plus className="w-3.5 h-3.5 text-white transition-all duration-150" />
-              <span className="text-xs font-medium text-white">Add Food</span>
-            </Button>
-          </div>
-          
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -81,8 +54,8 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
                 key={item.id}
                 className="ios-scale-in ios-smooth-transform"
                 style={{ 
-                  animationDelay: `${(index + 1) * 50}ms`,
-                  animation: `ios-scale-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${(index + 1) * 50}ms forwards`
+                  animationDelay: `${index * 50}ms`,
+                  animation: `ios-scale-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${index * 50}ms forwards`
                 }}
               >
                 <Button

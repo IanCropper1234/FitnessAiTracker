@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -41,14 +40,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
+  onShowLogger?: (selectedDate?: string) => void;
   onDatePickerOpen?: () => void;
   selectedDate?: string;
 }
 
-export function IntegratedNutritionOverview({ userId, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
+export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [, setLocation] = useLocation();
   const [internalSelectedDate, setInternalSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   
   // Use external selectedDate if provided, otherwise use internal state
@@ -659,7 +658,10 @@ export function IntegratedNutritionOverview({ userId, onDatePickerOpen, selected
               )}
               <Button 
                 onClick={() => {
-                  setLocation(`/add-food?date=${selectedDate}`);
+                  console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger with date:', selectedDate);
+                  if (onShowLogger) {
+                    onShowLogger(selectedDate);
+                  }
                 }}
                 className="text-xs h-6 px-1.5"
                 style={{ backgroundColor: '#479bf5', color: '#030303' }}
@@ -945,7 +947,9 @@ export function IntegratedNutritionOverview({ userId, onDatePickerOpen, selected
                       <div className="py-4">
                         <button 
                           onClick={() => {
-                            setLocation(`/add-food?meal=${mealType.key}&date=${selectedDate}`);
+                            if (onShowLogger) {
+                              onShowLogger(selectedDate);
+                            }
                           }}
                           className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px]"
                         >

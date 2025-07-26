@@ -216,6 +216,11 @@ export function Nutrition({ user }: NutritionProps) {
               <IntegratedNutritionOverview 
                 userId={user.id} 
                 selectedDate={selectedDate}
+                onShowLogger={(selectedDate) => {
+                  console.log('onShowLogger called from IntegratedNutritionOverview with date:', selectedDate, 'setting showLogger to true');
+                  setLoggerSelectedDate(selectedDate);
+                  setShowLogger(true);
+                }}
                 onDatePickerOpen={() => setShowDatePicker(true)}
               />
             </TabsContent>
@@ -242,7 +247,7 @@ export function Nutrition({ user }: NutritionProps) {
           </Tabs>
         </div>
 
-        {/* Legacy Nutrition Logger Modal - Kept for backward compatibility */}
+        {/* Nutrition Logger Modal */}
         {showLogger && (
           <div style={{ position: 'relative', zIndex: 9999 }}>
             <NutritionLogger 
