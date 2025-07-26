@@ -35,14 +35,17 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
 
   return (
     <div 
-      className="fixed bottom-6 right-4 z-[9999]" 
+      className="floating-menu-container" 
       style={{ 
         position: 'fixed',
-        bottom: '24px',
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',
         right: '16px',
-        zIndex: 9999,
+        zIndex: 99999,
         transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden'
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        WebkitTransform: 'translate3d(0, 0, 0)',
+        willChange: 'auto'
       }}
     >
       {/* iOS-style Backdrop for expanded menu */}

@@ -272,6 +272,25 @@
   margin-bottom: 16px;
 }
 
+/* Floating menu positioning - iOS Safari optimized */
+.floating-menu-container {
+  position: fixed !important;
+  -webkit-position: fixed !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  will-change: auto !important;
+  /* Ensure it's not affected by parent transforms or overflow */
+  contain: layout style paint !important;
+  isolation: isolate !important;
+  /* iOS specific viewport handling */
+  -webkit-overflow-scrolling: auto !important;
+  overflow: visible !important;
+}
+
 .element-spacing {
   margin-bottom: 12px;
 }
