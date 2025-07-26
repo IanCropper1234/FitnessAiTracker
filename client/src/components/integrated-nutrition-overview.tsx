@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -40,14 +41,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
-  onShowLogger?: (selectedDate?: string) => void;
   onDatePickerOpen?: () => void;
   selectedDate?: string;
 }
 
-export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
+export function IntegratedNutritionOverview({ userId, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [internalSelectedDate, setInternalSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   
   // Use external selectedDate if provided, otherwise use internal state
@@ -947,9 +948,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                       <div className="py-4">
                         <button 
                           onClick={() => {
-                            if (onShowLogger) {
-                              onShowLogger(selectedDate);
-                            }
+                            setLocation(`/add-food?meal=${mealType.key}&date=${selectedDate}`);
                           }}
                           className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px]"
                         >
