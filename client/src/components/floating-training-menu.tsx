@@ -35,23 +35,11 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
   };
 
   return (
-    <div 
-      className="floating-menu-container" 
-      style={{ 
-        position: 'fixed', 
-        bottom: '20px', 
-        right: '20px', 
-        zIndex: 9999,
-        left: 'auto',
-        top: 'auto',
-        transform: 'translateZ(0)'
-      }}
-    >
+    <div className="fixed bottom-20 right-4 z-50">
       {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm modal-overlay-enter ios-animation"
-          style={{ zIndex: 999 }}
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10 modal-overlay-enter ios-animation"
           onClick={() => setIsExpanded(false)}
         />
       )}

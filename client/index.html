@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>FitAI - AI-Powered Fitness Coach</title>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
     <!-- iOS Meta Tags for PWA - Enhanced for iPhone 12 mini -->
-    <!-- TEMPORARILY DISABLED FOR DEBUGGING: <meta name="apple-mobile-web-app-capable" content="yes" /> -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="FitAI" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -123,10 +123,6 @@
   </head>
   <body>
     <div id="root"></div>
-    
-    <!-- HTML TEST ELEMENT - If this moves with scroll, CSS on body/html is breaking position: fixed -->
-    <div style="position: fixed; bottom: 10px; right: 10px; background: yellow; width: 50px; height: 50px; z-index: 99999; color: black; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">HTML</div>
-    
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>

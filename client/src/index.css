@@ -16,87 +16,18 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Floating Action Button - Fixed positioning */
-.fab-fixed {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important; /* Explicitly override any left positioning */
-  top: auto !important; /* Explicitly override any top positioning */
-  z-index: 1000 !important;
-  /* REMOVED: transform: translateZ(0) - this breaks position: fixed */
-  /* REMOVED: -webkit-transform: translateZ(0) - this breaks position: fixed */
-  /* REMOVED: will-change: transform, opacity - this creates stacking context */
-}
-
-/* Ensure fixed elements stay on top */
-.fab-container {
-  position: fixed !important;
-  z-index: 1000 !important;
-  pointer-events: auto !important;
-}
-
-/* Prevent transform interference with fixed positioning */
-body, #root, .app-container {
-  transform: none !important;
-}
-
-/* Force fixed positioning for floating buttons */
-.floating-button-wrapper {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  z-index: 1001 !important;
-  pointer-events: auto !important;
-  /* REMOVED: transform: translateZ(0) - this breaks position: fixed */
-}
-
-/* Ultra-specific floating action button positioning - override everything */
-div.fab-container.fab-fixed {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  top: auto !important;
-  margin: 0 !important;
-  /* REMOVED: transform: translateZ(0) - this breaks position: fixed */
-  z-index: 9999 !important;
-}
-
-/* Additional specificity for any conflicting Tailwind classes */
-.fab-container.fab-fixed[style*="position"] {
-  right: 20px !important;
-  bottom: 20px !important;
-  left: auto !important;
-}
-
-/* Custom floating menu container - maximum specificity */
-.floating-menu-container {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  top: auto !important;
-  z-index: 9999 !important;
-  margin: 0 !important;
-  /* REMOVED: transform: translateZ(0) - this breaks position: fixed */
-  pointer-events: auto !important;
-}
-
 /* iOS-optimized animations and transitions */
 .ios-animation {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  /* REMOVED: perspective creates stacking context that breaks position: fixed */
-  /* -webkit-perspective: 1000; */
-  /* perspective: 1000; */
+  -webkit-perspective: 1000;
+  perspective: 1000;
 }
 
-/* CRITICAL FIX: ios-smooth-transform creates stacking context that breaks position: fixed */
 .ios-smooth-transform {
-  /* Removed transform: translateZ(0) - this breaks position: fixed for child elements */
-  will-change: auto; /* Changed from transform, opacity to auto */
-  /* -webkit-transform: translateZ(0); -- Removed this too */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  -webkit-transform: translateZ(0);
 }
 
 /* iOS spring animations */
@@ -374,21 +305,21 @@ div.fab-container.fab-fixed {
     padding: 0;
     margin: 0;
     width: 100vw;
-    /* REMOVED: overflow-x: hidden - can break position: fixed */
+    overflow-x: hidden;
   }
 
   body {
     padding: 0;
     margin: 0;
     width: 100vw;
-    /* REMOVED: overflow-x: hidden - can break position: fixed */
+    overflow-x: hidden;
   }
 
   #root {
     padding: 0;
     margin: 0;
     width: 100vw;
-    /* REMOVED: overflow-x: hidden - can break position: fixed */
+    overflow-x: hidden;
   }
 
   :root {
