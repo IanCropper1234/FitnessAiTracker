@@ -60,10 +60,8 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
               variant="ghost"
               size="sm"
               onClick={() => {
-                console.log('Add Food button clicked, setting location to /add-food');
                 setLocation('/add-food');
                 setIsExpanded(false);
-                console.log('Location should now be /add-food');
               }}
               className="flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
                 transition-all duration-200 ios-touch-feedback ios-smooth-transform min-w-[110px] justify-start

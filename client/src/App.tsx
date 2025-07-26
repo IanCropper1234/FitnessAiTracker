@@ -10,7 +10,7 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
-import { AddFood } from "./pages/add-food-simple";
+import { AddFood } from "./pages/add-food";
 import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
@@ -28,7 +28,7 @@ interface User {
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
-  console.log('Current location:', location);
+
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -66,12 +66,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       
       {location === "/add-food" && (
         <div className="page-enter ios-animation ios-smooth-transform">
-          <div className="min-h-screen bg-white dark:bg-black p-4">
-            <h1 className="text-xl font-bold">Add Food Route Test</h1>
-            <p>Current location: {location}</p>  
-            <p>User: {user ? user.email : 'No user'}</p>
-            <Button onClick={() => setLocation('/nutrition')}>Back to Nutrition</Button>
-          </div>
+          {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
         </div>
       )}
       
