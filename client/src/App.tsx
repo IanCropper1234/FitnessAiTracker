@@ -63,7 +63,15 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/add-food">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? (
+              <div className="min-h-screen bg-white dark:bg-black p-4">
+                <h1>Add Food Page Works!</h1>
+                <p>User: {user.email}</p>
+                <Button onClick={() => setLocation('/nutrition')}>Back to Nutrition</Button>
+              </div>
+            ) : (
+              <div className="animate-pulse">Loading...</div>
+            )}
           </div>
         </Route>
         <Route path="/training">
