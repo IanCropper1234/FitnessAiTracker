@@ -62,6 +62,22 @@ export function TrainingPage({ user }: TrainingPageProps) {
         </div>
       </div>
 
+      {/* TEST ELEMENT - Basic position fixed to verify if it works */}
+      <div style={{  
+        position: 'fixed',  
+        bottom: '80px',   
+        left: '20px',   
+        zIndex: 99999,  
+        background: 'blue',  
+        width: '50px',  
+        height: '50px',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '12px'
+      }}>TEST</div>
+
       {/* Floating Training Menu - OUTSIDE container that breaks fixed positioning */}
       <FloatingTrainingMenu 
         onTabSelect={setActiveTab}

@@ -91,10 +91,11 @@ div.fab-container.fab-fixed {
   perspective: 1000;
 }
 
+/* CRITICAL FIX: ios-smooth-transform creates stacking context that breaks position: fixed */
 .ios-smooth-transform {
-  transform: translateZ(0);
-  will-change: transform, opacity;
-  -webkit-transform: translateZ(0);
+  /* Removed transform: translateZ(0) - this breaks position: fixed for child elements */
+  will-change: auto; /* Changed from transform, opacity to auto */
+  /* -webkit-transform: translateZ(0); -- Removed this too */
 }
 
 /* iOS spring animations */

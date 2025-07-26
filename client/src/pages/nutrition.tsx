@@ -283,6 +283,22 @@ export function Nutrition({ user }: NutritionProps) {
         </div>
       </div>
 
+      {/* TEST ELEMENT - Basic position fixed to verify if it works */}
+      <div style={{  
+        position: 'fixed',  
+        bottom: '80px',   
+        right: '20px',   
+        zIndex: 99999,  
+        background: 'red',  
+        width: '50px',  
+        height: '50px',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '12px'
+      }}>TEST</div>
+
       {/* Floating Nutrition Menu - OUTSIDE container that breaks fixed positioning */}
       <FloatingNutritionMenu 
         onTabSelect={setActiveTab}
