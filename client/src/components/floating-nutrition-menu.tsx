@@ -34,11 +34,12 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   };
 
   return (
-    <div className="fixed bottom-20 right-4 z-50">
+    <div className="fab-container fab-fixed">
       {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10 modal-overlay-enter ios-animation"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm modal-overlay-enter ios-animation"
+          style={{ zIndex: 999 }}
           onClick={() => setIsExpanded(false)}
         />
       )}

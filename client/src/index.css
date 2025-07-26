@@ -16,6 +16,39 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Floating Action Button - Fixed positioning */
+.fab-fixed {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Ensure fixed elements stay on top */
+.fab-container {
+  position: fixed !important;
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+}
+
+/* Prevent transform interference with fixed positioning */
+body, #root, .app-container {
+  transform: none !important;
+}
+
+/* Force fixed positioning for floating buttons */
+.floating-button-wrapper {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1001 !important;
+  pointer-events: auto !important;
+  transform: translateZ(0) !important;
+}
+
 /* iOS-optimized animations and transitions */
 .ios-animation {
   -webkit-backface-visibility: hidden;
