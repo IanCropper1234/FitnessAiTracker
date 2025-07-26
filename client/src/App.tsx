@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { LanguageProvider, useLanguage } from "@/components/language-provider";
 import { BottomNavigation } from "@/components/bottom-navigation";
+import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
@@ -28,6 +29,7 @@ interface User {
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
+  const [activeNutritionTab, setActiveNutritionTab] = useState("overview");
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -59,7 +61,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/nutrition">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <Nutrition user={user} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <Nutrition user={user} activeTab={activeNutritionTab} onTabChange={setActiveNutritionTab} /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/add-food">
@@ -98,6 +100,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       </Switch>
       
       {showBottomNav && <BottomNavigation />}
+      {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
     </div>
   );
 }

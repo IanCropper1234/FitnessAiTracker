@@ -27,7 +27,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-50 safe-area-pb">
+    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-[60] safe-area-pb">
       <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto">
         {menuItems.map((item, index) => {
           const Icon = item.icon;

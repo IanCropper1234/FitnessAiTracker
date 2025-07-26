@@ -55,16 +55,19 @@ interface User {
 
 interface NutritionProps {
   user: User;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-export function Nutrition({ user }: NutritionProps) {
+export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
   const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("overview");
+  const activeTab = externalActiveTab || "overview";
+  const setActiveTab = onTabChange || (() => {});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
 
@@ -209,7 +212,7 @@ export function Nutrition({ user }: NutritionProps) {
         )}
 
         {/* Enhanced Nutrition Module */}
-        <div className="mt-4 mb-24">
+        <div className="mt-4 mb-32">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
 
             <TabsContent value="overview">
@@ -279,11 +282,7 @@ export function Nutrition({ user }: NutritionProps) {
           setShowDatePicker={setShowDatePicker}
         />
 
-        {/* Floating Nutrition Menu */}
-        <FloatingNutritionMenu 
-          onTabSelect={setActiveTab}
-          activeTab={activeTab}
-        />
+
       </div>
     </div>
   );
