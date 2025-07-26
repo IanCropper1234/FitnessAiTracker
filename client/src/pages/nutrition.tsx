@@ -209,7 +209,7 @@ export function Nutrition({ user }: NutritionProps) {
         )}
 
         {/* Enhanced Nutrition Module */}
-        <div className="mt-4">
+        <div className="mt-4 mb-24">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
 
             <TabsContent value="overview">
