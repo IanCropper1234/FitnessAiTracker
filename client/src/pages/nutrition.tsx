@@ -17,7 +17,7 @@ import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
 import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
-import { IOSDatePicker } from "@/components/ui/ios-date-picker";
+
 import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
 
@@ -57,9 +57,13 @@ interface NutritionProps {
   user: User;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  selectedDate: string;
+  setSelectedDate: (date: string) => void;
+  showDatePicker: boolean;
+  setShowDatePicker: (show: boolean) => void;
 }
 
-export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: NutritionProps) {
+export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, selectedDate, setSelectedDate, showDatePicker, setShowDatePicker }: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -68,23 +72,19 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: N
   const [, setLocation] = useLocation();
   const activeTab = externalActiveTab || "overview";
   const setActiveTab = onTabChange || (() => {});
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
-
-  const today = TimezoneUtils.getCurrentDate();
 
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
-    queryKey: ['/api/nutrition/summary', user.id, today],
+    queryKey: ['/api/nutrition/summary', user.id, selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${user.id}?date=${today}`);
+      const response = await fetch(`/api/nutrition/summary/${user.id}?date=${selectedDate}`);
       return response.json();
     }
   });
 
   const { data: nutritionLogs, isLoading: logsLoading } = useQuery({
-    queryKey: ['/api/nutrition/logs', user.id, today],
+    queryKey: ['/api/nutrition/logs', user.id, selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/logs/${user.id}?date=${today}`);
+      const response = await fetch(`/api/nutrition/logs/${user.id}?date=${selectedDate}`);
       return response.json();
     }
   });
@@ -267,20 +267,7 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: N
           </div>
         )}
 
-        {/* iOS Date Picker Modal */}
-        <IOSDatePicker 
-          selectedDate={selectedDate}
-          onDateChange={(newDate) => {
-            setSelectedDate(newDate);
-            setShowDatePicker(false);
-            // Invalidate queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
-          }}
-          size="lg"
-          showDatePicker={showDatePicker}
-          setShowDatePicker={setShowDatePicker}
-        />
+
 
 
       </div>

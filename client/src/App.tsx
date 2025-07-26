@@ -80,7 +80,19 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/nutrition">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <Nutrition user={user} activeTab={activeNutritionTab} onTabChange={setActiveNutritionTab} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? (
+              <Nutrition 
+                user={user} 
+                activeTab={activeNutritionTab} 
+                onTabChange={setActiveNutritionTab}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                showDatePicker={showDatePicker}
+                setShowDatePicker={setShowDatePicker}
+              />
+            ) : (
+              <div className="animate-pulse">Loading...</div>
+            )}
           </div>
         </Route>
         <Route path="/add-food">
