@@ -35,7 +35,18 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
   };
 
   return (
-    <div className="fab-container fab-fixed">
+    <div 
+      className="floating-menu-container" 
+      style={{ 
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px', 
+        zIndex: 9999,
+        left: 'auto',
+        top: 'auto',
+        transform: 'translateZ(0)'
+      }}
+    >
       {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
         <div 

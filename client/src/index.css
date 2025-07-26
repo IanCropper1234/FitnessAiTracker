@@ -21,6 +21,8 @@
   position: fixed !important;
   bottom: 20px !important;
   right: 20px !important;
+  left: auto !important; /* Explicitly override any left positioning */
+  top: auto !important; /* Explicitly override any top positioning */
   z-index: 1000 !important;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
@@ -47,6 +49,38 @@ body, #root, .app-container {
   z-index: 1001 !important;
   pointer-events: auto !important;
   transform: translateZ(0) !important;
+}
+
+/* Ultra-specific floating action button positioning - override everything */
+div.fab-container.fab-fixed {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  top: auto !important;
+  margin: 0 !important;
+  transform: translateZ(0) !important;
+  z-index: 9999 !important;
+}
+
+/* Additional specificity for any conflicting Tailwind classes */
+.fab-container.fab-fixed[style*="position"] {
+  right: 20px !important;
+  bottom: 20px !important;
+  left: auto !important;
+}
+
+/* Custom floating menu container - maximum specificity */
+.floating-menu-container {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  top: auto !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  transform: translateZ(0) !important;
+  pointer-events: auto !important;
 }
 
 /* iOS-optimized animations and transitions */
