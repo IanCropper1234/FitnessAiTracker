@@ -22,7 +22,9 @@ import {
   Utensils, 
   Loader2,
   Plus,
-  Sparkles
+  Sparkles,
+  History,
+  Clock
 } from "lucide-react";
 
 interface User {
@@ -67,6 +69,7 @@ export function AddFood({ user }: AddFoodProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [historySearchQuery, setHistorySearchQuery] = useState('');
 
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
@@ -98,6 +101,7 @@ export function AddFood({ user }: AddFoodProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/history'] });
       
       toast({
         title: "Success",
@@ -113,6 +117,15 @@ export function AddFood({ user }: AddFoodProps) {
         description: error.message || "Failed to log food",
         variant: "destructive"
       });
+    }
+  });
+
+  // Fetch user's food history (unique foods they've logged before)
+  const { data: foodHistory = [] } = useQuery({
+    queryKey: ['/api/nutrition/history', user.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/nutrition/history/${user.id}`);
+      return response.json();
     }
   });
 
@@ -139,6 +152,25 @@ export function AddFood({ user }: AddFoodProps) {
     });
     setShowBarcodeScanner(false);
     setSearchMode('search');
+  };
+
+  const handleQuickAddFromHistory = (historyItem: any) => {
+    const nutritionData = {
+      userId: user.id,
+      date: selectedDate,
+      foodName: historyItem.foodName,
+      quantity: historyItem.quantity || 1,
+      unit: historyItem.unit || 'serving',
+      calories: historyItem.calories,
+      protein: historyItem.protein,
+      carbs: historyItem.carbs,
+      fat: historyItem.fat,
+      mealType: mealType,
+      category: historyItem.category,
+      mealSuitability: historyItem.mealSuitability
+    };
+
+    logMutation.mutate(nutritionData);
   };
 
   const handleLogFood = () => {
@@ -176,6 +208,11 @@ export function AddFood({ user }: AddFoodProps) {
 
   const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending;
   const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
+  
+  // Filter food history based on search query
+  const filteredFoodHistory = foodHistory.filter((item: any) => 
+    item.foodName.toLowerCase().includes(historySearchQuery.toLowerCase())
+  ).slice(0, 10); // Limit to 10 items for better performance
 
   const categories = [
     { value: "protein", label: "Protein Sources", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
@@ -319,6 +356,66 @@ export function AddFood({ user }: AddFoodProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+            )}
+
+            {/* Food History Section */}
+            {foodHistory.length > 0 && (
+              <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2">
+                  <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
+                </div>
+                
+                {/* History Search */}
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                  <Input
+                    value={historySearchQuery}
+                    onChange={(e) => setHistorySearchQuery(e.target.value)}
+                    placeholder="Search your food history..."
+                    className="h-8 pl-7 text-xs ios-touch-feedback"
+                  />
+                </div>
+
+                {/* History Items */}
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {filteredFoodHistory.map((item: any, index: number) => (
+                    <div
+                      key={`${item.foodName}-${index}`}
+                      className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                              {item.foodName}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                              {Math.round(item.calories)}cal • {Math.round(item.protein)}g protein • {item.quantity} {item.unit}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        onClick={() => handleQuickAddFromHistory(item)}
+                        disabled={isLoading}
+                        size="sm"
+                        className="h-7 w-7 p-0 ml-2 ios-button touch-target flex-shrink-0"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  {filteredFoodHistory.length === 0 && historySearchQuery && (
+                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                      <p className="text-xs">No matching foods found in your history</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -625,6 +625,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's food history (unique foods they've logged before)
+  app.get("/api/nutrition/history/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Get unique foods from user's nutrition logs (last 90 days for relevance)
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      
+      const result = await db.execute(sql`
+        SELECT DISTINCT ON (food_name, quantity, unit)
+          food_name,
+          quantity,
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          category,
+          meal_suitability,
+          COUNT(*) as frequency,
+          MAX(date) as last_logged
+        FROM nutrition_logs 
+        WHERE user_id = ${userId} 
+          AND date >= ${ninetyDaysAgo}
+          AND food_name IS NOT NULL
+        GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability
+        HAVING COUNT(*) >= 1
+        ORDER BY food_name, COUNT(*) DESC, MAX(date) DESC
+        LIMIT 50
+      `);
+      
+      const foodHistory = result.rows.map((row: any) => ({
+        foodName: row.food_name,
+        quantity: parseFloat(row.quantity),
+        unit: row.unit,
+        calories: parseFloat(row.calories),
+        protein: parseFloat(row.protein),
+        carbs: parseFloat(row.carbs),
+        fat: parseFloat(row.fat),
+        category: row.category,
+        mealSuitability: row.meal_suitability,
+        frequency: parseInt(row.frequency),
+        lastLogged: row.last_logged
+      }));
+
+      res.json(foodHistory);
+    } catch (error: any) {
+      console.error('Get food history error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Copy meals from another date
   app.post("/api/nutrition/copy-meals", async (req, res) => {
     try {
