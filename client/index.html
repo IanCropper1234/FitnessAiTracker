@@ -123,6 +123,10 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- HTML TEST ELEMENT - If this moves with scroll, CSS on body/html is breaking position: fixed -->
+    <div style="position: fixed; bottom: 10px; right: 10px; background: yellow; width: 50px; height: 50px; z-index: 99999; color: black; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">HTML</div>
+    
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
