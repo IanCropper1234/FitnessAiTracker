@@ -9,6 +9,8 @@ import { LanguageProvider, useLanguage } from "@/components/language-provider";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { FloatingTrainingMenu } from "@/components/floating-training-menu";
+import { IOSDatePicker } from "@/components/ui/ios-date-picker";
+import { TimezoneUtils } from "@shared/utils/timezone";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
@@ -32,6 +34,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [location, setLocation] = useLocation();
   const [activeNutritionTab, setActiveNutritionTab] = useState("overview");
   const [activeTrainingTab, setActiveTrainingTab] = useState("sessions");
+  
+  // Global date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -59,7 +65,17 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/dashboard">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <Dashboard user={user} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? (
+              <Dashboard 
+                user={user} 
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                showDatePicker={showDatePicker}
+                setShowDatePicker={setShowDatePicker}
+              />
+            ) : (
+              <div className="animate-pulse">Loading...</div>
+            )}
           </div>
         </Route>
         <Route path="/nutrition">
@@ -105,6 +121,23 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       {showBottomNav && <BottomNavigation />}
       {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
       {showTrainingMenu && <FloatingTrainingMenu onTabSelect={setActiveTrainingTab} activeTab={activeTrainingTab} />}
+      
+      {/* Global iOS Date Picker Modal */}
+      {user && (
+        <IOSDatePicker 
+          selectedDate={selectedDate}
+          onDateChange={(newDate) => {
+            setSelectedDate(newDate);
+            setShowDatePicker(false);
+            // Invalidate queries to refresh data for the new date
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+            queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
+          }}
+          size="lg"
+          showDatePicker={showDatePicker}
+          setShowDatePicker={setShowDatePicker}
+        />
+      )}
     </div>
   );
 }

@@ -14,7 +14,6 @@ import { RecentActivity } from "@/components/recent-activity";
 import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
@@ -26,16 +25,18 @@ interface User {
 
 interface DashboardProps {
   user: User;
+  selectedDate: string;
+  setSelectedDate: (date: string) => void;
+  showDatePicker: boolean;
+  setShowDatePicker: (show: boolean) => void;
 }
 
-export function Dashboard({ user }: DashboardProps) {
+export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker, setShowDatePicker }: DashboardProps) {
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [showNutritionLogger, setShowNutritionLogger] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
@@ -369,20 +370,7 @@ export function Dashboard({ user }: DashboardProps) {
           />
         )}
 
-        {/* iOS Date Picker Modal */}
-        <IOSDatePicker 
-          selectedDate={selectedDate}
-          onDateChange={(newDate) => {
-            setSelectedDate(newDate);
-            setShowDatePicker(false);
-            // Invalidate queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-            queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
-          }}
-          size="lg"
-          showDatePicker={showDatePicker}
-          setShowDatePicker={setShowDatePicker}
-        />
+
 
       </div>
     </div>
