@@ -279,12 +279,13 @@ export function Nutrition({ user }: NutritionProps) {
           setShowDatePicker={setShowDatePicker}
         />
 
-        {/* Floating Nutrition Menu */}
-        <FloatingNutritionMenu 
-          onTabSelect={setActiveTab}
-          activeTab={activeTab}
-        />
       </div>
+      
+      {/* Floating Nutrition Menu - positioned outside all containers */}
+      <FloatingNutritionMenu 
+        onTabSelect={setActiveTab}
+        activeTab={activeTab}
+      />
     </div>
   );
 }
