@@ -22,7 +22,7 @@ import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { 
   Plus, 
   Search, 
@@ -279,85 +279,11 @@ export function Nutrition({ user }: NutritionProps) {
           setShowDatePicker={setShowDatePicker}
         />
 
-        {/* Bottom Tab Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/20 z-40">
-          <div className="flex items-center justify-around py-2 px-4 safe-area-padding-bottom">
-            <button
-              onClick={() => setActiveTab("overview")}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ios-touch-feedback ${
-                activeTab === "overview" 
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" 
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              <Utensils className="w-4 h-4" />
-              <span className="text-xs font-medium">Overview</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab("builder")}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ios-touch-feedback ${
-                activeTab === "builder" 
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" 
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              <Target className="w-4 h-4" />
-              <span className="text-xs font-medium">Diet Plan</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab("advanced")}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ios-touch-feedback ${
-                activeTab === "advanced" 
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" 
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              <Brain className="w-4 h-4" />
-              <span className="text-xs font-medium">RP Coach</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab("body")}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ios-touch-feedback ${
-                activeTab === "body" 
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" 
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              <User className="w-4 h-4" />
-              <span className="text-xs font-medium">Body</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab("progression")}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ios-touch-feedback ${
-                activeTab === "progression" 
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" 
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span className="text-xs font-medium">Progress</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab("shopping")}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ios-touch-feedback ${
-                activeTab === "shopping" 
-                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" 
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span className="text-xs font-medium">Shopping</span>
-            </button>
-          </div>
-        </div>
-        
-        {/* Bottom spacing for fixed navigation */}
-        <div className="h-20"></div>
+        {/* Floating Nutrition Menu */}
+        <FloatingNutritionMenu 
+          onTabSelect={setActiveTab}
+          activeTab={activeTab}
+        />
       </div>
     </div>
   );
