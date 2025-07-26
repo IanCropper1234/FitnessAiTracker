@@ -655,6 +655,51 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     });
   };
 
+  // Universal dial control handler
+  const createDialHandler = (macroType: 'protein' | 'carbs' | 'fat') => ({
+    onTouchStart: (e: React.TouchEvent) => {
+      e.preventDefault();
+      const dial = e.currentTarget.parentElement;
+      if (!dial) return;
+      const handleMove = (moveEvent: TouchEvent) => {
+        const rect = dial.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const touch = moveEvent.touches[0];
+        const angle = Math.atan2(touch.clientY - centerY, touch.clientX - centerX);
+        const degrees = (angle * 180 / Math.PI + 90) % 360;
+        const value = Math.round((degrees / 360) * 100 - 50);
+        handleMacroAdjustment(macroType, Math.max(-50, Math.min(50, value)));
+      };
+      const handleEnd = () => {
+        document.removeEventListener('touchmove', handleMove);
+        document.removeEventListener('touchend', handleEnd);
+      };
+      document.addEventListener('touchmove', handleMove);
+      document.addEventListener('touchend', handleEnd);
+    },
+    onMouseDown: (e: React.MouseEvent) => {
+      e.preventDefault();
+      const dial = e.currentTarget.parentElement;
+      if (!dial) return;
+      const handleMove = (moveEvent: MouseEvent) => {
+        const rect = dial.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const angle = Math.atan2(moveEvent.clientY - centerY, moveEvent.clientX - centerX);
+        const degrees = (angle * 180 / Math.PI + 90) % 360;
+        const value = Math.round((degrees / 360) * 100 - 50);
+        handleMacroAdjustment(macroType, Math.max(-50, Math.min(50, value)));
+      };
+      const handleEnd = () => {
+        document.removeEventListener('mousemove', handleMove);
+        document.removeEventListener('mouseup', handleEnd);
+      };
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+    }
+  });
+
   // Calculate current calorie total from macros
   const calculateCurrentCalories = () => {
     return Math.round((dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9));
@@ -1092,11 +1137,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
               </div>
 
-              {/* iOS Native Style Macro Adjustment Section */}
+              {/* Dial/Wheel Controls Macro Adjustment Section */}
               {(
-                <div className="bg-background border border-border rounded-lg overflow-hidden">
+                <div className="bg-background border border-border rounded-lg p-4 space-y-4">
                   {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border">
+                  <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium text-foreground text-sm">Macro Adjustments</h4>
                       <p className="text-xs text-muted-foreground">
@@ -1113,101 +1158,101 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </Button>
                   </div>
                   
-                  {/* iOS Settings Style Controls */}
-                  <div className="divide-y divide-border">
-                    {/* Protein Control */}
-                    <div className="px-4 py-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                          <span className="text-sm font-medium text-foreground">Protein</span>
-                          <span className="text-sm text-muted-foreground">{Math.round(Number(dietGoal.targetProtein))}g</span>
+                  {/* Dial/Wheel Controls Grid */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Protein Dial */}
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="text-xs font-medium text-blue-600 dark:text-blue-400">P: {Math.round(Number(dietGoal.targetProtein))}g</div>
+                      <div className="relative w-16 h-16 mx-auto">
+                        {/* Dial Background Circle */}
+                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
+                        {/* Progress Arc */}
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            fill="none"
+                            stroke="#3b82f6"
+                            strokeWidth="4"
+                            strokeDasharray={`${((macroAdjustments.protein + 50) / 100) * 175.9} 175.9`}
+                            strokeLinecap="round"
+                            className="transition-all duration-300 ease-out"
+                          />
+                        </svg>
+                        {/* Center Touch Area */}
+                        <div 
+                          className="absolute inset-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 flex items-center justify-center cursor-pointer touch-target ios-touch-feedback hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                          {...createDialHandler('protein')}
+                        >
+                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                            {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400 min-w-[50px] text-right">
-                          {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="range"
-                          min="-50"
-                          max="50"
-                          step="1"
-                          value={macroAdjustments.protein}
-                          onChange={(e) => handleMacroAdjustment('protein', Number(e.target.value))}
-                          className="ios-native-slider w-full h-6 bg-transparent appearance-none cursor-pointer touch-target ios-touch-feedback"
-                          style={{
-                            background: `linear-gradient(to right, 
-                              #e5e7eb 0%, 
-                              #e5e7eb ${((macroAdjustments.protein + 50) / 100) * 100}%, 
-                              #3b82f6 ${((macroAdjustments.protein + 50) / 100) * 100}%, 
-                              #3b82f6 100%)`
-                          }}
-                        />
                       </div>
                     </div>
                     
-                    {/* Carbs Control */}
-                    <div className="px-4 py-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                          <span className="text-sm font-medium text-foreground">Carbs</span>
-                          <span className="text-sm text-muted-foreground">{Math.round(Number(dietGoal.targetCarbs))}g</span>
+                    {/* Carbs Dial */}
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="text-xs font-medium text-green-600 dark:text-green-400">C: {Math.round(Number(dietGoal.targetCarbs))}g</div>
+                      <div className="relative w-16 h-16 mx-auto">
+                        {/* Dial Background Circle */}
+                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
+                        {/* Progress Arc */}
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            fill="none"
+                            stroke="#10b981"
+                            strokeWidth="4"
+                            strokeDasharray={`${((macroAdjustments.carbs + 50) / 100) * 175.9} 175.9`}
+                            strokeLinecap="round"
+                            className="transition-all duration-300 ease-out"
+                          />
+                        </svg>
+                        {/* Center Touch Area */}
+                        <div 
+                          className="absolute inset-2 rounded-full bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 flex items-center justify-center cursor-pointer touch-target ios-touch-feedback hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors"
+                          {...createDialHandler('carbs')}
+                        >
+                          <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                            {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-green-600 dark:text-green-400 min-w-[50px] text-right">
-                          {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="range"
-                          min="-50"
-                          max="50"
-                          step="1"
-                          value={macroAdjustments.carbs}
-                          onChange={(e) => handleMacroAdjustment('carbs', Number(e.target.value))}
-                          className="ios-native-slider w-full h-6 bg-transparent appearance-none cursor-pointer touch-target ios-touch-feedback"
-                          style={{
-                            background: `linear-gradient(to right, 
-                              #e5e7eb 0%, 
-                              #e5e7eb ${((macroAdjustments.carbs + 50) / 100) * 100}%, 
-                              #10b981 ${((macroAdjustments.carbs + 50) / 100) * 100}%, 
-                              #10b981 100%)`
-                          }}
-                        />
                       </div>
                     </div>
                     
-                    {/* Fat Control */}
-                    <div className="px-4 py-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                          <span className="text-sm font-medium text-foreground">Fat</span>
-                          <span className="text-sm text-muted-foreground">{Math.round(Number(dietGoal.targetFat))}g</span>
+                    {/* Fat Dial */}
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="text-xs font-medium text-orange-600 dark:text-orange-400">F: {Math.round(Number(dietGoal.targetFat))}g</div>
+                      <div className="relative w-16 h-16 mx-auto">
+                        {/* Dial Background Circle */}
+                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
+                        {/* Progress Arc */}
+                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            fill="none"
+                            stroke="#f97316"
+                            strokeWidth="4"
+                            strokeDasharray={`${((macroAdjustments.fat + 50) / 100) * 175.9} 175.9`}
+                            strokeLinecap="round"
+                            className="transition-all duration-300 ease-out"
+                          />
+                        </svg>
+                        {/* Center Touch Area */}
+                        <div 
+                          className="absolute inset-2 rounded-full bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800 flex items-center justify-center cursor-pointer touch-target ios-touch-feedback hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors"
+                          {...createDialHandler('fat')}
+                        >
+                          <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
+                            {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-orange-600 dark:text-orange-400 min-w-[50px] text-right">
-                          {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="range"
-                          min="-50"
-                          max="50"
-                          step="1"
-                          value={macroAdjustments.fat}
-                          onChange={(e) => handleMacroAdjustment('fat', Number(e.target.value))}
-                          className="ios-native-slider w-full h-6 bg-transparent appearance-none cursor-pointer touch-target ios-touch-feedback"
-                          style={{
-                            background: `linear-gradient(to right, 
-                              #e5e7eb 0%, 
-                              #e5e7eb ${((macroAdjustments.fat + 50) / 100) * 100}%, 
-                              #f97316 ${((macroAdjustments.fat + 50) / 100) * 100}%, 
-                              #f97316 100%)`
-                          }}
-                        />
                       </div>
                     </div>
                   </div>
