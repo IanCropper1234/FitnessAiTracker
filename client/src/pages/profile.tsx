@@ -11,6 +11,7 @@ import { useLanguage } from "@/components/language-provider";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface User {
   id: number;
@@ -36,6 +37,7 @@ interface DietGoals {
 // Activity & Goals Card Component
 function ActivityGoalsCard({ userId }: { userId: number }) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   // Fetch user profile data
   const { data: userData, isLoading } = useQuery({
@@ -68,11 +70,28 @@ function ActivityGoalsCard({ userId }: { userId: number }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
+      toast({
+        title: "Profile Updated",
+        description: "Your activity level and fitness goals have been saved successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Save Failed",
+        description: error?.message || "Failed to save profile changes. Please try again.",
+        variant: "destructive"
+      });
     }
   });
 
   const handleSaveProfile = () => {
-    updateProfileMutation.mutate(profileData);
+    // Send complete profile data including existing fields
+    const completeProfileData = {
+      ...userData?.profile,
+      activityLevel: profileData.activityLevel,
+      fitnessGoal: profileData.fitnessGoal
+    };
+    updateProfileMutation.mutate(completeProfileData);
   };
 
   if (isLoading) return null;
