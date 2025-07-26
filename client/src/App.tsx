@@ -39,9 +39,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   }, [user, location, setLocation]);
 
   const showBottomNav = user && location === "/dashboard";
+  const showNutritionMenu = user && location === "/nutrition";
 
   return (
-    <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav ? 'pb-20' : 'pb-4'} theme-transition`}>
+    <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
         <Route path="/auth">
           <div className="page-enter ios-animation">
