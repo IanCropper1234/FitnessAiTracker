@@ -5,6 +5,7 @@ import {
   User,
   TrendingUp
 } from "lucide-react";
+import { useScrollHide } from "@/hooks/use-scroll-hide";
 
 interface FloatingNutritionMenuProps {
   onTabSelect: (tab: string) => void;
@@ -12,6 +13,8 @@ interface FloatingNutritionMenuProps {
 }
 
 export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutritionMenuProps) {
+  const isVisible = useScrollHide({ threshold: 15 });
+  
   const menuItems = [
     { id: "overview", icon: BarChart3, label: "Overview" },
     { id: "builder", icon: Target, label: "Diet" },
@@ -25,7 +28,11 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-[60] safe-area-pb">
+    <div className={`
+      fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-[60] safe-area-pb
+      transition-transform duration-300 ease-out
+      ${isVisible ? 'translate-y-0' : 'translate-y-full'}
+    `}>
       <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto">
         {menuItems.map((item, index) => {
           const Icon = item.icon;

@@ -4,11 +4,13 @@ import { useLanguage } from "./language-provider";
 import { Home, BookOpen, Plus, BarChart3, MoreHorizontal, Utensils, Dumbbell, User, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useScrollHide } from "@/hooks/use-scroll-hide";
 
 export function BottomNavigation() {
   const [location, setLocation] = useLocation();
   const [showQuickActions, setShowQuickActions] = useState(false);
   const { t } = useLanguage();
+  const isVisible = useScrollHide({ threshold: 15 });
 
   // iOS-style navigation items (4 main tabs + center action button)
   const navItems = [
@@ -29,7 +31,11 @@ export function BottomNavigation() {
   return (
     <>
       {/* iOS-style Bottom Tab Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-50 safe-area-pb">
+      <div className={`
+        fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border z-50 safe-area-pb
+        transition-transform duration-300 ease-out
+        ${isVisible ? 'translate-y-0' : 'translate-y-full'}
+      `}>
         <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto">
           {/* First two navigation items */}
           {navItems.slice(0, 2).map((item) => {
