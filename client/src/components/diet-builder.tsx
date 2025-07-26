@@ -1092,42 +1092,42 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
               </div>
 
-              {/* Macro Adjustment Section */}
+              {/* iOS Native Style Macro Adjustment Section */}
               {(
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-3">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <div>
-                        <h4 className="font-medium text-blue-900 dark:text-blue-100 text-sm">Macro Adjustments</h4>
-                        <p className="text-xs text-blue-700 dark:text-blue-300">
-                          Fine-tune distribution (1% steps)
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-                          {Math.round(calculateCurrentCalories())}cal
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={resetMacroAdjustments}
-                          className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 text-xs px-2 py-1"
-                        >
-                          Reset
-                        </Button>
-                      </div>
+                <div className="bg-background border border-border rounded-lg overflow-hidden">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border">
+                    <div>
+                      <h4 className="font-medium text-foreground text-sm">Macro Adjustments</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {Math.round(calculateCurrentCalories())} cal
+                      </p>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetMacroAdjustments}
+                      className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm px-3 py-1 h-auto font-medium"
+                    >
+                      Reset
+                    </Button>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="space-y-2 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">Protein</Label>
-                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium ml-1 flex-shrink-0">
+                  {/* iOS Settings Style Controls */}
+                  <div className="divide-y divide-border">
+                    {/* Protein Control */}
+                    <div className="px-4 py-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                          <span className="text-sm font-medium text-foreground">Protein</span>
+                          <span className="text-sm text-muted-foreground">{Math.round(Number(dietGoal.targetProtein))}g</span>
+                        </div>
+                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400 min-w-[50px] text-right">
                           {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%
                         </span>
                       </div>
-                      <div className="px-1">
+                      <div className="relative">
                         <input
                           type="range"
                           min="-50"
@@ -1135,27 +1135,31 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           step="1"
                           value={macroAdjustments.protein}
                           onChange={(e) => handleMacroAdjustment('protein', Number(e.target.value))}
-                          className="w-full h-1.5 bg-blue-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-800"
+                          className="ios-native-slider w-full h-6 bg-transparent appearance-none cursor-pointer touch-target ios-touch-feedback"
+                          style={{
+                            background: `linear-gradient(to right, 
+                              #e5e7eb 0%, 
+                              #e5e7eb ${((macroAdjustments.protein + 50) / 100) * 100}%, 
+                              #3b82f6 ${((macroAdjustments.protein + 50) / 100) * 100}%, 
+                              #3b82f6 100%)`
+                          }}
                         />
-                      </div>
-                      <div className="text-center">
-                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                          {Math.round(Number(dietGoal.targetProtein))}g
-                        </span>
-                        <div className="text-xs text-blue-500 dark:text-blue-400">
-                          {Math.round(dietGoal.targetProtein * 4)}cal
-                        </div>
                       </div>
                     </div>
                     
-                    <div className="space-y-2 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">Carbs</Label>
-                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium ml-1 flex-shrink-0">
+                    {/* Carbs Control */}
+                    <div className="px-4 py-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                          <span className="text-sm font-medium text-foreground">Carbs</span>
+                          <span className="text-sm text-muted-foreground">{Math.round(Number(dietGoal.targetCarbs))}g</span>
+                        </div>
+                        <span className="text-sm font-medium text-green-600 dark:text-green-400 min-w-[50px] text-right">
                           {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%
                         </span>
                       </div>
-                      <div className="px-1">
+                      <div className="relative">
                         <input
                           type="range"
                           min="-50"
@@ -1163,27 +1167,31 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           step="1"
                           value={macroAdjustments.carbs}
                           onChange={(e) => handleMacroAdjustment('carbs', Number(e.target.value))}
-                          className="w-full h-1.5 bg-green-200 rounded-lg appearance-none cursor-pointer dark:bg-green-800"
+                          className="ios-native-slider w-full h-6 bg-transparent appearance-none cursor-pointer touch-target ios-touch-feedback"
+                          style={{
+                            background: `linear-gradient(to right, 
+                              #e5e7eb 0%, 
+                              #e5e7eb ${((macroAdjustments.carbs + 50) / 100) * 100}%, 
+                              #10b981 ${((macroAdjustments.carbs + 50) / 100) * 100}%, 
+                              #10b981 100%)`
+                          }}
                         />
-                      </div>
-                      <div className="text-center">
-                        <span className="text-xs font-medium text-green-600 dark:text-green-400">
-                          {Math.round(Number(dietGoal.targetCarbs))}g
-                        </span>
-                        <div className="text-xs text-green-500 dark:text-green-400">
-                          {Math.round(dietGoal.targetCarbs * 4)}cal
-                        </div>
                       </div>
                     </div>
                     
-                    <div className="space-y-2 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-medium text-blue-900 dark:text-blue-100 truncate">Fat</Label>
-                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium ml-1 flex-shrink-0">
+                    {/* Fat Control */}
+                    <div className="px-4 py-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                          <span className="text-sm font-medium text-foreground">Fat</span>
+                          <span className="text-sm text-muted-foreground">{Math.round(Number(dietGoal.targetFat))}g</span>
+                        </div>
+                        <span className="text-sm font-medium text-orange-600 dark:text-orange-400 min-w-[50px] text-right">
                           {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%
                         </span>
                       </div>
-                      <div className="px-1">
+                      <div className="relative">
                         <input
                           type="range"
                           min="-50"
@@ -1191,31 +1199,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           step="1"
                           value={macroAdjustments.fat}
                           onChange={(e) => handleMacroAdjustment('fat', Number(e.target.value))}
-                          className="w-full h-1.5 bg-yellow-200 rounded-lg appearance-none cursor-pointer dark:bg-yellow-800"
+                          className="ios-native-slider w-full h-6 bg-transparent appearance-none cursor-pointer touch-target ios-touch-feedback"
+                          style={{
+                            background: `linear-gradient(to right, 
+                              #e5e7eb 0%, 
+                              #e5e7eb ${((macroAdjustments.fat + 50) / 100) * 100}%, 
+                              #f97316 ${((macroAdjustments.fat + 50) / 100) * 100}%, 
+                              #f97316 100%)`
+                          }}
                         />
                       </div>
-                      <div className="text-center">
-                        <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
-                          {Math.round(Number(dietGoal.targetFat))}g
-                        </span>
-                        <div className="text-xs text-yellow-500 dark:text-yellow-400">
-                          {Math.round(dietGoal.targetFat * 9)}cal
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-xs bg-blue-100 dark:bg-blue-900/30 p-2 rounded space-y-1">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                      <span className="font-medium text-blue-900 dark:text-blue-100">Current Target:</span>
-                      <span className="text-blue-700 dark:text-blue-300 font-semibold">
-                        {Math.round(dietGoal.targetCalories)} cal
-                      </span>
-                    </div>
-                    <div className="text-blue-600 dark:text-blue-400 flex flex-wrap gap-2 text-xs">
-                      <span><strong>P:</strong> {Math.round(Number(dietGoal.targetProtein))}g</span>
-                      <span><strong>C:</strong> {Math.round(Number(dietGoal.targetCarbs))}g</span>
-                      <span><strong>F:</strong> {Math.round(Number(dietGoal.targetFat))}g</span>
                     </div>
                   </div>
                 </div>
