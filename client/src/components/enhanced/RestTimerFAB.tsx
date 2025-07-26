@@ -165,23 +165,15 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     return null;
   }
 
-  // Get safe positioning with overflow prevention and iOS-specific fixes
-  const getSafePosition = (): React.CSSProperties => {
+  // Get safe positioning with overflow prevention
+  const getSafePosition = () => {
     // Default position when not dragged - aligned with floating training menu
     if (!fabPosition) {
       return {
-        position: 'fixed',
-        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)', // 80px for bottom navigation
-        left: '16px',
-        zIndex: 99998, // Just below floating menus
-        transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden' as const,
-        WebkitBackfaceVisibility: 'hidden' as const,
-        WebkitTransform: 'translate3d(0, 0, 0)',
-        willChange: 'auto',
-        contain: 'layout style paint' as const,
-        isolation: 'isolate' as const,
-      } as React.CSSProperties;
+        bottom: '5rem', // Match floating training menu (bottom-20 = 5rem)
+        left: '1rem',
+        position: 'fixed' as const,
+      };
     }
     
     // Safe boundaries for dragged position
@@ -195,20 +187,12 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     const safeY = Math.max(margin, Math.min(viewportHeight - fabSize - margin, fabPosition.y));
     
     return {
-      position: 'fixed',
+      position: 'fixed' as const,
       left: `${safeX}px`,
       top: `${safeY}px`,
       bottom: 'auto',
       right: 'auto',
-      zIndex: 99998,
-      transform: 'translate3d(0, 0, 0)',
-      backfaceVisibility: 'hidden' as const,
-      WebkitBackfaceVisibility: 'hidden' as const,
-      WebkitTransform: 'translate3d(0, 0, 0)',
-      willChange: 'auto',
-      contain: 'layout style paint' as const,
-      isolation: 'isolate' as const,
-    } as React.CSSProperties;
+    };
   };
 
   return (
@@ -368,7 +352,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onClick={() => !isDragging && setIsExpanded(true)}
-        className={`fixed z-40 transition-all duration-300 ${
+        className={`floating-fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
         style={getSafePosition()}

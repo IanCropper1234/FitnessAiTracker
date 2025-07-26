@@ -34,20 +34,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   };
 
   return (
-    <div 
-      className="floating-menu-container" 
-      style={{ 
-        position: 'fixed',
-        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',
-        right: '16px',
-        zIndex: 99999,
-        transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden',
-        WebkitTransform: 'translate3d(0, 0, 0)',
-        willChange: 'auto'
-      }}
-    >
+    <div className="floating-fixed bottom-20 right-4">
       {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
         <div 
@@ -102,7 +89,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
           ios-touch-feedback ios-smooth-transform border-2 flex items-center justify-center cursor-pointer
           active:scale-90
           ${isExpanded 
-            ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 scale-110" 
+            ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
             : "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30 hover:scale-105"
           }
         `}
