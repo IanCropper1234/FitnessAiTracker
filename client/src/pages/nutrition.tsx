@@ -57,9 +57,10 @@ interface NutritionProps {
   user: User;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  onDatePickerOpen?: (selectedDate: string, onDateChange: (date: string) => void) => void;
 }
 
-export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: NutritionProps) {
+export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, onDatePickerOpen }: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -158,7 +159,12 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: N
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => setShowDatePicker(true)}
+              onClick={() => onDatePickerOpen?.(selectedDate, (newDate) => {
+                setSelectedDate(newDate);
+                // Invalidate queries to refresh data for the new date
+                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+              })}
               className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
             >
               <Calendar className="w-5 h-5 transition-transform duration-150" />
@@ -183,7 +189,12 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: N
               </button>
               
               <button
-                onClick={() => setShowDatePicker(true)}
+                onClick={() => onDatePickerOpen?.(selectedDate, (newDate) => {
+                  setSelectedDate(newDate);
+                  // Invalidate queries to refresh data for the new date
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+                })}
                 className="ios-touch-feedback ios-smooth-transform flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-all duration-200 active:scale-98"
               >
                 <span className="text-xs font-medium text-foreground transition-colors duration-150">
@@ -224,7 +235,13 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: N
                   setLoggerSelectedDate(selectedDate);
                   setShowLogger(true);
                 }}
-                onDatePickerOpen={() => setShowDatePicker(true)}
+                onDatePickerOpen={onDatePickerOpen}
+                onDateChange={(newDate) => {
+                  setSelectedDate(newDate);
+                  // Invalidate queries to refresh data for the new date
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+                }}
               />
             </TabsContent>
 
@@ -267,20 +284,7 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange }: N
           </div>
         )}
 
-        {/* iOS Date Picker Modal */}
-        <IOSDatePicker 
-          selectedDate={selectedDate}
-          onDateChange={(newDate) => {
-            setSelectedDate(newDate);
-            setShowDatePicker(false);
-            // Invalidate queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
-          }}
-          size="lg"
-          showDatePicker={showDatePicker}
-          setShowDatePicker={setShowDatePicker}
-        />
+
 
 
       </div>

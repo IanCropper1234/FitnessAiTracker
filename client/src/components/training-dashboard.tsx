@@ -456,9 +456,10 @@ function WorkoutSessionCard({
 interface TrainingDashboardProps {
   userId: number;
   activeTab?: string;
+  onDatePickerOpen?: (selectedDate: string, onDateChange: (date: string) => void) => void;
 }
 
-export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingDashboardProps) {
+export function TrainingDashboard({ userId, activeTab = "dashboard", onDatePickerOpen }: TrainingDashboardProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);

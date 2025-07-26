@@ -42,11 +42,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface IntegratedNutritionOverviewProps {
   userId: number;
   onShowLogger?: (selectedDate?: string) => void;
-  onDatePickerOpen?: () => void;
+  onDatePickerOpen?: (selectedDate: string, onDateChange: (date: string) => void) => void;
+  onDateChange?: (date: string) => void;
   selectedDate?: string;
 }
 
-export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
+export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePickerOpen, onDateChange, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
