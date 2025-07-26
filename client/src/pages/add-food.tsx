@@ -210,9 +210,9 @@ export function AddFood({ user }: AddFoodProps) {
   const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
   
   // Filter food history based on search query
-  const filteredFoodHistory = foodHistory.filter((item: any) => 
+  const filteredFoodHistory = Array.isArray(foodHistory) ? foodHistory.filter((item: any) => 
     item.foodName.toLowerCase().includes(historySearchQuery.toLowerCase())
-  ).slice(0, 10); // Limit to 10 items for better performance
+  ).slice(0, 10) : []; // Limit to 10 items for better performance
 
   const categories = [
     { value: "protein", label: "Protein Sources", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
@@ -361,7 +361,7 @@ export function AddFood({ user }: AddFoodProps) {
             )}
 
             {/* Food History Section */}
-            {foodHistory.length > 0 && (
+            {Array.isArray(foodHistory) && foodHistory.length > 0 && (
               <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />

@@ -635,7 +635,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
       
       const result = await db.execute(sql`
-        SELECT DISTINCT ON (food_name, quantity, unit)
+        SELECT 
           food_name,
           quantity,
           unit,
@@ -653,7 +653,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           AND food_name IS NOT NULL
         GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability
         HAVING COUNT(*) >= 1
-        ORDER BY food_name, COUNT(*) DESC, MAX(date) DESC
+        ORDER BY COUNT(*) DESC, MAX(date) DESC
         LIMIT 50
       `);
       
