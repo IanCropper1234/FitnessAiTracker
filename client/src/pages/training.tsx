@@ -13,10 +13,9 @@ interface TrainingPageProps {
   user: User;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
-  onDatePickerOpen?: (selectedDate: string, onDateChange: (date: string) => void) => void;
 }
 
-export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange, onDatePickerOpen }: TrainingPageProps) {
+export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }: TrainingPageProps) {
   const [, setLocation] = useLocation();
   const activeTab = externalActiveTab || "sessions";
   const setActiveTab = onTabChange || (() => {});
@@ -49,7 +48,7 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange, 
         </div>
         
         <div className="mt-8 mb-32">
-          <TrainingDashboard userId={user.id} activeTab={activeTab} onDatePickerOpen={onDatePickerOpen} />
+          <TrainingDashboard userId={user.id} activeTab={activeTab} />
         </div>
       </div>
     </div>

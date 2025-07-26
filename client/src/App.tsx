@@ -19,7 +19,6 @@ import { ProfilePage } from "./pages/profile";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GlobalDatePickerModal } from "@/components/ui/global-date-picker-modal";
 
 interface User {
   id: number;
@@ -34,13 +33,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [activeNutritionTab, setActiveNutritionTab] = useState("overview");
   const [activeTrainingTab, setActiveTrainingTab] = useState("sessions");
   
-  // Global date picker state
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [datePickerProps, setDatePickerProps] = useState<{
-    selectedDate: string;
-    onDateChange: (date: string) => void;
-  } | null>(null);
-  
   // Redirect to auth if no user
   useEffect(() => {
     if (!user && location !== "/auth") {
@@ -53,12 +45,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const showBottomNav = user && location === "/dashboard";
   const showNutritionMenu = user && location === "/nutrition";
   const showTrainingMenu = user && location === "/training";
-
-  // Helper function to open date picker from any component
-  const openDatePicker = (selectedDate: string, onDateChange: (date: string) => void) => {
-    setDatePickerProps({ selectedDate, onDateChange });
-    setShowDatePicker(true);
-  };
 
   return (
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu || showTrainingMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
@@ -78,7 +64,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/nutrition">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <Nutrition user={user} activeTab={activeNutritionTab} onTabChange={setActiveNutritionTab} onDatePickerOpen={openDatePicker} /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <Nutrition user={user} activeTab={activeNutritionTab} onTabChange={setActiveNutritionTab} /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/add-food">
@@ -119,16 +105,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       {showBottomNav && <BottomNavigation />}
       {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
       {showTrainingMenu && <FloatingTrainingMenu onTabSelect={setActiveTrainingTab} activeTab={activeTrainingTab} />}
-      
-      {/* Global Date Picker Modal */}
-      {datePickerProps && (
-        <GlobalDatePickerModal
-          showDatePicker={showDatePicker}
-          setShowDatePicker={setShowDatePicker}
-          selectedDate={datePickerProps.selectedDate}
-          onDateChange={datePickerProps.onDateChange}
-        />
-      )}
     </div>
   );
 }
