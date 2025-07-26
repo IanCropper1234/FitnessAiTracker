@@ -943,45 +943,44 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                       );
                     })}
                     
-                    {mealLogs.length === 0 && (
-                      <div className="py-4">
-                        <button 
-                          onClick={() => {
-                            setLocation(`/add-food?date=${selectedDate}&mealType=${mealType.key}`);
-                          }}
-                          className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px]"
-                        >
-                          {dragOverTarget === mealType.key ? (
-                            <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                                <ArrowRight className="w-3 h-3 text-white" />
-                              </div>
-                              <div>
-                                <div className="text-sm font-medium">Drop here!</div>
-                                <div className="text-xs opacity-75">Move to {mealType.label}</div>
-                              </div>
+                    {/* Always show Add Food button */}
+                    <div className="py-4">
+                      <button 
+                        onClick={() => {
+                          setLocation(`/add-food?date=${selectedDate}&mealType=${mealType.key}`);
+                        }}
+                        className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px]"
+                      >
+                        {dragOverTarget === mealType.key ? (
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                              <ArrowRight className="w-3 h-3 text-white" />
                             </div>
-                          ) : draggedItem && draggedItem.mealType !== mealType.key ? (
-                            <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                                <Plus className="w-3 h-3 text-white" />
-                              </div>
-                              <div>
-                                <div className="text-sm font-medium">Drop zone</div>
-                                <div className="text-xs opacity-75">Move {draggedItem.foodName} here</div>
-                              </div>
-                            </div>
-                          ) : (
                             <div>
-                              <div className="text-blue-500 text-lg font-medium">ADD FOOD</div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
-                                Swipe right to add meal
-                              </div>
+                              <div className="text-sm font-medium">Drop here!</div>
+                              <div className="text-xs opacity-75">Move to {mealType.label}</div>
                             </div>
-                          )}
-                        </button>
-                      </div>
-                    )}
+                          </div>
+                        ) : draggedItem && draggedItem.mealType !== mealType.key ? (
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                              <Plus className="w-3 h-3 text-white" />
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium">Drop zone</div>
+                              <div className="text-xs opacity-75">Move {draggedItem.foodName} here</div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="text-blue-500 text-lg font-medium">ADD FOOD</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {mealLogs.length === 0 ? 'Swipe right to add meal' : 'Add more foods'}
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
