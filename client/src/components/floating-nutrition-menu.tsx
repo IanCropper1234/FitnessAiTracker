@@ -28,7 +28,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
 
   return (
     <div 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 safe-area-bottom"
+      className="fixed-viewport bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700"
       style={{ 
         paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
         paddingTop: '8px'

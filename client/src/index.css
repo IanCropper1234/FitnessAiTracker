@@ -16,6 +16,18 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Fixed viewport positioning override */
+.fixed-viewport {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+  -webkit-transform: translateZ(0) !important;
+}
+
 /* iOS-optimized animations and transitions */
 .ios-animation {
   -webkit-backface-visibility: hidden;
