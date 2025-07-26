@@ -43,7 +43,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
               onClick={() => handleItemClick(item.id)}
               className={`
                 flex flex-col items-center justify-center min-h-[48px] px-2 py-1 flex-1 max-w-[80px]
-                transition-all duration-200 rounded-lg ios-touch-feedback
+                transition-all duration-200 rounded-lg ios-touch-feedback button-press-animation
                 ${isActive 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"

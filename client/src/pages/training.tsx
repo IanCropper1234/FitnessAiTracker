@@ -31,9 +31,9 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform return-button-animation"
             >
-              <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
+              <ArrowLeft className="w-5 h-5 return-icon-animation" />
             </Button>
             
             {/* Center: Compact Title with Icon */}
