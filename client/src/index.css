@@ -1052,21 +1052,6 @@
     min-width: 56px;
   }
   
-  /* Force fixed positioning for floating elements - unified approach */
-  .floating-fixed {
-    position: fixed !important;
-    z-index: 9999 !important;
-    /* Create new stacking context to prevent interference */
-    isolation: isolate;
-    /* Prevent transform inheritance from parent containers */
-    transform: translate3d(0, 0, 0) !important;
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    /* Prevent scrolling issues */
-    contain: layout style paint;
-  }
-  
   /* iOS Navigation Header Styling */
   @media (max-width: 375px) {
     .ios-nav-header {
