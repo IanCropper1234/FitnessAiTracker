@@ -3,8 +3,7 @@ import {
   Target,
   Brain,
   User,
-  TrendingUp,
-  ShoppingCart
+  TrendingUp
 } from "lucide-react";
 
 interface FloatingNutritionMenuProps {
@@ -19,7 +18,6 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
     { id: "advanced", icon: Brain, label: "Diet Coach" },
     { id: "body", icon: User, label: "Body" },
     { id: "progression", icon: TrendingUp, label: "Progress" },
-    { id: "shopping", icon: ShoppingCart, label: "Shopping" },
   ];
 
   const handleItemClick = (tabId: string) => {
