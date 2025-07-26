@@ -374,21 +374,21 @@ div.fab-container.fab-fixed {
     padding: 0;
     margin: 0;
     width: 100vw;
-    overflow-x: hidden;
+    /* REMOVED: overflow-x: hidden - can break position: fixed */
   }
 
   body {
     padding: 0;
     margin: 0;
     width: 100vw;
-    overflow-x: hidden;
+    /* REMOVED: overflow-x: hidden - can break position: fixed */
   }
 
   #root {
     padding: 0;
     margin: 0;
     width: 100vw;
-    overflow-x: hidden;
+    /* REMOVED: overflow-x: hidden - can break position: fixed */
   }
 
   :root {
