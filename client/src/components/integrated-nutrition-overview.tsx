@@ -659,10 +659,7 @@ export function IntegratedNutritionOverview({ userId, onDatePickerOpen, selected
               )}
               <Button 
                 onClick={() => {
-                  console.log('Add Food button clicked in IntegratedNutritionOverview, calling onShowLogger with date:', selectedDate);
-                  if (onShowLogger) {
-                    onShowLogger(selectedDate);
-                  }
+                  setLocation(`/add-food?date=${selectedDate}`);
                 }}
                 className="text-xs h-6 px-1.5"
                 style={{ backgroundColor: '#479bf5', color: '#030303' }}
