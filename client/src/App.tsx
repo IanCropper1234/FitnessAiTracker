@@ -10,6 +10,7 @@ import { BottomNavigation } from "@/components/bottom-navigation";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
+import { AddFood } from "./pages/add-food";
 import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
@@ -58,6 +59,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/nutrition">
           <div className="page-enter ios-animation ios-smooth-transform">
             {user ? <Nutrition user={user} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/add-food">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/training">
