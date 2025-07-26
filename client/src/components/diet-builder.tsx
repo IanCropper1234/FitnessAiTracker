@@ -947,6 +947,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     setDietGoal(prev => ({ ...prev, autoRegulation: checked }));
                   }}
                   disabled={!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)}
+                  className="bg-[#505d6e]"
                 />
               </div>
 
