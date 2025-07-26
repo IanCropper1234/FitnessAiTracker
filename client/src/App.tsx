@@ -28,6 +28,7 @@ interface User {
 
 function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User | null) => void }) {
   const [location, setLocation] = useLocation();
+  console.log('Current location:', location);
   
   // Redirect to auth if no user
   useEffect(() => {
@@ -63,7 +64,12 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/add-food">
           <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
+            <div className="min-h-screen bg-white dark:bg-black p-4">
+              <h1 className="text-xl font-bold">Add Food Route Test</h1>
+              <p>Current location: {location}</p>  
+              <p>User: {user ? user.email : 'No user'}</p>
+              <Button onClick={() => setLocation('/nutrition')}>Back to Nutrition</Button>
+            </div>
           </div>
         </Route>
         <Route path="/training">
