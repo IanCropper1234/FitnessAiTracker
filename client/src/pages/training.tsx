@@ -42,17 +42,8 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
               <h1 className="text-base font-semibold transition-colors duration-200">Training</h1>
             </div>
             
-            {/* Right: Context Menu */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback button-press-animation opacity-50"
-              disabled
-            >
-              <div className="w-1 h-1 bg-current rounded-full mx-0.5 transition-all duration-150"></div>
-              <div className="w-1 h-1 bg-current rounded-full mx-0.5 transition-all duration-150"></div>
-              <div className="w-1 h-1 bg-current rounded-full mx-0.5 transition-all duration-150"></div>
-            </Button>
+            {/* Right: Empty space for symmetry */}
+            <div className="min-h-[44px] min-w-[44px]"></div>
           </div>
         </div>
         
