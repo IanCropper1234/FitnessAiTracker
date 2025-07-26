@@ -35,7 +35,7 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
   };
 
   return (
-    <div className="fixed bottom-20 right-4 z-50">
+    <div className="floating-fixed scroll-fixed bottom-20 right-4 z-50">
       {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
         <div 

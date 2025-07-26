@@ -34,7 +34,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   };
 
   return (
-    <div className="fixed bottom-20 right-4 z-50">
+    <div className="floating-fixed scroll-fixed bottom-20 right-4 z-50">
       {/* iOS-style Backdrop for expanded menu */}
       {isExpanded && (
         <div 
