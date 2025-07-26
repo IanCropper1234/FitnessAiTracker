@@ -1,10 +1,14 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { 
   BarChart3,
   Target,
   Brain,
   User,
   TrendingUp,
-  ShoppingCart
+  ShoppingCart,
+  Plus,
+  X
 } from "lucide-react";
 
 interface FloatingNutritionMenuProps {
@@ -13,10 +17,12 @@ interface FloatingNutritionMenuProps {
 }
 
 export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutritionMenuProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const menuItems = [
     { id: "overview", icon: BarChart3, label: "Overview" },
     { id: "builder", icon: Target, label: "Diet Plan" },
-    { id: "advanced", icon: Brain, label: "RP Coach" },
+    { id: "advanced", icon: Brain, label: "Diet Coach" },
     { id: "body", icon: User, label: "Body" },
     { id: "progression", icon: TrendingUp, label: "Progress" },
     { id: "shopping", icon: ShoppingCart, label: "Shopping" },
@@ -24,54 +30,71 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
 
   const handleItemClick = (tabId: string) => {
     onTabSelect(tabId);
+    setIsExpanded(false);
   };
 
   return (
-    <div 
-      className="fixed-viewport bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700"
-      style={{ 
-        paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-        paddingTop: '8px'
-      }}
-    >
-      {/* iOS Native Tab Bar */}
-      <div className="flex items-center justify-around px-1">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeTab === item.id;
-          
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleItemClick(item.id)}
-              className={`
-                flex flex-col items-center justify-center min-w-0 flex-1 py-1 px-1 
-                ios-touch-feedback touch-target rounded-lg
-                transition-all duration-200 ease-out
-                hover:bg-gray-100 dark:hover:bg-gray-800
-                active:scale-95
-                ${isActive ? 'bg-gray-100 dark:bg-gray-800' : ''}
-              `}
-            >
-              <Icon 
-                className={`w-6 h-6 mb-0.5 transition-colors duration-200 ${
-                  isActive 
-                    ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-500 dark:text-gray-400'
-                }`} 
-              />
-              <span 
-                className={`text-xs font-medium truncate transition-colors duration-200 ${
-                  isActive 
-                    ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}
+    <div className="fixed bottom-20 right-4 z-50">
+      {/* iOS-style Backdrop for expanded menu */}
+      {isExpanded && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10 modal-overlay-enter ios-animation"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+
+      {/* Expanded Menu Items - iOS optimized for iPhone SE/12 mini */}
+      {isExpanded && (
+        <div className="absolute bottom-16 right-0 space-y-2 modal-content-enter ios-smooth-transform">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <div
+                key={item.id}
+                className="ios-scale-in ios-smooth-transform"
+                style={{ 
+                  animationDelay: `${index * 50}ms`,
+                  animation: `ios-scale-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${index * 50}ms forwards`
+                }}
               >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleItemClick(item.id)}
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-full shadow-xl backdrop-blur-md border
+                    transition-all duration-200 ios-touch-feedback ios-smooth-transform min-w-[110px] justify-start
+                    hover:scale-105 active:scale-95
+                    ${isActive 
+                      ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30" 
+                      : "bg-white/90 dark:bg-gray-800/90 text-black dark:text-white hover:bg-white dark:hover:bg-gray-700 border-gray-200/50 dark:border-gray-700/50"
+                    }
+                  `}
+                >
+                  <Icon className={`w-3.5 h-3.5 transition-all duration-150 ${isActive ? "text-white" : "text-blue-600 dark:text-blue-400"}`} />
+                  <span className="text-xs font-medium whitespace-nowrap transition-all duration-150">{item.label}</span>
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Main FAB - iOS optimized */}
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={`
+          w-12 h-12 rounded-full shadow-xl backdrop-blur-md transition-all duration-300 ease-out
+          ios-touch-feedback ios-smooth-transform border-2 flex items-center justify-center cursor-pointer
+          active:scale-90
+          ${isExpanded 
+            ? "bg-red-600 hover:bg-red-700 text-white border-red-500/30 rotate-45 scale-110" 
+            : "bg-blue-600 hover:bg-blue-700 text-white border-blue-500/30 hover:scale-105"
+          }
+        `}
+      >
+        <Plus className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'rotate-45' : 'rotate-0'}`} />
       </div>
     </div>
   );
