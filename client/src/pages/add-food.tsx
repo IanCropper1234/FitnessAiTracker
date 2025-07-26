@@ -71,8 +71,8 @@ export function AddFood({ user }: AddFoodProps) {
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
       let url = `/api/food/search?q=${encodeURIComponent(query)}`;
-      if (selectedCategory) url += `&category=${selectedCategory}`;
-      if (selectedMealSuitability) url += `&mealType=${selectedMealSuitability}`;
+      if (selectedCategory && selectedCategory !== 'any') url += `&category=${selectedCategory}`;
+      if (selectedMealSuitability && selectedMealSuitability !== 'any') url += `&mealType=${selectedMealSuitability}`;
       
       const response = await fetch(url);
       return response.json();
@@ -299,7 +299,7 @@ export function AddFood({ user }: AddFoodProps) {
                       <SelectValue placeholder="Any category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Any category</SelectItem>
+                      <SelectItem value="any">Any category</SelectItem>
                       {categories.map(cat => (
                         <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
                       ))}
@@ -313,7 +313,7 @@ export function AddFood({ user }: AddFoodProps) {
                       <SelectValue placeholder="Any meal" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Any meal</SelectItem>
+                      <SelectItem value="any">Any meal</SelectItem>
                       {mealSuitabilityOptions.map(option => (
                         <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                       ))}
