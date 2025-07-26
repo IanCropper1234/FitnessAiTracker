@@ -91,7 +91,7 @@ export function Dashboard({ user }: DashboardProps) {
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
       <div className="content-container section-spacing">
         {/* Compact Date Selector */}
-        <div className="flex items-center justify-center py-1 pt-[0px] pb-[0px] mt-[-20px] mb-[-20px]">
+        <div className="flex items-center justify-center py-1 mt-[-20px] mb-[-20px] pt-[10px] pb-[10px]">
           <div className="flex items-center gap-1">
             <button
               onClick={() => {
@@ -203,12 +203,12 @@ export function Dashboard({ user }: DashboardProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full card-spacing">
           {!nutritionSummary ? (
             // Loading skeletons for quick stats
-            <>
+            (<>
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
-            </>
+            </>)
           ) : (
             <>
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
