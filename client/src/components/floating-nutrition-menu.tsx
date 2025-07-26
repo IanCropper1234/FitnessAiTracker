@@ -14,8 +14,8 @@ interface FloatingNutritionMenuProps {
 export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutritionMenuProps) {
   const menuItems = [
     { id: "overview", icon: BarChart3, label: "Overview" },
-    { id: "builder", icon: Target, label: "Diet Plan" },
-    { id: "advanced", icon: Brain, label: "Diet Coach" },
+    { id: "builder", icon: Target, label: "Diet" },
+    { id: "advanced", icon: Brain, label: "Adjustment" },
     { id: "body", icon: User, label: "Body" },
     { id: "progression", icon: TrendingUp, label: "Progress" },
   ];
