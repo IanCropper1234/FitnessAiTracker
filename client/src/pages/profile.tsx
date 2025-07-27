@@ -330,9 +330,9 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/dashboard')}
-            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target return-button-animation"
+            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
-            <ArrowLeft className="w-4 h-4 return-icon-animation" />
+            <ArrowLeft className="w-4 h-4" />
           </Button>
           
           <div className="flex items-center gap-2 flex-1 justify-center">
@@ -344,9 +344,9 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/dashboard')}
-            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target return-button-animation"
+            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
-            <Home className="w-4 h-4 return-icon-animation" />
+            <Home className="w-4 h-4" />
           </Button>
         </div>
 

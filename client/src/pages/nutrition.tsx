@@ -143,9 +143,9 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform return-button-animation"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
             >
-              <ArrowLeft className="w-5 h-5 return-icon-animation" />
+              <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
             </Button>
             
             {/* Center: Compact Title with Icon */}
@@ -159,9 +159,9 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
               variant="ghost" 
               size="sm"
               onClick={() => setShowDatePicker(true)}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform return-button-animation"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
             >
-              <Calendar className="w-5 h-5 return-icon-animation" />
+              <Calendar className="w-5 h-5 transition-transform duration-150" />
             </Button>
           </div>
         </div>

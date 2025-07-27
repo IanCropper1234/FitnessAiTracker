@@ -131,48 +131,15 @@
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
-/* Enhanced iOS-style button press animations */
 .button-press-animation {
   transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform: translateZ(0);
-  will-change: transform, box-shadow, opacity;
+  will-change: transform, box-shadow;
 }
 
 .button-press-animation:active {
-  transform: scale(0.95) translateZ(0);
+  transform: scale(0.97) translateZ(0);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  opacity: 0.8;
-}
-
-.button-press-animation:hover {
-  transform: scale(1.02) translateZ(0);
-}
-
-/* Return/Navigation button specific animations */
-.return-button-animation {
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform: translateZ(0);
-  will-change: transform, background-color, box-shadow;
-}
-
-.return-button-animation:active {
-  transform: scale(0.92) translateZ(0);
-  background-color: rgba(255, 255, 255, 0.3);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.return-button-animation:hover {
-  transform: scale(1.05) translateZ(0);
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Icon rotation animation for return buttons */
-.return-icon-animation {
-  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.return-button-animation:active .return-icon-animation {
-  transform: rotate(-5deg) translateX(-1px);
 }
 
 /* Card hover animations */
