@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,15 @@ import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+
+// Debounce utility function
+function debounce<T extends (...args: any[]) => any>(func: T, delay: number): T {
+  let timeoutId: NodeJS.Timeout;
+  return ((...args: any[]) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  }) as T;
+}
 
 interface FoodItem {
   id: string;
@@ -623,9 +632,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   }, [currentDietGoal]);
 
-  // Auto-center wheels to selected percentages (only on initial load)
+  // Auto-center wheels to selected percentages (only once after data loads)
   useEffect(() => {
-    if (hasInitialCentered) return; // Only center once
+    if (hasInitialCentered || !currentDietGoal) return; // Only center once after data loads
     
     const centerWheelOnPercentage = (wheelRef: React.RefObject<HTMLDivElement>, percentage: number) => {
       if (!wheelRef.current) return;
@@ -639,15 +648,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       if (selectedButton) {
         // Calculate the scroll position to center the selected button
         const container = wheelRef.current;
-        const buttonTop = selectedButton.offsetTop;
-        const buttonHeight = selectedButton.offsetHeight;
-        const containerHeight = container.offsetHeight;
         
-        // Center the button in the container
-        const scrollTop = buttonTop - (containerHeight / 2) + (buttonHeight / 2);
+        // Calculate center position relative to the container's scroll area
+        const buttonCenterY = selectedButton.offsetTop + (selectedButton.offsetHeight / 2);
+        const containerCenterY = container.offsetHeight / 2;
+        const scrollTop = buttonCenterY - containerCenterY;
         
         container.scrollTo({
-          top: scrollTop,
+          top: Math.max(0, scrollTop),
           behavior: 'smooth'
         });
       }
@@ -659,10 +667,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       centerWheelOnPercentage(carbsWheelRef, macroPercentages.carbs);
       centerWheelOnPercentage(fatWheelRef, macroPercentages.fat);
       setHasInitialCentered(true);
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [macroPercentages, hasInitialCentered]);
+  }, [currentDietGoal, hasInitialCentered]);
+
+  // Debounced save function to prevent endless loops
+  const debouncedSave = useCallback(
+    debounce((updatedDietGoal: any) => {
+      saveDietGoalMutation.mutate(updatedDietGoal);
+    }, 1000),
+    [saveDietGoalMutation]
+  );
 
   // Update macros and calories when percentages change
   useEffect(() => {
@@ -670,53 +686,39 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     
     // Validate percentages total 100%
     if (!validateMacroPercentages(macroPercentages)) {
-      // Auto-adjust to ensure 100% total
-      const total = macroPercentages.protein + macroPercentages.carbs + macroPercentages.fat;
-      const scale = 100 / total;
-      const adjustedPercentages = {
-        protein: Math.round(macroPercentages.protein * scale),
-        carbs: Math.round(macroPercentages.carbs * scale),
-        fat: Math.round(macroPercentages.fat * scale)
-      };
-      setMacroPercentages(adjustedPercentages);
-      return;
+      return; // Skip if percentages don't total 100%
     }
     
     const macros = calculateMacrosFromPercentages(dietGoal.targetCalories, macroPercentages);
     
-    // Only update and save if macros actually changed
+    // Only update if macros actually changed (with tolerance for rounding)
     const currentMacros = {
-      protein: dietGoal.targetProtein,
-      carbs: dietGoal.targetCarbs,
-      fat: dietGoal.targetFat
+      protein: Number(dietGoal.targetProtein),
+      carbs: Number(dietGoal.targetCarbs),
+      fat: Number(dietGoal.targetFat)
     };
     
-    if (macros.protein === currentMacros.protein && 
-        macros.carbs === currentMacros.carbs && 
-        macros.fat === currentMacros.fat) {
-      return; // No changes, skip update
+    const tolerance = 0.1;
+    if (Math.abs(macros.protein - currentMacros.protein) < tolerance && 
+        Math.abs(macros.carbs - currentMacros.carbs) < tolerance && 
+        Math.abs(macros.fat - currentMacros.fat) < tolerance) {
+      return; // No significant changes, skip update
     }
     
     // Update local state
-    setDietGoal(prev => ({
-      ...prev,
+    const updatedGoal = {
+      ...dietGoal,
       targetProtein: macros.protein,
       targetCarbs: macros.carbs,
       targetFat: macros.fat
-    }));
-
-    // Save to database with longer debouncing to prevent loops
-    const timeoutId = setTimeout(() => {
-      saveDietGoalMutation.mutate({
-        ...dietGoal,
-        targetProtein: macros.protein,
-        targetCarbs: macros.carbs,
-        targetFat: macros.fat
-      });
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
-  }, [macroPercentages.protein, macroPercentages.carbs, macroPercentages.fat, dietGoal.targetCalories]);
+    };
+    
+    setDietGoal(updatedGoal);
+    
+    // Save to database with debouncing
+    debouncedSave(updatedGoal);
+    
+  }, [macroPercentages.protein, macroPercentages.carbs, macroPercentages.fat, dietGoal.targetCalories, debouncedSave]);
 
   // Handle macro percentage changes with validation
   const handleMacroPercentageChange = (macro: 'protein' | 'carbs' | 'fat', percentage: number) => {
