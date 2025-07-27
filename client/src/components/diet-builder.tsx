@@ -1159,100 +1159,94 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </Button>
                   </div>
                   
-                  {/* Dial/Wheel Controls Grid */}
-                  <div className="grid grid-cols-3 gap-4">
-                    {/* Protein Dial */}
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="text-xs font-medium text-blue-600 dark:text-blue-400">P: {Math.round(Number(dietGoal.targetProtein))}g</div>
-                      <div className="relative w-16 h-16 mx-auto">
-                        {/* Dial Background Circle */}
-                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
-                        {/* Progress Arc */}
-                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
-                          <circle
-                            cx="32"
-                            cy="32"
-                            r="28"
-                            fill="none"
-                            stroke="#3b82f6"
-                            strokeWidth="4"
-                            strokeDasharray={`${((macroAdjustments.protein + 50) / 100) * 175.9} 175.9`}
-                            strokeLinecap="round"
-                            className="transition-all duration-300 ease-out"
-                          />
-                        </svg>
-                        {/* Center Touch Area */}
-                        <div 
-                          className="absolute inset-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 flex items-center justify-center cursor-pointer touch-target ios-touch-feedback hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                          {...createDialHandler('protein')}
-                        >
-                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                            {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%
-                          </span>
+                  {/* iOS-Style Wheel Controls */}
+                  <div className="bg-background border border-border rounded-2xl overflow-hidden ios-smooth-transform">
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-4 border-b border-border bg-accent/20">
+                      <h4 className="text-sm font-semibold text-foreground">Macro Adjustments</h4>
+                      <div className="text-xs text-muted-foreground">Swipe to adjust</div>
+                    </div>
+                    
+                    {/* Macro Wheel Controls */}
+                    <div className="px-4 py-6 overflow-x-hidden" style={{ touchAction: 'pan-y' }}>
+                      <div className="grid grid-cols-3 gap-2 text-center relative max-w-full">
+                        
+                        {/* Protein Wheel */}
+                        <div className="flex flex-col items-center min-w-0">
+                          <div className="text-blue-600 dark:text-blue-400 text-xs font-medium text-center mb-2">
+                            Protein: {Math.round(Number(dietGoal.targetProtein))}g
+                          </div>
+                          <div className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
+                            {Array.from({ length: 21 }, (_, i) => i - 10).map((adjustment) => (
+                              <button
+                                key={adjustment}
+                                onClick={() => setMacroAdjustments(prev => ({ ...prev, protein: adjustment }))}
+                                className={`w-full text-sm py-2 px-1 rounded-lg transition-all duration-200 touch-target min-h-[36px] flex items-center justify-center return-button-animation ${
+                                  adjustment === macroAdjustments.protein
+                                    ? 'bg-blue-500 text-white font-semibold shadow-md' 
+                                    : 'text-foreground/70 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400'
+                                }`}
+                              >
+                                {adjustment > 0 ? '+' : ''}{adjustment}%
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Carbs Wheel */}
+                        <div className="flex flex-col items-center min-w-0">
+                          <div className="text-green-600 dark:text-green-400 text-xs font-medium text-center mb-2">
+                            Carbs: {Math.round(Number(dietGoal.targetCarbs))}g
+                          </div>
+                          <div className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
+                            {Array.from({ length: 21 }, (_, i) => i - 10).map((adjustment) => (
+                              <button
+                                key={adjustment}
+                                onClick={() => setMacroAdjustments(prev => ({ ...prev, carbs: adjustment }))}
+                                className={`w-full text-sm py-2 px-1 rounded-lg transition-all duration-200 touch-target min-h-[36px] flex items-center justify-center return-button-animation ${
+                                  adjustment === macroAdjustments.carbs
+                                    ? 'bg-green-500 text-white font-semibold shadow-md' 
+                                    : 'text-foreground/70 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400'
+                                }`}
+                              >
+                                {adjustment > 0 ? '+' : ''}{adjustment}%
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Fat Wheel */}
+                        <div className="flex flex-col items-center min-w-0">
+                          <div className="text-orange-600 dark:text-orange-400 text-xs font-medium text-center mb-2">
+                            Fat: {Math.round(Number(dietGoal.targetFat))}g
+                          </div>
+                          <div className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
+                            {Array.from({ length: 21 }, (_, i) => i - 10).map((adjustment) => (
+                              <button
+                                key={adjustment}
+                                onClick={() => setMacroAdjustments(prev => ({ ...prev, fat: adjustment }))}
+                                className={`w-full text-sm py-2 px-1 rounded-lg transition-all duration-200 touch-target min-h-[36px] flex items-center justify-center return-button-animation ${
+                                  adjustment === macroAdjustments.fat
+                                    ? 'bg-orange-500 text-white font-semibold shadow-md' 
+                                    : 'text-foreground/70 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400'
+                                }`}
+                              >
+                                {adjustment > 0 ? '+' : ''}{adjustment}%
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Carbs Dial */}
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="text-xs font-medium text-green-600 dark:text-green-400">C: {Math.round(Number(dietGoal.targetCarbs))}g</div>
-                      <div className="relative w-16 h-16 mx-auto">
-                        {/* Dial Background Circle */}
-                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
-                        {/* Progress Arc */}
-                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
-                          <circle
-                            cx="32"
-                            cy="32"
-                            r="28"
-                            fill="none"
-                            stroke="#10b981"
-                            strokeWidth="4"
-                            strokeDasharray={`${((macroAdjustments.carbs + 50) / 100) * 175.9} 175.9`}
-                            strokeLinecap="round"
-                            className="transition-all duration-300 ease-out"
-                          />
-                        </svg>
-                        {/* Center Touch Area */}
-                        <div 
-                          className="absolute inset-2 rounded-full bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 flex items-center justify-center cursor-pointer touch-target ios-touch-feedback hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors"
-                          {...createDialHandler('carbs')}
-                        >
-                          <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                            {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Fat Dial */}
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="text-xs font-medium text-orange-600 dark:text-orange-400">F: {Math.round(Number(dietGoal.targetFat))}g</div>
-                      <div className="relative w-16 h-16 mx-auto">
-                        {/* Dial Background Circle */}
-                        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
-                        {/* Progress Arc */}
-                        <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 64 64">
-                          <circle
-                            cx="32"
-                            cy="32"
-                            r="28"
-                            fill="none"
-                            stroke="#f97316"
-                            strokeWidth="4"
-                            strokeDasharray={`${((macroAdjustments.fat + 50) / 100) * 175.9} 175.9`}
-                            strokeLinecap="round"
-                            className="transition-all duration-300 ease-out"
-                          />
-                        </svg>
-                        {/* Center Touch Area */}
-                        <div 
-                          className="absolute inset-2 rounded-full bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800 flex items-center justify-center cursor-pointer touch-target ios-touch-feedback hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors"
-                          {...createDialHandler('fat')}
-                        >
-                          <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
-                            {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%
-                          </span>
+                    {/* Bottom Summary */}
+                    <div className="px-4 py-3 bg-accent/10 border-t border-border">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Adjustments:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-blue-600 dark:text-blue-400">P: {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%</span>
+                          <span className="text-green-600 dark:text-green-400">C: {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%</span>
+                          <span className="text-orange-600 dark:text-orange-400">F: {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%</span>
                         </div>
                       </div>
                     </div>
