@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,12 +106,17 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     weeklyWeightTarget: 0
   });
   
-  // Macro Adjustment State
-  const [macroAdjustments, setMacroAdjustments] = useState({
-    protein: 0,
-    carbs: 0,
-    fat: 0
+  // Macro Percentage State - Start with standard macro distribution
+  const [macroPercentages, setMacroPercentages] = useState({
+    protein: 25, // 25% protein
+    carbs: 45,   // 45% carbs  
+    fat: 30      // 30% fat
   });
+
+  // Refs for auto-centering wheel scrolls
+  const proteinWheelRef = useRef<HTMLDivElement>(null);
+  const carbsWheelRef = useRef<HTMLDivElement>(null);
+  const fatWheelRef = useRef<HTMLDivElement>(null);
   
   // Meal Plan State
   const [isEditingPlan, setIsEditingPlan] = useState(false);
@@ -563,142 +568,161 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }
   };
 
-  // Calculate macros based on calories and goal with percentage adjustments
-  const calculateMacros = (calories: number, goal: string, adjustments = { protein: 0, carbs: 0, fat: 0 }) => {
-    let proteinRatio, fatRatio, carbRatio;
-    
-    switch (goal) {
-      case 'cut':
-        proteinRatio = 0.3; // 30% protein
-        fatRatio = 0.25;    // 25% fat
-        carbRatio = 0.45;   // 45% carbs
-        break;
-      case 'bulk':
-        proteinRatio = 0.25; // 25% protein
-        fatRatio = 0.25;     // 25% fat
-        carbRatio = 0.5;     // 50% carbs
-        break;
-      case 'maintain':
-      default:
-        proteinRatio = 0.25; // 25% protein
-        fatRatio = 0.3;      // 30% fat
-        carbRatio = 0.45;    // 45% carbs
-        break;
+  // Function to calculate macros from calories and percentages
+  const calculateMacrosFromPercentages = (calories: number, percentages: { protein: number; carbs: number; fat: number }) => {
+    // Ensure percentages total 100%
+    const total = percentages.protein + percentages.carbs + percentages.fat;
+    if (Math.abs(total - 100) > 0.1) {
+      console.warn(`Macro percentages total ${total}%, adjusting to 100%`);
+      const scale = 100 / total;
+      const adjustedPercentages = {
+        protein: percentages.protein * scale,
+        carbs: percentages.carbs * scale,
+        fat: percentages.fat * scale
+      };
+      return {
+        protein: Math.round((calories * adjustedPercentages.protein / 100) / 4), // 4 cal per gram
+        carbs: Math.round((calories * adjustedPercentages.carbs / 100) / 4),      // 4 cal per gram  
+        fat: Math.round((calories * adjustedPercentages.fat / 100) / 9)          // 9 cal per gram
+      };
     }
 
-    // Apply percentage adjustments
-    const adjustedProteinRatio = proteinRatio * (1 + adjustments.protein / 100);
-    const adjustedCarbRatio = carbRatio * (1 + adjustments.carbs / 100);
-    const adjustedFatRatio = fatRatio * (1 + adjustments.fat / 100);
-
     return {
-      protein: Math.round((calories * adjustedProteinRatio) / 4), // 4 cal per gram
-      carbs: Math.round((calories * adjustedCarbRatio) / 4),      // 4 cal per gram  
-      fat: Math.round((calories * adjustedFatRatio) / 9)          // 9 cal per gram
+      protein: Math.round((calories * percentages.protein / 100) / 4), // 4 cal per gram
+      carbs: Math.round((calories * percentages.carbs / 100) / 4),      // 4 cal per gram  
+      fat: Math.round((calories * percentages.fat / 100) / 9)          // 9 cal per gram
     };
   };
 
-  // Update macros and calories when goal or adjustments change
-  useEffect(() => {
-    if (!dietGoal.tdee) return; // Wait for TDEE to be available
+  // Function to calculate current macro percentages from saved diet goal
+  const calculateCurrentMacroPercentages = (dietGoal: DietGoal) => {
+    const totalCalories = (dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9);
+    if (totalCalories === 0) return { protein: 25, carbs: 45, fat: 30 }; // Default
     
-    // Start with original TDEE-based calories for the baseline
-    const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'lose' ? 0.85 : dietGoal.goal === 'gain' ? 1.15 : 1));
-    const macros = calculateMacros(originalCalories, dietGoal.goal, macroAdjustments);
-    const adjustedCalories = (macros.protein * 4) + (macros.carbs * 4) + (macros.fat * 9);
+    return {
+      protein: Math.round((dietGoal.targetProtein * 4 / totalCalories) * 100),
+      carbs: Math.round((dietGoal.targetCarbs * 4 / totalCalories) * 100),
+      fat: Math.round((dietGoal.targetFat * 9 / totalCalories) * 100)
+    };
+  };
+
+  // Validation function to ensure percentages total 100%
+  const validateMacroPercentages = (percentages: { protein: number; carbs: number; fat: number }) => {
+    const total = percentages.protein + percentages.carbs + percentages.fat;
+    return Math.abs(total - 100) < 0.1; // Allow small rounding errors
+  };
+
+  // Initialize macro percentages from saved diet goal
+  useEffect(() => {
+    if (currentDietGoal?.targetCalories && currentDietGoal.targetProtein && currentDietGoal.targetCarbs && currentDietGoal.targetFat) {
+      const savedPercentages = calculateCurrentMacroPercentages(currentDietGoal);
+      setMacroPercentages(savedPercentages);
+    }
+  }, [currentDietGoal]);
+
+  // Auto-center wheels to selected percentages
+  useEffect(() => {
+    const centerWheelOnPercentage = (wheelRef: React.RefObject<HTMLDivElement>, percentage: number) => {
+      if (!wheelRef.current) return;
+      
+      // Find the selected button
+      const buttons = wheelRef.current.querySelectorAll('button');
+      const selectedButton = Array.from(buttons).find(button => 
+        button.textContent?.trim() === `${percentage}%`
+      );
+      
+      if (selectedButton) {
+        // Scroll to center the selected button in the wheel
+        selectedButton.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'center'
+        });
+      }
+    };
+
+    // Center all three wheels with a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      centerWheelOnPercentage(proteinWheelRef, macroPercentages.protein);
+      centerWheelOnPercentage(carbsWheelRef, macroPercentages.carbs);
+      centerWheelOnPercentage(fatWheelRef, macroPercentages.fat);
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [macroPercentages]);
+
+  // Update macros and calories when percentages change
+  useEffect(() => {
+    if (!dietGoal.targetCalories) return; // Wait for target calories to be available
+    
+    // Validate percentages total 100%
+    if (!validateMacroPercentages(macroPercentages)) {
+      // Auto-adjust to ensure 100% total
+      const total = macroPercentages.protein + macroPercentages.carbs + macroPercentages.fat;
+      const scale = 100 / total;
+      const adjustedPercentages = {
+        protein: Math.round(macroPercentages.protein * scale),
+        carbs: Math.round(macroPercentages.carbs * scale),
+        fat: Math.round(macroPercentages.fat * scale)
+      };
+      setMacroPercentages(adjustedPercentages);
+      return;
+    }
+    
+    const macros = calculateMacrosFromPercentages(dietGoal.targetCalories, macroPercentages);
     
     // Update local state
     setDietGoal(prev => ({
       ...prev,
-      targetCalories: Math.round(adjustedCalories),
       targetProtein: macros.protein,
       targetCarbs: macros.carbs,
       targetFat: macros.fat
     }));
 
-    // Only save to database if there are actual macro adjustments
-    if (macroAdjustments.protein !== 0 || macroAdjustments.carbs !== 0 || macroAdjustments.fat !== 0) {
-      // Debounce the database update to avoid too many requests
-      const timeoutId = setTimeout(() => {
-        saveDietGoalMutation.mutate({
-          ...dietGoal,
-          targetCalories: Math.round(adjustedCalories),
-          targetProtein: macros.protein,
-          targetCarbs: macros.carbs,
-          targetFat: macros.fat
+    // Save to database with debouncing
+    const timeoutId = setTimeout(() => {
+      saveDietGoalMutation.mutate({
+        ...dietGoal,
+        targetProtein: macros.protein,
+        targetCarbs: macros.carbs,
+        targetFat: macros.fat
+      });
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [macroPercentages, dietGoal.targetCalories]);
+
+  // Handle macro percentage changes with validation
+  const handleMacroPercentageChange = (macro: 'protein' | 'carbs' | 'fat', percentage: number) => {
+    const newPercentages = { ...macroPercentages, [macro]: percentage };
+    
+    // Ensure total doesn't exceed 100%
+    const total = newPercentages.protein + newPercentages.carbs + newPercentages.fat;
+    if (total <= 100) {
+      setMacroPercentages(newPercentages);
+    } else {
+      // If total exceeds 100%, adjust other macros proportionally
+      const otherMacros = Object.keys(newPercentages).filter(key => key !== macro) as ('protein' | 'carbs' | 'fat')[];
+      const remainingPercent = 100 - percentage;
+      const currentOtherTotal = otherMacros.reduce((sum, key) => sum + macroPercentages[key], 0);
+      
+      if (currentOtherTotal > 0) {
+        const adjustedPercentages = { ...newPercentages };
+        otherMacros.forEach(key => {
+          adjustedPercentages[key] = Math.round((macroPercentages[key] / currentOtherTotal) * remainingPercent);
         });
-      }, 500);
-
-      return () => clearTimeout(timeoutId);
+        setMacroPercentages(adjustedPercentages);
+      }
     }
-  }, [dietGoal.goal, dietGoal.tdee, macroAdjustments]);
-
-  // Handle macro adjustment changes and update target calories accordingly
-  const handleMacroAdjustment = (macro: 'protein' | 'carbs' | 'fat', value: number) => {
-    setMacroAdjustments(prev => ({ ...prev, [macro]: value }));
   };
 
-  // Reset macro adjustments and save to database
-  const resetMacroAdjustments = () => {
-    setMacroAdjustments({ protein: 0, carbs: 0, fat: 0 });
-    
-    // Reset to baseline macros in database
-    const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'lose' ? 0.85 : dietGoal.goal === 'gain' ? 1.15 : 1));
-    const baseMacros = calculateMacros(originalCalories, dietGoal.goal, { protein: 0, carbs: 0, fat: 0 });
-    
-    saveDietGoalMutation.mutate({
-      ...dietGoal,
-      targetCalories: originalCalories,
-      targetProtein: baseMacros.protein,
-      targetCarbs: baseMacros.carbs,
-      targetFat: baseMacros.fat
-    });
+  // Reset macro percentages to standard distribution
+  const resetMacroPercentages = () => {
+    const standardPercentages = { protein: 25, carbs: 45, fat: 30 };
+    setMacroPercentages(standardPercentages);
   };
 
-  // Universal dial control handler
-  const createDialHandler = (macroType: 'protein' | 'carbs' | 'fat') => ({
-    onTouchStart: (e: React.TouchEvent) => {
-      e.preventDefault();
-      const dial = e.currentTarget.parentElement;
-      if (!dial) return;
-      const handleMove = (moveEvent: TouchEvent) => {
-        const rect = dial.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const touch = moveEvent.touches[0];
-        const angle = Math.atan2(touch.clientY - centerY, touch.clientX - centerX);
-        const degrees = (angle * 180 / Math.PI + 90) % 360;
-        const value = Math.round((degrees / 360) * 100 - 50);
-        handleMacroAdjustment(macroType, Math.max(-50, Math.min(50, value)));
-      };
-      const handleEnd = () => {
-        document.removeEventListener('touchmove', handleMove);
-        document.removeEventListener('touchend', handleEnd);
-      };
-      document.addEventListener('touchmove', handleMove);
-      document.addEventListener('touchend', handleEnd);
-    },
-    onMouseDown: (e: React.MouseEvent) => {
-      e.preventDefault();
-      const dial = e.currentTarget.parentElement;
-      if (!dial) return;
-      const handleMove = (moveEvent: MouseEvent) => {
-        const rect = dial.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const angle = Math.atan2(moveEvent.clientY - centerY, moveEvent.clientX - centerX);
-        const degrees = (angle * 180 / Math.PI + 90) % 360;
-        const value = Math.round((degrees / 360) * 100 - 50);
-        handleMacroAdjustment(macroType, Math.max(-50, Math.min(50, value)));
-      };
-      const handleEnd = () => {
-        document.removeEventListener('mousemove', handleMove);
-        document.removeEventListener('mouseup', handleEnd);
-      };
-      document.addEventListener('mousemove', handleMove);
-      document.addEventListener('mouseup', handleEnd);
-    }
-  });
+
 
   // Calculate current calorie total from macros
   const calculateCurrentCalories = () => {
@@ -1152,7 +1176,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={resetMacroAdjustments}
+                      onClick={resetMacroPercentages}
                       className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm px-3 py-1 h-auto font-medium"
                     >
                       Reset
@@ -1176,18 +1200,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           <div className="text-blue-600 dark:text-blue-400 text-xs font-medium text-center mb-2">
                             Protein: {Math.round(Number(dietGoal.targetProtein))}g
                           </div>
-                          <div className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
-                            {Array.from({ length: 21 }, (_, i) => i - 10).map((adjustment) => (
+                          <div ref={proteinWheelRef} className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
+                            {Array.from({ length: 41 }, (_, i) => i + 10).map((percentage) => (
                               <button
-                                key={adjustment}
-                                onClick={() => setMacroAdjustments(prev => ({ ...prev, protein: adjustment }))}
+                                key={percentage}
+                                onClick={() => handleMacroPercentageChange('protein', percentage)}
                                 className={`w-full text-sm py-2 px-1 rounded-lg transition-all duration-200 touch-target min-h-[36px] flex items-center justify-center return-button-animation ${
-                                  adjustment === macroAdjustments.protein
+                                  percentage === macroPercentages.protein
                                     ? 'bg-blue-500 text-white font-semibold shadow-md' 
                                     : 'text-foreground/70 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400'
                                 }`}
                               >
-                                {adjustment > 0 ? '+' : ''}{adjustment}%
+                                {percentage}%
                               </button>
                             ))}
                           </div>
@@ -1198,18 +1222,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           <div className="text-green-600 dark:text-green-400 text-xs font-medium text-center mb-2">
                             Carbs: {Math.round(Number(dietGoal.targetCarbs))}g
                           </div>
-                          <div className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
-                            {Array.from({ length: 21 }, (_, i) => i - 10).map((adjustment) => (
+                          <div ref={carbsWheelRef} className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
+                            {Array.from({ length: 41 }, (_, i) => i + 10).map((percentage) => (
                               <button
-                                key={adjustment}
-                                onClick={() => setMacroAdjustments(prev => ({ ...prev, carbs: adjustment }))}
+                                key={percentage}
+                                onClick={() => handleMacroPercentageChange('carbs', percentage)}
                                 className={`w-full text-sm py-2 px-1 rounded-lg transition-all duration-200 touch-target min-h-[36px] flex items-center justify-center return-button-animation ${
-                                  adjustment === macroAdjustments.carbs
+                                  percentage === macroPercentages.carbs
                                     ? 'bg-green-500 text-white font-semibold shadow-md' 
                                     : 'text-foreground/70 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400'
                                 }`}
                               >
-                                {adjustment > 0 ? '+' : ''}{adjustment}%
+                                {percentage}%
                               </button>
                             ))}
                           </div>
@@ -1220,18 +1244,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           <div className="text-orange-600 dark:text-orange-400 text-xs font-medium text-center mb-2">
                             Fat: {Math.round(Number(dietGoal.targetFat))}g
                           </div>
-                          <div className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
-                            {Array.from({ length: 21 }, (_, i) => i - 10).map((adjustment) => (
+                          <div ref={fatWheelRef} className="max-h-32 overflow-y-auto space-y-1 date-picker-wheel py-8 w-full" style={{ touchAction: 'pan-y' }}>
+                            {Array.from({ length: 41 }, (_, i) => i + 10).map((percentage) => (
                               <button
-                                key={adjustment}
-                                onClick={() => setMacroAdjustments(prev => ({ ...prev, fat: adjustment }))}
+                                key={percentage}
+                                onClick={() => handleMacroPercentageChange('fat', percentage)}
                                 className={`w-full text-sm py-2 px-1 rounded-lg transition-all duration-200 touch-target min-h-[36px] flex items-center justify-center return-button-animation ${
-                                  adjustment === macroAdjustments.fat
+                                  percentage === macroPercentages.fat
                                     ? 'bg-orange-500 text-white font-semibold shadow-md' 
                                     : 'text-foreground/70 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400'
                                 }`}
                               >
-                                {adjustment > 0 ? '+' : ''}{adjustment}%
+                                {percentage}%
                               </button>
                             ))}
                           </div>
@@ -1242,11 +1266,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     {/* Bottom Summary */}
                     <div className="px-4 py-3 bg-accent/10 border-t border-border">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Adjustments:</span>
+                        <span className="text-muted-foreground">Distribution:</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-blue-600 dark:text-blue-400">P: {macroAdjustments.protein > 0 ? '+' : ''}{macroAdjustments.protein}%</span>
-                          <span className="text-green-600 dark:text-green-400">C: {macroAdjustments.carbs > 0 ? '+' : ''}{macroAdjustments.carbs}%</span>
-                          <span className="text-orange-600 dark:text-orange-400">F: {macroAdjustments.fat > 0 ? '+' : ''}{macroAdjustments.fat}%</span>
+                          <span className="text-blue-600 dark:text-blue-400">P: {macroPercentages.protein}%</span>
+                          <span className="text-green-600 dark:text-green-400">C: {macroPercentages.carbs}%</span>
+                          <span className="text-orange-600 dark:text-orange-400">F: {macroPercentages.fat}%</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-xs mt-1">
+                        <span className="text-muted-foreground">Total:</span>
+                        <div className={`font-medium ${
+                          validateMacroPercentages(macroPercentages) 
+                            ? 'text-green-600 dark:text-green-400' 
+                            : 'text-red-600 dark:text-red-400'
+                        }`}>
+                          {macroPercentages.protein + macroPercentages.carbs + macroPercentages.fat}% 
+                          {validateMacroPercentages(macroPercentages) ? '✓' : '⚠'}
                         </div>
                       </div>
                     </div>
