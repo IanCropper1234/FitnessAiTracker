@@ -97,6 +97,8 @@ export function AddFood({ user }: AddFoodProps) {
 
   const aiAnalyzeMutation = useMutation({
     mutationFn: async (data: { description?: string; image?: string; portionWeight?: string; portionUnit?: string }) => {
+      console.log("AI Analysis starting with data:", data);
+      
       const payload: any = {
         quantity: parseFloat(quantity),
         unit: unit
@@ -115,8 +117,28 @@ export function AddFood({ user }: AddFoodProps) {
         payload.portionUnit = data.portionUnit;
       }
       
+      console.log("Sending payload to AI analysis:", payload);
+      
       const response = await apiRequest("POST", "/api/nutrition/analyze", payload);
-      return response.json();
+      const result = await response.json();
+      
+      console.log("AI Analysis result:", result);
+      return result;
+    },
+    onError: (error: any) => {
+      console.error("AI Analysis error:", error);
+      toast({
+        title: "AI Analysis Failed",
+        description: error.message || "Failed to analyze food with AI",
+        variant: "destructive"
+      });
+    },
+    onSuccess: (data: any) => {
+      console.log("AI Analysis successful:", data);
+      toast({
+        title: "Success",
+        description: "Food analyzed successfully with AI!"
+      });
     }
   });
 
@@ -162,11 +184,18 @@ export function AddFood({ user }: AddFoodProps) {
   };
 
   const handleAIAnalysis = () => {
+    console.log("AI Analysis button clicked!");
+    console.log("Food query:", foodQuery);
+    console.log("Captured image:", capturedImage ? "Image present" : "No image");
+    console.log("Portion weight:", portionWeight);
+    console.log("Portion unit:", portionUnit);
+    
     const hasDescription = foodQuery.trim();
     const hasImage = capturedImage;
     const hasPortion = portionWeight && portionUnit;
     
     if (!hasDescription && !hasImage) {
+      console.log("No description or image provided");
       toast({
         title: "Missing Information",
         description: "Please provide a food description or capture a nutrition label image",
@@ -175,6 +204,7 @@ export function AddFood({ user }: AddFoodProps) {
       return;
     }
     
+    console.log("Calling AI mutation...");
     aiAnalyzeMutation.mutate({
       description: hasDescription ? foodQuery : undefined,
       image: hasImage ? capturedImage : undefined,
