@@ -8,6 +8,16 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 27, 2025 - COMPLETE: Image Recognition for Nutrition Labels with Enhanced Portion Input
+✓ **IMAGE CAPTURE FUNCTIONALITY**: Added camera button in AI analysis mode to capture nutrition fact labels using device camera
+✓ **ENHANCED AI ANALYSIS**: Updated OpenAI service to support both text descriptions and nutrition label images with GPT-4 vision
+✓ **PORTION INPUT FIELDS**: Implemented weight/volume input fields (g/ml/oz/cups/tbsp/tsp) for more accurate AI nutrition analysis
+✓ **DUAL INPUT VALIDATION**: Enhanced AI button to work with either text description or captured image, or both combined
+✓ **BACKEND IMAGE SUPPORT**: Updated /api/nutrition/analyze endpoint to handle image data and portion parameters
+✓ **VISUAL FEEDBACK**: Added image preview with clear button and proper validation for file size (5MB) and type restrictions
+✓ **IOS OPTIMIZED**: Image capture uses device camera with 'capture="environment"' for back-facing camera preference
+✓ **TRANSPARENT UI**: Clear labeling of optional portion inputs with blue-themed information sections
+
 ### July 26, 2025 - COMPLETE: Add Food History Section with Search & Quick-Add Functionality
 ✓ **FOOD HISTORY API**: Created comprehensive backend endpoint (/api/nutrition/history) fetching unique foods from user's last 90 days
 ✓ **SEARCHABLE INTERFACE**: Implemented real-time search functionality to filter through previously logged foods by name

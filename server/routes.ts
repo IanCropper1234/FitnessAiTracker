@@ -556,26 +556,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI nutrition analysis
+  // AI nutrition analysis with image support
   app.post("/api/nutrition/analyze", async (req, res) => {
     try {
-      const { foodDescription, quantity, unit } = req.body;
+      const { 
+        description, 
+        foodDescription, // Legacy support
+        quantity, 
+        unit, 
+        image,
+        portionWeight,
+        portionUnit 
+      } = req.body;
       
       if (!process.env.OPENAI_API_KEY) {
         return res.status(400).json({ message: "OpenAI API key not configured" });
+      }
+
+      // Support both legacy and new parameter names
+      const textDescription = description || foodDescription;
+      
+      if (!textDescription && !image) {
+        return res.status(400).json({ message: "Either description or image must be provided" });
       }
 
       // Import the analyzeNutrition function from services
       const { analyzeNutrition } = await import("./services/openai");
       
       const analysis = await analyzeNutrition(
-        foodDescription, 
+        textDescription, 
         quantity || 1, 
-        unit || "serving"
+        unit || "serving",
+        image,
+        portionWeight ? parseFloat(portionWeight) : undefined,
+        portionUnit
       );
       
       res.json(analysis);
     } catch (error: any) {
+      console.error("Nutrition analysis error:", error);
       res.status(400).json({ message: error.message });
     }
   });

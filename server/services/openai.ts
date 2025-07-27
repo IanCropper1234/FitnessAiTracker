@@ -21,12 +21,62 @@ const openai = new OpenAI({
 });
 
 export async function analyzeNutrition(
-  foodDescription: string, 
+  foodDescription?: string, 
   quantity: number = 1, 
-  unit: string = "serving"
+  unit: string = "serving",
+  nutritionLabelImage?: string,
+  portionWeight?: number,
+  portionUnit?: string
 ): Promise<NutritionAnalysis> {
   try {
-    const prompt = `Analyze the nutritional content of: "${foodDescription}" for ${quantity} ${unit}(s).
+    // Build prompt based on available inputs
+    let prompt = "";
+    let messageContent: any = [];
+
+    if (nutritionLabelImage) {
+      // Image analysis mode
+      prompt = `Analyze the nutrition facts label in this image${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : foodDescription ? ` for ${quantity} ${unit}(s) of "${foodDescription}"` : ""}.`;
+      
+      messageContent = [
+        {
+          type: "text",
+          text: prompt + `
+
+**Task:** Extract nutritional information from the nutrition facts label in the image.
+
+**Required Analysis:**
+1. **Label Reading:** Carefully read all text and numerical values from the nutrition facts label
+2. **Serving Size Recognition:** Identify the serving size shown on the label
+3. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on the label's serving size` : `Use the serving size as shown on the label`}
+4. **Accuracy Priority:** Base all values directly on what's visible in the label
+
+**Output Requirements - JSON format with these exact fields:**
+- calories: total calories (number)
+- protein: protein in grams (number) 
+- carbs: carbohydrates in grams (number)
+- fat: fat in grams (number)
+- confidence: confidence level 0-1 (number, 1 = very confident from clear label)
+- category: primary macro category (string: "protein", "carb", "fat", or "mixed")
+- mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
+- assumptions: any assumptions made if label is unclear (string)
+- servingDetails: clarification of portion analyzed from label (string)
+
+Return only valid JSON with all required fields.`
+        },
+        {
+          type: "image_url",
+          image_url: {
+            url: nutritionLabelImage
+          }
+        }
+      ];
+    } else if (foodDescription) {
+      // Text description mode
+      prompt = `Analyze the nutritional content of: "${foodDescription}" for ${quantity} ${unit}(s).`;
+      messageContent = [
+        {
+          type: "text",
+          text: prompt + `
 
 **Task:** Provide detailed nutritional analysis with transparent methodology and clear assumptions.
 
@@ -53,50 +103,32 @@ export async function analyzeNutrition(
 - "fat": >8g fat per 100 calories (nuts, oils, avocado, fatty fish)
 - "mixed": balanced macros or doesn't fit above categories
 
-**Meal Suitability Guidelines:**
-- "pre-workout": high carbs, moderate protein, low fat (fast energy)
-- "post-workout": high protein, moderate carbs, low fat (recovery)
-- "regular": balanced macros for main meals
-- "snack": appropriate for between-meal consumption
-
-**Analysis Process:**
-- If description is vague, make reasonable assumptions based on typical serving sizes
-- For mixed dishes, break down into probable ingredients and proportions
-- Consider preparation methods that affect calories (grilled vs fried, etc.)
-- Indicate uncertainty levels appropriately in confidence score
-- Provide serving details and key assumptions for transparency
-
-**Examples:**
-- "grilled chicken sandwich" → Assume: 1 medium sandwich (~180g), standard mayo, grilled chicken breast, regular bun
-- "medium bowl Thai green curry" → Assume: 300ml serving, chicken, eggplant, coconut milk, typical recipe proportions
-- "2 slices pizza" → Assume: medium pizza slices, cheese pizza unless specified otherwise
-
-Return only valid JSON with all required fields.`;
+Return only valid JSON with all required fields.`
+        }
+      ];
+    } else {
+      throw new Error("Either foodDescription or nutritionLabelImage must be provided");
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
           role: "system",
-          content: `You are an expert nutrition assistant specializing in analyzing food descriptions and estimating their nutritional content, especially calories and macronutrients (protein, carbohydrates, fat). Your expertise includes:
+          content: `You are an expert nutrition assistant specializing in analyzing food descriptions and nutrition labels, estimating their nutritional content, especially calories and macronutrients (protein, carbohydrates, fat). Your expertise includes:
 
-1. **Interpret User Descriptions:** Carefully read food, meal, or recipe descriptions, whether simple ("grilled chicken sandwich") or elaborate ("a medium bowl of homemade Thai green curry with chicken, eggplant, coconut milk, and white rice").
-
-2. **Portion & Detail Recognition:** Accurately identify and estimate quantities, portion sizes (e.g., "medium bowl", "2 slices"), and preparation methods that might affect calorie/macro values.
-
-3. **Ingredient Breakdown:** For mixed dishes or ambiguous terms, intelligently infer the most probable ingredients and proportions based on common recipes and dietary habits. When a description is vague, clarify assumptions (e.g., "assuming regular mayonnaise").
-
-4. **Database-Informed Estimation:** Base your answers on widely accepted nutrition databases (such as USDA FoodData Central, Open Food Facts, or similar trusted international sources) and up-to-date averages for regional/cultural variations. Use crowd-sourced or brand-level data when needed.
-
-5. **Transparent Methodology:** Always indicate any notable assumptions, explain your reasoning for portion sizes, and state confidence levels based on description completeness.
-
-6. **Renaissance Periodization Integration:** Apply RP methodology for food categorization and meal timing recommendations to support optimal training and recovery.
+1. **Interpret User Descriptions & Images:** Carefully read food descriptions and analyze nutrition facts labels from images
+2. **Portion & Detail Recognition:** Accurately identify quantities, portion sizes, and preparation methods
+3. **Label Reading:** Extract precise nutritional data from nutrition facts labels in images
+4. **Database-Informed Estimation:** Base estimates on USDA FoodData Central, Open Food Facts, and trusted sources
+5. **Transparent Methodology:** Always indicate assumptions and reasoning for accuracy
+6. **Renaissance Periodization Integration:** Apply RP methodology for food categorization and meal timing recommendations
 
 Goal: Provide the most realistic, transparent, and actionable nutritional information to support users in making healthy choices and accurately tracking their intake.`
         },
         {
           role: "user",
-          content: prompt
+          content: messageContent
         }
       ],
       response_format: { type: "json_object" },
