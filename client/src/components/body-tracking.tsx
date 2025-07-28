@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,7 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
   const queryClient = useQueryClient();
   const [isAddingMetric, setIsAddingMetric] = useState(false);
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
+  const formRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     weight: '',
@@ -176,6 +177,21 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
       }));
     }
   }, [latestMetric, isAddingMetric]);
+
+  // Auto-scroll to form when it opens
+  useEffect(() => {
+    if (isAddingMetric && formRef.current) {
+      const scrollTimeout = setTimeout(() => {
+        formRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }, 100); // Small delay to ensure DOM is updated
+      
+      return () => clearTimeout(scrollTimeout);
+    }
+  }, [isAddingMetric]);
 
   if (isLoading) {
     return (
@@ -513,7 +529,6 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
       )}
 
       {/* Add Metrics Form - Enhanced Design */}
-      {/* Debug: isAddingMetric = {isAddingMetric.toString()} */}
       {isAddingMetric && (
         <Card className="shadow-lg border-0 bg-white dark:bg-gray-900">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-blue-100 dark:border-blue-800">
@@ -533,7 +548,7 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent ref={formRef} className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Date and Unit Selection */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
