@@ -127,30 +127,30 @@ export function MacroChart({
       </ResponsiveContainer>
       {/* Macro Summary */}
       <div className="grid grid-cols-3 gap-4 text-center">
-        {data.map((macro) => (
-          <div key={macro.name} className="space-y-1">
-            <div className="flex items-center justify-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ backgroundColor: macro.color }}
-              />
-              <span className="text-sm font-medium text-black dark:text-white">
-                {macro.name}
-              </span>
-            </div>
-            <div className="text-lg font-bold text-black dark:text-white">
-              {Math.round(macro.grams)}g
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              {Math.round(macro.value)} cal
-            </div>
-            {macro.goal > 0 && (
-              <div className="text-xs font-semibold text-[#3c81f6]">
-                Goal: {Math.round(macro.goal)}g
+        {data.map((macro) => {
+          const percentage = totalCals > 0 ? Math.round((macro.value / totalCals) * 100) : 0;
+          return (
+            <div key={macro.name} className="space-y-1">
+              <div className="flex items-center justify-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: macro.color }}
+                />
+                <span className="text-sm font-medium text-black dark:text-white">
+                  {macro.name}
+                </span>
               </div>
-            )}
-          </div>
-        ))}
+              <div className="text-sm font-bold text-black dark:text-white">
+                {macro.name}{Math.round(macro.grams)}g • {Math.round(macro.value)} cal ({percentage}%)
+              </div>
+              {macro.goal > 0 && (
+                <div className="text-xs font-semibold text-[#3c81f6]">
+                  Goal: {Math.round(macro.goal)}g
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
       {/* Total Calories */}
       <div className="text-center border-t border-gray-200 dark:border-gray-700 pt-[10px] pb-[10px]">
