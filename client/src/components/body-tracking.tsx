@@ -205,8 +205,11 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
           <p className="text-gray-600 dark:text-gray-400 text-sm">Track your body measurements and changes</p>
         </div>
         <Button
-          onClick={() => setIsAddingMetric(!isAddingMetric)}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 font-medium shadow-lg"
+          onClick={() => {
+            console.log('Log Entry button clicked, current state:', isAddingMetric);
+            setIsAddingMetric(!isAddingMetric);
+          }}
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 font-medium shadow-lg ios-touch-feedback touch-target"
         >
           <Plus className="w-4 h-4 mr-2" />
           Log Entry
@@ -502,8 +505,11 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
                 Log your first body measurement to begin tracking your fitness journey and see your progress over time.
               </p>
               <Button
-                onClick={() => setIsAddingMetric(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => {
+                  console.log('Add First Entry button clicked');
+                  setIsAddingMetric(true);
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white ios-touch-feedback touch-target"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Entry

@@ -342,6 +342,42 @@
   border: 1px solid #6b7280;
 }
 
+/* iOS Touch Feedback and Button Optimization */
+.ios-touch-feedback {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: transform, opacity, box-shadow;
+}
+
+.ios-touch-feedback:active {
+  transform: scale(0.97) translateZ(0);
+  opacity: 0.8;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+/* Button touch optimization */
+button, .ios-button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
