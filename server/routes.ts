@@ -569,6 +569,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         portionUnit 
       } = req.body;
       
+      console.log("AI Analysis request received:", {
+        description: description ? "provided" : "missing",
+        image: image ? "provided" : "missing",
+        portionWeight,
+        portionUnit,
+        quantity,
+        unit
+      });
+      
       if (!process.env.OPENAI_API_KEY) {
         return res.status(400).json({ message: "OpenAI API key not configured" });
       }
@@ -591,6 +600,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         portionWeight ? parseFloat(portionWeight) : undefined,
         portionUnit
       );
+      
+      console.log("AI Analysis successful:", {
+        calories: analysis.calories,
+        protein: analysis.protein,
+        confidence: analysis.confidence
+      });
       
       res.json(analysis);
     } catch (error: any) {
