@@ -109,6 +109,28 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     }
   });
 
+  // Helper function to get current target calories (custom or suggested)
+  const getCurrentTargetCalories = () => {
+    if (!dietGoals) return nutritionSummary?.goalCalories || 2000;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetCalories || dietGoals.targetCalories) : dietGoals.targetCalories;
+  };
+
+  // Helper functions to get current macro targets (custom or suggested)
+  const getCurrentTargetProtein = () => {
+    if (!dietGoals) return nutritionSummary?.goalProtein || 150;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetProtein || dietGoals.targetProtein) : dietGoals.targetProtein;
+  };
+
+  const getCurrentTargetCarbs = () => {
+    if (!dietGoals) return nutritionSummary?.goalCarbs || 200;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetCarbs || dietGoals.targetCarbs) : dietGoals.targetCarbs;
+  };
+
+  const getCurrentTargetFat = () => {
+    if (!dietGoals) return nutritionSummary?.goalFat || 60;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetFat || dietGoals.targetFat) : dietGoals.targetFat;
+  };
+
   // Fetch nutrition logs for the selected date
   const { data: nutritionLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, selectedDate],
@@ -677,20 +699,15 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                 {nutritionSummary?.totalCalories || 0}
               </div>
               <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
-                of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
+                of {Math.round(getCurrentTargetCalories())}
               </div>
               {dietGoals && (
                 <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 mb-1">
-                  Left: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
+                  Left: {Math.max(0, Math.round(getCurrentTargetCalories()) - (nutritionSummary?.totalCalories || 0))}
                 </div>
               )}
               <Progress 
-                value={dietGoals 
-                  ? (nutritionSummary?.totalCalories || 0) / Number(dietGoals.targetCalories) * 100 
-                  : nutritionSummary 
-                    ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 
-                    : 0
-                } 
+                value={(nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100} 
                 className="h-1"
               />
             </div>
@@ -707,20 +724,15 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                 {Math.round(nutritionSummary?.totalProtein || 0)}
               </div>
               <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
-                of {Math.round(Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150))}g
+                of {Math.round(getCurrentTargetProtein())}g
               </div>
               {dietGoals && (
                 <div className="text-[10px] font-medium text-green-600 dark:text-green-400 mb-1">
-                  Left: {Math.round(Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)))}g
+                  Left: {Math.round(Math.max(0, getCurrentTargetProtein() - (nutritionSummary?.totalProtein || 0)))}g
                 </div>
               )}
               <Progress 
-                value={dietGoals 
-                  ? (nutritionSummary?.totalProtein || 0) / Number(dietGoals.targetProtein) * 100 
-                  : nutritionSummary 
-                    ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 
-                    : 0
-                } 
+                value={(nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100} 
                 className="h-1"
               />
             </div>
@@ -737,20 +749,15 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                 {Math.round(nutritionSummary?.totalCarbs || 0)}
               </div>
               <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
-                of {Math.round(Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200))}g
+                of {Math.round(getCurrentTargetCarbs())}g
               </div>
               {dietGoals && (
                 <div className="text-[10px] font-medium text-orange-600 dark:text-orange-400 mb-1">
-                  Left: {Math.round(Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)))}g
+                  Left: {Math.round(Math.max(0, getCurrentTargetCarbs() - (nutritionSummary?.totalCarbs || 0)))}g
                 </div>
               )}
               <Progress 
-                value={dietGoals 
-                  ? (nutritionSummary?.totalCarbs || 0) / Number(dietGoals.targetCarbs) * 100 
-                  : nutritionSummary 
-                    ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 
-                    : 0
-                } 
+                value={(nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100} 
                 className="h-1"
               />
             </div>
@@ -767,20 +774,15 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                 {Math.round(nutritionSummary?.totalFat || 0)}
               </div>
               <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
-                of {Math.round(Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60))}g
+                of {Math.round(getCurrentTargetFat())}g
               </div>
               {dietGoals && (
                 <div className="text-[10px] font-medium text-purple-600 dark:text-purple-400 mb-1">
-                  Left: {Math.round(Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)))}g
+                  Left: {Math.round(Math.max(0, getCurrentTargetFat() - (nutritionSummary?.totalFat || 0)))}g
                 </div>
               )}
               <Progress 
-                value={dietGoals 
-                  ? (nutritionSummary?.totalFat || 0) / Number(dietGoals.targetFat) * 100 
-                  : nutritionSummary 
-                    ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 
-                    : 0
-                } 
+                value={(nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100} 
                 className="h-1"
               />
             </div>

@@ -34,6 +34,28 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
     }
   });
 
+  // Helper function to get current target calories (custom or suggested)
+  const getCurrentTargetCalories = () => {
+    if (!dietGoals) return nutritionSummary?.goalCalories || 2000;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetCalories || dietGoals.targetCalories) : dietGoals.targetCalories;
+  };
+
+  // Helper functions to get current macro targets (custom or suggested)
+  const getCurrentTargetProtein = () => {
+    if (!dietGoals) return nutritionSummary?.goalProtein || 150;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetProtein || dietGoals.targetProtein) : dietGoals.targetProtein;
+  };
+
+  const getCurrentTargetCarbs = () => {
+    if (!dietGoals) return nutritionSummary?.goalCarbs || 200;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetCarbs || dietGoals.targetCarbs) : dietGoals.targetCarbs;
+  };
+
+  const getCurrentTargetFat = () => {
+    if (!dietGoals) return nutritionSummary?.goalFat || 60;
+    return dietGoals.useCustomCalories ? (dietGoals.customTargetFat || dietGoals.targetFat) : dietGoals.targetFat;
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -90,20 +112,15 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {nutritionSummary?.totalCalories || 0}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              of {dietGoals?.targetCalories || nutritionSummary?.goalCalories || 2000}
+              of {Math.round(getCurrentTargetCalories())}
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-blue-600 dark:text-blue-400 text-center">
-                Remaining: {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
+                Remaining: {Math.max(0, Math.round(getCurrentTargetCalories()) - (nutritionSummary?.totalCalories || 0))}
               </p>
             )}
             <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalCalories || 0) / Number(dietGoals.targetCalories) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 
-                  : 0
-              } 
+              value={(nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100} 
               className="mt-1 h-1"
             />
           </CardContent>
@@ -120,20 +137,15 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {Math.round(nutritionSummary?.totalProtein || 0)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              of {Math.round(Number(dietGoals?.targetProtein || nutritionSummary?.goalProtein || 150))}g
+              of {Math.round(getCurrentTargetProtein())}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-green-600 dark:text-green-400 text-center">
-                Remaining: {Math.round(Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)))}g
+                Remaining: {Math.round(Math.max(0, getCurrentTargetProtein() - (nutritionSummary?.totalProtein || 0)))}g
               </p>
             )}
             <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalProtein || 0) / Number(dietGoals.targetProtein) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 
-                  : 0
-              } 
+              value={(nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100} 
               className="mt-1 h-1"
             />
           </CardContent>
@@ -150,20 +162,15 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {Math.round(nutritionSummary?.totalCarbs || 0)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              of {Math.round(Number(dietGoals?.targetCarbs || nutritionSummary?.goalCarbs || 200))}g
+              of {Math.round(getCurrentTargetCarbs())}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-orange-600 dark:text-orange-400 text-center">
-                Remaining: {Math.round(Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)))}g
+                Remaining: {Math.round(Math.max(0, getCurrentTargetCarbs() - (nutritionSummary?.totalCarbs || 0)))}g
               </p>
             )}
             <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalCarbs || 0) / Number(dietGoals.targetCarbs) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalCarbs / nutritionSummary.goalCarbs) * 100 
-                  : 0
-              } 
+              value={(nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100} 
               className="mt-1 h-1"
             />
           </CardContent>
@@ -180,20 +187,15 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
               {Math.round(nutritionSummary?.totalFat || 0)}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              of {Math.round(Number(dietGoals?.targetFat || nutritionSummary?.goalFat || 60))}g
+              of {Math.round(getCurrentTargetFat())}g
             </p>
             {dietGoals && (
               <p className="text-xs font-medium text-purple-600 dark:text-purple-400 text-center">
-                Remaining: {Math.round(Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)))}g
+                Remaining: {Math.round(Math.max(0, getCurrentTargetFat() - (nutritionSummary?.totalFat || 0)))}g
               </p>
             )}
             <Progress 
-              value={dietGoals 
-                ? (nutritionSummary?.totalFat || 0) / Number(dietGoals.targetFat) * 100 
-                : nutritionSummary 
-                  ? (nutritionSummary.totalFat / nutritionSummary.goalFat) * 100 
-                  : 0
-              } 
+              value={(nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100} 
               className="mt-1 h-1"
             />
           </CardContent>
