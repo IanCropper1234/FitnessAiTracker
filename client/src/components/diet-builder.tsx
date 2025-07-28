@@ -1177,7 +1177,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </Button>
                   </div>
 
-                  {/* Macro Percentage List */}
+                  {/* Macro Percentage List with Scrollable 0-100% Range */}
                   <div className="space-y-3">
                     {/* Carbs */}
                     <div className="space-y-2">
@@ -1187,9 +1187,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           {Math.round(Number(dietGoal.targetCarbs))} g
                         </span>
                       </div>
-                      <div className="grid grid-cols-8 gap-1">
-                        {[35, 40, 45, 50, 55, 60, 65, 70].map((percentage) => {
-                          const isSelected = Math.abs((macroAdjustments.carbs + 50) - percentage) < 2.5;
+                      <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <style jsx>{`
+                          div::-webkit-scrollbar {
+                            display: none;
+                          }
+                        `}</style>
+                        {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
+                          const currentPercentage = Math.round(macroAdjustments.carbs + 50);
+                          const isSelected = currentPercentage === percentage;
                           return (
                             <Button
                               key={percentage}
@@ -1199,7 +1205,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                                 ...prev,
                                 carbs: percentage - 50
                               }))}
-                              className={`h-8 text-xs p-0 ios-touch-feedback touch-target ${
+                              className={`h-8 min-w-[40px] text-xs px-2 ios-touch-feedback touch-target flex-shrink-0 ${
                                 isSelected 
                                   ? 'bg-teal-600 text-white dark:bg-teal-500 hover:bg-teal-700 dark:hover:bg-teal-600' 
                                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -1220,9 +1226,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           {Math.round(Number(dietGoal.targetProtein))} g
                         </span>
                       </div>
-                      <div className="grid grid-cols-8 gap-1">
-                        {[15, 20, 25, 30, 35, 40, 45, 50].map((percentage) => {
-                          const isSelected = Math.abs((macroAdjustments.protein + 30) - percentage) < 2.5;
+                      <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <style jsx>{`
+                          div::-webkit-scrollbar {
+                            display: none;
+                          }
+                        `}</style>
+                        {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
+                          const currentPercentage = Math.round(macroAdjustments.protein + 30);
+                          const isSelected = currentPercentage === percentage;
                           return (
                             <Button
                               key={percentage}
@@ -1232,7 +1244,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                                 ...prev,
                                 protein: percentage - 30
                               }))}
-                              className={`h-8 text-xs p-0 ios-touch-feedback touch-target ${
+                              className={`h-8 min-w-[40px] text-xs px-2 ios-touch-feedback touch-target flex-shrink-0 ${
                                 isSelected 
                                   ? 'bg-yellow-600 text-white dark:bg-yellow-500 hover:bg-yellow-700 dark:hover:bg-yellow-600' 
                                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -1253,9 +1265,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           {Math.round(Number(dietGoal.targetFat))} g
                         </span>
                       </div>
-                      <div className="grid grid-cols-8 gap-1">
-                        {[5, 10, 15, 20, 25, 30, 35, 40].map((percentage) => {
-                          const isSelected = Math.abs((macroAdjustments.fat + 20) - percentage) < 2.5;
+                      <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <style jsx>{`
+                          div::-webkit-scrollbar {
+                            display: none;
+                          }
+                        `}</style>
+                        {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
+                          const currentPercentage = Math.round(macroAdjustments.fat + 20);
+                          const isSelected = currentPercentage === percentage;
                           return (
                             <Button
                               key={percentage}
@@ -1265,7 +1283,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                                 ...prev,
                                 fat: percentage - 20
                               }))}
-                              className={`h-8 text-xs p-0 ios-touch-feedback touch-target ${
+                              className={`h-8 min-w-[40px] text-xs px-2 ios-touch-feedback touch-target flex-shrink-0 ${
                                 isSelected 
                                   ? 'bg-purple-600 text-white dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600' 
                                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
