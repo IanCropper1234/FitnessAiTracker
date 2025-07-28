@@ -1159,23 +1159,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </Button>
                   </div>
                   
-                  {/* Percentage/Grams Toggle */}
-                  <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex-1 h-8 text-xs bg-gray-700 text-white dark:bg-gray-200 dark:text-black rounded-md"
-                    >
-                      %
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex-1 h-8 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                      Grams
-                    </Button>
-                  </div>
+                  
 
                   {/* Macro Percentage List with Scrollable 0-100% Range */}
                   <div className="space-y-3">
