@@ -401,7 +401,7 @@ export function AddFood({ user }: AddFoodProps) {
 
         {/* Main Content Card */}
         <Card className="ios-smooth-transform">
-          <CardContent className="p-4 space-y-4">
+          <CardContent className="p-4 space-y-4 pt-[16px] pb-[16px] pl-[2px] pr-[2px] ml-[0px] mr-[0px]">
             {/* Search Mode Toggle */}
             <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
               <Button
