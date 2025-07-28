@@ -74,6 +74,7 @@ export function AddFood({ user }: AddFoodProps) {
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [historySearchQuery, setHistorySearchQuery] = useState('');
+  const [savedMealsSearchQuery, setSavedMealsSearchQuery] = useState('');
   
   // Image recognition states
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -180,6 +181,15 @@ export function AddFood({ user }: AddFoodProps) {
     queryKey: ['/api/nutrition/history', user.id],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/history/${user.id}`);
+      return response.json();
+    }
+  });
+
+  // Fetch user's saved meals
+  const { data: savedMeals = [] } = useQuery({
+    queryKey: ['/api/saved-meals', user.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/saved-meals/${user.id}`);
       return response.json();
     }
   });
@@ -321,6 +331,48 @@ export function AddFood({ user }: AddFoodProps) {
     logMutation.mutate(nutritionData);
   };
 
+  // Add saved meal mutation
+  const addSavedMealMutation = useMutation({
+    mutationFn: async (meal: any) => {
+      const foodItems = typeof meal.foodItems === 'string' ? JSON.parse(meal.foodItems) : meal.foodItems;
+      const promises = foodItems.map((item: any) => {
+        const logData = {
+          userId: user.id,
+          date: selectedDate,
+          foodName: item.foodName,
+          quantity: parseFloat(item.quantity),
+          unit: item.unit,
+          calories: parseFloat(item.calories),
+          protein: parseFloat(item.protein),
+          carbs: parseFloat(item.carbs),
+          fat: parseFloat(item.fat),
+          mealType: mealType,
+          category: item.category || null,
+          mealSuitability: item.mealSuitability || []
+        };
+        return apiRequest("POST", "/api/nutrition/log", logData);
+      });
+      
+      return Promise.all(promises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
+      toast({
+        title: "Success",
+        description: "Saved meal added to your food log"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add saved meal",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleLogFood = () => {
     let nutritionData;
     
@@ -354,12 +406,17 @@ export function AddFood({ user }: AddFoodProps) {
     logMutation.mutate(logData);
   };
 
-  const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending;
+  const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending;
   const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
   
   // Filter food history based on search query
   const filteredFoodHistory = Array.isArray(foodHistory) ? foodHistory.filter((item: any) => 
     item.foodName.toLowerCase().includes(historySearchQuery.toLowerCase())
+  ).slice(0, 10) : []; // Limit to 10 items for better performance
+
+  // Filter saved meals based on search query
+  const filteredSavedMeals = Array.isArray(savedMeals) ? savedMeals.filter((meal: any) => 
+    meal.name.toLowerCase().includes(savedMealsSearchQuery.toLowerCase())
   ).slice(0, 10) : []; // Limit to 10 items for better performance
 
   const categories = [
@@ -691,6 +748,67 @@ export function AddFood({ user }: AddFoodProps) {
                   {filteredFoodHistory.length === 0 && historySearchQuery && (
                     <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                       <p className="text-xs">No matching foods found in your history</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Saved Meals Section */}
+            {Array.isArray(savedMeals) && savedMeals.length > 0 && (
+              <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2">
+                  <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
+                </div>
+                
+                {/* Saved Meals Search */}
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                  <Input
+                    value={savedMealsSearchQuery}
+                    onChange={(e) => setSavedMealsSearchQuery(e.target.value)}
+                    placeholder="Search your saved meals..."
+                    className="h-8 pl-7 text-xs ios-touch-feedback"
+                  />
+                </div>
+
+                {/* Saved Meals Items */}
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {filteredSavedMeals.map((meal: any) => (
+                    <div
+                      key={meal.id}
+                      className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Utensils className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                              {meal.name}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                              {Math.round(parseFloat(meal.totalCalories))}cal • {Math.round(parseFloat(meal.totalProtein))}g protein
+                              {meal.description && ` • ${meal.description}`}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        onClick={() => addSavedMealMutation.mutate(meal)}
+                        disabled={addSavedMealMutation.isPending}
+                        size="sm"
+                        className="h-7 w-7 p-0 ml-2 ios-button touch-target flex-shrink-0"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  {filteredSavedMeals.length === 0 && savedMealsSearchQuery && (
+                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                      <p className="text-xs">No matching saved meals found</p>
                     </div>
                   )}
                 </div>

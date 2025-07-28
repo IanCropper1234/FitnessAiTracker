@@ -1539,28 +1539,28 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                   <div className="text-center">
                     <div className="font-semibold text-black dark:text-white">
                       {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
-                        .reduce((sum: number, log: any) => sum + log.calories, 0))}
+                        .reduce((sum: number, log: any) => sum + parseFloat(log.calories || 0), 0))}
                     </div>
                     <div className="text-gray-500">Calories</div>
                   </div>
                   <div className="text-center">
                     <div className="font-semibold text-blue-600 dark:text-blue-400">
                       {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
-                        .reduce((sum: number, log: any) => sum + log.protein, 0))}g
+                        .reduce((sum: number, log: any) => sum + parseFloat(log.protein || 0), 0))}g
                     </div>
                     <div className="text-gray-500">Protein</div>
                   </div>
                   <div className="text-center">
                     <div className="font-semibold text-green-600 dark:text-green-400">
                       {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
-                        .reduce((sum: number, log: any) => sum + log.carbs, 0))}g
+                        .reduce((sum: number, log: any) => sum + parseFloat(log.carbs || 0), 0))}g
                     </div>
                     <div className="text-gray-500">Carbs</div>
                   </div>
                   <div className="text-center">
                     <div className="font-semibold text-yellow-600 dark:text-yellow-400">
                       {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
-                        .reduce((sum: number, log: any) => sum + log.fat, 0))}g
+                        .reduce((sum: number, log: any) => sum + parseFloat(log.fat || 0), 0))}g
                     </div>
                     <div className="text-gray-500">Fat</div>
                   </div>
