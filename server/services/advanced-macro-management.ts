@@ -182,11 +182,6 @@ export class AdvancedMacroManagementService {
   // Get weekly goals for a user
   static async getWeeklyGoals(userId: number, weekStartDate?: string) {
     try {
-      let query = db.select()
-        .from(weeklyNutritionGoals)
-        .where(eq(weeklyNutritionGoals.userId, userId))
-        .orderBy(desc(weeklyNutritionGoals.weekStartDate));
-
       if (weekStartDate) {
         // Convert weekStartDate to proper date format
         const weekStart = new Date(weekStartDate);
@@ -198,14 +193,22 @@ export class AdvancedMacroManagementService {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 6); // Week should be 7 days, so +6 from start
         
-        query = query.where(and(
-          eq(weeklyNutritionGoals.userId, userId),
-          gte(weeklyNutritionGoals.weekStartDate, weekStart),
-          lte(weeklyNutritionGoals.weekStartDate, weekEnd)
-        ));
+        return await db.select()
+          .from(weeklyNutritionGoals)
+          .where(and(
+            eq(weeklyNutritionGoals.userId, userId),
+            gte(weeklyNutritionGoals.weekStartDate, weekStart),
+            lte(weeklyNutritionGoals.weekStartDate, weekEnd)
+          ))
+          .orderBy(desc(weeklyNutritionGoals.weekStartDate))
+          .limit(10);
       }
 
-      return await query.limit(10);
+      return await db.select()
+        .from(weeklyNutritionGoals)
+        .where(eq(weeklyNutritionGoals.userId, userId))
+        .orderBy(desc(weeklyNutritionGoals.weekStartDate))
+        .limit(10);
     } catch (error) {
       console.error('Error getting weekly goals:', error);
       return [];

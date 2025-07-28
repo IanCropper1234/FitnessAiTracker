@@ -156,22 +156,35 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   });
 
   const handleWeeklyAdjustment = () => {
-    if (!dietGoals) return;
+    if (!dietGoals || !selectedWeek) {
+      toast({
+        title: "Missing Data",
+        description: "Please select a week and ensure diet goals are set",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Use actual data from weeklyGoals if available, otherwise defaults
+    const adherence = weeklyGoals?.[0]?.adherencePercentage ? parseFloat(weeklyGoals[0].adherencePercentage) : 85;
+    const energy = weeklyGoals?.[0]?.energyLevels || 7;
+    const hunger = weeklyGoals?.[0]?.hungerLevels || 5;
 
     const adjustmentData = {
       userId,
       weekStartDate: selectedWeek,
       currentGoals: dietGoals,
       adjustmentReason: "progress_check",
-      energyLevels: 7, // Default values - could be from user input
-      hungerLevels: 5,
-      adherencePercentage: 85
+      energyLevels: energy,
+      hungerLevels: hunger,
+      adherencePercentage: adherence
     };
 
     weeklyAdjustmentMutation.mutate(adjustmentData);
   };
 
-  const calculateAdjustmentRecommendation = () => {
+  // Calculate adjustment recommendation based on current data
+  const recommendation = (() => {
     if (!weeklyGoals || weeklyGoals.length === 0 || !comprehensiveAnalytics) return null;
 
     const latestWeek = weeklyGoals[0];
@@ -181,8 +194,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     // Convert to weekly rate (analytics is 14-day period, so divide by 2)
     const weeklyWeightChange = weightChange / 2;
 
-    let recommendation = {
-      type: "maintain",
+    let rec = {
+      type: "maintain" as const,
       message: "Continue with current macros",
       calorieChange: 0,
       reason: "Good progress"
@@ -190,15 +203,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
     if (dietGoals?.goal === "cut") {
       if (weeklyWeightChange > -0.2) { // Less than 0.2kg loss per week
-        recommendation = {
-          type: "decrease",
+        rec = {
+          type: "decrease" as const,
           message: "Reduce calories for better fat loss",
           calorieChange: -100,
           reason: "Weight loss too slow"
         };
       } else if (weeklyWeightChange < -0.8) { // More than 0.8kg loss per week
-        recommendation = {
-          type: "increase",
+        rec = {
+          type: "increase" as const,
           message: "Increase calories to prevent muscle loss",
           calorieChange: 50,
           reason: "Weight loss too fast"
@@ -206,15 +219,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       }
     } else if (dietGoals?.goal === "bulk") {
       if (weeklyWeightChange < 0.2) { // Less than 0.2kg gain per week
-        recommendation = {
-          type: "increase",
+        rec = {
+          type: "increase" as const,
           message: "Increase calories for muscle growth",
           calorieChange: 100,
           reason: "Weight gain too slow"
         };
       } else if (weeklyWeightChange > 0.5) { // More than 0.5kg gain per week
-        recommendation = {
-          type: "decrease",
+        rec = {
+          type: "decrease" as const,
           message: "Reduce calories to minimize fat gain",
           calorieChange: -75,
           reason: "Weight gain too fast"
@@ -223,15 +236,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     } else if (dietGoals?.goal === "maintain") {
       // For maintenance, slight adjustments based on weight trends
       if (weeklyWeightChange > 0.3) { // Gaining weight on maintenance
-        recommendation = {
-          type: "decrease",
+        rec = {
+          type: "decrease" as const,
           message: "Slight calorie reduction to maintain weight",
           calorieChange: -50,
           reason: "Weight trending upward"
         };
       } else if (weeklyWeightChange < -0.3) { // Losing weight on maintenance
-        recommendation = {
-          type: "increase",
+        rec = {
+          type: "increase" as const,
           message: "Slight calorie increase to maintain weight",
           calorieChange: 50,
           reason: "Weight trending downward"
@@ -239,8 +252,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       } else {
         // Good weight maintenance but check for muscle gain opportunity
         if (adherence >= 90 && weeklyWeightChange >= 0.2 && weeklyWeightChange <= 0.4) {
-          recommendation = {
-            type: "increase",
+          rec = {
+            type: "increase" as const,
             message: "Consider lean muscle gain phase",
             calorieChange: 150,
             reason: "Good adherence + controlled weight gain = muscle building opportunity"
@@ -250,11 +263,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
 
     if (adherence < 80) {
-      recommendation.message += " (Focus on adherence first)";
+      rec.message += " (Focus on adherence first)";
     }
 
-    return recommendation;
-  };
+    return rec;
+  })();
 
   // Create default RP-based meal distribution
   const createDefaultMealDistribution = async () => {
@@ -332,7 +345,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   };
 
-  const recommendation = calculateAdjustmentRecommendation();
+
 
   return (
     <div className="space-y-6">
@@ -379,7 +392,18 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {recommendation && (
+              {/* Show loading state when no data is available */}
+              {!selectedWeek && (
+                <div className="text-center py-8">
+                  <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Select a week with food logs to view progress analysis
+                  </p>
+                </div>
+              )}
+
+              {/* Show recommendation if available */}
+              {recommendation && selectedWeek && (
                 <div className={`p-4 rounded-lg border ${
                   recommendation.type === 'increase' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' :
                   recommendation.type === 'decrease' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
@@ -420,10 +444,10 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Energy Level</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {weeklyGoals[0].energyLevels || 0}/10
+                          {weeklyGoals[0].energyLevels || 'N/A'}/10
                         </span>
                       </div>
-                      <Progress value={(parseFloat(weeklyGoals[0].energyLevels || "0") / 10) * 100} className="h-2" />
+                      <Progress value={(parseFloat(weeklyGoals[0].energyLevels?.toString() || "0") / 10) * 100} className="h-2" />
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -452,14 +476,33 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 </div>
               )}
 
-              <Button
-                onClick={handleWeeklyAdjustment}
-                disabled={weeklyAdjustmentMutation.isPending}
-                className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                Apply Weekly Adjustment
-              </Button>
+              {/* Only show adjustment button when there's valid data */}
+              {selectedWeek && weeklyGoals && weeklyGoals.length > 0 && (
+                <Button
+                  onClick={handleWeeklyAdjustment}
+                  disabled={weeklyAdjustmentMutation.isPending || !dietGoals}
+                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                >
+                  {weeklyAdjustmentMutation.isPending ? (
+                    <>
+                      <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Applying Adjustment...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 mr-2" />
+                      Apply Weekly Adjustment
+                    </>
+                  )}
+                </Button>
+              )}
+
+              {/* Show message when no adjustment data is available */}
+              {selectedWeek && (!weeklyGoals || weeklyGoals.length === 0) && (
+                <div className="text-center py-4 text-gray-600 dark:text-gray-400 text-sm">
+                  No weekly progress data available for this period. Complete some food logs first.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
