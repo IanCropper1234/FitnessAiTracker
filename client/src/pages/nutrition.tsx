@@ -61,13 +61,9 @@ interface NutritionProps {
   setSelectedDate: (date: string) => void;
   showDatePicker: boolean;
   setShowDatePicker: (show: boolean) => void;
-  bodyTrackingDate?: string;
-  setBodyTrackingDate?: (date: string) => void;
-  showBodyDatePicker?: boolean;
-  setShowBodyDatePicker?: (show: boolean) => void;
 }
 
-export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, selectedDate, setSelectedDate, showDatePicker, setShowDatePicker, bodyTrackingDate, setBodyTrackingDate, showBodyDatePicker, setShowBodyDatePicker }: NutritionProps) {
+export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, selectedDate, setSelectedDate, showDatePicker, setShowDatePicker }: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -241,13 +237,7 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
             </TabsContent>
 
             <TabsContent value="body">
-              <BodyTracking 
-                userId={user.id}
-                selectedDate={bodyTrackingDate}
-                setSelectedDate={setBodyTrackingDate}
-                showDatePicker={showBodyDatePicker}
-                setShowDatePicker={setShowBodyDatePicker}
-              />
+              <BodyTracking userId={user.id} />
             </TabsContent>
 
             <TabsContent value="progression">
