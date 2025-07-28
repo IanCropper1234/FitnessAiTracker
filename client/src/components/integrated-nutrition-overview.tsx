@@ -918,7 +918,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                             userSelect: 'none'
                           }}
                           className={`
-                            flex items-center gap-3 py-2 px-0 
+                            flex items-center gap-3 py-2 px-0 w-full max-w-full
                             ios-touch-feedback ios-button touch-target
                             ${isCurrentlyDragged
                               ? 'opacity-30 scale-95 bg-blue-50 dark:bg-blue-900/20 shadow-lg z-10' 
@@ -947,7 +947,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                           </div>
 
                           {/* Food Content */}
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 pr-2">
                             <div 
                               className="cursor-pointer"
                               onClick={(e) => {
@@ -958,14 +958,14 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                               <div className="font-medium text-black dark:text-white text-sm mb-1 truncate">
                                 {log.foodName}
                               </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                              <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
                                 {log.quantity} {log.unit}, {log.calories} calories
                               </div>
                             </div>
                           </div>
                           
                           {/* Three-dot menu */}
-                          <div className="flex-shrink-0">
+                          <div className="flex-shrink-0 w-6 flex justify-center">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
