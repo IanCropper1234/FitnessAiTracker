@@ -423,7 +423,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
               {/* Show enhanced RP methodology recommendation if available */}
               {weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].adjustmentRecommendation && selectedWeek && (
-                <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-10px] mr-[-10px]">
+                <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-15px] mr-[-15px]">
                   <div className="flex items-center gap-2 mb-2">
                     {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />}
                     {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />}
