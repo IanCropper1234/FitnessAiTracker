@@ -43,6 +43,12 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showBodyDatePicker, setShowBodyDatePicker] = useState(false);
   const [bodyTrackingDate, setBodyTrackingDate] = useState(TimezoneUtils.getCurrentDate());
   
+  // Copy meal date picker states
+  const [showCopyFromDatePicker, setShowCopyFromDatePicker] = useState(false);
+  const [copyFromDate, setCopyFromDate] = useState("");
+  const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
+  const [copyToDate, setCopyToDate] = useState("");
+  
   // Redirect to auth if no user
   useEffect(() => {
     if (!user && location !== "/auth") {
@@ -97,6 +103,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 setBodyTrackingDate={setBodyTrackingDate}
                 showBodyDatePicker={showBodyDatePicker}
                 setShowBodyDatePicker={setShowBodyDatePicker}
+                copyFromDate={copyFromDate}
+                setCopyFromDate={setCopyFromDate}
+                showCopyFromDatePicker={showCopyFromDatePicker}
+                setShowCopyFromDatePicker={setShowCopyFromDatePicker}
+                copyToDate={copyToDate}
+                setCopyToDate={setCopyToDate}
+                showCopyToDatePicker={showCopyToDatePicker}
+                setShowCopyToDatePicker={setShowCopyToDatePicker}
               />
             ) : (
               <div className="animate-pulse">Loading...</div>
@@ -172,6 +186,37 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           size="lg"
           showDatePicker={showBodyDatePicker}
           setShowDatePicker={setShowBodyDatePicker}
+        />
+      )}
+
+      {/* Copy From Date iOS Date Picker Modal */}
+      {user && (
+        <IOSDatePicker 
+          selectedDate={copyFromDate || TimezoneUtils.getCurrentDate()}
+          onDateChange={(newDate) => {
+            setCopyFromDate(newDate);
+            setShowCopyFromDatePicker(false);
+            // Invalidate copy source logs query to refresh data
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id, newDate] });
+          }}
+          size="lg"
+          showDatePicker={showCopyFromDatePicker}
+          setShowDatePicker={setShowCopyFromDatePicker}
+          maxDate={new Date().toISOString().split('T')[0]}
+        />
+      )}
+
+      {/* Copy To Date iOS Date Picker Modal */}
+      {user && (
+        <IOSDatePicker 
+          selectedDate={copyToDate || TimezoneUtils.getCurrentDate()}
+          onDateChange={(newDate) => {
+            setCopyToDate(newDate);
+            setShowCopyToDatePicker(false);
+          }}
+          size="lg"
+          showDatePicker={showCopyToDatePicker}
+          setShowDatePicker={setShowCopyToDatePicker}
         />
       )}
     </div>

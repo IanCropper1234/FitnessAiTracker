@@ -65,9 +65,37 @@ interface NutritionProps {
   setBodyTrackingDate?: (date: string) => void;
   showBodyDatePicker?: boolean;
   setShowBodyDatePicker?: (show: boolean) => void;
+  copyFromDate?: string;
+  setCopyFromDate?: (date: string) => void;
+  showCopyFromDatePicker?: boolean;
+  setShowCopyFromDatePicker?: (show: boolean) => void;
+  copyToDate?: string;
+  setCopyToDate?: (date: string) => void;
+  showCopyToDatePicker?: boolean;
+  setShowCopyToDatePicker?: (show: boolean) => void;
 }
 
-export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, selectedDate, setSelectedDate, showDatePicker, setShowDatePicker, bodyTrackingDate, setBodyTrackingDate, showBodyDatePicker, setShowBodyDatePicker }: NutritionProps) {
+export function Nutrition({ 
+  user, 
+  activeTab: externalActiveTab, 
+  onTabChange, 
+  selectedDate, 
+  setSelectedDate, 
+  showDatePicker, 
+  setShowDatePicker, 
+  bodyTrackingDate, 
+  setBodyTrackingDate, 
+  showBodyDatePicker, 
+  setShowBodyDatePicker,
+  copyFromDate,
+  setCopyFromDate,
+  showCopyFromDatePicker,
+  setShowCopyFromDatePicker,
+  copyToDate,
+  setCopyToDate,
+  showCopyToDatePicker,
+  setShowCopyToDatePicker 
+}: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -229,6 +257,14 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
                   setShowLogger(true);
                 }}
                 onDatePickerOpen={() => setShowDatePicker(true)}
+                copyFromDate={copyFromDate}
+                setCopyFromDate={setCopyFromDate}
+                showCopyFromDatePicker={showCopyFromDatePicker}
+                setShowCopyFromDatePicker={setShowCopyFromDatePicker}
+                copyToDate={copyToDate}
+                setCopyToDate={setCopyToDate}
+                showCopyToDatePicker={showCopyToDatePicker}
+                setShowCopyToDatePicker={setShowCopyToDatePicker}
               />
             </TabsContent>
 

@@ -17,6 +17,14 @@ import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
 
 interface DailyFoodLogProps {
   userId: number;
+  copyFromDate?: string;
+  setCopyFromDate?: (date: string) => void;
+  showCopyFromDatePicker?: boolean;
+  setShowCopyFromDatePicker?: (show: boolean) => void;
+  copyToDate?: string;
+  setCopyToDate?: (date: string) => void;
+  showCopyToDatePicker?: boolean;
+  setShowCopyToDatePicker?: (show: boolean) => void;
 }
 
 interface FoodLog {
@@ -196,7 +204,17 @@ function DraggableFoodColumns({
 
 
 
-export function DailyFoodLog({ userId }: DailyFoodLogProps) {
+export function DailyFoodLog({ 
+  userId,
+  copyFromDate: externalCopyFromDate,
+  setCopyFromDate: externalSetCopyFromDate,
+  showCopyFromDatePicker,
+  setShowCopyFromDatePicker,
+  copyToDate: externalCopyToDate,
+  setCopyToDate: externalSetCopyToDate,
+  showCopyToDatePicker,
+  setShowCopyToDatePicker 
+}: DailyFoodLogProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -204,11 +222,18 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showCopyMeal, setShowCopyMeal] = useState(false);
-  const [copyFromDate, setCopyFromDate] = useState("");
+  // Use external state for copy dates when provided, otherwise use local state
+  const [localCopyFromDate, setLocalCopyFromDate] = useState("");
+  const copyFromDate = externalCopyFromDate !== undefined ? externalCopyFromDate : localCopyFromDate;
+  const setCopyFromDate = externalSetCopyFromDate || setLocalCopyFromDate;
+  
+  const [localCopyToDate, setLocalCopyToDate] = useState("");
+  const copyToDate = externalCopyToDate !== undefined ? externalCopyToDate : localCopyToDate;
+  const setCopyToDate = externalSetCopyToDate || setLocalCopyToDate;
+  
   const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
   const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
   const [bulkMode, setBulkMode] = useState(false);
-  const [copyToDate, setCopyToDate] = useState("");
 
   // Mutation to update meal type for food logs
   const updateMealTypeMutation = useMutation({
@@ -732,13 +757,12 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <label className="text-sm font-medium">Copy From:</label>
-              <input
-                type="date"
-                value={copyFromDate}
-                onChange={(e) => setCopyFromDate(e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
-                className="px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
-              />
+              <button
+                onClick={() => setShowCopyFromDatePicker && setShowCopyFromDatePicker(true)}
+                className="px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              >
+                {copyFromDate ? new Date(copyFromDate).toLocaleDateString() : 'Select Date'}
+              </button>
             </div>
 
             {copySourceLogs && copySourceLogs.length > 0 && (
@@ -851,13 +875,12 @@ export function DailyFoodLog({ userId }: DailyFoodLogProps) {
                   <Label htmlFor="copy-to-date" className="text-sm font-medium text-blue-700 dark:text-blue-300 whitespace-nowrap">
                     Copy to date:
                   </Label>
-                  <input
-                    id="copy-to-date"
-                    type="date"
-                    value={copyToDate}
-                    onChange={(e) => setCopyToDate(e.target.value)}
-                    className="px-3 py-2 text-sm border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white flex-1 sm:flex-initial"
-                  />
+                  <button
+                    onClick={() => setShowCopyToDatePicker && setShowCopyToDatePicker(true)}
+                    className="px-3 py-2 text-sm border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white flex-1 sm:flex-initial hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  >
+                    {copyToDate ? new Date(copyToDate).toLocaleDateString() : 'Select Date'}
+                  </button>
                   <Button
                     onClick={handleBulkCopyToDate}
                     variant="outline"

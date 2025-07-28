@@ -47,9 +47,30 @@ interface IntegratedNutritionOverviewProps {
   onShowLogger?: (selectedDate?: string) => void;
   onDatePickerOpen?: () => void;
   selectedDate?: string;
+  copyFromDate?: string;
+  setCopyFromDate?: (date: string) => void;
+  showCopyFromDatePicker?: boolean;
+  setShowCopyFromDatePicker?: (show: boolean) => void;
+  copyToDate?: string;
+  setCopyToDate?: (date: string) => void;
+  showCopyToDatePicker?: boolean;
+  setShowCopyToDatePicker?: (show: boolean) => void;
 }
 
-export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePickerOpen, selectedDate: externalSelectedDate }: IntegratedNutritionOverviewProps) {
+export function IntegratedNutritionOverview({ 
+  userId, 
+  onShowLogger, 
+  onDatePickerOpen, 
+  selectedDate: externalSelectedDate,
+  copyFromDate: externalCopyFromDate,
+  setCopyFromDate: externalSetCopyFromDate,
+  showCopyFromDatePicker,
+  setShowCopyFromDatePicker,
+  copyToDate: externalCopyToDate,
+  setCopyToDate: externalSetCopyToDate,
+  showCopyToDatePicker,
+  setShowCopyToDatePicker
+}: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -70,7 +91,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     data: any;
     sourceSection?: string;
   } | null>(null);
-  const [copyDate, setCopyDate] = useState('');
+  // Use external copy date states when provided, otherwise use local state
+  const [localCopyDate, setLocalCopyDate] = useState('');
+  const copyDate = externalCopyFromDate !== undefined ? externalCopyFromDate : externalCopyToDate !== undefined ? externalCopyToDate : localCopyDate;
+  const setCopyDate = externalSetCopyFromDate || externalSetCopyToDate || setLocalCopyDate;
   
   // Nutrition facts dialog state
   const [showNutritionDialog, setShowNutritionDialog] = useState(false);
@@ -1207,36 +1231,29 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="flex-1 justify-between h-8 px-3 py-1 text-sm"
-                    >
-                      {copyDate 
-                        ? new Date(copyDate).toLocaleDateString('en-GB', { 
-                            day: '2-digit', 
-                            month: '2-digit', 
-                            year: 'numeric' 
-                          })
-                        : 'Select date'
-                      }
-                      <ChevronDown className="h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={copyDate ? new Date(copyDate) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          setCopyDate(date.toISOString().split('T')[0]);
-                        }
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Button
+                  variant="outline"
+                  className="flex-1 justify-between h-8 px-3 py-1 text-sm"
+                  onClick={() => {
+                    if (copyOperation?.sourceSection) {
+                      // For "copy from" operations
+                      setShowCopyFromDatePicker && setShowCopyFromDatePicker(true);
+                    } else {
+                      // For "copy to" operations
+                      setShowCopyToDatePicker && setShowCopyToDatePicker(true);
+                    }
+                  }}
+                >
+                  {copyDate 
+                    ? new Date(copyDate).toLocaleDateString('en-GB', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                      })
+                    : 'Select date'
+                  }
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
                 
                 <Button
                   variant="outline"
