@@ -697,7 +697,7 @@ export function AddFood({ user }: AddFoodProps) {
             {/* Food History Section */}
             {Array.isArray(foodHistory) && foodHistory.length > 0 && (
               <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 pl-[5px] pr-[5px]">
                   <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
                 </div>
