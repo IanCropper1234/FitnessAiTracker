@@ -380,7 +380,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
           </CardDescription>
         </CardHeader>
       </Card>
-
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
         <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
           <TabsTrigger value="weekly-adjustment" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Weekly Adjustment</TabsTrigger>
@@ -424,12 +423,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
               {/* Show enhanced RP methodology recommendation if available */}
               {weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].adjustmentRecommendation && selectedWeek && (
-                <div className={`p-4 rounded-lg border ${
-                  weeklyGoals[0].adjustmentRecommendation === 'increase_calories' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' :
-                  weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
-                  weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' :
-                  'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
-                }`}>
+                <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-10px] mr-[-10px]">
                   <div className="flex items-center gap-2 mb-2">
                     {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />}
                     {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />}
