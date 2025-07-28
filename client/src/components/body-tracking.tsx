@@ -590,8 +590,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                         setShowDatePicker(true);
                       }
                     }}
-                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform"
-                    disabled={!setShowDatePicker}
+                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
