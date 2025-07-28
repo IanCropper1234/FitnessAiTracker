@@ -9,15 +9,15 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ## Recent Changes
 
 ### July 27, 2025 - COMPLETE: Image Recognition for Nutrition Labels with Enhanced Portion Input
-✓ **IMAGE CAPTURE FUNCTIONALITY**: Added camera button in AI analysis mode to capture nutrition fact labels using device camera
+✓ **DUAL IMAGE INPUT OPTIONS**: Added separate "Take Photo" and "Upload Image" buttons for flexible image acquisition
 ✓ **ENHANCED AI ANALYSIS**: Updated OpenAI service to support both text descriptions and nutrition label images with GPT-4 vision
 ✓ **FLEXIBLE PORTION INPUT**: Implemented free-text weight/volume input fields allowing any units (g, kg, ml, L, oz, cups, pieces, slices, etc.)
 ✓ **DUAL INPUT VALIDATION**: Enhanced AI button to work with either text description or captured image, or both combined
 ✓ **BACKEND IMAGE SUPPORT**: Updated /api/nutrition/analyze endpoint to handle image data and portion parameters with 50MB payload limit
 ✓ **VISUAL FEEDBACK**: Added image preview with clear button and proper validation for file size (5MB) and type restrictions
-✓ **IOS OPTIMIZED**: Image capture uses device camera with 'capture="environment"' for back-facing camera preference
-✓ **FLEXIBLE UI**: Users can enter any custom units instead of being limited to dropdown options
-✓ **PRODUCTION TESTED**: Confirmed working with real nutrition labels and portion calculations via server logs
+✓ **CAMERA VS GALLERY**: Take Photo uses device camera with back-facing preference, Upload Image accesses photo gallery
+✓ **FLEXIBLE UI**: Users can enter any custom units and choose between camera capture or file upload
+✓ **PRODUCTION TESTED**: Confirmed working with real nutrition labels and custom portion units (e.g., "2 gummies")
 
 ### July 26, 2025 - COMPLETE: Add Food History Section with Search & Quick-Add Functionality
 ✓ **FOOD HISTORY API**: Created comprehensive backend endpoint (/api/nutrition/history) fetching unique foods from user's last 90 days

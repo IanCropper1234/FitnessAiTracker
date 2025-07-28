@@ -214,8 +214,18 @@ export function AddFood({ user }: AddFoodProps) {
   };
 
   // Image capture functions
-  const handleImageCapture = () => {
-    fileInputRef.current?.click();
+  const handleTakePhoto = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.setAttribute('capture', 'environment');
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleUploadImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.click();
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -419,15 +429,26 @@ export function AddFood({ user }: AddFoodProps) {
                   }}
                 />
                 {searchMode === 'ai' && (
-                  <Button
-                    onClick={handleImageCapture}
-                    variant="outline"
-                    size="sm"
-                    className="h-9 px-3 ios-button touch-target"
-                    title="Capture nutrition label"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </Button>
+                  <>
+                    <Button
+                      onClick={handleTakePhoto}
+                      variant="outline"
+                      size="sm"
+                      className="h-9 px-3 ios-button touch-target"
+                      title="Take photo of nutrition label"
+                    >
+                      <Camera className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      onClick={handleUploadImage}
+                      variant="outline"
+                      size="sm"
+                      className="h-9 px-3 ios-button touch-target"
+                      title="Upload image from gallery"
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                    </Button>
+                  </>
                 )}
                 <Button
                   onClick={() => setShowBarcodeScanner(true)}
@@ -441,12 +462,11 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             </div>
 
-            {/* Hidden file input for image capture */}
+            {/* Hidden file input for image capture/upload */}
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture="environment"
               onChange={handleImageUpload}
               className="hidden"
             />
