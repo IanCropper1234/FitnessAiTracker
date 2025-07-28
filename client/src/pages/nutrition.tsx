@@ -153,7 +153,7 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
             </Button>
             
             {/* Center: Compact Title with Icon */}
-            <div className="flex items-center gap-1.5 min-w-0 text-left pl-[0px] pr-[0px] ml-[105px] mr-[105px]">
+            <div className="flex items-center gap-1.5 min-w-0">
               <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 transition-colors duration-200" />
               <h1 className="text-base font-semibold transition-colors duration-200">Nutrition</h1>
             </div>
