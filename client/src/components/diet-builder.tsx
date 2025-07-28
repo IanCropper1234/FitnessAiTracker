@@ -1187,12 +1187,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           {Math.round(Number(dietGoal.targetCarbs))} g
                         </span>
                       </div>
-                      <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        <style jsx>{`
-                          div::-webkit-scrollbar {
-                            display: none;
-                          }
-                        `}</style>
+                      <div 
+                        className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide" 
+                        style={{ 
+                          touchAction: 'pan-x',
+                          WebkitOverflowScrolling: 'touch'
+                        }}
+                      >
                         {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
                           const currentPercentage = Math.round(macroAdjustments.carbs + 50);
                           const isSelected = currentPercentage === percentage;
@@ -1226,12 +1227,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           {Math.round(Number(dietGoal.targetProtein))} g
                         </span>
                       </div>
-                      <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        <style jsx>{`
-                          div::-webkit-scrollbar {
-                            display: none;
-                          }
-                        `}</style>
+                      <div 
+                        className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide" 
+                        style={{ 
+                          touchAction: 'pan-x',
+                          WebkitOverflowScrolling: 'touch'
+                        }}
+                      >
                         {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
                           const currentPercentage = Math.round(macroAdjustments.protein + 30);
                           const isSelected = currentPercentage === percentage;
@@ -1265,12 +1267,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           {Math.round(Number(dietGoal.targetFat))} g
                         </span>
                       </div>
-                      <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        <style jsx>{`
-                          div::-webkit-scrollbar {
-                            display: none;
-                          }
-                        `}</style>
+                      <div 
+                        className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide" 
+                        style={{ 
+                          touchAction: 'pan-x',
+                          WebkitOverflowScrolling: 'touch'
+                        }}
+                      >
                         {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
                           const currentPercentage = Math.round(macroAdjustments.fat + 20);
                           const isSelected = currentPercentage === percentage;
