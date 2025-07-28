@@ -1,6 +1,7 @@
 import { db } from '../db';
 import { weeklyNutritionGoals, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { UnitConverter } from '../../shared/utils/unit-conversion';
 
 export class AdvancedMacroManagementService {
   
@@ -248,27 +249,36 @@ export class AdvancedMacroManagementService {
           .limit(1)
       ]);
 
-      // Calculate weight change and trend analysis
+      // Calculate weight change and trend analysis with unit conversion
       let weightChange = 0;
       let weightTrend = 'stable';
       let currentWeight = null;
       let previousWeight = null;
+      let currentWeightUnit = 'metric';
+      let previousWeightUnit = 'metric';
 
       if (currentWeekWeight.length > 0 && currentWeekWeight[0].weight) {
         currentWeight = parseFloat(currentWeekWeight[0].weight);
+        currentWeightUnit = currentWeekWeight[0].unit || 'metric';
       }
 
       if (previousWeekWeight.length > 0 && previousWeekWeight[0].weight) {
         previousWeight = parseFloat(previousWeekWeight[0].weight);
+        previousWeightUnit = previousWeekWeight[0].unit || 'metric';
       }
 
       if (currentWeight && previousWeight) {
-        weightChange = currentWeight - previousWeight;
+        // Convert weights to common unit for accurate comparison
+        const currentConverted = UnitConverter.convertWeight(currentWeight, currentWeightUnit);
+        const previousConverted = UnitConverter.convertWeight(previousWeight, previousWeightUnit);
         
-        // RP weight change classification
-        if (Math.abs(weightChange) < 0.25) {
+        // Calculate weight change in kg for consistent RP analysis
+        weightChange = currentConverted.kg - previousConverted.kg;
+        
+        // RP weight change classification (using kg thresholds)
+        if (Math.abs(weightChange) < 0.1) { // ~0.2 lbs
           weightTrend = 'stable';
-        } else if (weightChange > 0.25) {
+        } else if (weightChange > 0.1) {
           weightTrend = 'gaining';
         } else {
           weightTrend = 'losing';
@@ -317,7 +327,7 @@ export class AdvancedMacroManagementService {
         }
       }
 
-      // Create calculated weekly summary with RP analysis
+      // Create calculated weekly summary with RP analysis and unit information
       const weeklyData = {
         userId,
         weekStartDate: weekStart,
@@ -329,14 +339,18 @@ export class AdvancedMacroManagementService {
         energyLevels: 7, // Default value - could be enhanced with user feedback
         hungerLevels: 5, // Default value
         adjustmentReason,
-        // RP-specific fields
+        // RP-specific fields with unit information
         currentWeight: currentWeight?.toString() || null,
         previousWeight: previousWeight?.toString() || null,
         weightChange: weightChange.toFixed(2),
         weightTrend,
         adjustmentRecommendation,
         goalType: currentDietGoal?.goal || 'maintenance',
-        targetWeightChangePerWeek: currentDietGoal?.weeklyWeightTarget || '0'
+        targetWeightChangePerWeek: currentDietGoal?.weeklyWeightTarget || '0',
+        // Unit information for frontend conversion
+        currentWeightUnit,
+        previousWeightUnit,
+        weightUnit: 'kg' // Weight change is always calculated in kg for consistency
       };
 
       return weeklyData;

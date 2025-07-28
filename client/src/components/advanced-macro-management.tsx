@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { UnitConverter } from "@shared/utils/unit-conversion";
 
 interface AdvancedMacroManagementProps {
   userId: number;
@@ -33,6 +34,16 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Get user's body metrics for unit preference detection
+  const { data: bodyMetrics } = useQuery({
+    queryKey: ['/api/body-metrics', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/body-metrics/${userId}`);
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
   // Get available weeks with food log data
   const { data: availableWeeks } = useQuery({
     queryKey: ['/api/nutrition/available-weeks', userId],
@@ -50,7 +61,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   }, [availableWeeks, selectedWeek]);
 
   // Get weekly nutrition goals
-  const { data: weeklyGoals } = useQuery({
+  const { data: rawWeeklyGoals } = useQuery({
     queryKey: ['/api/weekly-goals', userId, selectedWeek],
     queryFn: async () => {
       if (!selectedWeek) return [];
@@ -59,6 +70,10 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     },
     enabled: !!selectedWeek
   });
+
+  // Convert weekly goals data to user's preferred weight units
+  const userWeightUnit = UnitConverter.getUserWeightUnit(null, bodyMetrics);
+  const weeklyGoals = UnitConverter.convertWeeklyGoalsUnits(rawWeeklyGoals || [], userWeightUnit);
 
   // Get meal macro distribution
   const { data: mealDistribution } = useQuery({
