@@ -844,7 +844,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="diet-goal" className="flex items-center gap-2">
             <Calculator className="w-4 h-4" />
             Diet Goal
@@ -852,14 +852,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           <TabsTrigger value="meal-timing" className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Meal Timing
-          </TabsTrigger>
-          <TabsTrigger value="meal-builder" className="flex items-center gap-2">
-            <ShoppingCart className="w-4 h-4" />
-            Meal Builder
-          </TabsTrigger>
-          <TabsTrigger value="saved-plans" className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4" />
-            Saved Plans
           </TabsTrigger>
         </TabsList>
 
