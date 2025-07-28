@@ -167,6 +167,20 @@ export const mealTimingPreferences = pgTable("meal_timing_preferences", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const savedMeals = pgTable("saved_meals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  foodItems: jsonb("food_items").notNull(), // Array of food items with nutrition info
+  totalCalories: decimal("total_calories", { precision: 8, scale: 2 }).notNull(),
+  totalProtein: decimal("total_protein", { precision: 6, scale: 2 }).notNull(),
+  totalCarbs: decimal("total_carbs", { precision: 6, scale: 2 }).notNull(),
+  totalFat: decimal("total_fat", { precision: 6, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const trainingPrograms = pgTable("training_programs", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -429,6 +443,7 @@ export const insertMealPlanSchema = createInsertSchema(mealPlans).omit({ id: tru
 export const insertWeeklyNutritionGoalSchema = createInsertSchema(weeklyNutritionGoals).omit({ id: true, createdAt: true });
 export const insertDietPhaseSchema = createInsertSchema(dietPhases).omit({ id: true, createdAt: true });
 export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPreferences).omit({ id: true, updatedAt: true });
+export const insertSavedMealSchema = createInsertSchema(savedMeals).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertBodyMetricSchema = createInsertSchema(bodyMetrics).omit({ id: true, createdAt: true });
 export const insertSavedMealPlanSchema = createInsertSchema(savedMealPlans).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertDietGoalSchema = createInsertSchema(dietGoals).omit({ id: true, createdAt: true, updatedAt: true });
@@ -481,6 +496,8 @@ export type DietPhase = typeof dietPhases.$inferSelect;
 export type InsertDietPhase = z.infer<typeof insertDietPhaseSchema>;
 export type MealTimingPreference = typeof mealTimingPreferences.$inferSelect;
 export type InsertMealTimingPreference = z.infer<typeof insertMealTimingPreferenceSchema>;
+export type SavedMeal = typeof savedMeals.$inferSelect;
+export type InsertSavedMeal = z.infer<typeof insertSavedMealSchema>;
 export type BodyMetric = typeof bodyMetrics.$inferSelect;
 export type InsertBodyMetric = z.infer<typeof insertBodyMetricSchema>;
 export type SavedMealPlan = typeof savedMealPlans.$inferSelect;

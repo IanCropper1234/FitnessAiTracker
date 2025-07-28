@@ -1,7 +1,7 @@
 import { 
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
-  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, dietGoals,
+  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, savedMeals, dietGoals,
   muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
@@ -11,7 +11,7 @@ import {
   type FoodCategory, type InsertFoodCategory, type FoodItem, type InsertFoodItem,
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
-  type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type DietGoal, type InsertDietGoal,
+  type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type SavedMeal, type InsertSavedMeal, type DietGoal, type InsertDietGoal,
   type MuscleGroup, type InsertMuscleGroup, type VolumeLandmark, type InsertVolumeLandmark,
   type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping,
   type TrainingTemplate, type InsertTrainingTemplate
@@ -919,6 +919,23 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTrainingTemplate(templateId: number): Promise<boolean> {
     const result = await db.delete(trainingTemplates).where(eq(trainingTemplates.id, templateId));
+    return result.rowCount > 0;
+  }
+
+  // Saved Meals
+  async getSavedMeals(userId: number): Promise<SavedMeal[]> {
+    return db.select().from(savedMeals)
+      .where(eq(savedMeals.userId, userId))
+      .orderBy(desc(savedMeals.createdAt));
+  }
+
+  async createSavedMeal(meal: InsertSavedMeal): Promise<SavedMeal> {
+    const [created] = await db.insert(savedMeals).values(meal).returning();
+    return created;
+  }
+
+  async deleteSavedMeal(id: number): Promise<boolean> {
+    const result = await db.delete(savedMeals).where(eq(savedMeals.id, id));
     return result.rowCount > 0;
   }
 }

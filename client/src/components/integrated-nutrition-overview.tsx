@@ -28,7 +28,8 @@ import {
   ArrowLeft,
   GripVertical,
   Check,
-  Edit
+  Edit,
+  Save
 } from "lucide-react";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -82,6 +83,12 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
   // Bulk selection state
   const [bulkMode, setBulkMode] = useState(false);
   const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
+  
+  // Save as meal dialog state
+  const [showSaveMealDialog, setShowSaveMealDialog] = useState(false);
+  const [saveMealName, setSaveMealName] = useState('');
+  const [saveMealDescription, setSaveMealDescription] = useState('');
+  const [saveMealSection, setSaveMealSection] = useState('');
 
   // Fetch nutrition summary for the selected date
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
@@ -272,6 +279,39 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     }
   });
 
+  const saveMealMutation = useMutation({
+    mutationFn: async (mealData: { name: string; description: string; foodItems: any[] }) => {
+      return await apiRequest("POST", "/api/saved-meals", {
+        userId,
+        name: mealData.name,
+        description: mealData.description,
+        foodItems: mealData.foodItems,
+        totalCalories: mealData.foodItems.reduce((sum, item) => sum + item.calories, 0),
+        totalProtein: mealData.foodItems.reduce((sum, item) => sum + item.protein, 0),
+        totalCarbs: mealData.foodItems.reduce((sum, item) => sum + item.carbs, 0),
+        totalFat: mealData.foodItems.reduce((sum, item) => sum + item.fat, 0)
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/saved-meals', userId] });
+      setShowSaveMealDialog(false);
+      setSaveMealName('');
+      setSaveMealDescription('');
+      setSaveMealSection('');
+      toast({
+        title: "Success",
+        description: "Meal saved successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save meal",
+        variant: "destructive"
+      });
+    }
+  });
+
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
       case 'breakfast': return <Sunrise className="h-4 w-4" />;
@@ -351,6 +391,64 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
       logId: editingItem.id,
       quantity,
       unit: editUnit
+    });
+  };
+
+  const handleSaveAsMeal = (mealSection: string) => {
+    const sectionLogs = nutritionLogs?.filter((log: any) => log.mealType === mealSection) || [];
+    
+    if (sectionLogs.length === 0) {
+      toast({
+        title: "No Foods Found",
+        description: "This meal section is empty. Add some foods first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSaveMealSection(mealSection);
+    setSaveMealName(`${formatMealType(mealSection)} - ${new Date().toLocaleDateString()}`);
+    setSaveMealDescription(`Saved from ${formatMealType(mealSection)} on ${new Date(selectedDate).toLocaleDateString()}`);
+    setShowSaveMealDialog(true);
+  };
+
+  const handleConfirmSaveMeal = () => {
+    if (!saveMealName.trim()) {
+      toast({
+        title: "Meal Name Required",
+        description: "Please enter a name for this meal",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const sectionLogs = nutritionLogs?.filter((log: any) => log.mealType === saveMealSection) || [];
+    
+    if (sectionLogs.length === 0) {
+      toast({
+        title: "No Foods Found",
+        description: "This meal section is empty",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const foodItems = sectionLogs.map((log: any) => ({
+      foodName: log.foodName,
+      quantity: log.quantity,
+      unit: log.unit,
+      calories: log.calories,
+      protein: log.protein,
+      carbs: log.carbs,
+      fat: log.fat,
+      category: log.category,
+      mealSuitability: log.mealSuitability || []
+    }));
+
+    saveMealMutation.mutate({
+      name: saveMealName.trim(),
+      description: saveMealDescription.trim(),
+      foodItems
     });
   };
 
@@ -891,6 +989,14 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                           <ArrowRight className="h-4 w-4 mr-2" />
                           Copy to date
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleSaveAsMeal(mealType.key)}
+                          disabled={mealLogs.length === 0}
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Save as Meal
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -1378,6 +1484,112 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Save as Meal Dialog */}
+      <Dialog open={showSaveMealDialog} onOpenChange={setShowSaveMealDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Save as Meal</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Meal Preview */}
+            {saveMealSection && (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  {getMealTypeIcon(saveMealSection)}
+                  <span className="font-medium text-sm">{formatMealType(saveMealSection)} Section</span>
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  {nutritionLogs?.filter((log: any) => log.mealType === saveMealSection).length || 0} food items
+                </div>
+              </div>
+            )}
+
+            {/* Meal Name Input */}
+            <div className="space-y-2">
+              <Label htmlFor="meal-name" className="text-sm font-medium">
+                Meal Name *
+              </Label>
+              <Input
+                id="meal-name"
+                value={saveMealName}
+                onChange={(e) => setSaveMealName(e.target.value)}
+                placeholder="Enter meal name"
+                className="w-full"
+              />
+            </div>
+
+            {/* Meal Description Input */}
+            <div className="space-y-2">
+              <Label htmlFor="meal-description" className="text-sm font-medium">
+                Description (Optional)
+              </Label>
+              <Input
+                id="meal-description" 
+                value={saveMealDescription}
+                onChange={(e) => setSaveMealDescription(e.target.value)}
+                placeholder="Enter meal description"
+                className="w-full"
+              />
+            </div>
+
+            {/* Nutritional Summary */}
+            {saveMealSection && nutritionLogs && (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                <h4 className="font-medium text-black dark:text-white mb-2 text-sm">Nutritional Summary</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-center">
+                    <div className="font-semibold text-black dark:text-white">
+                      {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
+                        .reduce((sum: number, log: any) => sum + log.calories, 0))}
+                    </div>
+                    <div className="text-gray-500">Calories</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
+                        .reduce((sum: number, log: any) => sum + log.protein, 0))}g
+                    </div>
+                    <div className="text-gray-500">Protein</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-green-600 dark:text-green-400">
+                      {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
+                        .reduce((sum: number, log: any) => sum + log.carbs, 0))}g
+                    </div>
+                    <div className="text-gray-500">Carbs</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-yellow-600 dark:text-yellow-400">
+                      {Math.round(nutritionLogs.filter((log: any) => log.mealType === saveMealSection)
+                        .reduce((sum: number, log: any) => sum + log.fat, 0))}g
+                    </div>
+                    <div className="text-gray-500">Fat</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowSaveMealDialog(false)}
+                disabled={saveMealMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleConfirmSaveMeal}
+                disabled={saveMealMutation.isPending || !saveMealName.trim()}
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              >
+                {saveMealMutation.isPending ? "Saving..." : "Save Meal"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

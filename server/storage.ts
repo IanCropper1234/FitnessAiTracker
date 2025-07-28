@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans, savedMeals,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -13,7 +13,8 @@ import {
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
   type BodyMetric, type InsertBodyMetric, type MuscleGroup, type InsertMuscleGroup,
   type VolumeLandmark, type InsertVolumeLandmark, type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking,
-  type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan
+  type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan,
+  type SavedMeal, type InsertSavedMeal
 } from "@shared/schema";
 
 export interface IStorage {
@@ -154,6 +155,11 @@ export interface IStorage {
   createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan>;
   updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined>;
   deleteSavedMealPlan(id: number): Promise<boolean>;
+
+  // Saved Meals
+  getSavedMeals(userId: number): Promise<SavedMeal[]>;
+  createSavedMeal(meal: InsertSavedMeal): Promise<SavedMeal>;
+  deleteSavedMeal(id: number): Promise<boolean>;
 
   // Mesocycles
   getMesocycle(id: number): Promise<any | undefined>;
@@ -679,6 +685,19 @@ export class MemStorage implements IStorage {
   }
 
   async deleteSavedMealPlan(id: number): Promise<boolean> {
+    return false;
+  }
+
+  // Saved Meals
+  async getSavedMeals(userId: number): Promise<SavedMeal[]> {
+    return [];
+  }
+
+  async createSavedMeal(meal: InsertSavedMeal): Promise<SavedMeal> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async deleteSavedMeal(id: number): Promise<boolean> {
     return false;
   }
 

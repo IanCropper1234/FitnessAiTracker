@@ -752,6 +752,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get saved meals for user
+  app.get("/api/saved-meals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const meals = await storage.getSavedMeals(userId);
+      res.json(meals);
+    } catch (error: any) {
+      console.error('Get saved meals error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Save a meal
+  app.post("/api/saved-meals", async (req, res) => {
+    try {
+      const { userId, name, description, foodItems } = req.body;
+      
+      // Calculate totals from food items
+      const totalCalories = foodItems.reduce((sum: number, item: any) => sum + item.calories, 0);
+      const totalProtein = foodItems.reduce((sum: number, item: any) => sum + item.protein, 0);
+      const totalCarbs = foodItems.reduce((sum: number, item: any) => sum + item.carbs, 0);
+      const totalFat = foodItems.reduce((sum: number, item: any) => sum + item.fat, 0);
+      
+      const mealData = {
+        userId: parseInt(userId),
+        name,
+        description: description || null,
+        foodItems: JSON.stringify(foodItems),
+        totalCalories: totalCalories.toString(),
+        totalProtein: totalProtein.toString(),
+        totalCarbs: totalCarbs.toString(),
+        totalFat: totalFat.toString()
+      };
+      
+      const savedMeal = await storage.createSavedMeal(mealData);
+      res.json(savedMeal);
+    } catch (error: any) {
+      console.error('Save meal error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Delete a saved meal
+  app.delete("/api/saved-meals/:id", async (req, res) => {
+    try {
+      const mealId = parseInt(req.params.id);
+      await storage.deleteSavedMeal(mealId);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Delete saved meal error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Enhanced Food search with Open Food Facts + USDA FoodData Central integration
   app.get("/api/food/search", async (req, res) => {
     try {
