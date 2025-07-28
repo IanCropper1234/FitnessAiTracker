@@ -179,6 +179,66 @@ export class AdvancedMacroManagementService {
     }
   }
 
+  // Calculate weekly nutrition summary from food logs
+  static async calculateWeeklyNutritionFromLogs(userId: number, weekStartDate: string) {
+    try {
+      const weekStart = new Date(weekStartDate);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      // Get nutrition logs for the week
+      const logs = await db.select()
+        .from(nutritionLogs)
+        .where(and(
+          eq(nutritionLogs.userId, userId),
+          gte(nutritionLogs.date, weekStart),
+          lte(nutritionLogs.date, weekEnd)
+        ));
+
+      if (logs.length === 0) {
+        return null;
+      }
+
+      // Calculate weekly totals and averages
+      const totalCalories = logs.reduce((sum, log) => sum + (parseFloat(log.calories) || 0), 0);
+      const totalProtein = logs.reduce((sum, log) => sum + (parseFloat(log.protein) || 0), 0);
+      const totalCarbs = logs.reduce((sum, log) => sum + (parseFloat(log.carbs) || 0), 0);
+      const totalFat = logs.reduce((sum, log) => sum + (parseFloat(log.fat) || 0), 0);
+
+      const daysWithLogs = new Set(logs.map(log => log.date.toDateString())).size;
+      const avgCalories = totalCalories / Math.max(daysWithLogs, 1);
+      const avgProtein = totalProtein / Math.max(daysWithLogs, 1);
+
+      // Get user's diet goals for adherence calculation
+      const dietGoalsData = await db.select().from(dietGoals).where(eq(dietGoals.userId, userId)).limit(1);
+      let adherencePercentage = 0;
+
+      if (dietGoalsData.length > 0) {
+        const targetCalories = parseFloat(dietGoalsData[0].targetCalories);
+        adherencePercentage = targetCalories > 0 ? Math.min((avgCalories / targetCalories) * 100, 200) : 0;
+      }
+
+      // Create calculated weekly summary
+      const weeklyData = {
+        userId,
+        weekStartDate: weekStart,
+        dailyCalories: Math.round(avgCalories),
+        protein: Math.round(avgProtein).toString(),
+        carbs: Math.round(totalCarbs / Math.max(daysWithLogs, 1)).toString(),
+        fat: Math.round(totalFat / Math.max(daysWithLogs, 1)).toString(),
+        adherencePercentage: Math.round(adherencePercentage).toString(),
+        energyLevels: 7, // Default value - could be enhanced with user feedback
+        hungerLevels: 5, // Default value
+        adjustmentReason: 'calculated_from_logs'
+      };
+
+      return weeklyData;
+    } catch (error) {
+      console.error('Error calculating weekly nutrition from logs:', error);
+      return null;
+    }
+  }
+
   // Get weekly goals for a user
   static async getWeeklyGoals(userId: number, weekStartDate?: string) {
     try {
@@ -193,7 +253,8 @@ export class AdvancedMacroManagementService {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 6); // Week should be 7 days, so +6 from start
         
-        return await db.select()
+        // First, try to get existing weekly goals
+        const existingGoals = await db.select()
           .from(weeklyNutritionGoals)
           .where(and(
             eq(weeklyNutritionGoals.userId, userId),
@@ -202,6 +263,17 @@ export class AdvancedMacroManagementService {
           ))
           .orderBy(desc(weeklyNutritionGoals.weekStartDate))
           .limit(10);
+
+        // If no existing goals, try to calculate from food logs
+        if (existingGoals.length === 0) {
+          const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, weekStartDate);
+          if (calculatedData) {
+            // Return calculated data as if it were from the database
+            return [calculatedData];
+          }
+        }
+
+        return existingGoals;
       }
 
       return await db.select()
