@@ -39,6 +39,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   
+  // Body tracking specific date picker state
+  const [showBodyDatePicker, setShowBodyDatePicker] = useState(false);
+  const [bodyTrackingDate, setBodyTrackingDate] = useState(TimezoneUtils.getCurrentDate());
+  
   // Redirect to auth if no user
   useEffect(() => {
     if (!user && location !== "/auth") {
@@ -89,6 +93,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 setSelectedDate={setSelectedDate}
                 showDatePicker={showDatePicker}
                 setShowDatePicker={setShowDatePicker}
+                bodyTrackingDate={bodyTrackingDate}
+                setBodyTrackingDate={setBodyTrackingDate}
+                showBodyDatePicker={showBodyDatePicker}
+                setShowBodyDatePicker={setShowBodyDatePicker}
               />
             ) : (
               <div className="animate-pulse">Loading...</div>
@@ -148,6 +156,22 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           size="lg"
           showDatePicker={showDatePicker}
           setShowDatePicker={setShowDatePicker}
+        />
+      )}
+      
+      {/* Body Tracking iOS Date Picker Modal */}
+      {user && (
+        <IOSDatePicker 
+          selectedDate={bodyTrackingDate}
+          onDateChange={(newDate) => {
+            setBodyTrackingDate(newDate);
+            setShowBodyDatePicker(false);
+            // Invalidate body metrics queries to refresh data for the new date
+            queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', user.id] });
+          }}
+          size="lg"
+          showDatePicker={showBodyDatePicker}
+          setShowDatePicker={setShowBodyDatePicker}
         />
       )}
     </div>

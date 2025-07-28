@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar } from "lucide-react";
+import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown } from "lucide-react";
+import { TimezoneUtils } from "@shared/utils/timezone";
 
 
 interface BodyMetric {
@@ -28,16 +29,24 @@ interface BodyMetric {
 
 interface BodyTrackingProps {
   userId: number;
+  selectedDate?: string;
+  setSelectedDate?: (date: string) => void;
+  showDatePicker?: boolean;
+  setShowDatePicker?: (show: boolean) => void;
 }
 
-export function BodyTracking({ userId }: BodyTrackingProps) {
+export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSelectedDate: externalSetSelectedDate, showDatePicker, setShowDatePicker }: BodyTrackingProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddingMetric, setIsAddingMetric] = useState(false);
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
   const formRef = useRef<HTMLDivElement>(null);
+  // Use external date if provided, otherwise use internal state
+  const selectedDate = externalSelectedDate || new Date().toISOString().split('T')[0];
+  const setSelectedDate = externalSetSelectedDate || (() => {});
+  
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: selectedDate,
     weight: '',
     bodyFatPercentage: '',
     neck: '',
@@ -168,15 +177,30 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
 
   const latestMetric = getLatestMetric();
 
-  // Update form date to latest metric date when metrics are available
+  // Update form date when selectedDate changes or when metrics are available
   useEffect(() => {
-    if (latestMetric && !isAddingMetric) {
+    if (isAddingMetric) {
+      setFormData(prev => ({
+        ...prev,
+        date: selectedDate
+      }));
+    } else if (latestMetric && !isAddingMetric) {
       setFormData(prev => ({
         ...prev,
         date: new Date(latestMetric.date).toISOString().split('T')[0]
       }));
     }
-  }, [latestMetric, isAddingMetric]);
+  }, [selectedDate, latestMetric, isAddingMetric]);
+  
+  // Sync external body tracking date changes to form data
+  useEffect(() => {
+    if (externalSelectedDate && isAddingMetric) {
+      setFormData(prev => ({
+        ...prev,
+        date: externalSelectedDate
+      }));
+    }
+  }, [externalSelectedDate, isAddingMetric]);
 
   // Auto-scroll to form when it opens
   useEffect(() => {
@@ -556,14 +580,32 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
                   <Label htmlFor="date" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Date
                   </Label>
-                  <Input
-                    type="date"
-                    id="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                    className="w-full"
-                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (setShowDatePicker) {
+                        // Update external date picker with current form date
+                        setSelectedDate(formData.date);
+                        setShowDatePicker(true);
+                      }
+                    }}
+                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform"
+                    disabled={!setShowDatePicker}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm">
+                        {TimezoneUtils.isToday(formData.date) ? 'Today' : 
+                         TimezoneUtils.parseUserDate(formData.date).toLocaleDateString('en-GB', { 
+                           weekday: 'short',
+                           day: '2-digit', 
+                           month: 'short'
+                         })}
+                      </span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                  </Button>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="unit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
