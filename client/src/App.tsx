@@ -15,7 +15,6 @@ import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { AddFood } from "./pages/add-food";
-import AddBodyMetricsPage from "./pages/add-body-metrics";
 import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
@@ -99,11 +98,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/add-food">
           <div className="page-enter ios-animation ios-smooth-transform">
             {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
-          </div>
-        </Route>
-        <Route path="/add-body-metrics">
-          <div className="page-enter ios-animation ios-smooth-transform">
-            {user ? <AddBodyMetricsPage /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route path="/training">
