@@ -244,90 +244,90 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   return (
     <div className="space-y-6">
       {/* Header with Quick Add */}
-      <div className="flex items-center justify-between mb-4 pl-[5px] pr-[5px]">
+      <div className="flex items-center justify-between mb-6 pl-[5px] pr-[5px]">
         <div>
-          <h2 className="text-xl font-bold text-black dark:text-white">Body Progress</h2>
-          <p className="text-gray-600 dark:text-gray-400 text-xs">Track measurements</p>
+          <h2 className="text-2xl font-bold text-black dark:text-white">Body Progress</h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Track your body measurements and changes</p>
         </div>
         <Button
           onClick={() => setIsAddingMetric(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-1.5 text-xs font-medium shadow-lg ios-touch-feedback touch-target"
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 font-medium shadow-lg ios-touch-feedback touch-target"
         >
-          <Plus className="w-3 h-3 mr-1" />
+          <Plus className="w-4 h-4 mr-2" />
           Log Entry
         </Button>
       </div>
       {/* Current Stats - Enhanced Visual Design */}
       {latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold text-black dark:text-white">Current Stats</h3>
-              <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-black dark:text-white">Current Stats</h3>
+              <span className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full">
                 {new Date(latestMetric.date).toLocaleDateString()}
               </span>
             </div>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               {/* Weight */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                    <Scale className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <Scale className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
-                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {latestMetric.weight || '-'}
-                      {latestMetric.weight && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('weight')}</span>}
+                      {latestMetric.weight && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('weight')}</span>}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Body Fat */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Body Fat</p>
-                    <p className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Body Fat</p>
+                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                       {latestMetric.bodyFatPercentage || '-'}
-                      {latestMetric.bodyFatPercentage && <span className="text-xs font-normal text-gray-500 ml-1">%</span>}
+                      {latestMetric.bodyFatPercentage && <span className="text-sm font-normal text-gray-500 ml-1">%</span>}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Waist */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
-                    <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                       {latestMetric.waist || '-'}
-                      {latestMetric.waist && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.waist && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Chest */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
-                    <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
+                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                       {latestMetric.chest || '-'}
-                      {latestMetric.chest && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.chest && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
                     </p>
                   </div>
                 </div>
@@ -335,66 +335,66 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             </div>
 
             {/* Additional Measurements Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Neck */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                    <Ruler className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
-                    <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
+                    <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                       {latestMetric.neck || '-'}
-                      {latestMetric.neck && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.neck && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Hips */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
-                    <p className="text-lg font-bold text-pink-600 dark:text-pink-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
+                    <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">
                       {latestMetric.hips || '-'}
-                      {latestMetric.hips && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.hips && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Thigh */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center">
+                    <Ruler className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
-                    <p className="text-lg font-bold text-cyan-600 dark:text-cyan-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
+                    <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
                       {latestMetric.thigh || '-'}
-                      {latestMetric.thigh && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.thigh && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Bicep */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
-                    <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
+                    <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                       {latestMetric.bicep || '-'}
-                      {latestMetric.bicep && <span className="text-xs font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.bicep && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
                     </p>
                   </div>
                 </div>
@@ -406,24 +406,24 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* No Data State - Show All Measurements with Dashes */}
       {!latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold text-black dark:text-white">Current Stats</h3>
-              <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-black dark:text-white">Current Stats</h3>
+              <span className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full">
                 No data yet
               </span>
             </div>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               {/* Weight */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                    <Scale className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <Scale className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -431,14 +431,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Body Fat */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Body Fat</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Body Fat</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -446,14 +446,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Waist */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -461,14 +461,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Chest */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -477,16 +477,16 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             </div>
 
             {/* Additional Measurements Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {/* Neck */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                    <Ruler className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -494,14 +494,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Hips */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -509,14 +509,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Thigh */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center">
+                    <Ruler className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -524,14 +524,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Bicep */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
-                    <p className="text-lg font-bold text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
+                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
                       -
                     </p>
                   </div>
@@ -540,15 +540,15 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             </div>
 
             <div className="text-center">
-              <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Start Tracking Your Progress</h4>
-              <p className="text-gray-500 dark:text-gray-400 text-xs mb-3 max-w-md mx-auto">
-                Log your first body measurement to begin tracking your fitness journey.
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Start Tracking Your Progress</h4>
+              <p className="text-gray-500 dark:text-gray-400 mb-4 max-w-md mx-auto">
+                Log your first body measurement to begin tracking your fitness journey and see your progress over time.
               </p>
               <Button
                 onClick={() => setIsAddingMetric(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 ios-touch-feedback touch-target"
+                className="bg-blue-600 hover:bg-blue-700 text-white ios-touch-feedback touch-target"
               >
-                <Plus className="w-3 h-3 mr-1" />
+                <Plus className="w-4 h-4 mr-2" />
                 Add First Entry
               </Button>
             </div>
@@ -558,29 +558,29 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Add Metrics Form - Enhanced Design */}
       {isAddingMetric && (
         <Card className="shadow-lg border-0 bg-white dark:bg-gray-900">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-blue-100 dark:border-blue-800 py-3">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-blue-100 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg font-bold text-black dark:text-white">Log Body Metrics</CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400 text-xs">Track your progress</CardDescription>
+                <CardTitle className="text-xl font-bold text-black dark:text-white">Log Body Metrics</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">Track your progress with accurate measurements</CardDescription>
               </div>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsAddingMetric(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 w-6 h-6 p-0"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               >
                 ✕
               </Button>
             </div>
           </CardHeader>
-          <CardContent ref={formRef} className="p-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent ref={formRef} className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Date and Unit Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="date" className="text-xs font-medium text-gray-700 dark:text-gray-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Date
                   </Label>
                   <Button
@@ -601,11 +601,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                         console.error('setShowDatePicker is not available!');
                       }
                     }}
-                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform cursor-pointer text-xs py-2 px-3"
+                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform cursor-pointer text-[12px] pl-[20px] pr-[20px] pt-[6px] pb-[6px] mt-[0px] mb-[0px] ml-[-5px] mr-[-5px]"
                   >
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
-                      <span className="text-xs">
+                      <span className="text-sm">
                         {TimezoneUtils.isToday(formData.date) ? 'Today' : 
                          TimezoneUtils.parseUserDate(formData.date).toLocaleDateString('en-GB', { 
                            weekday: 'short',
@@ -617,8 +617,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                     <ChevronDown className="h-4 w-4 text-gray-500" />
                   </Button>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="unit" className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                <div className="space-y-2">
+                  <Label htmlFor="unit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Unit System
                   </Label>
                   <Select value={unit} onValueChange={(value: 'metric' | 'imperial') => setUnit(value)}>
@@ -634,42 +634,42 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Primary Measurements */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   Primary Measurements
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label htmlFor="weight" className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="weight" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Weight ({formatUnit('weight')})
                     </Label>
                     <div className="relative">
-                      <Scale className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                      <Scale className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
                         type="number"
                         step="0.1"
                         id="weight"
                         value={formData.weight}
                         onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                        placeholder="Weight"
-                        className="pl-8 text-xs py-2"
+                        placeholder="Enter weight"
+                        className="pl-10"
                       />
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="bodyFatPercentage" className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                      Body Fat (%)
+                  <div className="space-y-2">
+                    <Label htmlFor="bodyFatPercentage" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Body Fat Percentage (%)
                     </Label>
                     <div className="relative">
-                      <TrendingUp className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                      <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
                         type="number"
                         step="0.1"
                         id="bodyFatPercentage"
                         value={formData.bodyFatPercentage}
                         onChange={(e) => setFormData({ ...formData, bodyFatPercentage: e.target.value })}
-                        placeholder="Body fat %"
-                        className="pl-8 text-xs py-2"
+                        placeholder="Enter body fat %"
+                        className="pl-10"
                       />
                     </div>
                   </div>
@@ -677,13 +677,13 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Body Measurements */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   Body Measurements ({formatUnit('measurement')})
                 </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <Label htmlFor="neck" className="text-xs text-gray-600 dark:text-gray-400">Neck</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="neck" className="text-sm text-gray-600 dark:text-gray-400">Neck</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -691,11 +691,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                       value={formData.neck}
                       onChange={(e) => setFormData({ ...formData, neck: e.target.value })}
                       placeholder="Neck"
-                      className="text-center text-xs py-2"
+                      className="text-center"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="chest" className="text-xs text-gray-600 dark:text-gray-400">Chest</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="chest" className="text-sm text-gray-600 dark:text-gray-400">Chest</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -703,11 +703,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                       value={formData.chest}
                       onChange={(e) => setFormData({ ...formData, chest: e.target.value })}
                       placeholder="Chest"
-                      className="text-center text-xs py-2"
+                      className="text-center"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="waist" className="text-xs text-gray-600 dark:text-gray-400">Waist</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="waist" className="text-sm text-gray-600 dark:text-gray-400">Waist</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -715,11 +715,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                       value={formData.waist}
                       onChange={(e) => setFormData({ ...formData, waist: e.target.value })}
                       placeholder="Waist"
-                      className="text-center text-xs py-2"
+                      className="text-center"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="hips" className="text-xs text-gray-600 dark:text-gray-400">Hips</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="hips" className="text-sm text-gray-600 dark:text-gray-400">Hips</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -727,11 +727,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                       value={formData.hips}
                       onChange={(e) => setFormData({ ...formData, hips: e.target.value })}
                       placeholder="Hips"
-                      className="text-center text-xs py-2"
+                      className="text-center"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="thigh" className="text-xs text-gray-600 dark:text-gray-400">Thigh</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="thigh" className="text-sm text-gray-600 dark:text-gray-400">Thigh</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -739,11 +739,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                       value={formData.thigh}
                       onChange={(e) => setFormData({ ...formData, thigh: e.target.value })}
                       placeholder="Thigh"
-                      className="text-center text-xs py-2"
+                      className="text-center"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="bicep" className="text-xs text-gray-600 dark:text-gray-400">Bicep</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="bicep" className="text-sm text-gray-600 dark:text-gray-400">Bicep</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -751,36 +751,36 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                       value={formData.bicep}
                       onChange={(e) => setFormData({ ...formData, bicep: e.target.value })}
                       placeholder="Bicep"
-                      className="text-center text-xs py-2"
+                      className="text-center"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Form Actions */}
-              <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Button
-                  type="submit"
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <Button 
+                  type="submit" 
                   disabled={addMetricMutation.isPending}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs py-2"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5"
                 >
                   {addMetricMutation.isPending ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       Saving...
-                    </span>
+                    </div>
                   ) : (
-                    <>
-                      <Save className="w-3 h-3 mr-1" />
-                      Save Entry
-                    </>
+                    <div className="flex items-center gap-2">
+                      <Plus className="w-4 h-4" />
+                      Save Metrics
+                    </div>
                   )}
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
+                <Button 
+                  type="button" 
+                  variant="outline" 
                   onClick={() => setIsAddingMetric(false)}
-                  className="px-6 text-xs py-2"
+                  className="px-6"
                 >
                   Cancel
                 </Button>
@@ -791,15 +791,15 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       )}
       {/* Metrics History - Compact Timeline */}
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-base font-semibold">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <TrendingUp className="w-4 h-4 text-blue-600" />
             Progress Timeline
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3">
+        <CardContent className="p-2">
           {metrics && metrics.length > 0 ? (
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {metrics.map((metric, index) => (
                 <div key={metric.id} className="relative">
                   {/* Timeline Line */}
@@ -926,19 +926,19 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="w-6 h-6 text-gray-400" />
+            <div className="text-center py-16">
+              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">No Progress Data Yet</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-xs mb-3 max-w-md mx-auto">
-                Start logging your body measurements to track your fitness journey.
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Progress Data Yet</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                Start logging your body measurements to track your fitness journey and see your progress over time.
               </p>
               <Button
                 onClick={() => setIsAddingMetric(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                <Plus className="w-3 h-3 mr-1" />
+                <Plus className="w-4 h-4 mr-2" />
                 Log Your First Entry
               </Button>
             </div>
