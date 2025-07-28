@@ -28,7 +28,8 @@ import {
   Camera,
   X,
   Upload,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Trash2
 } from "lucide-react";
 
 interface User {
@@ -373,6 +374,27 @@ export function AddFood({ user }: AddFoodProps) {
     }
   });
 
+  // Delete saved meal mutation
+  const deleteSavedMealMutation = useMutation({
+    mutationFn: async (mealId: number) => {
+      return apiRequest("DELETE", `/api/saved-meals/${mealId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/saved-meals'] });
+      toast({
+        title: "Success",
+        description: "Saved meal deleted successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete saved meal",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleLogFood = () => {
     let nutritionData;
     
@@ -406,7 +428,7 @@ export function AddFood({ user }: AddFoodProps) {
     logMutation.mutate(logData);
   };
 
-  const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending;
+  const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending || deleteSavedMealMutation.isPending;
   const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
   
   // Filter food history based on search query
@@ -795,14 +817,25 @@ export function AddFood({ user }: AddFoodProps) {
                         </div>
                       </div>
                       
-                      <Button
-                        onClick={() => addSavedMealMutation.mutate(meal)}
-                        disabled={addSavedMealMutation.isPending}
-                        size="sm"
-                        className="h-7 w-7 p-0 ml-2 ios-button touch-target flex-shrink-0"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </Button>
+                      <div className="flex items-center gap-1 ml-2">
+                        <Button
+                          onClick={() => addSavedMealMutation.mutate(meal)}
+                          disabled={addSavedMealMutation.isPending}
+                          size="sm"
+                          className="h-7 w-7 p-0 ios-button touch-target flex-shrink-0"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          onClick={() => deleteSavedMealMutation.mutate(meal.id)}
+                          disabled={deleteSavedMealMutation.isPending}
+                          size="sm"
+                          variant="destructive"
+                          className="h-7 w-7 p-0 ios-button touch-target flex-shrink-0"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                   
