@@ -27,7 +27,8 @@ import {
   ArrowRight,
   ArrowLeft,
   GripVertical,
-  Check
+  Check,
+  Edit
 } from "lucide-react";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -38,6 +39,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
@@ -72,6 +74,10 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
   // Nutrition facts dialog state
   const [showNutritionDialog, setShowNutritionDialog] = useState(false);
   const [selectedNutritionItem, setSelectedNutritionItem] = useState<any>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editQuantity, setEditQuantity] = useState('');
+  const [editUnit, setEditUnit] = useState('');
   
   // Bulk selection state
   const [bulkMode, setBulkMode] = useState(false);
@@ -242,6 +248,30 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     }
   });
 
+  const editQuantityMutation = useMutation({
+    mutationFn: async ({ logId, quantity, unit }: { logId: number; quantity: number; unit: string }) => {
+      return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { quantity, unit });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      setShowEditDialog(false);
+      setEditingItem(null);
+      toast({
+        title: "Success",
+        description: "Food quantity and unit updated successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update food item",
+        variant: "destructive"
+      });
+    }
+  });
+
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType) {
       case 'breakfast': return <Sunrise className="h-4 w-4" />;
@@ -295,6 +325,33 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     if (selectedLogs.length === 0 || !targetDate) return;
     
     bulkCopyMutation.mutate({ logIds: selectedLogs, targetDate });
+  };
+
+  const handleEditFood = (log: any) => {
+    setEditingItem(log);
+    setEditQuantity(log.quantity.toString());
+    setEditUnit(log.unit);
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingItem || !editQuantity || !editUnit) return;
+    
+    const quantity = parseFloat(editQuantity);
+    if (isNaN(quantity) || quantity <= 0) {
+      toast({
+        title: "Invalid Quantity",
+        description: "Please enter a valid quantity greater than 0",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    editQuantityMutation.mutate({
+      logId: editingItem.id,
+      quantity,
+      unit: editUnit
+    });
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
@@ -930,6 +987,12 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                                 }
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
+                                  onClick={() => handleEditFood(log)}
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit Quantity
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                   onClick={() => deleteMutation.mutate(log.id)}
                                   className="text-red-600 hover:text-red-700"
                                 >
@@ -1215,6 +1278,103 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
                 <div className="text-center text-xs text-gray-500">
                   Logged as: {selectedNutritionItem.mealType.charAt(0).toUpperCase() + selectedNutritionItem.mealType.slice(1)}
                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Food Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Food Quantity</DialogTitle>
+          </DialogHeader>
+          {editingItem && (
+            <div className="space-y-4">
+              {/* Food Name */}
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-black dark:text-white">
+                  {editingItem.foodName}
+                </h3>
+                <Badge className={`${getRPCategory(editingItem.category).color} text-xs mt-2`}>
+                  {getRPCategory(editingItem.category).label}
+                </Badge>
+              </div>
+
+              {/* Quantity Input */}
+              <div className="space-y-2">
+                <Label htmlFor="edit-quantity" className="text-sm font-medium">
+                  Quantity
+                </Label>
+                <Input
+                  id="edit-quantity"
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  value={editQuantity}
+                  onChange={(e) => setEditQuantity(e.target.value)}
+                  placeholder="Enter quantity"
+                  className="w-full"
+                />
+              </div>
+
+              {/* Unit Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="edit-unit" className="text-sm font-medium">
+                  Unit
+                </Label>
+                <Select value={editUnit} onValueChange={setEditUnit}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="g">g (grams)</SelectItem>
+                    <SelectItem value="kg">kg (kilograms)</SelectItem>
+                    <SelectItem value="ml">ml (milliliters)</SelectItem>
+                    <SelectItem value="L">L (liters)</SelectItem>
+                    <SelectItem value="oz">oz (ounces)</SelectItem>
+                    <SelectItem value="lb">lb (pounds)</SelectItem>
+                    <SelectItem value="cups">cups</SelectItem>
+                    <SelectItem value="tbsp">tbsp (tablespoons)</SelectItem>
+                    <SelectItem value="tsp">tsp (teaspoons)</SelectItem>
+                    <SelectItem value="pieces">pieces</SelectItem>
+                    <SelectItem value="slices">slices</SelectItem>
+                    <SelectItem value="serving">serving</SelectItem>
+                    <SelectItem value="portion">portion</SelectItem>
+                    <SelectItem value="container">container</SelectItem>
+                    <SelectItem value="packet">packet</SelectItem>
+                    <SelectItem value="gummies">gummies</SelectItem>
+                    <SelectItem value="tablets">tablets</SelectItem>
+                    <SelectItem value="scoops">scoops</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Current vs New Info */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-2">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div>Current: {editingItem.quantity} {editingItem.unit}</div>
+                  <div>New: {editQuantity} {editUnit}</div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowEditDialog(false)}
+                  disabled={editQuantityMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSaveEdit}
+                  disabled={editQuantityMutation.isPending || !editQuantity || !editUnit}
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                >
+                  {editQuantityMutation.isPending ? "Updating..." : "Update"}
+                </Button>
               </div>
             </div>
           )}
