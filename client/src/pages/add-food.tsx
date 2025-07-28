@@ -372,7 +372,7 @@ export function AddFood({ user }: AddFoodProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground ios-pwa-container">
-      <div className="container mx-auto p-4 space-y-4 max-w-2xl">
+      <div className="container mx-auto p-2 space-y-3 max-w-2xl">
         {/* Ultra-Compact Header - Consistent with other pages */}
         <div className="h-11 flex items-center justify-between px-1 ios-smooth-transform">
           <Button 
