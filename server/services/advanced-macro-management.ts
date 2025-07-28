@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { weeklyNutritionGoals, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs } from '../../shared/schema';
+import { weeklyNutritionGoals, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
 
 export class AdvancedMacroManagementService {
@@ -179,7 +179,7 @@ export class AdvancedMacroManagementService {
     }
   }
 
-  // Calculate weekly nutrition summary from food logs
+  // Calculate weekly nutrition summary from food logs with RP methodology
   static async calculateWeeklyNutritionFromLogs(userId: number, weekStartDate: string) {
     try {
       const weekStart = new Date(weekStartDate);
@@ -212,13 +212,112 @@ export class AdvancedMacroManagementService {
       // Get user's diet goals for adherence calculation
       const dietGoalsData = await db.select().from(dietGoals).where(eq(dietGoals.userId, userId)).limit(1);
       let adherencePercentage = 0;
+      let currentDietGoal = null;
 
       if (dietGoalsData.length > 0) {
-        const targetCalories = parseFloat(dietGoalsData[0].targetCalories);
+        currentDietGoal = dietGoalsData[0];
+        const targetCalories = parseFloat(currentDietGoal.targetCalories);
         adherencePercentage = targetCalories > 0 ? Math.min((avgCalories / targetCalories) * 100, 200) : 0;
       }
 
-      // Create calculated weekly summary
+      // Get weight data for RP analysis (current week and previous week)
+      const previousWeekStart = new Date(weekStart);
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7);
+
+      const [currentWeekWeight, previousWeekWeight] = await Promise.all([
+        // Current week weight (latest entry in the week)
+        db.select()
+          .from(bodyMetrics)
+          .where(and(
+            eq(bodyMetrics.userId, userId),
+            gte(bodyMetrics.date, weekStart),
+            lte(bodyMetrics.date, weekEnd)
+          ))
+          .orderBy(desc(bodyMetrics.date))
+          .limit(1),
+        
+        // Previous week weight (latest entry from previous week)
+        db.select()
+          .from(bodyMetrics)
+          .where(and(
+            eq(bodyMetrics.userId, userId),
+            gte(bodyMetrics.date, previousWeekStart),
+            lte(bodyMetrics.date, weekStart)
+          ))
+          .orderBy(desc(bodyMetrics.date))
+          .limit(1)
+      ]);
+
+      // Calculate weight change and trend analysis
+      let weightChange = 0;
+      let weightTrend = 'stable';
+      let currentWeight = null;
+      let previousWeight = null;
+
+      if (currentWeekWeight.length > 0 && currentWeekWeight[0].weight) {
+        currentWeight = parseFloat(currentWeekWeight[0].weight);
+      }
+
+      if (previousWeekWeight.length > 0 && previousWeekWeight[0].weight) {
+        previousWeight = parseFloat(previousWeekWeight[0].weight);
+      }
+
+      if (currentWeight && previousWeight) {
+        weightChange = currentWeight - previousWeight;
+        
+        // RP weight change classification
+        if (Math.abs(weightChange) < 0.25) {
+          weightTrend = 'stable';
+        } else if (weightChange > 0.25) {
+          weightTrend = 'gaining';
+        } else {
+          weightTrend = 'losing';
+        }
+      }
+
+      // RP-based adjustment recommendation calculation
+      let adjustmentRecommendation = 'maintain';
+      let adjustmentReason = 'calculated_from_logs';
+
+      if (currentDietGoal && currentWeight && previousWeight) {
+        const goalType = currentDietGoal.goal; // 'cutting', 'bulking', 'maintenance'
+        const targetWeightChangePerWeek = parseFloat(currentDietGoal.weeklyWeightTarget || '0');
+
+        // RP methodology: Adjust based on adherence + weight change vs target
+        if (goalType === 'cutting') {
+          // Cutting phase: target weight loss
+          if (adherencePercentage >= 90 && weightChange >= 0) {
+            adjustmentRecommendation = 'decrease_calories';
+            adjustmentReason = 'high_adherence_no_weight_loss';
+          } else if (adherencePercentage >= 90 && Math.abs(weightChange) > Math.abs(targetWeightChangePerWeek) * 1.5) {
+            adjustmentRecommendation = 'increase_calories';
+            adjustmentReason = 'excessive_weight_loss';
+          } else if (adherencePercentage < 80) {
+            adjustmentRecommendation = 'improve_adherence';
+            adjustmentReason = 'poor_adherence_cutting';
+          }
+        } else if (goalType === 'bulking') {
+          // Bulking phase: target weight gain
+          if (adherencePercentage >= 90 && weightChange <= 0) {
+            adjustmentRecommendation = 'increase_calories';
+            adjustmentReason = 'high_adherence_no_weight_gain';
+          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 1.5) {
+            adjustmentRecommendation = 'decrease_calories';
+            adjustmentReason = 'excessive_weight_gain';
+          } else if (adherencePercentage < 80) {
+            adjustmentRecommendation = 'improve_adherence';
+            adjustmentReason = 'poor_adherence_bulking';
+          }
+        } else {
+          // Maintenance phase
+          if (Math.abs(weightChange) > 0.5) {
+            adjustmentRecommendation = weightChange > 0 ? 'decrease_calories' : 'increase_calories';
+            adjustmentReason = 'weight_drift_maintenance';
+          }
+        }
+      }
+
+      // Create calculated weekly summary with RP analysis
       const weeklyData = {
         userId,
         weekStartDate: weekStart,
@@ -229,7 +328,15 @@ export class AdvancedMacroManagementService {
         adherencePercentage: Math.round(adherencePercentage).toString(),
         energyLevels: 7, // Default value - could be enhanced with user feedback
         hungerLevels: 5, // Default value
-        adjustmentReason: 'calculated_from_logs'
+        adjustmentReason,
+        // RP-specific fields
+        currentWeight: currentWeight?.toString() || null,
+        previousWeight: previousWeight?.toString() || null,
+        weightChange: weightChange.toFixed(2),
+        weightTrend,
+        adjustmentRecommendation,
+        goalType: currentDietGoal?.goal || 'maintenance',
+        targetWeightChangePerWeek: currentDietGoal?.weeklyWeightTarget || '0'
       };
 
       return weeklyData;
