@@ -135,6 +135,12 @@ export function AddFood({ user }: AddFoodProps) {
     },
     onSuccess: (data: any) => {
       console.log("AI Analysis successful:", data);
+      
+      // Auto-fill unit from portion information if available
+      if (portionUnit && portionUnit.trim()) {
+        setUnit(portionUnit);
+      }
+      
       toast({
         title: "Success",
         description: "Food analyzed successfully with AI!"
@@ -742,21 +748,12 @@ export function AddFood({ user }: AddFoodProps) {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Unit</Label>
-                    <Select value={unit} onValueChange={setUnit}>
-                      <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="serving">serving</SelectItem>
-                        <SelectItem value="gram">gram</SelectItem>
-                        <SelectItem value="milliliter">milliliter</SelectItem>
-                        <SelectItem value="ounce">ounce</SelectItem>
-                        <SelectItem value="cup">cup</SelectItem>
-                        <SelectItem value="piece">piece</SelectItem>
-                        <SelectItem value="gummies">gummies</SelectItem>
-                        <SelectItem value="slices">slices</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      value={unit}
+                      onChange={(e) => setUnit(e.target.value)}
+                      placeholder="g, ml, oz, cups, pieces, etc."
+                      className="h-8 text-sm ios-touch-feedback"
+                    />
                   </div>
                 </div>
 
