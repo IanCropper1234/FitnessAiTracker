@@ -109,26 +109,37 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
     }
   });
 
-  // Helper function to get current target calories (custom or suggested)
+  // Helper function to intelligently get current target calories (custom or suggested)
   const getCurrentTargetCalories = () => {
     if (!dietGoals) return nutritionSummary?.goalCalories || 2000;
-    return dietGoals.useCustomCalories ? (dietGoals.customTargetCalories || dietGoals.targetCalories) : dietGoals.targetCalories;
+    
+    // When custom calories toggle is enabled, use custom values
+    if (dietGoals.useCustomCalories && dietGoals.customTargetCalories) {
+      return dietGoals.customTargetCalories;
+    }
+    
+    // Otherwise use suggested values (even when custom toggle is on but no custom value set)
+    return dietGoals.targetCalories || nutritionSummary?.goalCalories || 2000;
   };
 
-  // Helper functions to get current macro targets (custom or suggested)
+  // Helper functions to intelligently get current macro targets (custom or suggested)
   const getCurrentTargetProtein = () => {
     if (!dietGoals) return nutritionSummary?.goalProtein || 150;
-    return dietGoals.useCustomCalories ? (dietGoals.customTargetProtein || dietGoals.targetProtein) : dietGoals.targetProtein;
+    
+    // When custom calories toggle is enabled and custom macros exist, use them
+    // The diet builder always stores macros in the regular fields (targetProtein, targetCarbs, targetFat)
+    // so we just use those regardless of custom toggle state
+    return dietGoals.targetProtein || nutritionSummary?.goalProtein || 150;
   };
 
   const getCurrentTargetCarbs = () => {
     if (!dietGoals) return nutritionSummary?.goalCarbs || 200;
-    return dietGoals.useCustomCalories ? (dietGoals.customTargetCarbs || dietGoals.targetCarbs) : dietGoals.targetCarbs;
+    return dietGoals.targetCarbs || nutritionSummary?.goalCarbs || 200;
   };
 
-  const getCurrentTargetFat = () => {
+  const getCurrentTargetFat = () => {  
     if (!dietGoals) return nutritionSummary?.goalFat || 60;
-    return dietGoals.useCustomCalories ? (dietGoals.customTargetFat || dietGoals.targetFat) : dietGoals.targetFat;
+    return dietGoals.targetFat || nutritionSummary?.goalFat || 60;
   };
 
   // Fetch nutrition logs for the selected date

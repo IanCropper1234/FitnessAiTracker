@@ -8,6 +8,14 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 28, 2025 - COMPLETE: Intelligent Diet Goal Synchronization System
+✓ **SMART DETECTION**: Enhanced nutrition overview components to intelligently detect and switch between custom and suggested diet targets
+✓ **SEAMLESS SYNC**: Fixed synchronization between diet builder custom values and all nutrition overview displays (dashboard, macro overview, integrated overview)
+✓ **AUTOMATIC SWITCHING**: System automatically uses suggested values when custom toggle is off, and custom values when toggle is enabled
+✓ **ROBUST LOGIC**: Added intelligent helper functions that handle edge cases (custom toggle on but no custom values set)
+✓ **COMPLETE INTEGRATION**: All progress bars, remaining calculations, and target displays now properly sync with user's current diet goal settings
+✓ **FALLBACK HANDLING**: Proper fallback to nutritionSummary default values when no diet goals are available
+
 ### July 28, 2025 - COMPLETE: Enhanced Renaissance Periodization Weekly Progress Analysis System with Unit Conversion
 ✓ **COMPREHENSIVE RP METHODOLOGY**: Implemented complete Renaissance Periodization analysis combining nutrition adherence, weight tracking, and diet goals
 ✓ **AUTOMATIC CALCULATION**: Enhanced backend service to automatically calculate weekly nutrition summaries from food logs when no weekly goal entries exist
