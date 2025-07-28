@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar } from "lucide-react";
+import { useLocation } from "wouter";
 
 
 interface BodyMetric {
@@ -33,19 +31,7 @@ interface BodyTrackingProps {
 export function BodyTracking({ userId }: BodyTrackingProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [isAddingMetric, setIsAddingMetric] = useState(false);
-  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
-  const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
-    weight: '',
-    bodyFatPercentage: '',
-    neck: '',
-    chest: '',
-    waist: '',
-    hips: '',
-    thigh: '',
-    bicep: '',
-  });
+  const [, setLocation] = useLocation();
 
   // Fetch body metrics
   const { data: metrics, isLoading } = useQuery<BodyMetric[]>({
@@ -56,49 +42,7 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
     }
   });
 
-  // Add body metric mutation
-  const addMetricMutation = useMutation({
-    mutationFn: async (metricData: any) => {
-      return await apiRequest("POST", "/api/body-metrics", metricData);
-    },
-    onSuccess: async (data, variables) => {
-      // If weight was added, sync it to user profile
-      if (variables.weight) {
-        try {
-          await syncWeightToProfile(variables.weight);
-        } catch (error) {
-          console.warn('Failed to sync weight to profile:', error);
-        }
-      }
-      
-      queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
-      setIsAddingMetric(false);
-      // Reset form data - the useEffect will automatically set the date to the latest metric date
-      setFormData({
-        date: new Date().toISOString().split('T')[0], // This will be updated by useEffect
-        weight: '',
-        bodyFatPercentage: '',
-        neck: '',
-        chest: '',
-        waist: '',
-        hips: '',
-        thigh: '',
-        bicep: '',
-      });
-      toast({
-        title: "Success",
-        description: "Body metrics added successfully"
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add body metrics",
-        variant: "destructive"
-      });
-    }
-  });
+
 
   // Delete metric mutation
   const deleteMetricMutation = useMutation({
@@ -114,68 +58,22 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
     }
   });
 
-  // Sync weight to user profile
-  const syncWeightToProfile = async (weight: number) => {
-    try {
-      // Get current profile
-      const profileResponse = await fetch(`/api/user/profile/${userId}`);
-      const profileData = await profileResponse.json();
-      const profile = profileData.profile || profileData.user;
-      
-      // Update profile with new weight
-      await apiRequest("PUT", `/api/user/profile/${userId}`, {
-        ...profile,
-        userId: userId,
-        weight: weight.toString()
-      });
-    } catch (error) {
-      console.warn('Failed to sync weight to profile:', error);
-    }
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const metricData = {
-      userId,
-      date: formData.date,
-      unit,
-      ...(formData.weight && { weight: parseFloat(formData.weight) }),
-      ...(formData.bodyFatPercentage && { bodyFatPercentage: parseFloat(formData.bodyFatPercentage) }),
-      ...(formData.neck && { neck: parseFloat(formData.neck) }),
-      ...(formData.chest && { chest: parseFloat(formData.chest) }),
-      ...(formData.waist && { waist: parseFloat(formData.waist) }),
-      ...(formData.hips && { hips: parseFloat(formData.hips) }),
-      ...(formData.thigh && { thigh: parseFloat(formData.thigh) }),
-      ...(formData.bicep && { bicep: parseFloat(formData.bicep) }),
-    };
 
-    addMetricMutation.mutate(metricData);
-  };
 
-  const formatUnit = (type: 'weight' | 'measurement') => {
-    if (type === 'weight') {
-      return unit === 'metric' ? 'kg' : 'lbs';
-    }
-    return unit === 'metric' ? 'cm' : 'inches';
-  };
 
   const getLatestMetric = () => {
     if (!metrics || metrics.length === 0) return null;
     return metrics.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
   };
 
+  const formatUnit = (type: 'weight' | 'measurement') => {
+    return type === 'weight' ? 'kg' : 'cm';
+  };
+
   const latestMetric = getLatestMetric();
 
-  // Update form date to latest metric date when metrics are available
-  useEffect(() => {
-    if (latestMetric && !isAddingMetric) {
-      setFormData(prev => ({
-        ...prev,
-        date: new Date(latestMetric.date).toISOString().split('T')[0]
-      }));
-    }
-  }, [latestMetric, isAddingMetric]);
+
 
   if (isLoading) {
     return (
@@ -204,7 +102,7 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
           <p className="text-gray-600 dark:text-gray-400 text-sm">Track your body measurements and changes</p>
         </div>
         <Button
-          onClick={() => setIsAddingMetric(true)}
+          onClick={() => setLocation('/add-body-metrics')}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 font-medium shadow-lg ios-touch-feedback touch-target"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -501,7 +399,7 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
                 Log your first body measurement to begin tracking your fitness journey and see your progress over time.
               </p>
               <Button
-                onClick={() => setIsAddingMetric(true)}
+                onClick={() => setLocation('/add-body-metrics')}
                 className="bg-blue-600 hover:bg-blue-700 text-white ios-touch-feedback touch-target"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -512,216 +410,7 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
         </Card>
       )}
 
-      {/* Add Metrics Form - Enhanced Design */}
-      {/* Debug: isAddingMetric = {isAddingMetric.toString()} */}
-      {isAddingMetric && (
-        <Card className="shadow-lg border-0 bg-white dark:bg-gray-900">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-blue-100 dark:border-blue-800">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold text-black dark:text-white">Log Body Metrics</CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400">Track your progress with accurate measurements</CardDescription>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsAddingMetric(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                ✕
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Date and Unit Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="date" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Date
-                  </Label>
-                  <Input
-                    type="date"
-                    id="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                    className="w-full"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Unit System
-                  </Label>
-                  <Select value={unit} onValueChange={(value: 'metric' | 'imperial') => setUnit(value)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="metric">Metric (kg/cm)</SelectItem>
-                      <SelectItem value="imperial">Imperial (lbs/inches)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              {/* Primary Measurements */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                  Primary Measurements
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="weight" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Weight ({formatUnit('weight')})
-                    </Label>
-                    <div className="relative">
-                      <Scale className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        type="number"
-                        step="0.1"
-                        id="weight"
-                        value={formData.weight}
-                        onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                        placeholder="Enter weight"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="bodyFatPercentage" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Body Fat Percentage (%)
-                    </Label>
-                    <div className="relative">
-                      <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        type="number"
-                        step="0.1"
-                        id="bodyFatPercentage"
-                        value={formData.bodyFatPercentage}
-                        onChange={(e) => setFormData({ ...formData, bodyFatPercentage: e.target.value })}
-                        placeholder="Enter body fat %"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Body Measurements */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                  Body Measurements ({formatUnit('measurement')})
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="neck" className="text-sm text-gray-600 dark:text-gray-400">Neck</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      id="neck"
-                      value={formData.neck}
-                      onChange={(e) => setFormData({ ...formData, neck: e.target.value })}
-                      placeholder="Neck"
-                      className="text-center"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="chest" className="text-sm text-gray-600 dark:text-gray-400">Chest</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      id="chest"
-                      value={formData.chest}
-                      onChange={(e) => setFormData({ ...formData, chest: e.target.value })}
-                      placeholder="Chest"
-                      className="text-center"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="waist" className="text-sm text-gray-600 dark:text-gray-400">Waist</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      id="waist"
-                      value={formData.waist}
-                      onChange={(e) => setFormData({ ...formData, waist: e.target.value })}
-                      placeholder="Waist"
-                      className="text-center"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hips" className="text-sm text-gray-600 dark:text-gray-400">Hips</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      id="hips"
-                      value={formData.hips}
-                      onChange={(e) => setFormData({ ...formData, hips: e.target.value })}
-                      placeholder="Hips"
-                      className="text-center"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="thigh" className="text-sm text-gray-600 dark:text-gray-400">Thigh</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      id="thigh"
-                      value={formData.thigh}
-                      onChange={(e) => setFormData({ ...formData, thigh: e.target.value })}
-                      placeholder="Thigh"
-                      className="text-center"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="bicep" className="text-sm text-gray-600 dark:text-gray-400">Bicep</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      id="bicep"
-                      value={formData.bicep}
-                      onChange={(e) => setFormData({ ...formData, bicep: e.target.value })}
-                      placeholder="Bicep"
-                      className="text-center"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <Button 
-                  type="submit" 
-                  disabled={addMetricMutation.isPending}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5"
-                >
-                  {addMetricMutation.isPending ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Saving...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Plus className="w-4 h-4" />
-                      Save Metrics
-                    </div>
-                  )}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setIsAddingMetric(false)}
-                  className="px-6"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Metrics History - Compact Timeline */}
       <Card>
@@ -869,8 +558,8 @@ export function BodyTracking({ userId }: BodyTrackingProps) {
                 Start logging your body measurements to track your fitness journey and see your progress over time.
               </p>
               <Button
-                onClick={() => setIsAddingMetric(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => setLocation('/add-body-metrics')}
+                className="bg-blue-600 hover:bg-blue-700 text-white ios-touch-feedback touch-target"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Log Your First Entry
