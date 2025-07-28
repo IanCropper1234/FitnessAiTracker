@@ -499,23 +499,17 @@ export function AddFood({ user }: AddFoodProps) {
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-blue-700 dark:text-blue-300">Unit</Label>
-                    <Select value={portionUnit} onValueChange={setPortionUnit}>
-                      <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="g">grams (g)</SelectItem>
-                        <SelectItem value="ml">milliliters (ml)</SelectItem>
-                        <SelectItem value="oz">ounces (oz)</SelectItem>
-                        <SelectItem value="cup">cups</SelectItem>
-                        <SelectItem value="tbsp">tablespoons</SelectItem>
-                        <SelectItem value="tsp">teaspoons</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      value={portionUnit}
+                      onChange={(e) => setPortionUnit(e.target.value)}
+                      type="text"
+                      placeholder="g, ml, oz, cups, etc."
+                      className="h-8 text-sm ios-touch-feedback"
+                    />
                   </div>
                 </div>
                 <p className="text-xs text-blue-600 dark:text-blue-400">
-                  Providing weight/volume helps AI give more accurate nutrition information
+                  Enter any weight/volume unit (e.g., g, kg, ml, L, oz, cups, tbsp, tsp, pieces, slices)
                 </p>
               </div>
             )}
