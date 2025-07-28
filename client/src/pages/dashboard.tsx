@@ -90,7 +90,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
-      <div className="content-container section-spacing pl-[2px] pr-[2px]">
+      <div className="content-container section-spacing">
         {/* Compact Date Selector */}
         <div className="flex items-center justify-center py-1 mt-[-20px] mb-[-20px] pt-[15px] pb-[15px]">
           <div className="flex items-center gap-1">
