@@ -2260,7 +2260,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/diet-goals/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const goal = await storage.updateDietGoal(userId, req.body);
+      
+      // Clean the request body to ensure proper data types
+      const cleanedGoal = { ...req.body };
+      
+      // Convert string dates to Date objects if needed
+      if (cleanedGoal.createdAt && typeof cleanedGoal.createdAt === 'string') {
+        cleanedGoal.createdAt = new Date(cleanedGoal.createdAt);
+      }
+      if (cleanedGoal.updatedAt && typeof cleanedGoal.updatedAt === 'string') {
+        cleanedGoal.updatedAt = new Date(cleanedGoal.updatedAt);
+      }
+      
+      const goal = await storage.updateDietGoal(userId, cleanedGoal);
       
       if (!goal) {
         return res.status(404).json({ message: "Diet goal not found" });
@@ -2268,6 +2280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(goal);
     } catch (error: any) {
+      console.error('Diet goal update error:', error);
       res.status(400).json({ message: error.message });
     }
   });

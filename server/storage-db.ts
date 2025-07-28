@@ -787,10 +787,14 @@ export class DatabaseStorage implements IStorage {
     const existingGoal = await this.getDietGoal(userId);
     
     if (existingGoal) {
+      // Clean the goal data to ensure proper types
+      const cleanGoal = { ...goal };
+      delete (cleanGoal as any).updatedAt; // Remove any existing updatedAt to prevent type errors
+      
       // Update the existing goal
       const [updatedGoal] = await db
         .update(dietGoals)
-        .set({ ...goal, updatedAt: new Date() })
+        .set({ ...cleanGoal, updatedAt: new Date() })
         .where(eq(dietGoals.id, existingGoal.id))
         .returning();
       return updatedGoal || undefined;
