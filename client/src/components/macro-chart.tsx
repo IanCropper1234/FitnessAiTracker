@@ -105,7 +105,7 @@ export function MacroChart({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-[11px] mb-[11px]">
       <ResponsiveContainer width="100%" height={250}>
         <PieChart>
           <Pie
