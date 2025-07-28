@@ -769,22 +769,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId, name, description, foodItems } = req.body;
       
-      // Calculate totals from food items
-      const totalCalories = foodItems.reduce((sum: number, item: any) => sum + item.calories, 0);
-      const totalProtein = foodItems.reduce((sum: number, item: any) => sum + item.protein, 0);
-      const totalCarbs = foodItems.reduce((sum: number, item: any) => sum + item.carbs, 0);
-      const totalFat = foodItems.reduce((sum: number, item: any) => sum + item.fat, 0);
+      console.log('Save meal request:', { userId, name, foodItems: foodItems?.length });
+      
+      // Calculate totals from food items with proper numeric conversion
+      const totalCalories = foodItems.reduce((sum: number, item: any) => {
+        const calories = parseFloat(item.calories) || 0;
+        return sum + calories;
+      }, 0);
+      
+      const totalProtein = foodItems.reduce((sum: number, item: any) => {
+        const protein = parseFloat(item.protein) || 0;
+        return sum + protein;
+      }, 0);
+      
+      const totalCarbs = foodItems.reduce((sum: number, item: any) => {
+        const carbs = parseFloat(item.carbs) || 0;
+        return sum + carbs;
+      }, 0);
+      
+      const totalFat = foodItems.reduce((sum: number, item: any) => {
+        const fat = parseFloat(item.fat) || 0;
+        return sum + fat;
+      }, 0);
+      
+      console.log('Calculated totals:', { totalCalories, totalProtein, totalCarbs, totalFat });
       
       const mealData = {
         userId: parseInt(userId),
         name,
         description: description || null,
-        foodItems: JSON.stringify(foodItems),
-        totalCalories: totalCalories.toString(),
-        totalProtein: totalProtein.toString(),
-        totalCarbs: totalCarbs.toString(),
-        totalFat: totalFat.toString()
+        foodItems: foodItems, // Already an array, no need to stringify
+        totalCalories: totalCalories.toFixed(2),
+        totalProtein: totalProtein.toFixed(2),  
+        totalCarbs: totalCarbs.toFixed(2),
+        totalFat: totalFat.toFixed(2)
       };
+      
+      console.log('Final meal data:', mealData);
       
       const savedMeal = await storage.createSavedMeal(mealData);
       res.json(savedMeal);

@@ -285,11 +285,7 @@ export function IntegratedNutritionOverview({ userId, onShowLogger, onDatePicker
         userId,
         name: mealData.name,
         description: mealData.description,
-        foodItems: mealData.foodItems,
-        totalCalories: mealData.foodItems.reduce((sum, item) => sum + item.calories, 0),
-        totalProtein: mealData.foodItems.reduce((sum, item) => sum + item.protein, 0),
-        totalCarbs: mealData.foodItems.reduce((sum, item) => sum + item.carbs, 0),
-        totalFat: mealData.foodItems.reduce((sum, item) => sum + item.fat, 0)
+        foodItems: mealData.foodItems
       });
     },
     onSuccess: () => {
