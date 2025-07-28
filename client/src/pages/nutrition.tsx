@@ -134,7 +134,7 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
-      <div className="w-full px-2 space-y-4">
+      <div className="w-full px-2 space-y-4 pl-[0px] pr-[0px]">
         {/* Ultra-Compact iOS Header */}
         <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-6">
           <div className="flex items-center justify-between h-[44px]">
