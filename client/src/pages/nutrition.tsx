@@ -158,15 +158,7 @@ export function Nutrition({ user, activeTab: externalActiveTab, onTabChange, sel
               <h1 className="text-base font-semibold transition-colors duration-200">Nutrition</h1>
             </div>
             
-            {/* Right: Context Menu */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setShowDatePicker(true)}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
-            >
-              <Calendar className="w-5 h-5 transition-transform duration-150" />
-            </Button>
+            {/* Right: Context Menu - Hidden per user request */}
           </div>
         </div>
 
