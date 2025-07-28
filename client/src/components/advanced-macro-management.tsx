@@ -10,7 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AdvancedMacroManagementProps {
