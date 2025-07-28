@@ -327,3 +327,5 @@ export function AddBodyMetricsPage() {
     </div>
   );
 }
+
+export default AddBodyMetricsPage;

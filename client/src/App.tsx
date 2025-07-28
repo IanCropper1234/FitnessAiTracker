@@ -15,7 +15,7 @@ import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { AddFood } from "./pages/add-food";
-import { AddBodyMetricsPage } from "./pages/add-body-metrics";
+import AddBodyMetricsPage from "./pages/add-body-metrics";
 import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
