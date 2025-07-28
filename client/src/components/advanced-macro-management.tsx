@@ -209,8 +209,13 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     // Convert to weekly rate (analytics is 14-day period, so divide by 2)
     const weeklyWeightChange = weightChange / 2;
 
-    let rec = {
-      type: "maintain" as const,
+    let rec: {
+      type: "maintain" | "increase" | "decrease";
+      message: string;
+      calorieChange: number;
+      reason: string;
+    } = {
+      type: "maintain",
       message: "Continue with current macros",
       calorieChange: 0,
       reason: "Good progress"
@@ -219,14 +224,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     if (dietGoals?.goal === "cut") {
       if (weeklyWeightChange > -0.2) { // Less than 0.2kg loss per week
         rec = {
-          type: "decrease" as const,
+          type: "decrease",
           message: "Reduce calories for better fat loss",
           calorieChange: -100,
           reason: "Weight loss too slow"
         };
       } else if (weeklyWeightChange < -0.8) { // More than 0.8kg loss per week
         rec = {
-          type: "increase" as const,
+          type: "increase",
           message: "Increase calories to prevent muscle loss",
           calorieChange: 50,
           reason: "Weight loss too fast"
@@ -235,14 +240,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     } else if (dietGoals?.goal === "bulk") {
       if (weeklyWeightChange < 0.2) { // Less than 0.2kg gain per week
         rec = {
-          type: "increase" as const,
+          type: "increase",
           message: "Increase calories for muscle growth",
           calorieChange: 100,
           reason: "Weight gain too slow"
         };
       } else if (weeklyWeightChange > 0.5) { // More than 0.5kg gain per week
         rec = {
-          type: "decrease" as const,
+          type: "decrease",
           message: "Reduce calories to minimize fat gain",
           calorieChange: -75,
           reason: "Weight gain too fast"
@@ -252,14 +257,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       // For maintenance, slight adjustments based on weight trends
       if (weeklyWeightChange > 0.3) { // Gaining weight on maintenance
         rec = {
-          type: "decrease" as const,
+          type: "decrease",
           message: "Slight calorie reduction to maintain weight",
           calorieChange: -50,
           reason: "Weight trending upward"
         };
       } else if (weeklyWeightChange < -0.3) { // Losing weight on maintenance
         rec = {
-          type: "increase" as const,
+          type: "increase",
           message: "Slight calorie increase to maintain weight",
           calorieChange: 50,
           reason: "Weight trending downward"
@@ -503,15 +508,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                           <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                           <div className="text-right">
                             <span className="text-sm font-medium text-black dark:text-white">
-                              {parseFloat(weeklyGoals[0].weightChange || '0') >= 0 ? '+' : ''}{parseFloat(weeklyGoals[0].weightChange || '0').toFixed(1)} lbs
+                              {parseFloat(weeklyGoals[0].weightChange || '0') >= 0 ? '+' : ''}{parseFloat(weeklyGoals[0].weightChange || '0').toFixed(1)} {userWeightUnit === 'lbs' ? 'lbs' : 'kg'}
                             </span>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {weeklyGoals[0].currentWeight} lbs
+                              {weeklyGoals[0].currentWeight} {userWeightUnit === 'lbs' ? 'lbs' : 'kg'}
                             </div>
                           </div>
                         </div>
                         <div className="flex justify-between text-xs">
-                          <span className="text-gray-500 dark:text-gray-400">Target: {weeklyGoals[0].targetWeightChangePerWeek} lbs/week</span>
+                          <span className="text-gray-500 dark:text-gray-400">Target: {weeklyGoals[0].targetWeightChangePerWeek} {userWeightUnit === 'lbs' ? 'lbs' : 'kg'}/week</span>
                           <span className={`font-medium ${
                             weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
                             weeklyGoals[0].weightTrend === 'gaining' ? 'text-green-600 dark:text-green-400' :
