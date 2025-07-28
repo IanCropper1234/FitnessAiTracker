@@ -656,6 +656,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }));
   };
 
+  // Auto-adjust macros to equal exactly 100%
+  const autoAdjustMacros = () => {
+    const targetCalories = getCurrentTargetCalories();
+    if (targetCalories <= 0) return;
+
+    const currentCalories = calculateCurrentCalories();
+    const ratio = targetCalories / currentCalories;
+
+    setDietGoal(prev => ({
+      ...prev,
+      targetProtein: Math.round(prev.targetProtein * ratio),
+      targetCarbs: Math.round(prev.targetCarbs * ratio),
+      targetFat: Math.round(prev.targetFat * ratio)
+    }));
+  };
+
   // Food search and meal plan functions
   const addToMealPlan = (food: FoodItem) => {
     setSelectedFoods([...selectedFoods, { ...food, quantity: 1 }]);
@@ -1197,9 +1213,28 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       {getTotalPercentage()}%
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Macronutrients must equal 100%
-                  </p>
+                  
+                  {getTotalPercentage() !== 100 && (
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Macronutrients must equal 100%
+                      </p>
+                      <Button
+                        onClick={autoAdjustMacros}
+                        variant="outline"
+                        size="sm"
+                        className="h-6 px-2 text-xs"
+                      >
+                        Auto-Adjust
+                      </Button>
+                    </div>
+                  )}
+
+                  {getTotalPercentage() === 100 && (
+                    <p className="text-xs text-green-500 dark:text-green-400">
+                      ✓ Macronutrients perfectly balanced
+                    </p>
+                  )}
                 </div>
               </div>
 
