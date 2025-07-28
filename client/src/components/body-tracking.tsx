@@ -244,7 +244,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   return (
     <div className="space-y-6">
       {/* Header with Quick Add */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 pl-[5px] pr-[5px]">
         <div>
           <h2 className="text-2xl font-bold text-black dark:text-white">Body Progress</h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm">Track your body measurements and changes</p>
@@ -257,7 +257,6 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           Log Entry
         </Button>
       </div>
-
       {/* Current Stats - Enhanced Visual Design */}
       {latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
@@ -404,7 +403,6 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           </CardContent>
         </Card>
       )}
-
       {/* No Data State - Show All Measurements with Dashes */}
       {!latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
@@ -557,7 +555,6 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           </CardContent>
         </Card>
       )}
-
       {/* Add Metrics Form - Enhanced Design */}
       {isAddingMetric && (
         <Card className="shadow-lg border-0 bg-white dark:bg-gray-900">
@@ -792,7 +789,6 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           </CardContent>
         </Card>
       )}
-
       {/* Metrics History - Compact Timeline */}
       <Card>
         <CardHeader className="pb-3">
