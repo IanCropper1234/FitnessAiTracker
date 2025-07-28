@@ -36,6 +36,12 @@ interface BodyTrackingProps {
 }
 
 export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSelectedDate: externalSetSelectedDate, showDatePicker, setShowDatePicker }: BodyTrackingProps) {
+  console.log('BodyTracking props:', { 
+    hasExternalSelectedDate: !!externalSelectedDate, 
+    hasExternalSetSelectedDate: !!externalSetSelectedDate, 
+    hasShowDatePicker: !!showDatePicker,
+    hasSetShowDatePicker: !!setShowDatePicker 
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddingMetric, setIsAddingMetric] = useState(false);
@@ -584,10 +590,18 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                     type="button"
                     variant="outline"
                     onClick={() => {
+                      console.log('Date picker button clicked!', {
+                        setShowDatePicker: !!setShowDatePicker,
+                        setSelectedDate: !!setSelectedDate,
+                        formDataDate: formData.date
+                      });
                       if (setShowDatePicker) {
+                        console.log('Opening date picker...');
                         // Update external date picker with current form date
                         setSelectedDate(formData.date);
                         setShowDatePicker(true);
+                      } else {
+                        console.error('setShowDatePicker is not available!');
                       }
                     }}
                     className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform cursor-pointer"
