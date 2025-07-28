@@ -427,13 +427,13 @@ export function AddFood({ user }: AddFoodProps) {
             {/* Search Input with Action Buttons */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">
-                {searchMode === 'ai' ? 'Describe your food or upload nutrition label' : 'Search food database'}
+                {searchMode === 'ai' ? 'Describe your food (required) *' : 'Search food database'}
               </Label>
               <div className="flex gap-2">
                 <Input
                   value={foodQuery}
                   onChange={(e) => setFoodQuery(e.target.value)}
-                  placeholder={searchMode === 'ai' ? "Large chicken breast with vegetables" : "Chicken breast"}
+                  placeholder={searchMode === 'ai' ? "Enter food name (e.g., Large chicken breast with vegetables)" : "Chicken breast"}
                   className="flex-1 h-9 text-sm ios-touch-feedback"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -515,7 +515,7 @@ export function AddFood({ user }: AddFoodProps) {
             {searchMode === 'ai' && (
               <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                  Portion Information (Optional - for more accurate analysis)
+                  Portion Information (Optional)
                 </Label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
@@ -550,7 +550,7 @@ export function AddFood({ user }: AddFoodProps) {
             {/* Action Button */}
             <Button
               onClick={searchMode === 'ai' ? handleAIAnalysis : handleSearch}
-              disabled={searchMode === 'ai' ? (!foodQuery.trim() && !capturedImage) || isLoading : !foodQuery.trim() || isLoading}
+              disabled={searchMode === 'ai' ? !foodQuery.trim() || isLoading : !foodQuery.trim() || isLoading}
               className="w-full h-9 ios-button touch-target"
             >
               {isLoading ? (
