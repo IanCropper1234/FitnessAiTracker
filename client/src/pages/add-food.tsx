@@ -213,6 +213,19 @@ export function AddFood({ user }: AddFoodProps) {
     });
   };
 
+  // Auto-sync portion values to quantity/unit after AI analysis
+  React.useEffect(() => {
+    if (aiAnalyzeMutation.data && searchMode === 'ai' && portionWeight && portionUnit) {
+      setQuantity(portionWeight);
+      setUnit(portionUnit === 'g' ? 'gram' : 
+            portionUnit === 'ml' ? 'milliliter' :
+            portionUnit === 'oz' ? 'ounce' :
+            portionUnit === 'cup' || portionUnit === 'cups' ? 'cup' :
+            portionUnit === 'piece' || portionUnit === 'pieces' ? 'piece' :
+            portionUnit); // Use custom unit as-is for non-standard units
+    }
+  }, [aiAnalyzeMutation.data, searchMode, portionWeight, portionUnit]);
+
   // Image capture functions
   const handleTakePhoto = () => {
     if (fileInputRef.current) {
@@ -736,9 +749,12 @@ export function AddFood({ user }: AddFoodProps) {
                       <SelectContent>
                         <SelectItem value="serving">serving</SelectItem>
                         <SelectItem value="gram">gram</SelectItem>
+                        <SelectItem value="milliliter">milliliter</SelectItem>
                         <SelectItem value="ounce">ounce</SelectItem>
                         <SelectItem value="cup">cup</SelectItem>
                         <SelectItem value="piece">piece</SelectItem>
+                        <SelectItem value="gummies">gummies</SelectItem>
+                        <SelectItem value="slices">slices</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
