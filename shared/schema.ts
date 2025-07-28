@@ -368,6 +368,8 @@ export const dietGoals = pgTable("diet_goals", {
   tdee: decimal("tdee", { precision: 6, scale: 2 }).notNull(),
   goal: text("goal").notNull(), // cut, bulk, maintain
   targetCalories: decimal("target_calories", { precision: 6, scale: 2 }).notNull(),
+  customTargetCalories: decimal("custom_target_calories", { precision: 6, scale: 2 }), // User-defined calories
+  useCustomCalories: boolean("use_custom_calories").notNull().default(false), // Toggle for custom vs suggested
   targetProtein: decimal("target_protein", { precision: 6, scale: 2 }).notNull(),
   targetCarbs: decimal("target_carbs", { precision: 6, scale: 2 }).notNull(),
   targetFat: decimal("target_fat", { precision: 6, scale: 2 }).notNull(),

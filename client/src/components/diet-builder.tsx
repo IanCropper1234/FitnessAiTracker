@@ -50,6 +50,8 @@ interface DietGoal {
   tdee: number;
   goal: 'cut' | 'bulk' | 'maintain';
   targetCalories: number;
+  customTargetCalories?: number;
+  useCustomCalories: boolean;
   targetProtein: number;
   targetCarbs: number;
   targetFat: number;
@@ -99,6 +101,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     tdee: 2000,
     goal: 'maintain',
     targetCalories: 2000,
+    customTargetCalories: 2000,
+    useCustomCalories: false,
     targetProtein: 150,
     targetCarbs: 200,
     targetFat: 65,
@@ -106,12 +110,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     weeklyWeightTarget: 0
   });
   
-  // Macro Adjustment State
-  const [macroAdjustments, setMacroAdjustments] = useState({
-    protein: 0,
-    carbs: 0,
-    fat: 0
-  });
+
   
   // Meal Plan State
   const [isEditingPlan, setIsEditingPlan] = useState(false);
@@ -223,13 +222,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     queryFn: async () => {
       const response = await fetch(`/api/diet-goals/${userId}`);
       return response.json();
-    },
-    onSuccess: (data) => {
-      if (data) {
-        setDietGoal(data);
-      }
     }
   });
+
+  // Update local state when diet goal data is fetched
+  useEffect(() => {
+    if (currentDietGoal) {
+      setDietGoal(currentDietGoal);
+    }
+  }, [currentDietGoal]);
 
   // Auto-sync with profile fitness goal changes and enable auto-regulation
   useEffect(() => {
@@ -259,7 +260,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         }
         
         // If current diet goal doesn't match expected, immediately sync the display to show the correct goal
-        if (currentDietGoal.goal !== expectedDietGoal) {
+        if (currentDietGoal && currentDietGoal.goal !== expectedDietGoal) {
           // Update the local state to show the expected goal that matches user's fitness goal
           setDietGoal(prev => ({ 
             ...prev, 
@@ -393,7 +394,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       const postWorkoutWindow = 1; // 1 hour after workout
       
       // Pre-workout meals
-      for (let i = 0; i < preWorkoutMeals; i++) {
+      for (let i = 0; i < (preWorkoutMeals || 1); i++) {
         const mealTime = new Date(workout.getTime() - (preWorkoutWindow - (i * 0.5)) * 60 * 60 * 1000);
         mealSchedule.push({
           mealNumber: i + 1,
@@ -404,10 +405,10 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       }
       
       // Post-workout meals
-      for (let i = 0; i < postWorkoutMeals; i++) {
+      for (let i = 0; i < (postWorkoutMeals || 1); i++) {
         const mealTime = new Date(workout.getTime() + (postWorkoutWindow + (i * 0.5)) * 60 * 60 * 1000);
         mealSchedule.push({
-          mealNumber: preWorkoutMeals + i + 1,
+          mealNumber: (preWorkoutMeals || 1) + i + 1,
           scheduledTime: mealTime.toTimeString().slice(0, 5),
           type: 'post-workout',
           description: `Post-workout meal ${i + 1}`
@@ -415,23 +416,23 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       }
       
       // Fill remaining meals
-      const remainingMeals = mealsPerDay - preWorkoutMeals - postWorkoutMeals;
+      const remainingMeals = (mealsPerDay || 4) - (preWorkoutMeals || 1) - (postWorkoutMeals || 1);
       const intervalHours = awakeHours / (remainingMeals + 1);
       
       for (let i = 0; i < remainingMeals; i++) {
         const mealTime = new Date(wake.getTime() + ((i + 1) * intervalHours * 60 * 60 * 1000));
         mealSchedule.push({
-          mealNumber: preWorkoutMeals + postWorkoutMeals + i + 1,
+          mealNumber: (preWorkoutMeals || 1) + (postWorkoutMeals || 1) + i + 1,
           scheduledTime: mealTime.toTimeString().slice(0, 5),
           type: 'regular',
-          description: `Meal ${preWorkoutMeals + postWorkoutMeals + i + 1}`
+          description: `Meal ${(preWorkoutMeals || 1) + (postWorkoutMeals || 1) + i + 1}`
         });
       }
     } else {
       // Regular day - evenly distribute meals
-      const intervalHours = awakeHours / (mealsPerDay + 1);
+      const intervalHours = awakeHours / ((mealsPerDay || 4) + 1);
       
-      for (let i = 0; i < mealsPerDay; i++) {
+      for (let i = 0; i < (mealsPerDay || 4); i++) {
         const mealTime = new Date(wake.getTime() + ((i + 1) * intervalHours * 60 * 60 * 1000));
         mealSchedule.push({
           mealNumber: i + 1,
@@ -453,7 +454,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     const isWorkoutDay = mealTimingPreferences.workoutDays?.includes(today) || false;
     
     // Use saved diet goals from database, fallback to current state
-    const activeDietGoal = currentDietGoal || dietGoal;
+    const activeDietGoal = (currentDietGoal as DietGoal) || dietGoal;
     const totalCalories = activeDietGoal.targetCalories;
     const totalProtein = activeDietGoal.targetProtein;
     const totalCarbs = activeDietGoal.targetCarbs;
@@ -477,7 +478,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           fatPercent = 0.15;
         } else {
           // Regular distribution for remaining meals
-          const remainingMeals = mealTimingPreferences.mealsPerDay - mealTimingPreferences.preWorkoutMeals - mealTimingPreferences.postWorkoutMeals;
+          const remainingMeals = (mealTimingPreferences.mealsPerDay || 4) - (mealTimingPreferences.preWorkoutMeals || 1) - (mealTimingPreferences.postWorkoutMeals || 1);
           const remainingCalories = 0.45; // 45% for non-workout meals
           caloriePercent = remainingCalories / remainingMeals;
           proteinPercent = 0.45 / remainingMeals;
@@ -598,111 +599,61 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     };
   };
 
-  // Update macros and calories when goal or adjustments change
+  // Update macros and calories when goal changes (only for auto-regulation)
   useEffect(() => {
-    if (!dietGoal.tdee) return; // Wait for TDEE to be available
+    if (!dietGoal.tdee || !dietGoal.autoRegulation) return; // Wait for TDEE and only if auto-regulation is on
     
     // Start with original TDEE-based calories for the baseline
-    const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'lose' ? 0.85 : dietGoal.goal === 'gain' ? 1.15 : 1));
-    const macros = calculateMacros(originalCalories, dietGoal.goal, macroAdjustments);
-    const adjustedCalories = (macros.protein * 4) + (macros.carbs * 4) + (macros.fat * 9);
+    const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
+    const macros = calculateMacros(originalCalories, dietGoal.goal, { protein: 0, carbs: 0, fat: 0 });
     
-    // Update local state
+    // Update local state with baseline macros
     setDietGoal(prev => ({
       ...prev,
-      targetCalories: Math.round(adjustedCalories),
+      targetCalories: originalCalories,
       targetProtein: macros.protein,
       targetCarbs: macros.carbs,
       targetFat: macros.fat
     }));
+  }, [dietGoal.goal, dietGoal.tdee, dietGoal.autoRegulation]);
 
-    // Only save to database if there are actual macro adjustments
-    if (macroAdjustments.protein !== 0 || macroAdjustments.carbs !== 0 || macroAdjustments.fat !== 0) {
-      // Debounce the database update to avoid too many requests
-      const timeoutId = setTimeout(() => {
-        saveDietGoalMutation.mutate({
-          ...dietGoal,
-          targetCalories: Math.round(adjustedCalories),
-          targetProtein: macros.protein,
-          targetCarbs: macros.carbs,
-          targetFat: macros.fat
-        });
-      }, 500);
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [dietGoal.goal, dietGoal.tdee, macroAdjustments]);
 
-  // Handle macro adjustment changes and update target calories accordingly
-  const handleMacroAdjustment = (macro: 'protein' | 'carbs' | 'fat', value: number) => {
-    setMacroAdjustments(prev => ({ ...prev, [macro]: value }));
+
+
+  // Helper function to get current target calories (custom or suggested)
+  const getCurrentTargetCalories = () => {
+    return dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || 0) : dietGoal.targetCalories;
   };
-
-  // Reset macro adjustments and save to database
-  const resetMacroAdjustments = () => {
-    setMacroAdjustments({ protein: 0, carbs: 0, fat: 0 });
-    
-    // Reset to baseline macros in database
-    const originalCalories = Math.round(dietGoal.tdee * (dietGoal.goal === 'lose' ? 0.85 : dietGoal.goal === 'gain' ? 1.15 : 1));
-    const baseMacros = calculateMacros(originalCalories, dietGoal.goal, { protein: 0, carbs: 0, fat: 0 });
-    
-    saveDietGoalMutation.mutate({
-      ...dietGoal,
-      targetCalories: originalCalories,
-      targetProtein: baseMacros.protein,
-      targetCarbs: baseMacros.carbs,
-      targetFat: baseMacros.fat
-    });
-  };
-
-  // Universal dial control handler
-  const createDialHandler = (macroType: 'protein' | 'carbs' | 'fat') => ({
-    onTouchStart: (e: React.TouchEvent) => {
-      e.preventDefault();
-      const dial = e.currentTarget.parentElement;
-      if (!dial) return;
-      const handleMove = (moveEvent: TouchEvent) => {
-        const rect = dial.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const touch = moveEvent.touches[0];
-        const angle = Math.atan2(touch.clientY - centerY, touch.clientX - centerX);
-        const degrees = (angle * 180 / Math.PI + 90) % 360;
-        const value = Math.round((degrees / 360) * 100 - 50);
-        handleMacroAdjustment(macroType, Math.max(-50, Math.min(50, value)));
-      };
-      const handleEnd = () => {
-        document.removeEventListener('touchmove', handleMove);
-        document.removeEventListener('touchend', handleEnd);
-      };
-      document.addEventListener('touchmove', handleMove);
-      document.addEventListener('touchend', handleEnd);
-    },
-    onMouseDown: (e: React.MouseEvent) => {
-      e.preventDefault();
-      const dial = e.currentTarget.parentElement;
-      if (!dial) return;
-      const handleMove = (moveEvent: MouseEvent) => {
-        const rect = dial.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const angle = Math.atan2(moveEvent.clientY - centerY, moveEvent.clientX - centerX);
-        const degrees = (angle * 180 / Math.PI + 90) % 360;
-        const value = Math.round((degrees / 360) * 100 - 50);
-        handleMacroAdjustment(macroType, Math.max(-50, Math.min(50, value)));
-      };
-      const handleEnd = () => {
-        document.removeEventListener('mousemove', handleMove);
-        document.removeEventListener('mouseup', handleEnd);
-      };
-      document.addEventListener('mousemove', handleMove);
-      document.addEventListener('mouseup', handleEnd);
-    }
-  });
 
   // Calculate current calorie total from macros
   const calculateCurrentCalories = () => {
     return Math.round((dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9));
+  };
+
+  // Calculate total percentage of macros
+  const getTotalPercentage = () => {
+    const currentCalories = getCurrentTargetCalories();
+    if (currentCalories === 0) return 0;
+    
+    const proteinPercent = (dietGoal.targetProtein * 4) / currentCalories * 100;
+    const carbsPercent = (dietGoal.targetCarbs * 4) / currentCalories * 100;
+    const fatPercent = (dietGoal.targetFat * 9) / currentCalories * 100;
+    
+    return Math.round(proteinPercent + carbsPercent + fatPercent);
+  };
+
+  // Reset macro targets to baseline
+  const resetMacroTargets = () => {
+    const targetCalories = dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || dietGoal.targetCalories) : dietGoal.targetCalories;
+    const baseMacros = calculateMacros(targetCalories, dietGoal.goal, { protein: 0, carbs: 0, fat: 0 });
+    
+    setDietGoal(prev => ({
+      ...prev,
+      targetProtein: baseMacros.protein,
+      targetCarbs: baseMacros.carbs,
+      targetFat: baseMacros.fat
+    }));
   };
 
   // Food search and meal plan functions
@@ -926,7 +877,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   )}
                 </div>
                 <Switch
-                  checked={dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight)}
+                  checked={Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight))}
                   onCheckedChange={(checked) => {
                     if (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) {
                       toast({
@@ -1130,164 +1081,127 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
               </div>
 
-              {/* MyFitnessPal-Style Macro Adjustment Section */}
-              {(
-                <div className="bg-background border border-border rounded-lg p-4 space-y-4">
-                  {/* Header */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-foreground text-sm">Custom Daily Goals</h4>
-                      <p className="text-xs text-muted-foreground">
-                        {Math.round(calculateCurrentCalories())} cal
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={resetMacroAdjustments}
-                      className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm px-3 py-1 h-auto font-medium"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                  
-                  
-
-                  {/* Macro Percentage List with Scrollable 0-100% Range */}
-                  <div className="space-y-3">
-                    {/* Carbs */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-teal-600 dark:text-teal-400">Carbs</span>
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {Math.round(Number(dietGoal.targetCarbs))} g
-                        </span>
-                      </div>
-                      <div 
-                        className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide" 
-                        style={{ 
-                          touchAction: 'pan-x',
-                          WebkitOverflowScrolling: 'touch'
-                        }}
-                      >
-                        {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
-                          const currentPercentage = Math.round(macroAdjustments.carbs + 50);
-                          const isSelected = currentPercentage === percentage;
-                          return (
-                            <Button
-                              key={percentage}
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setMacroAdjustments(prev => ({
-                                ...prev,
-                                carbs: percentage - 50
-                              }))}
-                              className={`h-8 min-w-[40px] text-xs px-2 ios-touch-feedback touch-target flex-shrink-0 ${
-                                isSelected 
-                                  ? 'bg-teal-600 text-white dark:bg-teal-500 hover:bg-teal-700 dark:hover:bg-teal-600' 
-                                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                              }`}
-                            >
-                              {percentage}%
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Protein */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Protein</span>
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {Math.round(Number(dietGoal.targetProtein))} g
-                        </span>
-                      </div>
-                      <div 
-                        className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide" 
-                        style={{ 
-                          touchAction: 'pan-x',
-                          WebkitOverflowScrolling: 'touch'
-                        }}
-                      >
-                        {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
-                          const currentPercentage = Math.round(macroAdjustments.protein + 30);
-                          const isSelected = currentPercentage === percentage;
-                          return (
-                            <Button
-                              key={percentage}
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setMacroAdjustments(prev => ({
-                                ...prev,
-                                protein: percentage - 30
-                              }))}
-                              className={`h-8 min-w-[40px] text-xs px-2 ios-touch-feedback touch-target flex-shrink-0 ${
-                                isSelected 
-                                  ? 'bg-yellow-600 text-white dark:bg-yellow-500 hover:bg-yellow-700 dark:hover:bg-yellow-600' 
-                                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                              }`}
-                            >
-                              {percentage}%
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Fat */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Fat</span>
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {Math.round(Number(dietGoal.targetFat))} g
-                        </span>
-                      </div>
-                      <div 
-                        className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide" 
-                        style={{ 
-                          touchAction: 'pan-x',
-                          WebkitOverflowScrolling: 'touch'
-                        }}
-                      >
-                        {Array.from({ length: 21 }, (_, i) => i * 5).map((percentage) => {
-                          const currentPercentage = Math.round(macroAdjustments.fat + 20);
-                          const isSelected = currentPercentage === percentage;
-                          return (
-                            <Button
-                              key={percentage}
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setMacroAdjustments(prev => ({
-                                ...prev,
-                                fat: percentage - 20
-                              }))}
-                              className={`h-8 min-w-[40px] text-xs px-2 ios-touch-feedback touch-target flex-shrink-0 ${
-                                isSelected 
-                                  ? 'bg-purple-600 text-white dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600' 
-                                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                              }`}
-                            >
-                              {percentage}%
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Total Percentage Display */}
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">% Total</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {Math.round((macroAdjustments.carbs + 50) + (macroAdjustments.protein + 30) + (macroAdjustments.fat + 20))}%
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Macronutrients must equal 100%
+              {/* Custom Daily Goals Section */}
+              <div className="bg-background border border-border rounded-lg p-4 space-y-4">
+                {/* Header with Calorie Toggle */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-foreground text-sm">Custom Daily Goals</h4>
+                    <p className="text-xs text-muted-foreground">
+                      {Math.round(calculateCurrentCalories())} cal
                     </p>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetMacroTargets}
+                    className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm px-3 py-1 h-auto font-medium"
+                  >
+                    Reset
+                  </Button>
                 </div>
-              )}
+                
+                {/* Calorie Target Toggle */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium text-foreground">Use Custom Calories</Label>
+                    <Switch
+                      checked={dietGoal.useCustomCalories}
+                      onCheckedChange={(checked) => setDietGoal(prev => ({ ...prev, useCustomCalories: checked }))}
+                    />
+                  </div>
+                  
+                  {dietGoal.useCustomCalories && (
+                    <div>
+                      <Label className="text-sm font-medium text-foreground">Custom Target Calories</Label>
+                      <Input
+                        type="number"
+                        value={dietGoal.customTargetCalories || ''}
+                        onChange={(e) => setDietGoal(prev => ({ 
+                          ...prev, 
+                          customTargetCalories: Number(e.target.value) || 0 
+                        }))}
+                        className="mt-1"
+                        placeholder="Enter calories"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Macro Input Fields */}
+                <div className="space-y-4">
+                  {/* Protein */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">Protein</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {getCurrentTargetCalories() > 0 ? Math.round((dietGoal.targetProtein * 4) / getCurrentTargetCalories() * 100) : 0}%
+                      </span>
+                    </div>
+                    <Input
+                      type="number"
+                      value={Math.round(Number(dietGoal.targetProtein))}
+                      onChange={(e) => setDietGoal(prev => ({ 
+                        ...prev, 
+                        targetProtein: Number(e.target.value) || 0 
+                      }))}
+                      className="text-center"
+                      placeholder="g"
+                    />
+                  </div>
+
+                  {/* Carbs */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium text-green-600 dark:text-green-400">Carbs</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {getCurrentTargetCalories() > 0 ? Math.round((dietGoal.targetCarbs * 4) / getCurrentTargetCalories() * 100) : 0}%
+                      </span>
+                    </div>
+                    <Input
+                      type="number"
+                      value={Math.round(Number(dietGoal.targetCarbs))}
+                      onChange={(e) => setDietGoal(prev => ({ 
+                        ...prev, 
+                        targetCarbs: Number(e.target.value) || 0 
+                      }))}
+                      className="text-center"
+                      placeholder="g"
+                    />
+                  </div>
+
+                  {/* Fat */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Fat</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {getCurrentTargetCalories() > 0 ? Math.round((dietGoal.targetFat * 9) / getCurrentTargetCalories() * 100) : 0}%
+                      </span>
+                    </div>
+                    <Input
+                      type="number"
+                      value={Math.round(Number(dietGoal.targetFat))}
+                      onChange={(e) => setDietGoal(prev => ({ 
+                        ...prev, 
+                        targetFat: Number(e.target.value) || 0 
+                      }))}
+                      className="text-center"
+                      placeholder="g"
+                    />
+                  </div>
+
+                  {/* Total Percentage Display */}
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">% Total</span>
+                    <span className={`text-sm font-medium ${getTotalPercentage() === 100 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {getTotalPercentage()}%
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Macronutrients must equal 100%
+                  </p>
+                </div>
+              </div>
 
               <Button 
                 onClick={handleSaveDietGoal}
