@@ -246,7 +246,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     readOnly={useBodyWeight}
                     inputMode="decimal"
                   />
-                  <div className="absolute right-0 top-0 h-7 flex items-center">
+                  <div className="absolute right-0 top-0 h-7 flex items-center pl-[5px] pr-[5px]">
                     <div className="h-3 w-px bg-border mr-0.5"></div>
                     <Select
                       value={weightUnit}
