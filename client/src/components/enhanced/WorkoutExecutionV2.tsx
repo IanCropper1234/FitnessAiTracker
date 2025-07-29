@@ -15,7 +15,6 @@ import { useFeature } from '@/hooks/useFeature';
 import { RestTimerFAB } from './RestTimerFAB';
 import { CircularProgress } from './CircularProgress';
 import { EnhancedSetInput } from './EnhancedSetInput';
-import { SpecialTrainingWrapper } from '../special-training/SpecialTrainingWrapper';
 import { DraggableExerciseList } from './DraggableExerciseList';
 
 // Import legacy component for fallback
@@ -585,36 +584,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           {/* Current Exercise Display */}
           {currentExercise && (
             <div className="ios-card p-1.5 space-y-1.5">
-              {/* Special Training Methods Integration */}
-              <SpecialTrainingWrapper
-                sets={currentSets}
-                onSetsUpdate={(sets, specialData) => {
-                  // Update workout data with new sets
-                  setWorkoutData(prev => ({
-                    ...prev,
-                    [currentExercise.id]: sets
-                  }));
-                  
-                  // Store special method data if provided
-                  if (specialData) {
-                    // Here we would save special method data to the database
-                    console.log('Special training method data:', specialData);
-                  }
-                }}
-                exerciseId={currentExercise.exerciseId}
-                exerciseName={currentExercise.exercise.name}
-                weightUnit={weightUnit}
-                onWeightUnitChange={setWeightUnit}
-                userId={session?.userId || 1}
-                isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
-                activeSetIndex={currentSetIndex}
-                onActiveSetChange={setCurrentSetIndex}
-                availableExercises={session?.exercises.map(ex => ({ 
-                  id: ex.exerciseId, 
-                  name: ex.exercise.name 
-                })) || []}
-                initialSpecialMethod="standard"
-              />
+              {/* Current Set Input */}
+              {currentSet && (
+                <EnhancedSetInput
+                  set={currentSet}
+                  recommendation={getExerciseRecommendation(currentExercise.exerciseId)}
+                  setRecommendation={getSetRecommendation(currentExercise.exerciseId, currentSet.setNumber)}
+                  onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
+                  onCompleteSet={completeSet}
+                  isActive={true}
+                  weightUnit={weightUnit}
+                  onWeightUnitChange={setWeightUnit}
+                  userId={session?.userId || 1}
+                  isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
+                />
+              )}
 
               {/* All Sets Overview - Ultra Compact */}
               <div className="space-y-1.5">

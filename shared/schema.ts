@@ -249,11 +249,6 @@ export const workoutExercises = pgTable("workout_exercises", {
   recommendedRpe: integer("recommended_rpe"), // AI recommended RPE
   weightUnit: text("weight_unit", { enum: ["kg", "lbs"] }).default("kg"), // Weight unit for this exercise
   finishedAt: timestamp("finished_at"), // Individual exercise completion time
-  // Special Training Methods fields
-  specialTrainingMethod: text("special_training_method", { 
-    enum: ["standard", "myoreps", "dropset", "superset", "giantset"] 
-  }).default("standard"),
-  specialMethodData: jsonb("special_method_data"), // Flexible JSON storage for method-specific data
 });
 
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {
