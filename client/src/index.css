@@ -162,6 +162,54 @@ body:has([data-radix-select-content][data-state="open"]) {
   }
 }
 
+/* iOS Nutrition Cards Optimization */
+.nutrition-card-ios {
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nutrition-card-ios:active {
+  transform: scale(0.98) translateZ(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced progress bars */
+.nutrition-progress-bar {
+  background: rgba(55, 65, 81, 1);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.nutrition-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.nutrition-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: progress-shimmer 1.5s infinite;
+}
+
+@keyframes progress-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 .button-press-animation {
   transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform: translateZ(0);

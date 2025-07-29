@@ -772,104 +772,124 @@ export function IntegratedNutritionOverview({
   return (
     <div className="space-y-3">
       
-      {/* Macro Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 w-full">
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardContent className="p-2">
+      {/* Macro Summary Cards - iOS Optimized Dark Style */}
+      <div className="grid grid-cols-2 gap-2 w-full">
+        {/* Calories Card */}
+        <Card className="bg-gray-900 dark:bg-gray-800 border-blue-500 border-2 shadow-lg nutrition-card-ios">
+          <CardContent className="p-3">
             <div className="text-center">
-              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs font-medium text-blue-400 mb-1">
                 Calories
               </div>
-              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
-                {nutritionSummary?.totalCalories || 0}
+              <div className="text-2xl font-bold text-white mb-1">
+                {Math.round(nutritionSummary?.totalCalories || 0)}
               </div>
-              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs text-gray-300 mb-2">
                 of {Math.round(getCurrentTargetCalories())}
               </div>
               {dietGoals && (
-                <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 mb-1">
+                <div className="text-xs font-medium text-blue-300 mb-2">
                   Left: {Math.max(0, Math.round(getCurrentTargetCalories()) - (nutritionSummary?.totalCalories || 0))}
                 </div>
               )}
-              <Progress 
-                value={(nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100} 
-                className="h-1"
-              />
+              <div className="nutrition-progress-bar">
+                <div 
+                  className="nutrition-progress-fill bg-blue-500"
+                  style={{ 
+                    width: `${Math.min(100, (nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100)}%` 
+                  }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardContent className="p-2">
+        {/* Protein Card */}
+        <Card className="bg-gray-900 dark:bg-gray-800 border-green-500 border-2 shadow-lg nutrition-card-ios">
+          <CardContent className="p-3">
             <div className="text-center">
-              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs font-medium text-green-400 mb-1">
                 Protein (g)
               </div>
-              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+              <div className="text-2xl font-bold text-white mb-1">
                 {Math.round(nutritionSummary?.totalProtein || 0)}
               </div>
-              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs text-gray-300 mb-2">
                 of {Math.round(getCurrentTargetProtein())}g
               </div>
               {dietGoals && (
-                <div className="text-[10px] font-medium text-green-600 dark:text-green-400 mb-1">
+                <div className="text-xs font-medium text-green-300 mb-2">
                   Left: {Math.round(Math.max(0, getCurrentTargetProtein() - (nutritionSummary?.totalProtein || 0)))}g
                 </div>
               )}
-              <Progress 
-                value={(nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100} 
-                className="h-1"
-              />
+              <div className="nutrition-progress-bar">
+                <div 
+                  className="nutrition-progress-fill bg-green-500"
+                  style={{ 
+                    width: `${Math.min(100, (nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100)}%` 
+                  }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardContent className="p-2">
+        {/* Carbs Card */}
+        <Card className="bg-gray-900 dark:bg-gray-800 border-orange-500 border-2 shadow-lg nutrition-card-ios">
+          <CardContent className="p-3">
             <div className="text-center">
-              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs font-medium text-orange-400 mb-1">
                 Carbs (g)
               </div>
-              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+              <div className="text-2xl font-bold text-white mb-1">
                 {Math.round(nutritionSummary?.totalCarbs || 0)}
               </div>
-              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs text-gray-300 mb-2">
                 of {Math.round(getCurrentTargetCarbs())}g
               </div>
               {dietGoals && (
-                <div className="text-[10px] font-medium text-orange-600 dark:text-orange-400 mb-1">
+                <div className="text-xs font-medium text-orange-300 mb-2">
                   Left: {Math.round(Math.max(0, getCurrentTargetCarbs() - (nutritionSummary?.totalCarbs || 0)))}g
                 </div>
               )}
-              <Progress 
-                value={(nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100} 
-                className="h-1"
-              />
+              <div className="nutrition-progress-bar">
+                <div 
+                  className="nutrition-progress-fill bg-orange-500"
+                  style={{ 
+                    width: `${Math.min(100, (nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100)}%` 
+                  }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardContent className="p-2">
+        {/* Fat Card */}
+        <Card className="bg-gray-900 dark:bg-gray-800 border-purple-500 border-2 shadow-lg nutrition-card-ios">
+          <CardContent className="p-3">
             <div className="text-center">
-              <div className="text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs font-medium text-purple-400 mb-1">
                 Fat (g)
               </div>
-              <div className="text-sm md:text-base font-bold text-black dark:text-white mb-1">
+              <div className="text-2xl font-bold text-white mb-1">
                 {Math.round(nutritionSummary?.totalFat || 0)}
               </div>
-              <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-1">
+              <div className="text-xs text-gray-300 mb-2">
                 of {Math.round(getCurrentTargetFat())}g
               </div>
               {dietGoals && (
-                <div className="text-[10px] font-medium text-purple-600 dark:text-purple-400 mb-1">
+                <div className="text-xs font-medium text-purple-300 mb-2">
                   Left: {Math.round(Math.max(0, getCurrentTargetFat() - (nutritionSummary?.totalFat || 0)))}g
                 </div>
               )}
-              <Progress 
-                value={(nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100} 
-                className="h-1"
-              />
+              <div className="nutrition-progress-bar">
+                <div 
+                  className="nutrition-progress-fill bg-purple-500"
+                  style={{ 
+                    width: `${Math.min(100, (nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100)}%` 
+                  }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
