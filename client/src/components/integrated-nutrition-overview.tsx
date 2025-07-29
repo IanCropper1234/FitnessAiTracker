@@ -1505,36 +1505,43 @@ export function IntegratedNutritionOverview({
                 />
               </div>
 
-              {/* Unit Selection */}
+              {/* Unit Input with Search */}
               <div className="space-y-2">
                 <Label htmlFor="edit-unit" className="text-sm font-medium">
                   Unit
                 </Label>
-                <Select value={editUnit} onValueChange={setEditUnit}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select unit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="g">g (grams)</SelectItem>
-                    <SelectItem value="kg">kg (kilograms)</SelectItem>
-                    <SelectItem value="ml">ml (milliliters)</SelectItem>
-                    <SelectItem value="L">L (liters)</SelectItem>
-                    <SelectItem value="oz">oz (ounces)</SelectItem>
-                    <SelectItem value="lb">lb (pounds)</SelectItem>
-                    <SelectItem value="cups">cups</SelectItem>
-                    <SelectItem value="tbsp">tbsp (tablespoons)</SelectItem>
-                    <SelectItem value="tsp">tsp (teaspoons)</SelectItem>
-                    <SelectItem value="pieces">pieces</SelectItem>
-                    <SelectItem value="slices">slices</SelectItem>
-                    <SelectItem value="serving">serving</SelectItem>
-                    <SelectItem value="portion">portion</SelectItem>
-                    <SelectItem value="container">container</SelectItem>
-                    <SelectItem value="packet">packet</SelectItem>
-                    <SelectItem value="gummies">gummies</SelectItem>
-                    <SelectItem value="tablets">tablets</SelectItem>
-                    <SelectItem value="scoops">scoops</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="edit-unit"
+                  type="text"
+                  value={editUnit}
+                  onChange={(e) => setEditUnit(e.target.value)}
+                  placeholder="Type unit (g, ml, oz, cups, pieces, etc.)"
+                  className="w-full"
+                  list="unit-suggestions"
+                />
+                <datalist id="unit-suggestions">
+                  <option value="g" />
+                  <option value="kg" />
+                  <option value="ml" />
+                  <option value="L" />
+                  <option value="oz" />
+                  <option value="lb" />
+                  <option value="cups" />
+                  <option value="tbsp" />
+                  <option value="tsp" />
+                  <option value="pieces" />
+                  <option value="slices" />
+                  <option value="serving" />
+                  <option value="portion" />
+                  <option value="container" />
+                  <option value="packet" />
+                  <option value="gummies" />
+                  <option value="tablets" />
+                  <option value="scoops" />
+                </datalist>
+                <div className="text-xs text-gray-500 mt-1">
+                  Common units: g, ml, oz, cups, pieces, slices, serving
+                </div>
               </div>
 
               {/* Current vs New Info */}
