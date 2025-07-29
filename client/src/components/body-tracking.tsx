@@ -428,7 +428,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   ? weight 
                   : (() => {
                       const converted = UnitConverter.convertWeight(weight, metric.unit);
-                      return displayUnit === 'metric' ? converted.kg : converted.lbs;
+                      const result = displayUnit === 'metric' ? converted.kg : converted.lbs;
+                      return typeof result === 'number' ? result : weight;
                     })();
                 
                 return {
@@ -436,7 +437,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                     month: 'short', 
                     day: 'numeric'
                   }),
-                  weight: Number(convertedWeight.toFixed(1)),
+                  weight: Math.round((convertedWeight || 0) * 10) / 10,
                   originalWeight: weight,
                   originalUnit: metric.unit,
                   isLatest: index === filteredMetrics.length - 1
