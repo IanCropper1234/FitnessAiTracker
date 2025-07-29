@@ -894,7 +894,7 @@ export function AddFood({ user }: AddFoodProps) {
                       onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
                       className="w-full h-8 text-xs ios-button touch-target"
                     >
-                      Load More ({filteredFoodHistory.length - historyDisplayLimit} remaining)
+                      Load More
                     </Button>
                   </div>
                 )}
