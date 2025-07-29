@@ -49,6 +49,14 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ✓ **TEXT TRUNCATION**: Added truncate classes to prevent long conversion text from causing horizontal overflow
 ✓ **OPTIMIZED SPACING**: Improved gap sizes and padding for consistent mobile-first experience
 
+### July 29, 2025 - COMPLETE: Critical TDEE Unit Conversion Fix & Diet Builder Loading Enhancement
+✓ **TDEE CALCULATION FIX**: Fixed critical TDEE unit conversion bug where weight and height weren't properly converted to metric units (kg/cm) before Harris-Benedict Formula
+✓ **ACCURATE CALORIE CALCULATIONS**: TDEE now correctly converts weight from lbs→kg and height from inches→cm ensuring accurate calorie and macro calculations
+✓ **BACKEND UNIT HANDLING**: Enhanced weight and height unit detection from both user profile and body metrics data sources
+✓ **LOADING STATE ENHANCEMENT**: Fixed yellow component flickering in Diet section by implementing proper loading states that prevent warnings during data fetch
+✓ **USER EXPERIENCE**: Added blue loading indicator with spinner during profile data fetching for better user feedback
+✓ **LSP ERROR RESOLUTION**: Fixed TypeScript null safety issues in meal timing preferences with proper null checks
+
 ### July 29, 2025 - COMPLETE: Current Stats Section Ultra-Compact Mobile Redesign
 ✓ **SPACE OPTIMIZATION**: Reduced Current Stats section height by ~60% with ultra-compact mobile-first design
 ✓ **PRIORITY LAYOUT**: Weight and Body Fat prominently displayed in 2-column layout at top for most important metrics

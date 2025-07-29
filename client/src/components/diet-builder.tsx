@@ -609,10 +609,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         }
       } else {
         // Even distribution across all meals
-        caloriePercent = 1 / mealTimingPreferences.mealsPerDay;
-        proteinPercent = 1 / mealTimingPreferences.mealsPerDay;
-        carbPercent = 1 / mealTimingPreferences.mealsPerDay;
-        fatPercent = 1 / mealTimingPreferences.mealsPerDay;
+        const mealsPerDay = mealTimingPreferences?.mealsPerDay || 4;
+        caloriePercent = 1 / mealsPerDay;
+        proteinPercent = 1 / mealsPerDay;
+        carbPercent = 1 / mealsPerDay;
+        fatPercent = 1 / mealsPerDay;
       }
       
       return {
@@ -626,8 +627,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   };
 
   // TDEE Calculation Function
+  // Note: Harris-Benedict Formula expects weight in kg and height in cm
   const calculateTDEE = (age: number, weight: number, height: number, activityLevel: string, gender: 'male' | 'female' = 'male') => {
-    // Harris-Benedict Formula
+    // Harris-Benedict Formula (weight in kg, height in cm)
     let bmr;
     if (gender === 'male') {
       bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
@@ -653,10 +655,23 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       const latestWeight = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0]?.weight : userProfile.weight;
       
       if (userProfile.age && latestWeight && userProfile.height && userProfile.activityLevel) {
+        // Get the weight unit and height unit
+        const weightUnit = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0]?.unit : (userProfile?.weightUnit || 'metric');
+        const heightUnit = userProfile?.heightUnit || 'metric';
+        
+        // Convert weight and height to metric (kg and cm) for TDEE calculation
+        const weightInKg = weightUnit === 'metric' 
+          ? Number(latestWeight) 
+          : convertValue(Number(latestWeight), 'weight', 'imperial', 'metric');
+        
+        const heightInCm = heightUnit === 'metric' 
+          ? Number(userProfile.height) 
+          : convertValue(Number(userProfile.height), 'measurement', 'imperial', 'metric');
+        
         const calculatedTDEE = calculateTDEE(
           userProfile.age,
-          Number(latestWeight),
-          Number(userProfile.height),
+          weightInKg,
+          heightInCm,
           userProfile.activityLevel
         );
         
