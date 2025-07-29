@@ -1026,83 +1026,129 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           )}
 
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-wrap gap-1">
-                <Button
-                  variant={selectedCategory === "all" ? "default" : "outline"}
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => setSelectedCategory("all")}
-                >
-                  All
-                </Button>
-                {Object.entries(exercisesByCategory).map(([category, categoryExercises]) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 px-2 text-xs capitalize"
-                    onClick={() => setSelectedCategory(category)}
+            <div className="flex items-center justify-between gap-2">
+              {/* Mobile-First Filter System */}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="relative">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="appearance-none bg-background border border-input rounded-md px-3 py-1.5 text-xs font-medium pr-8 min-w-24 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   >
-                    {category}
-                  </Button>
-                ))}
+                    <option value="all">All ({exercises.length})</option>
+                    {Object.entries(exercisesByCategory).map(([category, categoryExercises]) => (
+                      <option key={category} value={category} className="capitalize">
+                        {category} ({categoryExercises.length})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                </div>
+                
+                {/* Quick Filter Chips - Hidden on smallest screens */}
+                <div className="hidden sm:flex items-center gap-1 flex-wrap">
+                  {selectedCategory !== "all" && (
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-secondary/80"
+                      onClick={() => setSelectedCategory("all")}
+                    >
+                      {selectedCategory} ×
+                    </Badge>
+                  )}
+                  
+                  {/* Show popular categories as quick access */}
+                  {["strength", "compound", "push", "pull"].map((quickCategory) => {
+                    if (exercisesByCategory[quickCategory] && selectedCategory !== quickCategory) {
+                      return (
+                        <Badge 
+                          key={quickCategory}
+                          variant="outline" 
+                          className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-accent"
+                          onClick={() => setSelectedCategory(quickCategory)}
+                        >
+                          {quickCategory}
+                        </Badge>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
               </div>
+              
               <CreateExerciseButton />
+            </div>
+            
+            {/* Results Counter */}
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>
+                {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} 
+                {selectedCategory !== "all" && ` in ${selectedCategory}`}
+              </span>
+              {filteredExercises.length > 12 && (
+                <span>{Math.ceil(filteredExercises.length / 12)} pages</span>
+              )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
             {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <CardTitle className="text-base leading-tight truncate pr-2">{exercise.name}</CardTitle>
-                    <Badge variant="outline" className="text-xs capitalize shrink-0">
-                      {exercise.category}
+              <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
+                <CardHeader className="pb-1.5 px-3 pt-3">
+                  <div className="flex justify-between items-start gap-2 mb-1">
+                    <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">
+                      {exercise.name}
+                    </CardTitle>
+                    <Badge variant="outline" className="text-xs capitalize shrink-0 h-5">
+                      {exercise.category.slice(0, 4)}
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-5`}>
-                      {formatDisplayText(exercise.difficulty)}
+                  <div className="flex gap-1 flex-wrap">
+                    <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
+                      {formatDisplayText(exercise.difficulty).slice(0, 3)}
                     </Badge>
-                    <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-5`}>
-                      {formatDisplayText(exercise.movementPattern)}
+                    <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
+                      {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <p className="text-muted-foreground font-medium">Primary</p>
-                        <p className="font-medium truncate">{formatDisplayText(exercise.primaryMuscle)}</p>
+                <CardContent className="px-3 pb-3 pt-0">
+                  <div className="space-y-1.5">
+                    {/* Ultra-compact info grid */}
+                    <div className="text-xs space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground font-medium">Primary:</span>
+                        <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
+                          {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
+                        </span>
                       </div>
-                      <div>
-                        <p className="text-muted-foreground font-medium">Equipment</p>
-                        <p className="truncate">{formatDisplayText(exercise.equipment) || "Bodyweight"}</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex flex-wrap gap-1">
-                        {exercise.muscleGroups.slice(0, 3).map((muscle) => (
-                          <Badge key={muscle} variant="secondary" className="text-xs h-4 px-1">
-                            {formatDisplayText(muscle)}
-                          </Badge>
-                        ))}
-                        {exercise.muscleGroups.length > 3 && (
-                          <Badge variant="secondary" className="text-xs h-4 px-1">
-                            +{exercise.muscleGroups.length - 3}
-                          </Badge>
-                        )}
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground font-medium">Equipment:</span>
+                        <span className="truncate ml-1 text-right flex-1 min-w-0">
+                          {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
+                        </span>
                       </div>
                     </div>
                     
-                    <div className="flex gap-1.5">
+                    {/* Muscle groups - more compact */}
+                    <div className="flex flex-wrap gap-0.5 justify-center">
+                      {exercise.muscleGroups.slice(0, 2).map((muscle) => (
+                        <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                          {formatDisplayText(muscle).slice(0, 4)}
+                        </Badge>
+                      ))}
+                      {exercise.muscleGroups.length > 2 && (
+                        <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                          +{exercise.muscleGroups.length - 2}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {/* Action buttons - stacked for mobile */}
+                    <div className="flex flex-col gap-1 pt-1">
                       <Button 
                         size="sm" 
-                        className="flex-1 h-8 text-xs"
+                        className="w-full h-7 text-xs font-medium"
                         variant={isInWorkout(exercise.id) ? "secondary" : "default"}
                         onClick={() => addToWorkout(exercise)}
                         disabled={isInWorkout(exercise.id)}
@@ -1115,11 +1161,13 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                         ) : (
                           <>
                             <Plus className="h-3 w-3 mr-1" />
-                            Add
+                            Add to Workout
                           </>
                         )}
                       </Button>
-                      <ExerciseManagement exercise={exercise} />
+                      <div className="flex justify-center">
+                        <ExerciseManagement exercise={exercise} />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
