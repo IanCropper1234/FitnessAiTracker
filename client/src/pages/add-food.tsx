@@ -73,6 +73,10 @@ export function AddFood({ user }: AddFoodProps) {
   const [mealType, setMealType] = useState(mealTypeParam || 'breakfast');
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
+  
+  // State for dynamic AI recalculation
+  const [baseAIResult, setBaseAIResult] = useState<any>(null);
+  const [dynamicMacros, setDynamicMacros] = useState<any>(null);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [savedMealsSearchQuery, setSavedMealsSearchQuery] = useState('');
@@ -137,6 +141,10 @@ export function AddFood({ user }: AddFoodProps) {
     },
     onSuccess: (data: any) => {
       console.log("AI Analysis successful:", data);
+      
+      // Store the base AI result for volume calculations
+      setBaseAIResult(data);
+      setDynamicMacros(data);
       
       // Auto-fill unit from portion information if available
       if (portionUnit && portionUnit.trim()) {
@@ -207,6 +215,10 @@ export function AddFood({ user }: AddFoodProps) {
     console.log("Portion weight:", portionWeight);
     console.log("Portion unit:", portionUnit);
     
+    // Clear previous analysis results
+    setBaseAIResult(null);
+    setDynamicMacros(null);
+    
     const hasDescription = foodQuery.trim();
     const hasImage = capturedImage;
     const hasPortion = portionWeight && portionUnit;
@@ -230,6 +242,32 @@ export function AddFood({ user }: AddFoodProps) {
     });
   };
 
+  // Dynamic volume-based macro recalculation function
+  const recalculateMacrosFromVolume = React.useCallback(() => {
+    if (!baseAIResult || !quantity || parseFloat(quantity) <= 0) {
+      setDynamicMacros(baseAIResult);
+      return;
+    }
+
+    const newQuantity = parseFloat(quantity);
+    const baseQuantity = parseFloat(portionWeight) || 1;
+    const multiplier = newQuantity / baseQuantity;
+
+    const recalculatedMacros = {
+      ...baseAIResult,
+      calories: baseAIResult.calories * multiplier,
+      protein: baseAIResult.protein * multiplier,
+      carbs: baseAIResult.carbs * multiplier,
+      fat: baseAIResult.fat * multiplier,
+      servingDetails: `${quantity} ${unit} (adjusted from original analysis)`,
+      assumptions: baseAIResult.assumptions ? 
+        `${baseAIResult.assumptions} • Volume adjusted from ${portionWeight || '1'} to ${quantity} ${unit}` :
+        `Volume adjusted from original analysis to ${quantity} ${unit}`
+    };
+
+    setDynamicMacros(recalculatedMacros);
+  }, [baseAIResult, quantity, unit, portionWeight]);
+
   // Auto-sync portion values to quantity/unit after AI analysis
   React.useEffect(() => {
     if (aiAnalyzeMutation.data && searchMode === 'ai' && portionWeight && portionUnit) {
@@ -242,6 +280,21 @@ export function AddFood({ user }: AddFoodProps) {
             portionUnit); // Use custom unit as-is for non-standard units
     }
   }, [aiAnalyzeMutation.data, searchMode, portionWeight, portionUnit]);
+
+  // Recalculate macros when quantity or unit changes
+  React.useEffect(() => {
+    if (baseAIResult && searchMode === 'ai') {
+      recalculateMacrosFromVolume();
+    }
+  }, [quantity, unit, recalculateMacrosFromVolume, searchMode]);
+
+  // Reset dynamic calculations when switching search modes
+  React.useEffect(() => {
+    if (searchMode !== 'ai') {
+      setBaseAIResult(null);
+      setDynamicMacros(null);
+    }
+  }, [searchMode]);
 
   // Image capture functions
   const handleTakePhoto = () => {
@@ -398,8 +451,9 @@ export function AddFood({ user }: AddFoodProps) {
   const handleLogFood = () => {
     let nutritionData;
     
-    if (searchMode === 'ai' && aiAnalyzeMutation.data) {
-      nutritionData = aiAnalyzeMutation.data;
+    if (searchMode === 'ai' && (dynamicMacros || aiAnalyzeMutation.data)) {
+      // Use dynamic macros if available (already volume-adjusted), otherwise fall back to original AI result
+      nutritionData = dynamicMacros || aiAnalyzeMutation.data;
     } else if (selectedFood) {
       const multiplier = parseFloat(quantity);
       nutritionData = {
@@ -848,35 +902,49 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
-            {/* AI Analysis Results */}
-            {aiAnalyzeMutation.data && searchMode === 'ai' && (
+            {/* AI Analysis Results - Dynamic Volume-Based Display */}
+            {dynamicMacros && searchMode === 'ai' && (
               <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <div className="flex items-center gap-2">
                   <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">AI Analysis Result</Label>
+                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                    AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
+                  </Label>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
                     <p className="text-gray-600 dark:text-gray-400">Calories</p>
-                    <p className="font-bold">{Math.round(aiAnalyzeMutation.data.calories)}</p>
+                    <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
                   </div>
                   <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
                     <p className="text-gray-600 dark:text-gray-400">Protein</p>
-                    <p className="font-bold text-blue-600">{Math.round(aiAnalyzeMutation.data.protein)}g</p>
+                    <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
                   </div>
                   <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
                     <p className="text-gray-600 dark:text-gray-400">Carbs</p>
-                    <p className="font-bold text-orange-600">{Math.round(aiAnalyzeMutation.data.carbs)}g</p>
+                    <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
                   </div>
                   <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
                     <p className="text-gray-600 dark:text-gray-400">Fat</p>
-                    <p className="font-bold text-green-600">{Math.round(aiAnalyzeMutation.data.fat)}g</p>
+                    <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
                   </div>
                 </div>
-                {aiAnalyzeMutation.data.assumptions && (
+                {dynamicMacros.servingDetails && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Serving Details:</p>
+                    <p>{dynamicMacros.servingDetails}</p>
+                  </div>
+                )}
+                {dynamicMacros.assumptions && (
                   <div className="text-xs text-blue-700 dark:text-blue-300">
                     <p className="font-medium mb-1">Assumptions:</p>
-                    <p>{aiAnalyzeMutation.data.assumptions}</p>
+                    <p>{dynamicMacros.assumptions}</p>
+                  </div>
+                )}
+                {quantity !== (portionWeight || '1') && (
+                  <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
+                    <p className="font-medium">✓ Dynamic Calculation Applied</p>
+                    <p>Macros automatically updated based on your volume adjustment</p>
                   </div>
                 )}
               </div>
