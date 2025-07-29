@@ -119,9 +119,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
     setDietGoal(prev => {
-      const totalCalories = prev.useCustomCalories 
-        ? (prev.customTargetCalories || 2000)
-        : (prev.targetCalories || 2000);
+      const totalCalories = Number(prev.useCustomCalories 
+        ? (prev.customTargetCalories || prev.targetCalories)
+        : prev.targetCalories) || 2000;
       
       return {
         ...prev,
@@ -696,13 +696,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     const result = dietGoal.useCustomCalories 
       ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
       : dietGoal.targetCalories;
-    console.log('getCurrentCalories:', {
-      useCustomCalories: dietGoal.useCustomCalories,
-      customTargetCalories: dietGoal.customTargetCalories,
-      targetCalories: dietGoal.targetCalories,
-      result
-    });
-    return result;
+    
+    // Convert to number to ensure proper math calculations
+    return Number(result) || 2000;
   };
 
   // Calculate current calorie total from macros
@@ -1174,14 +1170,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     onCheckedChange={(checked) => {
                       setUserSetPercentages(false); // Reset flag to allow percentage recalculation
                       const newCalories = checked 
-                        ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
-                        : Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
+                        ? Number(dietGoal.customTargetCalories || dietGoal.targetCalories) || 2000
+                        : Math.round(Number(dietGoal.tdee) * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
                       
                       // Update diet goal and macros in one operation
                       setDietGoal(prev => ({ 
                         ...prev, 
                         useCustomCalories: checked,
                         targetCalories: newCalories,
+                        customTargetCalories: checked ? newCalories : undefined,
                         targetProtein: Math.round((newCalories * (proteinPercentage / 100)) / 4),
                         targetCarbs: Math.round((newCalories * (carbsPercentage / 100)) / 4),
                         targetFat: Math.round((newCalories * (fatPercentage / 100)) / 9)
@@ -1206,11 +1203,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         setDietGoal(prev => ({ 
                           ...prev, 
                           customTargetCalories: calories,
-                          targetCalories: calories,
                           targetProtein: Math.round((calories * (proteinPercentage / 100)) / 4),
                           targetCarbs: Math.round((calories * (carbsPercentage / 100)) / 4),
                           targetFat: Math.round((calories * (fatPercentage / 100)) / 9)
                         }));
+                        // Also trigger immediate recalculation for display
+                        updateMacrosFromPercentages(proteinPercentage, carbsPercentage, fatPercentage);
                       }
                     }}
                     disabled={!dietGoal.useCustomCalories}
