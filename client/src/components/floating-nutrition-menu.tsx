@@ -1,5 +1,5 @@
 import { 
-  BarChart3,
+  Utensils,
   Target,
   Brain,
   User,
@@ -16,7 +16,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   const isVisible = useScrollHide({ threshold: 15 });
   
   const menuItems = [
-    { id: "overview", icon: BarChart3, label: "Overview" },
+    { id: "overview", icon: Utensils, label: "Food Log" },
     { id: "builder", icon: Target, label: "Diet" },
     { id: "advanced", icon: Brain, label: "Adjustment" },
     { id: "body", icon: User, label: "Body" },
