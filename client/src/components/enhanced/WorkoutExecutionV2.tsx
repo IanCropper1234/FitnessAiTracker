@@ -223,45 +223,59 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     trackMouse: true,
   });
 
-  // Save progress mutation
+  // Save progress mutation with comprehensive error handling
   const saveProgressMutation = useMutation({
     mutationFn: async (progressData: any) => {
-      const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
-      return response;
-    },
-    onSuccess: (data, variables) => {
-      // Invalidate all relevant caches when workout is completed
-      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
-      // Also invalidate user-specific session queries with all possible query key variants
-      queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0] === "/api/training/sessions" && query.queryKey[1] === "1"
-      });
-      queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0] === "/api/training/stats" && query.queryKey[1] === "1"
-      });
-      
-      if (variables.isCompleted) {
-        // Workout completed - show feedback dialog
-        toast({
-          title: "Workout Completed!",
-          description: "Great job! Time for auto-regulation feedback.",
-        });
-        setShowFeedback(true);
-      } else {
-        // Just saving progress
-        toast({
-          title: "Progress Saved",
-          description: "Your workout progress has been saved.",
-        });
-        onComplete();
+      try {
+        if (!progressData || !sessionId) {
+          throw new Error('Missing required data for saving progress');
+        }
+        
+        const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
+        return response;
+      } catch (error) {
+        console.error('Save progress mutation error:', error);
+        throw error;
       }
     },
-    onError: (error) => {
+    onSuccess: (data, variables) => {
+      try {
+        // Invalidate all relevant caches when workout is completed
+        queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+        queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
+        // Also invalidate user-specific session queries with all possible query key variants
+        queryClient.invalidateQueries({ predicate: (query) => 
+          query.queryKey[0] === "/api/training/sessions" && query.queryKey[1] === "1"
+        });
+        queryClient.invalidateQueries({ predicate: (query) => 
+          query.queryKey[0] === "/api/training/stats" && query.queryKey[1] === "1"
+        });
+        
+        if (variables?.isCompleted) {
+          // Workout completed - show feedback dialog
+          toast({
+            title: "Workout Completed!",
+            description: "Great job! Time for auto-regulation feedback.",
+          });
+          setShowFeedback(true);
+        } else {
+          // Just saving progress
+          toast({
+            title: "Progress Saved",
+            description: "Your workout progress has been saved.",
+          });
+          onComplete();
+        }
+      } catch (error) {
+        console.error('Error in onSuccess handler:', error);
+      }
+    },
+    onError: (error: any) => {
+      console.error('Save progress mutation error:', error);
       toast({
         title: "Error",
-        description: `Failed to save workout progress: ${error.message || 'Unknown error'}`,
+        description: `Failed to save workout progress: ${error?.message || 'Unknown error'}`,
         variant: "destructive",
       });
     },
@@ -324,39 +338,56 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const completeSet = () => {
-    if (!currentSet?.weight || !currentSet?.actualReps) {
-      toast({
-        title: "Incomplete Set",
-        description: "Please enter weight and reps before completing the set.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    updateSet(currentExercise.id, currentSetIndex, 'completed', true);
-    
-    // Start rest timer and advance
-    if (currentSetIndex < currentSets.length - 1) {
-      // Next set in same exercise
-      if (restTimerFABEnabled) {
-        const restTime = customRestTime || currentExercise.restPeriod;
-        setRestTimeRemaining(restTime);
-        setIsRestTimerActive(true);
+    try {
+      if (!currentSet?.weight || !currentSet?.actualReps) {
         toast({
-          title: "Set Complete!",
-          description: `Rest ${Math.floor(restTime / 60)}:${(restTime % 60).toString().padStart(2, '0')} before next set`,
-          duration: 3000,
+          title: "Incomplete Set",
+          description: "Please enter weight and reps before completing the set.",
+          variant: "destructive",
         });
+        return;
       }
-      setCurrentSetIndex(currentSetIndex + 1);
-    } else if (currentExerciseIndex < session.exercises.length - 1) {
-      // Move to next exercise
-      setCurrentExerciseIndex(currentExerciseIndex + 1);
-      setCurrentSetIndex(0);
+
+      if (!currentExercise?.id) {
+        console.error('No current exercise found');
+        return;
+      }
+
+      updateSet(currentExercise.id, currentSetIndex, 'completed', true);
+      
+      // Start rest timer and advance
+      if (currentSetIndex < currentSets.length - 1) {
+        // Next set in same exercise
+        if (restTimerFABEnabled) {
+          const restTime = customRestTime || currentExercise.restPeriod || 120;
+          setRestTimeRemaining(restTime);
+          setIsRestTimerActive(true);
+          toast({
+            title: "Set Complete!",
+            description: `Rest ${Math.floor(restTime / 60)}:${(restTime % 60).toString().padStart(2, '0')} before next set`,
+            duration: 3000,
+          });
+        }
+        setCurrentSetIndex(currentSetIndex + 1);
+      } else if (currentExerciseIndex < (session?.exercises?.length || 0) - 1) {
+        // Move to next exercise
+        const nextExercise = session?.exercises?.[currentExerciseIndex + 1];
+        if (nextExercise) {
+          setCurrentExerciseIndex(currentExerciseIndex + 1);
+          setCurrentSetIndex(0);
+          toast({
+            title: "Exercise Complete!",
+            description: `Moving to ${nextExercise.exercise.name}`,
+            duration: 3000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error completing set:', error);
       toast({
-        title: "Exercise Complete!",
-        description: `Moving to ${session.exercises[currentExerciseIndex + 1]?.exercise.name}`,
-        duration: 3000,
+        title: "Error",
+        description: "Failed to complete set. Please try again.",
+        variant: "destructive",
       });
     }
   };
@@ -470,61 +501,99 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const saveAndExit = () => {
-    const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
-    const totalVolume = Math.round(Object.values(workoutData)
-      .flat()
-      .filter(set => set.completed)
-      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0));
+    try {
+      if (!session?.exercises || !sessionStartTime) {
+        console.error('Missing session data for save and exit');
+        toast({
+          title: "Error",
+          description: "Cannot save workout - missing session data",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const progressData = {
-      duration,
-      totalVolume,
-      isCompleted: false,
-      exercises: session.exercises.map(exercise => ({
-        exerciseId: exercise.exerciseId,
-        sets: workoutData[exercise.id] || [],
-        specialMethod: specialMethods[exercise.id] || null,
-        specialConfig: specialConfigs[exercise.id] || null
-      }))
-    };
+      const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
+      const totalVolume = Math.round(Object.values(workoutData)
+        .flat()
+        .filter(set => set?.completed)
+        .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0));
 
-    saveProgressMutation.mutate(progressData);
+      const progressData = {
+        duration,
+        totalVolume,
+        isCompleted: false,
+        exercises: session.exercises.map(exercise => ({
+          exerciseId: exercise.exerciseId,
+          sets: workoutData[exercise.id] || [],
+          specialMethod: specialMethods[exercise.id] || null,
+          specialConfig: specialConfigs[exercise.id] || null
+        }))
+      };
+
+      saveProgressMutation.mutate(progressData);
+    } catch (error) {
+      console.error('Error in saveAndExit:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save workout progress",
+        variant: "destructive",
+      });
+    }
   };
 
   const completeWorkout = () => {
-    // Validation: Check if all sets are completed
-    const allSets = Object.values(workoutData).flat();
-    const completedSets = allSets.filter(set => set.completed);
-    const incompleteSets = allSets.filter(set => !set.completed);
-    
-    if (incompleteSets.length > 0) {
+    try {
+      if (!session?.exercises || !sessionStartTime) {
+        console.error('Missing session data for workout completion');
+        toast({
+          title: "Error",
+          description: "Cannot complete workout - missing session data",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validation: Check if all sets are completed
+      const allSets = Object.values(workoutData).flat();
+      const completedSets = allSets.filter(set => set?.completed);
+      const incompleteSets = allSets.filter(set => !set?.completed);
+      
+      if (incompleteSets.length > 0) {
+        toast({
+          title: "Cannot Complete Workout",
+          description: `Please complete all ${incompleteSets.length} remaining set(s) before finishing the workout.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
+      const totalVolume = Math.round(Object.values(workoutData)
+        .flat()
+        .filter(set => set?.completed)
+        .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0));
+
+      const progressData = {
+        duration,
+        totalVolume,
+        isCompleted: true,
+        exercises: session.exercises.map(exercise => ({
+          exerciseId: exercise.exerciseId,
+          sets: workoutData[exercise.id] || [],
+          specialMethod: specialMethods[exercise.id] || null,
+          specialConfig: specialConfigs[exercise.id] || null
+        }))
+      };
+
+      saveProgressMutation.mutate(progressData);
+    } catch (error) {
+      console.error('Error in completeWorkout:', error);
       toast({
-        title: "Cannot Complete Workout",
-        description: `Please complete all ${incompleteSets.length} remaining set(s) before finishing the workout.`,
+        title: "Error",
+        description: "Failed to complete workout",
         variant: "destructive",
       });
-      return;
     }
-
-    const duration = Math.round((Date.now() - sessionStartTime) / 1000 / 60);
-    const totalVolume = Math.round(Object.values(workoutData)
-      .flat()
-      .filter(set => set.completed)
-      .reduce((sum, set) => sum + (set.weight * set.actualReps), 0));
-
-    const progressData = {
-      duration,
-      totalVolume,
-      isCompleted: true,
-      exercises: session.exercises.map(exercise => ({
-        exerciseId: exercise.exerciseId,
-        sets: workoutData[exercise.id] || [],
-        specialMethod: specialMethods[exercise.id] || null,
-        specialConfig: specialConfigs[exercise.id] || null
-      }))
-    };
-
-    saveProgressMutation.mutate(progressData);
   };
 
   const getSetRecommendation = (exerciseId: number, setNumber: number): SetRecommendation | undefined => {
