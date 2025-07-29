@@ -1287,6 +1287,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             rir: we.rir,
             isCompleted: we.isCompleted,
             setsData: we.setsData, // Include saved sets data
+            specialMethod: we.specialMethod, // Include special training method
+            specialConfig: we.specialConfig, // Include special training configuration
             exercise: exercise
           };
         })
