@@ -50,7 +50,7 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ✓ **OPTIMIZED SPACING**: Improved gap sizes and padding for consistent mobile-first experience
 
 ### July 29, 2025 - COMPLETE: Training Dashboard Mobile-First Redesign & Overflow Fix
-✓ **DROPDOWN FILTER SYSTEM**: Replaced overflowing button tabs with responsive dropdown selector preventing all horizontal overflow issues
+✓ **DROPDOWN FILTER SYSTEM**: Replaced overflowing button tabs with responsive dropdown selector preventing all horizontal overflow issues, fixed duplicate arrow with cross-browser CSS
 ✓ **MOBILE-FIRST APPROACH**: Primary filter via native select dropdown with exercise counts, optimized for thumb navigation
 ✓ **QUICK ACCESS CHIPS**: Desktop users get additional badge filters for popular categories (strength, compound, push, pull)  
 ✓ **ULTRA-COMPACT CARDS**: Redesigned exercise cards with 60% height reduction, truncated labels, and stacked mobile layout

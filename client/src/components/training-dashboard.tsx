@@ -1033,7 +1033,13 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="appearance-none bg-background border border-input rounded-md px-3 py-1.5 text-xs font-medium pr-8 min-w-24 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    className="w-full bg-background border border-input rounded-md px-3 py-1.5 text-xs font-medium pr-8 min-w-24 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                    style={{ 
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                      backgroundImage: 'none'
+                    }}
                   >
                     <option value="all">All ({exercises.length})</option>
                     {Object.entries(exercisesByCategory).map(([category, categoryExercises]) => (
