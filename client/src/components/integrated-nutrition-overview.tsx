@@ -1045,25 +1045,30 @@ export function IntegratedNutritionOverview({
                           size="sm" 
                           className="h-6 w-6 p-0"
                           onTouchStart={(e) => {
-                            // Prevent accidental clicks during scrolling
+                            // Track touch start time and position
                             e.currentTarget.dataset.touchStart = Date.now().toString();
+                            e.currentTarget.dataset.touchY = e.touches[0].clientY.toString();
                           }}
-                          onTouchEnd={(e) => {
-                            // Only allow click if touch was brief (not a scroll)
-                            const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
-                            const touchDuration = Date.now() - touchStart;
-                            if (touchDuration > 200) {
-                              e.preventDefault();
-                              e.stopPropagation();
+                          onTouchMove={(e) => {
+                            // Track if user is scrolling
+                            const startY = parseInt(e.currentTarget.dataset.touchY || '0');
+                            const currentY = e.touches[0].clientY;
+                            const deltaY = Math.abs(currentY - startY);
+                            if (deltaY > 10) {
+                              e.currentTarget.dataset.isScrolling = 'true';
                             }
                           }}
                           onClick={(e) => {
-                            // Additional protection against scroll-triggered clicks
+                            // Only prevent click if user was scrolling
+                            const isScrolling = e.currentTarget.dataset.isScrolling === 'true';
                             const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
-                            const timeSinceTouch = Date.now() - touchStart;
-                            if (timeSinceTouch > 200) {
+                            const touchDuration = Date.now() - touchStart;
+                            
+                            if (isScrolling || touchDuration > 500) {
                               e.preventDefault();
                               e.stopPropagation();
+                              // Reset scroll tracking
+                              e.currentTarget.dataset.isScrolling = 'false';
                             }
                           }}
                         >
@@ -1193,25 +1198,30 @@ export function IntegratedNutritionOverview({
                                   size="sm" 
                                   className="h-6 w-6 p-0"
                                   onTouchStart={(e) => {
-                                    // Prevent accidental clicks during scrolling
+                                    // Track touch start time and position
                                     e.currentTarget.dataset.touchStart = Date.now().toString();
+                                    e.currentTarget.dataset.touchY = e.touches[0].clientY.toString();
                                   }}
-                                  onTouchEnd={(e) => {
-                                    // Only allow click if touch was brief (not a scroll)
-                                    const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
-                                    const touchDuration = Date.now() - touchStart;
-                                    if (touchDuration > 200) {
-                                      e.preventDefault();
-                                      e.stopPropagation();
+                                  onTouchMove={(e) => {
+                                    // Track if user is scrolling
+                                    const startY = parseInt(e.currentTarget.dataset.touchY || '0');
+                                    const currentY = e.touches[0].clientY;
+                                    const deltaY = Math.abs(currentY - startY);
+                                    if (deltaY > 10) {
+                                      e.currentTarget.dataset.isScrolling = 'true';
                                     }
                                   }}
                                   onClick={(e) => {
-                                    // Additional protection against scroll-triggered clicks
+                                    // Only prevent click if user was scrolling
+                                    const isScrolling = e.currentTarget.dataset.isScrolling === 'true';
                                     const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
-                                    const timeSinceTouch = Date.now() - touchStart;
-                                    if (timeSinceTouch > 200) {
+                                    const touchDuration = Date.now() - touchStart;
+                                    
+                                    if (isScrolling || touchDuration > 500) {
                                       e.preventDefault();
                                       e.stopPropagation();
+                                      // Reset scroll tracking
+                                      e.currentTarget.dataset.isScrolling = 'false';
                                     }
                                   }}
                                 >
