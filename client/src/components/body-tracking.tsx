@@ -373,8 +373,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
                     <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {latestMetric.weight || '-'}
-                      {latestMetric.weight && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('weight')}</span>}
+                      {latestMetric.weight ? displayValue(latestMetric.weight, 'weight', latestMetric.unit) : '-'}
+                      {latestMetric.weight && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.weight, 'weight', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'lbs' : 'kg'}</span>}
                     </p>
                   </div>
                 </div>
@@ -405,8 +405,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {latestMetric.waist || '-'}
-                      {latestMetric.waist && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.waist ? displayValue(latestMetric.waist, 'measurement', latestMetric.unit) : '-'}
+                      {latestMetric.waist && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.waist, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
                     </p>
                   </div>
                 </div>
@@ -421,8 +421,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
                     <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      {latestMetric.chest || '-'}
-                      {latestMetric.chest && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.chest ? displayValue(latestMetric.chest, 'measurement', latestMetric.unit) : '-'}
+                      {latestMetric.chest && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.chest, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
                     </p>
                   </div>
                 </div>
@@ -440,8 +440,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
                     <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                      {latestMetric.neck || '-'}
-                      {latestMetric.neck && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.neck ? displayValue(latestMetric.neck, 'measurement', latestMetric.unit) : '-'}
+                      {latestMetric.neck && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.neck, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
                     </p>
                   </div>
                 </div>
@@ -456,8 +456,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
                     <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">
-                      {latestMetric.hips || '-'}
-                      {latestMetric.hips && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.hips ? displayValue(latestMetric.hips, 'measurement', latestMetric.unit) : '-'}
+                      {latestMetric.hips && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.hips, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
                     </p>
                   </div>
                 </div>
@@ -472,8 +472,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
                     <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
-                      {latestMetric.thigh || '-'}
-                      {latestMetric.thigh && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.thigh ? displayValue(latestMetric.thigh, 'measurement', latestMetric.unit) : '-'}
+                      {latestMetric.thigh && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.thigh, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
                     </p>
                   </div>
                 </div>
@@ -488,8 +488,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
                     <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                      {latestMetric.bicep || '-'}
-                      {latestMetric.bicep && <span className="text-sm font-normal text-gray-500 ml-1">{formatUnit('measurement')}</span>}
+                      {latestMetric.bicep ? displayValue(latestMetric.bicep, 'measurement', latestMetric.unit) : '-'}
+                      {latestMetric.bicep && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.bicep, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
                     </p>
                   </div>
                 </div>

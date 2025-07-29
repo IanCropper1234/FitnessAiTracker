@@ -8,6 +8,16 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 29, 2025 - COMPLETE: Comprehensive Smart Unit Conversion System Enhancement
+✓ **CURRENT STATS ENHANCEMENT**: Fixed Current Stats section to display proper unit conversion instead of raw kg values
+✓ **LIVE CONVERSION DISPLAY**: Added real-time conversion hints showing equivalent values (156.90kg ≈ 345.9lbs)
+✓ **TIMELINE UNIT TOGGLE**: Enhanced Progress Timeline with "Unify Units" vs "Show Original Units" toggle for historical data
+✓ **SMART CONVERSION HELPERS**: Added conversion assistance during unit switching with one-click "Convert All Values" functionality
+✓ **COMPREHENSIVE UNIT SUPPORT**: Full kg↔lbs and cm↔inches conversion throughout Current Stats, form inputs, and timeline
+✓ **VISUAL CONVERSION HINTS**: Inline conversion hints while typing values (shows equivalent in opposite unit system)
+✓ **UNIT NORMALIZATION**: Timeline intelligently shows (converted) indicator when displaying unified units vs original entry units
+✓ **ENHANCED USER EXPERIENCE**: Auto-detect unit switching with helpful conversion suggestions and real-time value assistance
+
 ### July 29, 2025 - COMPLETE: Auto-Regulation Toggle Visual Enhancement & Percentage Reversion Fix
 ✓ **AUTO-REGULATION DISPLAY**: Transformed auto-regulation toggle from interactive control to read-only system status indicator
 ✓ **VISUAL CLARITY**: Added gray background, disabled styling, and "System managed" label to show it's automatically controlled
