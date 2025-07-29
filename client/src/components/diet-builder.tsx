@@ -315,7 +315,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   });
 
   // Fetch user profile for TDEE calculation
-  const { data: userProfileResponse } = useQuery<UserProfileResponse>({
+  const { data: userProfileResponse, isLoading: isUserProfileLoading } = useQuery<UserProfileResponse>({
     queryKey: ['/api/user/profile', userId],
     queryFn: async () => {
       const response = await fetch(`/api/user/profile/${userId}`);
@@ -327,7 +327,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const userProfile = userProfileResponse?.profile || userProfileResponse?.user;
 
   // Fetch body metrics for recent weight
-  const { data: bodyMetrics } = useQuery({
+  const { data: bodyMetrics, isLoading: isBodyMetricsLoading } = useQuery({
     queryKey: ['/api/body-metrics', userId],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics/${userId}`);
@@ -336,13 +336,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   });
 
   // Fetch current diet goal
-  const { data: currentDietGoal } = useQuery<DietGoal>({
+  const { data: currentDietGoal, isLoading: isDietGoalLoading } = useQuery<DietGoal>({
     queryKey: ['/api/diet-goals', userId],
     queryFn: async () => {
       const response = await fetch(`/api/diet-goals/${userId}`);
       return response.json();
     }
   });
+
+  // Overall loading state to prevent premature warning display
+  const isDataLoading = isUserProfileLoading || isBodyMetricsLoading || isDietGoalLoading;
 
   // Update local state when diet goal data is fetched
   useEffect(() => {
@@ -933,8 +936,23 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Loading State */}
+              {isDataLoading && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+                    <div>
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100 text-sm">Loading Profile Data</h4>
+                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                        Fetching your profile information and settings...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Profile Integration Section */}
-              {userProfile?.fitnessGoal && (
+              {!isDataLoading && userProfile?.fitnessGoal && (
                 <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2 text-sm">
@@ -961,8 +979,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
               )}
 
-              {/* Data Validation Messages */}
-              {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
+              {/* Data Validation Messages - Only show when data is loaded and actually missing */}
+              {!isDataLoading && (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                   <h4 className="font-medium text-yellow-900 dark:text-yellow-100 mb-2">Missing Profile Data</h4>
                   <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
