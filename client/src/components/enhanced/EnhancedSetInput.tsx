@@ -245,19 +245,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     step="0.5"
                     min="0"
                     max="1000"
-                    className={`workout-input h-9 text-sm border-0 bg-transparent pr-12 text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    className={`workout-input h-9 text-sm border-0 bg-transparent pr-16 text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
                     disabled={useBodyWeight}
                     readOnly={useBodyWeight}
                     inputMode="decimal"
                   />
-                  {/* Inline Unit Selector with Visual Separator - Increased width */}
-                  <div className="absolute right-0 top-0 h-9 flex items-center pr-1">
-                    <div className="h-4 w-px bg-border mr-1"></div>
+                  {/* Inline Unit Selector with Visual Separator - Fixed positioning */}
+                  <div className="absolute right-1 top-0 h-9 flex items-center">
+                    <div className="h-4 w-px bg-border mr-2"></div>
                     <Select
                       value={weightUnit}
                       onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                     >
-                      <SelectTrigger className="w-10 h-9 border-0 bg-transparent text-xs p-0 touch-target flex items-center justify-center">
+                      <SelectTrigger className="w-12 h-8 border-0 bg-transparent text-xs px-1 touch-target flex items-center justify-center rounded-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
