@@ -150,17 +150,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   const isSetValid = set.weight > 0 && set.actualReps > 0 && set.rpe >= 1 && set.rpe <= 10;
 
   return (
-    <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-1 ring-primary/50 bg-primary/3' : ''}`}>
-      <CardContent className="p-1 space-y-0.5">
-        {/* Ultra-Compact Set Header */}
-        <div className="flex items-center justify-between min-h-[20px]">
-          <div className="flex items-center gap-1 flex-1 min-w-0">
-            <Badge variant={set.completed ? "default" : "outline"} className="text-[10px] px-1 py-0 h-4 flex-shrink-0">
-              S{set.setNumber}
+    <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
+      <CardContent className="p-1.5 space-y-1">
+        {/* Optimized Set Header - Single Line */}
+        <div className="flex items-center justify-between min-h-[24px]">
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <Badge variant={set.completed ? "default" : "outline"} className="text-xs px-1.5 py-0.5 flex-shrink-0">
+              Set {set.setNumber}
             </Badge>
-            <span className="text-[10px] text-foreground/60 truncate">
-              T:{setRecommendation?.recommendedReps || set.targetReps}
-              {setRecommendation && <span className="text-emerald-400 ml-0.5">R</span>}
+            <span className="text-xs text-foreground/70 truncate">
+              Target: {setRecommendation?.recommendedReps || set.targetReps}
+              {setRecommendation && (
+                <span className="text-emerald-400 ml-1">(R)</span>
+              )}
             </span>
           </div>
           
@@ -169,34 +171,36 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => setShowRecommendation(!showRecommendation)}
-              className="ios-touch-feedback p-0 w-5 h-5 flex-shrink-0"
+              className="ios-touch-feedback touch-target p-0 flex-shrink-0"
             >
-              <Info className="h-2.5 w-2.5" />
+              <Info className="h-3 w-3" />
             </Button>
           )}
         </div>
 
-        {/* Ultra-Compact Recommendation Banner */}
+        {/* Compact Recommendation Banner - Collapsed Design */}
         {(setRecommendation || recommendation) && showRecommendation && (
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded p-1">
-            <div className="flex items-center justify-between gap-1">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded p-1.5">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] text-emerald-300 truncate">
+                <div className="text-xs text-emerald-300 truncate">
                   {setRecommendation ? (
-                    `${setRecommendation.recommendedWeight}kg•${setRecommendation.recommendedReps}r•${setRecommendation.recommendedRpe}`
+                    `${setRecommendation.recommendedWeight}kg • ${setRecommendation.recommendedReps}r • RPE ${setRecommendation.recommendedRpe}`
                   ) : recommendation?.sets?.[0] ? (
-                    `${recommendation.sets[0].recommendedWeight}kg•${recommendation.sets[0].recommendedReps}r•${recommendation.sets[0].recommendedRpe}`
+                    `${recommendation.sets[0].recommendedWeight}kg • ${recommendation.sets[0].recommendedReps}r • RPE ${recommendation.sets[0].recommendedRpe}`
                   ) : (
-                    "No rec"
+                    "No recommendations"
                   )}
-                  {recommendation && <span className="text-emerald-300/70">W{recommendation.week}</span>}
+                  {recommendation && (
+                    <span className="text-emerald-300/70"> (W{recommendation.week})</span>
+                  )}
                 </div>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleUseRecommendation}
-                className="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/30 px-1 h-5 flex-shrink-0"
+                className="ios-touch-feedback touch-target text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/30 px-2 flex-shrink-0"
               >
                 Use
               </Button>
@@ -206,33 +210,33 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Conditional Rendering: Show input only for active sets, compact view for completed */}
         {!set.completed && isActive ? (
-          <div className="space-y-0.5">
-            {/* Compact Body Weight Info */}
+          <div className="space-y-1">
+            {/* Body Weight Info - Shows only when active */}
             {useBodyWeight && bodyWeightValue > 0 && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded p-0.5">
-                <div className="flex items-center gap-0.5 text-[10px] text-blue-400">
-                  <Scale className="h-2 w-2" />
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded p-1">
+                <div className="flex items-center gap-1 text-xs text-blue-400">
+                  <Scale className="h-2.5 w-2.5" />
                   <span>Body: {getEffectiveWeight()}{weightUnit}</span>
                 </div>
               </div>
             )}
             
-            {/* Ultra-Compact Grid with Tighter Spacing */}
-            <div className="grid grid-cols-3 gap-1">
-              {/* Weight Section - Ultra Compact */}
-              <div className="space-y-0.5">
-                <div className="h-4 flex items-center justify-between pt-[0px] pb-[0px] mt-[10px] mb-[10px]">
-                  <label className="text-[10px] font-medium text-foreground">Weight</label>
+            {/* iOS-Optimized Grid with Perfect Alignment */}
+            <div className="grid grid-cols-3 gap-2">
+              {/* Weight Section - Aligned label height */}
+              <div className="space-y-1">
+                <div className="h-5 flex items-center justify-between">
+                  <label className="text-xs font-medium text-foreground">Weight</label>
                   {isBodyWeightExercise && (
                     <Switch
                       checked={useBodyWeight}
                       onCheckedChange={handleBodyWeightToggle}
                       disabled={!bodyWeightValue}
-                      className="scale-50 -mt-0.5"
+                      className="scale-75 -mt-0.5"
                     />
                   )}
                 </div>
-                <div className="relative bg-background border border-border/50 rounded-md">
+                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Input
                     type="number"
                     value={getEffectiveWeight() || ''}
@@ -241,18 +245,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     step="0.5"
                     min="0"
                     max="1000"
-                    className={`h-7 text-xs border-0 bg-transparent pr-8 text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                    className={`workout-input h-9 text-sm border-0 bg-transparent pr-10 text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
                     disabled={useBodyWeight}
                     readOnly={useBodyWeight}
                     inputMode="decimal"
                   />
-                  <div className="absolute right-0 top-0 h-7 flex items-center pl-[5px] pr-[5px]">
-                    <div className="h-3 w-px bg-border mr-0.5"></div>
+                  {/* Inline Unit Selector with Visual Separator */}
+                  <div className="absolute right-0 top-0 h-9 flex items-center">
+                    <div className="h-4 w-px bg-border mr-1"></div>
                     <Select
                       value={weightUnit}
                       onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                     >
-                      <SelectTrigger className="w-6 h-7 border-0 bg-transparent text-[10px] p-0">
+                      <SelectTrigger className="w-8 h-9 border-0 bg-transparent text-xs p-0 touch-target">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -264,12 +269,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 </div>
               </div>
 
-              {/* Reps Section - Ultra Compact */}
-              <div className="space-y-0.5">
-                <div className="h-4 flex items-center mt-[10px] mb-[10px]">
-                  <label className="text-[10px] font-medium text-foreground">Reps</label>
+              {/* Reps Section - Fixed label height */}
+              <div className="space-y-1">
+                <div className="h-5 flex items-center">
+                  <label className="text-xs font-medium text-foreground">Reps</label>
                 </div>
-                <div className="relative bg-background border border-border/50 rounded-md">
+                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Input
                     type="number"
                     value={set.actualReps || ''}
@@ -277,23 +282,23 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     placeholder="0"
                     min="0"
                     max="50"
-                    className="h-7 text-xs border-0 bg-transparent text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="workout-input h-9 text-sm border-0 bg-transparent text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     inputMode="numeric"
                   />
                 </div>
               </div>
 
-              {/* RPE Section - Ultra Compact */}
-              <div className="space-y-0.5">
-                <div className="h-4 flex items-center mt-[10px] mb-[10px]">
-                  <label className="text-[10px] font-medium text-foreground">RPE</label>
+              {/* RPE Section - Fixed label height */}
+              <div className="space-y-1">
+                <div className="h-5 flex items-center">
+                  <label className="text-xs font-medium text-foreground">RPE</label>
                 </div>
-                <div className="relative bg-background border border-border/50 rounded-md">
+                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Select
                     value={set.rpe ? set.rpe.toString() : ""}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
-                    <SelectTrigger className="h-7 text-xs border-0 bg-transparent">
+                    <SelectTrigger className="h-9 text-sm border-0 bg-transparent touch-target">
                       <SelectValue placeholder="0" />
                     </SelectTrigger>
                     <SelectContent>
@@ -324,41 +329,41 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         ) : null}
 
-        {/* Complete Set Button - Ultra Compact */}
+        {/* Complete Set Button - Only shown for active sets */}
         {!set.completed && isActive && (
           <Button
             onClick={onCompleteSet}
             disabled={!isSetValid}
-            className="w-full text-xs h-6"
+            className="ios-button touch-target w-full text-sm"
             variant={isSetValid ? "default" : "secondary"}
           >
             {isSetValid ? (
               <>
-                <Check className="h-2.5 w-2.5 mr-1" />
-                Complete
+                <Check className="h-3 w-3 mr-1.5" />
+                Complete Set
               </>
             ) : (
-              "Enter values"
+              "Enter all values"
             )}
           </Button>
         )}
 
-        {/* Completed Set Display - Ultra Minimal */}
+        {/* Completed Set Display - Minimal and clean */}
         {set.completed && (
-          <div className="flex items-center justify-center p-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
-            <Check className="h-2.5 w-2.5 text-emerald-400 mr-0.5" />
-            <span className="text-[10px] text-emerald-300 font-medium">
-              {set.weight}{weightUnit}×{set.actualReps}@{set.rpe}
+          <div className="flex items-center justify-center p-1 bg-emerald-500/10 border border-emerald-500/20 rounded">
+            <Check className="h-3 w-3 text-emerald-400 mr-1" />
+            <span className="text-xs text-emerald-300 font-medium">
+              {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
             </span>
           </div>
         )}
 
-        {/* Non-active set preview - Ultra Compact */}
+        {/* Non-active set preview - Shows basic info for inactive sets */}
         {!set.completed && !isActive && (
-          <div className="p-0.5 bg-muted/20 rounded text-center">
-            <span className="text-[10px] text-muted-foreground">
+          <div className="p-1 bg-muted/20 rounded text-center">
+            <span className="text-xs text-muted-foreground">
               {set.weight > 0 || set.actualReps > 0 || set.rpe > 0
-                ? `${set.weight || 0}${weightUnit}×${set.actualReps || 0}@${set.rpe || 0}`
+                ? `${set.weight || 0}${weightUnit} × ${set.actualReps || 0} @ RPE ${set.rpe || 0}`
                 : "Tap to edit"
               }
             </span>
