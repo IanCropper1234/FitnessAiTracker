@@ -115,6 +115,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [carbsPercentage, setCarbsPercentage] = useState(45);     // Default 45%
   const [fatPercentage, setFatPercentage] = useState(30);         // Default 30%
   const [userSetPercentages, setUserSetPercentages] = useState(false); // Track if user manually set percentages
+  
+  // Keep track of original saved macro values for display
+  const [originalSavedMacros, setOriginalSavedMacros] = useState<{protein: number, carbs: number, fat: number} | null>(null);
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
@@ -138,6 +141,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     if (userSetPercentages) return;
     
     if (dietGoal.targetProtein > 0) {
+      // Store original saved macro values on first load
+      if (!originalSavedMacros) {
+        setOriginalSavedMacros({
+          protein: Number(dietGoal.targetProtein),
+          carbs: Number(dietGoal.targetCarbs),
+          fat: Number(dietGoal.targetFat)
+        });
+      }
+      
       // Calculate percentages based on the actual calorie equivalent of saved macros
       const proteinCals = (Number(dietGoal.targetProtein) * 4);
       const carbsCals = (Number(dietGoal.targetCarbs) * 4);
@@ -150,7 +162,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         setFatPercentage(Math.round((fatCals / totalMacroCals) * 100));
       }
     }
-  }, [dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
+  }, [dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages, originalSavedMacros]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
@@ -292,8 +304,17 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   useEffect(() => {
     if (currentDietGoal) {
       setDietGoal(currentDietGoal);
+      
+      // Capture original saved macro values on first load
+      if (!originalSavedMacros && currentDietGoal.targetProtein > 0) {
+        setOriginalSavedMacros({
+          protein: Number(currentDietGoal.targetProtein),
+          carbs: Number(currentDietGoal.targetCarbs),
+          fat: Number(currentDietGoal.targetFat)
+        });
+      }
     }
-  }, [currentDietGoal]);
+  }, [currentDietGoal, originalSavedMacros]);
 
   // Auto-sync with profile fitness goal changes and enable auto-regulation
   useEffect(() => {
@@ -1229,7 +1250,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">Protein</Label>
                       <span className="text-sm text-muted-foreground">
-                        {proteinPercentage}% = {Math.round(Number(dietGoal.targetProtein))}g
+                        {proteinPercentage}% = {Math.round(originalSavedMacros?.protein || Number(dietGoal.targetProtein))}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1264,7 +1285,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-green-600 dark:text-green-400">Carbs</Label>
                       <span className="text-sm text-muted-foreground">
-                        {carbsPercentage}% = {Math.round(Number(dietGoal.targetCarbs))}g
+                        {carbsPercentage}% = {Math.round(originalSavedMacros?.carbs || Number(dietGoal.targetCarbs))}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1299,7 +1320,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Fat</Label>
                       <span className="text-sm text-muted-foreground">
-                        {fatPercentage}% = {Math.round(Number(dietGoal.targetFat))}g
+                        {fatPercentage}% = {Math.round(originalSavedMacros?.fat || Number(dietGoal.targetFat))}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
