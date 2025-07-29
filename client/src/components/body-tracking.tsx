@@ -407,78 +407,90 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               {/* Waist */}
               {latestMetric.waist && (
                 <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 h-4">
                     <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
-                    <span className="text-xs font-medium text-green-700 dark:text-green-300 truncate">Waist</span>
+                    <span className="text-xs font-medium text-green-700 dark:text-green-300 truncate leading-none">Waist</span>
                   </div>
-                  <p className="text-sm font-bold text-green-800 dark:text-green-200 truncate leading-none">
-                    {displayValue(latestMetric.waist, 'measurement', latestMetric.unit)}
-                  </p>
+                  <div className="flex items-end h-4">
+                    <p className="text-sm font-bold text-green-800 dark:text-green-200 truncate leading-none">
+                      {displayValue(latestMetric.waist, 'measurement', latestMetric.unit)}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {/* Chest */}
               {latestMetric.chest && (
                 <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 h-4">
                     <User className="w-3 h-3 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                    <span className="text-xs font-medium text-purple-700 dark:text-purple-300 truncate">Chest</span>
+                    <span className="text-xs font-medium text-purple-700 dark:text-purple-300 truncate leading-none">Chest</span>
                   </div>
-                  <p className="text-sm font-bold text-purple-800 dark:text-purple-200 truncate leading-none">
-                    {displayValue(latestMetric.chest, 'measurement', latestMetric.unit)}
-                  </p>
+                  <div className="flex items-end h-4">
+                    <p className="text-sm font-bold text-purple-800 dark:text-purple-200 truncate leading-none">
+                      {displayValue(latestMetric.chest, 'measurement', latestMetric.unit)}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {/* Neck */}
               {latestMetric.neck && (
                 <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 h-4">
                     <Ruler className="w-3 h-3 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
-                    <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300 truncate">Neck</span>
+                    <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300 truncate leading-none">Neck</span>
                   </div>
-                  <p className="text-sm font-bold text-indigo-800 dark:text-indigo-200 truncate leading-none">
-                    {displayValue(latestMetric.neck, 'measurement', latestMetric.unit)}
-                  </p>
+                  <div className="flex items-end h-4">
+                    <p className="text-sm font-bold text-indigo-800 dark:text-indigo-200 truncate leading-none">
+                      {displayValue(latestMetric.neck, 'measurement', latestMetric.unit)}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {/* Hips */}
               {latestMetric.hips && (
                 <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 h-4">
                     <Target className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
-                    <span className="text-xs font-medium text-pink-700 dark:text-pink-300 truncate">Hips</span>
+                    <span className="text-xs font-medium text-pink-700 dark:text-pink-300 truncate leading-none">Hips</span>
                   </div>
-                  <p className="text-sm font-bold text-pink-800 dark:text-pink-200 truncate leading-none">
-                    {displayValue(latestMetric.hips, 'measurement', latestMetric.unit)}
-                  </p>
+                  <div className="flex items-end h-4">
+                    <p className="text-sm font-bold text-pink-800 dark:text-pink-200 truncate leading-none">
+                      {displayValue(latestMetric.hips, 'measurement', latestMetric.unit)}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {/* Thigh */}
               {latestMetric.thigh && (
                 <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 h-4">
                     <Ruler className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
-                    <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate">Thigh</span>
+                    <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate leading-none">Thigh</span>
                   </div>
-                  <p className="text-sm font-bold text-cyan-800 dark:text-cyan-200 truncate leading-none">
-                    {displayValue(latestMetric.thigh, 'measurement', latestMetric.unit)}
-                  </p>
+                  <div className="flex items-end h-4">
+                    <p className="text-sm font-bold text-cyan-800 dark:text-cyan-200 truncate leading-none">
+                      {displayValue(latestMetric.thigh, 'measurement', latestMetric.unit)}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {/* Bicep */}
               {latestMetric.bicep && (
                 <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 h-4">
                     <User className="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-                    <span className="text-xs font-medium text-amber-700 dark:text-amber-300 truncate">Bicep</span>
+                    <span className="text-xs font-medium text-amber-700 dark:text-amber-300 truncate leading-none">Bicep</span>
                   </div>
-                  <p className="text-sm font-bold text-amber-800 dark:text-amber-200 truncate leading-none">
-                    {displayValue(latestMetric.bicep, 'measurement', latestMetric.unit)}
-                  </p>
+                  <div className="flex items-end h-4">
+                    <p className="text-sm font-bold text-amber-800 dark:text-amber-200 truncate leading-none">
+                      {displayValue(latestMetric.bicep, 'measurement', latestMetric.unit)}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
