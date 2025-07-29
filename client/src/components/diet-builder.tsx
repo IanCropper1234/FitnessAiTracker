@@ -1219,11 +1219,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   <Input
                     type="number"
                     value={dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || '') : dietGoal.targetCalories || ''}
-                    onFocus={() => {
-                      if (dietGoal.useCustomCalories) {
-                        setShowMacroDistribution(true); // Expand macro section when user focuses on custom calorie input
-                      }
-                    }}
                     onChange={(e) => {
                       const calories = Number(e.target.value) || 0;
                       if (dietGoal.useCustomCalories) {

@@ -55,7 +55,10 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ✓ **SMART CLICK PREVENTION**: Only prevents dropdown opening when scroll movement detected, preserves normal scrolling behavior
 ✓ **NATIVE iOS BEHAVIOR**: Touch events behave like native iOS apps - scroll freely, tap deliberately to open menus
 
-### July 29, 2025 - COMPLETE: Smart Macro Distribution Based on Calorie Goals
+### July 29, 2025 - COMPLETE: Collapsible Macro Distribution with Smart Calorie-Based Defaults
+✓ **COLLAPSIBLE INTERFACE**: Made macro distribution section hidden by default for cleaner UI
+✓ **EDIT-TRIGGERED EXPANSION**: Section automatically expands only when user edits the custom daily calorie goal (not on focus)
+✓ **MANUAL TOGGLE**: Added Show/Hide button for manual control of macro distribution visibility
 ✓ **INTELLIGENT DEFAULTS**: Added calorie-based optimal macro distribution system with 5 different ranges
 ✓ **CALORIE-AWARE PERCENTAGES**: Very low calories (≤1200) get higher protein (35%), while high calories (>2500) optimize for performance (18% protein, 55% carbs)
 ✓ **AUTOMATIC OPTIMIZATION**: System automatically applies optimal distribution when custom calories are changed or toggled
@@ -66,6 +69,7 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
   - ≤2500 cal: 20% protein, 50% carbs, 30% fat (higher carbs)
   - >2500 cal: 18% protein, 55% carbs, 27% fat (performance optimized)
 ✓ **PRESERVES USER CHOICES**: Only applies smart defaults when user hasn't manually adjusted percentages
+✓ **SMART UX BEHAVIOR**: Expands contextually during calorie editing, maintaining clean interface when not needed
 
 ### July 29, 2025 - COMPLETE: Diet Builder Macro Display Synchronization Fix
 ✓ **MACRO CALCULATION FIX**: Fixed mismatch between displayed macro gram values and actual stored goal values
