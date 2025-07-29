@@ -1040,7 +1040,33 @@ export function IntegratedNutritionOverview({
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0"
+                          onTouchStart={(e) => {
+                            // Prevent accidental clicks during scrolling
+                            e.currentTarget.dataset.touchStart = Date.now().toString();
+                          }}
+                          onTouchEnd={(e) => {
+                            // Only allow click if touch was brief (not a scroll)
+                            const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
+                            const touchDuration = Date.now() - touchStart;
+                            if (touchDuration > 200) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }
+                          }}
+                          onClick={(e) => {
+                            // Additional protection against scroll-triggered clicks
+                            const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
+                            const timeSinceTouch = Date.now() - touchStart;
+                            if (timeSinceTouch > 200) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }
+                          }}
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -1162,7 +1188,33 @@ export function IntegratedNutritionOverview({
                           <div className="flex-shrink-0 w-6 flex justify-center">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-6 w-6 p-0"
+                                  onTouchStart={(e) => {
+                                    // Prevent accidental clicks during scrolling
+                                    e.currentTarget.dataset.touchStart = Date.now().toString();
+                                  }}
+                                  onTouchEnd={(e) => {
+                                    // Only allow click if touch was brief (not a scroll)
+                                    const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
+                                    const touchDuration = Date.now() - touchStart;
+                                    if (touchDuration > 200) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
+                                  }}
+                                  onClick={(e) => {
+                                    // Additional protection against scroll-triggered clicks
+                                    const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
+                                    const timeSinceTouch = Date.now() - touchStart;
+                                    if (timeSinceTouch > 200) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
+                                  }}
+                                >
                                   <MoreVertical className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
