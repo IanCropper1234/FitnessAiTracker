@@ -1345,7 +1345,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
             updateData.specialMethod = exerciseData.specialMethod;
           }
           if (exerciseData.specialConfig) {
-            updateData.specialConfig = exerciseData.specialConfig;
+            // Transform mini-set reps and dropset weight data for database storage
+            let transformedConfig = { ...exerciseData.specialConfig };
+            
+            // Transform mini-set reps string into array for special methods
+            if (exerciseData.specialMethod === 'myorep_match' && exerciseData.specialConfig.miniSetReps) {
+              const miniSetRepsStr = exerciseData.specialConfig.miniSetReps;
+              if (typeof miniSetRepsStr === 'string' && miniSetRepsStr.includes(',')) {
+                const repsArray = miniSetRepsStr.split(',').map((r: string) => parseInt(r.trim())).filter((r: number) => !isNaN(r));
+                const totalReps = repsArray.reduce((sum, reps) => sum + reps, 0);
+                transformedConfig.miniSetRepsArray = repsArray;
+                transformedConfig.totalCalculatedReps = totalReps;
+                transformedConfig.miniSetRepsString = miniSetRepsStr; // Keep original for UI display
+              }
+            }
+            
+            // Transform dropset data for complex dropset implementation
+            if (exerciseData.specialMethod === 'drop_set') {
+              if (exerciseData.specialConfig.miniSetReps && typeof exerciseData.specialConfig.miniSetReps === 'string') {
+                const miniSetRepsStr = exerciseData.specialConfig.miniSetReps;
+                if (miniSetRepsStr.includes(',')) {
+                  const repsArray = miniSetRepsStr.split(',').map((r: string) => parseInt(r.trim())).filter((r: number) => !isNaN(r));
+                  transformedConfig.miniSetRepsArray = repsArray;
+                  transformedConfig.miniSetRepsString = miniSetRepsStr;
+                }
+              }
+              
+              if (exerciseData.specialConfig.dropsetWeight && typeof exerciseData.specialConfig.dropsetWeight === 'string') {
+                const dropsetWeightStr = exerciseData.specialConfig.dropsetWeight;
+                if (dropsetWeightStr.includes(',')) {
+                  // Parse weights with units (e.g., "70kg,60kg" or "155lbs,135lbs")
+                  const weightArray = dropsetWeightStr.split(',').map((w: string) => {
+                    const trimmed = w.trim();
+                    const numericValue = parseFloat(trimmed.replace(/[^\d.]/g, ''));
+                    const unit = trimmed.replace(/[\d.]/g, '').trim() || 'kg';
+                    return { value: numericValue, unit: unit };
+                  }).filter((w: any) => !isNaN(w.value));
+                  
+                  transformedConfig.dropsetWeightArray = weightArray;
+                  transformedConfig.dropsetWeightString = dropsetWeightStr;
+                }
+              }
+            }
+            
+            updateData.specialConfig = transformedConfig;
           }
           
           if (completedSets.length > 0) {

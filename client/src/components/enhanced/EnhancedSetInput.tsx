@@ -310,23 +310,73 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <Minus className="h-3 w-3" />
               Drop Set Configuration
             </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-red-300">Mini-Set Reps</label>
+                <Input
+                  type="text"
+                  value={specialConfig?.miniSetReps || ''}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSetReps: e.target.value
+                  })}
+                  placeholder="e.g., 8,4"
+                  className="h-7 text-xs bg-background/50 border-red-500/20"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-red-300">Dropset Weight</label>
+                <Input
+                  type="text"
+                  value={specialConfig?.dropsetWeight || ''}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    dropsetWeight: e.target.value
+                  })}
+                  placeholder="e.g., 70kg,60kg"
+                  className="h-7 text-xs bg-background/50 border-red-500/20"
+                />
+              </div>
+            </div>
             <div className="text-xs text-red-300/70">
-              After failure, reduce weight by 15-20% and continue for 5-10s rest
+              Enter comma-separated values for each drop (e.g., "8,4" reps with "70kg,60kg" weights)
             </div>
           </div>
         )}
 
-        {(specialMethod === 'myorep_match' || specialMethod === 'myorep_no_match') && !set.completed && isActive && (
+        {specialMethod === 'myorep_match' && !set.completed && isActive && (
           <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 space-y-2">
             <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
-              {specialMethod === 'myorep_match' ? <Target className="h-3 w-3" /> : <Zap className="h-3 w-3" />}
-              {specialMethod === 'myorep_match' ? 'Myorep Match' : 'Myorep No Match'}
+              <Target className="h-3 w-3" />
+              Myorep Match Configuration
+            </div>
+            <div>
+              <label className="text-xs text-blue-300">Mini-Set Reps</label>
+              <Input
+                type="text"
+                value={specialConfig?.miniSetReps || ''}
+                onChange={(e) => onSpecialConfigChange?.({
+                  ...specialConfig,
+                  miniSetReps: e.target.value
+                })}
+                placeholder="e.g., 8,4 (total: 12)"
+                className="h-7 text-xs bg-background/50 border-blue-500/20"
+              />
             </div>
             <div className="text-xs text-blue-300/70">
-              {specialMethod === 'myorep_match' 
-                ? 'Perform activation set, then match rep count with mini-sets'
-                : 'Perform activation set followed by mini-sets with 20-30s rest'
-              }
+              Enter comma-separated rep counts for each mini-set (e.g., "8,4" = 12 total reps)
+            </div>
+          </div>
+        )}
+
+        {specialMethod === 'myorep_no_match' && !set.completed && isActive && (
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
+              <Zap className="h-3 w-3" />
+              Myorep No Match
+            </div>
+            <div className="text-xs text-blue-300/70">
+              Perform activation set followed by mini-sets with 20-30s rest
             </div>
           </div>
         )}

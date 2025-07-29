@@ -142,6 +142,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       console.log('Initializing V2 workout data from session:', session);
       
       const initialData: Record<number, WorkoutSet[]> = {};
+      const initialSpecialMethods: Record<number, string | null> = {};
+      const initialSpecialConfigs: Record<number, any> = {};
       
       session.exercises.forEach(exercise => {
         if (exercise.setsData && exercise.setsData.length > 0) {
@@ -166,10 +168,37 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           
           initialData[exercise.id] = defaultSets;
         }
+        
+        // Restore special method data if available
+        if (exercise.specialMethod) {
+          initialSpecialMethods[exercise.id] = exercise.specialMethod;
+        }
+        
+        if (exercise.specialConfig) {
+          // Transform database format back to UI format
+          let uiConfig = { ...exercise.specialConfig };
+          
+          // Restore mini-set reps string for UI display
+          if (exercise.specialConfig.miniSetRepsString) {
+            uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
+          }
+          
+          // Restore dropset weight string for UI display  
+          if (exercise.specialConfig.dropsetWeightString) {
+            uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeightString;
+          }
+          
+          initialSpecialConfigs[exercise.id] = uiConfig;
+        }
       });
       
       console.log('Initialized workout data:', initialData);
+      console.log('Restored special methods:', initialSpecialMethods);
+      console.log('Restored special configs:', initialSpecialConfigs);
+      
       setWorkoutData(initialData);
+      setSpecialMethods(initialSpecialMethods);
+      setSpecialConfigs(initialSpecialConfigs);
     }
   }, [session]);
 
