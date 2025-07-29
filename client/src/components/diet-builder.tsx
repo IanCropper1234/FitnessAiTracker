@@ -135,6 +135,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [carbsPercentage, setCarbsPercentage] = useState(45);
   const [fatPercentage, setFatPercentage] = useState(30);
   const [userSetPercentages, setUserSetPercentages] = useState(false); // Track if user manually set percentages
+  const [showMacroDistribution, setShowMacroDistribution] = useState(false); // Track if macro section should be expanded
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
@@ -1218,9 +1219,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   <Input
                     type="number"
                     value={dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || '') : dietGoal.targetCalories || ''}
+                    onFocus={() => {
+                      if (dietGoal.useCustomCalories) {
+                        setShowMacroDistribution(true); // Expand macro section when user focuses on custom calorie input
+                      }
+                    }}
                     onChange={(e) => {
                       const calories = Number(e.target.value) || 0;
                       if (dietGoal.useCustomCalories) {
+                        setShowMacroDistribution(true); // Expand macro section when user starts editing
                         setUserSetPercentages(false); // Reset flag to allow percentage recalculation when calories change
                         setDietGoal(prev => ({ 
                           ...prev, 
@@ -1249,10 +1256,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   )}
                 </div>
 
-                {/* Macro Percentages (MyFitnessPal Style) */}
+                {/* Macro Percentages (MyFitnessPal Style) - Collapsible */}
                 <div className="space-y-4">
-                  <div className="text-sm font-medium text-foreground">Macro Distribution (%)</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium text-foreground">Macro Distribution (%)</div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowMacroDistribution(!showMacroDistribution)}
+                      className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      {showMacroDistribution ? 'Hide' : 'Show'}
+                    </Button>
+                  </div>
                   
+                  {showMacroDistribution && (
+                  <div className="space-y-4">
                   {/* Protein Percentage */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -1405,6 +1424,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </p>
                     )}
                   </div>
+                  </div>
+                  )}
                 </div>
               </div>
             </CardContent>
