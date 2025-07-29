@@ -1026,14 +1026,14 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           )}
 
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-3">
               {/* Mobile-First Filter System */}
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="relative">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="relative flex-shrink-0">
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full bg-background border border-input rounded-md px-3 py-1.5 text-xs font-medium pr-8 min-w-24 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+                    className="bg-background border border-input rounded-lg px-4 py-2.5 text-sm font-medium pr-10 min-w-32 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer shadow-sm hover:bg-accent/50 transition-colors"
                     style={{ 
                       appearance: 'none',
                       WebkitAppearance: 'none',
@@ -1048,15 +1048,15 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 </div>
                 
                 {/* Quick Filter Chips - Hidden on smallest screens */}
-                <div className="hidden sm:flex items-center gap-1 flex-wrap">
+                <div className="hidden md:flex items-center gap-2 flex-wrap">
                   {selectedCategory !== "all" && (
                     <Badge 
                       variant="secondary" 
-                      className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-secondary/80"
+                      className="text-xs h-7 px-3 capitalize cursor-pointer hover:bg-secondary/80 transition-colors"
                       onClick={() => setSelectedCategory("all")}
                     >
                       {selectedCategory} ×
@@ -1070,7 +1070,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                         <Badge 
                           key={quickCategory}
                           variant="outline" 
-                          className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-accent"
+                          className="text-xs h-7 px-3 capitalize cursor-pointer hover:bg-accent transition-colors"
                           onClick={() => setSelectedCategory(quickCategory)}
                         >
                           {quickCategory}
@@ -1082,22 +1082,28 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 </div>
               </div>
               
-              <CreateExerciseButton />
+              <div className="flex-shrink-0">
+                <CreateExerciseButton />
+              </div>
             </div>
             
             {/* Results Counter */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
+            <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
+              <span className="font-medium">
                 {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} 
-                {selectedCategory !== "all" && ` in ${selectedCategory}`}
+                {selectedCategory !== "all" && (
+                  <span className="hidden sm:inline"> in {selectedCategory}</span>
+                )}
               </span>
               {filteredExercises.length > 12 && (
-                <span>{Math.ceil(filteredExercises.length / 12)} pages</span>
+                <span className="text-xs opacity-75">
+                  ~{Math.ceil(filteredExercises.length / 12)} pages
+                </span>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {filteredExercises.map((exercise) => (
               <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
                 <CardHeader className="pb-1.5 px-3 pt-3">
