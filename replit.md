@@ -8,6 +8,15 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 ## Recent Changes
 
+### July 29, 2025 - COMPLETE: Auto-Regulation Toggle Visual Enhancement & Percentage Reversion Fix
+✓ **AUTO-REGULATION DISPLAY**: Transformed auto-regulation toggle from interactive control to read-only system status indicator
+✓ **VISUAL CLARITY**: Added gray background, disabled styling, and "System managed" label to show it's automatically controlled
+✓ **STATUS MESSAGING**: Enhanced with clear active/inactive status based on profile data completeness
+✓ **USER PREFERENCE TRACKING**: Fixed percentage reversion bug by implementing userSetPercentages flag to prevent automatic recalculation from overriding manual inputs
+✓ **PERCENTAGE PERSISTENCE**: System now preserves user's percentage inputs instead of reverting to calculated values from saved grams
+✓ **SMART RECALCULATION**: Reset percentage tracking flag when switching custom/suggested calories to allow appropriate recalculation
+✓ **MATHEMATICAL ACCURACY**: Maintained 100% total through smart proportional adjustment while respecting user's manual choices
+
 ### July 29, 2025 - COMPLETE: Comprehensive Intelligent Diet Goal Synchronization System
 ✓ **SMART DETECTION**: Enhanced nutrition overview components to intelligently detect and switch between custom and suggested diet targets
 ✓ **SEAMLESS SYNC**: Fixed synchronization between diet builder custom values and all nutrition overview displays (dashboard, macro overview, integrated overview)

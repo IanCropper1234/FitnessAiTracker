@@ -921,35 +921,28 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
               )}
 
-              {/* Auto-regulation Toggle */}
-              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+              {/* Auto-regulation Toggle - Read-only display */}
+              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50">
                 <div className="space-y-1">
-                  <Label className="text-base font-medium text-black dark:text-white">Auto-regulation</Label>
+                  <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Auto-regulation</Label>
                   <p className="text-gray-600 dark:text-gray-400 text-[12px]">
-                    Automatically adjust calories and macros based on your body data and weight logs
+                    Connected to your body data and weight tracking system
                   </p>
-                  {(!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
-                    <p className="text-xs text-red-600 dark:text-red-400">
-                      Disabled: Complete your profile data first
-                    </p>
-                  )}
-                </div>
-                <Switch
-                  checked={Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight))}
-                  onCheckedChange={(checked) => {
-                    if (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) {
-                      toast({
-                        title: "Profile Incomplete",
-                        description: "Please complete your profile data first to enable auto-regulation.",
-                        variant: "destructive"
-                      });
-                      return;
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                    {Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight)) 
+                      ? "✓ Active - automatically adjusting based on your progress data"
+                      : "○ Inactive - complete profile data to enable automatic adjustments"
                     }
-                    setDietGoal(prev => ({ ...prev, autoRegulation: checked }));
-                  }}
-                  disabled={!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)}
-                  className="bg-[#505d6e]"
-                />
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight))}
+                    disabled={true}
+                    className="bg-gray-400 dark:bg-gray-600 pointer-events-none opacity-75"
+                  />
+                  <span className="text-xs text-gray-500 dark:text-gray-400">System managed</span>
+                </div>
               </div>
 
               {/* TDEE and Goal Settings */}
