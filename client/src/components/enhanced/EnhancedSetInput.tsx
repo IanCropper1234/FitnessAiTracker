@@ -221,7 +221,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <div className="grid grid-cols-3 gap-1">
               {/* Weight Section - Ultra Compact */}
               <div className="space-y-0.5">
-                <div className="h-4 flex items-center justify-between">
+                <div className="h-4 flex items-center justify-between pt-[0px] pb-[0px] mt-[10px] mb-[10px]">
                   <label className="text-[10px] font-medium text-foreground">Weight</label>
                   {isBodyWeightExercise && (
                     <Switch
