@@ -645,7 +645,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Reset macro targets to baseline
   const resetMacroTargets = () => {
-    const targetCalories = dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || dietGoal.targetCalories) : dietGoal.targetCalories;
+    const targetCalories = getCurrentTargetCalories();
     const baseMacros = calculateMacros(targetCalories, dietGoal.goal, { protein: 0, carbs: 0, fat: 0 });
     
     setDietGoal(prev => ({
@@ -661,9 +661,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     const targetCalories = getCurrentTargetCalories();
     if (targetCalories <= 0) return;
 
-    const currentCalories = calculateCurrentCalories();
+    // Calculate current calorie total from macros
+    const currentCalories = (dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9);
+    
+    if (currentCalories <= 0) return;
+    
+    // Calculate the ratio to scale down to target calories
     const ratio = targetCalories / currentCalories;
 
+    // Apply the ratio to all macros proportionally
     setDietGoal(prev => ({
       ...prev,
       targetProtein: Math.round(prev.targetProtein * ratio),
