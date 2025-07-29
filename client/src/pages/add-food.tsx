@@ -80,6 +80,7 @@ export function AddFood({ user }: AddFoodProps) {
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [savedMealsSearchQuery, setSavedMealsSearchQuery] = useState('');
+  const [historyDisplayLimit, setHistoryDisplayLimit] = useState(10);
   
   // Image recognition states
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -89,6 +90,11 @@ export function AddFood({ user }: AddFoodProps) {
   // Enhanced portion input states
   const [portionWeight, setPortionWeight] = useState('');
   const [portionUnit, setPortionUnit] = useState('g');
+
+  // Reset history display limit when search query changes
+  useEffect(() => {
+    setHistoryDisplayLimit(10);
+  }, [historySearchQuery]);
 
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
@@ -485,10 +491,14 @@ export function AddFood({ user }: AddFoodProps) {
   const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending || deleteSavedMealMutation.isPending;
   const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
   
-  // Filter food history based on search query
+  // Filter food history based on search query with pagination
   const filteredFoodHistory = Array.isArray(foodHistory) ? foodHistory.filter((item: any) => 
     item.foodName.toLowerCase().includes(historySearchQuery.toLowerCase())
-  ).slice(0, 10) : []; // Limit to 10 items for better performance
+  ) : [];
+  
+  // Apply display limit for pagination
+  const displayedFoodHistory = filteredFoodHistory.slice(0, historyDisplayLimit);
+  const hasMoreFoodHistory = filteredFoodHistory.length > historyDisplayLimit;
 
   // Filter saved meals based on search query
   const filteredSavedMeals = Array.isArray(savedMeals) ? savedMeals.filter((meal: any) => 
@@ -770,6 +780,54 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
+            {/* AI Analysis Results - Dynamic Volume-Based Display */}
+            {dynamicMacros && searchMode === 'ai' && (
+              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                    AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
+                  </Label>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Calories</p>
+                    <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Protein</p>
+                    <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Carbs</p>
+                    <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Fat</p>
+                    <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
+                  </div>
+                </div>
+                {dynamicMacros.servingDetails && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Serving Details:</p>
+                    <p>{dynamicMacros.servingDetails}</p>
+                  </div>
+                )}
+                {dynamicMacros.assumptions && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Assumptions:</p>
+                    <p>{dynamicMacros.assumptions}</p>
+                  </div>
+                )}
+                {quantity !== (portionWeight || '1') && (
+                  <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
+                    <p className="font-medium">✓ Dynamic Calculation Applied</p>
+                    <p>Macros automatically updated based on your volume adjustment</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Food History Section */}
             {Array.isArray(foodHistory) && foodHistory.length > 0 && (
               <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
@@ -791,7 +849,7 @@ export function AddFood({ user }: AddFoodProps) {
 
                 {/* History Items */}
                 <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {filteredFoodHistory.map((item: any, index: number) => (
+                  {displayedFoodHistory.map((item: any, index: number) => (
                     <div
                       key={`${item.foodName}-${index}`}
                       className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -827,6 +885,19 @@ export function AddFood({ user }: AddFoodProps) {
                     </div>
                   )}
                 </div>
+                
+                {/* Load More Button */}
+                {hasMoreFoodHistory && !historySearchQuery && (
+                  <div className="pt-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
+                      className="w-full h-8 text-xs ios-button touch-target"
+                    >
+                      Load More ({filteredFoodHistory.length - historyDisplayLimit} remaining)
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -902,53 +973,7 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
-            {/* AI Analysis Results - Dynamic Volume-Based Display */}
-            {dynamicMacros && searchMode === 'ai' && (
-              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                    AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
-                  </Label>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Calories</p>
-                    <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
-                  </div>
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Protein</p>
-                    <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
-                  </div>
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Carbs</p>
-                    <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
-                  </div>
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Fat</p>
-                    <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
-                  </div>
-                </div>
-                {dynamicMacros.servingDetails && (
-                  <div className="text-xs text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">Serving Details:</p>
-                    <p>{dynamicMacros.servingDetails}</p>
-                  </div>
-                )}
-                {dynamicMacros.assumptions && (
-                  <div className="text-xs text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">Assumptions:</p>
-                    <p>{dynamicMacros.assumptions}</p>
-                  </div>
-                )}
-                {quantity !== (portionWeight || '1') && (
-                  <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
-                    <p className="font-medium">✓ Dynamic Calculation Applied</p>
-                    <p>Macros automatically updated based on your volume adjustment</p>
-                  </div>
-                )}
-              </div>
-            )}
+
 
             {/* Quantity and Meal Selection */}
             {(selectedFood || (searchMode === 'ai' && aiAnalyzeMutation.data)) && (
