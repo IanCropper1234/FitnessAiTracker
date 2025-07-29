@@ -298,8 +298,89 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 />
               </div>
             </div>
+            
+            {/* Mini-Set Tracker */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-orange-300">Mini-Sets Progress</span>
+                <span className="text-xs text-orange-400">
+                  {(specialConfig?.miniSets || []).reduce((sum, mini) => sum + (mini.reps || 0), 0)} / {specialConfig?.totalTargetReps || 40} reps
+                </span>
+              </div>
+              
+              {/* Mini-Set List */}
+              <div className="space-y-1 max-h-20 overflow-y-auto">
+                {(specialConfig?.miniSets || []).map((miniSet, index) => (
+                  <div key={index} className="flex items-center gap-1 bg-orange-500/5 border border-orange-500/10 rounded p-1">
+                    <span className="text-xs text-orange-300 min-w-0">#{index + 1}:</span>
+                    <span className="text-xs text-orange-200">{miniSet.reps} reps</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newMiniSets = [...(specialConfig?.miniSets || [])];
+                        newMiniSets.splice(index, 1);
+                        onSpecialConfigChange?.({
+                          ...specialConfig,
+                          miniSets: newMiniSets
+                        });
+                      }}
+                      className="h-4 w-4 p-0 text-orange-400 hover:text-orange-200 ml-auto"
+                    >
+                      <Minus className="h-2 w-2" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Add Mini-Set */}
+              <div className="flex gap-1">
+                <Input
+                  type="number"
+                  placeholder="Reps"
+                  min="1"
+                  max="15"
+                  className="h-6 text-xs bg-background/50 border-orange-500/20 flex-1"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      const reps = parseInt((e.target as HTMLInputElement).value);
+                      if (reps > 0) {
+                        const newMiniSets = [...(specialConfig?.miniSets || [])];
+                        newMiniSets.push({ reps, timestamp: Date.now() });
+                        onSpecialConfigChange?.({
+                          ...specialConfig,
+                          miniSets: newMiniSets
+                        });
+                        (e.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    const input = (e.target as HTMLElement).parentElement?.querySelector('input');
+                    const reps = parseInt(input?.value || '0');
+                    if (reps > 0) {
+                      const newMiniSets = [...(specialConfig?.miniSets || [])];
+                      newMiniSets.push({ reps, timestamp: Date.now() });
+                      onSpecialConfigChange?.({
+                        ...specialConfig,
+                        miniSets: newMiniSets
+                      });
+                      if (input) input.value = '';
+                    }
+                  }}
+                  className="h-6 px-2 text-xs bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border-orange-500/30"
+                >
+                  <Plus className="h-2 w-2" />
+                </Button>
+              </div>
+            </div>
+            
             <div className="text-xs text-orange-300/70">
-              Perform mini-sets with {specialConfig?.restSeconds || 10}s rest until reaching target reps
+              Record each mini-set with {specialConfig?.restSeconds || 10}s rest between sets
             </div>
           </div>
         )}
@@ -310,6 +391,94 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <Minus className="h-3 w-3" />
               Drop Set Configuration
             </div>
+            
+            {/* Mini-Set Tracker for Drop Sets */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-red-300">Drop Set Progress</span>
+                <span className="text-xs text-red-400">
+                  {(specialConfig?.miniSets || []).length} drops
+                </span>
+              </div>
+              
+              {/* Mini-Set List */}
+              <div className="space-y-1 max-h-16 overflow-y-auto">
+                {(specialConfig?.miniSets || []).map((miniSet, index) => (
+                  <div key={index} className="flex items-center gap-1 bg-red-500/5 border border-red-500/10 rounded p-1">
+                    <span className="text-xs text-red-300 min-w-0">Drop #{index + 1}:</span>
+                    <span className="text-xs text-red-200">{miniSet.reps} reps</span>
+                    {miniSet.weight && (
+                      <span className="text-xs text-red-200/70">@ {miniSet.weight}{weightUnit}</span>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newMiniSets = [...(specialConfig?.miniSets || [])];
+                        newMiniSets.splice(index, 1);
+                        onSpecialConfigChange?.({
+                          ...specialConfig,
+                          miniSets: newMiniSets
+                        });
+                      }}
+                      className="h-4 w-4 p-0 text-red-400 hover:text-red-200 ml-auto"
+                    >
+                      <Minus className="h-2 w-2" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Add Drop Set */}
+              <div className="flex gap-1">
+                <Input
+                  type="number"
+                  placeholder="Reps"
+                  min="1"
+                  max="20"
+                  className="h-6 text-xs bg-background/50 border-red-500/20 flex-1"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      const reps = parseInt((e.target as HTMLInputElement).value);
+                      if (reps > 0) {
+                        // Calculate dropped weight (15-20% reduction from main set)
+                        const dropWeight = Math.round(set.weight * 0.8 * 100) / 100;
+                        const newMiniSets = [...(specialConfig?.miniSets || [])];
+                        newMiniSets.push({ reps, weight: dropWeight, timestamp: Date.now() });
+                        onSpecialConfigChange?.({
+                          ...specialConfig,
+                          miniSets: newMiniSets
+                        });
+                        (e.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    const input = (e.target as HTMLElement).parentElement?.querySelector('input');
+                    const reps = parseInt(input?.value || '0');
+                    if (reps > 0) {
+                      // Calculate dropped weight (15-20% reduction from main set)
+                      const dropWeight = Math.round(set.weight * 0.8 * 100) / 100;
+                      const newMiniSets = [...(specialConfig?.miniSets || [])];
+                      newMiniSets.push({ reps, weight: dropWeight, timestamp: Date.now() });
+                      onSpecialConfigChange?.({
+                        ...specialConfig,
+                        miniSets: newMiniSets
+                      });
+                      if (input) input.value = '';
+                    }
+                  }}
+                  className="h-6 px-2 text-xs bg-red-500/20 hover:bg-red-500/30 text-red-300 border-red-500/30"
+                >
+                  <Plus className="h-2 w-2" />
+                </Button>
+              </div>
+            </div>
+            
             <div className="text-xs text-red-300/70">
               After failure, reduce weight by 15-20% and continue for 5-10s rest
             </div>
@@ -322,6 +491,87 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               {specialMethod === 'myorep_match' ? <Target className="h-3 w-3" /> : <Zap className="h-3 w-3" />}
               {specialMethod === 'myorep_match' ? 'Myorep Match' : 'Myorep No Match'}
             </div>
+            
+            {/* Mini-Set Tracker for Myorep */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-blue-300">Mini-Sets Progress</span>
+                <span className="text-xs text-blue-400">
+                  {(specialConfig?.miniSets || []).length} mini-sets
+                </span>
+              </div>
+              
+              {/* Mini-Set List */}
+              <div className="space-y-1 max-h-16 overflow-y-auto">
+                {(specialConfig?.miniSets || []).map((miniSet, index) => (
+                  <div key={index} className="flex items-center gap-1 bg-blue-500/5 border border-blue-500/10 rounded p-1">
+                    <span className="text-xs text-blue-300 min-w-0">#{index + 1}:</span>
+                    <span className="text-xs text-blue-200">{miniSet.reps} reps</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newMiniSets = [...(specialConfig?.miniSets || [])];
+                        newMiniSets.splice(index, 1);
+                        onSpecialConfigChange?.({
+                          ...specialConfig,
+                          miniSets: newMiniSets
+                        });
+                      }}
+                      className="h-4 w-4 p-0 text-blue-400 hover:text-blue-200 ml-auto"
+                    >
+                      <Minus className="h-2 w-2" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Add Mini-Set */}
+              <div className="flex gap-1">
+                <Input
+                  type="number"
+                  placeholder="Reps"
+                  min="1"
+                  max="20"
+                  className="h-6 text-xs bg-background/50 border-blue-500/20 flex-1"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      const reps = parseInt((e.target as HTMLInputElement).value);
+                      if (reps > 0) {
+                        const newMiniSets = [...(specialConfig?.miniSets || [])];
+                        newMiniSets.push({ reps, timestamp: Date.now() });
+                        onSpecialConfigChange?.({
+                          ...specialConfig,
+                          miniSets: newMiniSets
+                        });
+                        (e.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    const input = (e.target as HTMLElement).parentElement?.querySelector('input');
+                    const reps = parseInt(input?.value || '0');
+                    if (reps > 0) {
+                      const newMiniSets = [...(specialConfig?.miniSets || [])];
+                      newMiniSets.push({ reps, timestamp: Date.now() });
+                      onSpecialConfigChange?.({
+                        ...specialConfig,
+                        miniSets: newMiniSets
+                      });
+                      if (input) input.value = '';
+                    }
+                  }}
+                  className="h-6 px-2 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border-blue-500/30"
+                >
+                  <Plus className="h-2 w-2" />
+                </Button>
+              </div>
+            </div>
+            
             <div className="text-xs text-blue-300/70">
               {specialMethod === 'myorep_match' 
                 ? 'Perform activation set, then match rep count with mini-sets'
@@ -468,21 +718,73 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </Button>
         )}
 
-        {/* Completed Set Display - Minimal and clean */}
+        {/* Completed Set Display - Enhanced with mini-set summaries */}
         {set.completed && (
-          <div className="flex items-center justify-center p-1 bg-emerald-500/10 border border-emerald-500/20 rounded">
-            <Check className="h-3 w-3 text-emerald-400 mr-1" />
-            <span className="text-xs text-emerald-300 font-medium">
-              {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
-            </span>
-            {specialMethod && (
-              <Badge variant="outline" className="ml-2 text-xs px-1 py-0 h-4 bg-orange-500/20 text-orange-300 border-orange-500/30">
-                {specialMethod === 'giant_set' && <Timer className="h-2 w-2 mr-0.5" />}
-                {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
-                {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
-                {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
-                {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
-              </Badge>
+          <div className="space-y-1">
+            <div className="flex items-center justify-center p-1 bg-emerald-500/10 border border-emerald-500/20 rounded">
+              <Check className="h-3 w-3 text-emerald-400 mr-1" />
+              <span className="text-xs text-emerald-300 font-medium">
+                {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
+              </span>
+              {specialMethod && (
+                <Badge variant="outline" className="ml-2 text-xs px-1 py-0 h-4 bg-orange-500/20 text-orange-300 border-orange-500/30">
+                  {specialMethod === 'giant_set' && <Timer className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                  {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
+                </Badge>
+              )}
+            </div>
+            
+            {/* Mini-Set Summary for Completed Sets */}
+            {specialMethod && specialConfig?.miniSets && specialConfig.miniSets.length > 0 && (
+              <div className="bg-background/50 border border-border/30 rounded p-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    {specialMethod === 'giant_set' && 'Giant Set:'}
+                    {specialMethod === 'drop_set' && 'Drop Sets:'}
+                    {(specialMethod === 'myorep_match' || specialMethod === 'myorep_no_match') && 'Mini-Sets:'}
+                  </span>
+                  <span className="text-xs font-medium text-foreground">
+                    {specialMethod === 'giant_set' && (
+                      <>
+                        {specialConfig.miniSets.reduce((sum, mini) => sum + (mini.reps || 0), 0)} total reps
+                        ({specialConfig.miniSets.length} mini-sets)
+                      </>
+                    )}
+                    {specialMethod === 'drop_set' && (
+                      <>
+                        {specialConfig.miniSets.length} drops
+                        ({specialConfig.miniSets.reduce((sum, mini) => sum + (mini.reps || 0), 0)} reps)
+                      </>
+                    )}
+                    {(specialMethod === 'myorep_match' || specialMethod === 'myorep_no_match') && (
+                      <>
+                        {specialConfig.miniSets.length} sets
+                        ({specialConfig.miniSets.reduce((sum, mini) => sum + (mini.reps || 0), 0)} reps)
+                      </>
+                    )}
+                  </span>
+                </div>
+                
+                {/* Mini-set breakdown */}
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {specialConfig.miniSets.slice(0, 5).map((miniSet, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs px-1 py-0 h-4">
+                      {miniSet.reps}
+                      {miniSet.weight && specialMethod === 'drop_set' && (
+                        <span className="text-muted-foreground">@{miniSet.weight}</span>
+                      )}
+                    </Badge>
+                  ))}
+                  {specialConfig.miniSets.length > 5 && (
+                    <Badge variant="secondary" className="text-xs px-1 py-0 h-4 text-muted-foreground">
+                      +{specialConfig.miniSets.length - 5}
+                    </Badge>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         )}
