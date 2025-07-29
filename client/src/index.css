@@ -30,6 +30,20 @@
   -webkit-transform: translateZ(0);
 }
 
+/* Dialog overlay improvements for mobile */
+.dialog-overlay-mobile {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Prevent background scroll on iOS when dialog is open */
+.dialog-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
 /* iOS spring animations */
 @keyframes ios-scale-in {
   0% {
