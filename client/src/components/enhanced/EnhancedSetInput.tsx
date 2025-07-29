@@ -266,7 +266,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
               {/* Reps Section - Ultra Compact */}
               <div className="space-y-0.5">
-                <div className="h-4 flex items-center">
+                <div className="h-4 flex items-center mt-[10px] mb-[10px]">
                   <label className="text-[10px] font-medium text-foreground">Reps</label>
                 </div>
                 <div className="relative bg-background border border-border/50 rounded-md">
