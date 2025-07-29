@@ -406,12 +406,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
               {/* Waist */}
               {latestMetric.waist && (
-                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-1 mb-1">
+                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5">
                     <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-green-700 dark:text-green-300 truncate">Waist</span>
                   </div>
-                  <p className="text-sm font-bold text-green-800 dark:text-green-200 truncate">
+                  <p className="text-sm font-bold text-green-800 dark:text-green-200 truncate leading-none">
                     {displayValue(latestMetric.waist, 'measurement', latestMetric.unit)}
                   </p>
                 </div>
@@ -419,12 +419,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Chest */}
               {latestMetric.chest && (
-                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-1 mb-1">
+                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5">
                     <User className="w-3 h-3 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-purple-700 dark:text-purple-300 truncate">Chest</span>
                   </div>
-                  <p className="text-sm font-bold text-purple-800 dark:text-purple-200 truncate">
+                  <p className="text-sm font-bold text-purple-800 dark:text-purple-200 truncate leading-none">
                     {displayValue(latestMetric.chest, 'measurement', latestMetric.unit)}
                   </p>
                 </div>
@@ -432,12 +432,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Neck */}
               {latestMetric.neck && (
-                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-1 mb-1">
+                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5">
                     <Ruler className="w-3 h-3 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300 truncate">Neck</span>
                   </div>
-                  <p className="text-sm font-bold text-indigo-800 dark:text-indigo-200 truncate">
+                  <p className="text-sm font-bold text-indigo-800 dark:text-indigo-200 truncate leading-none">
                     {displayValue(latestMetric.neck, 'measurement', latestMetric.unit)}
                   </p>
                 </div>
@@ -445,12 +445,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Hips */}
               {latestMetric.hips && (
-                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-1 mb-1">
+                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5">
                     <Target className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-pink-700 dark:text-pink-300 truncate">Hips</span>
                   </div>
-                  <p className="text-sm font-bold text-pink-800 dark:text-pink-200 truncate">
+                  <p className="text-sm font-bold text-pink-800 dark:text-pink-200 truncate leading-none">
                     {displayValue(latestMetric.hips, 'measurement', latestMetric.unit)}
                   </p>
                 </div>
@@ -458,12 +458,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Thigh */}
               {latestMetric.thigh && (
-                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-1 mb-1">
+                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5">
                     <Ruler className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate">Thigh</span>
                   </div>
-                  <p className="text-sm font-bold text-cyan-800 dark:text-cyan-200 truncate">
+                  <p className="text-sm font-bold text-cyan-800 dark:text-cyan-200 truncate leading-none">
                     {displayValue(latestMetric.thigh, 'measurement', latestMetric.unit)}
                   </p>
                 </div>
@@ -471,12 +471,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Bicep */}
               {latestMetric.bicep && (
-                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-1 mb-1">
+                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5">
                     <User className="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-amber-700 dark:text-amber-300 truncate">Bicep</span>
                   </div>
-                  <p className="text-sm font-bold text-amber-800 dark:text-amber-200 truncate">
+                  <p className="text-sm font-bold text-amber-800 dark:text-amber-200 truncate leading-none">
                     {displayValue(latestMetric.bicep, 'measurement', latestMetric.unit)}
                   </p>
                 </div>
