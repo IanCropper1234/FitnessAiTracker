@@ -249,6 +249,10 @@ export const workoutExercises = pgTable("workout_exercises", {
   recommendedRpe: integer("recommended_rpe"), // AI recommended RPE
   weightUnit: text("weight_unit", { enum: ["kg", "lbs"] }).default("kg"), // Weight unit for this exercise
   finishedAt: timestamp("finished_at"), // Individual exercise completion time
+  // Special Training Methods
+  specialMethod: text("special_method", { enum: ["myorep_match", "myorep_no_match", "drop_set", "superset", "giant_set"] }),
+  specialConfig: jsonb("special_config"), // Method-specific configuration
+  linkedExercises: integer("linked_exercises").array(), // For supersets/giant sets
 });
 
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {
@@ -526,3 +530,45 @@ export type WeeklyVolumeTracking = typeof weeklyVolumeTracking.$inferSelect;
 export type InsertWeeklyVolumeTracking = z.infer<typeof insertWeeklyVolumeTrackingSchema>;
 export type ExerciseMuscleMapping = typeof exerciseMuscleMapping.$inferSelect;
 export type InsertExerciseMuscleMapping = z.infer<typeof insertExerciseMuscleMapping>;
+
+// Special Training Methods Types
+export interface WorkoutSet {
+  setNumber: number;
+  targetReps: number;
+  actualReps: number;
+  weight: number;
+  rpe: number;
+  completed: boolean;
+}
+
+export interface MyorepConfig {
+  activationSet: boolean;
+  targetReps?: number; // For match sets
+  restSeconds: number; // 20-30s for myoreps
+  miniSets: WorkoutSet[];
+}
+
+export interface DropSetConfig {
+  weightReductions: number[]; // Percentages to drop (e.g., [15, 15, 15])
+  restSeconds: number; // 5-10s between drops
+  sets: WorkoutSet[];
+}
+
+export interface GiantSetConfig {
+  totalTargetReps: number; // At least 40 reps
+  miniSetReps: number; // 5-10 reps per mini-set
+  restSeconds: number; // 5-10s between mini-sets
+  miniSets: WorkoutSet[];
+}
+
+export interface SupersetConfig {
+  pairedExerciseId: number;
+  restBetween: number; // 30-60s between exercises
+  restAfter: number; // 2-3min after complete superset
+}
+
+export type SpecialMethodConfig = 
+  | { type: 'myorep_match' | 'myorep_no_match'; config: MyorepConfig }
+  | { type: 'drop_set'; config: DropSetConfig }
+  | { type: 'giant_set'; config: GiantSetConfig }
+  | { type: 'superset'; config: SupersetConfig };

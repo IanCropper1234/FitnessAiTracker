@@ -1339,6 +1339,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             sets: currentSetCount, // Update dynamic set count
             setsData: exerciseData.sets // Store individual set completion states
           };
+
+          // Include special training method data if provided
+          if (exerciseData.specialMethod) {
+            updateData.specialMethod = exerciseData.specialMethod;
+          }
+          if (exerciseData.specialConfig) {
+            updateData.specialConfig = exerciseData.specialConfig;
+          }
           
           if (completedSets.length > 0) {
             const avgWeight = completedSets.reduce((sum: number, set: any) => sum + (parseFloat(set.weight) || 0), 0) / completedSets.length;
@@ -1355,6 +1363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
 
           console.log(`API: Updating exercise ${exerciseData.exerciseId} with sets data:`, updateData.setsData);
+          console.log(`API: Special method data:`, updateData.specialMethod, updateData.specialConfig);
           await storage.updateWorkoutExercise(workoutExercise.id, updateData);
         }
       }

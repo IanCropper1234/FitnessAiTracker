@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Check, Info, Plus, Minus, Scale } from "lucide-react";
+import { Check, Info, Plus, Minus, Scale, Timer, Zap, Target } from "lucide-react";
 
 interface WorkoutSet {
   setNumber: number;
@@ -50,6 +50,11 @@ interface EnhancedSetInputProps {
   onWeightUnitChange?: (unit: 'kg' | 'lbs') => void;
   userId?: number;
   isBodyWeightExercise?: boolean;
+  // Special Training Methods
+  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
+  onSpecialMethodChange?: (method: string | null) => void;
+  specialConfig?: any;
+  onSpecialConfigChange?: (config: any) => void;
 }
 
 export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
@@ -66,6 +71,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   onWeightUnitChange,
   userId = 1,
   isBodyWeightExercise = false,
+  specialMethod = null,
+  onSpecialMethodChange,
+  specialConfig,
+  onSpecialConfigChange,
 }) => {
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [useBodyWeight, setUseBodyWeight] = useState(false);
@@ -204,6 +213,120 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               >
                 Use
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Special Training Methods Selector - Only for active sets */}
+        {!set.completed && isActive && (
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-foreground">Training Method</label>
+            <Select
+              value={specialMethod || ""}
+              onValueChange={(value) => onSpecialMethodChange?.(value === "" ? null : value)}
+            >
+              <SelectTrigger className="h-8 text-xs border border-border/50 bg-background touch-target ios-touch-feedback">
+                <SelectValue placeholder="Standard Set" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Standard Set</SelectItem>
+                <SelectItem value="myorep_match">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3" />
+                    Myorep Match
+                  </div>
+                </SelectItem>
+                <SelectItem value="myorep_no_match">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-3 w-3" />
+                    Myorep No Match
+                  </div>
+                </SelectItem>
+                <SelectItem value="drop_set">
+                  <div className="flex items-center gap-2">
+                    <Minus className="h-3 w-3" />
+                    Drop Set
+                  </div>
+                </SelectItem>
+                <SelectItem value="giant_set">
+                  <div className="flex items-center gap-2">
+                    <Timer className="h-3 w-3" />
+                    Giant Set (40+ reps)
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {/* Special Method Configuration - Conditional based on selected method */}
+        {!set.completed && isActive && specialMethod === 'giant_set' && (
+          <div className="bg-orange-500/10 border border-orange-500/20 rounded p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-orange-400 font-medium">
+              <Timer className="h-3 w-3" />
+              Giant Set Configuration
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-orange-300">Target Total Reps</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.totalTargetReps || 40}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    totalTargetReps: parseInt(e.target.value) || 40,
+                    miniSetReps: specialConfig?.miniSetReps || 5,
+                    restSeconds: specialConfig?.restSeconds || 10
+                  })}
+                  min="40"
+                  max="100"
+                  className="h-7 text-xs bg-background/50 border-orange-500/20"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-orange-300">Mini-Set Reps</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.miniSetReps || 5}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSetReps: parseInt(e.target.value) || 5
+                  })}
+                  min="3"
+                  max="15"
+                  className="h-7 text-xs bg-background/50 border-orange-500/20"
+                />
+              </div>
+            </div>
+            <div className="text-xs text-orange-300/70">
+              Perform mini-sets with {specialConfig?.restSeconds || 10}s rest until reaching target reps
+            </div>
+          </div>
+        )}
+
+        {specialMethod === 'drop_set' && !set.completed && isActive && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-red-400 font-medium">
+              <Minus className="h-3 w-3" />
+              Drop Set Configuration
+            </div>
+            <div className="text-xs text-red-300/70">
+              After failure, reduce weight by 15-20% and continue for 5-10s rest
+            </div>
+          </div>
+        )}
+
+        {(specialMethod === 'myorep_match' || specialMethod === 'myorep_no_match') && !set.completed && isActive && (
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
+              {specialMethod === 'myorep_match' ? <Target className="h-3 w-3" /> : <Zap className="h-3 w-3" />}
+              {specialMethod === 'myorep_match' ? 'Myorep Match' : 'Myorep No Match'}
+            </div>
+            <div className="text-xs text-blue-300/70">
+              {specialMethod === 'myorep_match' 
+                ? 'Perform activation set, then match rep count with mini-sets'
+                : 'Perform activation set followed by mini-sets with 20-30s rest'
+              }
             </div>
           </div>
         )}
@@ -352,18 +475,38 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <span className="text-xs text-emerald-300 font-medium">
               {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
             </span>
+            {specialMethod && (
+              <Badge variant="outline" className="ml-2 text-xs px-1 py-0 h-4 bg-orange-500/20 text-orange-300 border-orange-500/30">
+                {specialMethod === 'giant_set' && <Timer className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
+              </Badge>
+            )}
           </div>
         )}
 
         {/* Non-active set preview - Shows basic info for inactive sets */}
         {!set.completed && !isActive && (
           <div className="p-1 bg-muted/20 rounded text-center">
-            <span className="text-xs text-muted-foreground">
-              {set.weight > 0 || set.actualReps > 0 || set.rpe > 0
-                ? `${set.weight || 0}${weightUnit} × ${set.actualReps || 0} @ RPE ${set.rpe || 0}`
-                : "Tap to edit"
-              }
-            </span>
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-xs text-muted-foreground">
+                {set.weight > 0 || set.actualReps > 0 || set.rpe > 0
+                  ? `${set.weight || 0}${weightUnit} × ${set.actualReps || 0} @ RPE ${set.rpe || 0}`
+                  : "Tap to edit"
+                }
+              </span>
+              {specialMethod && (
+                <Badge variant="outline" className="text-xs px-1 py-0 h-4 bg-orange-500/10 text-orange-400 border-orange-500/20">
+                  {specialMethod === 'giant_set' && <Timer className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                  {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
+                </Badge>
+              )}
+            </div>
           </div>
         )}
       </CardContent>

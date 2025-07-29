@@ -52,6 +52,8 @@ interface WorkoutExercise {
   restPeriod: number;
   exercise: Exercise;
   setsData?: WorkoutSet[];
+  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
+  specialConfig?: any;
 }
 
 interface SetRecommendation {
@@ -110,6 +112,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
   const [showFeedback, setShowFeedback] = useState(false);
+  
+  // Special training methods state
+  const [specialMethods, setSpecialMethods] = useState<Record<number, string | null>>({});
+  const [specialConfigs, setSpecialConfigs] = useState<Record<number, any>>({});
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -290,6 +296,33 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }));
   };
 
+  // Special training methods handlers
+  const handleSpecialMethodChange = (exerciseId: number, method: string | null) => {
+    setSpecialMethods(prev => ({
+      ...prev,
+      [exerciseId]: method
+    }));
+    
+    // Reset config when method changes
+    if (method !== specialMethods[exerciseId]) {
+      setSpecialConfigs(prev => ({
+        ...prev,
+        [exerciseId]: method === 'giant_set' ? {
+          totalTargetReps: 40,
+          miniSetReps: 5,
+          restSeconds: 10
+        } : {}
+      }));
+    }
+  };
+
+  const handleSpecialConfigChange = (exerciseId: number, config: any) => {
+    setSpecialConfigs(prev => ({
+      ...prev,
+      [exerciseId]: config
+    }));
+  };
+
   const completeSet = () => {
     if (!currentSet?.weight || !currentSet?.actualReps) {
       toast({
@@ -449,7 +482,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       isCompleted: false,
       exercises: session.exercises.map(exercise => ({
         exerciseId: exercise.exerciseId,
-        sets: workoutData[exercise.id] || []
+        sets: workoutData[exercise.id] || [],
+        specialMethod: specialMethods[exercise.id] || null,
+        specialConfig: specialConfigs[exercise.id] || null
       }))
     };
 
@@ -483,7 +518,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       isCompleted: true,
       exercises: session.exercises.map(exercise => ({
         exerciseId: exercise.exerciseId,
-        sets: workoutData[exercise.id] || []
+        sets: workoutData[exercise.id] || [],
+        specialMethod: specialMethods[exercise.id] || null,
+        specialConfig: specialConfigs[exercise.id] || null
       }))
     };
 
@@ -597,6 +634,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   onWeightUnitChange={setWeightUnit}
                   userId={session?.userId || 1}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
+                  specialMethod={specialMethods[currentExercise.id] as any}
+                  onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
+                  specialConfig={specialConfigs[currentExercise.id]}
+                  onSpecialConfigChange={(config) => handleSpecialConfigChange(currentExercise.id, config)}
                 />
               )}
 
