@@ -110,10 +110,30 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     weeklyWeightTarget: 0
   });
   
-  // MyFitnessPal-style percentage state
-  const [proteinPercentage, setProteinPercentage] = useState(25); // Default 25%
-  const [carbsPercentage, setCarbsPercentage] = useState(45);     // Default 45%
-  const [fatPercentage, setFatPercentage] = useState(30);         // Default 30%
+  // Helper function to get optimal macro distribution based on calories
+  const getOptimalMacroDistribution = (calories: number) => {
+    if (calories <= 1200) {
+      // Very low calorie - higher protein to preserve muscle
+      return { protein: 35, carbs: 35, fat: 30 };
+    } else if (calories <= 1600) {
+      // Low calorie - moderate protein, moderate carbs
+      return { protein: 30, carbs: 40, fat: 30 };
+    } else if (calories <= 2000) {
+      // Moderate calorie - balanced approach
+      return { protein: 25, carbs: 45, fat: 30 };
+    } else if (calories <= 2500) {
+      // Higher calorie - can support more carbs
+      return { protein: 20, carbs: 50, fat: 30 };
+    } else {
+      // Very high calorie - optimized for performance
+      return { protein: 18, carbs: 55, fat: 27 };
+    }
+  };
+
+  // MyFitnessPal-style percentage state - Initialize with smart defaults
+  const [proteinPercentage, setProteinPercentage] = useState(25);
+  const [carbsPercentage, setCarbsPercentage] = useState(45);
+  const [fatPercentage, setFatPercentage] = useState(30);
   const [userSetPercentages, setUserSetPercentages] = useState(false); // Track if user manually set percentages
 
   // Function to update macros from percentages
@@ -139,15 +159,25 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
       : dietGoal.targetCalories;
       
-    if (currentCalories > 0 && dietGoal.targetProtein > 0) {
-      const proteinCals = (dietGoal.targetProtein * 4);
-      const carbsCals = (dietGoal.targetCarbs * 4);
-      const fatCals = (dietGoal.targetFat * 9);
+    if (currentCalories > 0) {
+      // If we have existing goal data with macros, calculate percentages from saved values
+      if (dietGoal.targetProtein > 0) {
+        const proteinCals = (dietGoal.targetProtein * 4);
+        const carbsCals = (dietGoal.targetCarbs * 4);
+        const fatCals = (dietGoal.targetFat * 9);
 
-      if (currentCalories > 0) {
         setProteinPercentage(Math.round((proteinCals / currentCalories) * 100));
         setCarbsPercentage(Math.round((carbsCals / currentCalories) * 100));
         setFatPercentage(Math.round((fatCals / currentCalories) * 100));
+      } else {
+        // Use optimal distribution for new goals or when no macro data exists
+        const optimalDistribution = getOptimalMacroDistribution(currentCalories);
+        setProteinPercentage(optimalDistribution.protein);
+        setCarbsPercentage(optimalDistribution.carbs);
+        setFatPercentage(optimalDistribution.fat);
+        
+        // Update the macro gram values based on optimal percentages
+        updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
       }
     }
   }, [dietGoal.targetCalories, dietGoal.customTargetCalories, dietGoal.useCustomCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
@@ -1157,13 +1187,24 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     checked={dietGoal.useCustomCalories}
                     onCheckedChange={(checked) => {
                       setUserSetPercentages(false); // Reset flag to allow percentage recalculation
+                      const newCalories = checked 
+                        ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
+                        : Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
+                      
                       setDietGoal(prev => ({ 
                         ...prev, 
                         useCustomCalories: checked,
-                        targetCalories: checked 
-                          ? (prev.customTargetCalories || prev.targetCalories)
-                          : Math.round(prev.tdee * (prev.goal === 'cut' ? 0.85 : prev.goal === 'bulk' ? 1.15 : 1))
+                        targetCalories: newCalories
                       }));
+                      
+                      // Apply optimal macro distribution for the calorie level
+                      if (newCalories > 0) {
+                        const optimalDistribution = getOptimalMacroDistribution(newCalories);
+                        setProteinPercentage(optimalDistribution.protein);
+                        setCarbsPercentage(optimalDistribution.carbs);
+                        setFatPercentage(optimalDistribution.fat);
+                        updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
+                      }
                     }}
                     className="bg-[#505d6e]"
                   />
@@ -1186,6 +1227,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           customTargetCalories: calories,
                           targetCalories: calories
                         }));
+                        
+                        // Apply optimal macro distribution for new calorie level
+                        if (calories > 0) {
+                          const optimalDistribution = getOptimalMacroDistribution(calories);
+                          setProteinPercentage(optimalDistribution.protein);
+                          setCarbsPercentage(optimalDistribution.carbs);
+                          setFatPercentage(optimalDistribution.fat);
+                          updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
+                        }
                       }
                     }}
                     disabled={!dietGoal.useCustomCalories}
