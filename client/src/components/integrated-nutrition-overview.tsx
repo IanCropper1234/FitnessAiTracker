@@ -1068,7 +1068,6 @@ export function IntegratedNutritionOverview({
                               data: mealType.key,
                               sourceSection: undefined // This is "copy to" operation
                             });
-                            setCopyDate('');
                             // Directly trigger iOS date picker for "copy to" date
                             if (setShowCopyToDatePicker) {
                               setShowCopyToDatePicker(true);
