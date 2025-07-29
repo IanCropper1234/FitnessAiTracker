@@ -46,6 +46,9 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const queryClient = useQueryClient();
   const [isAddingMetric, setIsAddingMetric] = useState(false);
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
+  const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
+  const [showConversionHelper, setShowConversionHelper] = useState(false);
+  const [showUnifiedUnits, setShowUnifiedUnits] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   // Use external date if provided, otherwise use internal state
   const selectedDate = externalSelectedDate || new Date().toISOString().split('T')[0];
@@ -176,6 +179,85 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
     return unit === 'metric' ? 'cm' : 'inches';
   };
 
+  // Smart unit conversion helpers
+  const convertValue = (value: number, type: 'weight' | 'measurement', fromUnit: 'metric' | 'imperial', toUnit: 'metric' | 'imperial'): number => {
+    if (fromUnit === toUnit || !value) return value;
+    
+    if (type === 'weight') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 2.20462 * 10) / 10; // kg to lbs
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 0.453592 * 10) / 10; // lbs to kg
+      }
+    } else if (type === 'measurement') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 0.393701 * 10) / 10; // cm to inches
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 2.54 * 10) / 10; // inches to cm
+      }
+    }
+    return value;
+  };
+
+  const getConversionHelper = (value: string, type: 'weight' | 'measurement'): string => {
+    const numValue = parseFloat(value);
+    if (!numValue) return '';
+    
+    const converted = convertValue(numValue, type, previousUnit, unit);
+    const fromUnitLabel = type === 'weight' ? 
+      (previousUnit === 'metric' ? 'kg' : 'lbs') : 
+      (previousUnit === 'metric' ? 'cm' : 'inches');
+    const toUnitLabel = formatUnit(type);
+    
+    return `${numValue} ${fromUnitLabel} ≈ ${converted} ${toUnitLabel}`;
+  };
+
+  const convertAllFormValues = () => {
+    setFormData(prev => ({
+      ...prev,
+      weight: prev.weight ? convertValue(parseFloat(prev.weight), 'weight', previousUnit, unit).toString() : '',
+      neck: prev.neck ? convertValue(parseFloat(prev.neck), 'measurement', previousUnit, unit).toString() : '',
+      chest: prev.chest ? convertValue(parseFloat(prev.chest), 'measurement', previousUnit, unit).toString() : '',
+      waist: prev.waist ? convertValue(parseFloat(prev.waist), 'measurement', previousUnit, unit).toString() : '',
+      hips: prev.hips ? convertValue(parseFloat(prev.hips), 'measurement', previousUnit, unit).toString() : '',
+      thigh: prev.thigh ? convertValue(parseFloat(prev.thigh), 'measurement', previousUnit, unit).toString() : '',
+      bicep: prev.bicep ? convertValue(parseFloat(prev.bicep), 'measurement', previousUnit, unit).toString() : '',
+    }));
+    setShowConversionHelper(false);
+  };
+
+  const hasFormValues = () => {
+    return formData.weight || formData.neck || formData.chest || formData.waist || 
+           formData.hips || formData.thigh || formData.bicep;
+  };
+
+  // Enhanced display functions for timeline with unit conversion
+  const displayValue = (value: number | undefined, type: 'weight' | 'measurement', originalUnit: 'metric' | 'imperial'): string => {
+    if (!value) return '';
+    
+    if (showUnifiedUnits) {
+      // Convert to current preferred unit
+      const converted = convertValue(value, type, originalUnit, unit);
+      const unitLabel = type === 'weight' ? 
+        (unit === 'metric' ? 'kg' : 'lbs') : 
+        (unit === 'metric' ? 'cm' : 'inches');
+      return `${converted}${unitLabel}`;
+    } else {
+      // Show original value with original unit
+      const unitLabel = type === 'weight' ? 
+        (originalUnit === 'metric' ? 'kg' : 'lbs') : 
+        (originalUnit === 'metric' ? 'cm' : 'inches');
+      return `${value}${unitLabel}`;
+    }
+  };
+
+  const getUnitIndicator = (metricUnit: 'metric' | 'imperial'): string => {
+    if (showUnifiedUnits && metricUnit !== unit) {
+      return ' (converted)';
+    }
+    return '';
+  };
+
   const getLatestMetric = () => {
     if (!metrics || metrics.length === 0) return null;
     return metrics.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
@@ -207,6 +289,19 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       }));
     }
   }, [externalSelectedDate, isAddingMetric]);
+
+  // Handle unit changes and show conversion helper
+  useEffect(() => {
+    if (unit !== previousUnit && hasFormValues() && isAddingMetric) {
+      setShowConversionHelper(true);
+    }
+  }, [unit, previousUnit, isAddingMetric]);
+
+  // Handle unit selector change
+  const handleUnitChange = (newUnit: 'metric' | 'imperial') => {
+    setPreviousUnit(unit);
+    setUnit(newUnit);
+  };
 
   // Auto-scroll to form when it opens
   useEffect(() => {
@@ -621,7 +716,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <Label htmlFor="unit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Unit System
                   </Label>
-                  <Select value={unit} onValueChange={(value: 'metric' | 'imperial') => setUnit(value)}>
+                  <Select value={unit} onValueChange={handleUnitChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
@@ -632,6 +727,49 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   </Select>
                 </div>
               </div>
+
+              {/* Smart Conversion Helper */}
+              {showConversionHelper && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Scale className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                        Convert Your Values?
+                      </h4>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                        You switched units and have entered values. Would you like to convert them automatically?
+                      </p>
+                      <div className="space-y-2 text-xs text-blue-600 dark:text-blue-400 mb-3">
+                        {formData.weight && <div>• {getConversionHelper(formData.weight, 'weight')}</div>}
+                        {formData.waist && <div>• Waist: {getConversionHelper(formData.waist, 'measurement')}</div>}
+                        {formData.chest && <div>• Chest: {getConversionHelper(formData.chest, 'measurement')}</div>}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={convertAllFormValues}
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5"
+                        >
+                          Convert All Values
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowConversionHelper(false)}
+                          className="text-xs px-3 py-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                        >
+                          Keep Current Values
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Primary Measurements */}
               <div className="space-y-4">
@@ -654,6 +792,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                         placeholder="Enter weight"
                         className="pl-10"
                       />
+                      {formData.weight && (
+                        <div className="mt-1 text-xs text-gray-500">
+                          ≈ {convertValue(parseFloat(formData.weight), 'weight', unit, unit === 'metric' ? 'imperial' : 'metric')} {unit === 'metric' ? 'lbs' : 'kg'}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -792,10 +935,20 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Metrics History - Compact Timeline */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <TrendingUp className="w-4 h-4 text-blue-600" />
-            Progress Timeline
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+              Progress Timeline
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
+              className="text-xs"
+            >
+              {showUnifiedUnits ? 'Show Original Units' : 'Unify Units'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-2">
           {metrics && metrics.length > 0 ? (
@@ -850,7 +1003,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                                 <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Weight</span>
                               </div>
                               <p className="text-xs font-bold text-blue-800 dark:text-blue-200">
-                                {metric.weight}<span className="text-xs font-normal ml-0.5">{formatUnit('weight')}</span>
+                                {displayValue(metric.weight, 'weight', metric.unit)}
+                                <span className="text-xs font-normal text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
                               </p>
                             </div>
                           )}
@@ -874,7 +1028,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                                 <span className="text-xs font-medium text-green-700 dark:text-green-300">Waist</span>
                               </div>
                               <p className="text-xs font-bold text-green-800 dark:text-green-200">
-                                {metric.waist}<span className="text-xs font-normal ml-0.5">{formatUnit('measurement')}</span>
+                                {displayValue(metric.waist, 'measurement', metric.unit)}
+                                <span className="text-xs font-normal text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
                               </p>
                             </div>
                           )}
@@ -886,7 +1041,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                                 <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Chest</span>
                               </div>
                               <p className="text-xs font-bold text-purple-800 dark:text-purple-200">
-                                {metric.chest}<span className="text-xs font-normal ml-0.5">{formatUnit('measurement')}</span>
+                                {displayValue(metric.chest, 'measurement', metric.unit)}
+                                <span className="text-xs font-normal text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
                               </p>
                             </div>
                           )}
@@ -898,22 +1054,22 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                             <div className="flex flex-wrap gap-1 text-xs">
                               {metric.neck && (
                                 <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
-                                  Neck: {metric.neck}{formatUnit('measurement')}
+                                  Neck: {displayValue(metric.neck, 'measurement', metric.unit)}
                                 </span>
                               )}
                               {metric.hips && (
                                 <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
-                                  Hips: {metric.hips}{formatUnit('measurement')}
+                                  Hips: {displayValue(metric.hips, 'measurement', metric.unit)}
                                 </span>
                               )}
                               {metric.thigh && (
                                 <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
-                                  Thigh: {metric.thigh}{formatUnit('measurement')}
+                                  Thigh: {displayValue(metric.thigh, 'measurement', metric.unit)}
                                 </span>
                               )}
                               {metric.bicep && (
                                 <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
-                                  Bicep: {metric.bicep}{formatUnit('measurement')}
+                                  Bicep: {displayValue(metric.bicep, 'measurement', metric.unit)}
                                 </span>
                               )}
                             </div>
