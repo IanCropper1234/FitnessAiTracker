@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -27,7 +28,9 @@ import {
   ChevronRight,
   ChevronLeft,
   Shield,
-  AlertTriangle
+  AlertTriangle,
+  Info,
+  HelpCircle
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -247,7 +250,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   return (
     <div className="space-y-6">
       {/* Header and Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="space-y-4">
         <div>
           <h3 className="text-lg font-semibold mb-2">Training Templates</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -255,22 +258,56 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={() => validateTemplatesMutation.mutate()}
-            disabled={validateTemplatesMutation.isPending}
-            className="text-orange-600 border-orange-200 hover:bg-orange-50"
-          >
-            <Shield className="h-4 w-4 mr-1" />
-            {validateTemplatesMutation.isPending ? 'Validating...' : 'Validate Templates'}
-          </Button>
-
+        {/* Enhanced Action Buttons Layout */}
+        <div className="space-y-3">
+          {/* Database Maintenance Section */}
+          <div className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200/50 dark:border-orange-800/30">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Shield className="w-4 h-4 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-orange-800 dark:text-orange-200">Database Maintenance</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <div className="space-y-2 text-xs">
+                          <p className="font-medium">Template Validation Tool</p>
+                          <p>Scans all training templates for:</p>
+                          <ul className="list-disc list-inside space-y-1 ml-2">
+                            <li>Missing exercise references</li>
+                            <li>Broken workout structures</li>
+                            <li>Invalid data entries</li>
+                          </ul>
+                          <p className="text-muted-foreground">Safely removes broken templates while protecting active mesocycles.</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <p className="text-xs text-orange-700 dark:text-orange-300 truncate">Validates templates and removes invalid entries</p>
+              </div>
+            </div>
+            <Button
+              onClick={() => validateTemplatesMutation.mutate()}
+              disabled={validateTemplatesMutation.isPending}
+              variant="outline"
+              size="sm"
+              className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:text-orange-300 dark:hover:bg-orange-900/30 flex-shrink-0"
+            >
+              {validateTemplatesMutation.isPending ? "Validating..." : "Validate"}
+            </Button>
+          </div>
+          
+          {/* Create Template Button */}
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-1" />
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 w-full"
+              >
+                <Plus className="w-4 h-4" />
                 Create Template
               </Button>
             </DialogTrigger>
