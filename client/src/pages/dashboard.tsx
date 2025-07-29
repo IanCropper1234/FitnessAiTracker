@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
-import { NutritionLogger } from "@/components/nutrition-logger";
+
 import { RecentActivity } from "@/components/recent-activity";
 import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -35,7 +35,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
-  const [showNutritionLogger, setShowNutritionLogger] = useState(false);
+
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
 
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
@@ -339,7 +339,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             <CardContent className="space-y-4">
               <Button 
                 className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                onClick={() => setShowNutritionLogger(true)}
+                onClick={() => setLocation('/nutrition')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {t("log_food")}
@@ -357,7 +357,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               <Button 
                 variant="outline"
                 className="w-full border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => window.location.hash = '#/profile'}
+                onClick={() => setLocation('/profile')}
               >
                 View {t("profile")}
               </Button>
@@ -368,18 +368,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           <RecentActivity userId={user.id} />
         </div>
 
-        {/* Nutrition Logger Modal */}
-        {showNutritionLogger && (
-          <NutritionLogger 
-            userId={user.id}
-            onComplete={() => {
-              setShowNutritionLogger(false);
-              // Refresh nutrition data and recent activities on dashboard
-              queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-              queryClient.invalidateQueries({ queryKey: ['/api/activities', user.id] });
-            }}
-          />
-        )}
+
 
 
 
