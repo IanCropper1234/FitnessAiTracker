@@ -221,60 +221,61 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </div>
             )}
             
-            {/* iOS-Optimized Grid with Perfect Alignment */}
-            <div className="grid grid-cols-3 gap-2">
-              {/* Weight Section - Aligned label height */}
+            {/* Redesigned Grid Layout - Weight Column Split for Better UX */}
+            <div className="space-y-2">
+              {/* Weight Section - Separated for Better Display */}
               <div className="space-y-1">
-                <div className="h-5 flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-foreground">Weight</label>
                   {isBodyWeightExercise && (
                     <Switch
                       checked={useBodyWeight}
                       onCheckedChange={handleBodyWeightToggle}
                       disabled={!bodyWeightValue}
-                      className="scale-75 -mt-0.5"
+                      className="scale-75"
                     />
                   )}
                 </div>
-                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
-                  <Input
-                    type="number"
-                    value={getEffectiveWeight() || ''}
-                    onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    step="0.5"
-                    min="0"
-                    max="1000"
-                    className={`workout-input h-9 text-sm border-0 bg-transparent pr-16 text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
-                    disabled={useBodyWeight}
-                    readOnly={useBodyWeight}
-                    inputMode="decimal"
-                  />
-                  {/* Inline Unit Selector with Visual Separator - Fixed positioning */}
-                  <div className="absolute right-1 top-0 h-9 flex items-center">
-                    <div className="h-4 w-px bg-border mr-2"></div>
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Weight Input - Full width without unit selector */}
+                  <div className="col-span-2">
+                    <Input
+                      type="number"
+                      value={getEffectiveWeight() || ''}
+                      onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
+                      placeholder="0"
+                      step="0.5"
+                      min="0"
+                      max="1000"
+                      className={`workout-input h-9 text-sm border border-border/50 bg-background text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ios-touch-feedback ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
+                      disabled={useBodyWeight}
+                      readOnly={useBodyWeight}
+                      inputMode="decimal"
+                    />
+                  </div>
+                  {/* Unit Selector - Separate column */}
+                  <div>
                     <Select
                       value={weightUnit}
                       onValueChange={(value: 'kg' | 'lbs') => onWeightUnitChange?.(value)}
                     >
-                      <SelectTrigger className="w-12 h-8 border-0 bg-transparent text-xs px-1 touch-target flex items-center justify-center rounded-sm">
+                      <SelectTrigger className="h-9 text-sm border border-border/50 bg-background touch-target ios-touch-feedback">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="kg">kg</SelectItem>
-                        <SelectItem value="lbs">lb</SelectItem>
+                        <SelectItem value="lbs">lbs</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
               </div>
-
-              {/* Reps Section - Fixed label height */}
-              <div className="space-y-1">
-                <div className="h-5 flex items-center">
+              
+              {/* Reps and RPE Row */}
+              <div className="grid grid-cols-2 gap-2">
+                {/* Reps Section */}
+                <div className="space-y-1">
                   <label className="text-xs font-medium text-foreground">Reps</label>
-                </div>
-                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Input
                     type="number"
                     value={set.actualReps || ''}
@@ -282,23 +283,19 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     placeholder="0"
                     min="0"
                     max="50"
-                    className="workout-input h-9 text-sm border-0 bg-transparent text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="workout-input h-9 text-sm border border-border/50 bg-background text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ios-touch-feedback"
                     inputMode="numeric"
                   />
                 </div>
-              </div>
 
-              {/* RPE Section - Fixed label height */}
-              <div className="space-y-1">
-                <div className="h-5 flex items-center">
+                {/* RPE Section */}
+                <div className="space-y-1">
                   <label className="text-xs font-medium text-foreground">RPE</label>
-                </div>
-                <div className="relative bg-background border border-border/50 rounded-md ios-touch-feedback">
                   <Select
                     value={set.rpe ? set.rpe.toString() : ""}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
-                    <SelectTrigger className="h-9 text-sm border-0 bg-transparent touch-target">
+                    <SelectTrigger className="h-9 text-sm border border-border/50 bg-background touch-target ios-touch-feedback">
                       <SelectValue placeholder="0" />
                     </SelectTrigger>
                     <SelectContent>
