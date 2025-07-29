@@ -28,6 +28,7 @@ import {
   ArrowLeft,
   GripVertical,
   Check,
+  CheckSquare,
   Edit,
   Save
 } from "lucide-react";
@@ -913,7 +914,7 @@ export function IntegratedNutritionOverview({
                   }}
                   className="text-xs h-6 px-1.5"
                 >
-                  <Check className="w-3 h-3" />
+                  <CheckSquare className="w-3 h-3" />
                 </Button>
               )}
               <Button 
