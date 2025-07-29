@@ -1163,16 +1163,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
                         : Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
                       
+                      // Update diet goal and macros in one operation
                       setDietGoal(prev => ({ 
                         ...prev, 
                         useCustomCalories: checked,
-                        targetCalories: newCalories
+                        targetCalories: newCalories,
+                        targetProtein: Math.round((newCalories * (proteinPercentage / 100)) / 4),
+                        targetCarbs: Math.round((newCalories * (carbsPercentage / 100)) / 4),
+                        targetFat: Math.round((newCalories * (fatPercentage / 100)) / 9)
                       }));
-                      
-                      // Immediately recalculate macros with current percentages and new calorie target
-                      setTimeout(() => {
-                        updateMacrosFromPercentages(proteinPercentage, carbsPercentage, fatPercentage);
-                      }, 0);
                     }}
                     className="bg-[#505d6e]"
                   />
@@ -1193,13 +1192,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         setDietGoal(prev => ({ 
                           ...prev, 
                           customTargetCalories: calories,
-                          targetCalories: calories
+                          targetCalories: calories,
+                          targetProtein: Math.round((calories * (proteinPercentage / 100)) / 4),
+                          targetCarbs: Math.round((calories * (carbsPercentage / 100)) / 4),
+                          targetFat: Math.round((calories * (fatPercentage / 100)) / 9)
                         }));
-                        
-                        // Immediately recalculate macros with current percentages and new calorie value
-                        setTimeout(() => {
-                          updateMacrosFromPercentages(proteinPercentage, carbsPercentage, fatPercentage);
-                        }, 0);
                       }
                     }}
                     disabled={!dietGoal.useCustomCalories}
