@@ -291,27 +291,29 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           )}
         </div>
 
-        {/* Training Insights - Single Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800 ml-[15px] mr-[15px]">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-xs text-center">Most Active</h4>
-            <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
-              {trainingStats && trainingStats.totalSessions > 10 ? "High frequency trainer" : "Building consistency"}
-            </p>
-          </div>
-          
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800 mt-[0px] mb-[0px] ml-[15px] mr-[15px]">
-            <h4 className="text-green-900 dark:text-green-100 mb-1 text-xs font-medium text-center">Volume Progress</h4>
-            <p className="text-xs text-green-700 dark:text-green-300 text-center">
-              {trainingStats && trainingStats.totalVolume > 1000 ? "Strong progression" : "Steady improvement"}
-            </p>
-          </div>
-          
-          <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-800 mt-[0px] mb-[0px] ml-[15px] mr-[15px]">
-            <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-1 text-xs text-center">Session Length</h4>
-            <p className="text-xs text-purple-700 dark:text-purple-300 text-center">
-              {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough workouts" : "Efficient training"}
-            </p>
+        {/* Training Insights - Compact */}
+        <div className="px-4">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-md border border-blue-200 dark:border-blue-800">
+              <h4 className="font-medium text-blue-900 dark:text-blue-100 text-[10px] text-center leading-tight">Activity</h4>
+              <p className="text-[9px] text-blue-700 dark:text-blue-300 text-center leading-tight mt-0.5">
+                {trainingStats && trainingStats.totalSessions > 10 ? "High freq" : "Building"}
+              </p>
+            </div>
+            
+            <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded-md border border-green-200 dark:border-green-800">
+              <h4 className="text-green-900 dark:text-green-100 text-[10px] font-medium text-center leading-tight">Volume</h4>
+              <p className="text-[9px] text-green-700 dark:text-green-300 text-center leading-tight mt-0.5">
+                {trainingStats && trainingStats.totalVolume > 1000 ? "Strong" : "Steady"}
+              </p>
+            </div>
+            
+            <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-md border border-purple-200 dark:border-purple-800">
+              <h4 className="font-medium text-purple-900 dark:text-purple-100 text-[10px] text-center leading-tight">Sessions</h4>
+              <p className="text-[9px] text-purple-700 dark:text-purple-300 text-center leading-tight mt-0.5">
+                {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough" : "Efficient"}
+              </p>
+            </div>
           </div>
         </div>
 
