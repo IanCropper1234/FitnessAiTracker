@@ -9,6 +9,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { UnitConverter } from "@shared/utils/unit-conversion";
 
 
 interface BodyMetric {
@@ -49,6 +51,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
   const [showConversionHelper, setShowConversionHelper] = useState(false);
   const [showUnifiedUnits, setShowUnifiedUnits] = useState(false);
+  const [chartTimeRange, setChartTimeRange] = useState<string>('1month');
   const formRef = useRef<HTMLDivElement>(null);
   // Use external date if provided, otherwise use internal state
   const selectedDate = externalSelectedDate || new Date().toISOString().split('T')[0];
@@ -352,6 +355,190 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           Log Entry
         </Button>
       </div>
+      
+      {/* Weight Progress Chart */}
+      {metrics && metrics.length > 0 && (
+        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                <Scale className="w-5 h-5 text-green-600 dark:text-green-400" />
+                Weight Progress
+              </CardTitle>
+              <Select value={chartTimeRange} onValueChange={setChartTimeRange}>
+                <SelectTrigger className="w-auto min-w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1week">1 Week</SelectItem>
+                  <SelectItem value="1month">1 Month</SelectItem>
+                  <SelectItem value="2months">2 Months</SelectItem>
+                  <SelectItem value="3months">3 Months</SelectItem>
+                  <SelectItem value="6months">6 Months</SelectItem>
+                  <SelectItem value="1year">1 Year</SelectItem>
+                  <SelectItem value="all">All (Since Start Weight)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {(() => {
+              // Filter metrics based on time range
+              const now = new Date();
+              const getFilteredMetrics = () => {
+                const weightMetrics = metrics
+                  .filter(m => m.weight && m.weight > 0)
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                
+                if (chartTimeRange === 'all') return weightMetrics;
+                
+                const daysMap: Record<string, number> = {
+                  '1week': 7,
+                  '1month': 30,
+                  '2months': 60,
+                  '3months': 90,
+                  '6months': 180,
+                  '1year': 365
+                };
+                
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - daysMap[chartTimeRange]);
+                
+                return weightMetrics.filter(m => new Date(m.date) >= cutoffDate);
+              };
+              
+              const filteredMetrics = getFilteredMetrics();
+              
+              if (filteredMetrics.length === 0) {
+                return (
+                  <div className="h-32 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                    <p className="text-sm">No weight data available for selected time range</p>
+                  </div>
+                );
+              }
+              
+              // Prepare chart data with unit conversion
+              const chartData = filteredMetrics.map((metric, index) => {
+                const date = new Date(metric.date);
+                const weight = metric.weight!;
+                
+                // Convert to a common unit for consistent display
+                const displayUnit = latestMetric?.unit || 'metric';
+                const convertedWeight = metric.unit === displayUnit 
+                  ? weight 
+                  : (() => {
+                      const converted = UnitConverter.convertWeight(weight, metric.unit);
+                      return displayUnit === 'metric' ? converted.kg : converted.lbs;
+                    })();
+                
+                return {
+                  date: date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric'
+                  }),
+                  weight: Number(convertedWeight.toFixed(1)),
+                  originalWeight: weight,
+                  originalUnit: metric.unit,
+                  isLatest: index === filteredMetrics.length - 1
+                };
+              });
+              
+              const startWeight = chartData[0]?.weight;
+              const currentWeight = chartData[chartData.length - 1]?.weight;
+              const weightChange = currentWeight - startWeight;
+              const weightChangePercent = startWeight > 0 ? ((weightChange / startWeight) * 100) : 0;
+              const displayUnit = latestMetric?.unit === 'metric' ? 'kg' : 'lbs';
+              
+              return (
+                <div className="space-y-4">
+                  {/* Stats Summary */}
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Start</p>
+                      <p className="text-lg font-bold text-green-700 dark:text-green-300">
+                        {startWeight} {displayUnit}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Current</p>
+                      <p className="text-lg font-bold text-green-800 dark:text-green-200">
+                        {currentWeight} {displayUnit}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Change</p>
+                      <p className={`text-lg font-bold ${
+                        weightChange > 0 
+                          ? 'text-orange-600 dark:text-orange-400' 
+                          : weightChange < 0 
+                            ? 'text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-gray-400'
+                      }`}>
+                        {weightChange > 0 ? '+' : ''}{weightChange.toFixed(1)} {displayUnit}
+                      </p>
+                      <p className={`text-xs ${
+                        weightChange > 0 
+                          ? 'text-orange-500 dark:text-orange-400' 
+                          : weightChange < 0 
+                            ? 'text-blue-500 dark:text-blue-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                      }`}>
+                        ({weightChangePercent > 0 ? '+' : ''}{weightChangePercent.toFixed(1)}%)
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Chart */}
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                        <XAxis 
+                          dataKey="date" 
+                          fontSize={10}
+                          tick={{ fill: 'currentColor' }}
+                          axisLine={{ stroke: 'currentColor', strokeWidth: 1 }}
+                        />
+                        <YAxis 
+                          fontSize={10}
+                          tick={{ fill: 'currentColor' }}
+                          axisLine={{ stroke: 'currentColor', strokeWidth: 1 }}
+                          domain={['dataMin - 2', 'dataMax + 2']}
+                        />
+                        <Tooltip 
+                          content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg">
+                                  <p className="text-sm font-medium">{label}</p>
+                                  <p className="text-sm text-green-600 dark:text-green-400">
+                                    Weight: {data.weight} {displayUnit}
+                                  </p>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="weight"
+                          stroke="#059669"
+                          strokeWidth={2}
+                          dot={{ fill: '#059669', strokeWidth: 2, r: 3 }}
+                          activeDot={{ r: 5, fill: '#059669' }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      )}
+      
       {/* Current Stats - Ultra Compact Mobile Design */}
       {latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
@@ -378,7 +565,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                     </p>
                     {latestMetric.weight && (
                       <p className="text-xs text-gray-400 truncate">
-                        ≈ {convertValue(latestMetric.weight, 'weight', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'lbs' : 'kg'}
+                        ≈ {(() => {
+                          const converted = UnitConverter.convertWeight(latestMetric.weight, latestMetric.unit);
+                          const targetUnit = latestMetric.unit === 'metric' ? 'lbs' : 'kg';
+                          const convertedValue = targetUnit === 'lbs' ? converted.lbs : converted.kg;
+                          return `${convertedValue.toFixed(1)} ${targetUnit}`;
+                        })()}
                       </p>
                     )}
                   </div>
