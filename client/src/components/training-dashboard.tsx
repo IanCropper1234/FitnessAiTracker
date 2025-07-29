@@ -996,125 +996,126 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             />
           </div>
 
-          {/* Selected exercises indicator */}
+          {/* Selected exercises indicator - Compact */}
           {selectedExercises.length > 0 && (
-            <div className="bg-muted p-4 rounded-lg">
-              <h4 className="font-medium mb-2">Selected for Workout ({selectedExercises.length})</h4>
-              <div className="flex flex-wrap gap-2 mb-3">
+            <div className="bg-muted p-3 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-sm">Selected ({selectedExercises.length})</h4>
+                <Button 
+                  onClick={() => setShowSessionCreator(true)}
+                  disabled={selectedExercises.length === 0}
+                  size="sm"
+                >
+                  Create Session
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-1">
                 {selectedExercises.map((exercise) => (
-                  <Badge key={exercise.id} variant="secondary" className="flex items-center gap-1">
-                    {exercise.name}
+                  <Badge key={exercise.id} variant="secondary" className="text-xs h-6 px-2">
+                    <span className="truncate max-w-20">{exercise.name}</span>
                     <button
                       onClick={() => setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id))}
-                      className="ml-1 hover:text-destructive"
+                      className="ml-1 hover:text-destructive text-xs"
                     >
                       ×
                     </button>
                   </Badge>
                 ))}
               </div>
-              <Button 
-                onClick={() => setShowSessionCreator(true)}
-                disabled={selectedExercises.length === 0}
-                className="w-full"
-              >
-                Create Workout Session ({selectedExercises.length} exercises)
-              </Button>
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-between">
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={selectedCategory === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory("all")}
-              >
-                All ({exercises.length})
-              </Button>
-              {Object.entries(exercisesByCategory).map(([category, categoryExercises]) => (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-wrap gap-1">
                 <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
+                  variant={selectedCategory === "all" ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="capitalize"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setSelectedCategory("all")}
                 >
-                  {category} ({categoryExercises.length})
+                  All
                 </Button>
-              ))}
+                {Object.entries(exercisesByCategory).map(([category, categoryExercises]) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 px-2 text-xs capitalize"
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+              <CreateExerciseButton />
             </div>
-            
-            <CreateExerciseButton />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg">{exercise.name}</CardTitle>
-                    <Badge variant="outline" className="capitalize">
+              <Card key={exercise.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start mb-1">
+                    <CardTitle className="text-base leading-tight truncate pr-2">{exercise.name}</CardTitle>
+                    <Badge variant="outline" className="text-xs capitalize shrink-0">
                       {exercise.category}
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className={getDifficultyColor(exercise.difficulty)}>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-5`}>
                       {formatDisplayText(exercise.difficulty)}
                     </Badge>
-                    <Badge className={getPatternColor(exercise.movementPattern)}>
+                    <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-5`}>
                       {formatDisplayText(exercise.movementPattern)}
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Primary Muscle</p>
-                      <p className="text-sm font-medium">{formatDisplayText(exercise.primaryMuscle)}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Equipment</p>
-                      <p className="text-sm">{formatDisplayText(exercise.equipment) || "Bodyweight"}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Muscle Groups</p>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {exercise.muscleGroups.map((muscle) => (
-                          <Badge key={muscle} variant="secondary" className="text-xs">
-                            {formatDisplayText(muscle)}
-                          </Badge>
-                        ))}
+                <CardContent className="pt-0">
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="text-muted-foreground font-medium">Primary</p>
+                        <p className="font-medium truncate">{formatDisplayText(exercise.primaryMuscle)}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground font-medium">Equipment</p>
+                        <p className="truncate">{formatDisplayText(exercise.equipment) || "Bodyweight"}</p>
                       </div>
                     </div>
                     
-                    <Separator />
-                    
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        {exercise.instructions}
-                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {exercise.muscleGroups.slice(0, 3).map((muscle) => (
+                          <Badge key={muscle} variant="secondary" className="text-xs h-4 px-1">
+                            {formatDisplayText(muscle)}
+                          </Badge>
+                        ))}
+                        {exercise.muscleGroups.length > 3 && (
+                          <Badge variant="secondary" className="text-xs h-4 px-1">
+                            +{exercise.muscleGroups.length - 3}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="flex gap-2 pt-2">
+                    <div className="flex gap-1.5">
                       <Button 
                         size="sm" 
-                        className="flex-1"
+                        className="flex-1 h-8 text-xs"
                         variant={isInWorkout(exercise.id) ? "secondary" : "default"}
                         onClick={() => addToWorkout(exercise)}
                         disabled={isInWorkout(exercise.id)}
                       >
                         {isInWorkout(exercise.id) ? (
                           <>
-                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
                             Added
                           </>
                         ) : (
                           <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add to Workout
+                            <Plus className="h-3 w-3 mr-1" />
+                            Add
                           </>
                         )}
                       </Button>
@@ -1129,71 +1130,71 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
 
 
-        <TabsContent value="volume" className="space-y-6">
+        <TabsContent value="volume" className="space-y-4">
           <VolumeLandmarks />
         </TabsContent>
 
-        <TabsContent value="auto-regulation" className="space-y-6">
+        <TabsContent value="auto-regulation" className="space-y-4">
           <AutoRegulationDashboard userId={1} />
         </TabsContent>
 
-        <TabsContent value="programs" className="space-y-6">
+        <TabsContent value="programs" className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Training Programs</h3>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
+            <h3 className="text-base font-semibold">Training Programs</h3>
+            <Button size="sm">
+              <Plus className="h-4 w-4 mr-1" />
               Create Program
             </Button>
           </div>
 
           <Card>
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <Target className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No training programs yet</h3>
-              <p className="text-muted-foreground text-center mb-4">
-                Create structured training programs with Renaissance Periodization methodology.
+            <CardContent className="flex flex-col items-center justify-center py-8">
+              <Target className="h-8 w-8 text-muted-foreground mb-3" />
+              <h3 className="text-base font-semibold mb-2">No training programs yet</h3>
+              <p className="text-sm text-muted-foreground text-center mb-3">
+                Create structured training programs with RP methodology.
               </p>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-1" />
                 Create Your First Program
               </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="progress" className="space-y-6">
+        <TabsContent value="progress" className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Progress Tracking</h3>
-            <Button variant="outline">
-              <BarChart3 className="h-4 w-4 mr-2" />
+            <h3 className="text-base font-semibold">Progress Tracking</h3>
+            <Button variant="outline" size="sm">
+              <BarChart3 className="h-4 w-4 mr-1" />
               View Analytics
             </Button>
           </div>
 
           <Card>
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Track Your Progress</h3>
-              <p className="text-muted-foreground text-center mb-4">
+            <CardContent className="flex flex-col items-center justify-center py-8">
+              <TrendingUp className="h-8 w-8 text-muted-foreground mb-3" />
+              <h3 className="text-base font-semibold mb-2">Track Your Progress</h3>
+              <p className="text-sm text-muted-foreground text-center mb-3">
                 Complete workouts to see your strength and volume progression.
               </p>
-              <Button>
-                <Play className="h-4 w-4 mr-2" />
+              <Button size="sm">
+                <Play className="h-4 w-4 mr-1" />
                 Start First Workout
               </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="templates" className="space-y-6">
+        <TabsContent value="templates" className="space-y-4">
           <TrainingTemplates userId={userId} />
         </TabsContent>
 
-        <TabsContent value="mesocycles" className="space-y-6">
+        <TabsContent value="mesocycles" className="space-y-4">
           <MesocycleDashboard userId={userId} />
         </TabsContent>
 
-        <TabsContent value="progression" className="space-y-6">
+        <TabsContent value="progression" className="space-y-4">
           <LoadProgressionTracker userId={userId} />
         </TabsContent>
       </Tabs>
