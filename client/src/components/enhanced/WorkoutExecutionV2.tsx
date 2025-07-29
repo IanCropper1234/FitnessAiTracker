@@ -665,9 +665,29 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               {Math.round(progressPercentage)}%
             </span>
             {currentExercise && (
-              <span className="text-xs font-medium text-foreground truncate">
-                {currentExercise.exercise.name}
-              </span>
+              <>
+                <span className="text-xs font-medium text-foreground truncate">
+                  {currentExercise.exercise.name}
+                </span>
+                {/* Special Training Method Badge in Header */}
+                {specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
+                  <div className={`px-1 py-0.5 rounded text-xs font-medium border ${
+                    specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                    specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                    specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
+                    specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500/10 border-purple-500/30 text-purple-600' :
+                    specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500/10 border-orange-500/30 text-orange-600' :
+                    'bg-gray-500/10 border-gray-500/30 text-gray-600'
+                  }`}>
+                    {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep' :
+                     specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep' :
+                     specialMethods[currentExercise.id] === 'drop_set' ? 'Drop' :
+                     specialMethods[currentExercise.id] === 'superset' ? 'Super' :
+                     specialMethods[currentExercise.id] === 'giant_set' ? 'Giant' :
+                     specialMethods[currentExercise.id]}
+                  </div>
+                )}
+              </>
             )}
           </div>
           <button
@@ -677,6 +697,78 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             {circularProgressEnabled ? 'Bar' : 'Circle'}
           </button>
         </div>
+
+        {/* Special Training Method Details Section */}
+        {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
+          <div className="border border-border/50 rounded-lg p-2 bg-muted/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`px-2 py-1 rounded text-xs font-medium border ${
+                  specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                  specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                  specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
+                  specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500/10 border-purple-500/30 text-purple-600' :
+                  specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500/10 border-orange-500/30 text-orange-600' :
+                  'bg-gray-500/10 border-gray-500/30 text-gray-600'
+                }`}>
+                  {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep Match' :
+                   specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep No Match' :
+                   specialMethods[currentExercise.id] === 'drop_set' ? 'Drop Set' :
+                   specialMethods[currentExercise.id] === 'superset' ? 'Superset' :
+                   specialMethods[currentExercise.id] === 'giant_set' ? 'Giant Set' :
+                   specialMethods[currentExercise.id]}
+                </div>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Special Method Applied
+              </div>
+            </div>
+            
+            {/* Method-specific details */}
+            <div className="mt-1.5 space-y-1">
+              {/* Mini-Set Reps Display */}
+              {(specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'drop_set') && 
+               specialConfigs[currentExercise.id]?.miniSetReps && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">Mini-Set Reps:</span>
+                  <span className="font-medium text-foreground">
+                    {specialConfigs[currentExercise.id].miniSetReps}
+                  </span>
+                </div>
+              )}
+              
+              {/* Dropset Weight Display */}
+              {specialMethods[currentExercise.id] === 'drop_set' && 
+               specialConfigs[currentExercise.id]?.dropsetWeight && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">Dropset Weights:</span>
+                  <span className="font-medium text-foreground">
+                    {specialConfigs[currentExercise.id].dropsetWeight}
+                  </span>
+                </div>
+              )}
+              
+              {/* Giant Set Configuration */}
+              {specialMethods[currentExercise.id] === 'giant_set' && 
+               specialConfigs[currentExercise.id] && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-muted-foreground">Target Total Reps:</span>
+                    <span className="font-medium text-foreground">
+                      {specialConfigs[currentExercise.id].totalTargetReps || 40}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-muted-foreground">Reps per Mini-Set:</span>
+                    <span className="font-medium text-foreground">
+                      {specialConfigs[currentExercise.id].miniSetReps || 5}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Compact Progress Indicator */}
         {circularProgressEnabled ? (
@@ -835,6 +927,52 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                                 </>
                               )}
                             </div>
+                            
+                            {/* Special Training Method Indicator */}
+                            {specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <div className={`px-1.5 py-0.5 rounded text-xs font-medium border ${
+                                  specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                                  specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                                  specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
+                                  specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500/10 border-purple-500/30 text-purple-600' :
+                                  specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500/10 border-orange-500/30 text-orange-600' :
+                                  'bg-gray-500/10 border-gray-500/30 text-gray-600'
+                                }`}>
+                                  {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep Match' :
+                                   specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep No Match' :
+                                   specialMethods[currentExercise.id] === 'drop_set' ? 'Drop Set' :
+                                   specialMethods[currentExercise.id] === 'superset' ? 'Superset' :
+                                   specialMethods[currentExercise.id] === 'giant_set' ? 'Giant Set' :
+                                   specialMethods[currentExercise.id]}
+                                </div>
+                                
+                                {/* Mini-Set Reps Display */}
+                                {(specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'drop_set') && 
+                                 specialConfigs[currentExercise.id]?.miniSetReps && (
+                                  <div className="text-xs text-muted-foreground">
+                                    Reps: {specialConfigs[currentExercise.id].miniSetReps}
+                                  </div>
+                                )}
+                                
+                                {/* Dropset Weight Display */}
+                                {specialMethods[currentExercise.id] === 'drop_set' && 
+                                 specialConfigs[currentExercise.id]?.dropsetWeight && (
+                                  <div className="text-xs text-muted-foreground">
+                                    Weights: {specialConfigs[currentExercise.id].dropsetWeight}
+                                  </div>
+                                )}
+                                
+                                {/* Giant Set Display */}
+                                {specialMethods[currentExercise.id] === 'giant_set' && 
+                                 specialConfigs[currentExercise.id] && (
+                                  <div className="text-xs text-muted-foreground">
+                                    Target: {specialConfigs[currentExercise.id].totalTargetReps || 40} reps, 
+                                    {specialConfigs[currentExercise.id].miniSetReps || 5} per mini-set
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
 
