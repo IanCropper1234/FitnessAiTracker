@@ -261,16 +261,16 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         {/* Enhanced Action Buttons Layout */}
         <div className="space-y-3">
           {/* Database Maintenance Section */}
-          <div className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200/50 dark:border-orange-800/30">
+          <div className="flex items-center gap-3 p-3 bg-muted/30 dark:bg-muted/20 rounded-lg border border-border">
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <Shield className="w-4 h-4 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+              <Shield className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-orange-800 dark:text-orange-200">Database Maintenance</span>
+                  <span className="text-sm font-medium text-foreground">Database Maintenance</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400 cursor-help" />
+                        <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <div className="space-y-2 text-xs">
@@ -287,7 +287,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <p className="text-xs text-orange-700 dark:text-orange-300 truncate">Validates templates and removes invalid entries</p>
+                <p className="text-xs text-muted-foreground truncate">Validates templates and removes invalid entries</p>
               </div>
             </div>
             <Button
@@ -295,7 +295,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
               disabled={validateTemplatesMutation.isPending}
               variant="outline"
               size="sm"
-              className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:text-orange-300 dark:hover:bg-orange-900/30 flex-shrink-0"
+              className="flex-shrink-0"
             >
               {validateTemplatesMutation.isPending ? "Validating..." : "Validate"}
             </Button>
