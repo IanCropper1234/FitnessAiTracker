@@ -222,14 +222,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <div className="space-y-1">
             <label className="text-xs font-medium text-foreground">Training Method</label>
             <Select
-              value={specialMethod || ""}
-              onValueChange={(value) => onSpecialMethodChange?.(value === "" ? null : value)}
+              value={specialMethod || "standard"}
+              onValueChange={(value) => onSpecialMethodChange?.(value === "standard" ? null : value)}
             >
               <SelectTrigger className="h-8 text-xs border border-border/50 bg-background touch-target ios-touch-feedback">
                 <SelectValue placeholder="Standard Set" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Standard Set</SelectItem>
+                <SelectItem value="standard">Standard Set</SelectItem>
                 <SelectItem value="myorep_match">
                   <div className="flex items-center gap-2">
                     <Target className="h-3 w-3" />
@@ -415,11 +415,11 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-foreground">RPE</label>
                   <Select
-                    value={set.rpe ? set.rpe.toString() : ""}
+                    value={set.rpe ? set.rpe.toString() : "8"}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
                     <SelectTrigger className="h-9 text-sm border border-border/50 bg-background touch-target ios-touch-feedback">
-                      <SelectValue placeholder="0" />
+                      <SelectValue placeholder="8" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1">1</SelectItem>
