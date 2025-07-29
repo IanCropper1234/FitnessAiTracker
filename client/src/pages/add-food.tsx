@@ -886,16 +886,15 @@ export function AddFood({ user }: AddFoodProps) {
                   )}
                 </div>
                 
-                {/* Load More Button */}
+                {/* Load More Link */}
                 {hasMoreFoodHistory && !historySearchQuery && (
-                  <div className="pt-2">
-                    <Button
-                      variant="outline"
+                  <div className="pt-2 text-center">
+                    <span
                       onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
-                      className="w-full h-8 text-xs ios-button touch-target"
+                      className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
                     >
                       Load More
-                    </Button>
+                    </span>
                   </div>
                 )}
               </div>
