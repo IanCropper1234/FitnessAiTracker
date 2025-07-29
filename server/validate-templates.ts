@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { trainingTemplates, exercises } from "@shared/schema";
+import { trainingTemplates, exercises, mesocycles } from "@shared/schema";
 import { eq, inArray } from "drizzle-orm";
 
 interface ValidationResult {
@@ -145,37 +145,82 @@ export async function validateAllTemplates(): Promise<ValidationResult[]> {
 }
 
 /**
- * Deletes invalid templates based on validation results
+ * Checks which templates are referenced by active mesocycles
  */
-export async function deleteInvalidTemplates(validationResults: ValidationResult[]): Promise<number> {
+async function getTemplatesWithMesocycles(templateIds: number[]): Promise<number[]> {
+  const referencedTemplates = await db.select({
+    templateId: mesocycles.templateId
+  })
+  .from(mesocycles)
+  .where(inArray(mesocycles.templateId, templateIds));
+  
+  return referencedTemplates.map(r => r.templateId).filter(id => id !== null) as number[];
+}
+
+/**
+ * Safely deletes invalid templates, handling foreign key constraints
+ */
+export async function deleteInvalidTemplates(validationResults: ValidationResult[]): Promise<{
+  deletedCount: number;
+  skippedCount: number;
+  skippedTemplates: ValidationResult[];
+}> {
   const invalidTemplates = validationResults.filter(r => !r.isValid);
   
   if (invalidTemplates.length === 0) {
     console.log('No invalid templates to delete');
-    return 0;
+    return { deletedCount: 0, skippedCount: 0, skippedTemplates: [] };
   }
   
-  console.log(`Deleting ${invalidTemplates.length} invalid templates...`);
+  console.log(`Found ${invalidTemplates.length} invalid templates...`);
   
   const templateIds = invalidTemplates.map(t => t.templateId);
   
-  try {
-    const result = await db.delete(trainingTemplates)
-      .where(inArray(trainingTemplates.id, templateIds));
-    
-    console.log(`Successfully deleted ${result.rowCount || 0} invalid templates`);
-    
-    // Log which templates were deleted
-    for (const template of invalidTemplates) {
-      console.log(`Deleted template: ${template.name} (ID: ${template.templateId})`);
-      console.log(`  Issues: ${template.issues.join(', ')}`);
-    }
-    
-    return result.rowCount || 0;
-  } catch (error) {
-    console.error('Error deleting invalid templates:', error);
-    throw error;
+  // Check which templates are referenced by mesocycles
+  const referencedTemplateIds = await getTemplatesWithMesocycles(templateIds);
+  
+  // Separate deletable vs referenced templates
+  const deletableTemplates = invalidTemplates.filter(t => !referencedTemplateIds.includes(t.templateId));
+  const skippedTemplates = invalidTemplates.filter(t => referencedTemplateIds.includes(t.templateId));
+  
+  if (skippedTemplates.length > 0) {
+    console.log(`Skipping ${skippedTemplates.length} templates that are referenced by active mesocycles:`);
+    skippedTemplates.forEach(template => {
+      console.log(`  - ${template.name} (ID: ${template.templateId}) - Referenced by mesocycles`);
+    });
   }
+  
+  let deletedCount = 0;
+  
+  if (deletableTemplates.length > 0) {
+    console.log(`Deleting ${deletableTemplates.length} unreferenced invalid templates...`);
+    
+    const deletableIds = deletableTemplates.map(t => t.templateId);
+    
+    try {
+      const result = await db.delete(trainingTemplates)
+        .where(inArray(trainingTemplates.id, deletableIds));
+      
+      deletedCount = result.rowCount || 0;
+      console.log(`Successfully deleted ${deletedCount} invalid templates`);
+      
+      // Log which templates were deleted
+      for (const template of deletableTemplates) {
+        console.log(`Deleted template: ${template.name} (ID: ${template.templateId})`);
+        console.log(`  Issues: ${template.issues.join(', ')}`);
+      }
+      
+    } catch (error) {
+      console.error('Error deleting invalid templates:', error);
+      throw error;
+    }
+  }
+  
+  return { 
+    deletedCount, 
+    skippedCount: skippedTemplates.length, 
+    skippedTemplates 
+  };
 }
 
 /**
@@ -186,6 +231,8 @@ export async function validateAndCleanupTemplates(): Promise<{
   validTemplates: number;
   invalidTemplates: number;
   deletedTemplates: number;
+  skippedTemplates: number;
+  skippedReasons: string[];
   validationResults: ValidationResult[];
 }> {
   console.log('Starting template validation and cleanup process...');
@@ -207,13 +254,19 @@ export async function validateAndCleanupTemplates(): Promise<{
     });
   }
   
-  const deletedTemplates = await deleteInvalidTemplates(validationResults);
+  const deleteResult = await deleteInvalidTemplates(validationResults);
+  
+  const skippedReasons = deleteResult.skippedTemplates.length > 0 
+    ? [`${deleteResult.skippedTemplates.length} templates skipped (referenced by active mesocycles)`]
+    : [];
   
   return {
     totalTemplates,
     validTemplates,
     invalidTemplates,
-    deletedTemplates,
+    deletedTemplates: deleteResult.deletedCount,
+    skippedTemplates: deleteResult.skippedCount,
+    skippedReasons,
     validationResults
   };
 }

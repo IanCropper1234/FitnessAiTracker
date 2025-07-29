@@ -3578,9 +3578,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const result = await validateAndCleanupTemplates();
       
+      let message = `Template validation complete. Deleted ${result.deletedTemplates} invalid templates.`;
+      if (result.skippedTemplates > 0) {
+        message += ` Skipped ${result.skippedTemplates} templates (referenced by active mesocycles).`;
+      }
+      
       res.json({
         success: true,
-        message: `Template validation complete. Deleted ${result.deletedTemplates} invalid templates.`,
+        message,
         ...result
       });
     } catch (error: any) {

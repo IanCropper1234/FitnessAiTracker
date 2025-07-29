@@ -163,9 +163,15 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
       return response.json();
     },
     onSuccess: (data) => {
+      let description = `Found ${data.totalTemplates} templates. Deleted ${data.deletedTemplates} invalid templates.`;
+      
+      if (data.skippedTemplates > 0) {
+        description += ` Skipped ${data.skippedTemplates} templates (in use by active mesocycles).`;
+      }
+      
       toast({
         title: "Template Validation Complete",
-        description: `Found ${data.totalTemplates} templates. Deleted ${data.deletedTemplates} invalid templates.`,
+        description,
         variant: data.deletedTemplates > 0 ? "default" : "default"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
