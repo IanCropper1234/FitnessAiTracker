@@ -483,14 +483,14 @@ export function UserProfile({ userId }: UserProfileProps) {
 
             {/* Fitness Health Index Display */}
             {fitnessHealthIndex && (
-              <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="flex justify-between items-center mb-2">
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-black dark:text-white">Fitness Health Index</span>
                   <span className="text-lg font-bold text-black dark:text-white">{fitnessHealthIndex}</span>
                 </div>
                 {fhiInfo && (
                   <>
-                    <p className={`text-sm font-medium ${fhiInfo.color}`}>{fhiInfo.category}</p>
+                    <p className={`text-sm mt-1 ${fhiInfo.color}`}>{fhiInfo.category}</p>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{fhiInfo.description}</p>
                   </>
                 )}
