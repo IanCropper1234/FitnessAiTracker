@@ -137,22 +137,20 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     // Don't override user's manual percentage changes
     if (userSetPercentages) return;
     
-    const currentCalories = Number(dietGoal.useCustomCalories 
-      ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
-      : dietGoal.targetCalories);
-      
-    if (currentCalories > 0 && dietGoal.targetProtein > 0) {
+    if (dietGoal.targetProtein > 0) {
+      // Calculate percentages based on the actual calorie equivalent of saved macros
       const proteinCals = (Number(dietGoal.targetProtein) * 4);
       const carbsCals = (Number(dietGoal.targetCarbs) * 4);
       const fatCals = (Number(dietGoal.targetFat) * 9);
+      const totalMacroCals = proteinCals + carbsCals + fatCals;
 
-      if (currentCalories > 0) {
-        setProteinPercentage(Math.round((proteinCals / currentCalories) * 100));
-        setCarbsPercentage(Math.round((carbsCals / currentCalories) * 100));
-        setFatPercentage(Math.round((fatCals / currentCalories) * 100));
+      if (totalMacroCals > 0) {
+        setProteinPercentage(Math.round((proteinCals / totalMacroCals) * 100));
+        setCarbsPercentage(Math.round((carbsCals / totalMacroCals) * 100));
+        setFatPercentage(Math.round((fatCals / totalMacroCals) * 100));
       }
     }
-  }, [dietGoal.targetCalories, dietGoal.customTargetCalories, dietGoal.useCustomCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
+  }, [dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
