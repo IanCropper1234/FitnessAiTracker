@@ -262,32 +262,85 @@ export function UserProfile({ userId }: UserProfileProps) {
     }));
   };
 
-  // Calculate BMI
-  const calculateBMI = () => {
-    if (profileData.weight && profileData.height) {
-      const weight = parseFloat(profileData.weight);
-      const height = parseFloat(profileData.height);
-      if (weight > 0 && height > 0) {
-        const heightInMeters = height / 100;
-        return (weight / (heightInMeters * heightInMeters)).toFixed(1);
-      }
+  // Calculate Fitness Health Index (FHI) - Better for athletes and bodybuilders
+  const calculateFitnessHealthIndex = () => {
+    if (!profileData.height || !profileData.weight || 
+        parseFloat(profileData.height) <= 0 || parseFloat(profileData.weight) <= 0) {
+      return null;
     }
-    return null;
+    
+    // Convert to standard units (cm and kg)
+    let heightInCm = parseFloat(profileData.height);
+    let weightInKg = parseFloat(profileData.weight);
+    
+    // Convert to metric if needed
+    if (profileData.heightUnit === 'imperial') {
+      heightInCm = convertValue(heightInCm, 'measurement', 'imperial', 'metric');
+    }
+    if (profileData.weightUnit === 'imperial') {
+      weightInKg = convertValue(weightInKg, 'weight', 'imperial', 'metric');
+    }
+    
+    // Enhanced calculation considering muscle mass and fitness goals
+    const heightInM = heightInCm / 100;
+    const baseIndex = weightInKg / (heightInM * heightInM);
+    
+    // Adjustment factors for athletes/bodybuilders
+    let adjustmentFactor = 1.0;
+    
+    // Activity level adjustments (higher activity = higher healthy weight range)
+    switch (profileData.activityLevel) {
+      case 'very_active': adjustmentFactor = 0.85; break;
+      case 'extremely_active': adjustmentFactor = 0.80; break;
+      case 'active': adjustmentFactor = 0.90; break;
+      case 'lightly_active': adjustmentFactor = 0.95; break;
+      default: adjustmentFactor = 1.0;
+    }
+    
+    // Fitness goal adjustments
+    if (profileData.fitnessGoal === 'muscle_gain') {
+      adjustmentFactor *= 0.85; // Allow for higher weight with muscle gain goals
+    }
+    
+    const adjustedIndex = baseIndex * adjustmentFactor;
+    return Math.round(adjustedIndex * 10) / 10;
   };
 
-  const getBMICategory = (bmi: number) => {
-    if (bmi < 18.5) return { category: "Underweight", color: "text-blue-600 dark:text-blue-400" };
-    if (bmi < 25) return { category: "Normal weight", color: "text-green-600 dark:text-green-400" };
-    if (bmi < 30) return { category: "Overweight", color: "text-yellow-600 dark:text-yellow-400" };
-    return { category: "Obese", color: "text-red-600 dark:text-red-400" };
+  const getFitnessHealthInfo = (fhi: number) => {
+    // Adjusted ranges that better account for muscle mass
+    if (fhi < 17) return { 
+      category: "Below healthy range", 
+      color: "text-blue-600 dark:text-blue-400",
+      description: "Consider increasing caloric intake and strength training"
+    };
+    if (fhi < 23) return { 
+      category: "Healthy athletic range", 
+      color: "text-green-600 dark:text-green-400",
+      description: "Excellent range for active individuals with good muscle mass"
+    };
+    if (fhi < 27) return { 
+      category: "Athletic/muscular build", 
+      color: "text-green-500 dark:text-green-300",
+      description: "Common for bodybuilders and strength athletes"
+    };
+    if (fhi < 30) return { 
+      category: "Monitor body composition", 
+      color: "text-yellow-600 dark:text-yellow-400",
+      description: "Consider body fat % measurement for better assessment"
+    };
+    return { 
+      category: "Health assessment recommended", 
+      color: "text-orange-600 dark:text-orange-400",
+      description: "Consult with a fitness professional for personalized evaluation"
+    };
   };
 
   const isProfileComplete = () => {
     return profileData.age && profileData.height && profileData.activityLevel && profileData.fitnessGoal;
   };
 
-  const bmi = calculateBMI();
-  const bmiInfo = bmi ? getBMICategory(Number(bmi)) : null;
+  const fitnessHealthIndex = calculateFitnessHealthIndex();
+  const fhiInfo = fitnessHealthIndex ? getFitnessHealthInfo(fitnessHealthIndex) : null;
 
   if (isLoading) {
     return (
@@ -428,16 +481,22 @@ export function UserProfile({ userId }: UserProfileProps) {
               </p>
             </div>
 
-            {/* BMI Display */}
-            {bmi && (
-              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-black dark:text-white">BMI</span>
-                  <span className="text-lg font-bold text-black dark:text-white">{bmi}</span>
+            {/* Fitness Health Index Display */}
+            {fitnessHealthIndex && (
+              <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-black dark:text-white">Fitness Health Index</span>
+                  <span className="text-lg font-bold text-black dark:text-white">{fitnessHealthIndex}</span>
                 </div>
-                {bmiInfo && (
-                  <p className={`text-sm mt-1 ${bmiInfo.color}`}>{bmiInfo.category}</p>
+                {fhiInfo && (
+                  <>
+                    <p className={`text-sm font-medium ${fhiInfo.color}`}>{fhiInfo.category}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{fhiInfo.description}</p>
+                  </>
                 )}
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  Better suited for athletes and bodybuilders than traditional BMI
+                </div>
               </div>
             )}
           </CardContent>
