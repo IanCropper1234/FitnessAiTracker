@@ -118,16 +118,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
-    const totalCalories = dietGoal.useCustomCalories 
-      ? (dietGoal.customTargetCalories || 2000)
-      : (dietGoal.targetCalories || 2000);
-    
-    setDietGoal(prev => ({
-      ...prev,
-      targetProtein: Math.round((totalCalories * (protein / 100)) / 4),
-      targetCarbs: Math.round((totalCalories * (carbs / 100)) / 4),
-      targetFat: Math.round((totalCalories * (fat / 100)) / 9)
-    }));
+    setDietGoal(prev => {
+      const totalCalories = prev.useCustomCalories 
+        ? (prev.customTargetCalories || 2000)
+        : (prev.targetCalories || 2000);
+      
+      return {
+        ...prev,
+        targetProtein: Math.round((totalCalories * (protein / 100)) / 4),
+        targetCarbs: Math.round((totalCalories * (carbs / 100)) / 4),
+        targetFat: Math.round((totalCalories * (fat / 100)) / 9)
+      };
+    });
   };
 
   // Initialize percentages when diet goal loads or changes (only if user hasn't manually set them)
@@ -1157,13 +1159,20 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     checked={dietGoal.useCustomCalories}
                     onCheckedChange={(checked) => {
                       setUserSetPercentages(false); // Reset flag to allow percentage recalculation
+                      const newCalories = checked 
+                        ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
+                        : Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
+                      
                       setDietGoal(prev => ({ 
                         ...prev, 
                         useCustomCalories: checked,
-                        targetCalories: checked 
-                          ? (prev.customTargetCalories || prev.targetCalories)
-                          : Math.round(prev.tdee * (prev.goal === 'cut' ? 0.85 : prev.goal === 'bulk' ? 1.15 : 1))
+                        targetCalories: newCalories
                       }));
+                      
+                      // Immediately recalculate macros with current percentages and new calorie target
+                      setTimeout(() => {
+                        updateMacrosFromPercentages(proteinPercentage, carbsPercentage, fatPercentage);
+                      }, 0);
                     }}
                     className="bg-[#505d6e]"
                   />
@@ -1186,6 +1195,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           customTargetCalories: calories,
                           targetCalories: calories
                         }));
+                        
+                        // Immediately recalculate macros with current percentages and new calorie value
+                        setTimeout(() => {
+                          updateMacrosFromPercentages(proteinPercentage, carbsPercentage, fatPercentage);
+                        }, 0);
                       }
                     }}
                     disabled={!dietGoal.useCustomCalories}

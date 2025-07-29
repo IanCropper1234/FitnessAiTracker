@@ -55,6 +55,13 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ✓ **SMART CLICK PREVENTION**: Only prevents dropdown opening when scroll movement detected, preserves normal scrolling behavior
 ✓ **NATIVE iOS BEHAVIOR**: Touch events behave like native iOS apps - scroll freely, tap deliberately to open menus
 
+### July 29, 2025 - COMPLETE: Custom Calorie Toggle Macro Synchronization Fix
+✓ **TOGGLE SYNCHRONIZATION**: Fixed macro distribution not updating when custom calorie toggle is switched
+✓ **IMMEDIATE RECALCULATION**: Added automatic macro recalculation when switching between custom and suggested calories
+✓ **CALORIE INPUT SYNC**: Enhanced custom calorie input to immediately update macro gram values based on current percentages
+✓ **STATE MANAGEMENT**: Improved updateMacrosFromPercentages function to use current state values for accurate calculations
+✓ **USER EXPERIENCE**: Macro gram values now instantly reflect changes when toggling between calorie targets
+
 ### July 29, 2025 - COMPLETE: Diet Builder Macro Display Synchronization Fix
 ✓ **MACRO CALCULATION FIX**: Fixed mismatch between displayed macro gram values and actual stored goal values
 ✓ **ELIMINATED ROUNDING ERRORS**: Changed display to show actual stored dietGoal values instead of recalculating from percentages
