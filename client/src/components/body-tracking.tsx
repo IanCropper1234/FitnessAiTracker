@@ -730,40 +730,40 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Smart Conversion Helper */}
               {showConversionHelper && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Scale className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                        Convert Your Values?
+                        Convert Values?
                       </h4>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
-                        You switched units and have entered values. Would you like to convert them automatically?
+                      <p className="text-xs text-blue-700 dark:text-blue-300 mb-2 leading-relaxed">
+                        Unit changed. Convert existing values?
                       </p>
-                      <div className="space-y-2 text-xs text-blue-600 dark:text-blue-400 mb-3">
-                        {formData.weight && <div>• {getConversionHelper(formData.weight, 'weight')}</div>}
-                        {formData.waist && <div>• Waist: {getConversionHelper(formData.waist, 'measurement')}</div>}
-                        {formData.chest && <div>• Chest: {getConversionHelper(formData.chest, 'measurement')}</div>}
+                      <div className="space-y-1 text-xs text-blue-600 dark:text-blue-400 mb-3">
+                        {formData.weight && <div className="truncate">• {getConversionHelper(formData.weight, 'weight')}</div>}
+                        {formData.waist && <div className="truncate">• Waist: {getConversionHelper(formData.waist, 'measurement')}</div>}
+                        {formData.chest && <div className="truncate">• Chest: {getConversionHelper(formData.chest, 'measurement')}</div>}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           type="button"
                           size="sm"
                           onClick={convertAllFormValues}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5"
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1.5 flex-1 sm:flex-none"
                         >
-                          Convert All Values
+                          Convert All
                         </Button>
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
                           onClick={() => setShowConversionHelper(false)}
-                          className="text-xs px-3 py-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                          className="text-xs px-2 py-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-300 dark:hover:bg-blue-900/20 flex-1 sm:flex-none"
                         >
-                          Keep Current Values
+                          Keep Values
                         </Button>
                       </div>
                     </div>
