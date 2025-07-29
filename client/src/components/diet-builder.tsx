@@ -1208,7 +1208,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">Protein</Label>
                       <span className="text-sm text-muted-foreground">
-                        {proteinPercentage}% = {Math.round(((dietGoal.useCustomCalories ? dietGoal.customTargetCalories : dietGoal.targetCalories) || 0) * (proteinPercentage / 100) / 4)}g
+                        {proteinPercentage}% = {Math.round(dietGoal.targetProtein)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1243,7 +1243,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-green-600 dark:text-green-400">Carbs</Label>
                       <span className="text-sm text-muted-foreground">
-                        {carbsPercentage}% = {Math.round(((dietGoal.useCustomCalories ? dietGoal.customTargetCalories : dietGoal.targetCalories) || 0) * (carbsPercentage / 100) / 4)}g
+                        {carbsPercentage}% = {Math.round(dietGoal.targetCarbs)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1278,7 +1278,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Fat</Label>
                       <span className="text-sm text-muted-foreground">
-                        {fatPercentage}% = {Math.round(((dietGoal.useCustomCalories ? dietGoal.customTargetCalories : dietGoal.targetCalories) || 0) * (fatPercentage / 100) / 9)}g
+                        {fatPercentage}% = {Math.round(dietGoal.targetFat)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
