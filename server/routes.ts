@@ -3249,6 +3249,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Special Training Methods API Routes
+  
+  // Save special training method data for a workout exercise
+  app.post("/api/training/special-methods", async (req, res) => {
+    try {
+      const { exerciseId, method, data } = req.body;
+      
+      // Update the workout exercise with special training method data
+      const updatedExercise = await db
+        .update(workoutExercises)
+        .set({
+          specialTrainingMethod: method,
+          specialMethodData: data
+        })
+        .where(eq(workoutExercises.id, exerciseId))
+        .returning()
+        .then(rows => rows[0]);
+      
+      if (!updatedExercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      
+      res.json(updatedExercise);
+    } catch (error: any) {
+      console.error('Special training method save error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Get special training method data for a workout exercise
+  app.get("/api/training/special-methods/:exerciseId", async (req, res) => {
+    try {
+      const exerciseId = parseInt(req.params.exerciseId);
+      
+      const exercise = await db
+        .select({
+          id: workoutExercises.id,
+          specialTrainingMethod: workoutExercises.specialTrainingMethod,
+          specialMethodData: workoutExercises.specialMethodData
+        })
+        .from(workoutExercises)
+        .where(eq(workoutExercises.id, exerciseId))
+        .then(rows => rows[0]);
+      
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+      
+      res.json(exercise);
+    } catch (error: any) {
+      console.error('Special training method get error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Get all special training methods history for a user
+  app.get("/api/training/special-methods/history/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const days = parseInt(req.query.days as string) || 90; // Default 90 days
+      
+      const history = await db
+        .select({
+          exerciseId: workoutExercises.exerciseId,
+          exerciseName: exercises.name,
+          sessionDate: workoutSessions.date,
+          method: workoutExercises.specialTrainingMethod,
+          data: workoutExercises.specialMethodData,
+          sets: workoutExercises.setsData
+        })
+        .from(workoutExercises)
+        .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+        .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id))
+        .where(
+          and(
+            eq(workoutSessions.userId, userId),
+            ne(workoutExercises.specialTrainingMethod, "standard"),
+            gte(workoutSessions.date, new Date(Date.now() - days * 24 * 60 * 60 * 1000))
+          )
+        )
+        .orderBy(desc(workoutSessions.date));
+      
+      res.json(history);
+    } catch (error: any) {
+      console.error('Special training methods history error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Get special training method statistics for analytics
+  app.get("/api/training/special-methods/stats/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const days = parseInt(req.query.days as string) || 30; // Default 30 days
+      
+      const stats = await db
+        .select({
+          method: workoutExercises.specialTrainingMethod,
+          count: sql<number>`count(*)::int`,
+          avgVolume: sql<number>`avg(case when ${workoutExercises.setsData} is not null then jsonb_array_length(${workoutExercises.setsData}) else ${workoutExercises.sets} end)::decimal`
+        })
+        .from(workoutExercises)
+        .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+        .where(
+          and(
+            eq(workoutSessions.userId, userId),
+            ne(workoutExercises.specialTrainingMethod, "standard"),
+            gte(workoutSessions.date, new Date(Date.now() - days * 24 * 60 * 60 * 1000))
+          )
+        )
+        .groupBy(workoutExercises.specialTrainingMethod);
+      
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Special training methods stats error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Analytics and Reporting Routes
   
   // Get nutrition analytics for a time period
