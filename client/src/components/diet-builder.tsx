@@ -117,7 +117,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
-    const totalCalories = dietGoal.targetCalories || 2000;
+    const totalCalories = dietGoal.useCustomCalories 
+      ? (dietGoal.customTargetCalories || 2000)
+      : (dietGoal.targetCalories || 2000);
     
     setDietGoal(prev => ({
       ...prev,
@@ -129,19 +131,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Initialize percentages when diet goal loads or changes
   useEffect(() => {
-    if (dietGoal.targetCalories > 0) {
+    const currentCalories = dietGoal.useCustomCalories 
+      ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
+      : dietGoal.targetCalories;
+      
+    if (currentCalories > 0) {
       const proteinCals = (dietGoal.targetProtein * 4);
       const carbsCals = (dietGoal.targetCarbs * 4);
       const fatCals = (dietGoal.targetFat * 9);
-      const totalCals = dietGoal.targetCalories;
 
-      if (totalCals > 0) {
-        setProteinPercentage(Math.round((proteinCals / totalCals) * 100));
-        setCarbsPercentage(Math.round((carbsCals / totalCals) * 100));
-        setFatPercentage(Math.round((fatCals / totalCals) * 100));
+      if (currentCalories > 0) {
+        setProteinPercentage(Math.round((proteinCals / currentCalories) * 100));
+        setCarbsPercentage(Math.round((carbsCals / currentCalories) * 100));
+        setFatPercentage(Math.round((fatCals / currentCalories) * 100));
       }
     }
-  }, [dietGoal.targetCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat]);
+  }, [dietGoal.targetCalories, dietGoal.customTargetCalories, dietGoal.useCustomCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
@@ -1138,28 +1143,60 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <p className="text-xs text-muted-foreground">MyFitnessPal-style setup</p>
                   </div>
                 </div>
+
+                {/* Custom Calories Toggle */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-foreground">Custom Calorie Target</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {dietGoal.useCustomCalories 
+                        ? 'Using your custom calorie target' 
+                        : `Using suggested: ${Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1))} calories`
+                      }
+                    </p>
+                  </div>
+                  <Switch
+                    checked={dietGoal.useCustomCalories}
+                    onCheckedChange={(checked) => {
+                      setDietGoal(prev => ({ 
+                        ...prev, 
+                        useCustomCalories: checked,
+                        targetCalories: checked 
+                          ? (prev.customTargetCalories || prev.targetCalories)
+                          : Math.round(prev.tdee * (prev.goal === 'cut' ? 0.85 : prev.goal === 'bulk' ? 1.15 : 1))
+                      }));
+                    }}
+                    className="bg-[#505d6e]"
+                  />
+                </div>
                 
                 {/* Daily Calorie Goal */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground">Daily Calorie Goal</Label>
+                  <Label className="text-sm font-medium text-foreground">
+                    {dietGoal.useCustomCalories ? 'Custom Daily Calorie Goal' : 'Suggested Daily Calories'}
+                  </Label>
                   <Input
                     type="number"
-                    value={dietGoal.targetCalories || ''}
+                    value={dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || '') : dietGoal.targetCalories || ''}
                     onChange={(e) => {
                       const calories = Number(e.target.value) || 0;
-                      setDietGoal(prev => ({ 
-                        ...prev, 
-                        targetCalories: calories,
-                        customTargetCalories: calories,
-                        useCustomCalories: true
-                      }));
+                      if (dietGoal.useCustomCalories) {
+                        setDietGoal(prev => ({ 
+                          ...prev, 
+                          customTargetCalories: calories,
+                          targetCalories: calories
+                        }));
+                      }
                     }}
-                    className="text-lg font-semibold text-center"
+                    disabled={!dietGoal.useCustomCalories}
+                    className={`text-lg font-semibold text-center ${!dietGoal.useCustomCalories ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' : ''}`}
                     placeholder="2000"
                   />
-                  <p className="text-xs text-muted-foreground text-center">
-                    Suggested: {Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1))} calories
-                  </p>
+                  {!dietGoal.useCustomCalories && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      Using suggested calories based on your TDEE and goal
+                    </p>
+                  )}
                 </div>
 
                 {/* Macro Percentages (MyFitnessPal Style) */}
@@ -1171,7 +1208,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">Protein</Label>
                       <span className="text-sm text-muted-foreground">
-                        {proteinPercentage}% = {Math.round((dietGoal.targetCalories || 0) * (proteinPercentage / 100) / 4)}g
+                        {proteinPercentage}% = {Math.round(((dietGoal.useCustomCalories ? dietGoal.customTargetCalories : dietGoal.targetCalories) || 0) * (proteinPercentage / 100) / 4)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1196,7 +1233,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-green-600 dark:text-green-400">Carbs</Label>
                       <span className="text-sm text-muted-foreground">
-                        {carbsPercentage}% = {Math.round((dietGoal.targetCalories || 0) * (carbsPercentage / 100) / 4)}g
+                        {carbsPercentage}% = {Math.round(((dietGoal.useCustomCalories ? dietGoal.customTargetCalories : dietGoal.targetCalories) || 0) * (carbsPercentage / 100) / 4)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1221,7 +1258,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Fat</Label>
                       <span className="text-sm text-muted-foreground">
-                        {fatPercentage}% = {Math.round((dietGoal.targetCalories || 0) * (fatPercentage / 100) / 9)}g
+                        {fatPercentage}% = {Math.round(((dietGoal.useCustomCalories ? dietGoal.customTargetCalories : dietGoal.targetCalories) || 0) * (fatPercentage / 100) / 9)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
