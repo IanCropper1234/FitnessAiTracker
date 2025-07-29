@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,7 @@ interface IntegratedNutritionOverviewProps {
   setCopyToDate?: (date: string) => void;
   showCopyToDatePicker?: boolean;
   setShowCopyToDatePicker?: (show: boolean) => void;
+  onCopyDateSelected?: (date: string, operation: { type: 'section' | 'item', data: any, sourceSection?: string }) => void;
 }
 
 export function IntegratedNutritionOverview({ 
@@ -69,7 +70,8 @@ export function IntegratedNutritionOverview({
   copyToDate: externalCopyToDate,
   setCopyToDate: externalSetCopyToDate,
   showCopyToDatePicker,
-  setShowCopyToDatePicker
+  setShowCopyToDatePicker,
+  onCopyDateSelected
 }: IntegratedNutritionOverviewProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -85,16 +87,29 @@ export function IntegratedNutritionOverview({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDraggingActive, setIsDraggingActive] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
-  const [showCopyDialog, setShowCopyDialog] = useState(false);
+
   const [copyOperation, setCopyOperation] = useState<{
     type: 'item' | 'section';
     data: any;
     sourceSection?: string;
   } | null>(null);
-  // Use external copy date states when provided, otherwise use local state
-  const [localCopyDate, setLocalCopyDate] = useState('');
-  const copyDate = externalCopyFromDate !== undefined ? externalCopyFromDate : externalCopyToDate !== undefined ? externalCopyToDate : localCopyDate;
-  const setCopyDate = externalSetCopyFromDate || externalSetCopyToDate || setLocalCopyDate;
+
+
+  // Effect to handle copy operations when external date pickers close with a date
+  useEffect(() => {
+    if (copyOperation && copyOperation.type === 'section') {
+      if (externalCopyFromDate && copyOperation.sourceSection) {
+        // Handle "copy from" date operation - need to fetch logs from externalCopyFromDate and copy to current date
+        // This requires a different approach - we need to copy FROM a different date
+        handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
+        setCopyOperation(null);
+      } else if (externalCopyToDate && !copyOperation.sourceSection) {
+        // Handle "copy to" date operation - copy FROM current date TO the selected date
+        handleCopySection(copyOperation.data, externalCopyToDate);
+        setCopyOperation(null);
+      }
+    }
+  }, [externalCopyFromDate, externalCopyToDate, copyOperation, selectedDate]);
   
   // Nutrition facts dialog state
   const [showNutritionDialog, setShowNutritionDialog] = useState(false);
@@ -701,6 +716,41 @@ export function IntegratedNutritionOverview({
     });
   };
 
+  const handleCopyFromDate = async (mealType: string, sourceDate: string, targetDate: string) => {
+    try {
+      // Fetch nutrition logs from the source date
+      const response = await fetch(`/api/nutrition/logs/${userId}?date=${sourceDate}`);
+      const sourceLogs = await response.json();
+      
+      // Filter logs for the specific meal type
+      const mealLogs = sourceLogs?.filter((log: any) => log.mealType === mealType) || [];
+      
+      // Copy each log to the target date
+      mealLogs.forEach((log: any) => {
+        const { id, createdAt, ...foodData } = log;
+        const newFoodData = {
+          ...foodData,
+          userId,
+          date: targetDate,
+          mealType
+        };
+        copyFoodMutation.mutate(newFoodData);
+      });
+      
+      toast({
+        title: "Meal Copied",
+        description: `${formatMealType(mealType)} copied from ${new Date(sourceDate).toLocaleDateString()}`,
+      });
+    } catch (error) {
+      console.error('Copy from date failed:', error);
+      toast({
+        title: "Copy Failed",
+        description: "Failed to copy meal from selected date",
+        variant: "destructive"
+      });
+    }
+  };
+
   const mealTypes = [
     { key: 'breakfast', label: 'Breakfast', icon: <Sunrise className="h-4 w-4" /> },
     { key: 'lunch', label: 'Lunch', icon: <Sun className="h-4 w-4" /> },
@@ -1002,7 +1052,10 @@ export function IntegratedNutritionOverview({
                               data: mealType.key,
                               sourceSection: mealType.key
                             });
-                            setShowCopyDialog(true);
+                            // Directly trigger iOS date picker for "copy from" date
+                            if (setShowCopyFromDatePicker) {
+                              setShowCopyFromDatePicker(true);
+                            }
                           }}
                         >
                           <Copy className="h-4 w-4 mr-2" />
@@ -1013,10 +1066,13 @@ export function IntegratedNutritionOverview({
                             setCopyOperation({
                               type: 'section',
                               data: mealType.key,
-                              sourceSection: mealType.key
+                              sourceSection: undefined // This is "copy to" operation
                             });
                             setCopyDate('');
-                            setShowCopyDialog(true);
+                            // Directly trigger iOS date picker for "copy to" date
+                            if (setShowCopyToDatePicker) {
+                              setShowCopyToDatePicker(true);
+                            }
                           }}
                         >
                           <ArrowRight className="h-4 w-4 mr-2" />
@@ -1204,95 +1260,7 @@ export function IntegratedNutritionOverview({
           </div>
         </div>
       )}
-      {/* Copy Dialog */}
-      <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {copyOperation?.type === 'section' ? 'Copy Meal Section' : 'Copy Food Item'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {copyOperation?.sourceSection ? 'Copy from date' : 'Copy to date'}
-              </Label>
-              <div className="flex items-center gap-2 mt-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const currentDate = copyDate ? new Date(copyDate) : new Date();
-                    currentDate.setDate(currentDate.getDate() - 1);
-                    setCopyDate(currentDate.toISOString().split('T')[0]);
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  className="flex-1 justify-between h-8 px-3 py-1 text-sm"
-                  onClick={() => {
-                    if (copyOperation?.sourceSection) {
-                      // For "copy from" operations
-                      setShowCopyFromDatePicker && setShowCopyFromDatePicker(true);
-                    } else {
-                      // For "copy to" operations
-                      setShowCopyToDatePicker && setShowCopyToDatePicker(true);
-                    }
-                  }}
-                >
-                  {copyDate 
-                    ? new Date(copyDate).toLocaleDateString('en-GB', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
-                        year: 'numeric' 
-                      })
-                    : 'Select date'
-                  }
-                  <ChevronDown className="h-4 w-4 opacity-50" />
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const currentDate = copyDate ? new Date(copyDate) : new Date();
-                    currentDate.setDate(currentDate.getDate() + 1);
-                    setCopyDate(currentDate.toISOString().split('T')[0]);
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowCopyDialog(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (copyOperation && copyDate) {
-                    if (copyOperation.type === 'section') {
-                      handleCopySection(copyOperation.data, copyDate);
-                    }
-                    setShowCopyDialog(false);
-                    setCopyOperation(null);
-                    setCopyDate('');
-                  }
-                }}
-                disabled={!copyDate}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-              >
-                Copy
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
       {/* Nutrition Facts Dialog */}
       <Dialog open={showNutritionDialog} onOpenChange={setShowNutritionDialog}>
         <DialogContent className="max-w-md">

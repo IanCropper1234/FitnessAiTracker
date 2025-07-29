@@ -265,6 +265,11 @@ export function Nutrition({
                 setCopyToDate={setCopyToDate}
                 showCopyToDatePicker={showCopyToDatePicker}
                 setShowCopyToDatePicker={setShowCopyToDatePicker}
+                onCopyDateSelected={(date, operation) => {
+                  // The copy operation will be handled by the IntegratedNutritionOverview component
+                  // through the useEffect that triggers handleCopySection
+                  console.log('Copy date selected:', date, 'operation:', operation);
+                }}
               />
             </TabsContent>
 
