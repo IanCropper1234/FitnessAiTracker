@@ -91,12 +91,25 @@ export class AdvancedMacroManagementService {
     return dailyTotals;
   }
 
-  // Calculate adherence percentage
+  // Calculate adherence percentage using intelligent target detection
   private static calculateAdherence(dailyTotals: any, targetGoals: any) {
     const days = Object.keys(dailyTotals);
     if (days.length === 0) return 0;
 
-    const targetCalories = parseFloat(targetGoals.targetCalories);
+    // Intelligently detect custom vs suggested target calories
+    const getCurrentTargetCalories = () => {
+      if (!targetGoals) return 2000;
+      
+      // When custom calories toggle is enabled, use custom values
+      if (targetGoals.useCustomCalories && targetGoals.customTargetCalories) {
+        return parseFloat(targetGoals.customTargetCalories);
+      }
+      
+      // Otherwise use suggested values
+      return parseFloat(targetGoals.targetCalories) || 2000;
+    };
+
+    const targetCalories = getCurrentTargetCalories();
     let adherenceSum = 0;
 
     days.forEach(date => {
@@ -108,10 +121,24 @@ export class AdvancedMacroManagementService {
     return Math.round(adherenceSum / days.length);
   }
 
-  // Calculate RP-based macro adjustment
+  // Calculate RP-based macro adjustment using intelligent target detection
   private static calculateRPAdjustment(data: any) {
     const { currentGoals, adherencePercentage } = data;
-    const targetCalories = parseFloat(currentGoals.targetCalories);
+    
+    // Intelligently detect current target calories (custom or suggested)
+    const getCurrentTargetCalories = () => {
+      if (!currentGoals) return 2000;
+      
+      // When custom calories toggle is enabled, use custom values
+      if (currentGoals.useCustomCalories && currentGoals.customTargetCalories) {
+        return parseFloat(currentGoals.customTargetCalories);
+      }
+      
+      // Otherwise use suggested values
+      return parseFloat(currentGoals.targetCalories) || 2000;
+    };
+
+    const targetCalories = getCurrentTargetCalories();
     
     let adjustmentPercentage = 0;
     let adjustmentReason = 'maintain_current';

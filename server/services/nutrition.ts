@@ -33,8 +33,21 @@ export async function getNutritionSummary(userId: number, date: Date): Promise<N
     totalFat: 0,
   });
 
-  // Prioritize diet goals for macro targets since they're the primary source
-  const goalCalories = dietGoal?.targetCalories ? Number(dietGoal.targetCalories) : (nutritionGoal?.dailyCalories || 2000);
+  // Intelligently detect custom vs suggested diet targets
+  const getCurrentTargetCalories = () => {
+    if (!dietGoal) return nutritionGoal?.dailyCalories || 2000;
+    
+    // When custom calories toggle is enabled, use custom values
+    if (dietGoal.useCustomCalories && dietGoal.customTargetCalories) {
+      return Number(dietGoal.customTargetCalories);
+    }
+    
+    // Otherwise use suggested values (even when custom toggle is on but no custom value set)
+    return Number(dietGoal.targetCalories) || nutritionGoal?.dailyCalories || 2000;
+  };
+
+  // Use intelligent target detection for goals
+  const goalCalories = getCurrentTargetCalories();
   const goalProtein = dietGoal?.targetProtein ? Number(dietGoal.targetProtein) : (Number(nutritionGoal?.protein) || 150);
   const goalCarbs = dietGoal?.targetCarbs ? Number(dietGoal.targetCarbs) : (Number(nutritionGoal?.carbs) || 200);
   const goalFat = dietGoal?.targetFat ? Number(dietGoal.targetFat) : (Number(nutritionGoal?.fat) || 70);
