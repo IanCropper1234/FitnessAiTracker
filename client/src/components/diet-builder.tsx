@@ -114,6 +114,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [proteinPercentage, setProteinPercentage] = useState(25); // Default 25%
   const [carbsPercentage, setCarbsPercentage] = useState(45);     // Default 45%
   const [fatPercentage, setFatPercentage] = useState(30);         // Default 30%
+  const [userSetPercentages, setUserSetPercentages] = useState(false); // Track if user manually set percentages
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
@@ -129,13 +130,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     }));
   };
 
-  // Initialize percentages when diet goal loads or changes
+  // Initialize percentages when diet goal loads or changes (only if user hasn't manually set them)
   useEffect(() => {
+    // Don't override user's manual percentage changes
+    if (userSetPercentages) return;
+    
     const currentCalories = dietGoal.useCustomCalories 
       ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
       : dietGoal.targetCalories;
       
-    if (currentCalories > 0) {
+    if (currentCalories > 0 && dietGoal.targetProtein > 0) {
       const proteinCals = (dietGoal.targetProtein * 4);
       const carbsCals = (dietGoal.targetCarbs * 4);
       const fatCals = (dietGoal.targetFat * 9);
@@ -146,7 +150,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         setFatPercentage(Math.round((fatCals / currentCalories) * 100));
       }
     }
-  }, [dietGoal.targetCalories, dietGoal.customTargetCalories, dietGoal.useCustomCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat]);
+  }, [dietGoal.targetCalories, dietGoal.customTargetCalories, dietGoal.useCustomCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
@@ -164,6 +168,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     const newCarbs = Math.round(carbsPercentage * scaleFactor);
     const newFat = 100 - newProtein - newCarbs; // Ensure exact 100%
 
+    setUserSetPercentages(true); // Mark that user set percentages
     setProteinPercentage(newProtein);
     setCarbsPercentage(newCarbs);
     setFatPercentage(newFat);
@@ -1158,6 +1163,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   <Switch
                     checked={dietGoal.useCustomCalories}
                     onCheckedChange={(checked) => {
+                      setUserSetPercentages(false); // Reset flag to allow percentage recalculation
                       setDietGoal(prev => ({ 
                         ...prev, 
                         useCustomCalories: checked,
@@ -1181,6 +1187,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     onChange={(e) => {
                       const calories = Number(e.target.value) || 0;
                       if (dietGoal.useCustomCalories) {
+                        setUserSetPercentages(false); // Reset flag to allow percentage recalculation when calories change
                         setDietGoal(prev => ({ 
                           ...prev, 
                           customTargetCalories: calories,
@@ -1224,6 +1231,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           const newCarbs = currentCarbsFat > 0 ? Math.round((carbsPercentage / currentCarbsFat) * remaining) : Math.round(remaining * 0.6);
                           const newFat = remaining - newCarbs;
                           
+                          setUserSetPercentages(true); // Mark that user manually set percentages
                           setProteinPercentage(newProtein);
                           setCarbsPercentage(newCarbs);
                           setFatPercentage(newFat);
@@ -1258,6 +1266,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           const newProtein = currentProteinFat > 0 ? Math.round((proteinPercentage / currentProteinFat) * remaining) : Math.round(remaining * 0.4);
                           const newFat = remaining - newProtein;
                           
+                          setUserSetPercentages(true); // Mark that user manually set percentages
                           setProteinPercentage(newProtein);
                           setCarbsPercentage(newCarbs);
                           setFatPercentage(newFat);
@@ -1292,6 +1301,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           const newProtein = currentProteinCarbs > 0 ? Math.round((proteinPercentage / currentProteinCarbs) * remaining) : Math.round(remaining * 0.35);
                           const newCarbs = remaining - newProtein;
                           
+                          setUserSetPercentages(true); // Mark that user manually set percentages
                           setProteinPercentage(newProtein);
                           setCarbsPercentage(newCarbs);
                           setFatPercentage(newFat);
