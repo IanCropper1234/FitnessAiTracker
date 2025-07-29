@@ -741,11 +741,20 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   };
 
   const handleSaveDietGoal = () => {
-    // Ensure weeklyWeightTarget is 0 for maintain goals
+    // Convert all numeric fields to strings to match database decimal type expectations
     const goalToSave = {
       ...dietGoal,
-      weeklyWeightTarget: dietGoal.goal === 'maintain' ? 0 : dietGoal.weeklyWeightTarget
+      // Convert all numeric fields to strings for database decimal fields
+      tdee: dietGoal.tdee.toString(),
+      targetCalories: dietGoal.targetCalories.toString(),
+      customTargetCalories: dietGoal.customTargetCalories ? dietGoal.customTargetCalories.toString() : undefined,
+      targetProtein: dietGoal.targetProtein.toString(),
+      targetCarbs: dietGoal.targetCarbs.toString(),
+      targetFat: dietGoal.targetFat.toString(),
+      weeklyWeightTarget: (dietGoal.goal === 'maintain' ? 0 : dietGoal.weeklyWeightTarget).toString()
     };
+    
+    console.log('Saving diet goal:', goalToSave); // Debug log to see what's being sent
     saveDietGoalMutation.mutate(goalToSave);
   };
 
