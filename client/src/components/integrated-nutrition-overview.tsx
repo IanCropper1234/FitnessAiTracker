@@ -1040,40 +1040,42 @@ export function IntegratedNutritionOverview({
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-6 w-6 p-0"
+                        <div
                           onTouchStart={(e) => {
-                            // Track touch start time and position
-                            e.currentTarget.dataset.touchStart = Date.now().toString();
+                            // Track touch start position for scroll detection
                             e.currentTarget.dataset.touchY = e.touches[0].clientY.toString();
+                            e.currentTarget.dataset.scrollDetected = 'false';
                           }}
                           onTouchMove={(e) => {
-                            // Track if user is scrolling
+                            // Detect scrolling movement
                             const startY = parseInt(e.currentTarget.dataset.touchY || '0');
                             const currentY = e.touches[0].clientY;
                             const deltaY = Math.abs(currentY - startY);
                             if (deltaY > 10) {
-                              e.currentTarget.dataset.isScrolling = 'true';
-                            }
-                          }}
-                          onClick={(e) => {
-                            // Only prevent click if user was scrolling
-                            const isScrolling = e.currentTarget.dataset.isScrolling === 'true';
-                            const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
-                            const touchDuration = Date.now() - touchStart;
-                            
-                            if (isScrolling || touchDuration > 500) {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              // Reset scroll tracking
-                              e.currentTarget.dataset.isScrolling = 'false';
+                              e.currentTarget.dataset.scrollDetected = 'true';
                             }
                           }}
                         >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 w-6 p-0"
+                            onClick={(e) => {
+                              // Prevent menu opening if scroll was detected
+                              const scrollDetected = e.currentTarget.parentElement?.dataset.scrollDetected === 'true';
+                              if (scrollDetected) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                // Reset for next interaction
+                                if (e.currentTarget.parentElement) {
+                                  e.currentTarget.parentElement.dataset.scrollDetected = 'false';
+                                }
+                              }
+                            }}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
@@ -1193,40 +1195,42 @@ export function IntegratedNutritionOverview({
                           <div className="flex-shrink-0 w-6 flex justify-center">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-6 w-6 p-0"
+                                <div
                                   onTouchStart={(e) => {
-                                    // Track touch start time and position
-                                    e.currentTarget.dataset.touchStart = Date.now().toString();
+                                    // Track touch start position for scroll detection
                                     e.currentTarget.dataset.touchY = e.touches[0].clientY.toString();
+                                    e.currentTarget.dataset.scrollDetected = 'false';
                                   }}
                                   onTouchMove={(e) => {
-                                    // Track if user is scrolling
+                                    // Detect scrolling movement
                                     const startY = parseInt(e.currentTarget.dataset.touchY || '0');
                                     const currentY = e.touches[0].clientY;
                                     const deltaY = Math.abs(currentY - startY);
                                     if (deltaY > 10) {
-                                      e.currentTarget.dataset.isScrolling = 'true';
-                                    }
-                                  }}
-                                  onClick={(e) => {
-                                    // Only prevent click if user was scrolling
-                                    const isScrolling = e.currentTarget.dataset.isScrolling === 'true';
-                                    const touchStart = parseInt(e.currentTarget.dataset.touchStart || '0');
-                                    const touchDuration = Date.now() - touchStart;
-                                    
-                                    if (isScrolling || touchDuration > 500) {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      // Reset scroll tracking
-                                      e.currentTarget.dataset.isScrolling = 'false';
+                                      e.currentTarget.dataset.scrollDetected = 'true';
                                     }
                                   }}
                                 >
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0"
+                                    onClick={(e) => {
+                                      // Prevent menu opening if scroll was detected
+                                      const scrollDetected = e.currentTarget.parentElement?.dataset.scrollDetected === 'true';
+                                      if (scrollDetected) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        // Reset for next interaction
+                                        if (e.currentTarget.parentElement) {
+                                          e.currentTarget.parentElement.dataset.scrollDetected = 'false';
+                                        }
+                                      }
+                                    }}
+                                  >
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 {mealTypes
