@@ -267,15 +267,7 @@ export function IOSDatePicker({
               </div>
             </div>
 
-            {/* Today Button */}
-            <div className="p-4 text-center border-b border-border">
-              <button
-                onClick={handleTodaySelect}
-                className="text-blue-500 font-medium text-lg hover:text-blue-600 transition-colors touch-target"
-              >
-                Today
-              </button>
-            </div>
+            
 
             {/* Date Picker Wheels */}
             <div className="px-4 py-6 overflow-x-hidden" style={{ touchAction: 'pan-y' }}>
