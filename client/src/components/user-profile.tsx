@@ -177,6 +177,7 @@ export function UserProfile({ userId }: UserProfileProps) {
     
     const today = new Date().toISOString().split('T')[0];
     const weightValue = parseFloat(profileData.weight);
+    const userWeightUnit = profileData.weightUnit === 'imperial' ? 'imperial' : 'metric';
     
     // Check if there's already a body metric entry for today
     const existingMetrics = await fetch(`/api/body-metrics/${userId}`).then(res => res.json());
@@ -185,19 +186,19 @@ export function UserProfile({ userId }: UserProfileProps) {
     );
     
     if (todayMetric) {
-      // Update existing metric with new weight
+      // Update existing metric with new weight and user's unit preference
       await apiRequest("PUT", `/api/body-metrics/${todayMetric.id}`, {
         ...todayMetric,
         weight: weightValue.toString(),
-        unit: 'metric'
+        unit: userWeightUnit
       });
     } else {
-      // Create new body metric entry for today
+      // Create new body metric entry for today with user's unit preference
       await apiRequest("POST", "/api/body-metrics", {
         userId: userId,
         date: new Date(),
         weight: weightValue.toString(),
-        unit: 'metric'
+        unit: userWeightUnit
       });
     }
   };
@@ -347,48 +348,47 @@ export function UserProfile({ userId }: UserProfileProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-black dark:text-white">Age *</Label>
+            <div>
+              <Label className="text-black dark:text-white">Age *</Label>
+              <Input
+                type="number"
+                placeholder="25"
+                value={profileData.age || ''}
+                onChange={(e) => setProfileData(prev => ({ ...prev, age: Number(e.target.value) || undefined }))}
+                className="border-gray-300 dark:border-gray-600"
+              />
+            </div>
+
+            <div>
+              <Label className="text-black dark:text-white">Height *</Label>
+              <div className="flex gap-2">
                 <Input
                   type="number"
-                  placeholder="25"
-                  value={profileData.age || ''}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, age: Number(e.target.value) || undefined }))}
-                  className="border-gray-300 dark:border-gray-600"
+                  placeholder="175"
+                  value={profileData.height || ''}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
+                  className="border-gray-300 dark:border-gray-600 flex-1"
                 />
+                <Select 
+                  value={profileData.heightUnit || 'metric'} 
+                  onValueChange={(value) => setProfileData(prev => ({ ...prev, heightUnit: value }))}
+                >
+                  <SelectTrigger className="w-20 border-gray-300 dark:border-gray-600">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">cm</SelectItem>
+                    <SelectItem value="imperial">in</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div>
-                <Label className="text-black dark:text-white">Height *</Label>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    placeholder="175"
-                    value={profileData.height || ''}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
-                    className="border-gray-300 dark:border-gray-600 flex-1"
-                  />
-                  <Select 
-                    value={profileData.heightUnit || 'metric'} 
-                    onValueChange={(value) => setProfileData(prev => ({ ...prev, heightUnit: value }))}
-                  >
-                    <SelectTrigger className="w-20 border-gray-300 dark:border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="metric">cm</SelectItem>
-                      <SelectItem value="imperial">in</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  {profileData.height && (
-                    profileData.heightUnit === 'metric' 
-                      ? `≈${convertValue(parseFloat(profileData.height), 'measurement', 'metric', 'imperial')} in`
-                      : `≈${convertValue(parseFloat(profileData.height), 'measurement', 'imperial', 'metric')} cm`
-                  )}
-                </p>
-              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {profileData.height && (
+                  profileData.heightUnit === 'metric' 
+                    ? `≈${convertValue(parseFloat(profileData.height), 'measurement', 'metric', 'imperial')} in`
+                    : `≈${convertValue(parseFloat(profileData.height), 'measurement', 'imperial', 'metric')} cm`
+                )}
+              </p>
             </div>
 
             <div>
@@ -489,8 +489,8 @@ export function UserProfile({ userId }: UserProfileProps) {
       {/* Save Button */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {isProfileComplete() 
                   ? "✓ Profile complete! All Diet Builder features are now available."
@@ -501,7 +501,7 @@ export function UserProfile({ userId }: UserProfileProps) {
             <Button
               onClick={handleSaveProfile}
               disabled={updateProfileMutation.isPending}
-              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 whitespace-nowrap flex-shrink-0"
             >
               {updateProfileMutation.isPending ? (
                 <>
