@@ -71,6 +71,8 @@ export function UserProfile({ userId }: UserProfileProps) {
     age: undefined,
     weight: '',
     height: '',
+    weightUnit: 'metric',
+    heightUnit: 'metric',
     activityLevel: '',
     fitnessGoal: '',
     dietaryRestrictions: []
@@ -115,6 +117,8 @@ export function UserProfile({ userId }: UserProfileProps) {
         age: profile.age || undefined,
         weight: profile.weight ? String(profile.weight) : '',
         height: profile.height ? String(profile.height) : '',
+        weightUnit: profile.weightUnit || 'metric',
+        heightUnit: profile.heightUnit || 'metric',
         activityLevel: profile.activityLevel || '',
         fitnessGoal: profile.fitnessGoal || '',
         dietaryRestrictions: profile.dietaryRestrictions || []

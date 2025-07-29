@@ -24,6 +24,10 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ✓ **PROFILE UNIT SELECTION**: Enhanced user profile with unit selectors (kg/lbs, cm/in) for weight and height measurements
 ✓ **TDEE CALCULATION FIX**: Fixed TDEE auto-calculation display to properly handle profile unit vs body metrics unit conversion
 ✓ **DATABASE MIGRATION**: Successfully applied schema changes via drizzle-kit push for new unit tracking fields
+✓ **UNIT PERSISTENCE FIX**: Fixed critical unit reversion bug where weight/height units switched back to metric after saving
+✓ **STATE SYNCHRONIZATION**: Updated useEffect and initial state to properly include weightUnit and heightUnit fields
+✓ **BODY TRACKING SYNC**: Enhanced body metrics synchronization to respect user's selected unit preferences instead of hardcoded metric
+✓ **RESPONSIVE LAYOUT**: Repositioned Height field to separate row and fixed Save Profile button overflow with proper responsive design
 
 ### July 29, 2025 - COMPLETE: Auto-Regulation Toggle Visual Enhancement & Percentage Reversion Fix
 ✓ **AUTO-REGULATION DISPLAY**: Transformed auto-regulation toggle from interactive control to read-only system status indicator
