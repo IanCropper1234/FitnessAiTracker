@@ -67,6 +67,8 @@ interface UserProfileResponse {
     age?: number;
     weight?: number;
     height?: number;
+    weightUnit?: string;
+    heightUnit?: string;
     activityLevel?: string;
     fitnessGoal?: string;
   };
@@ -74,6 +76,8 @@ interface UserProfileResponse {
     age?: number;
     weight?: number;
     height?: number;
+    weightUnit?: string;
+    heightUnit?: string;
     activityLevel?: string;
     fitnessGoal?: string;
   };
@@ -1013,19 +1017,26 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       <p className="text-xs text-gray-500 mt-1">
                         Auto-calculated from: {userProfile?.age}y, {(() => {
                           const weight = bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight;
-                          const unit = bodyMetrics?.length > 0 ? bodyMetrics[0]?.unit : 'metric';
+                          const weightUnit = bodyMetrics?.length > 0 ? bodyMetrics[0]?.unit : (userProfile?.weightUnit || 'metric');
                           if (!weight) return 'No weight';
                           
                           // Convert weight display with proper unit handling
-                          if (unit === 'metric') {
+                          if (weightUnit === 'metric') {
                             return `${weight}kg (≈${convertValue(weight, 'weight', 'metric', 'imperial')}lbs)`;
                           } else {
                             return `${weight}lbs (≈${convertValue(weight, 'weight', 'imperial', 'metric')}kg)`;
                           }
                         })()}, {(() => {
                           const height = userProfile?.height;
+                          const heightUnit = userProfile?.heightUnit || 'metric';
                           if (!height) return 'No height';
-                          return `${height}cm (≈${convertValue(height, 'measurement', 'metric', 'imperial')}in)`;
+                          
+                          // Convert height display with proper unit handling
+                          if (heightUnit === 'metric') {
+                            return `${height}cm (≈${convertValue(height, 'measurement', 'metric', 'imperial')}in)`;
+                          } else {
+                            return `${height}in (≈${convertValue(height, 'measurement', 'imperial', 'metric')}cm)`;
+                          }
                         })()}, {userProfile?.activityLevel}
                       </p>
                     )}

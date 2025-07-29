@@ -20,6 +20,10 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 ✓ **FINAL SYSTEMATIC FIXES**: Resolved all remaining hardcoded unit labels in diet-builder.tsx, weekly-nutrition-goals.tsx, and user-profile.tsx
 ✓ **UNIVERSAL COVERAGE**: All weight and measurement fields across the entire application now include dynamic unit conversion with helper text
 ✓ **CONSISTENT IMPLEMENTATION**: Standardized convertValue function patterns across all components for uniform user experience
+✓ **SCHEMA ENHANCEMENT**: Added weightUnit and heightUnit fields to userProfiles table for proper unit tracking
+✓ **PROFILE UNIT SELECTION**: Enhanced user profile with unit selectors (kg/lbs, cm/in) for weight and height measurements
+✓ **TDEE CALCULATION FIX**: Fixed TDEE auto-calculation display to properly handle profile unit vs body metrics unit conversion
+✓ **DATABASE MIGRATION**: Successfully applied schema changes via drizzle-kit push for new unit tracking fields
 
 ### July 29, 2025 - COMPLETE: Auto-Regulation Toggle Visual Enhancement & Percentage Reversion Fix
 ✓ **AUTO-REGULATION DISPLAY**: Transformed auto-regulation toggle from interactive control to read-only system status indicator

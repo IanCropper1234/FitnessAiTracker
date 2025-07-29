@@ -20,6 +20,8 @@ export const userProfiles = pgTable("user_profiles", {
   age: integer("age"),
   weight: decimal("weight", { precision: 5, scale: 2 }),
   height: decimal("height", { precision: 5, scale: 2 }),
+  weightUnit: text("weight_unit").default("metric"), // metric (kg) or imperial (lbs)
+  heightUnit: text("height_unit").default("metric"), // metric (cm) or imperial (inches)
   activityLevel: text("activity_level"), // sedentary, lightly_active, moderately_active, very_active
   fitnessGoal: text("fitness_goal"), // fat_loss, muscle_gain, maintenance
   dietaryRestrictions: text("dietary_restrictions").array(),

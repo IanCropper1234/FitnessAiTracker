@@ -19,6 +19,8 @@ interface UserProfileData {
   age?: number;
   weight?: string;
   height?: string;
+  weightUnit?: string;
+  heightUnit?: string;
   activityLevel?: string;
   fitnessGoal?: string;
   dietaryRestrictions?: string[];
@@ -358,31 +360,67 @@ export function UserProfile({ userId }: UserProfileProps) {
               </div>
               <div>
                 <Label className="text-black dark:text-white">Height *</Label>
-                <Input
-                  type="number"
-                  placeholder="175"
-                  value={profileData.height || ''}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
-                  className="border-gray-300 dark:border-gray-600"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="175"
+                    value={profileData.height || ''}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
+                    className="border-gray-300 dark:border-gray-600 flex-1"
+                  />
+                  <Select 
+                    value={profileData.heightUnit || 'metric'} 
+                    onValueChange={(value) => setProfileData(prev => ({ ...prev, heightUnit: value }))}
+                  >
+                    <SelectTrigger className="w-20 border-gray-300 dark:border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="metric">cm</SelectItem>
+                      <SelectItem value="imperial">in</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  cm {profileData.height && `(≈${convertValue(parseFloat(profileData.height), 'measurement', 'metric', 'imperial')}in)`}
+                  {profileData.height && (
+                    profileData.heightUnit === 'metric' 
+                      ? `≈${convertValue(parseFloat(profileData.height), 'measurement', 'metric', 'imperial')} in`
+                      : `≈${convertValue(parseFloat(profileData.height), 'measurement', 'imperial', 'metric')} cm`
+                  )}
                 </p>
               </div>
             </div>
 
             <div>
               <Label className="text-black dark:text-white">Weight</Label>
-              <Input
-                type="number"
-                step="0.1"
-                placeholder="70.0"
-                value={profileData.weight || ''}
-                onChange={(e) => setProfileData(prev => ({ ...prev, weight: e.target.value }))}
-                className="border-gray-300 dark:border-gray-600"
-              />
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="70.0"
+                  value={profileData.weight || ''}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, weight: e.target.value }))}
+                  className="border-gray-300 dark:border-gray-600 flex-1"
+                />
+                <Select 
+                  value={profileData.weightUnit || 'metric'} 
+                  onValueChange={(value) => setProfileData(prev => ({ ...prev, weightUnit: value }))}
+                >
+                  <SelectTrigger className="w-20 border-gray-300 dark:border-gray-600">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">kg</SelectItem>
+                    <SelectItem value="imperial">lbs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <p className="text-xs text-gray-500 mt-1">
-                kg {profileData.weight && `(≈${convertValue(parseFloat(profileData.weight), 'weight', 'metric', 'imperial')} lbs)`} · Weight tracking is done in Body Tracking tab for progress monitoring
+                {profileData.weight && (
+                  profileData.weightUnit === 'metric' 
+                    ? `≈${convertValue(parseFloat(profileData.weight), 'weight', 'metric', 'imperial')} lbs`
+                    : `≈${convertValue(parseFloat(profileData.weight), 'weight', 'imperial', 'metric')} kg`
+                )} · Weight tracking is done in Body Tracking tab for progress monitoring
               </p>
             </div>
 
