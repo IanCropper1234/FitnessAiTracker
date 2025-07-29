@@ -1015,7 +1015,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                           const weight = bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight;
                           const unit = bodyMetrics?.length > 0 ? bodyMetrics[0]?.unit : 'metric';
                           if (!weight) return 'No weight';
-                          return `${weight}${unit === 'metric' ? 'kg' : 'lbs'} (≈${convertValue(weight, 'weight', unit, unit === 'metric' ? 'imperial' : 'metric')}${unit === 'metric' ? 'lbs' : 'kg'})`;
+                          
+                          // Convert weight display with proper unit handling
+                          if (unit === 'metric') {
+                            return `${weight}kg (≈${convertValue(weight, 'weight', 'metric', 'imperial')}lbs)`;
+                          } else {
+                            return `${weight}lbs (≈${convertValue(weight, 'weight', 'imperial', 'metric')}kg)`;
+                          }
                         })()}, {(() => {
                           const height = userProfile?.height;
                           if (!height) return 'No height';
