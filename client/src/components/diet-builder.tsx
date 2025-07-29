@@ -693,9 +693,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Get current calories for display calculations
   const getCurrentCalories = () => {
-    return dietGoal.useCustomCalories 
+    const result = dietGoal.useCustomCalories 
       ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
       : dietGoal.targetCalories;
+    console.log('getCurrentCalories:', {
+      useCustomCalories: dietGoal.useCustomCalories,
+      customTargetCalories: dietGoal.customTargetCalories,
+      targetCalories: dietGoal.targetCalories,
+      result
+    });
+    return result;
   };
 
   // Calculate current calorie total from macros
