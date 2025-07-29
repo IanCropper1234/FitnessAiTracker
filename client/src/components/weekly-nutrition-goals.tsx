@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Target, TrendingUp, TrendingDown, Minus, Calculator } from "lucide-react";
 import { format, startOfWeek, addWeeks } from "date-fns";
 
+
 interface WeeklyNutritionGoal {
   id: number;
   userId: number;
@@ -54,6 +55,20 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Local unit conversion helper
+  const convertValue = (value: number, type: 'weight' | 'measurement', fromUnit: 'metric' | 'imperial', toUnit: 'metric' | 'imperial'): number => {
+    if (fromUnit === toUnit || !value) return value;
+    
+    if (type === 'weight') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 2.20462 * 10) / 10; // kg to lbs
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 0.453592 * 10) / 10; // lbs to kg
+      }
+    }
+    return value;
+  };
   
   const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date()));
   const [isEditing, setIsEditing] = useState(false);
@@ -319,14 +334,18 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="currentWeight">{t("Current Weight (kg)")}</Label>
+                <Label htmlFor="currentWeight">{t("Current Weight")} (kg)</Label>
                 <Input
                   id="currentWeight"
                   type="number"
                   step="0.1"
                   value={formData.currentWeight}
                   onChange={(e) => setFormData(prev => ({ ...prev, currentWeight: parseFloat(e.target.value) }))}
+                  placeholder="kg"
                 />
+                <p className="text-xs text-gray-500">
+                  {formData.currentWeight > 0 && `≈${convertValue(formData.currentWeight, 'weight', 'metric', 'imperial')} lbs`}
+                </p>
               </div>
             </div>
 

@@ -17,6 +17,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
+
 interface FoodItem {
   id: string;
   name: string;
@@ -87,6 +88,26 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+
+  // Local unit conversion helper
+  const convertValue = (value: number, type: 'weight' | 'measurement', fromUnit: 'metric' | 'imperial', toUnit: 'metric' | 'imperial'): number => {
+    if (fromUnit === toUnit || !value) return value;
+    
+    if (type === 'weight') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 2.20462 * 10) / 10; // kg to lbs
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 0.453592 * 10) / 10; // lbs to kg
+      }
+    } else if (type === 'measurement') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 0.393701 * 10) / 10; // cm to inches
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 2.54 * 10) / 10; // inches to cm
+      }
+    }
+    return value;
+  };
   
   // UI State
   const [activeTab, setActiveTab] = useState<'diet-goal' | 'meal-timing' | 'meal-builder' | 'saved-plans'>('diet-goal');
@@ -990,7 +1011,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     />
                     {dietGoal.autoRegulation && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Auto-calculated from: {userProfile?.age}y, {bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight}kg, {userProfile?.height}cm, {userProfile?.activityLevel}
+                        Auto-calculated from: {userProfile?.age}y, {(() => {
+                          const weight = bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight;
+                          const unit = bodyMetrics?.length > 0 ? bodyMetrics[0]?.unit : 'metric';
+                          if (!weight) return 'No weight';
+                          return `${weight}${unit === 'metric' ? 'kg' : 'lbs'} (≈${convertValue(weight, 'weight', unit, unit === 'metric' ? 'imperial' : 'metric')}${unit === 'metric' ? 'lbs' : 'kg'})`;
+                        })()}, {(() => {
+                          const height = userProfile?.height;
+                          if (!height) return 'No height';
+                          return `${height}cm (≈${convertValue(height, 'measurement', 'metric', 'imperial')}in)`;
+                        })()}, {userProfile?.activityLevel}
                       </p>
                     )}
                     {!dietGoal.autoRegulation && (
@@ -1066,7 +1096,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                   {dietGoal.goal !== 'maintain' && (
                     <div>
-                      <Label className="text-black dark:text-white">Weekly Weight Target (kg)</Label>
+                      <Label className="text-black dark:text-white">Weekly Weight Target</Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -1075,6 +1105,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         placeholder={dietGoal.goal === 'cut' ? '-0.5' : '0.3'}
                         className="border-gray-300 dark:border-gray-600"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        kg/week (≈{convertValue(Math.abs(dietGoal.weeklyWeightTarget || (dietGoal.goal === 'cut' ? 0.5 : 0.3)), 'weight', 'metric', 'imperial')} lbs/week)
+                      </p>
                     </div>
                   )}
                 </div>

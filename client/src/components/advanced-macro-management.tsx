@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { UnitConverter } from "@shared/utils/unit-conversion";
+
 
 interface AdvancedMacroManagementProps {
   userId: number;
@@ -71,9 +71,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     enabled: !!selectedWeek
   });
 
-  // Convert weekly goals data to user's preferred weight units
-  const userWeightUnit = UnitConverter.getUserWeightUnit(null, bodyMetrics);
-  const weeklyGoals = UnitConverter.convertWeeklyGoalsUnits(rawWeeklyGoals || [], userWeightUnit);
+  // Use weekly goals data directly (unit conversion handled in backend)
+  const weeklyGoals = rawWeeklyGoals || [];
 
   // Get meal macro distribution
   const { data: mealDistribution } = useQuery({
@@ -502,15 +501,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                           <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                           <div className="text-right">
                             <span className="text-sm font-medium text-black dark:text-white">
-                              {parseFloat(weeklyGoals[0].weightChange || '0') >= 0 ? '+' : ''}{parseFloat(weeklyGoals[0].weightChange || '0').toFixed(1)} {userWeightUnit === 'lbs' ? 'lbs' : 'kg'}
+                              {parseFloat(weeklyGoals[0].weightChange || '0') >= 0 ? '+' : ''}{parseFloat(weeklyGoals[0].weightChange || '0').toFixed(1)} kg
                             </span>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {weeklyGoals[0].currentWeight} {userWeightUnit === 'lbs' ? 'lbs' : 'kg'}
+                              {weeklyGoals[0].currentWeight} kg
                             </div>
                           </div>
                         </div>
                         <div className="flex justify-between text-xs">
-                          <span className="text-gray-500 dark:text-gray-400">Target: {weeklyGoals[0].targetWeightChangePerWeek} {userWeightUnit === 'lbs' ? 'lbs' : 'kg'}/week</span>
+                          <span className="text-gray-500 dark:text-gray-400">Target: {weeklyGoals[0].targetWeightChangePerWeek} kg/week</span>
                           <span className={`font-medium ${
                             weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
                             weeklyGoals[0].weightTrend === 'gaining' ? 'text-green-600 dark:text-green-400' :

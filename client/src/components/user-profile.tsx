@@ -44,6 +44,26 @@ export function UserProfile({ userId }: UserProfileProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Local unit conversion helper
+  const convertValue = (value: number, type: 'weight' | 'measurement', fromUnit: 'metric' | 'imperial', toUnit: 'metric' | 'imperial'): number => {
+    if (fromUnit === toUnit || !value) return value;
+    
+    if (type === 'weight') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 2.20462 * 10) / 10; // kg to lbs
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 0.453592 * 10) / 10; // lbs to kg
+      }
+    } else if (type === 'measurement') {
+      if (fromUnit === 'metric' && toUnit === 'imperial') {
+        return Math.round(value * 0.393701 * 10) / 10; // cm to inches
+      } else if (fromUnit === 'imperial' && toUnit === 'metric') {
+        return Math.round(value * 2.54 * 10) / 10; // inches to cm
+      }
+    }
+    return value;
+  };
+
   const [profileData, setProfileData] = useState<UserProfileData>({
     userId: userId,
     age: undefined,
@@ -337,7 +357,7 @@ export function UserProfile({ userId }: UserProfileProps) {
                 />
               </div>
               <div>
-                <Label className="text-black dark:text-white">Height (cm) *</Label>
+                <Label className="text-black dark:text-white">Height *</Label>
                 <Input
                   type="number"
                   placeholder="175"
@@ -345,11 +365,14 @@ export function UserProfile({ userId }: UserProfileProps) {
                   onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
                   className="border-gray-300 dark:border-gray-600"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  cm {profileData.height && `(≈${convertValue(parseFloat(profileData.height), 'measurement', 'metric', 'imperial')}in)`}
+                </p>
               </div>
             </div>
 
             <div>
-              <Label className="text-black dark:text-white">Weight (kg)</Label>
+              <Label className="text-black dark:text-white">Weight</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -359,7 +382,7 @@ export function UserProfile({ userId }: UserProfileProps) {
                 className="border-gray-300 dark:border-gray-600"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Note: Weight tracking is done in Body Tracking tab for progress monitoring
+                kg {profileData.weight && `(≈${convertValue(parseFloat(profileData.weight), 'weight', 'metric', 'imperial')} lbs)`} · Weight tracking is done in Body Tracking tab for progress monitoring
               </p>
             </div>
 
