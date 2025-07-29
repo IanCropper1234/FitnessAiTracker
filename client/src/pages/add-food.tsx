@@ -888,7 +888,7 @@ export function AddFood({ user }: AddFoodProps) {
                 
                 {/* Load More Link */}
                 {hasMoreFoodHistory && !historySearchQuery && (
-                  <div className="pt-2 text-center">
+                  <div className="text-center pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
                     <span
                       onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
                       className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
