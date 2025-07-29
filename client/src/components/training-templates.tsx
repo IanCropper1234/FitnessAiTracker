@@ -25,7 +25,9 @@ import {
   Trash2,
   User,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Shield,
+  AlertTriangle
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -154,6 +156,29 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     },
   });
 
+  // Template validation and cleanup mutation
+  const validateTemplatesMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/training/templates/validate-and-cleanup');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Template Validation Complete",
+        description: `Found ${data.totalTemplates} templates. Deleted ${data.deletedTemplates} invalid templates.`,
+        variant: data.deletedTemplates > 0 ? "default" : "default"
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Validation Failed",
+        description: error.message || "Failed to validate templates",
+        variant: "destructive"
+      });
+    }
+  });
+
   // Update template mutation
   const updateTemplateMutation = useMutation({
     mutationFn: async (data: { templateId: number; updateData: any }) => {
@@ -225,6 +250,17 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         </div>
 
         <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => validateTemplatesMutation.mutate()}
+            disabled={validateTemplatesMutation.isPending}
+            className="text-orange-600 border-orange-200 hover:bg-orange-50"
+          >
+            <Shield className="h-4 w-4 mr-1" />
+            {validateTemplatesMutation.isPending ? 'Validating...' : 'Validate Templates'}
+          </Button>
+
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
               <Button size="sm">
@@ -238,8 +274,6 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
               onClose={() => setShowCreateDialog(false)}
             />
           </Dialog>
-
-          
         </div>
       </div>
 

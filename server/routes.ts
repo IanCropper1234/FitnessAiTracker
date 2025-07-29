@@ -15,6 +15,7 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
+import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
 
@@ -3566,6 +3567,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(demo);
     } catch (error: any) {
       console.error("Error demonstrating workflow:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Template validation and cleanup endpoint
+  app.post("/api/training/templates/validate-and-cleanup", async (req, res) => {
+    try {
+      console.log('Starting template validation and cleanup...');
+      
+      const result = await validateAndCleanupTemplates();
+      
+      res.json({
+        success: true,
+        message: `Template validation complete. Deleted ${result.deletedTemplates} invalid templates.`,
+        ...result
+      });
+    } catch (error: any) {
+      console.error("Error validating templates:", error);
       res.status(500).json({ error: error.message });
     }
   });
