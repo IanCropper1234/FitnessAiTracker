@@ -21,6 +21,7 @@ interface UserProfileData {
   height?: string;
   weightUnit?: string;
   heightUnit?: string;
+  bodyFatPercentage?: string;
   activityLevel?: string;
   fitnessGoal?: string;
   dietaryRestrictions?: string[];
@@ -73,6 +74,7 @@ export function UserProfile({ userId }: UserProfileProps) {
     height: '',
     weightUnit: 'metric',
     heightUnit: 'metric',
+    bodyFatPercentage: '',
     activityLevel: '',
     fitnessGoal: '',
     dietaryRestrictions: []
@@ -108,10 +110,32 @@ export function UserProfile({ userId }: UserProfileProps) {
     }
   });
 
+  // Fetch latest body metrics for body fat percentage
+  const { data: bodyMetricsResponse } = useQuery({
+    queryKey: ['/api/body-metrics', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/body-metrics/${userId}`);
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
   // Update profile data when user profile loads
   useEffect(() => {
     if (userProfileResponse?.profile || userProfileResponse?.user) {
       const profile = userProfileResponse.profile || userProfileResponse.user;
+      
+      // Get latest body fat percentage from body metrics
+      let latestBodyFat = '';
+      if (bodyMetricsResponse && Array.isArray(bodyMetricsResponse) && bodyMetricsResponse.length > 0) {
+        const sortedMetrics = bodyMetricsResponse
+          .filter(metric => metric.bodyFatPercentage && metric.bodyFatPercentage > 0)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        if (sortedMetrics.length > 0) {
+          latestBodyFat = String(sortedMetrics[0].bodyFatPercentage);
+        }
+      }
+      
       setProfileData({
         userId: userId,
         age: profile.age || undefined,
@@ -119,12 +143,13 @@ export function UserProfile({ userId }: UserProfileProps) {
         height: profile.height ? String(profile.height) : '',
         weightUnit: profile.weightUnit || 'metric',
         heightUnit: profile.heightUnit || 'metric',
+        bodyFatPercentage: latestBodyFat,
         activityLevel: profile.activityLevel || '',
         fitnessGoal: profile.fitnessGoal || '',
         dietaryRestrictions: profile.dietaryRestrictions || []
       });
     }
-  }, [userProfileResponse]);
+  }, [userProfileResponse, bodyMetricsResponse]);
 
   // Update meal timing data when preferences load
   useEffect(() => {
@@ -262,7 +287,7 @@ export function UserProfile({ userId }: UserProfileProps) {
     }));
   };
 
-  // Calculate Fitness Health Index (FHI) - Better for athletes and bodybuilders
+  // Calculate Enhanced Fitness Health Index (FHI) - Better for athletes and bodybuilders
   const calculateFitnessHealthIndex = () => {
     if (!profileData.height || !profileData.weight || 
         parseFloat(profileData.height) <= 0 || parseFloat(profileData.weight) <= 0) {
@@ -283,12 +308,23 @@ export function UserProfile({ userId }: UserProfileProps) {
     
     // Enhanced calculation considering muscle mass and fitness goals
     const heightInM = heightInCm / 100;
-    const baseIndex = weightInKg / (heightInM * heightInM);
+    let baseIndex = weightInKg / (heightInM * heightInM);
     
-    // Adjustment factors for athletes/bodybuilders
-    let adjustmentFactor = 1.0;
+    // Body fat percentage enhancement (if available)
+    let bodyFatAdjustment = 1.0;
+    if (profileData.bodyFatPercentage && parseFloat(profileData.bodyFatPercentage) > 0) {
+      const bodyFat = parseFloat(profileData.bodyFatPercentage);
+      // Adjust index based on body fat percentage for more accurate assessment
+      if (bodyFat <= 12) bodyFatAdjustment = 0.75; // Very lean athletes
+      else if (bodyFat <= 18) bodyFatAdjustment = 0.85; // Athletic build
+      else if (bodyFat <= 25) bodyFatAdjustment = 0.95; // Moderate body fat
+      else bodyFatAdjustment = 1.05; // Higher body fat
+      
+      baseIndex *= bodyFatAdjustment;
+    }
     
     // Activity level adjustments (higher activity = higher healthy weight range)
+    let adjustmentFactor = 1.0;
     switch (profileData.activityLevel) {
       case 'very_active': adjustmentFactor = 0.85; break;
       case 'extremely_active': adjustmentFactor = 0.80; break;
@@ -307,31 +343,33 @@ export function UserProfile({ userId }: UserProfileProps) {
   };
 
   const getFitnessHealthInfo = (fhi: number) => {
-    // Adjusted ranges that better account for muscle mass
+    const hasBodyFat = profileData.bodyFatPercentage && parseFloat(profileData.bodyFatPercentage) > 0;
+    
+    // Enhanced ranges considering body composition when available
     if (fhi < 17) return { 
       category: "Below healthy range", 
       color: "text-blue-600 dark:text-blue-400",
-      description: "Consider increasing caloric intake and strength training"
+      description: hasBodyFat ? "Consider increasing caloric intake for lean mass" : "Consider increasing caloric intake and strength training"
     };
     if (fhi < 23) return { 
       category: "Healthy athletic range", 
       color: "text-green-600 dark:text-green-400",
-      description: "Excellent range for active individuals with good muscle mass"
+      description: hasBodyFat ? "Excellent body composition for athletes" : "Excellent range for active individuals with good muscle mass"
     };
     if (fhi < 27) return { 
       category: "Athletic/muscular build", 
       color: "text-green-500 dark:text-green-300",
-      description: "Common for bodybuilders and strength athletes"
+      description: hasBodyFat ? "Strong athletic build with good muscle mass" : "Common for bodybuilders and strength athletes"
     };
     if (fhi < 30) return { 
       category: "Monitor body composition", 
       color: "text-yellow-600 dark:text-yellow-400",
-      description: "Consider body fat % measurement for better assessment"
+      description: hasBodyFat ? "Good range but monitor fat vs muscle ratio" : "Consider body fat % measurement for better assessment"
     };
     return { 
       category: "Health assessment recommended", 
       color: "text-orange-600 dark:text-orange-400",
-      description: "Consult with a fitness professional for personalized evaluation"
+      description: hasBodyFat ? "Consider body composition optimization" : "Consult with a fitness professional for personalized evaluation"
     };
   };
 
@@ -481,6 +519,29 @@ export function UserProfile({ userId }: UserProfileProps) {
               </p>
             </div>
 
+            <div>
+              <Label className="text-black dark:text-white">Body Fat Percentage (Optional)</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  step="0.1"
+                  placeholder="15.0"
+                  value={profileData.bodyFatPercentage || ''}
+                  onChange={(e) => setProfileData(prev => ({ ...prev, bodyFatPercentage: e.target.value }))}
+                  className="border-gray-300 dark:border-gray-600 flex-1"
+                />
+                <div className="w-12 flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+                  %
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {bodyMetricsResponse && Array.isArray(bodyMetricsResponse) && bodyMetricsResponse.length > 0 
+                  ? "Latest from Body Tracking · Improves Fitness Health Index accuracy"
+                  : "Add body fat % for more accurate health assessment · Track in Body Tracking tab"
+                }
+              </p>
+            </div>
+
             {/* Fitness Health Index Display */}
             {fitnessHealthIndex && (
               <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -495,7 +556,10 @@ export function UserProfile({ userId }: UserProfileProps) {
                   </>
                 )}
                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  Better suited for athletes and bodybuilders than traditional BMI
+                  {profileData.bodyFatPercentage && parseFloat(profileData.bodyFatPercentage) > 0 
+                    ? `Enhanced with body composition (${profileData.bodyFatPercentage}% body fat) · Better than BMI for athletes`
+                    : "Better suited for athletes and bodybuilders than traditional BMI"
+                  }
                 </div>
               </div>
             )}
