@@ -1216,9 +1216,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         type="number"
                         value={proteinPercentage}
                         onChange={(e) => {
-                          const percent = Math.max(5, Math.min(50, Number(e.target.value) || 20));
-                          setProteinPercentage(percent);
-                          updateMacrosFromPercentages(percent, carbsPercentage, fatPercentage);
+                          const newProtein = Math.max(5, Math.min(50, Number(e.target.value) || 20));
+                          const remaining = 100 - newProtein;
+                          
+                          // Proportionally adjust carbs and fat to fit remaining percentage
+                          const currentCarbsFat = carbsPercentage + fatPercentage;
+                          const newCarbs = currentCarbsFat > 0 ? Math.round((carbsPercentage / currentCarbsFat) * remaining) : Math.round(remaining * 0.6);
+                          const newFat = remaining - newCarbs;
+                          
+                          setProteinPercentage(newProtein);
+                          setCarbsPercentage(newCarbs);
+                          setFatPercentage(newFat);
+                          updateMacrosFromPercentages(newProtein, newCarbs, newFat);
                         }}
                         className="w-20 text-center"
                         min="5"
@@ -1241,9 +1250,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         type="number"
                         value={carbsPercentage}
                         onChange={(e) => {
-                          const percent = Math.max(10, Math.min(70, Number(e.target.value) || 45));
-                          setCarbsPercentage(percent);
-                          updateMacrosFromPercentages(proteinPercentage, percent, fatPercentage);
+                          const newCarbs = Math.max(10, Math.min(70, Number(e.target.value) || 45));
+                          const remaining = 100 - newCarbs;
+                          
+                          // Proportionally adjust protein and fat to fit remaining percentage
+                          const currentProteinFat = proteinPercentage + fatPercentage;
+                          const newProtein = currentProteinFat > 0 ? Math.round((proteinPercentage / currentProteinFat) * remaining) : Math.round(remaining * 0.4);
+                          const newFat = remaining - newProtein;
+                          
+                          setProteinPercentage(newProtein);
+                          setCarbsPercentage(newCarbs);
+                          setFatPercentage(newFat);
+                          updateMacrosFromPercentages(newProtein, newCarbs, newFat);
                         }}
                         className="w-20 text-center"
                         min="10"
@@ -1266,9 +1284,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         type="number"
                         value={fatPercentage}
                         onChange={(e) => {
-                          const percent = Math.max(15, Math.min(60, Number(e.target.value) || 35));
-                          setFatPercentage(percent);
-                          updateMacrosFromPercentages(proteinPercentage, carbsPercentage, percent);
+                          const newFat = Math.max(15, Math.min(60, Number(e.target.value) || 35));
+                          const remaining = 100 - newFat;
+                          
+                          // Proportionally adjust protein and carbs to fit remaining percentage
+                          const currentProteinCarbs = proteinPercentage + carbsPercentage;
+                          const newProtein = currentProteinCarbs > 0 ? Math.round((proteinPercentage / currentProteinCarbs) * remaining) : Math.round(remaining * 0.35);
+                          const newCarbs = remaining - newProtein;
+                          
+                          setProteinPercentage(newProtein);
+                          setCarbsPercentage(newCarbs);
+                          setFatPercentage(newFat);
+                          updateMacrosFromPercentages(newProtein, newCarbs, newFat);
                         }}
                         className="w-20 text-center"
                         min="15"
