@@ -897,8 +897,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               duration: 2000,
             });
           }}
-          position="bottom-left"
-          draggable={false}
         />
       )}
       {/* WorkoutFeedbackDialog - Critical Missing Component */}
