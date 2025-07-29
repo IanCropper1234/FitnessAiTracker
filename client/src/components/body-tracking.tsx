@@ -352,299 +352,157 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           Log Entry
         </Button>
       </div>
-      {/* Current Stats - Enhanced Visual Design */}
+      {/* Current Stats - Ultra Compact Mobile Design */}
       {latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-black dark:text-white">Current Stats</h3>
-              <span className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full">
-                {new Date(latestMetric.date).toLocaleDateString()}
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold text-black dark:text-white">Current Stats</h3>
+              <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
+                {new Date(latestMetric.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {/* Priority Metrics - Always Visible */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
               {/* Weight */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                    <Scale className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400 truncate">
                       {latestMetric.weight ? displayValue(latestMetric.weight, 'weight', latestMetric.unit) : '-'}
-                      {latestMetric.weight && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.weight, 'weight', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'lbs' : 'kg'}</span>}
                     </p>
+                    {latestMetric.weight && (
+                      <p className="text-xs text-gray-400 truncate">
+                        ≈ {convertValue(latestMetric.weight, 'weight', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'lbs' : 'kg'}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Body Fat */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Body Fat</p>
-                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    <p className="text-lg font-bold text-orange-600 dark:text-orange-400 truncate">
                       {latestMetric.bodyFatPercentage || '-'}
                       {latestMetric.bodyFatPercentage && <span className="text-sm font-normal text-gray-500 ml-1">%</span>}
                     </p>
                   </div>
                 </div>
               </div>
-
-              {/* Waist */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {latestMetric.waist ? displayValue(latestMetric.waist, 'measurement', latestMetric.unit) : '-'}
-                      {latestMetric.waist && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.waist, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chest */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
-                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      {latestMetric.chest ? displayValue(latestMetric.chest, 'measurement', latestMetric.unit) : '-'}
-                      {latestMetric.chest && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.chest, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Additional Measurements Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Neck */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            {/* Compact Measurements Grid - 4 columns on larger screens, 2 on mobile */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+              {/* Waist */}
+              {latestMetric.waist && (
+                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <span className="text-xs font-medium text-green-700 dark:text-green-300 truncate">Waist</span>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
-                    <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                      {latestMetric.neck ? displayValue(latestMetric.neck, 'measurement', latestMetric.unit) : '-'}
-                      {latestMetric.neck && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.neck, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
-                    </p>
-                  </div>
+                  <p className="text-sm font-bold text-green-800 dark:text-green-200 truncate">
+                    {displayValue(latestMetric.waist, 'measurement', latestMetric.unit)}
+                  </p>
                 </div>
-              </div>
+              )}
+
+              {/* Chest */}
+              {latestMetric.chest && (
+                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-1 mb-1">
+                    <User className="w-3 h-3 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                    <span className="text-xs font-medium text-purple-700 dark:text-purple-300 truncate">Chest</span>
+                  </div>
+                  <p className="text-sm font-bold text-purple-800 dark:text-purple-200 truncate">
+                    {displayValue(latestMetric.chest, 'measurement', latestMetric.unit)}
+                  </p>
+                </div>
+              )}
+
+              {/* Neck */}
+              {latestMetric.neck && (
+                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Ruler className="w-3 h-3 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                    <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300 truncate">Neck</span>
+                  </div>
+                  <p className="text-sm font-bold text-indigo-800 dark:text-indigo-200 truncate">
+                    {displayValue(latestMetric.neck, 'measurement', latestMetric.unit)}
+                  </p>
+                </div>
+              )}
 
               {/* Hips */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+              {latestMetric.hips && (
+                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Target className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                    <span className="text-xs font-medium text-pink-700 dark:text-pink-300 truncate">Hips</span>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
-                    <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">
-                      {latestMetric.hips ? displayValue(latestMetric.hips, 'measurement', latestMetric.unit) : '-'}
-                      {latestMetric.hips && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.hips, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
-                    </p>
-                  </div>
+                  <p className="text-sm font-bold text-pink-800 dark:text-pink-200 truncate">
+                    {displayValue(latestMetric.hips, 'measurement', latestMetric.unit)}
+                  </p>
                 </div>
-              </div>
+              )}
 
               {/* Thigh */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+              {latestMetric.thigh && (
+                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Ruler className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
+                    <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate">Thigh</span>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
-                    <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
-                      {latestMetric.thigh ? displayValue(latestMetric.thigh, 'measurement', latestMetric.unit) : '-'}
-                      {latestMetric.thigh && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.thigh, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
-                    </p>
-                  </div>
+                  <p className="text-sm font-bold text-cyan-800 dark:text-cyan-200 truncate">
+                    {displayValue(latestMetric.thigh, 'measurement', latestMetric.unit)}
+                  </p>
                 </div>
-              </div>
+              )}
 
               {/* Bicep */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              {latestMetric.bicep && (
+                <div className="bg-white dark:bg-gray-800 rounded p-1.5 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-1 mb-1">
+                    <User className="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                    <span className="text-xs font-medium text-amber-700 dark:text-amber-300 truncate">Bicep</span>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
-                    <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                      {latestMetric.bicep ? displayValue(latestMetric.bicep, 'measurement', latestMetric.unit) : '-'}
-                      {latestMetric.bicep && <span className="text-xs text-gray-400 block">≈ {convertValue(latestMetric.bicep, 'measurement', latestMetric.unit, latestMetric.unit === 'metric' ? 'imperial' : 'metric')} {latestMetric.unit === 'metric' ? 'in' : 'cm'}</span>}
-                    </p>
-                  </div>
+                  <p className="text-sm font-bold text-amber-800 dark:text-amber-200 truncate">
+                    {displayValue(latestMetric.bicep, 'measurement', latestMetric.unit)}
+                  </p>
                 </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>
       )}
-      {/* No Data State - Show All Measurements with Dashes */}
+      {/* No Data State - Compact Design */}
       {!latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-black dark:text-white">Current Stats</h3>
-              <span className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full">
-                No data yet
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              {/* Weight */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                    <Scale className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Weight</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Body Fat */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Body Fat</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Waist */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Waist</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chest */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Chest</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Measurements Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {/* Neck */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neck</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Hips */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center">
-                    <Target className="w-5 h-5 text-pink-600 dark:text-pink-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Hips</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Thigh */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center">
-                    <Ruler className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Thigh</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bicep */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Bicep</p>
-                    <p className="text-2xl font-bold text-gray-400 dark:text-gray-500">
-                      -
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <CardContent className="p-4">
             <div className="text-center">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Start Tracking Your Progress</h4>
-              <p className="text-gray-500 dark:text-gray-400 mb-4 max-w-md mx-auto">
-                Log your first body measurement to begin tracking your fitness journey and see your progress over time.
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Progress Data Yet</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto text-sm">
+                Start logging your body measurements to track your fitness journey and see your progress over time.
               </p>
               <Button
                 onClick={() => setIsAddingMetric(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white ios-touch-feedback touch-target"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add First Entry
+                Log Your First Entry
               </Button>
             </div>
           </CardContent>
