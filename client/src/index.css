@@ -131,6 +131,37 @@
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
+/* Dropdown overflow fixes */
+[data-radix-select-content] {
+  max-width: calc(100vw - 2rem) !important;
+  max-height: 50vh !important;
+  overflow: hidden !important;
+}
+
+[data-radix-select-viewport] {
+  max-height: calc(50vh - 4rem) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Mobile touch optimizations for select items */
+[data-radix-select-item] {
+  min-height: 44px !important;
+  touch-action: manipulation;
+}
+
+/* Prevent body scroll when dropdown is open on mobile */
+body:has([data-radix-select-content][data-state="open"]) {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  [data-radix-select-content] {
+    max-width: calc(100vw - 1rem) !important;
+    margin: 0.5rem !important;
+  }
+}
+
 .button-press-animation {
   transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform: translateZ(0);
