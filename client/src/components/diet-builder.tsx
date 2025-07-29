@@ -691,6 +691,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     return dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || 0) : dietGoal.targetCalories;
   };
 
+  // Get current calories for display calculations
+  const getCurrentCalories = () => {
+    return dietGoal.useCustomCalories 
+      ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
+      : dietGoal.targetCalories;
+  };
+
   // Calculate current calorie total from macros
   const calculateCurrentCalories = () => {
     return Math.round((dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9));
@@ -1219,7 +1226,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">Protein</Label>
                       <span className="text-sm text-muted-foreground">
-                        {proteinPercentage}% = {Math.round(dietGoal.targetProtein)}g
+                        {proteinPercentage}% = {Math.round((getCurrentCalories() * (proteinPercentage / 100)) / 4)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1254,7 +1261,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-green-600 dark:text-green-400">Carbs</Label>
                       <span className="text-sm text-muted-foreground">
-                        {carbsPercentage}% = {Math.round(dietGoal.targetCarbs)}g
+                        {carbsPercentage}% = {Math.round((getCurrentCalories() * (carbsPercentage / 100)) / 4)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -1289,7 +1296,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Fat</Label>
                       <span className="text-sm text-muted-foreground">
-                        {fatPercentage}% = {Math.round(dietGoal.targetFat)}g
+                        {fatPercentage}% = {Math.round((getCurrentCalories() * (fatPercentage / 100)) / 9)}g
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
