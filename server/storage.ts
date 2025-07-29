@@ -46,6 +46,7 @@ export interface IStorage {
   // Nutrition Logs
   getNutritionLogs(userId: number, date?: Date): Promise<NutritionLog[]>;
   getNutritionLogsInRange(userId: number, startDate: Date, endDate: Date): Promise<NutritionLog[]>;
+  getNutritionLogById(id: number): Promise<NutritionLog | undefined>;
   createNutritionLog(log: InsertNutritionLog): Promise<NutritionLog>;
   updateNutritionLog(id: number, log: Partial<InsertNutritionLog>): Promise<NutritionLog | undefined>;
   deleteNutritionLog(id: number): Promise<boolean>;
@@ -311,6 +312,10 @@ export class MemStorage implements IStorage {
         log.date <= endDate
       )
       .sort((a, b) => b.date.getTime() - a.date.getTime());
+  }
+
+  async getNutritionLogById(id: number): Promise<NutritionLog | undefined> {
+    return this.nutritionLogs.get(id);
   }
 
   async createNutritionLog(log: InsertNutritionLog): Promise<NutritionLog> {

@@ -132,6 +132,11 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(nutritionLogs.date));
   }
 
+  async getNutritionLogById(id: number): Promise<NutritionLog | undefined> {
+    const [log] = await db.select().from(nutritionLogs).where(eq(nutritionLogs.id, id));
+    return log || undefined;
+  }
+
   async createNutritionLog(log: InsertNutritionLog): Promise<NutritionLog> {
     const [newLog] = await db
       .insert(nutritionLogs)

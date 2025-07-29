@@ -503,6 +503,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       const updates = req.body;
       
+      // If quantity or unit is being updated, recalculate macros proportionally
+      if (updates.quantity !== undefined || updates.unit !== undefined) {
+        // Get current log to calculate proportional changes
+        const currentLog = await storage.getNutritionLogById(id);
+        if (!currentLog) {
+          return res.status(404).json({ message: "Log not found" });
+        }
+        
+        // Calculate multiplier for macro recalculation
+        const newQuantity = updates.quantity !== undefined ? parseFloat(updates.quantity) : parseFloat(currentLog.quantity);
+        const oldQuantity = parseFloat(currentLog.quantity);
+        const multiplier = newQuantity / oldQuantity;
+        
+        // Recalculate macros proportionally
+        const recalculatedMacros = {
+          calories: (parseFloat(currentLog.calories) * multiplier).toFixed(2),
+          protein: (parseFloat(currentLog.protein) * multiplier).toFixed(2),
+          carbs: (parseFloat(currentLog.carbs) * multiplier).toFixed(2),
+          fat: (parseFloat(currentLog.fat) * multiplier).toFixed(2)
+        };
+        
+        // Include recalculated macros in updates
+        Object.assign(updates, recalculatedMacros);
+        
+        console.log(`Recalculating macros for log ${id}: ${oldQuantity} → ${newQuantity} (${multiplier.toFixed(2)}x)`);
+        console.log('Updated macros:', recalculatedMacros);
+      }
+      
       const updatedLog = await storage.updateNutritionLog(id, updates);
       
       if (!updatedLog) {
