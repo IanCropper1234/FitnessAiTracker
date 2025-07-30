@@ -102,9 +102,9 @@ export function MealPlanner({ userId }: MealPlannerProps) {
 
   // Fetch current day's meal plans
   const { data: mealPlans = [], isError: mealPlansError } = useQuery<MealPlan[]>({
-    queryKey: ["/api/meal-plans", userId, selectedDate.toISOString().split('T')[0]],
+    queryKey: ["/api/meal-plans", selectedDate.toISOString().split('T')[0]],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-plans/${userId}?date=${selectedDate.toISOString()}`);
+      const response = await fetch(`/api/meal-plans?date=${selectedDate.toISOString()}`);
       if (!response.ok) {
         console.error('Meal plans API error:', response.status, response.statusText);
         return [];
@@ -116,18 +116,18 @@ export function MealPlanner({ userId }: MealPlannerProps) {
 
   // Fetch current week's nutrition goal
   const { data: weeklyGoal } = useQuery<WeeklyNutritionGoal>({
-    queryKey: ["/api/weekly-nutrition-goal", userId],
+    queryKey: ["/api/weekly-nutrition-goal"],
     queryFn: async () => {
-      const response = await fetch(`/api/weekly-nutrition-goal/${userId}`);
+      const response = await fetch(`/api/weekly-nutrition-goal`);
       return response.json();
     },
   });
 
   // Fetch meal timing preferences
   const { data: mealTiming } = useQuery<MealTimingPreference>({
-    queryKey: ["/api/meal-timing", userId],
+    queryKey: ["/api/meal-timing"],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-timing/${userId}`);
+      const response = await fetch(`/api/meal-timing`);
       return response.json();
     },
   });
@@ -135,7 +135,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   // Create meal plan mutation
   const createMealPlan = useMutation({
     mutationFn: (mealPlan: Partial<MealPlan>) => 
-      apiRequest("/api/meal-plans", { method: "POST", body: mealPlan }),
+      apiRequest("POST", "/api/meal-plans", mealPlan),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/meal-plans"] });
       toast({ title: t("Meal plan created successfully") });

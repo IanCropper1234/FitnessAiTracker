@@ -46,9 +46,9 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
 
   // Get load progressions for specific exercises
   const { data: progressions = [], isLoading: progressionsLoading } = useQuery({
-    queryKey: ['/api/training/load-progression', userId, exerciseIds],
+    queryKey: ['/api/training/load-progression', exerciseIds],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/training/load-progression/${userId}${exerciseIds ? `?exerciseIds=${exerciseIds.join(',')}` : ''}`);
+      const response = await apiRequest('GET', `/api/training/load-progression${exerciseIds ? `?exerciseIds=${exerciseIds.join(',')}` : ''}`);
       return response.json();
     },
     enabled: !!userId,
@@ -56,9 +56,9 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
 
   // Get performance analysis
   const { data: analysis, isLoading: analysisLoading } = useQuery<PerformanceAnalysis>({
-    queryKey: ['/api/training/performance-analysis', userId, timeframe],
+    queryKey: ['/api/training/performance-analysis', timeframe],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/training/performance-analysis/${userId}?timeframeDays=${timeframe}`);
+      const response = await apiRequest('GET', `/api/training/performance-analysis?timeframeDays=${timeframe}`);
       return response.json();
     },
     enabled: !!userId,

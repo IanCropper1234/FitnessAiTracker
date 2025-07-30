@@ -79,9 +79,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
   // Get current mesocycles
   const { data: mesocycles = [], isLoading: mesocyclesLoading } = useQuery({
-    queryKey: ['/api/training/mesocycles', userId],
+    queryKey: ['/api/training/mesocycles'],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/training/mesocycles/${userId}`);
+      const response = await apiRequest('GET', `/api/training/mesocycles`);
       const data = await response.json();
       return Array.isArray(data) ? data : [data];
     },

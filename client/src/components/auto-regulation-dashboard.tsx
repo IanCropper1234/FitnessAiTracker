@@ -41,12 +41,12 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
 
   // Fetch volume recommendations
   const { data: recommendations = [], isLoading: recommendationsLoading } = useQuery<VolumeRecommendation[]>({
-    queryKey: ["/api/training/volume-recommendations", userId],
+    queryKey: ["/api/training/volume-recommendations"],
   });
 
   // Fetch fatigue analysis
   const { data: fatigueAnalysis, isLoading: fatigueLoading } = useQuery<FatigueAnalysis>({
-    queryKey: ["/api/training/fatigue-analysis", userId],
+    queryKey: ["/api/training/fatigue-analysis"],
   });
 
   const getRecommendationColor = (recommendation: string) => {

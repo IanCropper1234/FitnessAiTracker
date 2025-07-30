@@ -45,9 +45,9 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
 
   // Fetch shopping list based on food history
   const { data: historyShoppingList, isLoading: historyLoading } = useQuery({
-    queryKey: ['/api/shopping-list', userId, dateRange.startDate, dateRange.endDate],
+    queryKey: ['/api/shopping-list', dateRange.startDate, dateRange.endDate],
     queryFn: async () => {
-      const response = await fetch(`/api/shopping-list/${userId}?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`);
+      const response = await fetch(`/api/shopping-list?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`);
       return response.json();
     },
     enabled: selectedTab === 'history'
@@ -55,9 +55,9 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
 
   // Fetch optimized shopping list based on diet goals
   const { data: optimizedShoppingList, isLoading: optimizedLoading } = useQuery({
-    queryKey: ['/api/shopping-list/optimized', userId],
+    queryKey: ['/api/shopping-list/optimized'],
     queryFn: async () => {
-      const response = await fetch(`/api/shopping-list/optimized/${userId}`);
+      const response = await fetch(`/api/shopping-list/optimized`);
       return response.json();
     },
     enabled: selectedTab === 'optimized'
@@ -77,8 +77,8 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
   const exportShoppingList = () => {
     if (!currentShoppingList) return;
 
-    const listText = currentShoppingList.map(group => {
-      const items = group.items.map(item => 
+    const listText = currentShoppingList.map((group: any) => {
+      const items = group.items.map((item: any) => 
         `• ${item.foodName} - ${item.totalQuantity} ${item.unit} ${item.estimatedCost ? `($${item.estimatedCost})` : ''}`
       ).join('\n');
       

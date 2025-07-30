@@ -417,9 +417,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Auth user data route (keep for legacy compatibility)
-  app.get("/api/auth/user/:userId", async (req, res) => {
+  app.get("/api/auth/user", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const user = await storage.getUser(userId);
       
       if (!user) {

@@ -81,7 +81,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
   // Fetch user's latest body weight (always fetch to check availability)
   const { data: bodyMetrics = [] } = useQuery<any[]>({
-    queryKey: [`/api/body-metrics/${userId}`],
+    queryKey: [`/api/body-metrics`],
     enabled: isBodyWeightExercise, // Only fetch for body weight exercises
   });
 

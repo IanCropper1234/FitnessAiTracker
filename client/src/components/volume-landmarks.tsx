@@ -44,13 +44,13 @@ export function VolumeLandmarks() {
   // Get volume landmarks for user
   const { data: volumeLandmarks, isLoading } = useQuery({
     queryKey: ["/api/training/volume-landmarks", 1], // TODO: Get user ID from context
-    queryFn: () => apiRequest("GET", "/api/training/volume-landmarks/1")
+    queryFn: () => apiRequest("GET", "/api/training/volume-landmarks")
   });
 
   // Update volume landmark mutation
   const updateLandmarkMutation = useMutation({
     mutationFn: async ({ muscleGroupId, data }: { muscleGroupId: number; data: Partial<VolumeLandmark> }) => {
-      return apiRequest("PUT", `/api/training/volume-landmarks/1/${muscleGroupId}`, data);
+      return apiRequest("PUT", `/api/training/volume-landmarks/${muscleGroupId}`, data);
     },
     onSuccess: () => {
       toast({

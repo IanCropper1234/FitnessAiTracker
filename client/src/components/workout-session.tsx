@@ -58,18 +58,15 @@ export function WorkoutSession({ userId, sessionName, exercises, onComplete }: W
 
   const completeWorkoutMutation = useMutation({
     mutationFn: async (workoutData: any) => {
-      return apiRequest("/api/training/session/complete", {
-        method: "POST",
-        body: JSON.stringify(workoutData),
-      });
+      return apiRequest("POST", "/api/training/session/complete", workoutData);
     },
     onSuccess: () => {
       toast({
         title: "Workout Completed!",
         description: "Great job! Time for auto-regulation feedback.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/training/stats", userId] });
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
       onComplete();
     },
     onError: () => {
