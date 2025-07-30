@@ -214,9 +214,12 @@ export function IntegratedNutritionOverview({
       return await apiRequest("DELETE", `/api/nutrition/log/${logId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      // Invalidate with correct query keys to match the component's queries
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
       toast({
         title: "Success",
         description: "Food log deleted successfully"
@@ -236,9 +239,12 @@ export function IntegratedNutritionOverview({
       return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { mealType: newMealType });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      // Invalidate with correct query keys to match the component's queries
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
     },
     onError: (error: any) => {
       toast({
@@ -254,9 +260,12 @@ export function IntegratedNutritionOverview({
       return await apiRequest("POST", "/api/nutrition/log", foodData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      // Invalidate with correct query keys to match the component's queries
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
       toast({
         title: "Success",
         description: "Food copied successfully"
@@ -277,9 +286,12 @@ export function IntegratedNutritionOverview({
       return await Promise.all(promises);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      // Invalidate with correct query keys to match the component's queries
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
       setBulkMode(false);
       setSelectedLogs([]);
       toast({
@@ -324,9 +336,12 @@ export function IntegratedNutritionOverview({
       return await Promise.all(promises);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      // Invalidate with correct query keys to match the component's queries
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
       setBulkMode(false);
       setSelectedLogs([]);
       
@@ -351,9 +366,12 @@ export function IntegratedNutritionOverview({
       return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { quantity, unit });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      // Invalidate with correct query keys to match the component's queries
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
       setShowEditDialog(false);
       setEditingItem(null);
       toast({
