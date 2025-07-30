@@ -2613,22 +2613,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           newFat: adjustment.adjustment.newFat
         });
 
+        console.log('Updated diet goals result:', updatedDietGoals ? 'SUCCESS' : 'NULL');
+        
         if (updatedDietGoals) {
-          res.json({
+          const successResponse = {
             weeklyGoal,
             adjustment: adjustment.adjustment,
             appliedToCurrentGoals: true,
             updatedDietGoals,
             message: `Weekly adjustment applied successfully. Your calorie target increased to ${Math.round(adjustment.adjustment.newCalories)} calories.`
-          });
+          };
+          console.log('Sending success response:', successResponse);
+          res.json(successResponse);
         } else {
-          res.json({
+          const errorResponse = {
             weeklyGoal,
             adjustment: adjustment.adjustment,
             appliedToCurrentGoals: false,
             error: "Diet goal update returned null",
             message: "Weekly analysis recorded. Failed to update diet goals - please check your Diet Goals section manually."
-          });
+          };
+          console.log('Sending error response:', errorResponse);
+          res.json(errorResponse);
         }
       } catch (updateError) {
         console.error('Failed to update diet goals:', updateError);

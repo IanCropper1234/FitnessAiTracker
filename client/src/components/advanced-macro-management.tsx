@@ -329,13 +329,16 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         console.log('Cache invalidated and refetch triggered');
         
         // Show success message with adjustment details
-        if (data.appliedToCurrentGoals) {
+        console.log('Weekly adjustment success response:', data);
+        
+        if (data.appliedToCurrentGoals === true) {
           toast({
             title: "RP Adjustment Applied",
             description: data.message || `Diet goals updated. New target: ${Math.round(data.adjustment.newCalories)} calories`,
             variant: "default"
           });
         } else {
+          console.log('Applied to current goals:', data.appliedToCurrentGoals);
           toast({
             title: "Weekly Analysis Recorded", 
             description: data.message || "Unable to update diet goals automatically.",
