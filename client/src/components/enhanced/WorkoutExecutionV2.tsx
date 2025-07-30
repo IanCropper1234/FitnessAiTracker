@@ -110,6 +110,18 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [customRestTime, setCustomRestTime] = useState<number | null>(null);
   const [sessionStartTime] = useState(Date.now());
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [headerExpanded, setHeaderExpanded] = useState(false);
+  
+  // Auto-collapse header after inactivity
+  useEffect(() => {
+    if (headerExpanded) {
+      const timer = setTimeout(() => {
+        setHeaderExpanded(false);
+      }, 3000); // Auto-collapse after 3 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [headerExpanded]);
   const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
   const [showFeedback, setShowFeedback] = useState(false);
   
@@ -653,25 +665,99 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   return (
     <div className="space-y-2 max-w-4xl mx-auto ios-list-scroll animated-element" {...swipeHandlers}>
-      {/* Ultra-Compact Header */}
-      <div className="ios-card p-2 space-y-1.5 animated-element">
-        {/* Single Line Summary - Minimalist Approach */}
-        <div className="flex items-center justify-between">
+      {/* iOS-Style Expandable Compact Header */}
+      <div className="ios-card overflow-hidden animated-element">
+        {/* Collapsed State - Ultra Compact Single Row */}
+        <div 
+          className="flex items-center justify-between p-2 cursor-pointer ios-touch-feedback transition-all duration-200 hover:bg-muted/30"
+          onClick={() => setHeaderExpanded(!headerExpanded)}
+        >
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="text-xs text-muted-foreground">
-              {currentExerciseIndex + 1}/{session.exercises.length}
-            </span>
-            <span className="text-xs font-medium text-primary">
-              {Math.round(progressPercentage)}%
-            </span>
+            {/* Exercise Index & Progress */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                {currentExerciseIndex + 1}/{session.exercises.length}
+              </span>
+              <span className="text-xs font-semibold text-primary">
+                {Math.round(progressPercentage)}%
+              </span>
+            </div>
+            
+            {/* Exercise Name */}
             {currentExercise && (
-              <>
-                <span className="text-xs font-medium text-foreground truncate">
-                  {currentExercise.exercise.name}
-                </span>
-                {/* Special Training Method Badge in Header */}
-                {specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
-                  <div className={`px-1 py-0.5 rounded text-xs font-medium border ${
+              <span className="text-sm font-medium text-foreground truncate flex-1">
+                {currentExercise.exercise.name}
+              </span>
+            )}
+            
+            {/* Special Method Indicator Dot */}
+            {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
+              <div className={`w-2 h-2 rounded-full ${
+                specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500' :
+                specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500' :
+                specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500' :
+                specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500' :
+                'bg-gray-500'
+              }`} />
+            )}
+          </div>
+          
+          {/* Expand/Collapse Chevron */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">
+              {completedSets}/{totalSets}
+            </span>
+            <div className={`transform transition-transform duration-200 ${headerExpanded ? 'rotate-180' : ''}`}>
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Expanded State - Detailed View */}
+        {headerExpanded && (
+          <div className="border-t border-border/30 bg-muted/10 space-y-2 p-2 animate-in slide-in-from-top-1 duration-200">
+            {/* Session Info Row */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground truncate">
+                {session.name}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCircularProgressEnabled(!circularProgressEnabled);
+                }}
+                className="text-xs text-muted-foreground hover:text-foreground ios-touch-feedback px-2 py-1 rounded-md"
+              >
+                {circularProgressEnabled ? 'Bar View' : 'Circle View'}
+              </button>
+            </div>
+
+            {/* Progress Display */}
+            {circularProgressEnabled ? (
+              <div className="flex justify-center py-1">
+                <CircularProgress 
+                  progress={progressPercentage}
+                  size={36}
+                  strokeWidth={3}
+                />
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <Progress value={progressPercentage} className="h-1.5 bg-muted" />
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Workout Progress</span>
+                  <span>{Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min elapsed</span>
+                </div>
+              </div>
+            )}
+
+            {/* Special Training Method Details */}
+            {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
+              <div className="border border-border/50 rounded-lg p-2 bg-background/50">
+                <div className="flex items-center justify-between mb-1">
+                  <div className={`px-2 py-1 rounded text-xs font-medium border ${
                     specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                     specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                     specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
@@ -679,117 +765,50 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                     specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500/10 border-orange-500/30 text-orange-600' :
                     'bg-gray-500/10 border-gray-500/30 text-gray-600'
                   }`}>
-                    {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep' :
-                     specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep' :
-                     specialMethods[currentExercise.id] === 'drop_set' ? 'Drop' :
-                     specialMethods[currentExercise.id] === 'superset' ? 'Super' :
-                     specialMethods[currentExercise.id] === 'giant_set' ? 'Giant' :
+                    {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep Match' :
+                     specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep No Match' :
+                     specialMethods[currentExercise.id] === 'drop_set' ? 'Drop Set' :
+                     specialMethods[currentExercise.id] === 'superset' ? 'Superset' :
+                     specialMethods[currentExercise.id] === 'giant_set' ? 'Giant Set' :
                      specialMethods[currentExercise.id]}
                   </div>
-                )}
-              </>
+                  <span className="text-xs text-muted-foreground">Active</span>
+                </div>
+                
+                {/* Method Configuration Details */}
+                <div className="space-y-1 text-xs">
+                  {(specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'drop_set') && 
+                   specialConfigs[currentExercise.id]?.miniSetReps && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Mini-Set Reps:</span>
+                      <span className="font-medium">{specialConfigs[currentExercise.id].miniSetReps}</span>
+                    </div>
+                  )}
+                  
+                  {specialMethods[currentExercise.id] === 'drop_set' && 
+                   specialConfigs[currentExercise.id]?.dropsetWeight && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Dropset Weights:</span>
+                      <span className="font-medium">{specialConfigs[currentExercise.id].dropsetWeight}</span>
+                    </div>
+                  )}
+                  
+                  {specialMethods[currentExercise.id] === 'giant_set' && 
+                   specialConfigs[currentExercise.id] && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Target Reps:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].totalTargetReps || 40}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Per Mini-Set:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].miniSetReps || 5}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             )}
-          </div>
-          <button
-            onClick={() => setCircularProgressEnabled(!circularProgressEnabled)}
-            className="text-xs text-muted-foreground hover:text-foreground ios-touch-feedback touch-target"
-          >
-            {circularProgressEnabled ? 'Bar' : 'Circle'}
-          </button>
-        </div>
-
-        {/* Special Training Method Details Section */}
-        {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
-          <div className="border border-border/50 rounded-lg p-2 bg-muted/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`px-2 py-1 rounded text-xs font-medium border ${
-                  specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
-                  specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
-                  specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
-                  specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500/10 border-purple-500/30 text-purple-600' :
-                  specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500/10 border-orange-500/30 text-orange-600' :
-                  'bg-gray-500/10 border-gray-500/30 text-gray-600'
-                }`}>
-                  {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep Match' :
-                   specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep No Match' :
-                   specialMethods[currentExercise.id] === 'drop_set' ? 'Drop Set' :
-                   specialMethods[currentExercise.id] === 'superset' ? 'Superset' :
-                   specialMethods[currentExercise.id] === 'giant_set' ? 'Giant Set' :
-                   specialMethods[currentExercise.id]}
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Special Method Applied
-              </div>
-            </div>
-            
-            {/* Method-specific details */}
-            <div className="mt-1.5 space-y-1">
-              {/* Mini-Set Reps Display */}
-              {(specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'drop_set') && 
-               specialConfigs[currentExercise.id]?.miniSetReps && (
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-muted-foreground">Mini-Set Reps:</span>
-                  <span className="font-medium text-foreground">
-                    {specialConfigs[currentExercise.id].miniSetReps}
-                  </span>
-                </div>
-              )}
-              
-              {/* Dropset Weight Display */}
-              {specialMethods[currentExercise.id] === 'drop_set' && 
-               specialConfigs[currentExercise.id]?.dropsetWeight && (
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-muted-foreground">Dropset Weights:</span>
-                  <span className="font-medium text-foreground">
-                    {specialConfigs[currentExercise.id].dropsetWeight}
-                  </span>
-                </div>
-              )}
-              
-              {/* Giant Set Configuration */}
-              {specialMethods[currentExercise.id] === 'giant_set' && 
-               specialConfigs[currentExercise.id] && (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-muted-foreground">Target Total Reps:</span>
-                    <span className="font-medium text-foreground">
-                      {specialConfigs[currentExercise.id].totalTargetReps || 40}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-muted-foreground">Reps per Mini-Set:</span>
-                    <span className="font-medium text-foreground">
-                      {specialConfigs[currentExercise.id].miniSetReps || 5}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Compact Progress Indicator */}
-        {circularProgressEnabled ? (
-          <div className="flex justify-center py-1">
-            <CircularProgress 
-              progress={progressPercentage}
-              size={40}
-              strokeWidth={4}
-            />
-          </div>
-        ) : (
-          <div className="space-y-1">
-            <Progress value={progressPercentage} className="h-1.5 bg-muted" />
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                {session.name}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {completedSets}/{totalSets} sets
-              </span>
-            </div>
           </div>
         )}
       </div>
