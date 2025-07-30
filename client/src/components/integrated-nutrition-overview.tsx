@@ -233,7 +233,7 @@ export function IntegratedNutritionOverview({
 
   const updateMealTypeMutation = useMutation({
     mutationFn: async ({ logId, newMealType }: { logId: number; newMealType: string }) => {
-      return await apiRequest("PUT", `/api/nutrition/logs/${logId}/meal-type`, { mealType: newMealType });
+      return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { mealType: newMealType });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
@@ -540,11 +540,8 @@ export function IntegratedNutritionOverview({
   };
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
-    console.log('Drag start triggered for:', log.foodName, 'from meal type:', log.mealType, 'bulkMode:', bulkMode);
-    if (!e.dataTransfer || !log || bulkMode) {
-      console.log('Drag cancelled - bulkMode:', bulkMode);
-      return;
-    }
+    console.log('Drag start triggered for:', log.foodName, 'from meal type:', log.mealType);
+    if (!e.dataTransfer || !log || bulkMode) return;
     
     setDraggedItem(log);
     setIsDraggingActive(true);
@@ -970,12 +967,10 @@ export function IntegratedNutritionOverview({
                   variant={bulkMode ? "default" : "outline"}
                   size="sm"
                   onClick={() => {
-                    console.log('Bulk mode toggled from', bulkMode, 'to', !bulkMode);
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
                   className="text-xs h-6 px-1.5"
-                  title={bulkMode ? "Exit bulk selection mode" : "Enter bulk selection mode"}
                 >
                   <CheckSquare className="w-3 h-3" />
                 </Button>
@@ -995,18 +990,6 @@ export function IntegratedNutritionOverview({
           </div>
         </CardHeader>
         <CardContent className="pt-0 px-4 pb-4">
-          {/* Bulk Mode Status Alert */}
-          {bulkMode && (
-            <div className="mb-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-700">
-              <div className="text-xs text-yellow-800 dark:text-yellow-200 font-medium mb-1">
-                🔒 Bulk Selection Mode Active - Drag & Drop Disabled
-              </div>
-              <div className="text-xs text-yellow-600 dark:text-yellow-400">
-                Click the ☑️ button above to exit bulk mode and enable drag & drop
-              </div>
-            </div>
-          )}
-          
           {/* Bulk Operations Controls */}
           {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
             <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded border border-blue-200 dark:border-blue-700">
@@ -1197,26 +1180,13 @@ export function IntegratedNutritionOverview({
                         <div 
                           key={log.id}
                           draggable={!bulkMode}
-                          onDragStart={(e) => {
-                            console.log('onDragStart called for:', log.foodName, 'bulkMode:', bulkMode);
-                            if (!bulkMode) {
-                              handleDragStart(e, log);
-                            }
-                          }}
+                          onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => !bulkMode && handleDragOver(e, mealType.key, index)}
-                          onTouchStart={(e) => {
-                            console.log('onTouchStart called for:', log.foodName);
-                            // For mobile devices, we need to handle touch events differently
-                            if (!bulkMode) {
-                              setDraggedItem(log);
-                              setIsDraggingActive(true);
-                            }
-                          }}
                           style={{
                             transform: shouldShift ? 'translateY(4px)' : 'translateY(0)',
                             transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                            touchAction: bulkMode ? 'auto' : 'none',
+                            touchAction: 'manipulation',
                             WebkitTouchCallout: 'none',
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
@@ -1314,33 +1284,7 @@ export function IntegratedNutritionOverview({
                                   .filter(mt => mt.key !== log.mealType)
                                   .map(mt => (
                                     <DropdownMenuItem
-                                      key={`move-${mt.key}`}
-                                      onClick={() => {
-                                        console.log('Moving via dropdown:', log.foodName, 'to', mt.key);
-                                        updateMealTypeMutation.mutate({
-                                          logId: log.id,
-                                          newMealType: mt.key
-                                        }, {
-                                          onSuccess: () => {
-                                            toast({
-                                              title: "Food Moved",
-                                              description: `${log.foodName} moved to ${mt.label}`,
-                                            });
-                                          }
-                                        });
-                                      }}
-                                    >
-                                      <ArrowRight className="h-4 w-4 mr-2" />
-                                      Move to {mt.label}
-                                    </DropdownMenuItem>
-                                  ))
-                                }
-                                <DropdownMenuSeparator />
-                                {mealTypes
-                                  .filter(mt => mt.key !== log.mealType)
-                                  .map(mt => (
-                                    <DropdownMenuItem
-                                      key={`copy-${mt.key}`}
+                                      key={mt.key}
                                       onClick={() => handleCopyFood(log, mt.key)}
                                     >
                                       <Copy className="h-4 w-4 mr-2" />
