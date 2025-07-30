@@ -260,9 +260,11 @@ export function DailyFoodLog({
   });
 
   const { data: nutritionLogs, isLoading } = useQuery({
-    queryKey: ['/api/nutrition/logs', userId, selectedDate],
+    queryKey: ['/api/nutrition/logs', selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/logs?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${selectedDate}`, {
+        credentials: 'include'
+      });
       return response.json();
     }
   });
@@ -300,10 +302,12 @@ export function DailyFoodLog({
 
   // Copy meals from another date
   const { data: copySourceLogs } = useQuery({
-    queryKey: ['/api/nutrition/logs', userId, copyFromDate],
+    queryKey: ['/api/nutrition/logs', copyFromDate],
     queryFn: async () => {
       if (!copyFromDate) return [];
-      const response = await fetch(`/api/nutrition/logs?date=${copyFromDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${copyFromDate}`, {
+        credentials: 'include'
+      });
       return response.json();
     },
     enabled: !!copyFromDate
@@ -335,7 +339,6 @@ export function DailyFoodLog({
     mutationFn: async (logData: any) => {
       return await apiRequest("POST", "/api/nutrition/log", {
         ...logData,
-        userId,
         date: selectedDate
       });
     },
@@ -360,7 +363,6 @@ export function DailyFoodLog({
   const copyMealsMutation = useMutation({
     mutationFn: async (data: { fromDate: string; toDate: string; mealTypes?: string[] }) => {
       return await apiRequest("POST", "/api/nutrition/copy-meals", {
-        userId,
         ...data
       });
     },
@@ -415,7 +417,6 @@ export function DailyFoodLog({
   const bulkCopyToDateMutation = useMutation({
     mutationFn: async (data: { logIds: number[]; targetDate: string }) => {
       return await apiRequest("POST", "/api/nutrition/bulk-copy", {
-        userId,
         logIds: data.logIds,
         targetDate: data.targetDate
       });

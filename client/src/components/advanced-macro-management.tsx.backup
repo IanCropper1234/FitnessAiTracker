@@ -306,6 +306,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     const hunger = weeklyGoals?.[0]?.hungerLevels || 5;
 
     const adjustmentData = {
+      ]
       weekStartDate: selectedWeek,
       currentGoals: dietGoals,
       adjustmentReason: "progress_check",
@@ -410,6 +411,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const createDefaultMealDistribution = async () => {
     const defaultDistributions = [
       {
+        ]
         mealType: "breakfast",
         mealTiming: "regular",
         proteinPercentage: 25,
@@ -418,6 +420,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         caloriePercentage: 25
       },
       {
+        ]
         mealType: "pre_workout",
         mealTiming: "pre_workout", 
         proteinPercentage: 15,
@@ -426,6 +429,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         caloriePercentage: 15
       },
       {
+        ]
         mealType: "post_workout",
         mealTiming: "post_workout",
         proteinPercentage: 45,
@@ -434,6 +438,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         caloriePercentage: 25
       },
       {
+        ]
         mealType: "dinner",
         mealTiming: "regular",
         proteinPercentage: 30,
@@ -452,6 +457,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const createDefaultFlexibilityRules = async () => {
     const defaultRules = [
       {
+        ]
         ruleName: "Weekend Social Eating",
         triggerDays: ["saturday", "sunday"],
         flexProtein: 10,
@@ -461,6 +467,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         isActive: true
       },
       {
+        ]
         ruleName: "Business Lunch",
         triggerDays: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         flexProtein: 15,
