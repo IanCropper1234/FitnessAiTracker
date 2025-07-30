@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WeeklyWellnessCheckin from "@/components/weekly-wellness-checkin";
+import DailyWellnessCheckin from "@/components/daily-wellness-checkin";
 import { Badge } from "@/components/ui/badge";
 import { Brain, TrendingUp, Calendar } from "lucide-react";
 
@@ -27,7 +27,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="checkin" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            Weekly Check-in
+            Daily Check-in
           </TabsTrigger>
           <TabsTrigger value="analysis" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -40,7 +40,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
         </TabsList>
 
         <TabsContent value="checkin" className="space-y-6">
-          <WeeklyWellnessCheckin userId={userId} />
+          <DailyWellnessCheckin userId={userId} />
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">

@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { weeklyNutritionGoals, weeklyWellnessCheckins, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
+import { weeklyNutritionGoals, dailyWellnessCheckins, weeklyWellnessSummaries, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import { UnitConverter } from '../../shared/utils/unit-conversion';
 
@@ -38,14 +38,9 @@ export class AdvancedMacroManagementService {
       const dailyTotals = this.calculateDailyTotals(weeklyLogs);
       const adherencePercentage = this.calculateAdherence(dailyTotals, currentGoal);
 
-      // Get wellness data for the current week
-      const wellnessData = await db.select()
-        .from(weeklyWellnessCheckins)
-        .where(and(
-          eq(weeklyWellnessCheckins.userId, userId),
-          eq(weeklyWellnessCheckins.weekStartDate, weekStart)
-        ))
-        .limit(1);
+      // Get wellness data using the new daily wellness service
+      const { DailyWellnessService } = await import('./daily-wellness-service');
+      const wellnessData = await DailyWellnessService.getWellnessDataForMacroAdjustment(userId, weekStart);
 
       // Get previous week's weight (if available)
       const previousWeekStart = new Date(weekStart);
@@ -66,7 +61,7 @@ export class AdvancedMacroManagementService {
         adherencePercentage,
         weeklyLogs,
         previousWeekGoals: previousWeekGoals[0] || null,
-        wellnessData: wellnessData[0] || null
+        wellnessData: wellnessData
       });
 
       return {

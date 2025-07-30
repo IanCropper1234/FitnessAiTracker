@@ -13,7 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
-import WeeklyWellnessCheckin from "./weekly-wellness-checkin";
+import DailyWellnessCheckin from "./daily-wellness-checkin";
 
 
 interface AdvancedMacroManagementProps {
@@ -467,18 +467,30 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Weekly Wellness Check-in Section */}
+              {/* Daily Wellness Check-in Section */}
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Heart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <h3 className="font-semibold text-black dark:text-white">Weekly Wellness Check-in</h3>
+                    <h3 className="font-semibold text-black dark:text-white">Daily Wellness Check-in</h3>
                     <Badge variant="secondary" className="text-xs">Required for adjustments</Badge>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Your wellness ratings directly influence macro adjustment calculations using RP methodology
+                    Daily wellness ratings are automatically averaged weekly to influence macro adjustment calculations using authentic RP methodology
                   </p>
-                  <WeeklyWellnessCheckin userId={userId} />
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      Complete your daily wellness check-ins in the RP Coach section for accurate macro adjustments.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.location.href = '/rp-coach'}
+                      className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                    >
+                      Go to RP Coach Daily Check-in
+                    </Button>
+                  </div>
                 </div>
               </div>
               

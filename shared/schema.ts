@@ -98,11 +98,11 @@ export const mealPlans = pgTable("meal_plans", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Weekly Wellness Check-ins (RP Diet Coach style)
-export const weeklyWellnessCheckins = pgTable("weekly_wellness_checkins", {
+// Daily Wellness Check-ins (RP Diet Coach style - authentic methodology)
+export const dailyWellnessCheckins = pgTable("daily_wellness_checkins", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  weekStartDate: timestamp("week_start_date").notNull(),
+  date: timestamp("date").notNull(), // Daily date for wellness tracking
   energyLevel: integer("energy_level").notNull(), // 1-10 scale
   hungerLevel: integer("hunger_level").notNull(), // 1-10 scale
   sleepQuality: integer("sleep_quality"), // 1-10 scale (optional)
@@ -112,6 +112,24 @@ export const weeklyWellnessCheckins = pgTable("weekly_wellness_checkins", {
   notes: text("notes"), // Optional user notes
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Weekly Wellness Summaries (calculated from daily checkins for macro adjustments)
+export const weeklyWellnessSummaries = pgTable("weekly_wellness_summaries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  weekStartDate: timestamp("week_start_date").notNull(),
+  // Weekly averages calculated from daily checkins
+  avgEnergyLevel: decimal("avg_energy_level", { precision: 3, scale: 1 }), // Calculated average
+  avgHungerLevel: decimal("avg_hunger_level", { precision: 3, scale: 1 }), // Calculated average
+  avgSleepQuality: decimal("avg_sleep_quality", { precision: 3, scale: 1 }), // Calculated average
+  avgStressLevel: decimal("avg_stress_level", { precision: 3, scale: 1 }), // Calculated average
+  avgCravingsIntensity: decimal("avg_cravings_intensity", { precision: 3, scale: 1 }), // Calculated average
+  avgAdherencePerception: decimal("avg_adherence_perception", { precision: 3, scale: 1 }), // Calculated average
+  // Metadata
+  daysTracked: integer("days_tracked").notNull(), // How many days had checkins
+  calculatedAt: timestamp("calculated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
@@ -465,7 +483,8 @@ export const insertFoodCategorySchema = createInsertSchema(foodCategories).omit(
 export const insertFoodItemSchema = createInsertSchema(foodItems).omit({ id: true });
 export const insertMealPlanSchema = createInsertSchema(mealPlans).omit({ id: true, createdAt: true });
 export const insertWeeklyNutritionGoalSchema = createInsertSchema(weeklyNutritionGoals).omit({ id: true, createdAt: true });
-export const insertWeeklyWellnessCheckinSchema = createInsertSchema(weeklyWellnessCheckins).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertDailyWellnessCheckinSchema = createInsertSchema(dailyWellnessCheckins).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertWeeklyWellnessSummarySchema = createInsertSchema(weeklyWellnessSummaries).omit({ id: true, calculatedAt: true, createdAt: true });
 export const insertDietPhaseSchema = createInsertSchema(dietPhases).omit({ id: true, createdAt: true });
 export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPreferences).omit({ id: true, updatedAt: true });
 export const insertSavedMealSchema = createInsertSchema(savedMeals).omit({ id: true, createdAt: true, updatedAt: true });
@@ -517,8 +536,10 @@ export type MealPlan = typeof mealPlans.$inferSelect;
 export type InsertMealPlan = z.infer<typeof insertMealPlanSchema>;
 export type WeeklyNutritionGoal = typeof weeklyNutritionGoals.$inferSelect;
 export type InsertWeeklyNutritionGoal = z.infer<typeof insertWeeklyNutritionGoalSchema>;
-export type WeeklyWellnessCheckin = typeof weeklyWellnessCheckins.$inferSelect;
-export type InsertWeeklyWellnessCheckin = z.infer<typeof insertWeeklyWellnessCheckinSchema>;
+export type DailyWellnessCheckin = typeof dailyWellnessCheckins.$inferSelect;
+export type InsertDailyWellnessCheckin = z.infer<typeof insertDailyWellnessCheckinSchema>;
+export type WeeklyWellnessSummary = typeof weeklyWellnessSummaries.$inferSelect;
+export type InsertWeeklyWellnessSummary = z.infer<typeof insertWeeklyWellnessSummarySchema>;
 export type DietPhase = typeof dietPhases.$inferSelect;
 export type InsertDietPhase = z.infer<typeof insertDietPhaseSchema>;
 export type MealTimingPreference = typeof mealTimingPreferences.$inferSelect;

@@ -2180,79 +2180,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Weekly Wellness Check-in routes (RP Diet Coach style)
-  app.get("/api/wellness-checkins/:userId", async (req, res) => {
+  // Daily Wellness Check-in routes (Authentic RP Diet Coach methodology)
+  const { DailyWellnessService } = await import("./services/daily-wellness-service");
+  
+  app.get("/api/daily-wellness-checkins/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const { week } = req.query;
+      const { date } = req.query;
       
-      let query = db.select()
-        .from(weeklyWellnessCheckins)
-        .where(eq(weeklyWellnessCheckins.userId, userId));
-      
-      if (week) {
-        const weekStart = new Date(week as string);
-        query = query.where(eq(weeklyWellnessCheckins.weekStartDate, weekStart));
+      if (date) {
+        // Get specific date's checkin
+        const checkin = await DailyWellnessService.getDailyCheckin(userId, new Date(date as string));
+        res.json(checkin);
+      } else {
+        // Get recent checkins (last 7 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+        
+        const checkins = await DailyWellnessService.getDailyCheckins(userId, startDate, endDate);
+        res.json(checkins);
       }
-      
-      const checkins = await query.orderBy(desc(weeklyWellnessCheckins.weekStartDate));
-      res.json(checkins);
     } catch (error: any) {
-      console.error('Error fetching wellness checkins:', error);
-      res.status(500).json({ error: 'Failed to fetch wellness checkins' });
+      console.error('Error fetching daily wellness checkins:', error);
+      res.status(500).json({ error: 'Failed to fetch daily wellness checkins' });
     }
   });
 
-  app.post("/api/wellness-checkins", async (req, res) => {
+  app.post("/api/daily-wellness-checkins", async (req, res) => {
     try {
-      const { userId, weekStartDate, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
+      const { userId, date, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
       
-      // Check if checkin already exists for this week
-      const existingCheckin = await db.select()
-        .from(weeklyWellnessCheckins)
-        .where(and(
-          eq(weeklyWellnessCheckins.userId, userId),
-          eq(weeklyWellnessCheckins.weekStartDate, new Date(weekStartDate))
-        ));
+      const checkin = await DailyWellnessService.upsertDailyCheckin(userId, new Date(date), {
+        energyLevel,
+        hungerLevel,
+        sleepQuality,
+        stressLevel,
+        cravingsIntensity,
+        adherencePerception,
+        notes
+      });
       
-      if (existingCheckin.length > 0) {
-        // Update existing checkin
-        const updated = await db.update(weeklyWellnessCheckins)
-          .set({
-            energyLevel,
-            hungerLevel,
-            sleepQuality,
-            stressLevel,
-            cravingsIntensity,
-            adherencePerception,
-            notes,
-            updatedAt: new Date()
-          })
-          .where(eq(weeklyWellnessCheckins.id, existingCheckin[0].id))
-          .returning();
-        
-        res.json(updated[0]);
-      } else {
-        // Create new checkin
-        const newCheckin = await db.insert(weeklyWellnessCheckins)
-          .values({
-            userId,
-            weekStartDate: new Date(weekStartDate),
-            energyLevel,
-            hungerLevel,
-            sleepQuality,
-            stressLevel,
-            cravingsIntensity,
-            adherencePerception,
-            notes
-          })
-          .returning();
-        
-        res.json(newCheckin[0]);
-      }
+      res.json(checkin);
     } catch (error: any) {
-      console.error('Error saving wellness checkin:', error);
-      res.status(500).json({ error: 'Failed to save wellness checkin' });
+      console.error('Error saving daily wellness checkin:', error);
+      res.status(500).json({ error: 'Failed to save daily wellness checkin' });
+    }
+  });
+
+  // Weekly wellness summary routes
+  app.get("/api/weekly-wellness-summary/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { weekStartDate } = req.query;
+      
+      if (!weekStartDate) {
+        return res.status(400).json({ error: 'weekStartDate query parameter is required' });
+      }
+      
+      const summary = await DailyWellnessService.getWeeklySummary(userId, new Date(weekStartDate as string));
+      res.json(summary);
+    } catch (error: any) {
+      console.error('Error fetching weekly wellness summary:', error);
+      res.status(500).json({ error: 'Failed to fetch weekly wellness summary' });
+    }
+  });
+
+  app.post("/api/weekly-wellness-summary", async (req, res) => {
+    try {
+      const { userId, weekStartDate } = req.body;
+      
+      const summary = await DailyWellnessService.upsertWeeklySummary(userId, new Date(weekStartDate));
+      res.json(summary);
+    } catch (error: any) {
+      console.error('Error creating weekly wellness summary:', error);
+      res.status(500).json({ error: 'Failed to create weekly wellness summary' });
     }
   });
 
