@@ -55,7 +55,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   useEffect(() => {
     if (!user && location !== "/auth") {
       setLocation("/auth");
-    } else if (user && location === "/auth") {
+    } else if (user && (location === "/auth" || location === "/")) {
       setLocation("/dashboard");
     }
   }, [user, location, setLocation]);
@@ -67,6 +67,15 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   return (
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu || showTrainingMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
+        <Route path="/">
+          <div className="page-enter ios-animation">
+            {user ? (
+              <div className="animate-pulse">Redirecting...</div>
+            ) : (
+              <div className="animate-pulse">Loading...</div>
+            )}
+          </div>
+        </Route>
         <Route path="/auth">
           <div className="page-enter ios-animation">
             <Auth onSuccess={(userData: User) => {
