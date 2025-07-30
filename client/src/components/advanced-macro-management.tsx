@@ -129,17 +129,32 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
   };
 
-  // Get actual weekly weight change from weekly goals data with proper unit handling
+  // Get actual weekly weight change from weekly goals data with proper NULL handling
   const getWeeklyWeightChange = () => {
-    if (weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].weightChange) {
-      return parseFloat(weeklyGoals[0].weightChange);
+    if (weeklyGoals && weeklyGoals.length > 0) {
+      // Try to get weight change from current and previous weights
+      if (weeklyGoals[0].currentWeight && weeklyGoals[0].previousWeight) {
+        const current = parseFloat(weeklyGoals[0].currentWeight);
+        const previous = parseFloat(weeklyGoals[0].previousWeight);
+        if (!isNaN(current) && !isNaN(previous)) {
+          return current - previous;
+        }
+      }
+      // Fallback to direct weight change field
+      if (weeklyGoals[0].weightChange) {
+        const weightChange = parseFloat(weeklyGoals[0].weightChange);
+        return !isNaN(weightChange) ? weightChange : null;
+      }
     }
-    return 0;
+    return null; // Return null when no valid weight data available
   };
 
   // Format weight change with user's preferred unit
   const formatWeightChangeWithUnit = (weightChange: number) => {
-    if (!weightChange) return '0.0kg';
+    // Handle NULL, undefined, or NaN values properly
+    if (weightChange === null || weightChange === undefined || isNaN(weightChange)) {
+      return 'No data';
+    }
     
     const preferredUnit = getUserWeightUnit();
     const convertedChange = UnitConverter.convertWeightChange(
@@ -645,36 +660,32 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <Progress value={(parseFloat(weeklyGoals[0].energyLevels?.toString() || "0") / 10) * 100} className="h-2" />
                     </div>
 
-                    {/* Weight Change Analysis (RP Methodology) */}
-                    {weeklyGoals[0].currentWeight && weeklyGoals[0].previousWeight && (
-                      <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
-                          <div className="text-right">
-                            <span className="text-sm font-medium text-black dark:text-white">
-                              {formatWeightChangeWithUnit(getWeeklyWeightChange())}
-                            </span>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {weeklyGoals[0].currentWeight ? UnitConverter.formatWeight(parseFloat(weeklyGoals[0].currentWeight), weeklyGoals[0].currentWeightUnit || 'metric') : 'N/A'}
-                            </div>
+                    {/* Weight Change Analysis - Show when any weight data exists or provide helpful message */}
+                    <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
+                        <div className="text-right">
+                          <span className="text-sm font-medium text-black dark:text-white">
+                            {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                          </span>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {getWeeklyWeightChange() === null ? 'Add weight data in Body section' : 'Current week'}
                           </div>
                         </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-gray-500 dark:text-gray-400">
-                            Target: {weeklyGoals[0].targetWeightChangePerWeek ? 
-                              formatWeightChangeWithUnit(parseFloat(weeklyGoals[0].targetWeightChangePerWeek)) : 
-                              'N/A'}/week
-                          </span>
-                          <span className={`font-medium ${
-                            weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
-                            weeklyGoals[0].weightTrend === 'gaining' ? 'text-green-600 dark:text-green-400' :
-                            'text-orange-600 dark:text-orange-400'
-                          }`}>
-                            {weeklyGoals[0].weightTrend?.charAt(0).toUpperCase() + weeklyGoals[0].weightTrend?.slice(1)}
-                          </span>
-                        </div>
                       </div>
-                    )}
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Target: No target set
+                        </span>
+                        <span className={`font-medium ${
+                          weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
+                          weeklyGoals[0].weightTrend === 'gaining' ? 'text-green-600 dark:text-green-400' :
+                          'text-orange-600 dark:text-orange-400'
+                        }`}>
+                          {weeklyGoals[0].weightTrend?.charAt(0).toUpperCase() + weeklyGoals[0].weightTrend?.slice(1) || 'Tracking'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-3">
                     <h4 className="font-medium text-black dark:text-white">Weekly Changes</h4>
