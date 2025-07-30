@@ -564,47 +564,49 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 </div>
               )}
 
-              {/* Mobile-Optimized RP Analysis Section */}
+              {/* Show enhanced RP methodology recommendation if available */}
               {weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].adjustmentRecommendation && selectedWeek && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden">
-                  <div className="p-3 sm:p-4">
-                    <div className="flex items-start gap-2 mb-3">
-                      <div className="flex-shrink-0 mt-0.5">
-                        {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                        {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />}
-                        {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <Target className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />}
-                        {weeklyGoals[0].adjustmentRecommendation === 'maintain' && <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-black dark:text-white text-sm leading-tight mb-2">
-                          RP Analysis
-                        </h3>
-                        <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && 'Weight progress slower than target despite good adherence. Increase calories to optimize results.'}
-                          {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && 'Weight progress faster than target or stalled with high adherence. Adjust calories for optimal body composition.'}
-                          {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && 'Focus on hitting nutrition targets consistently before making calorie adjustments.'}
-                          {weeklyGoals[0].adjustmentRecommendation === 'maintain' && 'Current approach is working well. Continue with current plan.'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Compact metrics in stacked layout for mobile */}
-                    <div className="space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600 dark:text-gray-400 truncate">Goal Type:</span>
-                        <span className="font-medium text-black dark:text-white capitalize ml-2">{weeklyGoals[0].goalType}</span>
+                <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-15px] mr-[-15px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />}
+                    {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />}
+                    {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <Target className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />}
+                    {weeklyGoals[0].adjustmentRecommendation === 'maintain' && <ArrowRight className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
+                    <h3 className="font-semibold text-black dark:text-white">
+                      Renaissance Periodization Analysis
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                    {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && 'Weight progress slower than target despite good adherence. Increase calories to optimize results.'}
+                    {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && 'Weight progress faster than target or stalled with high adherence. Adjust calories for optimal body composition.'}
+                    {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && 'Focus on hitting nutrition targets consistently before making calorie adjustments.'}
+                    {weeklyGoals[0].adjustmentRecommendation === 'maintain' && 'Current approach is working well. Continue with current plan.'}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Goal Type:</span>
+                        <span className="font-medium text-black dark:text-white capitalize">{weeklyGoals[0].goalType}</span>
                       </div>
                       {weeklyGoals[0].currentWeight && weeklyGoals[0].previousWeight && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400 truncate">Weight Change:</span>
-                          <span className="font-medium text-black dark:text-white ml-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 dark:text-gray-400">Weight Change:</span>
+                          <span className="font-medium text-black dark:text-white">
                             {formatWeightChangeWithUnit(getWeeklyWeightChange())}
                           </span>
                         </div>
                       )}
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600 dark:text-gray-400 truncate">Recommendation:</span>
-                        <span className="font-medium text-black dark:text-white capitalize ml-2 truncate">
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Data Source:</span>
+                        <span className="font-medium text-black dark:text-white">
+                          {weeklyGoals[0].adjustmentReason === 'calculated_from_logs' ? 'Calculated' : 'Stored'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Recommendation:</span>
+                        <span className="font-medium text-black dark:text-white capitalize">
                           {weeklyGoals[0].adjustmentRecommendation?.replace('_', ' ')}
                         </span>
                       </div>
@@ -613,68 +615,80 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 </div>
               )}
 
-              {/* Mobile-First Progress Metrics */}
               {weeklyGoals && weeklyGoals.length > 0 && (
-                <div className="space-y-4">
-                  {/* Progress Section */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-                    <h4 className="font-medium text-black dark:text-white mb-3 text-sm">Progress Metrics</h4>
-                    
-                    {/* Adherence */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-600 dark:text-gray-400">Adherence</span>
-                        <span className="text-xs font-medium text-black dark:text-white">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-black dark:text-white">Progress Metrics</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Adherence (Past Days)</span>
+                        <span className="text-sm font-medium text-black dark:text-white">
                           {weeklyGoals[0].adherencePercentage || 0}%
                         </span>
                       </div>
-                      <Progress value={parseFloat(weeklyGoals[0].adherencePercentage || "0")} className="h-1.5" />
+                      <Progress value={parseFloat(weeklyGoals[0].adherencePercentage || "0")} className="h-2" />
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Only counts completed days, not future days
+                      </div>
                     </div>
-                    
-                    {/* Energy Level */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-600 dark:text-gray-400">Energy Level</span>
-                        <span className="text-xs font-medium text-black dark:text-white">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Energy Level</span>
+                        <span className="text-sm font-medium text-black dark:text-white">
                           {weeklyGoals[0].energyLevels || 'N/A'}/10
                         </span>
                       </div>
-                      <Progress value={(parseFloat(weeklyGoals[0].energyLevels?.toString() || "0") / 10) * 100} className="h-1.5" />
+                      <Progress value={(parseFloat(weeklyGoals[0].energyLevels?.toString() || "0") / 10) * 100} className="h-2" />
                     </div>
-                  </div>
-                  
-                  {/* Weight & Calorie Changes - Compact Cards */}
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {/* Weight Change Card */}
+
+                    {/* Weight Change Analysis (RP Methodology) */}
                     {weeklyGoals[0].currentWeight && weeklyGoals[0].previousWeight && (
-                      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-black dark:text-white">
-                            {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                      <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
+                          <div className="text-right">
+                            <span className="text-sm font-medium text-black dark:text-white">
+                              {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                            </span>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {weeklyGoals[0].currentWeight ? UnitConverter.formatWeight(parseFloat(weeklyGoals[0].currentWeight), weeklyGoals[0].currentWeightUnit || 'metric') : 'N/A'}
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">Weight Change</div>
-                          <div className={`text-xs font-medium mt-1 ${
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Target: {weeklyGoals[0].targetWeightChangePerWeek ? 
+                              formatWeightChangeWithUnit(parseFloat(weeklyGoals[0].targetWeightChangePerWeek)) : 
+                              'N/A'}/week
+                          </span>
+                          <span className={`font-medium ${
                             weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
                             weeklyGoals[0].weightTrend === 'gaining' ? 'text-green-600 dark:text-green-400' :
                             'text-orange-600 dark:text-orange-400'
                           }`}>
                             {weeklyGoals[0].weightTrend?.charAt(0).toUpperCase() + weeklyGoals[0].weightTrend?.slice(1)}
-                          </div>
+                          </span>
                         </div>
                       </div>
                     )}
-                    
-                    {/* Calorie Adjustment Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
-                      <div className="text-center">
-                        <div className="text-lg font-semibold text-black dark:text-white">
+                  </div>
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-black dark:text-white">Weekly Changes</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
+                        <span className="text-sm font-medium text-black dark:text-white">
+                          {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Calorie Adjustment</span>
+                        <span className="text-sm font-medium text-black dark:text-white">
                           {(weeklyGoals && weeklyGoals[0] && weeklyGoals[0].adjustmentPercentage) 
                             ? `${weeklyGoals[0].adjustmentPercentage}%`
                             : '0.0%'
                           }
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">Calorie Adjustment</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">For next week</div>
+                        </span>
                       </div>
                     </div>
                   </div>
