@@ -140,16 +140,16 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={weightData}>
-              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -158,12 +158,11 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px',
-                  color: 'hsl(var(--foreground))'
+                  fontSize: '12px'
                 }}
                 formatter={(value: any) => [
                   `${value.toFixed(1)} ${getUserPreferredWeightUnit()}`, 
@@ -191,28 +190,27 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={bodyFatData}>
-              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px',
-                  color: 'hsl(var(--foreground))'
+                  fontSize: '12px'
                 }}
                 formatter={(value: any) => [`${value}%`, 'Body Fat']}
               />
@@ -232,28 +230,27 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={progressionData}>
-              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px',
-                  color: 'hsl(var(--foreground))'
+                  fontSize: '12px'
                 }}
                 formatter={(value: any) => [`${value} cal`, 'Calories']}
               />
@@ -273,28 +270,27 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={progressionData} barCategoryGap="10%">
-              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="hsl(var(--muted-foreground))" 
+                stroke="#9CA3AF" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px',
-                  color: 'hsl(var(--foreground))'
+                  fontSize: '12px'
                 }}
                 formatter={(value: any, name: any) => [`${value}g`, name]}
               />
@@ -408,15 +404,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         
         {/* Pill-shaped controls */}
         <div className="flex items-center gap-2">
-          <div className="flex bg-muted rounded-full p-1">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
             {(['7d', '30d', '90d', '1y'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
                 className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
                   timeRange === range 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
               >
                 {range}
@@ -424,7 +420,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             ))}
           </div>
           
-          <div className="flex bg-muted rounded-full p-1">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
             {([
               { key: 'weight', label: 'Weight' },
               { key: 'bodyFat', label: 'Fat%' },
@@ -436,8 +432,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                 onClick={() => setChartType(chart.key)}
                 className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
                   chartType === chart.key 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
               >
                 {chart.label}
@@ -451,51 +447,51 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       {summary && (
         <div className="overflow-x-auto pb-2 -mx-1">
           <div className="flex gap-3 min-w-max px-1">
-            <div className="bg-background rounded-xl border border-border p-3 min-w-[120px]">
-              <div className="text-xs text-muted-foreground mb-1">Weight</div>
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Weight</div>
               <div className={`text-lg font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
               </div>
-              <div className="text-xs text-muted-foreground">{getUserPreferredWeightUnit()}</div>
+              <div className="text-xs text-gray-400">{getUserPreferredWeightUnit()}</div>
             </div>
             
-            <div className="bg-background rounded-xl border border-border p-3 min-w-[120px]">
-              <div className="text-xs text-muted-foreground mb-1">Avg Calories</div>
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Calories</div>
               <div className="text-lg font-bold text-blue-600">
                 {Math.round(summary.avgCalories)}
               </div>
-              <div className="text-xs text-muted-foreground">per day</div>
+              <div className="text-xs text-gray-400">per day</div>
             </div>
             
-            <div className="bg-background rounded-xl border border-border p-3 min-w-[120px]">
-              <div className="text-xs text-muted-foreground mb-1">Avg Protein</div>
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Protein</div>
               <div className="text-lg font-bold text-orange-600">
                 {Math.round(summary.avgProtein)}g
               </div>
-              <div className="text-xs text-muted-foreground">per day</div>
+              <div className="text-xs text-gray-400">per day</div>
             </div>
             
-            <div className="bg-background rounded-xl border border-border p-3 min-w-[120px]">
-              <div className="text-xs text-muted-foreground mb-1">Cal Trend</div>
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Cal Trend</div>
               <div className={`text-lg font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)}
               </div>
-              <div className="text-xs text-muted-foreground">vs start</div>
+              <div className="text-xs text-gray-400">vs start</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Borderless Chart */}
-      <div className="bg-background rounded-xl border border-border p-3">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
         <div className="mb-3">
-          <h3 className="text-sm font-medium text-foreground mb-1">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
             {chartType === 'weight' && 'Weight Trend'}
             {chartType === 'bodyFat' && 'Body Fat %'}
             {chartType === 'calories' && 'Daily Calories'}
             {chartType === 'macros' && 'Macronutrients'}
           </h3>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             {chartType === 'weight' && `Track changes over ${timeRange}`}
             {chartType === 'bodyFat' && `Body composition ${timeRange}`}
             {chartType === 'calories' && `Daily intake ${timeRange}`}
