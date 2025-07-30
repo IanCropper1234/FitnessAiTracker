@@ -101,7 +101,7 @@ export function RecentActivity({ userId }: RecentActivityProps) {
   }
 
   return (
-    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+    <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[-25px] mb-[-25px]">
       <CardHeader>
         <CardTitle className="text-black dark:text-white">Recent Activity</CardTitle>
         <CardDescription className="text-gray-600 dark:text-gray-400">
