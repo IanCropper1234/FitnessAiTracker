@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { UnitConverter } from "@shared/utils/unit-conversion";
 
 
 interface AdvancedMacroManagementProps {
@@ -40,6 +41,16 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics/${userId}`);
       if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
+  // Get user profile for unit preferences
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile/${userId}`);
+      if (!response.ok) return null;
       return response.json();
     }
   });
@@ -73,6 +84,28 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   // Use weekly goals data directly (unit conversion handled in backend)
   const weeklyGoals = rawWeeklyGoals || [];
+
+  // Get user's preferred weight unit
+  const getUserWeightUnit = () => {
+    return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics);
+  };
+
+  // Convert weight change to user's preferred unit
+  const formatWeightChange = (weightChange: number) => {
+    if (!weightChange) return '0.0kg';
+    
+    const preferredUnit = getUserWeightUnit();
+    const convertedChange = UnitConverter.convertWeightChange(
+      weightChange, 
+      'kg', // Weight changes from analytics are typically in kg
+      preferredUnit
+    );
+    
+    const unitLabel = preferredUnit === 'lbs' ? 'lbs' : 'kg';
+    const sign = convertedChange > 0 ? '+' : '';
+    
+    return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
+  };
 
   // Get meal macro distribution
   const { data: mealDistribution } = useQuery({
@@ -528,8 +561,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <span className="text-sm font-medium text-black dark:text-white">
                           {comprehensiveAnalytics?.overview?.weightChange 
-                            ? `${comprehensiveAnalytics.overview.weightChange > 0 ? '+' : ''}${comprehensiveAnalytics.overview.weightChange.toFixed(1)}kg`
-                            : '0.0kg'
+                            ? formatWeightChange(comprehensiveAnalytics.overview.weightChange)
+                            : formatWeightChange(0)
                           }
                         </span>
                       </div>
