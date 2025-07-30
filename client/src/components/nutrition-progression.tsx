@@ -131,19 +131,19 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
         return (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10">
+            <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Weight</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Body Fat</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Weight</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Body Fat</th>
               </tr>
             </thead>
             <tbody>
               {weightTableData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-                  <td className="py-1.5 px-1 text-gray-900 dark:text-gray-100 text-xs">{entry.date}</td>
-                  <td className="py-1.5 px-1 text-blue-600 font-medium text-xs">{entry.weight} {entry.unit}</td>
-                  <td className="py-1.5 px-1 text-gray-600 dark:text-gray-400 text-xs">{entry.bodyFat}</td>
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">{entry.date}</td>
+                  <td className="py-2 px-1 text-blue-600 font-medium">{entry.weight} {entry.unit}</td>
+                  <td className="py-2 px-1 text-gray-600 dark:text-gray-400">{entry.bodyFat}</td>
                 </tr>
               ))}
             </tbody>
@@ -170,17 +170,17 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
         return (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10">
+            <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Body Fat %</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Body Fat %</th>
               </tr>
             </thead>
             <tbody>
               {bodyFatTableData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-                  <td className="py-1.5 px-1 text-gray-900 dark:text-gray-100 text-xs">{entry.date}</td>
-                  <td className="py-1.5 px-1 text-orange-600 font-medium text-xs">{entry.bodyFat}%</td>
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">{entry.date}</td>
+                  <td className="py-2 px-1 text-orange-600 font-medium">{entry.bodyFat}%</td>
                 </tr>
               ))}
             </tbody>
@@ -200,25 +200,25 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         
         return (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10">
+            <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Calories</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Protein</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Calories</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Protein</th>
               </tr>
             </thead>
             <tbody>
               {progressionData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-                  <td className="py-1.5 px-1 text-gray-900 dark:text-gray-100 text-xs">
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">
                     {new Date(entry.date).toLocaleDateString('en-GB', { 
                       day: '2-digit', 
                       month: '2-digit',
                       year: '2-digit'
                     })}
                   </td>
-                  <td className="py-1.5 px-1 text-blue-600 font-medium text-xs">{Math.round(entry.calories)}</td>
-                  <td className="py-1.5 px-1 text-orange-600 font-medium text-xs">{Math.round(entry.protein)}g</td>
+                  <td className="py-2 px-1 text-blue-600 font-medium">{Math.round(entry.calories)}</td>
+                  <td className="py-2 px-1 text-orange-600 font-medium">{Math.round(entry.protein)}g</td>
                 </tr>
               ))}
             </tbody>
@@ -238,27 +238,27 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         
         return (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10">
+            <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Protein</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Carbs</th>
-                <th className="text-left py-1.5 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Fat</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Protein</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Carbs</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Fat</th>
               </tr>
             </thead>
             <tbody>
               {progressionData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-                  <td className="py-1.5 px-1 text-gray-900 dark:text-gray-100 text-xs">
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">
                     {new Date(entry.date).toLocaleDateString('en-GB', { 
                       day: '2-digit', 
                       month: '2-digit',
                       year: '2-digit'
                     })}
                   </td>
-                  <td className="py-1.5 px-1 text-blue-600 font-medium text-xs">{Math.round(entry.protein)}g</td>
-                  <td className="py-1.5 px-1 text-green-600 font-medium text-xs">{Math.round(entry.carbs)}g</td>
-                  <td className="py-1.5 px-1 text-yellow-600 font-medium text-xs">{Math.round(entry.fat)}g</td>
+                  <td className="py-2 px-1 text-blue-600 font-medium">{Math.round(entry.protein)}g</td>
+                  <td className="py-2 px-1 text-green-600 font-medium">{Math.round(entry.carbs)}g</td>
+                  <td className="py-2 px-1 text-yellow-600 font-medium">{Math.round(entry.fat)}g</td>
                 </tr>
               ))}
             </tbody>
@@ -624,44 +624,46 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </div>
         </div>
       </div>
-      {/* iOS-Optimized Metrics Grid */}
+      {/* Ultra-Compact Horizontal Scrolling Metrics */}
       {summary && (
-        <div className="grid grid-cols-2 gap-1.5 mb-3">
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-center">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Weight</div>
-            <div className={`text-sm font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
+        <div className="overflow-x-auto pb-1 -mx-1">
+          <div className="flex gap-2 min-w-max px-1 text-center pl-[50px] pr-[50px] pt-[5px] pb-[5px] ml-[1px] mr-[1px]">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Weight</div>
+              <div className={`text-base font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
+              </div>
+              <div className="text-xs text-gray-400">{getUserPreferredWeightUnit()}</div>
             </div>
-            <div className="text-xs text-gray-400">{getUserPreferredWeightUnit()}</div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-center">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Avg Cal</div>
-            <div className="text-sm font-bold text-blue-600">
-              {Math.round(summary.avgCalories)}
+            
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Avg Cal</div>
+              <div className="text-base font-bold text-blue-600">
+                {Math.round(summary.avgCalories)}
+              </div>
+              <div className="text-xs text-gray-400">per day</div>
             </div>
-            <div className="text-xs text-gray-400">per day</div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-center">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Protein</div>
-            <div className="text-sm font-bold text-orange-600">
-              {Math.round(summary.avgProtein)}g
+            
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Protein</div>
+              <div className="text-base font-bold text-orange-600">
+                {Math.round(summary.avgProtein)}g
+              </div>
+              <div className="text-xs text-gray-400">per day</div>
             </div>
-            <div className="text-xs text-gray-400">per day</div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-1.5 text-center">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Trend</div>
-            <div className={`text-sm font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)}
+            
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Trend</div>
+              <div className={`text-base font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)}
+              </div>
+              <div className="text-xs text-gray-400">vs start</div>
             </div>
-            <div className="text-xs text-gray-400">vs start</div>
           </div>
         </div>
       )}
       {/* Compact Chart Container */}
-      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 mb-3">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
         <div className="mb-2">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
             {chartType === 'weight' && 'Weight Trend'}
@@ -677,7 +679,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </p>
         </div>
         
-        <div className="w-full h-[180px]">
+        <div className="w-full h-[200px]">
           {renderChart()}
         </div>
       </div>
@@ -696,7 +698,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </p>
         </div>
         
-        <div className="max-h-64 overflow-y-auto -mx-2 px-2">
+        <div className="overflow-x-auto">
           {renderDataTable()}
         </div>
       </div>
