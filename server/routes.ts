@@ -506,10 +506,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/nutrition/log", async (req, res) => {
+  app.post("/api/nutrition/log", requireAuth, async (req, res) => {
     try {
+      const userId = (req as any).userId;
       const logData = {
         ...req.body,
+        userId: userId,
         date: new Date(req.body.date)
       };
       const log = await storage.createNutritionLog(logData);
@@ -531,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/nutrition/log/:id", async (req, res) => {
+  app.delete("/api/nutrition/log/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteNutritionLog(id);
@@ -546,7 +548,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/nutrition/log/:id", async (req, res) => {
+  app.put("/api/nutrition/log/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
@@ -592,7 +594,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update meal type for nutrition log (specific endpoint for drag-and-drop)
-  app.put("/api/nutrition/logs/:id/meal-type", async (req, res) => {
+  app.put("/api/nutrition/logs/:id/meal-type", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const { mealType } = req.body;
@@ -841,9 +843,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Save a meal
-  app.post("/api/saved-meals", async (req, res) => {
+  app.post("/api/saved-meals", requireAuth, async (req, res) => {
     try {
-      const { userId, name, description, foodItems } = req.body;
+      const userId = (req as any).userId;
+      const { name, description, foodItems } = req.body;
       
       console.log('Save meal request:', { userId, name, foodItems: foodItems?.length });
       
@@ -871,7 +874,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Calculated totals:', { totalCalories, totalProtein, totalCarbs, totalFat });
       
       const mealData = {
-        userId: parseInt(userId),
+        userId: userId,
         name,
         description: description || null,
         foodItems: foodItems, // Already an array, no need to stringify
@@ -892,7 +895,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete a saved meal
-  app.delete("/api/saved-meals/:id", async (req, res) => {
+  app.delete("/api/saved-meals/:id", requireAuth, async (req, res) => {
     try {
       const mealId = parseInt(req.params.id);
       await storage.deleteSavedMeal(mealId);
