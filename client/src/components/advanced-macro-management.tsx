@@ -10,7 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 import { useLocation } from "wouter";
@@ -92,6 +92,24 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const getUserWeightUnit = () => {
     return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics);
   };
+
+  // Get current week's wellness check-ins count
+  const { data: weeklyWellnessStatus } = useQuery({
+    queryKey: ['/api/weekly-wellness-summary', userId],
+    queryFn: async () => {
+      // Get current week start date (Monday)
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days, otherwise go back (dayOfWeek - 1) days
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - daysToMonday);
+      const weekStartString = weekStart.toISOString().split('T')[0];
+      
+      const response = await fetch(`/api/weekly-wellness-summary/${userId}?weekStartDate=${weekStartString}`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
 
   // Convert weight change to user's preferred unit
   const formatWeightChange = (weightChange: number) => {
@@ -481,17 +499,32 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     Daily wellness ratings are automatically averaged weekly to influence macro adjustment calculations using authentic RP methodology
                   </p>
                   <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      Complete your daily wellness check-ins in the RP Coach section for accurate macro adjustments.
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setLocation('/rp-coach')}
-                      className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-                    >
-                      Go to RP Coach Daily Check-in
-                    </Button>
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Complete your daily wellness check-ins in the RP Coach section for accurate macro adjustments.
+                      </p>
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                          <div className="text-xs text-yellow-700 dark:text-yellow-300">
+                            <p className="font-medium mb-1">Weekly Summary Status</p>
+                            {weeklyWellnessStatus ? (
+                              <p>Weekly summary available! Wellness data is being used for macro adjustments.</p>
+                            ) : (
+                              <p>Weekly averages require 3+ daily check-ins. Continue daily tracking for automatic macro adjustments next week.</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setLocation('/rp-coach')}
+                        className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                      >
+                        Go to RP Coach Daily Check-in
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

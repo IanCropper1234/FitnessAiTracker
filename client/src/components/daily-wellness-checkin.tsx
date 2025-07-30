@@ -94,9 +94,14 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
   });
 
   const handleSubmit = () => {
+    // Create date string in user's local timezone to avoid timezone conversion issues
+    const localDateString = trackingDate.getFullYear() + '-' + 
+      String(trackingDate.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(trackingDate.getDate()).padStart(2, '0');
+    
     const checkinData = {
       userId,
-      date: trackingDate.toISOString(),
+      date: localDateString + 'T00:00:00.000Z', // Store as consistent midnight UTC
       energyLevel: energyLevel[0],
       hungerLevel: hungerLevel[0],
       sleepQuality: sleepQuality[0],
