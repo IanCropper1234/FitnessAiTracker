@@ -98,15 +98,21 @@ export function IntegratedNutritionOverview({
 
   // Effect to handle copy operations when external date pickers close with a date
   useEffect(() => {
-    if (copyOperation && copyOperation.type === 'section') {
-      if (externalCopyFromDate && copyOperation.sourceSection) {
-        // Handle "copy from" date operation - need to fetch logs from externalCopyFromDate and copy to current date
-        // This requires a different approach - we need to copy FROM a different date
-        handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
-        setCopyOperation(null);
-      } else if (externalCopyToDate && !copyOperation.sourceSection) {
-        // Handle "copy to" date operation - copy FROM current date TO the selected date
-        handleCopySection(copyOperation.data, externalCopyToDate);
+    if (copyOperation) {
+      if (copyOperation.type === 'section') {
+        if (externalCopyFromDate && copyOperation.sourceSection) {
+          // Handle "copy from" date operation - need to fetch logs from externalCopyFromDate and copy to current date
+          // This requires a different approach - we need to copy FROM a different date
+          handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
+          setCopyOperation(null);
+        } else if (externalCopyToDate && !copyOperation.sourceSection) {
+          // Handle "copy to" date operation - copy FROM current date TO the selected date
+          handleCopySection(copyOperation.data, externalCopyToDate);
+          setCopyOperation(null);
+        }
+      } else if (copyOperation.type === 'item' && externalCopyToDate) {
+        // Handle individual food item copy to date
+        handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
       }
     }
@@ -702,6 +708,22 @@ export function IntegratedNutritionOverview({
     copyFoodMutation.mutate(newFoodData);
   };
 
+  const handleCopyFoodToDate = (log: any, targetDate: string) => {
+    const { id, createdAt, ...foodData } = log;
+    const newFoodData = {
+      ...foodData,
+      userId,
+      date: targetDate,
+      mealType: log.mealType // Keep same meal type when copying to date
+    };
+    copyFoodMutation.mutate(newFoodData);
+    
+    toast({
+      title: "Food Copied",
+      description: `${log.foodName} copied to ${new Date(targetDate).toLocaleDateString()}`,
+    });
+  };
+
   const handleCopySection = (mealType: string, targetDate: string) => {
     const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
     
@@ -1266,6 +1288,22 @@ export function IntegratedNutritionOverview({
                                     </DropdownMenuItem>
                                   ))
                                 }
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setCopyOperation({
+                                      type: 'item',
+                                      data: log,
+                                      sourceSection: undefined
+                                    });
+                                    // Trigger iOS date picker for "copy to" date
+                                    if (setShowCopyToDatePicker) {
+                                      setShowCopyToDatePicker(true);
+                                    }
+                                  }}
+                                >
+                                  <CalendarIcon className="h-4 w-4 mr-2" />
+                                  Copy to date
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                   onClick={() => handleEditFood(log)}
