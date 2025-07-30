@@ -253,9 +253,22 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const weeklyAdjustmentMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log('Making weekly adjustment request with data:', data);
-      const response = await apiRequest("POST", "/api/weekly-adjustment", data);
-      console.log('Weekly adjustment response received:', response);
-      return response;
+      const response = await fetch('/api/weekly-adjustment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const jsonData = await response.json();
+      console.log('Weekly adjustment response received:', jsonData);
+      return jsonData;
     },
     onError: (error: any) => {
       console.error('Weekly adjustment mutation error:', error);
