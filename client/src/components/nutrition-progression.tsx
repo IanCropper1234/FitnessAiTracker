@@ -196,6 +196,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           );
         }
 
+        // The backend API already filters by date range, so progressionData should contain only relevant entries
+        console.log('Calories data entries:', progressionData?.length, 'for time range:', timeRange);
+        
         return (
           <table className="w-full text-sm">
             <thead>
@@ -232,6 +235,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           );
         }
 
+        // The backend API already filters by date range, so progressionData should contain only relevant entries
+        console.log('Macros data entries:', progressionData?.length, 'for time range:', timeRange);
+        
         return (
           <table className="w-full text-sm">
             <thead>
