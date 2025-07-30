@@ -107,12 +107,29 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
   };
 
-  // Get actual weekly weight change from weekly goals data
+  // Get actual weekly weight change from weekly goals data with proper unit handling
   const getWeeklyWeightChange = () => {
     if (weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].weightChange) {
       return parseFloat(weeklyGoals[0].weightChange);
     }
     return 0;
+  };
+
+  // Format weight change with user's preferred unit
+  const formatWeightChangeWithUnit = (weightChange: number) => {
+    if (!weightChange) return '0.0kg';
+    
+    const preferredUnit = getUserWeightUnit();
+    const convertedChange = UnitConverter.convertWeightChange(
+      weightChange, 
+      'kg', // Weight changes are stored in kg
+      preferredUnit
+    );
+    
+    const unitLabel = preferredUnit === 'lbs' ? 'lbs' : 'kg';
+    const sign = convertedChange > 0 ? '+' : '';
+    
+    return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
   };
 
   // Get meal macro distribution
@@ -487,7 +504,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Weight Change:</span>
                           <span className="font-medium text-black dark:text-white">
-                            {parseFloat(weeklyGoals[0].weightChange || '0') >= 0 ? '+' : ''}{parseFloat(weeklyGoals[0].weightChange || '0').toFixed(1)} lbs
+                            {formatWeightChangeWithUnit(getWeeklyWeightChange())}
                           </span>
                         </div>
                       )}
@@ -540,15 +557,19 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                           <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                           <div className="text-right">
                             <span className="text-sm font-medium text-black dark:text-white">
-                              {parseFloat(weeklyGoals[0].weightChange || '0') >= 0 ? '+' : ''}{parseFloat(weeklyGoals[0].weightChange || '0').toFixed(1)} kg
+                              {formatWeightChangeWithUnit(getWeeklyWeightChange())}
                             </span>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {weeklyGoals[0].currentWeight} kg
+                              {weeklyGoals[0].currentWeight ? UnitConverter.formatWeight(parseFloat(weeklyGoals[0].currentWeight), weeklyGoals[0].currentWeightUnit || 'metric') : 'N/A'}
                             </div>
                           </div>
                         </div>
                         <div className="flex justify-between text-xs">
-                          <span className="text-gray-500 dark:text-gray-400">Target: {weeklyGoals[0].targetWeightChangePerWeek} kg/week</span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Target: {weeklyGoals[0].targetWeightChangePerWeek ? 
+                              formatWeightChangeWithUnit(parseFloat(weeklyGoals[0].targetWeightChangePerWeek)) : 
+                              'N/A'}/week
+                          </span>
                           <span className={`font-medium ${
                             weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
                             weeklyGoals[0].weightTrend === 'gaining' ? 'text-green-600 dark:text-green-400' :
@@ -566,7 +587,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {formatWeightChange(getWeeklyWeightChange())}
+                          {formatWeightChangeWithUnit(getWeeklyWeightChange())}
                         </span>
                       </div>
                       <div className="flex justify-between">
