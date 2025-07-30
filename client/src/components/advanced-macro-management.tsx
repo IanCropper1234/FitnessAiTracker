@@ -107,6 +107,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
   };
 
+  // Get actual weekly weight change from weekly goals data
+  const getWeeklyWeightChange = () => {
+    if (weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].weightChange) {
+      return parseFloat(weeklyGoals[0].weightChange);
+    }
+    return 0;
+  };
+
   // Get meal macro distribution
   const { data: mealDistribution } = useQuery({
     queryKey: ['/api/meal-distribution', userId],
@@ -236,10 +244,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
     const latestWeek = weeklyGoals[0];
     const adherence = parseFloat(latestWeek.adherencePercentage || "0");
-    // Use weight change from comprehensive analytics (actual weight data)
-    const weightChange = comprehensiveAnalytics.overview.weightChange || 0;
-    // Convert to weekly rate (analytics is 14-day period, so divide by 2)
-    const weeklyWeightChange = weightChange / 2;
+    // Use actual weekly weight change from weekly goals data
+    const weeklyWeightChange = parseFloat(latestWeek.weightChange || "0");
 
     let rec: {
       type: "maintain" | "increase" | "decrease";
@@ -560,10 +566,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {comprehensiveAnalytics?.overview?.weightChange 
-                            ? formatWeightChange(comprehensiveAnalytics.overview.weightChange)
-                            : formatWeightChange(0)
-                          }
+                          {formatWeightChange(getWeeklyWeightChange())}
                         </span>
                       </div>
                       <div className="flex justify-between">
