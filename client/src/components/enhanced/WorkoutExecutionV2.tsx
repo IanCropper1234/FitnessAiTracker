@@ -716,12 +716,16 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         </div>
 
         {/* Expanded State - Detailed View with Smooth Transitions */}
-        <div className={`border-t border-border/30 bg-muted/10 space-y-2 overflow-hidden transition-all duration-300 ease-in-out transform-gpu ${
-          headerExpanded 
-            ? 'max-h-96 p-2 opacity-100 translate-y-0' 
-            : 'max-h-0 p-0 opacity-0 -translate-y-2'
-        }`}>
-            {/* Session Info Row */}
+        <div 
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            headerExpanded 
+              ? 'max-h-96 opacity-100 border-t border-border/30 bg-muted/10' 
+              : 'max-h-0 opacity-0'
+          }`}
+        >
+          {headerExpanded && (
+            <div className="p-2 space-y-2">
+              {/* Session Info Row */}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground truncate">
                 {session.name}
@@ -794,6 +798,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 </div>
               </div>
             )}
+            </div>
+          )}
         </div>
       </div>
       {/* Enhanced Tabs Interface */}
