@@ -2616,7 +2616,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           adjustment: adjustment.adjustment,
           appliedToCurrentGoals: true,
           updatedDietGoals,
-          message: "Weekly adjustment applied successfully. Your diet goals have been updated."
+          message: `Weekly adjustment applied successfully. Your calorie target increased to ${Math.round(adjustment.adjustment.newCalories)} calories.`
         });
       } catch (updateError) {
         console.error('Failed to update diet goals:', updateError);
@@ -2625,7 +2625,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           adjustment: adjustment.adjustment,
           appliedToCurrentGoals: false,
           error: "Adjustment calculated but failed to update diet goals",
-          message: "Weekly analysis recorded. Target macros maintained."
+          message: "Weekly analysis recorded. Failed to update diet goals - please check your Diet Goals section manually."
         });
       }
     } catch (error: any) {
