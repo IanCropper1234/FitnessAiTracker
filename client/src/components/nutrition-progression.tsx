@@ -159,10 +159,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <Tooltip 
                 contentStyle={{
                   backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
+                  border: '1px solid #2563EB',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: '#2563EB'
+                }}
+                labelStyle={{
+                  color: '#2563EB',
+                  fontWeight: '500'
                 }}
                 formatter={(value: any) => [
                   `${value.toFixed(1)} ${getUserPreferredWeightUnit()}`, 
