@@ -772,12 +772,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
         {/* Compact Progress Indicator */}
         {circularProgressEnabled ? (
-          <div className="flex justify-center py-1">
-            <CircularProgress 
-              progress={progressPercentage}
-              size={40}
-              strokeWidth={4}
-            />
+          <div className="flex justify-center items-center py-0.5">
+            <div className="relative">
+              <CircularProgress 
+                progress={progressPercentage}
+                size={32}
+                strokeWidth={3}
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xs font-bold text-primary">
+                  {Math.round(progressPercentage)}%
+                </span>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-1">
