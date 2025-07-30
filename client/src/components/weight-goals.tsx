@@ -120,12 +120,17 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       if (profile?.fitnessGoal === 'fat_loss') goalType = 'cutting';
       else if (profile?.fitnessGoal === 'muscle_gain') goalType = 'bulking';
 
-      setFormData(prev => ({
-        ...prev,
+      // Calculate weekly change for the selected goal type
+      const weeklyChange = currentWeight ? calculateRPWeeklyChange(goalType, parseFloat(currentWeight)).toString() : '';
+
+      setFormData({
         currentWeight,
+        targetWeight: '',
+        targetWeightChangePerWeek: weeklyChange,
         goalType,
-        targetWeightChangePerWeek: currentWeight ? calculateRPWeeklyChange(goalType, parseFloat(currentWeight)).toString() : ''
-      }));
+        unit: userWeightUnit,
+        targetDate: ''
+      });
     }
   }, [isAddingGoal, bodyMetrics, userProfile, userWeightUnit]);
 
@@ -161,11 +166,15 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       queryClient.invalidateQueries({ queryKey: ['/api/weight-goals', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/comprehensive', userId] });
       setIsAddingGoal(false);
+      // Reset form but keep user profile goal type if available
+      const profileGoalType = userProfile?.user?.fitnessGoal === 'fat_loss' ? 'cutting' : 
+                              userProfile?.user?.fitnessGoal === 'muscle_gain' ? 'bulking' : 'maintenance';
+      
       setFormData({
         currentWeight: '',
         targetWeight: '',
         targetWeightChangePerWeek: '',
-        goalType: 'maintenance',
+        goalType: profileGoalType,
         unit: userWeightUnit,
         targetDate: ''
       });
@@ -280,6 +289,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                 <div className="text-sm text-muted-foreground">
                   Target: {Math.round(convertValue(
                     activeGoal.targetWeight, 
+                    'weight',
                     activeGoal.unit, 
                     userWeightUnit
                   ))} {userWeightUnit === 'metric' ? 'kg' : 'lbs'}
