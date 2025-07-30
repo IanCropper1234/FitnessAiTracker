@@ -2,6 +2,7 @@ import { db } from '../db';
 import { weeklyNutritionGoals, dailyWellnessCheckins, weeklyWellnessSummaries, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import { UnitConverter } from '../../shared/utils/unit-conversion';
+import { DailyWellnessService } from './daily-wellness-service';
 
 export class AdvancedMacroManagementService {
   
@@ -503,18 +504,36 @@ export class AdvancedMacroManagementService {
         if (existingGoals.length === 0) {
           const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, weekStartDate);
           if (calculatedData) {
+            // Enhance with real daily wellness data
+            const wellnessAverages = await DailyWellnessService.calculateWeeklyAverages(userId, weekStart);
+            if (wellnessAverages) {
+              calculatedData.energyLevels = Math.round(parseFloat(wellnessAverages.avgEnergyLevel));
+              calculatedData.hungerLevels = Math.round(parseFloat(wellnessAverages.avgHungerLevel));
+            }
             // Return calculated data as if it were from the database
             return [calculatedData];
           }
         } else {
-          // If we have existing goals but they lack weight data, enhance them with calculated weight data
+          // Enhance existing goals with real daily wellness data and weight data
           const enhancedGoals = await Promise.all(existingGoals.map(async (goal) => {
+            // Always get fresh wellness data for this week
+            const wellnessAverages = await DailyWellnessService.calculateWeeklyAverages(userId, weekStart);
+            
+            let updatedGoal = { ...goal };
+            
+            // Update wellness data with real daily check-in averages
+            if (wellnessAverages) {
+              updatedGoal.energyLevels = Math.round(parseFloat(wellnessAverages.avgEnergyLevel));
+              updatedGoal.hungerLevels = Math.round(parseFloat(wellnessAverages.avgHungerLevel));
+            }
+            
+            // Add calculated weight data if missing
             if (!goal.currentWeight || !goal.previousWeight) {
               const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
               if (calculatedData && (calculatedData.currentWeight || calculatedData.previousWeight)) {
                 // Add calculated weight data to existing goal
-                return {
-                  ...goal,
+                updatedGoal = {
+                  ...updatedGoal,
                   currentWeight: calculatedData.currentWeight || goal.currentWeight,
                   previousWeight: calculatedData.previousWeight || goal.previousWeight,
                   weightChange: calculatedData.weightChange || '0.0',
@@ -528,7 +547,8 @@ export class AdvancedMacroManagementService {
                 };
               }
             }
-            return goal;
+            
+            return updatedGoal;
           }));
           return enhancedGoals;
         }
