@@ -2274,6 +2274,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Weight Goals API Routes
+  // Get user's weight goals
+  app.get("/api/weight-goals/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const weightGoals = await storage.getWeightGoals(userId);
+      res.json(weightGoals);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Create or update weight goal
+  app.post("/api/weight-goals", async (req, res) => {
+    try {
+      const weightGoal = await storage.createWeightGoal(req.body);
+      res.json(weightGoal);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Update weight goal
+  app.put("/api/weight-goals/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const weightGoal = await storage.updateWeightGoal(id, req.body);
+      if (!weightGoal) {
+        return res.status(404).json({ message: "Weight goal not found" });
+      }
+      res.json(weightGoal);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Delete weight goal
+  app.delete("/api/weight-goals/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteWeightGoal(id);
+      res.json({ message: "Weight goal deleted successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
 
 
   // Body Metrics

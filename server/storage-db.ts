@@ -1,7 +1,7 @@
 import { 
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
-  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, savedMeals, dietGoals,
+  foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, savedMeals, dietGoals, weightGoals,
   muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
@@ -12,6 +12,7 @@ import {
   type MealPlan, type InsertMealPlan, type WeeklyNutritionGoal, type InsertWeeklyNutritionGoal,
   type DietPhase, type InsertDietPhase, type MealTimingPreference, type InsertMealTimingPreference,
   type BodyMetric, type InsertBodyMetric, type SavedMealPlan, type InsertSavedMealPlan, type SavedMeal, type InsertSavedMeal, type DietGoal, type InsertDietGoal,
+  type WeightGoal, type InsertWeightGoal,
   type MuscleGroup, type InsertMuscleGroup, type VolumeLandmark, type InsertVolumeLandmark,
   type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping,
   type TrainingTemplate, type InsertTrainingTemplate
@@ -690,6 +691,51 @@ export class DatabaseStorage implements IStorage {
   async deleteBodyMetric(id: number): Promise<boolean> {
     const result = await db.delete(bodyMetrics).where(eq(bodyMetrics.id, id));
     return result.rowCount > 0;
+  }
+
+  // Weight Goals
+  async getWeightGoals(userId: number): Promise<WeightGoal[]> {
+    return await db.select().from(weightGoals)
+      .where(eq(weightGoals.userId, userId))
+      .orderBy(desc(weightGoals.createdAt));
+  }
+
+  async getActiveWeightGoal(userId: number): Promise<WeightGoal | undefined> {
+    const [goal] = await db.select().from(weightGoals)
+      .where(and(eq(weightGoals.userId, userId), eq(weightGoals.isActive, true)))
+      .orderBy(desc(weightGoals.createdAt));
+    return goal || undefined;
+  }
+
+  async createWeightGoal(goal: InsertWeightGoal): Promise<WeightGoal> {
+    // First, deactivate any existing active goals for this user
+    await db.update(weightGoals)
+      .set({ isActive: false })
+      .where(and(eq(weightGoals.userId, goal.userId), eq(weightGoals.isActive, true)));
+
+    // Create the new goal with isActive = true
+    const [newGoal] = await db
+      .insert(weightGoals)
+      .values({ ...goal, isActive: true })
+      .returning();
+    return newGoal;
+  }
+
+  async updateWeightGoal(id: number, goal: Partial<InsertWeightGoal>): Promise<WeightGoal | undefined> {
+    const [updatedGoal] = await db
+      .update(weightGoals)
+      .set({ ...goal, updatedAt: new Date() })
+      .where(eq(weightGoals.id, id))
+      .returning();
+    return updatedGoal || undefined;
+  }
+
+  async deleteWeightGoal(id: number): Promise<boolean> {
+    const result = await db
+      .delete(weightGoals)
+      .where(eq(weightGoals.id, id))
+      .returning();
+    return result.length > 0;
   }
 
   // Nutrition Progression

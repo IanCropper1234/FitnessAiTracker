@@ -3,6 +3,7 @@ import {
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
   muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans, savedMeals,
+  weightGoals,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -14,7 +15,7 @@ import {
   type BodyMetric, type InsertBodyMetric, type MuscleGroup, type InsertMuscleGroup,
   type VolumeLandmark, type InsertVolumeLandmark, type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking,
   type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan,
-  type SavedMeal, type InsertSavedMeal
+  type SavedMeal, type InsertSavedMeal, type WeightGoal, type InsertWeightGoal
 } from "@shared/schema";
 
 export interface IStorage {
@@ -145,6 +146,13 @@ export interface IStorage {
   getBodyMetrics(userId: number, date?: Date): Promise<BodyMetric[]>;
   createBodyMetric(metric: InsertBodyMetric): Promise<BodyMetric>;
   deleteBodyMetric(id: number): Promise<boolean>;
+
+  // Weight Goals
+  getWeightGoals(userId: number): Promise<WeightGoal[]>;
+  getActiveWeightGoal(userId: number): Promise<WeightGoal | undefined>;
+  createWeightGoal(goal: InsertWeightGoal): Promise<WeightGoal>;
+  updateWeightGoal(id: number, goal: Partial<InsertWeightGoal>): Promise<WeightGoal | undefined>;
+  deleteWeightGoal(id: number): Promise<boolean>;
   
   // Nutrition Progression
   getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]>;
@@ -717,6 +725,27 @@ export class MemStorage implements IStorage {
 
   async updateDietGoal(userId: number, goal: any): Promise<any | undefined> {
     return undefined; // Stub for memory storage
+  }
+
+  // Weight Goals (stub implementation for memory storage)
+  async getWeightGoals(userId: number): Promise<any[]> {
+    return [];
+  }
+
+  async getActiveWeightGoal(userId: number): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async createWeightGoal(goal: any): Promise<any> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateWeightGoal(id: number, goal: any): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async deleteWeightGoal(id: number): Promise<boolean> {
+    return false;
   }
 
   // Mesocycles

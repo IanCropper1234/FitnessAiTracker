@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
+import { WeightGoals } from "./weight-goals";
 
 
 interface BodyMetric {
@@ -802,6 +803,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           </CardContent>
         </Card>
       )}
+
+      {/* Weight Goals Section */}
+      <WeightGoals userId={userId} userWeightUnit={unit} />
+
       {/* Metrics History - Compact Timeline */}
       <Card>
         <CardHeader className="pb-3">

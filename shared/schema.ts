@@ -466,6 +466,22 @@ export const loadProgressionTracking = pgTable("load_progression_tracking", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Weight goals table for user weight targets
+export const weightGoals = pgTable("weight_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  currentWeight: decimal("current_weight", { precision: 5, scale: 2 }),
+  targetWeight: decimal("target_weight", { precision: 5, scale: 2 }).notNull(),
+  targetWeightChangePerWeek: decimal("target_weight_change_per_week", { precision: 4, scale: 2 }),
+  goalType: text("goal_type").notNull(), // cutting, bulking, maintenance
+  unit: text("unit").default("metric"), // metric (kg) or imperial (lbs)
+  startDate: timestamp("start_date").defaultNow(),
+  targetDate: timestamp("target_date"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true, updatedAt: true });
@@ -496,6 +512,7 @@ export const insertDietGoalSchema = createInsertSchema(dietGoals).omit({ id: tru
 export const insertTrainingTemplateSchema = createInsertSchema(trainingTemplates).omit({ id: true, createdAt: true });
 export const insertMesocycleSchema = createInsertSchema(mesocycles).omit({ id: true, createdAt: true });
 export const insertLoadProgressionTrackingSchema = createInsertSchema(loadProgressionTracking).omit({ id: true, createdAt: true });
+export const insertWeightGoalSchema = createInsertSchema(weightGoals).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Step 2: Volume Landmarks System Schemas
 export const insertMuscleGroupSchema = createInsertSchema(muscleGroups).omit({ id: true });
@@ -560,6 +577,8 @@ export type Mesocycle = typeof mesocycles.$inferSelect;
 export type InsertMesocycle = z.infer<typeof insertMesocycleSchema>;
 export type LoadProgressionTracking = typeof loadProgressionTracking.$inferSelect;
 export type InsertLoadProgressionTracking = z.infer<typeof insertLoadProgressionTrackingSchema>;
+export type WeightGoal = typeof weightGoals.$inferSelect;
+export type InsertWeightGoal = z.infer<typeof insertWeightGoalSchema>;
 
 // Step 2: Volume Landmarks System Types
 export type MuscleGroup = typeof muscleGroups.$inferSelect;
