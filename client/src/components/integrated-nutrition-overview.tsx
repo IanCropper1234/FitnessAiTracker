@@ -778,7 +778,7 @@ export function IntegratedNutritionOverview({
   const handleCopyFromDate = async (mealType: string, sourceDate: string, targetDate: string) => {
     try {
       // Fetch nutrition logs from the source date
-      const response = await fetch(`/api/nutrition/logs/${userId}?date=${sourceDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${sourceDate}`);
       const sourceLogs = await response.json();
       
       // Filter logs for the specific meal type

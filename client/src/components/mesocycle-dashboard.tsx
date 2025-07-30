@@ -89,18 +89,18 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
   // Get mesocycle recommendations
   const { data: recommendations, isLoading: recommendationsLoading } = useQuery<MesocycleRecommendation>({
-    queryKey: ['/api/training/mesocycle-recommendations', userId],
+    queryKey: ['/api/training/mesocycle-recommendations'],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/training/mesocycle-recommendations/${userId}`);
+      const response = await apiRequest('GET', `/api/training/mesocycle-recommendations`);
       return response.json();
     },
   });
 
   // Get workout sessions to check completion status
   const { data: sessions = [] } = useQuery({
-    queryKey: ['/api/training/sessions', userId],
+    queryKey: ['/api/training/sessions'],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/training/sessions/${userId}`);
+      const response = await apiRequest('GET', `/api/training/sessions`);
       return response.json();
     },
   });

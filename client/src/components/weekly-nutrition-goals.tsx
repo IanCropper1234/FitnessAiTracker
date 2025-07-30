@@ -83,27 +83,27 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
 
   // Fetch current week's goal
   const { data: weeklyGoal, isLoading } = useQuery<WeeklyNutritionGoal>({
-    queryKey: ["/api/weekly-nutrition-goal", userId, currentWeek.toISOString()],
+    queryKey: ["/api/weekly-nutrition-goal", currentWeek.toISOString()],
     queryFn: async () => {
-      const response = await fetch(`/api/weekly-nutrition-goal/${userId}?weekStartDate=${currentWeek.toISOString()}`);
+      const response = await fetch(`/api/weekly-nutrition-goal?weekStartDate=${currentWeek.toISOString()}`);
       return response.json();
     },
   });
 
   // Fetch user profile for calculations
   const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ["/api/user/profile", userId],
+    queryKey: ["/api/user/profile"],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch(`/api/user/profile`);
       return response.json();
     },
   });
 
   // Fetch active diet phase
   const { data: activeDietPhase } = useQuery<DietPhase>({
-    queryKey: ["/api/diet-phases", userId, "active"],
+    queryKey: ["/api/diet-phases", "active"],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-phases/${userId}?activeOnly=true`);
+      const response = await fetch(`/api/diet-phases?activeOnly=true`);
       return response.json();
     },
   });

@@ -243,8 +243,8 @@ export function DailyFoodLog({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
       toast({
         title: "Meal moved successfully",
         description: "Food item has been moved to the new meal.",
@@ -262,16 +262,16 @@ export function DailyFoodLog({
   const { data: nutritionLogs, isLoading } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/logs/${userId}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${selectedDate}`);
       return response.json();
     }
   });
 
   // Fetch diet goals to show remaining targets
   const { data: dietGoals } = useQuery({
-    queryKey: ['/api/diet-goals', userId],
+    queryKey: ['/api/diet-goals'],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-goals/${userId}`);
+      const response = await fetch(`/api/diet-goals`);
       if (!response.ok) return null;
       return response.json();
     }
@@ -291,9 +291,9 @@ export function DailyFoodLog({
 
   // Quick add suggestions
   const { data: quickAddSuggestions } = useQuery({
-    queryKey: ['/api/nutrition/quick-add', userId],
+    queryKey: ['/api/nutrition/quick-add'],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/quick-add/${userId}`);
+      const response = await fetch(`/api/nutrition/quick-add`);
       return response.json();
     }
   });
@@ -303,7 +303,7 @@ export function DailyFoodLog({
     queryKey: ['/api/nutrition/logs', userId, copyFromDate],
     queryFn: async () => {
       if (!copyFromDate) return [];
-      const response = await fetch(`/api/nutrition/logs/${userId}?date=${copyFromDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${copyFromDate}`);
       return response.json();
     },
     enabled: !!copyFromDate
@@ -314,8 +314,8 @@ export function DailyFoodLog({
       return await apiRequest("DELETE", `/api/nutrition/log/${logId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       toast({
         title: "Success",
         description: "Food log deleted successfully"
@@ -340,8 +340,8 @@ export function DailyFoodLog({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       toast({
         title: "Success",
         description: "Food added successfully"
@@ -365,8 +365,8 @@ export function DailyFoodLog({
       });
     },
     onSuccess: (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       setShowCopyMeal(false);
       setCopyFromDate("");
       setSelectedMealTypes([]);
@@ -393,8 +393,8 @@ export function DailyFoodLog({
       return Promise.all(deletePromises);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       setSelectedLogs([]);
       setBulkMode(false);
       toast({
@@ -421,8 +421,8 @@ export function DailyFoodLog({
       });
     },
     onSuccess: (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       setSelectedLogs([]);
       setBulkMode(false);
       setCopyToDate("");
@@ -939,8 +939,8 @@ export function DailyFoodLog({
           selectedDate={selectedDate}
           onComplete={() => {
             setShowLogger(false);
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
           }}
         />
       )}

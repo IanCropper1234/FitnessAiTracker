@@ -55,9 +55,9 @@ export default function WeeklyWellnessCheckin({ userId }: WeeklyWellnessCheckinP
 
   // Fetch existing checkin for current week
   const { data: checkins = [] } = useQuery<WeeklyWellnessCheckin[]>({
-    queryKey: ["/api/wellness-checkins", userId, weekStartDate.toISOString()],
+    queryKey: ["/api/wellness-checkins", weekStartDate.toISOString()],
     queryFn: async () => {
-      const response = await apiRequest(`/api/wellness-checkins/${userId}?week=${weekStartDate.toISOString()}`);
+      const response = await apiRequest(`GET`, `/api/wellness-checkins?week=${weekStartDate.toISOString()}`);
       return response;
     },
   });

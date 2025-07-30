@@ -55,10 +55,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
   // Fetch progression data
   const { data: progressionData, isLoading } = useQuery<ProgressData[]>({
-    queryKey: ['/api/nutrition/progression', userId, timeRange],
+    queryKey: ['/api/nutrition/progression', timeRange],
     queryFn: async () => {
       const response = await fetch(
-        `/api/nutrition/progression/${userId}?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
+        `/api/nutrition/progression?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
       );
       return response.json();
     }
@@ -66,9 +66,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
   // Fetch body metrics for weight/body fat trends
   const { data: bodyMetrics } = useQuery({
-    queryKey: ['/api/body-metrics', userId, timeRange],
+    queryKey: ['/api/body-metrics', timeRange],
     queryFn: async () => {
-      const response = await fetch(`/api/body-metrics/${userId}`);
+      const response = await fetch(`/api/body-metrics`);
       const allMetrics = await response.json();
       // Filter by date range and sort by date
       const filteredMetrics = allMetrics
@@ -84,9 +84,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
   // Get user profile for unit preferences
   const { data: userProfile } = useQuery({
-    queryKey: ['/api/user/profile', userId],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch(`/api/user/profile`);
       if (!response.ok) return null;
       return response.json();
     }

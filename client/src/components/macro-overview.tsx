@@ -26,7 +26,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
 
   // Fetch diet goals to show targets and remaining
   const { data: dietGoals } = useQuery({
-    queryKey: ['/api/diet-goals', userId],
+    queryKey: ['/api/diet-goals'],
     queryFn: async () => {
       const response = await fetch(`/api/diet-goals`);
       if (!response.ok) return null;

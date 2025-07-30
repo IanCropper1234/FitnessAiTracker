@@ -94,11 +94,10 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
 
   // Get available templates (includes user templates)
   const { data: templates = [], isLoading } = useQuery({
-    queryKey: ['/api/training/templates', selectedCategory, userId],
+    queryKey: ['/api/training/templates', selectedCategory],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (selectedCategory !== 'all') params.append('category', selectedCategory);
-      params.append('userId', userId.toString());
       
       const response = await apiRequest('GET', `/api/training/templates?${params.toString()}`);
       return response.json();

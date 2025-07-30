@@ -69,7 +69,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
   // Fetch body metrics
   const { data: metrics, isLoading } = useQuery<BodyMetric[]>({
-    queryKey: ['/api/body-metrics', userId],
+    queryKey: ['/api/body-metrics'],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`);
       return response.json();
@@ -91,8 +91,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         }
       }
       
-      queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
       setIsAddingMetric(false);
       // Reset form data - the useEffect will automatically set the date to the latest metric date
       setFormData({
@@ -126,7 +126,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       return await apiRequest("DELETE", `/api/body-metrics/${metricId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
       toast({
         title: "Success",
         description: "Body metric deleted successfully"

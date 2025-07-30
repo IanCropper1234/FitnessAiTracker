@@ -81,18 +81,18 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
 
   // Fetch latest body metrics to prefill current weight
   const { data: bodyMetrics } = useQuery({
-    queryKey: ['/api/body-metrics', userId],
+    queryKey: ['/api/body-metrics'],
     queryFn: async () => {
-      const response = await fetch(`/api/body-metrics/${userId}`);
+      const response = await fetch(`/api/body-metrics`);
       return response.json();
     }
   });
 
   // Fetch user profile to match goal type
   const { data: userProfile } = useQuery({
-    queryKey: ['/api/user/profile', userId],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch(`/api/user/profile`);
       return response.json();
     }
   });
@@ -150,9 +150,9 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
 
   // Fetch weight goals
   const { data: weightGoals, isLoading } = useQuery<WeightGoal[]>({
-    queryKey: ['/api/weight-goals', userId],
+    queryKey: ['/api/weight-goals'],
     queryFn: async () => {
-      const response = await fetch(`/api/weight-goals/${userId}`);
+      const response = await fetch(`/api/weight-goals`);
       return response.json();
     }
   });

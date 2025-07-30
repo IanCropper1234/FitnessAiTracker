@@ -31,9 +31,9 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   // Get current diet goals
   const { data: dietGoals } = useQuery({
-    queryKey: ['/api/diet-goals', userId],
+    queryKey: ['/api/diet-goals'],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-goals/${userId}`);
+      const response = await fetch(`/api/diet-goals`);
       if (!response.ok) return null;
       return response.json();
     }
@@ -41,9 +41,9 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   // Get user's body metrics for unit preference detection
   const { data: bodyMetrics } = useQuery({
-    queryKey: ['/api/body-metrics', userId],
+    queryKey: ['/api/body-metrics'],
     queryFn: async () => {
-      const response = await fetch(`/api/body-metrics/${userId}`);
+      const response = await fetch(`/api/body-metrics`);
       if (!response.ok) return [];
       return response.json();
     }

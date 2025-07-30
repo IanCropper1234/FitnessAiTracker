@@ -316,7 +316,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Fetch user profile for TDEE calculation
   const { data: userProfileResponse, isLoading: isUserProfileLoading } = useQuery<UserProfileResponse>({
-    queryKey: ['/api/user/profile', userId],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
       const response = await fetch(`/api/user/profile`);
       return response.json();
@@ -328,7 +328,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Fetch body metrics for recent weight
   const { data: bodyMetrics, isLoading: isBodyMetricsLoading } = useQuery({
-    queryKey: ['/api/body-metrics', userId],
+    queryKey: ['/api/body-metrics'],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`);
       return response.json();
@@ -337,7 +337,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Fetch current diet goal
   const { data: currentDietGoal, isLoading: isDietGoalLoading } = useQuery<DietGoal>({
-    queryKey: ['/api/diet-goals', userId],
+    queryKey: ['/api/diet-goals'],
     queryFn: async () => {
       const response = await fetch(`/api/diet-goals`);
       return response.json();
@@ -401,18 +401,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Fetch saved meal plans
   const { data: savedMealPlans } = useQuery<SavedMealPlan[]>({
-    queryKey: ['/api/meal-plans/saved', userId],
+    queryKey: ['/api/meal-plans/saved'],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-plans/saved/${userId}`);
+      const response = await fetch(`/api/meal-plans/saved`);
       return response.json();
     }
   });
 
   // Fetch meal timing preferences for meal scheduling
   const { data: mealTimingPreferences } = useQuery<MealTimingPreference | null>({
-    queryKey: ['/api/meal-timing', userId],
+    queryKey: ['/api/meal-timing'],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-timing/${userId}`);
+      const response = await fetch(`/api/meal-timing`);
       if (!response.ok) return null;
       return response.json();
     }
@@ -882,8 +882,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       });
     },
     onSuccess: (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       toast({
         title: "Meal Logged Successfully",
         description: `Added ${data.loggedCount} food entries to your nutrition log`

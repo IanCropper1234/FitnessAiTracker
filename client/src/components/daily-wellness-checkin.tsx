@@ -48,9 +48,9 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
 
   // Fetch existing checkin for the selected date
   const { data: existingCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins', userId, trackingDate.toISOString().split('T')[0]],
+    queryKey: ['/api/daily-wellness-checkins', trackingDate.toISOString().split('T')[0]],
     queryFn: async () => {
-      const response = await fetch(`/api/daily-wellness-checkins/${userId}?date=${trackingDate.toISOString().split('T')[0]}`);
+      const response = await fetch(`/api/daily-wellness-checkins?date=${trackingDate.toISOString().split('T')[0]}`);
       if (!response.ok) return null;
       return response.json();
     }
