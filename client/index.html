@@ -110,9 +110,25 @@
       // Standard PWA install prompt (for Android/Chrome)
       let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
+        // Store the event for later use
         deferredPrompt = e;
         console.log('FitAI PWA: Install prompt available');
+        
+        // Optionally show install button or banner
+        // For now, we'll auto-prompt after a delay to demonstrate PWA capability
+        setTimeout(() => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('FitAI PWA: User accepted the install prompt');
+              } else {
+                console.log('FitAI PWA: User dismissed the install prompt');
+              }
+              deferredPrompt = null;
+            });
+          }
+        }, 5000); // Show install prompt after 5 seconds
       });
 
       window.addEventListener('appinstalled', (evt) => {
