@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
+import { useLocation } from "wouter";
 import DailyWellnessCheckin from "./daily-wellness-checkin";
 
 
@@ -24,6 +25,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [location, setLocation] = useLocation();
   const [selectedWeek, setSelectedWeek] = useState<string>("");
 
   // Get current diet goals
@@ -485,7 +487,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => window.location.href = '/rp-coach'}
+                      onClick={() => setLocation('/rp-coach')}
                       className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
                     >
                       Go to RP Coach Daily Check-in
