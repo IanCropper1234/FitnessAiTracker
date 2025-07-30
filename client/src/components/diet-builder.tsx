@@ -429,8 +429,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         title: "Success",
         description: "Diet goal saved successfully!"
       });
+      // Invalidate diet goals cache
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      // Invalidate weight goals cache for bidirectional sync
+      queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
     },
     onError: (error: any) => {
       toast({

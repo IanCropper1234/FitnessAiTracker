@@ -163,7 +163,11 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       return await apiRequest("POST", "/api/weight-goals", goalData);
     },
     onSuccess: () => {
+      // Invalidate weight goals cache
+      queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weight-goals', userId] });
+      // Invalidate diet goals cache for bidirectional sync
+      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/comprehensive', userId] });
       setIsAddingGoal(false);
       // Reset form but keep user profile goal type if available
@@ -198,7 +202,11 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       return await apiRequest("DELETE", `/api/weight-goals/${goalId}`);
     },
     onSuccess: () => {
+      // Invalidate weight goals cache
+      queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weight-goals', userId] });
+      // Invalidate diet goals cache for bidirectional sync
+      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/comprehensive', userId] });
       toast({
         title: "Success",
