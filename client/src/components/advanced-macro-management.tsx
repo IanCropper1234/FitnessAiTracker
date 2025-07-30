@@ -322,9 +322,9 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     if (!weeklyGoals || weeklyGoals.length === 0 || !comprehensiveAnalytics) return null;
 
     const latestWeek = weeklyGoals[0];
-    const adherence = parseFloat(latestWeek.adherencePercentage || "0");
+    const adherence = parseFloat(latestWeek?.adherencePercentage || "0");
     // Use actual weekly weight change from weekly goals data
-    const weeklyWeightChange = parseFloat(latestWeek.weightChange || "0");
+    const weeklyWeightChange = parseFloat(latestWeek?.weightChange || "0");
 
     let rec: {
       type: "maintain" | "increase" | "decrease";
@@ -630,7 +630,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Weight Change:</span>
                           <span className="font-medium text-black dark:text-white">
-                            {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                            {formatWeightChangeWithUnit(getWeeklyWeightChange() || 0)}
                           </span>
                         </div>
                       )}
