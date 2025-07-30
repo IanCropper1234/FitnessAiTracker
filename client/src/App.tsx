@@ -251,9 +251,8 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Try to fetch user profile to check for existing session
-        // Since this app is demo-focused, try user ID 1
-        const response = await fetch('/api/user/profile/1');
+        // Check if user is authenticated via session
+        const response = await fetch('/api/auth/user');
         if (response.ok) {
           const data = await response.json();
           if (data.user) {

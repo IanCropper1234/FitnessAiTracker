@@ -35,15 +35,15 @@ interface DietGoals {
 }
 
 // Activity & Goals Card Component
-function ActivityGoalsCard({ userId }: { userId: number }) {
+function ActivityGoalsCard() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
   // Fetch user profile data
   const { data: userData, isLoading } = useQuery({
-    queryKey: ['/api/user/profile', userId],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch('/api/user/profile');
       return response.json();
     }
   });
@@ -66,10 +66,10 @@ function ActivityGoalsCard({ userId }: { userId: number }) {
   // Mutation to update profile
   const updateProfileMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('PUT', `/api/user/profile/${userId}`, data);
+      return apiRequest('PUT', '/api/user/profile', data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user/profile', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
       toast({
         title: "Profile Updated",
         description: "Your activity level and fitness goals have been saved successfully.",
@@ -185,19 +185,19 @@ function ActivityGoalsCard({ userId }: { userId: number }) {
   );
 }
 
-function DietGoalsCard({ userId }: { userId: number }) {
+function DietGoalsCard() {
   const { data: dietGoals, isLoading } = useQuery<DietGoals>({
-    queryKey: ['/api/diet-goals', userId],
+    queryKey: ['/api/diet-goals'],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-goals/${userId}`);
+      const response = await fetch('/api/diet-goals');
       return response.json();
     }
   });
 
   const { data: userProfile } = useQuery({
-    queryKey: ['/api/user/profile', userId],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch('/api/user/profile');
       return response.json();
     }
   });
@@ -293,25 +293,50 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch complete user data including developer settings
   const { data: userData } = useQuery({
-    queryKey: ['/api/auth/user', user.id],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch(`/api/auth/user/${user.id}`);
+      const response = await fetch('/api/user/profile');
       return response.json();
+    }
+  });
+
+  // Signout mutation
+  const signoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/auth/signout', { method: 'POST' });
+      if (!response.ok) throw new Error('Failed to sign out');
+      return response.json();
+    },
+    onSuccess: () => {
+      if (onSignOut) onSignOut();
+      setLocation('/auth');
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Sign Out Failed",
+        description: error?.message || "Failed to sign out. Please try again.",
+        variant: "destructive"
+      });
     }
   });
 
   // Mutation to update developer settings
   const updateDeveloperSettingsMutation = useMutation({
     mutationFn: async (showDeveloperFeatures: boolean) => {
-      return apiRequest('PUT', `/api/auth/user/${user.id}/developer-settings`, {
+      return apiRequest('PUT', '/api/auth/user/developer-settings', {
         showDeveloperFeatures
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user', user.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
     }
   });
 
@@ -479,13 +504,13 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         </Card>
 
         {/* Activity & Goals Card - Moved Above Diet Goals */}
-        <ActivityGoalsCard userId={user.id} />
+        <ActivityGoalsCard />
 
         {/* Diet Goals Card */}
-        <DietGoalsCard userId={user.id} />
+        <DietGoalsCard />
 
         {/* Profile Component */}
-        <UserProfile userId={user.id} />
+        <UserProfile />
       </div>
     </div>
   );

@@ -38,11 +38,9 @@ interface MealTimingData {
   postWorkoutMeals: number;
 }
 
-interface UserProfileProps {
-  userId: number;
-}
+interface UserProfileProps {}
 
-export function UserProfile({ userId }: UserProfileProps) {
+export function UserProfile({}: UserProfileProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -68,7 +66,7 @@ export function UserProfile({ userId }: UserProfileProps) {
   };
 
   const [profileData, setProfileData] = useState<UserProfileData>({
-    userId: userId,
+    userId: 0, // Will be populated from session
     age: undefined,
     weight: '',
     height: '',
@@ -81,7 +79,7 @@ export function UserProfile({ userId }: UserProfileProps) {
   });
 
   const [mealTimingData, setMealTimingData] = useState<MealTimingData>({
-    userId: userId,
+    userId: 0, // Will be populated from session
     wakeTime: '07:00',
     sleepTime: '23:00',
     workoutTime: '',
@@ -93,18 +91,18 @@ export function UserProfile({ userId }: UserProfileProps) {
 
   // Fetch current user profile
   const { data: userProfileResponse, isLoading } = useQuery({
-    queryKey: ['/api/user/profile', userId],
+    queryKey: ['/api/user/profile'],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch('/api/user/profile');
       return response.json();
     }
   });
 
   // Fetch meal timing preferences
   const { data: mealTimingResponse } = useQuery({
-    queryKey: ['/api/meal-timing', userId],
+    queryKey: ['/api/meal-timing'],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-timing/${userId}`);
+      const response = await fetch('/api/meal-timing');
       if (!response.ok) return null;
       return response.json();
     }
@@ -112,9 +110,9 @@ export function UserProfile({ userId }: UserProfileProps) {
 
   // Fetch latest body metrics for body fat percentage
   const { data: bodyMetricsResponse } = useQuery({
-    queryKey: ['/api/body-metrics', userId],
+    queryKey: ['/api/body-metrics'],
     queryFn: async () => {
-      const response = await fetch(`/api/body-metrics/${userId}`);
+      const response = await fetch('/api/body-metrics');
       if (!response.ok) return [];
       return response.json();
     }
@@ -137,7 +135,7 @@ export function UserProfile({ userId }: UserProfileProps) {
       }
       
       setProfileData({
-        userId: userId,
+        userId: userProfileResponse.user?.id || 0,
         age: profile.age || undefined,
         weight: profile.weight ? String(profile.weight) : '',
         height: profile.height ? String(profile.height) : '',

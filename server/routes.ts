@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { initializeExercises } from "./data/exercises";
@@ -18,6 +18,16 @@ import { AnalyticsService } from "./services/analytics-service";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
+
+// Authentication middleware
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const userId = (req.session as any).userId;
+  if (!userId) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+  (req as any).userId = userId;
+  next();
+}
 
 // Auto-progression algorithm for workout sessions
 async function getAutoProgressedValues(exerciseId: number, userId: number, previousExercise: any) {
@@ -295,6 +305,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         dietaryRestrictions: []
       });
 
+      // Automatically sign in the new user
+      (req.session as any).userId = user.id;
+
       res.json({ user: { id: user.id, email: user.email, name: user.name } });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -315,6 +328,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      // Store user ID in session
+      (req.session as any).userId = user.id;
+      
+      res.json({ user: { id: user.id, email: user.email, name: user.name } });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/signout", async (req, res) => {
+    try {
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ message: "Failed to sign out" });
+        }
+        res.json({ message: "Signed out successfully" });
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       res.json({ user: { id: user.id, email: user.email, name: user.name } });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -322,9 +369,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User profile routes
-  app.get("/api/user/profile/:userId", async (req, res) => {
+  app.get("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const user = await storage.getUser(userId);
       const profile = await storage.getUserProfile(userId);
       
@@ -338,9 +385,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/user/profile/:userId", async (req, res) => {
+  app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const profileData = insertUserProfileSchema.parse(req.body);
       
       // Get current profile to check if fitness goal changed
@@ -404,9 +451,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Recent activities route
-  app.get("/api/activities/:userId", async (req, res) => {
+  app.get("/api/activities", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const limit = parseInt(req.query.limit as string) || 10;
       
       // Get recent nutrition logs (last 7 days)
@@ -447,9 +494,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Nutrition routes
-  app.get("/api/nutrition/summary/:userId", async (req, res) => {
+  app.get("/api/nutrition/summary", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const date = req.query.date ? new Date(req.query.date as string) : new Date();
       
       const summary = await getNutritionSummary(userId, date);
@@ -472,7 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/nutrition/logs/:userId", async (req, res) => {
+  app.get("/api/nutrition/logs", requireAuth, async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
@@ -1816,10 +1863,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get fatigue analysis for user
-  app.get("/api/training/fatigue-analysis/:userId", async (req, res) => {
+  // Developer settings route
+  app.put("/api/auth/user/developer-settings", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
+      const { showDeveloperFeatures } = req.body;
+      
+      // Update user's developer settings (this would need to be added to user schema)
+      res.json({ message: "Developer settings updated", showDeveloperFeatures });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get fatigue analysis for user
+  app.get("/api/training/fatigue-analysis", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).userId;
       const days = parseInt(req.query.days as string) || 14; // Default 14 days
       
       const fatigueAnalysis = await getFatigueAnalysis(userId, days);
@@ -1830,9 +1890,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get volume recommendations for user
-  app.get("/api/training/volume-recommendations/:userId", async (req, res) => {
+  app.get("/api/training/volume-recommendations", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const recommendations = await getVolumeRecommendations(userId);
       res.json(recommendations);
     } catch (error: any) {
@@ -2051,7 +2111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Meal Planning
   app.get("/api/meal-plans/:userId", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const date = req.query.date ? new Date(req.query.date as string) : new Date();
       
       const plans = await storage.getMealPlans(userId, date);

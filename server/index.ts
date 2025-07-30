@@ -1,8 +1,29 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { db } from "./db";
 
 const app = express();
+
+// Session configuration
+const PgSession = connectPgSimple(session);
+app.use(session({
+  store: new PgSession({
+    pool: db,
+    tableName: 'user_sessions'
+  }),
+  secret: process.env.SESSION_SECRET || 'fitai-session-secret-key-2025',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  }
+}));
+
 // Increase payload limit for image uploads (50MB limit)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
