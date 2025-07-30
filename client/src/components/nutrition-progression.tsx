@@ -138,7 +138,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         const yAxisMax = maxWeight + padding;
 
         return (
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={weightData}>
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -193,7 +193,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         })) || [];
 
         return (
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={bodyFatData}>
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -233,7 +233,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'calories':
         return (
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={progressionData}>
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -273,7 +273,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'macros':
         return (
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <BarChart data={progressionData} barCategoryGap="10%">
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -399,22 +399,22 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   }
 
   return (
-    <div className="space-y-3">
-      {/* Compact Header with Integrated Controls */}
-      <div className="flex items-center justify-between flex-wrap gap-3 px-1">
-        <div className="flex items-center gap-2">
+    <div className="space-y-2">
+      {/* Ultra-Compact Header */}
+      <div className="flex items-center justify-between flex-wrap gap-2 px-1">
+        <div className="flex items-center gap-1.5">
           <TrendingUp className="w-4 h-4 text-blue-600" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Progress</h2>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Progress</h2>
         </div>
         
-        {/* Pill-shaped controls */}
-        <div className="flex items-center gap-2">
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+        {/* Compact Pill Controls */}
+        <div className="flex items-center gap-1.5">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5">
             {(['7d', '30d', '90d', '1y'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                className={`px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
                   timeRange === range 
                     ? 'bg-blue-600 text-white shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -425,7 +425,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             ))}
           </div>
           
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5">
             {([
               { key: 'weight', label: 'Weight' },
               { key: 'bodyFat', label: 'Fat%' },
@@ -435,7 +435,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <button
                 key={chart.key}
                 onClick={() => setChartType(chart.key)}
-                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                className={`px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
                   chartType === chart.key 
                     ? 'bg-blue-600 text-white shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -448,37 +448,37 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         </div>
       </div>
 
-      {/* Horizontal Scrolling Metrics Bar */}
+      {/* Ultra-Compact Horizontal Scrolling Metrics */}
       {summary && (
-        <div className="overflow-x-auto pb-2 -mx-1">
-          <div className="flex gap-3 min-w-max px-1">
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Weight</div>
-              <div className={`text-lg font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="overflow-x-auto pb-1 -mx-1">
+          <div className="flex gap-2 min-w-max px-1">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Weight</div>
+              <div className={`text-base font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
               </div>
               <div className="text-xs text-gray-400">{getUserPreferredWeightUnit()}</div>
             </div>
             
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Calories</div>
-              <div className="text-lg font-bold text-blue-600">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Avg Cal</div>
+              <div className="text-base font-bold text-blue-600">
                 {Math.round(summary.avgCalories)}
               </div>
               <div className="text-xs text-gray-400">per day</div>
             </div>
             
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Protein</div>
-              <div className="text-lg font-bold text-orange-600">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Protein</div>
+              <div className="text-base font-bold text-orange-600">
                 {Math.round(summary.avgProtein)}g
               </div>
               <div className="text-xs text-gray-400">per day</div>
             </div>
             
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Cal Trend</div>
-              <div className={`text-lg font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Trend</div>
+              <div className={`text-base font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)}
               </div>
               <div className="text-xs text-gray-400">vs start</div>
@@ -487,10 +487,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         </div>
       )}
 
-      {/* Borderless Chart */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
-        <div className="mb-3">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+      {/* Compact Chart Container */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
+        <div className="mb-2">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
             {chartType === 'weight' && 'Weight Trend'}
             {chartType === 'bodyFat' && 'Body Fat %'}
             {chartType === 'calories' && 'Daily Calories'}
@@ -504,7 +504,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </p>
         </div>
         
-        <div className="w-full h-[240px]">
+        <div className="w-full h-[200px]">
           {renderChart()}
         </div>
       </div>
