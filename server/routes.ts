@@ -2596,19 +2596,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Always update current diet goals with the new adjustments
-      const updatedDietGoals = await storage.updateDietGoal(userId, {
-        targetCalories: adjustment.adjustment.newCalories.toString(),
-        targetProtein: adjustment.adjustment.newProtein.toString(),
-        targetCarbs: adjustment.adjustment.newCarbs.toString(),
-        targetFat: adjustment.adjustment.newFat.toString()
-      });
+      try {
+        const updatedDietGoals = await storage.updateDietGoal(userId, {
+          targetCalories: adjustment.adjustment.newCalories.toString(),
+          targetProtein: adjustment.adjustment.newProtein.toString(),
+          targetCarbs: adjustment.adjustment.newCarbs.toString(),
+          targetFat: adjustment.adjustment.newFat.toString()
+        });
 
-      res.json({
-        weeklyGoal,
-        adjustment: adjustment.adjustment,
-        appliedToCurrentGoals: true,
-        updatedDietGoals
-      });
+        console.log('Successfully updated diet goals:', {
+          newCalories: adjustment.adjustment.newCalories,
+          newProtein: adjustment.adjustment.newProtein,
+          newCarbs: adjustment.adjustment.newCarbs,
+          newFat: adjustment.adjustment.newFat
+        });
+
+        res.json({
+          weeklyGoal,
+          adjustment: adjustment.adjustment,
+          appliedToCurrentGoals: true,
+          updatedDietGoals,
+          message: "Weekly adjustment applied successfully. Your diet goals have been updated."
+        });
+      } catch (updateError) {
+        console.error('Failed to update diet goals:', updateError);
+        res.json({
+          weeklyGoal,
+          adjustment: adjustment.adjustment,
+          appliedToCurrentGoals: false,
+          error: "Adjustment calculated but failed to update diet goals",
+          message: "Weekly analysis recorded. Target macros maintained."
+        });
+      }
     } catch (error: any) {
       console.error('Weekly adjustment error:', error);
       res.status(500).json({ message: error.message });

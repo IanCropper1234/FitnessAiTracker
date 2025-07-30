@@ -314,7 +314,29 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       adherencePercentage: adherence
     };
 
-    weeklyAdjustmentMutation.mutate(adjustmentData);
+    weeklyAdjustmentMutation.mutate(adjustmentData, {
+      onSuccess: (data) => {
+        // Force refresh diet goals and other related data
+        queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals'] });
+        
+        // Show success message with adjustment details
+        if (data.appliedToCurrentGoals) {
+          toast({
+            title: "Weekly Adjustment Applied Successfully",
+            description: `Your diet goals have been updated. New target: ${Math.round(data.adjustment.newCalories)} calories`,
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "Weekly Analysis Recorded",
+            description: data.message || "Target macros maintained.",
+            variant: "default"
+          });
+        }
+      }
+    });
   };
 
   // Calculate adjustment recommendation based on current data

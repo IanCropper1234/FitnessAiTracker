@@ -839,6 +839,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateDietGoal(userId: number, goal: Partial<InsertDietGoal>): Promise<DietGoal | undefined> {
+    console.log('Updating diet goal for user:', userId, 'with data:', goal);
     // First check if a diet goal exists for this user
     const existingGoal = await this.getDietGoal(userId);
     
