@@ -233,7 +233,7 @@ export function IntegratedNutritionOverview({
 
   const updateMealTypeMutation = useMutation({
     mutationFn: async ({ logId, newMealType }: { logId: number; newMealType: string }) => {
-      return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { mealType: newMealType });
+      return await apiRequest("PUT", `/api/nutrition/logs/${logId}/meal-type`, { mealType: newMealType });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
