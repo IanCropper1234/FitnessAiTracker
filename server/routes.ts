@@ -2350,6 +2350,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/weight-goals", async (req, res) => {
     try {
       const weightGoal = await storage.createWeightGoal(req.body);
+      
+      // Bidirectional sync: Update diet goal's weekly weight target if it exists
+      if (weightGoal && weightGoal.targetWeightChangePerWeek !== undefined) {
+        try {
+          const existingDietGoal = await storage.getDietGoal(weightGoal.userId);
+          if (existingDietGoal) {
+            await storage.updateDietGoal(weightGoal.userId, {
+              weeklyWeightTarget: weightGoal.targetWeightChangePerWeek
+            });
+            console.log(`Synced diet goal weekly weight target: ${weightGoal.targetWeightChangePerWeek}kg/week`);
+          }
+        } catch (syncError) {
+          console.error('Failed to sync weight goal to diet goal:', syncError);
+          // Don't fail the weight goal creation if sync fails
+        }
+      }
+      
       res.json(weightGoal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2364,6 +2381,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!weightGoal) {
         return res.status(404).json({ message: "Weight goal not found" });
       }
+      
+      // Bidirectional sync: Update diet goal's weekly weight target if it exists
+      if (weightGoal && req.body.targetWeightChangePerWeek !== undefined) {
+        try {
+          const existingDietGoal = await storage.getDietGoal(weightGoal.userId);
+          if (existingDietGoal) {
+            await storage.updateDietGoal(weightGoal.userId, {
+              weeklyWeightTarget: req.body.targetWeightChangePerWeek
+            });
+            console.log(`Synced diet goal weekly weight target: ${req.body.targetWeightChangePerWeek}kg/week`);
+          }
+        } catch (syncError) {
+          console.error('Failed to sync weight goal to diet goal:', syncError);
+          // Don't fail the weight goal update if sync fails
+        }
+      }
+      
       res.json(weightGoal);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2550,6 +2584,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!goal) {
         return res.status(404).json({ message: "Diet goal not found" });
+      }
+      
+      // Bidirectional sync: Update active weight goal's target change if weeklyWeightTarget changed
+      if (req.body.weeklyWeightTarget !== undefined) {
+        try {
+          const existingWeightGoals = await storage.getWeightGoals(userId);
+          const activeWeightGoal = existingWeightGoals.find((wg: any) => wg.isActive);
+          
+          if (activeWeightGoal) {
+            await storage.updateWeightGoal(activeWeightGoal.id, {
+              targetWeightChangePerWeek: req.body.weeklyWeightTarget
+            });
+            console.log(`Synced weight goal target change: ${req.body.weeklyWeightTarget}kg/week`);
+          }
+        } catch (syncError) {
+          console.error('Failed to sync diet goal to weight goal:', syncError);
+          // Don't fail the diet goal update if sync fails
+        }
       }
       
       res.json(goal);
