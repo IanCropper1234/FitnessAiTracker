@@ -115,7 +115,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           let weight = parseFloat(metric.weight);
           // Convert weight to user's preferred unit
           const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
-          const targetUnit = preferredUnit === 'metric' ? 'kg' : 'lbs';
+          const targetUnit = preferredUnit === 'imperial' ? 'lbs' : 'kg';
           
           if (metricUnit !== targetUnit) {
             weight = convertWeight(weight, metricUnit, targetUnit);
@@ -129,29 +129,42 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         }) || [];
 
         return (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={weightData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#6B7280" />
-              <YAxis stroke="#6B7280" />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <XAxis 
+                dataKey="date" 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#F9FAFB'
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  fontSize: '12px'
                 }}
-                formatter={(value: any, name: any) => [
-                  `${value.toFixed(1)} ${getUserPreferredWeightUnit() === 'metric' ? 'kg' : 'lbs'}`, 
+                formatter={(value: any) => [
+                  `${value.toFixed(1)} ${getUserPreferredWeightUnit() === 'imperial' ? 'lbs' : 'kg'}`, 
                   'Weight'
                 ]}
               />
               <Line 
                 type="monotone" 
                 dataKey="weight" 
-                stroke="#3B82F6" 
-                strokeWidth={2}
-                dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                stroke="#2563EB" 
+                strokeWidth={3}
+                dot={{ fill: '#2563EB', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: '#2563EB' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -164,25 +177,39 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         })) || [];
 
         return (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={bodyFatData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#6B7280" />
-              <YAxis stroke="#6B7280" />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <XAxis 
+                dataKey="date" 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#F9FAFB'
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  fontSize: '12px'
                 }}
+                formatter={(value: any) => [`${value}%`, 'Body Fat']}
               />
               <Line 
                 type="monotone" 
                 dataKey="bodyFat" 
-                stroke="#10B981" 
-                strokeWidth={2}
-                dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
+                stroke="#059669" 
+                strokeWidth={3}
+                dot={{ fill: '#059669', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: '#059669' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -190,25 +217,39 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'calories':
         return (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={progressionData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#6B7280" />
-              <YAxis stroke="#6B7280" />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <XAxis 
+                dataKey="date" 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#F9FAFB'
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  fontSize: '12px'
                 }}
+                formatter={(value: any) => [`${value} cal`, 'Calories']}
               />
               <Line 
                 type="monotone" 
                 dataKey="calories" 
-                stroke="#F59E0B" 
-                strokeWidth={2}
-                dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                stroke="#EA580C" 
+                strokeWidth={3}
+                dot={{ fill: '#EA580C', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: '#EA580C' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -216,22 +257,35 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'macros':
         return (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={progressionData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#6B7280" />
-              <YAxis stroke="#6B7280" />
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={progressionData} barCategoryGap="10%">
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <XAxis 
+                dataKey="date" 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#F9FAFB'
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  fontSize: '12px'
                 }}
+                formatter={(value: any, name: any) => [`${value}g`, name]}
               />
-              <Bar dataKey="protein" fill="#10B981" name="Protein" />
-              <Bar dataKey="carbs" fill="#F59E0B" name="Carbs" />
-              <Bar dataKey="fat" fill="#8B5CF6" name="Fat" />
+              <Bar dataKey="protein" fill="#059669" name="Protein" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="carbs" fill="#EA580C" name="Carbs" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="fat" fill="#7C3AED" name="Fat" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -275,7 +329,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       // Convert to preferred unit if needed
       const latestMetricUnit = latestMetric.unit === 'imperial' ? 'lbs' : 'kg';
       const earliestMetricUnit = earliestMetric.unit === 'imperial' ? 'lbs' : 'kg';
-      const targetUnit = preferredUnit === 'metric' ? 'kg' : 'lbs';
+      const targetUnit = preferredUnit === 'imperial' ? 'lbs' : 'kg';
       
       if (latestMetricUnit !== targetUnit) {
         latestWeight = convertWeight(latestWeight, latestMetricUnit, targetUnit);
@@ -301,156 +355,143 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Card className="animate-pulse">
-          <CardHeader>
-            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          </CardContent>
-        </Card>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+          <div className="flex gap-2">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-full w-24 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-full w-32 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <div className="flex gap-3 min-w-max">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 min-w-[120px] animate-pulse">
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-12 mb-2"></div>
+                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-1"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 animate-pulse">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-2"></div>
+          <div className="h-[240px] bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Nutrition Progression
-          </CardTitle>
-          <CardDescription>
-            Track your weight, body fat, calories, and macro trends over time
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Time Range:</label>
-              <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7d">7 Days</SelectItem>
-                  <SelectItem value="30d">30 Days</SelectItem>
-                  <SelectItem value="90d">90 Days</SelectItem>
-                  <SelectItem value="1y">1 Year</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Chart Type:</label>
-              <Select value={chartType} onValueChange={(value: any) => setChartType(value)}>
-                <SelectTrigger className="w-32 ml-[5px] mr-[5px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weight">Weight</SelectItem>
-                  <SelectItem value="bodyFat">Body Fat %</SelectItem>
-                  <SelectItem value="calories">Calories</SelectItem>
-                  <SelectItem value="macros">Macros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="space-y-3">
+      {/* Compact Header with Integrated Controls */}
+      <div className="flex items-center justify-between flex-wrap gap-3 px-1">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-blue-600" />
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Progress</h2>
+        </div>
+        
+        {/* Pill-shaped controls */}
+        <div className="flex items-center gap-2">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+            {(['7d', '30d', '90d', '1y'] as const).map((range) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                  timeRange === range 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {range}
+              </button>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+            {([
+              { key: 'weight', label: 'Weight' },
+              { key: 'bodyFat', label: 'Fat%' },
+              { key: 'calories', label: 'Cals' },
+              { key: 'macros', label: 'Macros' }
+            ] as const).map((chart) => (
+              <button
+                key={chart.key}
+                onClick={() => setChartType(chart.key)}
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                  chartType === chart.key 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {chart.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      {/* Progress Summary */}
+      {/* Horizontal Scrolling Metrics Bar */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Weight Change
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${summary.weightChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                {summary.weightChange > 0 ? '+' : ''}{summary.weightChange.toFixed(1)} {getUserPreferredWeightUnit() === 'metric' ? 'kg' : 'lbs'}
+        <div className="overflow-x-auto pb-2 -mx-1">
+          <div className="flex gap-3 min-w-max px-1">
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Weight</div>
+              <div className={`text-lg font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                Last {timeRange}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Avg Calories
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-5 text-left ml-[-15px] mr-[-15px] pl-[25px] pr-[25px] pt-[14px] pb-[14px] mt-[0px] mb-[0px]">
-              <div className="text-2xl font-bold text-black dark:text-white">
+              <div className="text-xs text-gray-400">{getUserPreferredWeightUnit() === 'imperial' ? 'lbs' : 'kg'}</div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Calories</div>
+              <div className="text-lg font-bold text-blue-600">
                 {Math.round(summary.avgCalories)}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                Daily average
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Avg Protein
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black dark:text-white">
+              <div className="text-xs text-gray-400">per day</div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Protein</div>
+              <div className="text-lg font-bold text-orange-600">
                 {Math.round(summary.avgProtein)}g
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                Daily average
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Calorie Trend
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${summary.calorieChange >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+              <div className="text-xs text-gray-400">per day</div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Cal Trend</div>
+              <div className={`text-lg font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)}
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                vs start of period
-              </p>
-            </CardContent>
-          </Card>
+              <div className="text-xs text-gray-400">vs start</div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="w-5 h-5" />
+      {/* Borderless Chart */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
+        <div className="mb-3">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
             {chartType === 'weight' && 'Weight Trend'}
-            {chartType === 'bodyFat' && 'Body Fat Percentage Trend'}
-            {chartType === 'calories' && 'Daily Calorie Intake'}
-            {chartType === 'macros' && 'Daily Macronutrient Intake'}
-          </CardTitle>
-          <CardDescription>
-            {chartType === 'weight' && 'Track your weight changes over time'}
-            {chartType === 'bodyFat' && 'Monitor body composition progress'}
-            {chartType === 'calories' && 'Monitor daily calorie consumption'}
-            {chartType === 'macros' && 'Track protein, carbs, and fat intake'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-5 text-left ml-[-15px] mr-[-15px] pl-[25px] pr-[25px] pt-[14px] pb-[14px] mt-[0px] mb-[0px]">
+            {chartType === 'bodyFat' && 'Body Fat %'}
+            {chartType === 'calories' && 'Daily Calories'}
+            {chartType === 'macros' && 'Macronutrients'}
+          </h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {chartType === 'weight' && `Track changes over ${timeRange}`}
+            {chartType === 'bodyFat' && `Body composition ${timeRange}`}
+            {chartType === 'calories' && `Daily intake ${timeRange}`}
+            {chartType === 'macros' && `Protein, carbs, fat ${timeRange}`}
+          </p>
+        </div>
+        
+        <div className="h-[240px]">
           {renderChart()}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
