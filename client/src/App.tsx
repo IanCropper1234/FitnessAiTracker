@@ -19,6 +19,7 @@ import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
+import RPCoachPage from "./pages/RPCoachPage";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -143,6 +144,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             {user ? <WellnessTestPage /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
+        <Route path="/rp-coach">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <RPCoachPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
         <Route>
           <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
             <div className="text-center">
@@ -208,7 +214,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           size="lg"
           showDatePicker={showCopyFromDatePicker}
           setShowDatePicker={setShowCopyFromDatePicker}
-          maxDate={new Date().toISOString().split('T')[0]}
         />
       )}
 
