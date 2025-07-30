@@ -2622,7 +2622,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get weekly goals
   app.get("/api/weekly-goals", requireAuth, async (req, res) => {
     try {
-      const userId = req.userId;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       const week = req.query.week as string;
       
       const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(userId, week);
@@ -2636,7 +2639,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Meal Distribution API endpoints
   app.get("/api/meal-distribution", requireAuth, async (req, res) => {
     try {
-      const userId = req.userId;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       const distributions = await AdvancedMacroManagementService.getMealDistributions(userId);
       res.json(distributions);
     } catch (error: any) {
@@ -2644,9 +2650,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/meal-distribution", async (req, res) => {
+  app.post("/api/meal-distribution", requireAuth, async (req, res) => {
     try {
-      const distribution = await AdvancedMacroManagementService.createMealDistribution(req.body);
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const distribution = await AdvancedMacroManagementService.createMealDistribution({
+        ...req.body,
+        userId
+      });
       res.json(distribution);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2656,7 +2670,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Macro Flexibility API endpoints
   app.get("/api/flexibility-rules", requireAuth, async (req, res) => {
     try {
-      const userId = req.userId;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       const rules = await AdvancedMacroManagementService.getFlexibilityRules(userId);
       res.json(rules);
     } catch (error: any) {
@@ -2664,9 +2681,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/flexibility-rules", async (req, res) => {
+  app.post("/api/flexibility-rules", requireAuth, async (req, res) => {
     try {
-      const rule = await AdvancedMacroManagementService.createFlexibilityRule(req.body);
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const rule = await AdvancedMacroManagementService.createFlexibilityRule({
+        ...req.body,
+        userId
+      });
       res.json(rule);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

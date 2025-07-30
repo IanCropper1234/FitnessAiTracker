@@ -685,7 +685,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <div className="text-right">
                           <span className="text-sm font-medium text-black dark:text-white">
-                            {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                            {formatWeightChangeWithUnit(getWeeklyWeightChange() || 0)}
                           </span>
                           <div className="text-xs text-gray-500 dark:text-gray-400">
                             {getWeeklyWeightChange() === null ? 'Add weight data in Body section' : 'Current week'}
@@ -707,11 +707,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                             let displayWeight = targetWeight;
                             let displayWeeklyChange = weeklyChange;
                             if (activeGoal.unit !== preferredUnit) {
-                              displayWeight = targetWeight * (preferredUnit === 'metric' ? 0.453592 : 2.20462);
-                              displayWeeklyChange = weeklyChange * (preferredUnit === 'metric' ? 0.453592 : 2.20462);
+                              displayWeight = targetWeight * (preferredUnit === 'kg' ? 0.453592 : 2.20462);
+                              displayWeeklyChange = weeklyChange * (preferredUnit === 'kg' ? 0.453592 : 2.20462);
                             }
                             
-                            const unitLabel = preferredUnit === 'metric' ? 'kg' : 'lbs';
+                            const unitLabel = preferredUnit === 'kg' ? 'kg' : 'lbs';
                             const goalType = activeGoal.goalType === 'cutting' ? '↓' : activeGoal.goalType === 'bulking' ? '↑' : '→';
                             
                             return `${goalType} ${displayWeight.toFixed(1)} ${unitLabel} (${Math.abs(displayWeeklyChange).toFixed(1)}/week)`;
@@ -733,7 +733,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {formatWeightChangeWithUnit(getWeeklyWeightChange())}
+                          {formatWeightChangeWithUnit(getWeeklyWeightChange() || 0)}
                         </span>
                       </div>
                       <div className="flex justify-between">
