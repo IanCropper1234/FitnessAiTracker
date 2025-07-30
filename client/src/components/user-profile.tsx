@@ -153,7 +153,7 @@ export function UserProfile({}: UserProfileProps) {
   useEffect(() => {
     if (mealTimingResponse) {
       setMealTimingData({
-        userId: userId,
+        userId: userProfileResponse?.user?.id || 0,
         wakeTime: mealTimingResponse.wakeTime || '07:00',
         sleepTime: mealTimingResponse.sleepTime || '23:00',
         workoutTime: mealTimingResponse.workoutTime || '',
@@ -163,12 +163,12 @@ export function UserProfile({}: UserProfileProps) {
         postWorkoutMeals: mealTimingResponse.postWorkoutMeals || 1
       });
     }
-  }, [mealTimingResponse]);
+  }, [mealTimingResponse, userProfileResponse]);
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (updatedProfile: UserProfileData) => {
-      return await apiRequest("PUT", `/api/user/profile/${userId}`, updatedProfile);
+      return await apiRequest("PUT", "/api/user/profile", updatedProfile);
     },
     onSuccess: async (data) => {
       // If weight was updated, sync it to Body Tracking
@@ -207,7 +207,7 @@ export function UserProfile({}: UserProfileProps) {
     const userWeightUnit = profileData.weightUnit === 'imperial' ? 'imperial' : 'metric';
     
     // Check if there's already a body metric entry for today
-    const existingMetrics = await fetch(`/api/body-metrics/${userId}`).then(res => res.json());
+    const existingMetrics = await fetch('/api/body-metrics').then(res => res.json());
     const todayMetric = existingMetrics?.find((metric: any) => 
       new Date(metric.date).toISOString().split('T')[0] === today
     );
@@ -222,7 +222,6 @@ export function UserProfile({}: UserProfileProps) {
     } else {
       // Create new body metric entry for today with user's unit preference
       await apiRequest("POST", "/api/body-metrics", {
-        userId: userId,
         date: new Date(),
         weight: weightValue.toString(),
         unit: userWeightUnit
@@ -237,7 +236,7 @@ export function UserProfile({}: UserProfileProps) {
       const exists = mealTimingResponse;
       
       if (exists) {
-        return await apiRequest("PUT", `/api/meal-timing/${userId}`, data);
+        return await apiRequest("PUT", "/api/meal-timing", data);
       } else {
         return await apiRequest("POST", "/api/meal-timing", data);
       }
