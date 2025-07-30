@@ -322,7 +322,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     setLocation("/auth");
   };
   return (
-    <div className="min-h-screen bg-background text-foreground ios-pwa-container">
+    <div className="min-h-screen bg-background text-foreground ios-pwa-container ml-[8px] mr-[8px] pl-[5px] pr-[5px]">
       <div className="container mx-auto p-4 space-y-6 pl-[0px] pr-[0px] pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
         {/* Ultra-Compact Header - Consistent with Training/Nutrition */}
         <div className="h-11 flex items-center justify-between px-1 ios-smooth-transform">
