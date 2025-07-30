@@ -193,18 +193,24 @@ export function AddFood({ user }: AddFoodProps) {
 
   // Fetch user's food history (unique foods they've logged before)
   const { data: foodHistory = [] } = useQuery({
-    queryKey: ['/api/nutrition/history', user.id],
+    queryKey: ['/api/nutrition/history'],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/history/${user.id}`);
+      const response = await fetch('/api/nutrition/history', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch food history');
       return response.json();
     }
   });
 
   // Fetch user's saved meals
   const { data: savedMeals = [] } = useQuery({
-    queryKey: ['/api/saved-meals', user.id],
+    queryKey: ['/api/saved-meals'],
     queryFn: async () => {
-      const response = await fetch(`/api/saved-meals/${user.id}`);
+      const response = await fetch('/api/saved-meals', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch saved meals');
       return response.json();
     }
   });
@@ -374,7 +380,6 @@ export function AddFood({ user }: AddFoodProps) {
 
   const handleQuickAddFromHistory = (historyItem: any) => {
     const nutritionData = {
-      userId: user.id,
       date: selectedDate,
       foodName: historyItem.foodName,
       quantity: historyItem.quantity || 1,
@@ -397,7 +402,6 @@ export function AddFood({ user }: AddFoodProps) {
       const foodItems = typeof meal.foodItems === 'string' ? JSON.parse(meal.foodItems) : meal.foodItems;
       const promises = foodItems.map((item: any) => {
         const logData = {
-          userId: user.id,
           date: selectedDate,
           foodName: item.foodName,
           quantity: parseFloat(item.quantity),
@@ -473,7 +477,6 @@ export function AddFood({ user }: AddFoodProps) {
     }
 
     const logData = {
-      userId: user.id,
       date: selectedDate,
       foodName: searchMode === 'ai' ? foodQuery : selectedFood?.name || foodQuery,
       quantity: quantity,
