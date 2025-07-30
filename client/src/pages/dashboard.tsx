@@ -135,7 +135,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
         </div>
 
         {/* Overview Section with Toggle */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[10px] mb-[10px]">
           <CardHeader>
             <div className="space-y-3">
               {/* First Row - Title with Icon */}
