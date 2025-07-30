@@ -2367,24 +2367,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/nutrition/progression/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const startDateStr = req.query.start as string;
-      const endDateStr = req.query.end as string;
+      let startDate = new Date();
+      let endDate = new Date();
       
-      if (!startDateStr || !endDateStr) {
-        return res.status(400).json({ message: "Start and end dates are required" });
+      // Check if date range is provided in query parameters
+      if (req.query.start && req.query.end) {
+        const startDateStr = req.query.start as string;
+        const endDateStr = req.query.end as string;
+        
+        startDate = new Date(startDateStr);
+        endDate = new Date(endDateStr);
+        
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          return res.status(400).json({ message: "Invalid date format" });
+        }
+      } else {
+        // Default to last 90 days if no date range provided
+        startDate.setDate(endDate.getDate() - 90);
       }
       
-      const startDate = new Date(startDateStr);
-      const endDate = new Date(endDateStr);
-      
-      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        return res.status(400).json({ message: "Invalid date format" });
-      }
+      console.log(`Nutrition progression: userId=${userId}, start=${startDate.toISOString()}, end=${endDate.toISOString()}`);
       
       const progression = await storage.getNutritionProgression(userId, startDate, endDate);
+      console.log(`Found ${progression.length} nutrition progression entries`);
       res.json(progression);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error('Get nutrition progression error:', error);
+      res.status(500).json({ message: error.message });
     }
   });
 
