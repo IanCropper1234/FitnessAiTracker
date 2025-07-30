@@ -2465,8 +2465,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fat: adjustment.adjustment.newFat,
         adjustmentReason: adjustment.adjustment.adjustmentReason,
         adherencePercentage: adjustment.adherencePercentage,
-        energyLevels,
-        hungerLevels,
+        wellnessFactors: adjustment.adjustment.wellnessFactors, // Use wellness data from check-ins
+        energyLevels: adjustment.adjustment.wellnessFactors?.energyLevel || energyLevels,
+        hungerLevels: adjustment.adjustment.wellnessFactors?.hungerLevel || hungerLevels,
         adjustmentPercentage: adjustment.adjustment.adjustmentPercentage
       });
 

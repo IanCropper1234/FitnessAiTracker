@@ -18,6 +18,7 @@ import { AddFood } from "./pages/add-food";
 import { TrainingPage } from "./pages/training";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
+import WellnessTestPage from "./pages/WellnessTestPage";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -135,6 +136,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/profile">
           <div className="page-enter ios-animation ios-smooth-transform">
             {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/wellness-test">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <WellnessTestPage /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route>

@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { weeklyNutritionGoals, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
+import { weeklyNutritionGoals, weeklyWellnessCheckins, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import { UnitConverter } from '../../shared/utils/unit-conversion';
 
@@ -38,6 +38,15 @@ export class AdvancedMacroManagementService {
       const dailyTotals = this.calculateDailyTotals(weeklyLogs);
       const adherencePercentage = this.calculateAdherence(dailyTotals, currentGoal);
 
+      // Get wellness data for the current week
+      const wellnessData = await db.select()
+        .from(weeklyWellnessCheckins)
+        .where(and(
+          eq(weeklyWellnessCheckins.userId, userId),
+          eq(weeklyWellnessCheckins.weekStartDate, weekStart)
+        ))
+        .limit(1);
+
       // Get previous week's weight (if available)
       const previousWeekStart = new Date(weekStart);
       previousWeekStart.setDate(previousWeekStart.getDate() - 7);
@@ -56,7 +65,8 @@ export class AdvancedMacroManagementService {
         currentGoals: currentGoal,
         adherencePercentage,
         weeklyLogs,
-        previousWeekGoals: previousWeekGoals[0] || null
+        previousWeekGoals: previousWeekGoals[0] || null,
+        wellnessData: wellnessData[0] || null
       });
 
       return {
@@ -134,9 +144,9 @@ export class AdvancedMacroManagementService {
     return Math.round(adherenceSum / pastDays.length);
   }
 
-  // Calculate RP-based macro adjustment using intelligent target detection
+  // Calculate RP-based macro adjustment using intelligent target detection and wellness data
   private static calculateRPAdjustment(data: any) {
-    const { currentGoals, adherencePercentage } = data;
+    const { currentGoals, adherencePercentage, wellnessData } = data;
     
     // Intelligently detect current target calories (custom or suggested)
     const getCurrentTargetCalories = () => {
@@ -156,6 +166,13 @@ export class AdvancedMacroManagementService {
     let adjustmentPercentage = 0;
     let adjustmentReason = 'maintain_current';
 
+    // Get wellness metrics from user check-in (authentic RP Diet Coach methodology)
+    const energyLevel = wellnessData?.energyLevel || 7; // 1-10 scale from weekly wellness check-in
+    const hungerLevel = wellnessData?.hungerLevel || 5; // 1-10 scale from weekly wellness check-in
+    const sleepQuality = wellnessData?.sleepQuality || 7; // 1-10 scale
+    const stressLevel = wellnessData?.stressLevel || 5; // 1-10 scale
+    const adherencePerception = wellnessData?.adherencePerception || 8; // 1-10 scale
+
     // Only adjust if adherence is good (>80%)
     if (adherencePercentage < 80) {
       return {
@@ -164,19 +181,72 @@ export class AdvancedMacroManagementService {
         newCalories: targetCalories,
         newProtein: parseFloat(currentGoals.targetProtein),
         newCarbs: parseFloat(currentGoals.targetCarbs),
-        newFat: parseFloat(currentGoals.targetFat)
+        newFat: parseFloat(currentGoals.targetFat),
+        wellnessFactors: {
+          energyLevel,
+          hungerLevel,
+          sleepQuality,
+          stressLevel,
+          adherencePerception
+        }
       };
     }
 
-    // RP-based adjustment logic
+    // RP-based adjustment logic with wellness integration
+    let baseAdjustment = 0;
     if (currentGoals.goal === 'cut') {
-      // For cutting, reduce calories by 2-5% if progress stalls
-      adjustmentPercentage = -3;
+      baseAdjustment = -3; // Base 3% reduction for cutting
       adjustmentReason = 'progress_optimization';
     } else if (currentGoals.goal === 'bulk') {
-      // For bulking, increase calories by 2-5% if weight gain is slow
-      adjustmentPercentage = 3;
+      baseAdjustment = 3; // Base 3% increase for bulking  
       adjustmentReason = 'growth_optimization';
+    }
+
+    // Adjust based on wellness factors (RP Diet Coach methodology)
+    let wellnessAdjustment = 0;
+    
+    // Energy level adjustments
+    if (energyLevel <= 4) {
+      // Low energy - reduce deficit or increase surplus
+      wellnessAdjustment += currentGoals.goal === 'cut' ? 1 : 1; // Less aggressive
+      adjustmentReason = 'low_energy_adjustment';
+    } else if (energyLevel >= 8) {
+      // High energy - can be more aggressive
+      wellnessAdjustment += currentGoals.goal === 'cut' ? -1 : 1; // More aggressive
+    }
+
+    // Hunger level adjustments
+    if (hungerLevel >= 8) {
+      // High hunger - reduce deficit or increase surplus
+      wellnessAdjustment += currentGoals.goal === 'cut' ? 2 : 1; // Less aggressive deficit
+      adjustmentReason = 'high_hunger_adjustment';
+    } else if (hungerLevel <= 3) {
+      // Low hunger - can be more aggressive with deficit
+      wellnessAdjustment += currentGoals.goal === 'cut' ? -1 : 0;
+    }
+
+    // Sleep quality adjustments
+    if (sleepQuality <= 4) {
+      // Poor sleep - be more conservative
+      wellnessAdjustment += 1; // Less aggressive
+      adjustmentReason = 'poor_sleep_adjustment';
+    }
+
+    // Stress level adjustments
+    if (stressLevel >= 8) {
+      // High stress - be more conservative
+      wellnessAdjustment += 1; // Less aggressive
+      adjustmentReason = 'high_stress_adjustment';
+    }
+
+    // Calculate final adjustment percentage
+    adjustmentPercentage = baseAdjustment + wellnessAdjustment;
+    
+    // Cap adjustments to reasonable ranges
+    if (currentGoals.goal === 'cut') {
+      adjustmentPercentage = Math.max(-8, Math.min(0, adjustmentPercentage)); // -8% to 0%
+    } else if (currentGoals.goal === 'bulk') {
+      adjustmentPercentage = Math.max(0, Math.min(8, adjustmentPercentage)); // 0% to 8%
     }
 
     const newCalories = Math.round(targetCalories * (1 + adjustmentPercentage / 100));
@@ -190,7 +260,14 @@ export class AdvancedMacroManagementService {
       newCalories,
       newProtein: Math.round(newCalories * proteinPerCalorie),
       newCarbs: Math.round(newCalories * carbPerCalorie),
-      newFat: Math.round(newCalories * fatPerCalorie)
+      newFat: Math.round(newCalories * fatPerCalorie),
+      wellnessFactors: {
+        energyLevel,
+        hungerLevel,
+        sleepQuality,
+        stressLevel,
+        adherencePerception
+      }
     };
   }
 
@@ -208,8 +285,8 @@ export class AdvancedMacroManagementService {
         previousWeight: data.previousWeight?.toString(),
         currentWeight: data.currentWeight?.toString(),
         adherencePercentage: data.adherencePercentage?.toString(),
-        energyLevels: data.energyLevels,
-        hungerLevels: data.hungerLevels,
+        energyLevels: data.wellnessFactors?.energyLevel || data.energyLevels || 7,
+        hungerLevels: data.wellnessFactors?.hungerLevel || data.hungerLevels || 5,
         adjustmentPercentage: data.adjustmentPercentage?.toString()
       }).returning();
 
