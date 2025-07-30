@@ -140,16 +140,16 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={weightData}>
-              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis 
                 dataKey="date" 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -158,11 +158,12 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: 'hsl(var(--foreground))'
                 }}
                 formatter={(value: any) => [
                   `${value.toFixed(1)} ${getUserPreferredWeightUnit()}`, 
@@ -190,27 +191,28 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={bodyFatData}>
-              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis 
                 dataKey="date" 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: 'hsl(var(--foreground))'
                 }}
                 formatter={(value: any) => [`${value}%`, 'Body Fat']}
               />
@@ -230,27 +232,28 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={progressionData}>
-              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis 
                 dataKey="date" 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: 'hsl(var(--foreground))'
                 }}
                 formatter={(value: any) => [`${value} cal`, 'Calories']}
               />
@@ -270,27 +273,28 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return (
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={progressionData} barCategoryGap="10%">
-              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
+              <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis 
                 dataKey="date" 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis 
-                stroke="#9CA3AF" 
+                stroke="hsl(var(--muted-foreground))" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: 'hsl(var(--foreground))'
                 }}
                 formatter={(value: any, name: any) => [`${value}g`, name]}
               />
