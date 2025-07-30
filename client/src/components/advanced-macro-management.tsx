@@ -330,15 +330,18 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         
         // Show success message with adjustment details
         console.log('Weekly adjustment success response:', data);
+        console.log('appliedToCurrentGoals value:', data.appliedToCurrentGoals, 'type:', typeof data.appliedToCurrentGoals);
         
-        if (data.appliedToCurrentGoals === true) {
+        // Ensure we're checking the exact boolean value
+        if (data.appliedToCurrentGoals === true || data.appliedToCurrentGoals === "true") {
           toast({
-            title: "RP Adjustment Applied",
+            title: "✅ RP Adjustment Applied",
             description: data.message || `Diet goals updated. New target: ${Math.round(data.adjustment.newCalories)} calories`,
             variant: "default"
           });
         } else {
-          console.log('Applied to current goals:', data.appliedToCurrentGoals);
+          console.log('Applied to current goals failed:', data.appliedToCurrentGoals);
+          console.log('Full response data:', JSON.stringify(data, null, 2));
           toast({
             title: "Weekly Analysis Recorded", 
             description: data.message || "Unable to update diet goals automatically.",
