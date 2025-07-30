@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +55,93 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
     unit: userWeightUnit,
     targetDate: ''
   });
+
+  // Calculate RP-based weekly change recommendations
+  const calculateRPWeeklyChange = (goalType: string, currentWeight: number) => {
+    const bodyWeight = currentWeight;
+    
+    switch (goalType) {
+      case 'cutting':
+        // RP principle: 0.5-1% of body weight per week for fat loss
+        if (bodyWeight < 70) return Math.round((bodyWeight * 0.005) * 10) / 10; // 0.5%
+        return Math.round((bodyWeight * 0.007) * 10) / 10; // 0.7%
+        
+      case 'bulking':
+        // RP principle: 0.25-0.5% of body weight per week for muscle gain
+        if (bodyWeight < 70) return Math.round((bodyWeight * 0.004) * 10) / 10; // 0.4%
+        return Math.round((bodyWeight * 0.003) * 10) / 10; // 0.3%
+        
+      case 'maintenance':
+        return 0; // No intentional weight change
+        
+      default:
+        return 0;
+    }
+  };
+
+  // Fetch latest body metrics to prefill current weight
+  const { data: bodyMetrics } = useQuery({
+    queryKey: ['/api/body-metrics', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/body-metrics/${userId}`);
+      return response.json();
+    }
+  });
+
+  // Fetch user profile to match goal type
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile/${userId}`);
+      return response.json();
+    }
+  });
+
+  // Prefill form data when opening form
+  useEffect(() => {
+    if (isAddingGoal && bodyMetrics && userProfile) {
+      const latestMetric = bodyMetrics[0]; // First item is the latest
+      const profile = userProfile.user;
+      
+      // Prefill current weight from latest body metric
+      let currentWeight = '';
+      if (latestMetric?.weight) {
+        const weight = parseFloat(latestMetric.weight);
+        if (latestMetric.unit !== userWeightUnit) {
+          const convertedWeight = convertValue(weight, 'weight', latestMetric.unit, userWeightUnit);
+          currentWeight = convertedWeight.toString();
+        } else {
+          currentWeight = weight.toString();
+        }
+      }
+
+      // Map user profile fitness goal to weight goal type
+      let goalType: 'cutting' | 'bulking' | 'maintenance' = 'maintenance';
+      if (profile?.fitnessGoal === 'fat_loss') goalType = 'cutting';
+      else if (profile?.fitnessGoal === 'muscle_gain') goalType = 'bulking';
+
+      setFormData(prev => ({
+        ...prev,
+        currentWeight,
+        goalType,
+        targetWeightChangePerWeek: currentWeight ? calculateRPWeeklyChange(goalType, parseFloat(currentWeight)).toString() : ''
+      }));
+    }
+  }, [isAddingGoal, bodyMetrics, userProfile, userWeightUnit]);
+
+  // Auto-calculate weekly change when goal type or current weight changes
+  useEffect(() => {
+    if (formData.currentWeight && formData.goalType) {
+      const currentWeight = parseFloat(formData.currentWeight);
+      if (!isNaN(currentWeight)) {
+        const recommendedChange = calculateRPWeeklyChange(formData.goalType, currentWeight);
+        setFormData(prev => ({
+          ...prev,
+          targetWeightChangePerWeek: recommendedChange.toString()
+        }));
+      }
+    }
+  }, [formData.goalType, formData.currentWeight]);
 
   // Fetch weight goals
   const { data: weightGoals, isLoading } = useQuery<WeightGoal[]>({
@@ -243,6 +330,9 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                   onChange={(e) => setFormData(prev => ({ ...prev, currentWeight: e.target.value }))}
                   placeholder={`${userWeightUnit === 'metric' ? 'kg' : 'lbs'}`}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {bodyMetrics?.[0]?.weight ? "Auto-filled from latest body tracking" : "Enter your current weight"}
+                </p>
               </div>
               <div>
                 <Label htmlFor="targetWeight">Target Weight *</Label>
@@ -274,6 +364,9 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                     <SelectItem value="maintenance">Maintenance</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {userProfile?.user?.fitnessGoal ? "Matched from your profile goal" : "Choose your goal type"}
+                </p>
               </div>
               <div>
                 <Label htmlFor="weeklyChange">Weekly Change</Label>
@@ -285,6 +378,11 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                   onChange={(e) => setFormData(prev => ({ ...prev, targetWeightChangePerWeek: e.target.value }))}
                   placeholder={`${userWeightUnit === 'metric' ? 'kg' : 'lbs'}/week`}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {formData.goalType === 'cutting' && "RP recommends 0.5-1% body weight/week for fat loss"}
+                  {formData.goalType === 'bulking' && "RP recommends 0.25-0.5% body weight/week for muscle gain"}
+                  {formData.goalType === 'maintenance' && "No weekly change for maintenance"}
+                </p>
               </div>
             </div>
 
@@ -296,6 +394,17 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                 value={formData.targetDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, targetDate: e.target.value }))}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Syncs with daily wellness tracking for macro adjustments
+              </p>
+            </div>
+
+            {/* RP Methodology Indicator */}
+            <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+              <Target className="w-4 h-4 text-blue-600" />
+              <div className="text-sm text-blue-700 dark:text-blue-300">
+                <strong>Renaissance Periodization</strong> - Using evidence-based weight change recommendations for optimal body composition results
+              </div>
             </div>
 
             <div className="flex gap-2">
