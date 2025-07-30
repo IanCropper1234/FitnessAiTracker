@@ -129,7 +129,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
         </div>
 
         <div className="mt-4">
-          <div className="p-4">
+          <div className="p-4 pl-[0px] pr-[0px]">
             {/* Period and Report Type Selectors moved to body */}
             <div className="flex gap-3 mb-6 justify-center">
               <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
