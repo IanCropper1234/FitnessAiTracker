@@ -416,7 +416,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth user data route
+  // Auth user data route (keep for legacy compatibility)
   app.get("/api/auth/user/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -433,9 +433,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Developer settings route
-  app.put("/api/auth/user/:userId/developer-settings", async (req, res) => {
+  app.put("/api/auth/user/developer-settings", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { showDeveloperFeatures } = req.body;
       
       const user = await storage.updateUserDeveloperSettings(userId, showDeveloperFeatures);
@@ -613,9 +613,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/nutrition/goal/:userId", async (req, res) => {
+  app.post("/api/nutrition/goal", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { activityLevel, fitnessGoal, height, weight, age } = req.body;
       
       const goal = await storage.createNutritionGoal({
@@ -691,9 +691,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Quick add suggestions based on patterns
-  app.get("/api/nutrition/quick-add/:userId", async (req, res) => {
+  app.get("/api/nutrition/quick-add", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const mealType = req.query.mealType as string;
       
       // Get logs from past 30 days
@@ -736,9 +736,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's food history (unique foods they've logged before)
-  app.get("/api/nutrition/history/:userId", async (req, res) => {
+  app.get("/api/nutrition/history", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       
       // Get unique foods from user's nutrition logs (last 90 days for relevance)
       const ninetyDaysAgo = new Date();
@@ -829,9 +829,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get saved meals for user
-  app.get("/api/saved-meals/:userId", async (req, res) => {
+  app.get("/api/saved-meals", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const meals = await storage.getSavedMeals(userId);
       res.json(meals);
     } catch (error: any) {
@@ -1133,9 +1133,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // RP Diet Coach food recommendations
-  app.get("/api/food/recommendations/:userId", async (req, res) => {
+  app.get("/api/food/recommendations", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const mealType = req.query.mealType as string;
       const currentTime = req.query.time as string;
       
@@ -1191,9 +1191,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Training routes
-  app.get("/api/training/stats/:userId", async (req, res) => {
+  app.get("/api/training/stats", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const date = req.query.date as string; // Optional date filter
       const stats = await getTrainingStats(userId, date);
       res.json(stats);
@@ -1222,9 +1222,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/training/sessions/:userId", async (req, res) => {
+  app.get("/api/training/sessions", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
       const sessions = await storage.getWorkoutSessions(userId, date);
       res.json(sessions);
@@ -1779,9 +1779,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get volume landmarks for user
-  app.get("/api/training/volume-landmarks/:userId", async (req, res) => {
+  app.get("/api/training/volume-landmarks", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const landmarks = await storage.getVolumeLandmarks(userId);
       res.json(landmarks);
     } catch (error: any) {
@@ -1790,9 +1790,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update volume landmark
-  app.put("/api/training/volume-landmarks/:userId/:muscleGroupId", async (req, res) => {
+  app.put("/api/training/volume-landmarks/:muscleGroupId", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const muscleGroupId = parseInt(req.params.muscleGroupId);
       const landmarkData = req.body;
       
@@ -1901,9 +1901,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get weekly volume tracking
-  app.get("/api/training/weekly-volume/:userId", async (req, res) => {
+  app.get("/api/training/weekly-volume", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const weeklyTracking = await storage.getWeeklyVolumeTracking(userId);
       res.json(weeklyTracking);
     } catch (error: any) {
@@ -1942,9 +1942,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/training/plan/:userId/:day", async (req, res) => {
+  app.get("/api/training/plan/:day", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const day = req.params.day;
       
       const plan = await getWorkoutPlan(userId, day);
@@ -2043,9 +2043,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/weight/logs/:userId", async (req, res) => {
+  app.get("/api/weight/logs", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const logs = await storage.getWeightLogs(userId);
       res.json(logs);
     } catch (error: any) {
@@ -2109,9 +2109,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Meal Planning
-  app.get("/api/meal-plans/:userId", async (req, res) => {
+  app.get("/api/meal-plans", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const date = req.query.date ? new Date(req.query.date as string) : new Date();
       
       const plans = await storage.getMealPlans(userId, date);
@@ -2163,9 +2163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Weekly Nutrition Goals
-  app.get("/api/weekly-nutrition-goal/:userId", async (req, res) => {
+  app.get("/api/weekly-nutrition-goal", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const weekStartDate = req.query.weekStartDate ? new Date(req.query.weekStartDate as string) : null;
       
       let goal;
@@ -2192,9 +2192,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Diet Phases
-  app.get("/api/diet-phases/:userId", async (req, res) => {
+  app.get("/api/diet-phases", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const activeOnly = req.query.activeOnly === 'true';
       
       if (activeOnly) {
@@ -2220,9 +2220,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Meal Timing Preferences
-  app.get("/api/meal-timing/:userId", async (req, res) => {
+  app.get("/api/meal-timing", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const preferences = await storage.getMealTimingPreferences(userId);
       res.json(preferences);
     } catch (error: any) {
@@ -2243,9 +2243,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Daily Wellness Check-in routes (Authentic RP Diet Coach methodology)
   const { DailyWellnessService } = await import("./services/daily-wellness-service");
   
-  app.get("/api/daily-wellness-checkins/:userId", async (req, res) => {
+  app.get("/api/daily-wellness-checkins", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { date } = req.query;
       
       if (date) {
@@ -2289,9 +2289,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Weekly wellness summary routes
-  app.get("/api/weekly-wellness-summary/:userId", async (req, res) => {
+  app.get("/api/weekly-wellness-summary", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { weekStartDate } = req.query;
       
       if (!weekStartDate) {
@@ -2318,9 +2318,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/meal-timing/:userId", async (req, res) => {
+  app.put("/api/meal-timing", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const preferencesData = req.body;
       const preferences = await storage.updateMealTimingPreferences(userId, preferencesData);
       
@@ -2336,9 +2336,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Weight Goals API Routes
   // Get user's weight goals
-  app.get("/api/weight-goals/:userId", async (req, res) => {
+  app.get("/api/weight-goals", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const weightGoals = await storage.getWeightGoals(userId);
       res.json(weightGoals);
     } catch (error: any) {
@@ -2384,9 +2384,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Body Metrics
-  app.get("/api/body-metrics/:userId", async (req, res) => {
+  app.get("/api/body-metrics", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
       const metrics = await storage.getBodyMetrics(userId, date);
       res.json(metrics);
@@ -2424,9 +2424,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Nutrition Progression
-  app.get("/api/nutrition/progression/:userId", async (req, res) => {
+  app.get("/api/nutrition/progression", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       let startDate = new Date();
       let endDate = new Date();
       
@@ -2455,9 +2455,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Saved Meal Plans - Diet Builder
-  app.get("/api/meal-plans/saved/:userId", async (req, res) => {
+  app.get("/api/meal-plans/saved", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const mealType = req.query.mealType as string;
       
       if (mealType) {
@@ -2512,9 +2512,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Diet Goals - TDEE and Auto-regulation
-  app.get("/api/diet-goals/:userId", async (req, res) => {
+  app.get("/api/diet-goals", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const goal = await storage.getDietGoal(userId);
       res.json(goal);
     } catch (error: any) {
@@ -2531,9 +2531,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/diet-goals/:userId", async (req, res) => {
+  app.put("/api/diet-goals", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       
       // Clean the request body to ensure proper data types
       const cleanedGoal = { ...req.body };
@@ -2615,9 +2615,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get weekly goals
-  app.get("/api/weekly-goals/:userId", async (req, res) => {
+  app.get("/api/weekly-goals", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const week = req.query.week as string;
       
       const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(userId, week);
@@ -2629,9 +2629,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Meal Distribution API endpoints
-  app.get("/api/meal-distribution/:userId", async (req, res) => {
+  app.get("/api/meal-distribution", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const distributions = await AdvancedMacroManagementService.getMealDistributions(userId);
       res.json(distributions);
     } catch (error: any) {
@@ -2649,9 +2649,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Macro Flexibility API endpoints
-  app.get("/api/flexibility-rules/:userId", async (req, res) => {
+  app.get("/api/flexibility-rules", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const rules = await AdvancedMacroManagementService.getFlexibilityRules(userId);
       res.json(rules);
     } catch (error: any) {
@@ -2671,9 +2671,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Shopping List Generation API endpoints
   const { ShoppingListGenerator } = await import("./services/shopping-list-generator");
 
-  app.get("/api/shopping-list/:userId", async (req, res) => {
+  app.get("/api/shopping-list", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const startDate = req.query.startDate as string || new Date().toISOString();
       const endDate = req.query.endDate as string || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       
@@ -2684,9 +2684,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/shopping-list/optimized/:userId", async (req, res) => {
+  app.get("/api/shopping-list/optimized", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const dietGoals = await storage.getDietGoal(userId);
       
       if (!dietGoals) {
@@ -2787,9 +2787,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get available weeks with food log data
-  app.get("/api/nutrition/available-weeks/:userId", async (req, res) => {
+  app.get("/api/nutrition/available-weeks", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       
       // Get distinct weeks that have food logs
       const result = await db.execute(sql`
@@ -2827,9 +2827,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Advanced Training System Routes
 
   // Mesocycle management
-  app.get("/api/training/mesocycles/:userId", async (req, res) => {
+  app.get("/api/training/mesocycles", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       
       const userMesocycles = await storage.getUserMesocycles(userId);
       
@@ -2916,9 +2916,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/training/mesocycle-recommendations/:userId", async (req, res) => {
+  app.get("/api/training/mesocycle-recommendations", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       
       const recommendations = await MesocyclePeriodization.generateMesocycleRecommendations(userId);
       
@@ -3092,10 +3092,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/training/templates/:templateId/customize/:userId", async (req, res) => {
+  app.get("/api/training/templates/:templateId/customize", requireAuth, async (req, res) => {
     try {
       const templateId = parseInt(req.params.templateId);
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { specialization, availableDays } = req.query;
       
       const customizedTemplate = await TemplateEngine.customizeTemplateForUser(
@@ -3113,9 +3113,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Load progression
-  app.get("/api/training/load-progression/:userId", async (req, res) => {
+  app.get("/api/training/load-progression", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { exerciseIds } = req.query;
       
       const exerciseIdArray = exerciseIds 
@@ -3475,9 +3475,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/training/performance-analysis/:userId", async (req, res) => {
+  app.get("/api/training/performance-analysis", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const { timeframeDays } = req.query;
       
       const analysis = await LoadProgression.analyzePerformance(
@@ -3506,9 +3506,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics and Reporting Routes
   
   // Get nutrition analytics for a time period
-  app.get("/api/analytics/nutrition/:userId", async (req, res) => {
+  app.get("/api/analytics/nutrition", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const days = parseInt(req.query.days as string) || 30;
       
       const analytics = await AnalyticsService.getNutritionAnalytics(userId, days);
@@ -3521,9 +3521,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get training analytics for a time period
-  app.get("/api/analytics/training/:userId", async (req, res) => {
+  app.get("/api/analytics/training", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const days = parseInt(req.query.days as string) || 30;
       
       const analytics = await AnalyticsService.getTrainingAnalytics(userId, days);
@@ -3536,9 +3536,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get body progress analytics for a time period
-  app.get("/api/analytics/body-progress/:userId", async (req, res) => {
+  app.get("/api/analytics/body-progress", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const days = parseInt(req.query.days as string) || 30;
       
       const analytics = await AnalyticsService.getBodyProgressAnalytics(userId, days);
@@ -3551,9 +3551,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get auto-regulation feedback analytics for a time period
-  app.get("/api/analytics/feedback/:userId", async (req, res) => {
+  app.get("/api/analytics/feedback", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const days = parseInt(req.query.days as string) || 30;
       
       const analytics = await AnalyticsService.getFeedbackAnalytics(userId, days);
@@ -3566,9 +3566,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get comprehensive analytics summary
-  app.get("/api/analytics/comprehensive/:userId", async (req, res) => {
+  app.get("/api/analytics/comprehensive", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       const days = parseInt(req.query.days as string) || 30;
       
       const analytics = await AnalyticsService.getComprehensiveAnalytics(userId, days);
@@ -3812,9 +3812,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/demonstrate-workflow/:userId", async (req, res) => {
+  app.post("/api/training/demonstrate-workflow", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.userId;
       
       const demo = await UnifiedMesocycleTemplate.demonstrateProperWorkflow(userId);
       

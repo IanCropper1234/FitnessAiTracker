@@ -318,7 +318,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const { data: userProfileResponse, isLoading: isUserProfileLoading } = useQuery<UserProfileResponse>({
     queryKey: ['/api/user/profile', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/user/profile/${userId}`);
+      const response = await fetch(`/api/user/profile`);
       return response.json();
     }
   });
@@ -330,7 +330,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const { data: bodyMetrics, isLoading: isBodyMetricsLoading } = useQuery({
     queryKey: ['/api/body-metrics', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/body-metrics/${userId}`);
+      const response = await fetch(`/api/body-metrics`);
       return response.json();
     }
   });
@@ -339,7 +339,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const { data: currentDietGoal, isLoading: isDietGoalLoading } = useQuery<DietGoal>({
     queryKey: ['/api/diet-goals', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-goals/${userId}`);
+      const response = await fetch(`/api/diet-goals`);
       return response.json();
     }
   });
@@ -422,7 +422,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const saveDietGoalMutation = useMutation({
     mutationFn: async (goal: DietGoal) => {
       // Always use PUT to update/create the goal for this user
-      return await apiRequest("PUT", `/api/diet-goals/${userId}`, goal);
+      return await apiRequest("PUT", `/api/diet-goals`, goal);
     },
     onSuccess: () => {
       toast({

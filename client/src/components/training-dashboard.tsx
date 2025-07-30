@@ -478,7 +478,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
   const { data: userData } = useQuery({
     queryKey: ['/api/auth/user', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/auth/user/${userId}`);
+      const response = await fetch(`/api/auth/user`);
       return response.json();
     }
   });
@@ -566,8 +566,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
     queryKey: ["/api/training/stats", userId, dateQueryParam],
     queryFn: async () => {
       const url = dateQueryParam 
-        ? `/api/training/stats/${userId}?date=${dateQueryParam}`
-        : `/api/training/stats/${userId}`;
+        ? `/api/training/stats?date=${dateQueryParam}`
+        : `/api/training/stats`;
       
       console.log('Fetching stats for date:', dateQueryParam || 'all dates');
       

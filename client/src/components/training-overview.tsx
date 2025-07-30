@@ -25,8 +25,8 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
     queryKey: ['/api/training/stats', userId, dateQueryParam],
     queryFn: async () => {
       const url = dateQueryParam 
-        ? `/api/training/stats/${userId}?date=${dateQueryParam}`
-        : `/api/training/stats/${userId}`;
+        ? `/api/training/stats?date=${dateQueryParam}`
+        : `/api/training/stats`;
       const response = await fetch(url);
       return response.json();
     }

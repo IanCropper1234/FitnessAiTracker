@@ -19,7 +19,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
   const { data: nutritionSummary, isLoading } = useQuery({
     queryKey: ['/api/nutrition/summary', userId, selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${userId}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/summary?date=${selectedDate}`);
       return response.json();
     }
   });
@@ -28,7 +28,7 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
   const { data: dietGoals } = useQuery({
     queryKey: ['/api/diet-goals', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-goals/${userId}`);
+      const response = await fetch(`/api/diet-goals`);
       if (!response.ok) return null;
       return response.json();
     }

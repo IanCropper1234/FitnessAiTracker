@@ -56,7 +56,7 @@ export function MealTimingSetup({ userId }: MealTimingSetupProps) {
   const { data: preferences, isLoading } = useQuery<MealTimingPreference>({
     queryKey: ["/api/meal-timing", userId],
     queryFn: async () => {
-      const response = await fetch(`/api/meal-timing/${userId}`);
+      const response = await fetch(`/api/meal-timing`);
       if (!response.ok) return null;
       return response.json();
     },
@@ -81,15 +81,9 @@ export function MealTimingSetup({ userId }: MealTimingSetupProps) {
   const saveMutation = useMutation({
     mutationFn: (data: typeof formData) => {
       if (preferences) {
-        return apiRequest(`/api/meal-timing/${userId}`, {
-          method: "PUT",
-          body: { ...data, userId }
-        });
+        return apiRequest("PUT", `/api/meal-timing`, { ...data });
       } else {
-        return apiRequest("/api/meal-timing", {
-          method: "POST",
-          body: { ...data, userId }
-        });
+        return apiRequest("POST", `/api/meal-timing`, { ...data });
       }
     },
     onSuccess: () => {

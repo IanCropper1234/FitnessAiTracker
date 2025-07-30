@@ -28,7 +28,7 @@ export function RecentActivity({ userId }: RecentActivityProps) {
   const { data: activities = [] } = useQuery({
     queryKey: ['/api/activities', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/activities/${userId}?limit=5`);
+      const response = await fetch(`/api/activities?limit=5`);
       return response.json();
     }
   });

@@ -71,7 +71,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const { data: metrics, isLoading } = useQuery<BodyMetric[]>({
     queryKey: ['/api/body-metrics', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/body-metrics/${userId}`);
+      const response = await fetch(`/api/body-metrics`);
       return response.json();
     }
   });
@@ -138,12 +138,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const syncWeightToProfile = async (weight: number) => {
     try {
       // Get current profile
-      const profileResponse = await fetch(`/api/user/profile/${userId}`);
+      const profileResponse = await fetch(`/api/user/profile`);
       const profileData = await profileResponse.json();
       const profile = profileData.profile || profileData.user;
       
       // Update profile with new weight
-      await apiRequest("PUT", `/api/user/profile/${userId}`, {
+      await apiRequest("PUT", `/api/user/profile`, {
         ...profile,
         userId: userId,
         weight: weight.toString()
