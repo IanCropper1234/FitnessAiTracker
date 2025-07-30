@@ -740,8 +740,6 @@ export class DatabaseStorage implements IStorage {
 
   // Nutrition Progression
   async getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]> {
-    console.log(`DB Query: Fetching nutrition logs for user ${userId} from ${startDate.toISOString()} to ${endDate.toISOString()}`);
-    
     const logs = await db.select().from(nutritionLogs)
       .where(and(
         eq(nutritionLogs.userId, userId),
@@ -749,11 +747,6 @@ export class DatabaseStorage implements IStorage {
         lte(nutritionLogs.date, endDate)
       ))
       .orderBy(nutritionLogs.date);
-
-    console.log(`DB Query: Found ${logs.length} raw nutrition logs within date range`);
-    if (logs.length > 0) {
-      console.log(`First log date: ${logs[0].date.toISOString()}, Last log date: ${logs[logs.length - 1].date.toISOString()}`);
-    }
 
     // Group by date and sum macros
     const dailyData = logs.reduce((acc: any, log: any) => {
@@ -774,9 +767,7 @@ export class DatabaseStorage implements IStorage {
       return acc;
     }, {});
 
-    const result = Object.values(dailyData);
-    console.log(`DB Query: Grouped into ${result.length} daily summaries`);
-    return result;
+    return Object.values(dailyData);
   }
 
   // Saved Meal Plans
