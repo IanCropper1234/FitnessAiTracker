@@ -128,6 +128,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           };
         }) || [];
 
+        // Calculate dynamic Y-axis range for better weight visualization
+        const weights = weightData.map((d: any) => d.weight);
+        const minWeight = Math.min(...weights);
+        const maxWeight = Math.max(...weights);
+        const weightRange = maxWeight - minWeight;
+        const padding = Math.max(weightRange * 0.2, 1); // 20% padding or minimum 1 unit
+        const yAxisMin = Math.max(0, minWeight - padding);
+        const yAxisMax = maxWeight + padding;
+
         return (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={weightData}>
@@ -144,6 +153,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
+                domain={[yAxisMin, yAxisMax]}
+                tickFormatter={(value) => `${value.toFixed(1)}`}
               />
               <Tooltip 
                 contentStyle={{
