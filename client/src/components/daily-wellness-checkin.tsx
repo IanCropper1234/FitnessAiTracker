@@ -72,7 +72,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
   // Submit checkin mutation
   const submitCheckinMutation = useMutation({
     mutationFn: async (checkinData: any) => {
-      return apiRequest('/api/daily-wellness-checkins', 'POST', checkinData);
+      return apiRequest('POST', '/api/daily-wellness-checkins', checkinData);
     },
     onSuccess: () => {
       toast({
