@@ -90,7 +90,7 @@ export function IntegratedNutritionOverview({
   const [dragStartY, setDragStartY] = useState(0);
 
   const [copyOperation, setCopyOperation] = useState<{
-    type: 'item' | 'section';
+    type: 'item' | 'section' | 'bulk';
     data: any;
     sourceSection?: string;
   } | null>(null);
@@ -113,6 +113,10 @@ export function IntegratedNutritionOverview({
       } else if (copyOperation.type === 'item' && externalCopyToDate) {
         // Handle individual food item copy to date
         handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
+        setCopyOperation(null);
+      } else if (copyOperation.type === 'bulk' && externalCopyToDate) {
+        // Handle bulk copy to date
+        handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
       }
     }
@@ -724,6 +728,30 @@ export function IntegratedNutritionOverview({
     });
   };
 
+  const handleBulkCopyToDate = (selectedLogIds: number[], targetDate: string) => {
+    const logsToCreate = nutritionLogs?.filter((log: any) => selectedLogIds.includes(log.id)) || [];
+    
+    logsToCreate.forEach((log: any) => {
+      const { id, createdAt, ...foodData } = log;
+      const newFoodData = {
+        ...foodData,
+        userId,
+        date: targetDate,
+        mealType: log.mealType // Keep same meal type when copying to date
+      };
+      copyFoodMutation.mutate(newFoodData);
+    });
+    
+    toast({
+      title: "Foods Copied",
+      description: `${logsToCreate.length} food items copied to ${new Date(targetDate).toLocaleDateString()}`,
+    });
+    
+    // Clear bulk selection after copy
+    setSelectedLogs([]);
+    setBulkMode(false);
+  };
+
   const handleCopySection = (mealType: string, targetDate: string) => {
     const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
     
@@ -983,56 +1011,24 @@ export function IntegratedNutritionOverview({
               
               {selectedLogs.length > 0 && (
                 <div className="flex items-center gap-1 pt-1 border-t border-blue-200 dark:border-blue-600">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        className="flex-1 h-6 text-[10px]"
-                      >
-                        <CalendarIcon className="mr-1 h-3 w-3" />
-                        Copy to date
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <div className="flex items-center justify-between p-2 border-b">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), -1);
-                            handleBulkCopy(dateStr);
-                          }}
-                          className="text-xs h-6"
-                        >
-                          <ChevronLeft className="h-3 w-3 mr-1" />
-                          Yesterday
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const dateStr = TimezoneUtils.addDays(TimezoneUtils.getCurrentDate(), 1);
-                            handleBulkCopy(dateStr);
-                          }}
-                          className="text-xs h-6"
-                        >
-                          Tomorrow
-                          <ChevronRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                      <CalendarComponent
-                        mode="single"
-                        selected={undefined}
-                        onSelect={(date) => {
-                          if (date) {
-                            const dateStr = TimezoneUtils.formatDateForStorage(date);
-                            handleBulkCopy(dateStr);
-                          }
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 h-6 text-[10px]"
+                    onClick={() => {
+                      setCopyOperation({
+                        type: 'bulk',
+                        data: selectedLogs,
+                        sourceSection: undefined
+                      });
+                      // Trigger iOS date picker for bulk copy
+                      if (setShowCopyToDatePicker) {
+                        setShowCopyToDatePicker(true);
+                      }
+                    }}
+                  >
+                    <CalendarIcon className="mr-1 h-3 w-3" />
+                    Copy to date
+                  </Button>
                 </div>
               )}
             </div>
