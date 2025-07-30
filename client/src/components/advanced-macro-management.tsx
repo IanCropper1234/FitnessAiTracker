@@ -10,7 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 import { useLocation } from "wouter";
@@ -27,6 +27,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const queryClient = useQueryClient();
   const [location, setLocation] = useLocation();
   const [selectedWeek, setSelectedWeek] = useState<string>("");
+  const [showWellnessInfo, setShowWellnessInfo] = useState(false);
 
   // Get current diet goals
   const { data: dietGoals } = useQuery({
@@ -487,22 +488,42 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Daily Wellness Check-in Section */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-lg border border-blue-200 dark:border-blue-800">
+              {/* Simplified Daily Wellness Check-in Section */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Heart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <h3 className="font-semibold text-black dark:text-white">Daily Wellness Check-in</h3>
-                    <Badge variant="secondary" className="text-xs">Required for adjustments</Badge>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <h3 className="font-semibold text-black dark:text-white">Daily Wellness Check-in</h3>
+                      <Badge variant="secondary" className="text-xs">Required</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setLocation('/rp-coach')}
+                        className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                      >
+                        Start Check-in
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowWellnessInfo(!showWellnessInfo)}
+                        className="p-2"
+                      >
+                        {showWellnessInfo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Daily wellness ratings are automatically averaged weekly to influence macro adjustment calculations using authentic RP methodology
-                  </p>
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                    <div className="space-y-3">
+                  
+                  {/* Expandable information section */}
+                  {showWellnessInfo && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Complete your daily wellness check-ins in the RP Coach section for accurate macro adjustments.
+                        Daily wellness ratings are automatically averaged weekly to influence macro adjustment calculations using authentic RP methodology.
                       </p>
+                      
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
                         <div className="flex items-start gap-2">
                           <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
@@ -516,16 +537,20 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                           </div>
                         </div>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setLocation('/rp-coach')}
-                        className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-                      >
-                        Go to RP Coach Daily Check-in
-                      </Button>
+                      
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">
+                          What we track:
+                        </h4>
+                        <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
+                          <li>• Energy levels (1-10 scale)</li>
+                          <li>• Hunger levels and cravings</li>
+                          <li>• Sleep quality and stress</li>
+                          <li>• Diet adherence perception</li>
+                        </ul>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
               
