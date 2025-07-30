@@ -97,6 +97,153 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics);
   };
 
+  const renderDataTable = () => {
+    if (!progressionData || progressionData.length === 0) {
+      return (
+        <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+          <p className="text-sm">No data entries for the selected time range</p>
+        </div>
+      );
+    }
+
+    switch (chartType) {
+      case 'weight':
+        if (!bodyMetrics || bodyMetrics.length === 0) return null;
+        
+        const preferredUnit = getUserPreferredWeightUnit();
+        const weightTableData = bodyMetrics?.map((metric: any) => {
+          let weight = parseFloat(metric.weight);
+          const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
+          
+          if (metricUnit !== preferredUnit) {
+            weight = convertWeight(weight, metricUnit, preferredUnit);
+          }
+          
+          return {
+            date: new Date(metric.date).toLocaleDateString('en-GB', { 
+              day: '2-digit', 
+              month: '2-digit',
+              year: '2-digit'
+            }),
+            weight: weight.toFixed(1),
+            unit: preferredUnit,
+            bodyFat: metric.bodyFatPercentage ? `${metric.bodyFatPercentage}%` : '-'
+          };
+        }) || [];
+
+        return (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Weight</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Body Fat</th>
+              </tr>
+            </thead>
+            <tbody>
+              {weightTableData.map((entry, index) => (
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">{entry.date}</td>
+                  <td className="py-2 px-1 text-blue-600 font-medium">{entry.weight} {entry.unit}</td>
+                  <td className="py-2 px-1 text-gray-600 dark:text-gray-400">{entry.bodyFat}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+
+      case 'bodyFat':
+        const bodyFatTableData = bodyMetrics?.filter(metric => metric.bodyFatPercentage).map((metric: any) => ({
+          date: new Date(metric.date).toLocaleDateString('en-GB', { 
+            day: '2-digit', 
+            month: '2-digit',
+            year: '2-digit'
+          }),
+          bodyFat: metric.bodyFatPercentage
+        })) || [];
+
+        return (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Body Fat %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bodyFatTableData.map((entry, index) => (
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">{entry.date}</td>
+                  <td className="py-2 px-1 text-orange-600 font-medium">{entry.bodyFat}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+
+      case 'calories':
+        return (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Calories</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Protein</th>
+              </tr>
+            </thead>
+            <tbody>
+              {progressionData.map((entry, index) => (
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">
+                    {new Date(entry.date).toLocaleDateString('en-GB', { 
+                      day: '2-digit', 
+                      month: '2-digit',
+                      year: '2-digit'
+                    })}
+                  </td>
+                  <td className="py-2 px-1 text-blue-600 font-medium">{Math.round(entry.calories)}</td>
+                  <td className="py-2 px-1 text-orange-600 font-medium">{Math.round(entry.protein)}g</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+
+      case 'macros':
+        return (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Protein</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Carbs</th>
+                <th className="text-left py-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">Fat</th>
+              </tr>
+            </thead>
+            <tbody>
+              {progressionData.map((entry, index) => (
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+                  <td className="py-2 px-1 text-gray-900 dark:text-gray-100">
+                    {new Date(entry.date).toLocaleDateString('en-GB', { 
+                      day: '2-digit', 
+                      month: '2-digit',
+                      year: '2-digit'
+                    })}
+                  </td>
+                  <td className="py-2 px-1 text-blue-600 font-medium">{Math.round(entry.protein)}g</td>
+                  <td className="py-2 px-1 text-green-600 font-medium">{Math.round(entry.carbs)}g</td>
+                  <td className="py-2 px-1 text-yellow-600 font-medium">{Math.round(entry.fat)}g</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const renderChart = () => {
     if (!progressionData || progressionData.length === 0) {
       return (
@@ -504,6 +651,25 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         
         <div className="w-full h-[200px]">
           {renderChart()}
+        </div>
+      </div>
+
+      {/* Data Table Section */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
+        <div className="mb-2">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
+            Data Entries
+          </h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {chartType === 'weight' && `Weight entries over ${timeRange}`}
+            {chartType === 'bodyFat' && `Body fat entries over ${timeRange}`}
+            {chartType === 'calories' && `Daily calories over ${timeRange}`}
+            {chartType === 'macros' && `Macro breakdown over ${timeRange}`}
+          </p>
+        </div>
+        
+        <div className="overflow-x-auto">
+          {renderDataTable()}
         </div>
       </div>
     </div>
