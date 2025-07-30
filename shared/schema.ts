@@ -98,6 +98,22 @@ export const mealPlans = pgTable("meal_plans", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Weekly Wellness Check-ins (RP Diet Coach style)
+export const weeklyWellnessCheckins = pgTable("weekly_wellness_checkins", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  weekStartDate: timestamp("week_start_date").notNull(),
+  energyLevel: integer("energy_level").notNull(), // 1-10 scale
+  hungerLevel: integer("hunger_level").notNull(), // 1-10 scale
+  sleepQuality: integer("sleep_quality"), // 1-10 scale (optional)
+  stressLevel: integer("stress_level"), // 1-10 scale (optional)
+  cravingsIntensity: integer("cravings_intensity"), // 1-10 scale (optional)
+  adherencePerception: integer("adherence_perception"), // 1-10 how well user thinks they stuck to plan
+  notes: text("notes"), // Optional user notes
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -110,8 +126,8 @@ export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
   previousWeight: decimal("previous_weight", { precision: 5, scale: 2 }),
   currentWeight: decimal("current_weight", { precision: 5, scale: 2 }),
   adherencePercentage: decimal("adherence_percentage", { precision: 5, scale: 2 }), // % compliance
-  energyLevels: integer("energy_levels"), // 1-10 scale
-  hungerLevels: integer("hunger_levels"), // 1-10 scale
+  energyLevels: integer("energy_levels"), // 1-10 scale (from wellness checkin)
+  hungerLevels: integer("hunger_levels"), // 1-10 scale (from wellness checkin)
   adjustmentPercentage: decimal("adjustment_percentage", { precision: 5, scale: 2 }), // % change applied
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -449,6 +465,7 @@ export const insertFoodCategorySchema = createInsertSchema(foodCategories).omit(
 export const insertFoodItemSchema = createInsertSchema(foodItems).omit({ id: true });
 export const insertMealPlanSchema = createInsertSchema(mealPlans).omit({ id: true, createdAt: true });
 export const insertWeeklyNutritionGoalSchema = createInsertSchema(weeklyNutritionGoals).omit({ id: true, createdAt: true });
+export const insertWeeklyWellnessCheckinSchema = createInsertSchema(weeklyWellnessCheckins).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertDietPhaseSchema = createInsertSchema(dietPhases).omit({ id: true, createdAt: true });
 export const insertMealTimingPreferenceSchema = createInsertSchema(mealTimingPreferences).omit({ id: true, updatedAt: true });
 export const insertSavedMealSchema = createInsertSchema(savedMeals).omit({ id: true, createdAt: true, updatedAt: true });
@@ -500,6 +517,8 @@ export type MealPlan = typeof mealPlans.$inferSelect;
 export type InsertMealPlan = z.infer<typeof insertMealPlanSchema>;
 export type WeeklyNutritionGoal = typeof weeklyNutritionGoals.$inferSelect;
 export type InsertWeeklyNutritionGoal = z.infer<typeof insertWeeklyNutritionGoalSchema>;
+export type WeeklyWellnessCheckin = typeof weeklyWellnessCheckins.$inferSelect;
+export type InsertWeeklyWellnessCheckin = z.infer<typeof insertWeeklyWellnessCheckinSchema>;
 export type DietPhase = typeof dietPhases.$inferSelect;
 export type InsertDietPhase = z.infer<typeof insertDietPhaseSchema>;
 export type MealTimingPreference = typeof mealTimingPreferences.$inferSelect;

@@ -2180,6 +2180,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Weekly Wellness Check-in routes (RP Diet Coach style)
+  app.get("/api/wellness-checkins/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { week } = req.query;
+      
+      let query = db.select()
+        .from(weeklyWellnessCheckins)
+        .where(eq(weeklyWellnessCheckins.userId, userId));
+      
+      if (week) {
+        const weekStart = new Date(week as string);
+        query = query.where(eq(weeklyWellnessCheckins.weekStartDate, weekStart));
+      }
+      
+      const checkins = await query.orderBy(desc(weeklyWellnessCheckins.weekStartDate));
+      res.json(checkins);
+    } catch (error: any) {
+      console.error('Error fetching wellness checkins:', error);
+      res.status(500).json({ error: 'Failed to fetch wellness checkins' });
+    }
+  });
+
+  app.post("/api/wellness-checkins", async (req, res) => {
+    try {
+      const { userId, weekStartDate, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
+      
+      // Check if checkin already exists for this week
+      const existingCheckin = await db.select()
+        .from(weeklyWellnessCheckins)
+        .where(and(
+          eq(weeklyWellnessCheckins.userId, userId),
+          eq(weeklyWellnessCheckins.weekStartDate, new Date(weekStartDate))
+        ));
+      
+      if (existingCheckin.length > 0) {
+        // Update existing checkin
+        const updated = await db.update(weeklyWellnessCheckins)
+          .set({
+            energyLevel,
+            hungerLevel,
+            sleepQuality,
+            stressLevel,
+            cravingsIntensity,
+            adherencePerception,
+            notes,
+            updatedAt: new Date()
+          })
+          .where(eq(weeklyWellnessCheckins.id, existingCheckin[0].id))
+          .returning();
+        
+        res.json(updated[0]);
+      } else {
+        // Create new checkin
+        const newCheckin = await db.insert(weeklyWellnessCheckins)
+          .values({
+            userId,
+            weekStartDate: new Date(weekStartDate),
+            energyLevel,
+            hungerLevel,
+            sleepQuality,
+            stressLevel,
+            cravingsIntensity,
+            adherencePerception,
+            notes
+          })
+          .returning();
+        
+        res.json(newCheckin[0]);
+      }
+    } catch (error: any) {
+      console.error('Error saving wellness checkin:', error);
+      res.status(500).json({ error: 'Failed to save wellness checkin' });
+    }
+  });
+
   app.put("/api/meal-timing/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
