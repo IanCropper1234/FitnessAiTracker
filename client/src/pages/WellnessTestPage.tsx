@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import WeeklyWellnessCheckin from "@/components/weekly-wellness-checkin";
-import AdvancedMacroManagement from "@/components/advanced-macro-management";
+import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, TrendingUp, Calendar, Zap } from "lucide-react";
 

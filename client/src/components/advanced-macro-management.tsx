@@ -10,9 +10,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
+import WeeklyWellnessCheckin from "./weekly-wellness-checkin";
 
 
 interface AdvancedMacroManagementProps {
@@ -466,6 +467,21 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Weekly Wellness Check-in Section */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Heart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <h3 className="font-semibold text-black dark:text-white">Weekly Wellness Check-in</h3>
+                    <Badge variant="secondary" className="text-xs">Required for adjustments</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Your wellness ratings directly influence macro adjustment calculations using RP methodology
+                  </p>
+                  <WeeklyWellnessCheckin userId={userId} />
+                </div>
+              </div>
+              
               {/* Show loading state when no data is available */}
               {!selectedWeek && (
                 <div className="text-center py-8">
