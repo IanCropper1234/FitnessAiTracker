@@ -57,13 +57,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   const { data: progressionData, isLoading } = useQuery<ProgressData[]>({
     queryKey: ['/api/nutrition/progression', userId, timeRange],
     queryFn: async () => {
-      console.log(`Frontend: Fetching nutrition progression for ${timeRange}:`, startDate.toISOString(), 'to', endDate.toISOString());
       const response = await fetch(
         `/api/nutrition/progression/${userId}?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
       );
-      const data = await response.json();
-      console.log(`Frontend: Received ${data.length} nutrition progression entries for ${timeRange}:`, data);
-      return data;
+      return response.json();
     }
   });
 
@@ -71,11 +68,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   const { data: bodyMetrics } = useQuery({
     queryKey: ['/api/body-metrics', userId, timeRange],
     queryFn: async () => {
-      console.log(`Frontend: Fetching body metrics for ${timeRange}:`, startDate.toISOString(), 'to', endDate.toISOString());
       const response = await fetch(`/api/body-metrics/${userId}`);
       const allMetrics = await response.json();
-      console.log(`Frontend: Raw body metrics:`, allMetrics.length, 'entries');
-      
       // Filter by date range and sort by date
       const filteredMetrics = allMetrics
         .filter((metric: any) => {
@@ -84,7 +78,6 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         })
         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
       
-      console.log(`Frontend: Filtered body metrics for ${timeRange}:`, filteredMetrics.length, 'entries', filteredMetrics);
       return filteredMetrics;
     }
   });
@@ -204,7 +197,6 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         }
 
         // The backend API already filters by date range, so progressionData should contain only relevant entries
-        console.log('Calories data entries:', progressionData?.length, 'for time range:', timeRange);
         
         return (
           <table className="w-full text-sm">
@@ -243,7 +235,6 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         }
 
         // The backend API already filters by date range, so progressionData should contain only relevant entries
-        console.log('Macros data entries:', progressionData?.length, 'for time range:', timeRange);
         
         return (
           <table className="w-full text-sm">

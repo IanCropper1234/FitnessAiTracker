@@ -2386,10 +2386,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         startDate.setDate(endDate.getDate() - 90);
       }
       
-      console.log(`Nutrition progression: userId=${userId}, start=${startDate.toISOString()}, end=${endDate.toISOString()}`);
-      
       const progression = await storage.getNutritionProgression(userId, startDate, endDate);
-      console.log(`Found ${progression.length} nutrition progression entries`);
       res.json(progression);
     } catch (error: any) {
       console.error('Get nutrition progression error:', error);

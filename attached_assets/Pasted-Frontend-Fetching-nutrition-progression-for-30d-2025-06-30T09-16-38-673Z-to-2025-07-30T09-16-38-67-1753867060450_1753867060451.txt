@@ -1,0 +1,164 @@
+Frontend: Fetching nutrition progression for 30d: 2025-06-30T09:16:38.673Z to 2025-07-30T09:16:38.673Z
+nutrition-progression.tsx:74 Frontend: Fetching body metrics for 30d: 2025-06-30T09:16:38.673Z to 2025-07-30T09:16:38.673Z
+nutrition-progression.tsx:77 Frontend: Raw body metrics: 8 entries
+nutrition-progression.tsx:87 Frontend: Filtered body metrics for 30d: 8 entries 
+(8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0
+: 
+{id: 44, userId: 1, date: '2025-07-24T00:00:00.000Z', weight: '70.80', bodyFatPercentage: '11.90', …}
+1
+: 
+{id: 40, userId: 1, date: '2025-07-25T00:00:00.000Z', weight: '71.60', bodyFatPercentage: null, …}
+2
+: 
+{id: 41, userId: 1, date: '2025-07-25T00:00:00.000Z', weight: '71.60', bodyFatPercentage: null, …}
+3
+: 
+{id: 39, userId: 1, date: '2025-07-26T00:00:00.000Z', weight: '71.60', bodyFatPercentage: null, …}
+4
+: 
+{id: 37, userId: 1, date: '2025-07-27T00:00:00.000Z', weight: '71.00', bodyFatPercentage: null, …}
+5
+: 
+{id: 36, userId: 1, date: '2025-07-28T00:00:00.000Z', weight: '71.30', bodyFatPercentage: null, …}
+6
+: 
+{id: 43, userId: 1, date: '2025-07-29T00:00:00.000Z', weight: '156.90', bodyFatPercentage: '12.80', …}
+7
+: 
+{id: 45, userId: 1, date: '2025-07-30T00:00:00.000Z', weight: '157.80', bodyFatPercentage: '13.10', …}
+length
+: 
+8
+[[Prototype]]
+: 
+Array(0)
+nutrition-progression.tsx:65 Frontend: Received 19 nutrition progression entries for 30d: 
+(19) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0
+: 
+{date: '2025-07-11', calories: 2270, protein: 141, carbs: 277, fat: 76}
+1
+: 
+{date: '2025-07-12', calories: 2270, protein: 141, carbs: 277, fat: 76}
+2
+: 
+{date: '2025-07-13', calories: 2270, protein: 141, carbs: 277, fat: 76}
+3
+: 
+{date: '2025-07-14', calories: 2270, protein: 141, carbs: 277, fat: 76}
+4
+: 
+{date: '2025-07-16', calories: 2270, protein: 141, carbs: 277, fat: 76}
+5
+: 
+{date: '2025-07-17', calories: 2318, protein: 124, carbs: 315, fat: 70.5}
+6
+: 
+{date: '2025-07-18', calories: 2456, protein: 137, carbs: 305, fat: 79}
+7
+: 
+{date: '2025-07-19', calories: 2555, protein: 206, carbs: 257, fat: 81.6}
+8
+: 
+{date: '2025-07-20', calories: 2585, protein: 206, carbs: 262, fat: 83.6}
+9
+: 
+{date: '2025-07-21', calories: 2240, protein: 121.89999999999999, carbs: 282.5, fat: 64.5}
+10
+: 
+{date: '2025-07-22', calories: 1919, protein: 75, carbs: 164, fat: 109.1}
+11
+: 
+{date: '2025-07-23', calories: 2500, protein: 195.3, carbs: 276.5, fat: 56}
+12
+: 
+{date: '2025-07-24', calories: 577, protein: 49.7, carbs: 55.8, fat: 15.9}
+13
+: 
+{date: '2025-07-25', calories: 2748, protein: 241.3, carbs: 276.5, fat: 61}
+14
+: 
+{date: '2025-07-26', calories: 2374, protein: 155.7, carbs: 215.5, fat: 100.4}
+15
+: 
+{date: '2025-07-27', calories: 450, protein: 40, carbs: 10, fat: 30}
+16
+: 
+{date: '2025-07-28', calories: 2564.06, protein: 182.77, carbs: 328.1, fat: 53.56}
+17
+: 
+{date: '2025-07-29', calories: 2556.5, protein: 179.85, carbs: 338.5, fat: 58.150000000000006}
+18
+: 
+{date: '2025-07-30', calories: 2995, protein: 163.1, carbs: 361.35, fat: 91.05000000000001}
+length
+: 
+19
+[[Prototype]]
+: 
+Array(0)
+nutrition-progression.tsx:60 Frontend: Fetching nutrition progression for 7d: 2025-07-23T09:16:42.360Z to 2025-07-30T09:16:42.360Z
+nutrition-progression.tsx:74 Frontend: Fetching body metrics for 7d: 2025-07-23T09:16:42.360Z to 2025-07-30T09:16:42.360Z
+nutrition-progression.tsx:77 Frontend: Raw body metrics: 8 entries
+nutrition-progression.tsx:87 Frontend: Filtered body metrics for 7d: 8 entries 
+(8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0
+: 
+{id: 44, userId: 1, date: '2025-07-24T00:00:00.000Z', weight: '70.80', bodyFatPercentage: '11.90', …}
+1
+: 
+{id: 40, userId: 1, date: '2025-07-25T00:00:00.000Z', weight: '71.60', bodyFatPercentage: null, …}
+2
+: 
+{id: 41, userId: 1, date: '2025-07-25T00:00:00.000Z', weight: '71.60', bodyFatPercentage: null, …}
+3
+: 
+{id: 39, userId: 1, date: '2025-07-26T00:00:00.000Z', weight: '71.60', bodyFatPercentage: null, …}
+4
+: 
+{id: 37, userId: 1, date: '2025-07-27T00:00:00.000Z', weight: '71.00', bodyFatPercentage: null, …}
+5
+: 
+{id: 36, userId: 1, date: '2025-07-28T00:00:00.000Z', weight: '71.30', bodyFatPercentage: null, …}
+6
+: 
+{id: 43, userId: 1, date: '2025-07-29T00:00:00.000Z', weight: '156.90', bodyFatPercentage: '12.80', …}
+7
+: 
+{id: 45, userId: 1, date: '2025-07-30T00:00:00.000Z', weight: '157.80', bodyFatPercentage: '13.10', …}
+length
+: 
+8
+[[Prototype]]
+: 
+Array(0)
+nutrition-progression.tsx:65 Frontend: Received 7 nutrition progression entries for 7d: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0
+: 
+{date: '2025-07-24', calories: 577, protein: 49.7, carbs: 55.8, fat: 15.9}
+1
+: 
+{date: '2025-07-25', calories: 2748, protein: 241.3, carbs: 276.5, fat: 61}
+2
+: 
+{date: '2025-07-26', calories: 2374, protein: 155.7, carbs: 215.5, fat: 100.4}
+3
+: 
+{date: '2025-07-27', calories: 450, protein: 40, carbs: 10, fat: 30}
+4
+: 
+{date: '2025-07-28', calories: 2564.06, protein: 182.77, carbs: 328.1, fat: 53.56}
+5
+: 
+{date: '2025-07-29', calories: 2556.5, protein: 179.85, carbs: 338.5, fat: 58.150000000000006}
+6
+: 
+{date: '2025-07-30', calories: 2995, protein: 163.1, carbs: 361.35, fat: 91.05000000000001}
+length
+: 
+7
+[[Prototype]]
+: 
+Array(0)
