@@ -115,7 +115,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           let weight = parseFloat(metric.weight);
           // Convert weight to user's preferred unit
           const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
-          const targetUnit = preferredUnit === 'imperial' ? 'lbs' : 'kg';
+          const targetUnit = preferredUnit;
           
           if (metricUnit !== targetUnit) {
             weight = convertWeight(weight, metricUnit, targetUnit);
@@ -129,7 +129,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         }) || [];
 
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={240}>
             <LineChart data={weightData}>
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -154,7 +154,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   fontSize: '12px'
                 }}
                 formatter={(value: any) => [
-                  `${value.toFixed(1)} ${getUserPreferredWeightUnit() === 'imperial' ? 'lbs' : 'kg'}`, 
+                  `${value.toFixed(1)} ${getUserPreferredWeightUnit()}`, 
                   'Weight'
                 ]}
               />
@@ -177,7 +177,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         })) || [];
 
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={240}>
             <LineChart data={bodyFatData}>
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -217,7 +217,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'calories':
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={240}>
             <LineChart data={progressionData}>
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -257,7 +257,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'macros':
         return (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart data={progressionData} barCategoryGap="10%">
               <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
@@ -329,7 +329,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       // Convert to preferred unit if needed
       const latestMetricUnit = latestMetric.unit === 'imperial' ? 'lbs' : 'kg';
       const earliestMetricUnit = earliestMetric.unit === 'imperial' ? 'lbs' : 'kg';
-      const targetUnit = preferredUnit === 'imperial' ? 'lbs' : 'kg';
+      const targetUnit = preferredUnit;
       
       if (latestMetricUnit !== targetUnit) {
         latestWeight = convertWeight(latestWeight, latestMetricUnit, targetUnit);
@@ -441,7 +441,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <div className={`text-lg font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
               </div>
-              <div className="text-xs text-gray-400">{getUserPreferredWeightUnit() === 'imperial' ? 'lbs' : 'kg'}</div>
+              <div className="text-xs text-gray-400">{getUserPreferredWeightUnit()}</div>
             </div>
             
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-w-[120px]">
@@ -488,7 +488,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </p>
         </div>
         
-        <div className="h-[240px]">
+        <div className="w-full h-[240px]">
           {renderChart()}
         </div>
       </div>
