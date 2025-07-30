@@ -2563,9 +2563,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { AdvancedMacroManagementService } = await import("./services/advanced-macro-management");
 
   // Weekly macro adjustment endpoint with enhanced wellness integration
-  app.post("/api/weekly-adjustment", async (req, res) => {
+  app.post("/api/weekly-adjustment", requireAuth, async (req, res) => {
     try {
-      const { userId, weekStartDate } = req.body;
+      const userId = req.user?.id;
+      const { weekStartDate } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       
       console.log('Weekly adjustment request:', { userId, weekStartDate });
       
