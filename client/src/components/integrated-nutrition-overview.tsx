@@ -1197,13 +1197,26 @@ export function IntegratedNutritionOverview({
                         <div 
                           key={log.id}
                           draggable={!bulkMode}
-                          onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
+                          onDragStart={(e) => {
+                            console.log('onDragStart called for:', log.foodName, 'bulkMode:', bulkMode);
+                            if (!bulkMode) {
+                              handleDragStart(e, log);
+                            }
+                          }}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => !bulkMode && handleDragOver(e, mealType.key, index)}
+                          onTouchStart={(e) => {
+                            console.log('onTouchStart called for:', log.foodName);
+                            // For mobile devices, we need to handle touch events differently
+                            if (!bulkMode) {
+                              setDraggedItem(log);
+                              setIsDraggingActive(true);
+                            }
+                          }}
                           style={{
                             transform: shouldShift ? 'translateY(4px)' : 'translateY(0)',
                             transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                            touchAction: 'manipulation',
+                            touchAction: bulkMode ? 'auto' : 'none',
                             WebkitTouchCallout: 'none',
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
@@ -1301,7 +1314,33 @@ export function IntegratedNutritionOverview({
                                   .filter(mt => mt.key !== log.mealType)
                                   .map(mt => (
                                     <DropdownMenuItem
-                                      key={mt.key}
+                                      key={`move-${mt.key}`}
+                                      onClick={() => {
+                                        console.log('Moving via dropdown:', log.foodName, 'to', mt.key);
+                                        updateMealTypeMutation.mutate({
+                                          logId: log.id,
+                                          newMealType: mt.key
+                                        }, {
+                                          onSuccess: () => {
+                                            toast({
+                                              title: "Food Moved",
+                                              description: `${log.foodName} moved to ${mt.label}`,
+                                            });
+                                          }
+                                        });
+                                      }}
+                                    >
+                                      <ArrowRight className="h-4 w-4 mr-2" />
+                                      Move to {mt.label}
+                                    </DropdownMenuItem>
+                                  ))
+                                }
+                                <DropdownMenuSeparator />
+                                {mealTypes
+                                  .filter(mt => mt.key !== log.mealType)
+                                  .map(mt => (
+                                    <DropdownMenuItem
+                                      key={`copy-${mt.key}`}
                                       onClick={() => handleCopyFood(log, mt.key)}
                                     >
                                       <Copy className="h-4 w-4 mr-2" />
