@@ -715,43 +715,28 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         </div>
 
-        {/* Expanded State - Detailed View */}
-        {headerExpanded && (
-          <div className="border-t border-border/30 bg-muted/10 space-y-2 p-2 animate-in slide-in-from-top-1 duration-200">
+        {/* Expanded State - Detailed View with Smooth Transitions */}
+        <div className={`border-t border-border/30 bg-muted/10 space-y-2 overflow-hidden transition-all duration-300 ease-in-out transform-gpu ${
+          headerExpanded 
+            ? 'max-h-96 p-2 opacity-100 translate-y-0' 
+            : 'max-h-0 p-0 opacity-0 -translate-y-2'
+        }`}>
             {/* Session Info Row */}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground truncate">
                 {session.name}
               </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCircularProgressEnabled(!circularProgressEnabled);
-                }}
-                className="text-xs text-muted-foreground hover:text-foreground ios-touch-feedback px-2 py-1 rounded-md"
-              >
-                {circularProgressEnabled ? 'Bar View' : 'Circle View'}
-              </button>
+
             </div>
 
-            {/* Progress Display */}
-            {circularProgressEnabled ? (
-              <div className="flex justify-center py-1">
-                <CircularProgress 
-                  progress={progressPercentage}
-                  size={36}
-                  strokeWidth={3}
-                />
+            {/* Progress Display - Bar View Only */}
+            <div className="space-y-1">
+              <Progress value={progressPercentage} className="h-1.5 bg-muted" />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Workout Progress</span>
+                <span>{Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min elapsed</span>
               </div>
-            ) : (
-              <div className="space-y-1">
-                <Progress value={progressPercentage} className="h-1.5 bg-muted" />
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Workout Progress</span>
-                  <span>{Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min elapsed</span>
-                </div>
-              </div>
-            )}
+            </div>
 
             {/* Special Training Method Details */}
             {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
@@ -809,8 +794,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 </div>
               </div>
             )}
-          </div>
-        )}
+        </div>
       </div>
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
