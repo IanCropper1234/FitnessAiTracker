@@ -533,12 +533,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     <h4 className="font-medium text-black dark:text-white">Progress Metrics</h4>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Adherence</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Adherence (Past Days)</span>
                         <span className="text-sm font-medium text-black dark:text-white">
                           {weeklyGoals[0].adherencePercentage || 0}%
                         </span>
                       </div>
                       <Progress value={parseFloat(weeklyGoals[0].adherencePercentage || "0")} className="h-2" />
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Only counts completed days, not future days
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between">

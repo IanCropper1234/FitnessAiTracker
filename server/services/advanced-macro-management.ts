@@ -91,10 +91,23 @@ export class AdvancedMacroManagementService {
     return dailyTotals;
   }
 
-  // Calculate adherence percentage using intelligent target detection
+  // Calculate adherence percentage using intelligent target detection - only for past days
   private static calculateAdherence(dailyTotals: any, targetGoals: any) {
-    const days = Object.keys(dailyTotals);
-    if (days.length === 0) return 0;
+    const allDays = Object.keys(dailyTotals);
+    if (allDays.length === 0) return 0;
+
+    // Filter to only include days that have already passed (not today or future)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today for accurate comparison
+    
+    const pastDays = allDays.filter(date => {
+      const dayDate = new Date(date);
+      dayDate.setHours(0, 0, 0, 0);
+      return dayDate < today; // Only include days before today
+    });
+
+    // If no past days, return 0 (can't calculate adherence for future/today)
+    if (pastDays.length === 0) return 0;
 
     // Intelligently detect custom vs suggested target calories
     const getCurrentTargetCalories = () => {
@@ -112,13 +125,13 @@ export class AdvancedMacroManagementService {
     const targetCalories = getCurrentTargetCalories();
     let adherenceSum = 0;
 
-    days.forEach(date => {
+    pastDays.forEach(date => {
       const actualCalories = dailyTotals[date].calories;
       const adherence = Math.max(0, 100 - Math.abs((actualCalories - targetCalories) / targetCalories * 100));
       adherenceSum += adherence;
     });
 
-    return Math.round(adherenceSum / days.length);
+    return Math.round(adherenceSum / pastDays.length);
   }
 
   // Calculate RP-based macro adjustment using intelligent target detection
@@ -237,15 +250,17 @@ export class AdvancedMacroManagementService {
       const avgCalories = totalCalories / Math.max(daysWithLogs, 1);
       const avgProtein = totalProtein / Math.max(daysWithLogs, 1);
 
-      // Get user's diet goals for adherence calculation
+      // Get user's diet goals for adherence calculation using past days only
       const dietGoalsData = await db.select().from(dietGoals).where(eq(dietGoals.userId, userId)).limit(1);
       let adherencePercentage = 0;
       let currentDietGoal = null;
 
       if (dietGoalsData.length > 0) {
         currentDietGoal = dietGoalsData[0];
-        const targetCalories = parseFloat(currentDietGoal.targetCalories);
-        adherencePercentage = targetCalories > 0 ? Math.min((avgCalories / targetCalories) * 100, 200) : 0;
+        
+        // Calculate daily totals for smart adherence calculation
+        const dailyTotals = this.calculateDailyTotals(logs);
+        adherencePercentage = this.calculateAdherence(dailyTotals, currentDietGoal);
       }
 
       // Get weight data for RP analysis (current week and previous week)
