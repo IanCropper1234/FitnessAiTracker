@@ -292,7 +292,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
         </div>
 
         {/* Training Insights */}
-        <div className="px-4">
+        <div className="px-4 pl-[0px] pr-[0px]">
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
               <h4 className="font-medium text-blue-900 dark:text-blue-100 text-xs text-center mb-1">Training Frequency</h4>
