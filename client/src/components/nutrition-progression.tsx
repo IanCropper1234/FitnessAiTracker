@@ -447,11 +447,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </div>
         </div>
       </div>
-
       {/* Ultra-Compact Horizontal Scrolling Metrics */}
       {summary && (
         <div className="overflow-x-auto pb-1 -mx-1">
-          <div className="flex gap-2 min-w-max px-1">
+          <div className="flex gap-2 min-w-max px-1 text-center pl-[50px] pr-[50px] pt-[5px] pb-[5px] ml-[1px] mr-[1px]">
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Weight</div>
               <div className={`text-base font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -486,7 +485,6 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </div>
         </div>
       )}
-
       {/* Compact Chart Container */}
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
         <div className="mb-2">
