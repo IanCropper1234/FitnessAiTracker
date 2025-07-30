@@ -3,16 +3,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DailyWellnessCheckin from "@/components/daily-wellness-checkin";
 import { Badge } from "@/components/ui/badge";
-import { Brain, TrendingUp, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Brain, TrendingUp, Calendar, ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface RPCoachPageProps {
   userId: number;
 }
 
 export default function RPCoachPage({ userId }: RPCoachPageProps) {
+  const [, setLocation] = useLocation();
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex items-center gap-3 mb-6">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setLocation('/nutrition')}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         <Brain className="h-8 w-8 text-blue-600" />
         <div>
           <h1 className="text-3xl font-bold">RP Diet Coach</h1>
