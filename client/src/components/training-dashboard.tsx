@@ -740,7 +740,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
       {/* Training Stats Cards */}
-      <div className="grid grid-cols-3 gap-2 w-full">
+      <div className="grid grid-cols-3 gap-2 w-full pl-[5px] pr-[5px] ml-[0px] mr-[0px]">
         <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
             <Calendar className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
