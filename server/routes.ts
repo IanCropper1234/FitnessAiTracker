@@ -2449,15 +2449,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Advanced Macro Management API endpoints
   const { AdvancedMacroManagementService } = await import("./services/advanced-macro-management");
 
-  // Weekly macro adjustment endpoint
+  // Weekly macro adjustment endpoint with enhanced wellness integration
   app.post("/api/weekly-adjustment", async (req, res) => {
     try {
-      const { userId, weekStartDate, currentGoals, adjustmentReason, energyLevels, hungerLevels, adherencePercentage } = req.body;
+      const { userId, weekStartDate } = req.body;
       
-      // Calculate the adjustment based on RP methodology
+      console.log('Weekly adjustment request:', { userId, weekStartDate });
+      
+      // Calculate the adjustment based on RP methodology with real wellness data
       const adjustment = await AdvancedMacroManagementService.calculateWeeklyAdjustment(userId, weekStartDate);
       
-      // Create weekly goal entry
+      console.log('Calculated adjustment with wellness data:', {
+        adherence: adjustment.adherencePercentage,
+        wellnessFactors: adjustment.adjustment.wellnessFactors,
+        reason: adjustment.adjustment.adjustmentReason
+      });
+      
+      // Create weekly goal entry with authentic wellness data
       const weeklyGoal = await AdvancedMacroManagementService.createWeeklyGoal({
         userId,
         weekStartDate,
@@ -2467,9 +2475,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fat: adjustment.adjustment.newFat,
         adjustmentReason: adjustment.adjustment.adjustmentReason,
         adherencePercentage: adjustment.adherencePercentage,
-        wellnessFactors: adjustment.adjustment.wellnessFactors, // Use wellness data from check-ins
-        energyLevels: adjustment.adjustment.wellnessFactors?.energyLevel || energyLevels,
-        hungerLevels: adjustment.adjustment.wellnessFactors?.hungerLevel || hungerLevels,
+        wellnessFactors: adjustment.adjustment.wellnessFactors, // Real daily wellness averages
+        energyLevels: adjustment.adjustment.wellnessFactors?.energyLevel || 5,
+        hungerLevels: adjustment.adjustment.wellnessFactors?.hungerLevel || 5,
         adjustmentPercentage: adjustment.adjustment.adjustmentPercentage
       });
 

@@ -531,20 +531,9 @@ export class AdvancedMacroManagementService {
             if (!goal.currentWeight || !goal.previousWeight) {
               const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
               if (calculatedData && (calculatedData.currentWeight || calculatedData.previousWeight)) {
-                // Add calculated weight data to existing goal
-                updatedGoal = {
-                  ...updatedGoal,
-                  currentWeight: calculatedData.currentWeight || goal.currentWeight,
-                  previousWeight: calculatedData.previousWeight || goal.previousWeight,
-                  weightChange: calculatedData.weightChange || '0.0',
-                  weightTrend: calculatedData.weightTrend || 'stable',
-                  adjustmentRecommendation: calculatedData.adjustmentRecommendation || 'maintain',
-                  goalType: calculatedData.goalType || 'maintenance',
-                  targetWeightChangePerWeek: calculatedData.targetWeightChangePerWeek || '0',
-                  currentWeightUnit: calculatedData.currentWeightUnit || 'metric',
-                  previousWeightUnit: calculatedData.previousWeightUnit || 'metric',
-                  weightUnit: 'kg'
-                };
+                // Update only existing database fields
+                updatedGoal.currentWeight = calculatedData.currentWeight || goal.currentWeight;
+                updatedGoal.previousWeight = calculatedData.previousWeight || goal.previousWeight;
               }
             }
             

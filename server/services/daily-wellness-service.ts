@@ -184,7 +184,8 @@ export class DailyWellnessService {
     
     // If no summary exists, calculate it from daily data
     if (!summary) {
-      summary = await this.upsertWeeklySummary(userId, weekStartDate);
+      const calculatedSummary = await this.upsertWeeklySummary(userId, weekStartDate);
+      summary = calculatedSummary;
     }
 
     // If still no summary (no daily data), return defaults
