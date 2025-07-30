@@ -848,12 +848,17 @@ export class DatabaseStorage implements IStorage {
       const cleanGoal = { ...goal };
       delete (cleanGoal as any).updatedAt; // Remove any existing updatedAt to prevent type errors
       
+      console.log('Existing goal before update:', existingGoal);
+      console.log('Clean goal data to update:', cleanGoal);
+      
       // Update the existing goal
       const [updatedGoal] = await db
         .update(dietGoals)
         .set({ ...cleanGoal, updatedAt: new Date() })
         .where(eq(dietGoals.id, existingGoal.id))
         .returning();
+      
+      console.log('Updated goal result:', updatedGoal);
       return updatedGoal || undefined;
     } else {
       // Create a new goal if none exists

@@ -2597,8 +2597,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Always update current diet goals with the new adjustments
       try {
+        // Update both suggested and custom calories to ensure consistency
         const updatedDietGoals = await storage.updateDietGoal(userId, {
           targetCalories: adjustment.adjustment.newCalories.toString(),
+          customTargetCalories: adjustment.adjustment.newCalories.toString(),
           targetProtein: adjustment.adjustment.newProtein.toString(),
           targetCarbs: adjustment.adjustment.newCarbs.toString(),
           targetFat: adjustment.adjustment.newFat.toString()
@@ -2611,13 +2613,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           newFat: adjustment.adjustment.newFat
         });
 
-        res.json({
-          weeklyGoal,
-          adjustment: adjustment.adjustment,
-          appliedToCurrentGoals: true,
-          updatedDietGoals,
-          message: `Weekly adjustment applied successfully. Your calorie target increased to ${Math.round(adjustment.adjustment.newCalories)} calories.`
-        });
+        if (updatedDietGoals) {
+          res.json({
+            weeklyGoal,
+            adjustment: adjustment.adjustment,
+            appliedToCurrentGoals: true,
+            updatedDietGoals,
+            message: `Weekly adjustment applied successfully. Your calorie target increased to ${Math.round(adjustment.adjustment.newCalories)} calories.`
+          });
+        } else {
+          res.json({
+            weeklyGoal,
+            adjustment: adjustment.adjustment,
+            appliedToCurrentGoals: false,
+            error: "Diet goal update returned null",
+            message: "Weekly analysis recorded. Failed to update diet goals - please check your Diet Goals section manually."
+          });
+        }
       } catch (updateError) {
         console.error('Failed to update diet goals:', updateError);
         res.json({
