@@ -65,24 +65,30 @@ export default function Auth({ onSuccess }: AuthProps) {
   const signInMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
       try {
+        console.log('Making signin request...');
         const response = await apiRequest("POST", "/api/auth/signin", data);
         if (!response.ok) {
           throw new Error(`Server error: ${response.status}`);
         }
-        return response.json();
+        const result = await response.json();
+        console.log('Signin response received:', result);
+        return result;
       } catch (error) {
         console.error('API request failed:', error);
         throw error;
       }
     },
     onSuccess: (data) => {
+      console.log('SignIn mutation success:', data);
       if (data && data.user) {
         toast({
           title: t("welcome") || "Welcome",
           description: `${t("welcome") || "Welcome"} ${data.user.name || 'User'}!`
         });
+        console.log('Calling onSuccess with user:', data.user);
         onSuccess(data.user);
       } else {
+        console.error('Invalid response structure:', data);
         toast({
           title: "Error",
           description: "Invalid response from server",

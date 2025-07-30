@@ -51,10 +51,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // Redirect to auth if no user
+  // Redirect to auth if no user (but not if we're already checking auth)
   useEffect(() => {
     if (!user && location !== "/auth") {
+      console.log('Redirecting to auth - no user found');
       setLocation("/auth");
+    } else if (user && location === "/auth") {
+      console.log('User authenticated, redirecting to dashboard');
+      setLocation("/");
     }
   }, [user, location, setLocation]);
 
@@ -240,15 +244,20 @@ export default function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('Checking authentication status...');
         const response = await fetch('/api/auth/user', {
           credentials: 'include'
         });
+        console.log('Auth check response status:', response.status);
         if (response.ok) {
           const userData = await response.json();
+          console.log('Authentication successful, user data:', userData);
           setUser(userData.user);
+        } else {
+          console.log('Not authenticated - no valid session');
         }
       } catch (error) {
-        console.log('Not authenticated');
+        console.log('Authentication check failed:', error);
       } finally {
         setAuthLoading(false);
       }
