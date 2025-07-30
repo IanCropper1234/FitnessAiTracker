@@ -98,17 +98,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   };
 
   const renderDataTable = () => {
-    if (!progressionData || progressionData.length === 0) {
-      return (
-        <div className="text-center py-6 text-gray-600 dark:text-gray-400">
-          <p className="text-sm">No data entries for the selected time range</p>
-        </div>
-      );
-    }
-
     switch (chartType) {
       case 'weight':
-        if (!bodyMetrics || bodyMetrics.length === 0) return null;
+        if (!bodyMetrics || bodyMetrics.length === 0) {
+          return (
+            <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+              <p className="text-sm">No weight entries for the selected time range</p>
+            </div>
+          );
+        }
         
         const preferredUnit = getUserPreferredWeightUnit();
         const weightTableData = bodyMetrics?.map((metric: any) => {
@@ -141,7 +139,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </tr>
             </thead>
             <tbody>
-              {weightTableData.map((entry, index) => (
+              {weightTableData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
                   <td className="py-2 px-1 text-gray-900 dark:text-gray-100">{entry.date}</td>
                   <td className="py-2 px-1 text-blue-600 font-medium">{entry.weight} {entry.unit}</td>
@@ -153,7 +151,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       case 'bodyFat':
-        const bodyFatTableData = bodyMetrics?.filter(metric => metric.bodyFatPercentage).map((metric: any) => ({
+        if (!bodyMetrics || bodyMetrics.length === 0) {
+          return (
+            <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+              <p className="text-sm">No body fat entries for the selected time range</p>
+            </div>
+          );
+        }
+
+        const bodyFatTableData = bodyMetrics?.filter((metric: any) => metric.bodyFatPercentage).map((metric: any) => ({
           date: new Date(metric.date).toLocaleDateString('en-GB', { 
             day: '2-digit', 
             month: '2-digit',
@@ -171,7 +177,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </tr>
             </thead>
             <tbody>
-              {bodyFatTableData.map((entry, index) => (
+              {bodyFatTableData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
                   <td className="py-2 px-1 text-gray-900 dark:text-gray-100">{entry.date}</td>
                   <td className="py-2 px-1 text-orange-600 font-medium">{entry.bodyFat}%</td>
@@ -182,6 +188,14 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       case 'calories':
+        if (!progressionData || progressionData.length === 0) {
+          return (
+            <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+              <p className="text-sm">No calorie entries for the selected time range</p>
+            </div>
+          );
+        }
+
         return (
           <table className="w-full text-sm">
             <thead>
@@ -192,7 +206,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </tr>
             </thead>
             <tbody>
-              {progressionData.map((entry, index) => (
+              {progressionData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
                   <td className="py-2 px-1 text-gray-900 dark:text-gray-100">
                     {new Date(entry.date).toLocaleDateString('en-GB', { 
@@ -210,6 +224,14 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       case 'macros':
+        if (!progressionData || progressionData.length === 0) {
+          return (
+            <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+              <p className="text-sm">No macro entries for the selected time range</p>
+            </div>
+          );
+        }
+
         return (
           <table className="w-full text-sm">
             <thead>
@@ -221,7 +243,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </tr>
             </thead>
             <tbody>
-              {progressionData.map((entry, index) => (
+              {progressionData.map((entry: any, index: number) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
                   <td className="py-2 px-1 text-gray-900 dark:text-gray-100">
                     {new Date(entry.date).toLocaleDateString('en-GB', { 
@@ -240,7 +262,11 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       default:
-        return null;
+        return (
+          <div className="text-center py-6 text-gray-600 dark:text-gray-400">
+            <p className="text-sm">No data available for the selected time range</p>
+          </div>
+        );
     }
   };
 
