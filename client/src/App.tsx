@@ -236,6 +236,46 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Check for existing authentication on app load
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Try to fetch user profile to check for existing session
+        // Since this app is demo-focused, try user ID 1
+        const response = await fetch('/api/user/profile/1');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            setUser(data.user);
+          }
+        }
+      } catch (error) {
+        // No valid session, user remains null
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+                <div className="animate-pulse text-black dark:text-white">Loading...</div>
+              </div>
+            </TooltipProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    );
+  }
   
   return (
     <QueryClientProvider client={queryClient}>
