@@ -59,6 +59,16 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Get weight goals to show target in Progress Metrics
+  const { data: weightGoals } = useQuery({
+    queryKey: ['/api/weight-goals', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/weight-goals/${userId}`);
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
   // Get available weeks with food log data
   const { data: availableWeeks } = useQuery({
     queryKey: ['/api/nutrition/available-weeks', userId],
@@ -675,7 +685,28 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-500 dark:text-gray-400">
-                          Target: No target set
+                          Target: {(() => {
+                            if (!weightGoals || weightGoals.length === 0) return 'No target set';
+                            const activeGoal = weightGoals.find((goal: any) => goal.isActive);
+                            if (!activeGoal) return 'No target set';
+                            
+                            const preferredUnit = getUserWeightUnit();
+                            const targetWeight = parseFloat(activeGoal.targetWeight);
+                            const weeklyChange = parseFloat(activeGoal.targetWeightChangePerWeek || 0);
+                            
+                            // Convert units if needed using convertValue function
+                            let displayWeight = targetWeight;
+                            let displayWeeklyChange = weeklyChange;
+                            if (activeGoal.unit !== preferredUnit) {
+                              displayWeight = targetWeight * (preferredUnit === 'metric' ? 0.453592 : 2.20462);
+                              displayWeeklyChange = weeklyChange * (preferredUnit === 'metric' ? 0.453592 : 2.20462);
+                            }
+                            
+                            const unitLabel = preferredUnit === 'metric' ? 'kg' : 'lbs';
+                            const goalType = activeGoal.goalType === 'cutting' ? '↓' : activeGoal.goalType === 'bulking' ? '↑' : '→';
+                            
+                            return `${goalType} ${displayWeight.toFixed(1)} ${unitLabel} (${Math.abs(displayWeeklyChange).toFixed(1)}/week)`;
+                          })()}
                         </span>
                         <span className={`font-medium ${
                           weeklyGoals[0].weightTrend === 'stable' ? 'text-blue-600 dark:text-blue-400' :
