@@ -142,18 +142,23 @@ export function IntegratedNutritionOverview({
 
   // Fetch nutrition summary for the selected date
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
-    queryKey: ['/api/nutrition/summary', userId, selectedDate],
+    queryKey: ['/api/nutrition/summary', selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${userId}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/summary?date=${selectedDate}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch nutrition summary');
       return response.json();
     }
   });
 
   // Fetch diet goals
   const { data: dietGoals } = useQuery({
-    queryKey: ['/api/diet-goals', userId],
+    queryKey: ['/api/diet-goals'],
     queryFn: async () => {
-      const response = await fetch(`/api/diet-goals/${userId}`);
+      const response = await fetch(`/api/diet-goals`, {
+        credentials: 'include'
+      });
       if (!response.ok) return null;
       return response.json();
     }
@@ -194,9 +199,12 @@ export function IntegratedNutritionOverview({
 
   // Fetch nutrition logs for the selected date
   const { data: nutritionLogs, isLoading: logsLoading } = useQuery({
-    queryKey: ['/api/nutrition/logs', userId, selectedDate],
+    queryKey: ['/api/nutrition/logs', selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/logs/${userId}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${selectedDate}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch nutrition logs');
       return response.json();
     }
   });

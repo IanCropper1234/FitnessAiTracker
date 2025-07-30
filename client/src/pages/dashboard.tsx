@@ -42,26 +42,35 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const dateQueryParam = selectedDate;
 
   const { data: nutritionSummary } = useQuery({
-    queryKey: ['/api/nutrition/summary', user.id, dateQueryParam],
+    queryKey: ['/api/nutrition/summary', dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${user.id}?date=${dateQueryParam}`);
+      const response = await fetch(`/api/nutrition/summary?date=${dateQueryParam}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch nutrition summary');
       return response.json();
     }
   });
 
   const { data: trainingStats } = useQuery({
-    queryKey: ['/api/training/stats', user.id, dateQueryParam],
+    queryKey: ['/api/training/stats', dateQueryParam],
     queryFn: async () => {
-      const response = await fetch(`/api/training/stats/${user.id}?date=${dateQueryParam}`);
+      const response = await fetch(`/api/training/stats?date=${dateQueryParam}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch training stats');
       return response.json();
     }
   });
 
   // Get active workout sessions for smart Start Workout behavior
   const { data: workoutSessions } = useQuery({
-    queryKey: ['/api/training/sessions', user.id],
+    queryKey: ['/api/training/sessions'],
     queryFn: async () => {
-      const response = await fetch(`/api/training/sessions/${user.id}`);
+      const response = await fetch(`/api/training/sessions`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch workout sessions');
       return response.json();
     }
   });

@@ -110,7 +110,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Nutrition Logs
-  async getNutritionLogs(userId: number, date?: Date): Promise<NutritionLog[]> {
+  async getNutritionLogs(userId: number | string, date?: Date): Promise<NutritionLog[]> {
+    // Ensure userId is a number
+    const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+    if (isNaN(userIdNum)) {
+      throw new Error('Invalid userId provided');
+    }
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
@@ -120,7 +125,7 @@ export class DatabaseStorage implements IStorage {
       return await db.select().from(nutritionLogs)
         .where(
           and(
-            eq(nutritionLogs.userId, userId),
+            eq(nutritionLogs.userId, userIdNum),
             gte(nutritionLogs.date, startOfDay),
             lte(nutritionLogs.date, endOfDay)
           )
@@ -129,7 +134,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     return await db.select().from(nutritionLogs)
-      .where(eq(nutritionLogs.userId, userId))
+      .where(eq(nutritionLogs.userId, userIdNum))
       .orderBy(desc(nutritionLogs.date));
   }
 

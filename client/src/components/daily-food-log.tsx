@@ -279,9 +279,12 @@ export function DailyFoodLog({
 
   // Fetch nutrition summary for the selected date
   const { data: nutritionSummary } = useQuery({
-    queryKey: ['/api/nutrition/summary', userId, selectedDate],
+    queryKey: ['/api/nutrition/summary', selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${userId}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/summary?date=${selectedDate}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch nutrition summary');
       return response.json();
     }
   });

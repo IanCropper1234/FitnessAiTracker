@@ -521,7 +521,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/nutrition/logs", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = (req as any).userId;
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
       
       const logs = await storage.getNutritionLogs(userId, date);

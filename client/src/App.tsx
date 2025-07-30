@@ -185,8 +185,8 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setSelectedDate(newDate);
             setShowDatePicker(false);
             // Invalidate queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
-            queryClient.invalidateQueries({ queryKey: ['/api/training/stats', user.id] });
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/training/stats'] });
           }}
           size="lg"
           showDatePicker={showDatePicker}
@@ -202,7 +202,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setBodyTrackingDate(newDate);
             setShowBodyDatePicker(false);
             // Invalidate body metrics queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/body-metrics', user.id] });
+            queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
           }}
           size="lg"
           showDatePicker={showBodyDatePicker}
@@ -218,7 +218,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setCopyFromDate(newDate);
             setShowCopyFromDatePicker(false);
             // Invalidate copy source logs query to refresh data
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id, newDate] });
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', newDate] });
           }}
           size="lg"
           showDatePicker={showCopyFromDatePicker}
@@ -243,40 +243,39 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   );
 }
 
-function App() {
+export default function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  // Check for existing authentication on app load
+  // Check authentication status on app initialization
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check if user is authenticated via session
-        const response = await fetch('/api/auth/user');
+        const response = await fetch('/api/auth/user', {
+          credentials: 'include'
+        });
         if (response.ok) {
-          const data = await response.json();
-          if (data.user) {
-            setUser(data.user);
-          }
+          const userData = await response.json();
+          setUser(userData.user);
         }
       } catch (error) {
-        // No valid session, user remains null
+        console.log('Not authenticated');
       } finally {
-        setLoading(false);
+        setAuthLoading(false);
       }
     };
 
     checkAuth();
   }, []);
 
-  if (loading) {
+  if (authLoading) {
     return (
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <LanguageProvider>
             <TooltipProvider>
-              <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
-                <div className="animate-pulse text-black dark:text-white">Loading...</div>
+              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+                <div className="animate-pulse">Loading...</div>
               </div>
             </TooltipProvider>
           </LanguageProvider>
@@ -284,15 +283,15 @@ function App() {
       </QueryClientProvider>
     );
   }
-  
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
           <TooltipProvider>
-            <div className="min-h-screen bg-white dark:bg-black">
-              <Toaster />
+            <div className="text-foreground bg-background theme-transition">
               <AppRouter user={user} setUser={setUser} />
+              <Toaster />
             </div>
           </TooltipProvider>
         </LanguageProvider>
@@ -300,5 +299,3 @@ function App() {
     </QueryClientProvider>
   );
 }
-
-export default App;
