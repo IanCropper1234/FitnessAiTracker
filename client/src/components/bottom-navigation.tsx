@@ -14,10 +14,10 @@ export function BottomNavigation() {
 
   // iOS-style navigation items (4 main tabs + center action button)
   const navItems = [
-    { path: "/dashboard", icon: Home, label: "Dashboard" },
+    { path: "/", icon: Home, label: "Dashboard" },
     { path: "/nutrition", icon: BookOpen, label: "Diary" },
     { path: "/training", icon: Dumbbell, label: "Training" },
-    { path: "/reports", icon: BarChart3, label: "Progress" },
+    { path: "/profile", icon: User, label: "Profile" },
   ];
 
   const handleNavigation = (path: string) => {
@@ -140,16 +140,6 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
       description: "Begin a new training session",
       action: () => {
         setLocation("/training");
-        onClose();
-      }
-    },
-    {
-      id: "profile",
-      icon: User,
-      label: "Profile",
-      description: "View and edit your profile settings",
-      action: () => {
-        setLocation("/profile");
         onClose();
       }
     }

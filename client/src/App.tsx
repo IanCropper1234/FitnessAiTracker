@@ -55,12 +55,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   useEffect(() => {
     if (!user && location !== "/auth") {
       setLocation("/auth");
-    } else if (user && (location === "/auth" || location === "/")) {
-      setLocation("/dashboard");
     }
   }, [user, location, setLocation]);
 
-  const showBottomNav = user && location === "/dashboard";
+  const showBottomNav = user && location === "/";
   const showNutritionMenu = user && location === "/nutrition";
   const showTrainingMenu = user && location === "/training";
 
@@ -68,23 +66,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu || showTrainingMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
         <Route path="/">
-          <div className="page-enter ios-animation">
-            {user ? (
-              <div className="animate-pulse">Redirecting...</div>
-            ) : (
-              <div className="animate-pulse">Loading...</div>
-            )}
-          </div>
-        </Route>
-        <Route path="/auth">
-          <div className="page-enter ios-animation">
-            <Auth onSuccess={(userData: User) => {
-              setUser(userData);
-              setLocation("/dashboard");
-            }} />
-          </div>
-        </Route>
-        <Route path="/dashboard">
           <div className="page-enter ios-animation ios-smooth-transform">
             {user ? (
               <Dashboard 
@@ -97,6 +78,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             ) : (
               <div className="animate-pulse">Loading...</div>
             )}
+          </div>
+        </Route>
+        <Route path="/auth">
+          <div className="page-enter ios-animation">
+            <Auth onSuccess={(userData: User) => {
+              setUser(userData);
+              setLocation("/");
+            }} />
           </div>
         </Route>
         <Route path="/nutrition">
