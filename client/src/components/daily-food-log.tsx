@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
-
+import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
 
 interface DailyFoodLogProps {
   userId: number;
@@ -67,19 +67,16 @@ function DraggableFoodColumns({
     return nutritionLogs.filter(log => log.mealType === mealType);
   };
 
-  // Simplified drag and drop without the complex hook for cross-meal-type drops
-  const [draggedItem, setDraggedItem] = useState<FoodLog | null>(null);
-  
-  const handleDragStart = (e: React.DragEvent, log: FoodLog) => {
-    if (bulkMode) return;
-    e.dataTransfer.setData('text/plain', log.id.toString());
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggedItem(log);
-  };
-  
-  const handleDragEnd = () => {
-    setDraggedItem(null);
-  };
+  const { getDragHandleProps, getItemClassName } = useMobileDragDrop({
+    items: nutritionLogs,
+    onReorder: (newLogs) => {
+      // Handle cross-meal-type drops
+      const updatedLogs = [...newLogs];
+      // The actual meal type updating will be handled by the drop zones
+    },
+    getItemId: (log) => log.id,
+    isDisabled: bulkMode,
+  });
 
   const handleMealTypeDrop = (logId: number, newMealType: string) => {
     const log = nutritionLogs.find(l => l.id === logId);
@@ -88,16 +85,22 @@ function DraggableFoodColumns({
     }
   };
 
-  const FoodItem = ({ log }: { log: FoodLog }) => (
+  const FoodItem = ({ log, index }: { log: FoodLog; index: number }) => (
     <div
-      className={`flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
-        bulkMode && selectedLogs.includes(log.id) 
-          ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-      } ${draggedItem?.id === log.id ? 'opacity-50 scale-105' : ''}`}
-      draggable={!bulkMode}
-      onDragStart={(e) => handleDragStart(e, log)}
-      onDragEnd={handleDragEnd}
+      className={getItemClassName(
+        index,
+        `flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+          bulkMode && selectedLogs.includes(log.id) 
+            ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+        }`
+      )}
+      {...(bulkMode ? {} : getDragHandleProps(index))}
+      onDragStart={(e) => {
+        if (!bulkMode) {
+          e.dataTransfer.setData('text/plain', log.id.toString());
+        }
+      }}
     >
       {bulkMode && (
         <div className="pt-1">
@@ -152,16 +155,11 @@ function DraggableFoodColumns({
     
     return (
       <div 
-        className={`flex-1 min-w-0 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 transition-all duration-200 ${
-          draggedItem && draggedItem.mealType !== mealType 
-            ? 'ring-2 ring-blue-300 bg-blue-50 dark:bg-blue-900/20' 
-            : ''
-        }`}
+        className="flex-1 min-w-0 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
         onDrop={(e) => {
           e.preventDefault();
           const logId = parseInt(e.dataTransfer.getData('text/plain'));
-          if (logId && logId !== draggedItem?.id) {
-            console.log(`Dropping food log ${logId} into ${mealType}`);
+          if (logId) {
             handleMealTypeDrop(logId, mealType);
           }
         }}
@@ -182,8 +180,8 @@ function DraggableFoodColumns({
         
         <div className="space-y-2 min-h-[100px]">
           {logs.length > 0 ? (
-            logs.map((log) => (
-              <FoodItem key={log.id} log={log} />
+            logs.map((log, index) => (
+              <FoodItem key={log.id} log={log} index={nutritionLogs.indexOf(log)} />
             ))
           ) : (
             <div className="text-center py-6 text-gray-400 dark:text-gray-500 text-xs">
