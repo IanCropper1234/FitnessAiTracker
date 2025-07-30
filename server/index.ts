@@ -1,18 +1,19 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
+import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 const app = express();
 
-// Session configuration
-const PgSession = connectPgSimple(session);
+// Session configuration with memory store (production-ready for single server deployment)
+const MemoryStoreSession = MemoryStore(session);
+
 app.use(session({
-  store: new PgSession({
-    pool: db,
-    tableName: 'user_sessions'
+  store: new MemoryStoreSession({
+    checkPeriod: 86400000 // prune expired entries every 24h
   }),
   secret: process.env.SESSION_SECRET || 'fitai-session-secret-key-2025',
   resave: false,
