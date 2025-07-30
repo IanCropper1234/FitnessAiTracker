@@ -488,21 +488,24 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Simplified Daily Wellness Check-in Section */}
+              {/* Mobile-Optimized Daily Wellness Check-in Section */}
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
+                <div className="p-3 sm:p-4">
+                  {/* Header - Mobile stacked, Desktop inline */}
+                  <div className="space-y-3 sm:space-y-0">
                     <div className="flex items-center gap-2">
-                      <Heart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      <h3 className="font-semibold text-black dark:text-white">Daily Wellness Check-in</h3>
-                      <Badge variant="secondary" className="text-xs">Required</Badge>
+                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <h3 className="font-semibold text-black dark:text-white text-sm sm:text-base truncate">Daily Wellness</h3>
+                      <Badge variant="secondary" className="text-xs px-1.5 py-0.5">Required</Badge>
                     </div>
-                    <div className="flex items-center gap-2">
+                    
+                    {/* Buttons - Mobile full width, Desktop inline */}
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-1">
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => setLocation('/rp-coach')}
-                        className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                        className="w-full sm:w-auto text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20 text-xs sm:text-sm px-3 py-1.5"
                       >
                         Start Check-in
                       </Button>
@@ -510,44 +513,45 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowWellnessInfo(!showWellnessInfo)}
-                        className="p-2"
+                        className="w-full sm:w-auto justify-center sm:justify-start text-xs sm:text-sm px-3 py-1.5"
                       >
-                        {showWellnessInfo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        {showWellnessInfo ? 'Hide Info' : 'Show Info'}
+                        {showWellnessInfo ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4 ml-1" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />}
                       </Button>
                     </div>
                   </div>
                   
                   {/* Expandable information section */}
                   {showWellnessInfo && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Daily wellness ratings are automatically averaged weekly to influence macro adjustment calculations using authentic RP methodology.
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        Daily wellness ratings are averaged weekly for macro adjustments using RP methodology.
                       </p>
                       
-                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2">
                         <div className="flex items-start gap-2">
-                          <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
-                          <div className="text-xs text-yellow-700 dark:text-yellow-300">
-                            <p className="font-medium mb-1">Weekly Summary Status</p>
-                            {weeklyWellnessStatus ? (
-                              <p>Weekly summary available! Wellness data is being used for macro adjustments.</p>
-                            ) : (
-                              <p>Weekly averages require 3+ daily check-ins. Continue daily tracking for automatic macro adjustments next week.</p>
-                            )}
+                          <AlertCircle className="w-3 h-3 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                          <div className="text-xs text-yellow-700 dark:text-yellow-300 min-w-0">
+                            <p className="font-medium mb-1">Status</p>
+                            <p className="break-words">
+                              {weeklyWellnessStatus ? 
+                                'Weekly summary available! Data is being used for adjustments.' : 
+                                'Need 3+ daily check-ins for automatic adjustments.'
+                              }
+                            </p>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">
-                          What we track:
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2">
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-xs">
+                          Tracking:
                         </h4>
-                        <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-                          <li>• Energy levels (1-10 scale)</li>
-                          <li>• Hunger levels and cravings</li>
-                          <li>• Sleep quality and stress</li>
-                          <li>• Diet adherence perception</li>
-                        </ul>
+                        <div className="text-xs text-blue-800 dark:text-blue-200 space-y-0.5">
+                          <div>• Energy & hunger levels</div>
+                          <div>• Sleep quality & stress</div>
+                          <div>• Diet adherence</div>
+                        </div>
                       </div>
                     </div>
                   )}
