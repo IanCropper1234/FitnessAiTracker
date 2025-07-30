@@ -845,7 +845,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-semibold pl-[0px] pr-[0px] ml-[10px] mr-[10px]">Workout Sessions</h3>
-              <p className="text-sm text-muted-foreground ml-[14px] mr-[14px]">
+              <p className="text-sm text-muted-foreground ml-[12px] mr-[12px]">
                 {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
               </p>
             </div>
