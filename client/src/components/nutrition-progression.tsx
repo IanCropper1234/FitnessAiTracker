@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Activity, Target } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { UnitConverter } from "@shared/utils/unit-conversion";
+import { convertWeight, getUserWeightUnit } from "@shared/utils/metric-conversion";
 
 interface NutritionProgressionProps {
   userId: number;
@@ -76,10 +78,24 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         })
         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
       
-      console.log(`Filtered ${filteredMetrics.length} metrics from ${startDate.toISOString()} to ${endDate.toISOString()}`);
       return filteredMetrics;
     }
   });
+
+  // Get user profile for unit preferences
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile/${userId}`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
+  // Get user's preferred weight unit using UnitConverter
+  const getUserPreferredWeightUnit = () => {
+    return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics);
+  };
 
   const renderChart = () => {
     if (!progressionData || progressionData.length === 0) {
@@ -94,10 +110,23 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
     switch (chartType) {
       case 'weight':
-        const weightData = bodyMetrics?.map((metric: any) => ({
-          date: new Date(metric.date).toLocaleDateString(),
-          weight: metric.weight,
-        })) || [];
+        const preferredUnit = getUserPreferredWeightUnit();
+        const weightData = bodyMetrics?.map((metric: any) => {
+          let weight = parseFloat(metric.weight);
+          // Convert weight to user's preferred unit
+          const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
+          const targetUnit = preferredUnit === 'metric' ? 'kg' : 'lbs';
+          
+          if (metricUnit !== targetUnit) {
+            weight = convertWeight(weight, metricUnit, targetUnit);
+          }
+          return {
+            date: new Date(metric.date).toLocaleDateString(),
+            weight: weight,
+            originalWeight: metric.weight,
+            originalUnit: metric.unit
+          };
+        }) || [];
 
         return (
           <ResponsiveContainer width="100%" height={300}>
@@ -112,6 +141,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   borderRadius: '8px',
                   color: '#F9FAFB'
                 }}
+                formatter={(value: any, name: any) => [
+                  `${value.toFixed(1)} ${getUserPreferredWeightUnit() === 'metric' ? 'kg' : 'lbs'}`, 
+                  'Weight'
+                ]}
               />
               <Line 
                 type="monotone" 
@@ -229,9 +262,30 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         return nextIndex === -1; // Keep if no later entry exists for same date
       }) : [];
 
-    const weightChange = sortedBodyMetrics && sortedBodyMetrics.length >= 2 
-      ? parseFloat(sortedBodyMetrics[sortedBodyMetrics.length - 1].weight) - parseFloat(sortedBodyMetrics[0].weight)
-      : 0;
+    // Calculate weight change with unit conversion
+    let weightChange = 0;
+    if (sortedBodyMetrics && sortedBodyMetrics.length >= 2) {
+      const preferredUnit = getUserPreferredWeightUnit();
+      const latestMetric = sortedBodyMetrics[sortedBodyMetrics.length - 1];
+      const earliestMetric = sortedBodyMetrics[0];
+      
+      let latestWeight = parseFloat(latestMetric.weight);
+      let earliestWeight = parseFloat(earliestMetric.weight);
+      
+      // Convert to preferred unit if needed
+      const latestMetricUnit = latestMetric.unit === 'imperial' ? 'lbs' : 'kg';
+      const earliestMetricUnit = earliestMetric.unit === 'imperial' ? 'lbs' : 'kg';
+      const targetUnit = preferredUnit === 'metric' ? 'kg' : 'lbs';
+      
+      if (latestMetricUnit !== targetUnit) {
+        latestWeight = convertWeight(latestWeight, latestMetricUnit, targetUnit);
+      }
+      if (earliestMetricUnit !== targetUnit) {
+        earliestWeight = convertWeight(earliestWeight, earliestMetricUnit, targetUnit);
+      }
+      
+      weightChange = latestWeight - earliestWeight;
+    }
 
     const calorieChange = latest.calories - previous.calories;
 
@@ -318,7 +372,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${summary.weightChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                {summary.weightChange > 0 ? '+' : ''}{summary.weightChange.toFixed(1)} kg
+                {summary.weightChange > 0 ? '+' : ''}{summary.weightChange.toFixed(1)} {getUserPreferredWeightUnit() === 'metric' ? 'kg' : 'lbs'}
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-400">
                 Last {timeRange}
