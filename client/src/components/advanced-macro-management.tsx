@@ -252,22 +252,13 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   // Generate weekly adjustment mutation
   const weeklyAdjustmentMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("POST", "/api/weekly-adjustment", data);
-    },
-    onSuccess: (response: any) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
-      
-      const { adjustment, appliedToCurrentGoals } = response;
-      toast({
-        title: "Weekly Adjustment Applied",
-        description: appliedToCurrentGoals 
-          ? `Your target calories updated to ${adjustment.newCalories} (${adjustment.adjustmentPercentage > 0 ? '+' : ''}${adjustment.adjustmentPercentage}%)` 
-          : "Weekly analysis recorded. Target macros maintained."
-      });
+      console.log('Making weekly adjustment request with data:', data);
+      const response = await apiRequest("POST", "/api/weekly-adjustment", data);
+      console.log('Weekly adjustment response received:', response);
+      return response;
     },
     onError: (error: any) => {
+      console.error('Weekly adjustment mutation error:', error);
       toast({
         title: "Adjustment Failed",
         description: error.message || "Failed to apply weekly adjustment",
@@ -316,7 +307,17 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
     weeklyAdjustmentMutation.mutate(adjustmentData, {
       onSuccess: (data) => {
-        console.log('Weekly adjustment response:', data);
+        console.log('Weekly adjustment response in onSuccess callback:', data);
+        
+        if (!data) {
+          console.error('Response data is undefined or null');
+          toast({
+            title: "Adjustment Failed",
+            description: "No response data received from server",
+            variant: "destructive"
+          });
+          return;
+        }
         
         // Force refresh diet goals and other related data
         queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
@@ -329,14 +330,13 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         console.log('Cache invalidated and refetch triggered');
         
         // Show success message with adjustment details
-        console.log('Weekly adjustment success response:', data);
         console.log('appliedToCurrentGoals value:', data.appliedToCurrentGoals, 'type:', typeof data.appliedToCurrentGoals);
         
         // Ensure we're checking the exact boolean value
         if (data.appliedToCurrentGoals === true || data.appliedToCurrentGoals === "true") {
           toast({
             title: "✅ RP Adjustment Applied",
-            description: data.message || `Diet goals updated. New target: ${Math.round(data.adjustment.newCalories)} calories`,
+            description: data.message || `Diet goals updated. New target: ${Math.round(data.adjustment?.newCalories || 0)} calories`,
             variant: "default"
           });
         } else {
@@ -348,6 +348,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
             variant: "destructive"
           });
         }
+      },
+      onError: (error) => {
+        console.error('Weekly adjustment onError callback:', error);
+        toast({
+          title: "Adjustment Failed",
+          description: error.message || "Failed to apply weekly adjustment",
+          variant: "destructive"
+        });
       }
     });
   };
