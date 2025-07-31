@@ -166,10 +166,10 @@ export function AddFood({ user }: AddFoodProps) {
       return await apiRequest("POST", "/api/nutrition/log", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', user.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/history', user.id] });
       
       toast({
         title: "Success",
@@ -197,7 +197,7 @@ export function AddFood({ user }: AddFoodProps) {
 
   // Fetch user's food history (unique foods they've logged before)
   const { data: foodHistory = [] } = useQuery({
-    queryKey: ['/api/nutrition/history'],
+    queryKey: ['/api/nutrition/history', user.id],
     queryFn: async () => {
       const response = await fetch('/api/nutrition/history', {
         credentials: 'include'
