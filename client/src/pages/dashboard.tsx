@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
+import { DraggableDashboard } from "@/components/draggable-dashboard";
 
 import { RecentActivity } from "@/components/recent-activity";
 import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
@@ -209,94 +210,22 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           </CardContent>
         </Card>
 
-        {/* Quick Stats - Single Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full card-spacing">
-          {!nutritionSummary ? (
+        {/* Draggable Dashboard Cards */}
+        <div className="card-spacing">
+          {!nutritionSummary || !trainingStats ? (
             // Loading skeletons for quick stats
-            (<>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
               <DashboardCardSkeleton />
-            </>)
+            </div>
           ) : (
-            <>
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
-                <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-                  <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1 transition-colors duration-200" />
-                  <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                    Calories
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="px-2 pb-2">
-                  <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                    {Math.round(nutritionSummary?.totalCalories || 0)}
-                  </div>
-                  <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                    /{Math.round(nutritionSummary?.goalCalories || 2000)}
-                  </p>
-                  <Progress 
-                    value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
-                    className="mt-1 h-1"
-                  />
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Protein
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {Math.round(nutritionSummary?.totalProtein || 0)}g
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                /{Math.round(nutritionSummary?.goalProtein || 150)}g
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 : 0} 
-                className="mt-1 h-1"
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <Activity className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Sessions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {trainingStats?.totalSessions || 0}
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                This week
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Adherence
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {Math.round(nutritionSummary?.adherence || 0)}%
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                Overall
-              </p>
-            </CardContent>
-          </Card>
-            </>
+            <DraggableDashboard 
+              nutritionData={nutritionSummary}
+              trainingData={trainingStats}
+              className="w-full"
+            />
           )}
         </div>
 
