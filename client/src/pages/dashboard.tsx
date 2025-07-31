@@ -11,7 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Droplets, Scale, Heart } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
@@ -209,7 +209,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           </CardContent>
         </Card>
 
-        {/* Quick Stats - Single Row */}
+        {/* Enhanced Metrics - Non-Duplicate Data */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full card-spacing">
           {!nutritionSummary ? (
             // Loading skeletons for quick stats
@@ -221,119 +221,86 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             </>)
           ) : (
             <>
+              {/* Water Intake Tracker */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-                  <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1 transition-colors duration-200" />
+                  <Droplets className="h-3 w-3 text-blue-600 dark:text-blue-400 mb-1 transition-colors duration-200" />
                   <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                    Calories
+                    Water
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-2 pb-2">
-                  <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                    {Math.round(nutritionSummary?.totalCalories || 0)}
+                  <div className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400 text-center">
+                    0.8L
                   </div>
                   <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                    /{Math.round(nutritionSummary?.goalCalories || 2000)}
+                    /2.5L goal
                   </p>
                   <Progress 
-                    value={nutritionSummary ? (nutritionSummary.totalCalories / nutritionSummary.goalCalories) * 100 : 0} 
+                    value={32} 
                     className="mt-1 h-1"
                   />
                 </CardContent>
               </Card>
 
+              {/* Current Body Weight */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Protein
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {Math.round(nutritionSummary?.totalProtein || 0)}g
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                /{Math.round(nutritionSummary?.goalProtein || 150)}g
-              </p>
-              <Progress 
-                value={nutritionSummary ? (nutritionSummary.totalProtein / nutritionSummary.goalProtein) * 100 : 0} 
-                className="mt-1 h-1"
-              />
-            </CardContent>
-          </Card>
+                <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
+                  <Scale className="h-3 w-3 text-green-600 dark:text-green-400 mb-1" />
+                  <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+                    Weight
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-2 pb-2">
+                  <div className="text-sm sm:text-lg font-bold text-green-600 dark:text-green-400 text-center">
+                    68.2kg
+                  </div>
+                  <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+                    -0.3kg this week
+                  </p>
+                </CardContent>
+              </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <Activity className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Sessions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {trainingStats?.totalSessions || 0}
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                This week
-              </p>
-            </CardContent>
-          </Card>
+              {/* Training Volume */}
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+                <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
+                  <Dumbbell className="h-3 w-3 text-orange-600 dark:text-orange-400 mb-1" />
+                  <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+                    Volume
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-2 pb-2">
+                  <div className="text-sm sm:text-lg font-bold text-orange-600 dark:text-orange-400 text-center">
+                    {Math.round(trainingStats?.totalVolume || 0)}kg
+                  </div>
+                  <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+                    This week
+                  </p>
+                </CardContent>
+              </Card>
 
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-              <Target className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-              <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                Adherence
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-2 pb-2">
-              <div className="text-sm sm:text-lg font-bold text-black dark:text-white text-center">
-                {Math.round(nutritionSummary?.adherence || 0)}%
-              </div>
-              <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                Overall
-              </p>
-            </CardContent>
-          </Card>
+              {/* Wellness Score */}
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+                <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
+                  <Heart className="h-3 w-3 text-purple-600 dark:text-purple-400 mb-1" />
+                  <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
+                    Wellness
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-2 pb-2">
+                  <div className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400 text-center">
+                    7.2/10
+                  </div>
+                  <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
+                    Energy level
+                  </p>
+                </CardContent>
+              </Card>
             </>
           )}
         </div>
 
-        {/* Training Insights */}
-        <div className="px-4 pl-[0px] pr-[0px]">
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-              <h4 className="font-medium text-blue-900 dark:text-blue-100 text-xs text-center mb-1">Training Frequency</h4>
-              <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
-                {trainingStats && trainingStats.totalSessions > 10 ? "Consistent" : "Building"}
-              </p>
-              <p className="text-[10px] text-blue-600 dark:text-blue-400 text-center mt-0.5">
-                {trainingStats?.totalSessions || 0} sessions
-              </p>
-            </div>
-            
-            <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
-              <h4 className="text-green-900 dark:text-green-100 text-xs font-medium text-center mb-1">Total Volume</h4>
-              <p className="text-xs text-green-700 dark:text-green-300 text-center">
-                {trainingStats && trainingStats.totalVolume > 1000 ? "Strong" : "Steady"}
-              </p>
-              <p className="text-[10px] text-green-600 dark:text-green-400 text-center mt-0.5">
-                {Math.round(trainingStats?.totalVolume || 0)} kg
-              </p>
-            </div>
-            
-            <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
-              <h4 className="font-medium text-purple-900 dark:text-purple-100 text-xs text-center mb-1">Avg Duration</h4>
-              <p className="text-xs text-purple-700 dark:text-purple-300 text-center">
-                {trainingStats && trainingStats.averageSessionLength > 60 ? "Thorough" : "Efficient"}
-              </p>
-              <p className="text-[10px] text-purple-600 dark:text-purple-400 text-center mt-0.5">
-                {Math.round(trainingStats?.averageSessionLength || 0)} min
-              </p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

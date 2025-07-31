@@ -55,32 +55,57 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
     <div className="space-y-6">
       {/* Training Summary Charts */}
       <div className="grid grid-cols-1 gap-6">
-        {/* Exercise Type Distribution */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white text-center">Exercise Distribution</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={exerciseDistribution}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                dataKey="value"
-                label={({ name, value }) => `${name}: ${value}%`}
-              >
-                {exerciseDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '6px'
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        {/* Training Progress Metrics */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-black dark:text-white text-center mb-4">Training Progress</h3>
+          
+          {/* Training Frequency Card */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Weekly Frequency</h4>
+                <p className="text-blue-700 dark:text-blue-300 text-xs">Training sessions</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-blue-900 dark:text-blue-100">
+                  {trainingStats?.totalSessions || 0}
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">this week</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Volume Card */}
+          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-semibold text-green-900 dark:text-green-100 text-sm">Total Volume</h4>
+                <p className="text-green-700 dark:text-green-300 text-xs">Weight moved</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-green-900 dark:text-green-100">
+                  {Math.round(trainingStats?.totalVolume || 0)}
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400">kg total</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Session Duration Card */}
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-semibold text-purple-900 dark:text-purple-100 text-sm">Avg Duration</h4>
+                <p className="text-purple-700 dark:text-purple-300 text-xs">Per session</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-purple-900 dark:text-purple-100">
+                  {Math.round(trainingStats?.averageSessionLength || 0)}
+                </p>
+                <p className="text-xs text-purple-600 dark:text-purple-400">minutes</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
