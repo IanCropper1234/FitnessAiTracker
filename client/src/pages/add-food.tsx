@@ -708,149 +708,161 @@ export function AddFood({ user }: AddFoodProps) {
               Analyze with AI
             </Button>
 
-            {/* Recent Foods Section - Moved to replace Database Search */}
-            {Array.isArray(foodHistory) && foodHistory.length > 0 && (
-              <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
-                </div>
-                
-                {/* History Search */}
-                <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
-                  <Input
-                    value={historySearchQuery}
-                    onChange={(e) => setHistorySearchQuery(e.target.value)}
-                    placeholder="Search your food history..."
-                    className="h-8 pl-7 text-xs ios-touch-feedback"
-                  />
-                </div>
-
-                {/* History Items */}
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {displayedFoodHistory.map((item: any, index: number) => (
-                    <div
-                      key={`${item.foodName}-${index}`}
-                      className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
-                              {item.foodName}
-                            </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                              {Math.round(item.calories)}cal • {Math.round(item.protein)}g protein • {item.quantity} {item.unit}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <Button
-                        onClick={() => handleQuickAddFromHistory(item)}
-                        disabled={isLoading}
-                        size="sm"
-                        className="h-7 w-7 p-0 ml-2 ios-button touch-target flex-shrink-0"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                  
-                  {filteredFoodHistory.length === 0 && historySearchQuery && (
-                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                      <p className="text-xs">No matching foods found in your history</p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Load More Link */}
-                {hasMoreFoodHistory && !historySearchQuery && (
-                  <div className="text-center">
-                    <span
-                      onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
-                      className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
-                    >
-                      Load More
-                    </span>
-                  </div>
-                )}
+            {/* Recent Foods Section - Always Visible Now */}
+            <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-2">
+                <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
               </div>
-            )}
+              
+              {Array.isArray(foodHistory) && foodHistory.length > 0 ? (
+                <>
+                  {/* History Search */}
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                    <Input
+                      value={historySearchQuery}
+                      onChange={(e) => setHistorySearchQuery(e.target.value)}
+                      placeholder="Search your food history..."
+                      className="h-8 pl-7 text-xs ios-touch-feedback"
+                    />
+                  </div>
 
-            {/* Saved Meals Section - Moved to replace Database Search */}
-            {Array.isArray(savedMeals) && savedMeals.length > 0 && (
-              <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
-                </div>
-                
-                {/* Saved Meals Search */}
-                <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
-                  <Input
-                    value={savedMealsSearchQuery}
-                    onChange={(e) => setSavedMealsSearchQuery(e.target.value)}
-                    placeholder="Search your saved meals..."
-                    className="h-8 pl-7 text-xs ios-touch-feedback"
-                  />
-                </div>
-
-                {/* Saved Meals Items */}
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {filteredSavedMeals.map((meal: any) => (
-                    <div
-                      key={meal.id}
-                      className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <Utensils className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
-                              {meal.name}
-                            </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                              {Math.round(parseFloat(meal.totalCalories))}cal • {Math.round(parseFloat(meal.totalProtein))}g protein
-                              {meal.description && ` • ${meal.description}`}
-                            </p>
+                  {/* History Items */}
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {displayedFoodHistory.map((item: any, index: number) => (
+                      <div
+                        key={`${item.foodName}-${index}`}
+                        className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {item.foodName}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {Math.round(item.calories)}cal • {Math.round(item.protein)}g protein • {item.quantity} {item.unit}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-1 ml-2">
+                        
                         <Button
-                          onClick={() => addSavedMealMutation.mutate(meal)}
-                          disabled={addSavedMealMutation.isPending}
+                          onClick={() => handleQuickAddFromHistory(item)}
+                          disabled={isLoading}
                           size="sm"
-                          className="h-7 w-7 p-0 ios-button touch-target flex-shrink-0"
+                          className="h-7 w-7 p-0 ml-2 ios-button touch-target flex-shrink-0"
                         >
                           <Plus className="w-3 h-3" />
                         </Button>
-                        <Button
-                          onClick={() => deleteSavedMealMutation.mutate(meal.id)}
-                          disabled={deleteSavedMealMutation.isPending}
-                          size="sm"
-                          variant="destructive"
-                          className="h-7 w-7 p-0 ios-button touch-target flex-shrink-0"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                    
+                    {filteredFoodHistory.length === 0 && historySearchQuery && (
+                      <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                        <p className="text-xs">No matching foods found in your history</p>
+                      </div>
+                    )}
+                  </div>
                   
-                  {filteredSavedMeals.length === 0 && savedMealsSearchQuery && (
-                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                      <p className="text-xs">No matching saved meals found</p>
+                  {/* Load More Link */}
+                  {hasMoreFoodHistory && !historySearchQuery && (
+                    <div className="text-center">
+                      <span
+                        onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
+                        className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
+                      >
+                        Load More
+                      </span>
                     </div>
                   )}
+                </>
+              ) : (
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  <p className="text-xs">No food history yet. Foods you log will appear here for quick access.</p>
                 </div>
+              )}
+            </div>
+
+            {/* Saved Meals Section - Always Visible Now */}
+            <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-2">
+                <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
               </div>
-            )}
+              
+              {Array.isArray(savedMeals) && savedMeals.length > 0 ? (
+                <>
+                  {/* Saved Meals Search */}
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
+                    <Input
+                      value={savedMealsSearchQuery}
+                      onChange={(e) => setSavedMealsSearchQuery(e.target.value)}
+                      placeholder="Search your saved meals..."
+                      className="h-8 pl-7 text-xs ios-touch-feedback"
+                    />
+                  </div>
+
+                  {/* Saved Meals Items */}
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {filteredSavedMeals.map((meal: any) => (
+                      <div
+                        key={meal.id}
+                        className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Utensils className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {meal.name}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                {Math.round(parseFloat(meal.totalCalories))}cal • {Math.round(parseFloat(meal.totalProtein))}g protein
+                                {meal.description && ` • ${meal.description}`}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-1 ml-2">
+                          <Button
+                            onClick={() => addSavedMealMutation.mutate(meal)}
+                            disabled={addSavedMealMutation.isPending}
+                            size="sm"
+                            className="h-7 w-7 p-0 ios-button touch-target flex-shrink-0"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            onClick={() => deleteSavedMealMutation.mutate(meal.id)}
+                            disabled={deleteSavedMealMutation.isPending}
+                            size="sm"
+                            variant="destructive"
+                            className="h-7 w-7 p-0 ios-button touch-target flex-shrink-0"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {filteredSavedMeals.length === 0 && savedMealsSearchQuery && (
+                      <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                        <p className="text-xs">No matching saved meals found</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  <p className="text-xs">No saved meals yet. Create meal templates for quick access.</p>
+                </div>
+              )}
+            </div>
 
             {/* AI Analysis Results - Dynamic Volume-Based Display */}
             {dynamicMacros && (
