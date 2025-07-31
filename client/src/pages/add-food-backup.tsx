@@ -703,78 +703,28 @@ export function AddFood({ user }: AddFoodProps) {
               </p>
             </div>
 
-                {/* Action Button */}
-                <Button
-                  onClick={handleAIAnalysis}
-                  disabled={!foodQuery.trim() || isLoading}
-                  className="w-full h-9 ios-button touch-target"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Brain className="w-4 h-4 mr-2" />
-                  )}
-                  Analyze with AI
-                </Button>
+            {/* Action Button */}
+            <Button
+              onClick={handleAIAnalysis}
+              disabled={!foodQuery.trim() || isLoading}
+              className="w-full h-9 ios-button touch-target"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Brain className="w-4 h-4 mr-2" />
+              )}
+              Analyze with AI
+            </Button>
 
-                {/* AI Analysis Results - Dynamic Volume-Based Display */}
-                {dynamicMacros && (
-                  <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-t border-gray-200 dark:border-gray-700 pt-3">
-                    <div className="flex items-center gap-2">
-                      <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                        AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
-                      </Label>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                        <p className="text-gray-600 dark:text-gray-400">Calories</p>
-                        <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
-                      </div>
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                        <p className="text-gray-600 dark:text-gray-400">Protein</p>
-                        <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
-                      </div>
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                        <p className="text-gray-600 dark:text-gray-400">Carbs</p>
-                        <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
-                      </div>
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                        <p className="text-gray-600 dark:text-gray-400">Fat</p>
-                        <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
-                      </div>
-                    </div>
-                    {dynamicMacros.servingDetails && (
-                      <div className="text-xs text-blue-700 dark:text-blue-300">
-                        <p className="font-medium mb-1">Serving Details:</p>
-                        <p>{dynamicMacros.servingDetails}</p>
-                      </div>
-                    )}
-                    {dynamicMacros.assumptions && (
-                      <div className="text-xs text-blue-700 dark:text-blue-300">
-                        <p className="font-medium mb-1">Assumptions:</p>
-                        <p>{dynamicMacros.assumptions}</p>
-                      </div>
-                    )}
-                    {quantity !== (portionWeight || '1') && (
-                      <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
-                        <p className="font-medium">✓ Dynamic Calculation Applied</p>
-                        <p>Macros automatically updated based on your volume adjustment</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="recent-foods" className="space-y-4 mt-4">
-                {/* Recent Foods Section */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                    <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
-                  </div>
-                  
-                  {Array.isArray(foodHistory) && foodHistory.length > 0 ? (
+            {/* Recent Foods Section - Always Visible Now */}
+            <div className="space-y-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-300 dark:border-yellow-700">
+              <div className="flex items-center gap-2">
+                <History className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                <Label className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Recent Foods (Debug: Always Visible)</Label>
+              </div>
+              
+              {Array.isArray(foodHistory) && foodHistory.length > 0 ? (
                 <>
                   {/* History Search */}
                   <div className="relative">
@@ -839,22 +789,20 @@ export function AddFood({ user }: AddFoodProps) {
                   )}
                 </>
               ) : (
-                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                      <p className="text-xs">No food history yet. Foods you log will appear here for quick access.</p>
-                    </div>
-                  )}
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  <p className="text-xs">No food history yet. Foods you log will appear here for quick access.</p>
                 </div>
-              </TabsContent>
+              )}
+            </div>
 
-              <TabsContent value="saved-meals" className="space-y-4 mt-4">
-                {/* Saved Meals Section */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                    <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
-                  </div>
-                  
-                  {Array.isArray(savedMeals) && savedMeals.length > 0 ? (
+            {/* Saved Meals Section - Always Visible Now */}
+            <div className="space-y-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300 dark:border-green-700">
+              <div className="flex items-center gap-2">
+                <Utensils className="w-4 h-4 text-green-600 dark:text-green-400" />
+                <Label className="text-sm font-medium text-green-800 dark:text-green-200">Saved Meals (Debug: Always Visible)</Label>
+              </div>
+              
+              {Array.isArray(savedMeals) && savedMeals.length > 0 ? (
                 <>
                   {/* Saved Meals Search */}
                   <div className="relative">
@@ -919,13 +867,62 @@ export function AddFood({ user }: AddFoodProps) {
                   </div>
                 </>
               ) : (
-                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                      <p className="text-xs">No saved meals yet. Create meal templates for quick access.</p>
-                    </div>
-                  )}
+                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                  <p className="text-xs">No saved meals yet. Create meal templates for quick access.</p>
                 </div>
-              </TabsContent>
-            </Tabs>
+              )}
+            </div>
+
+            {/* AI Analysis Results - Dynamic Volume-Based Display */}
+            {dynamicMacros && (
+              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                    AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
+                  </Label>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Calories</p>
+                    <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Protein</p>
+                    <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Carbs</p>
+                    <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Fat</p>
+                    <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
+                  </div>
+                </div>
+                {dynamicMacros.servingDetails && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Serving Details:</p>
+                    <p>{dynamicMacros.servingDetails}</p>
+                  </div>
+                )}
+                {dynamicMacros.assumptions && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Assumptions:</p>
+                    <p>{dynamicMacros.assumptions}</p>
+                  </div>
+                )}
+                {quantity !== (portionWeight || '1') && (
+                  <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
+                    <p className="font-medium">✓ Dynamic Calculation Applied</p>
+                    <p>Macros automatically updated based on your volume adjustment</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+
+
 
 
             {/* Quantity and Meal Selection */}
