@@ -17,18 +17,35 @@ export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className 
     if (containerRef.current) {
       setIsAnimating(true);
       
-      // Always animate on mount/location change
+      // Create a much more dramatic and noticeable animation
       const animation = containerRef.current.animate([
-        { opacity: 0, transform: 'translateY(20px) scale(0.95)' },
-        { opacity: 1, transform: 'translateY(0) scale(1)' }
+        { 
+          opacity: 0, 
+          transform: 'translateY(50px) scale(0.8) rotateX(15deg)',
+          filter: 'blur(5px)'
+        },
+        { 
+          opacity: 0.5, 
+          transform: 'translateY(25px) scale(0.9) rotateX(7deg)',
+          filter: 'blur(2px)'
+        },
+        { 
+          opacity: 1, 
+          transform: 'translateY(0) scale(1) rotateX(0deg)',
+          filter: 'blur(0px)'
+        }
       ], {
-        duration: 500,
-        easing: 'ease-out',
+        duration: 800,
+        easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'both'
       });
 
+      animation.addEventListener('start', () => {
+        console.log('🎬 ANIMATION STARTED for page:', location);
+      });
+
       animation.addEventListener('finish', () => {
-        console.log('Page transition animation completed for:', location);
+        console.log('✅ ANIMATION COMPLETED for page:', location);
         setIsAnimating(false);
       });
     }
