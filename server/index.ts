@@ -16,12 +16,13 @@ app.use(session({
     checkPeriod: 86400000 // prune expired entries every 24h
   }),
   secret: process.env.SESSION_SECRET || 'fitai-session-secret-key-2025',
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Force session save for PWA compatibility
+  saveUninitialized: true, // Create sessions for unauthenticated users
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    secure: false, // Allow cookies over HTTP for PWA development and Replit deployment
+    httpOnly: false, // Allow JavaScript access for PWA functionality
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    sameSite: 'lax' // PWA-friendly sameSite setting
   }
 }));
 

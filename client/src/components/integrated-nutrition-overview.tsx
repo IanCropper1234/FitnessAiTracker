@@ -154,14 +154,26 @@ export function IntegratedNutritionOverview({
   const [saveMealSection, setSaveMealSection] = useState('');
 
   // Fetch nutrition summary for the selected date
-  const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
+  const { data: nutritionSummary, isLoading: summaryLoading, error: summaryError } = useQuery({
     queryKey: ['/api/nutrition/summary', selectedDate],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/summary?date=${selectedDate}`, {
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to fetch nutrition summary');
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Redirect to login if unauthorized
+          window.location.href = '/auth';
+          throw new Error('Authentication required');
+        }
+        throw new Error('Failed to fetch nutrition summary');
+      }
       return response.json();
+    },
+    retry: (failureCount, error: any) => {
+      // Don't retry on authentication errors
+      if (error.message?.includes('Authentication required')) return false;
+      return failureCount < 3;
     }
   });
 
@@ -223,14 +235,27 @@ export function IntegratedNutritionOverview({
   };
 
   // Fetch nutrition logs for the selected date
-  const { data: nutritionLogs, isLoading: logsLoading } = useQuery({
+  const { data: nutritionLogs, isLoading: logsLoading, error: logsError } = useQuery({
     queryKey: ['/api/nutrition/logs', selectedDate],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/logs?date=${selectedDate}`, {
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to fetch nutrition logs');
-      return response.json();
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Redirect to login if unauthorized
+          window.location.href = '/auth';
+          throw new Error('Authentication required');
+        }
+        throw new Error('Failed to fetch nutrition logs');
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
+    retry: (failureCount, error: any) => {
+      // Don't retry on authentication errors
+      if (error.message?.includes('Authentication required')) return false;
+      return failureCount < 3;
     }
   });
 
@@ -471,7 +496,7 @@ export function IntegratedNutritionOverview({
     if (selectedLogs.length === nutritionLogs?.length) {
       setSelectedLogs([]);
     } else {
-      setSelectedLogs(nutritionLogs?.map((log: any) => log.id) || []);
+      setSelectedLogs(Array.isArray(nutritionLogs) ? nutritionLogs.map((log: any) => log.id) : []);
     }
   };
 
@@ -525,7 +550,7 @@ export function IntegratedNutritionOverview({
   };
 
   const handleSaveAsMeal = (mealSection: string) => {
-    const sectionLogs = nutritionLogs?.filter((log: any) => log.mealType === mealSection) || [];
+    const sectionLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === mealSection) : [];
     
     if (sectionLogs.length === 0) {
       toast({
@@ -552,7 +577,7 @@ export function IntegratedNutritionOverview({
       return;
     }
 
-    const sectionLogs = nutritionLogs?.filter((log: any) => log.mealType === saveMealSection) || [];
+    const sectionLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === saveMealSection) : [];
     
     if (sectionLogs.length === 0) {
       toast({
@@ -897,7 +922,7 @@ export function IntegratedNutritionOverview({
   };
 
   const handleBulkCopyToDate = (selectedLogIds: number[], targetDate: string) => {
-    const logsToCreate = nutritionLogs?.filter((log: any) => selectedLogIds.includes(log.id)) || [];
+    const logsToCreate = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => selectedLogIds.includes(log.id)) : [];
     
     logsToCreate.forEach((log: any) => {
       const { id, createdAt, ...foodData } = log;
@@ -921,7 +946,7 @@ export function IntegratedNutritionOverview({
   };
 
   const handleCopySection = (mealType: string, targetDate: string) => {
-    const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
+    const mealLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === mealType) : [];
     
     mealLogs.forEach((log: any) => {
       const { id, createdAt, ...foodData } = log;
@@ -980,7 +1005,7 @@ export function IntegratedNutritionOverview({
 
   // Calculate meal totals for each section
   const calculateMealTotals = (mealType: string) => {
-    const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
+    const mealLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === mealType) : [];
     return mealLogs.reduce((totals: { calories: number; protein: number; carbs: number; fat: number; count: number }, log: any) => ({
       calories: totals.calories + (parseFloat(log.calories) || 0),
       protein: totals.protein + (parseFloat(log.protein) || 0),
@@ -1127,11 +1152,11 @@ export function IntegratedNutritionOverview({
       </div>
       {/* Expandable Micronutrients Section with RDA Comparison */}
       {(() => {
-        const todayLogs = nutritionLogs?.filter((log: any) => {
+        const todayLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => {
           const logDate = new Date(log.date).toLocaleDateString();
           const today = new Date(selectedDate).toLocaleDateString();
           return logDate === today;
-        }) || [];
+        }) : [];
         
         const micronutrientLogs = todayLogs.filter((log: any) => log.micronutrients && Object.keys(log.micronutrients).length > 0);
         
@@ -1626,7 +1651,7 @@ export function IntegratedNutritionOverview({
           
           <div className="space-y-0">
             {mealTypes.map((mealType) => {
-              const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType.key) || [];
+              const mealLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === mealType.key) : [];
               
               return (
                 <div 
