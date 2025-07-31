@@ -624,48 +624,44 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </div>
         </div>
       </div>
-      {/* Ultra-Compact Horizontal Scrolling Metrics */}
+      {/* Ultra-Compact 2x2 Grid Metrics */}
       {summary && (
-        <div className="overflow-x-auto pb-1 -mx-1">
-          <div className="flex gap-2 min-w-max px-1 text-center pl-[50px] pr-[50px] pt-[5px] pb-[5px] ml-[1px] mr-[1px]">
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Weight</div>
-              <div className={`text-base font-bold ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)}
-              </div>
-              <div className="text-xs text-gray-400">{getUserPreferredWeightUnit()}</div>
+        <div className="grid grid-cols-2 gap-1.5 px-0.5">
+          {/* Top Row: Weight Change + Avg Calories */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Weight</div>
+            <div className={`text-sm font-bold leading-none ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)} {getUserPreferredWeightUnit()}
             </div>
-            
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Avg Cal</div>
-              <div className="text-base font-bold text-blue-600">
-                {Math.round(summary.avgCalories)}
-              </div>
-              <div className="text-xs text-gray-400">per day</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Avg Calories</div>
+            <div className="text-sm font-bold text-blue-600 leading-none">
+              {Math.round(summary.avgCalories)} cal/day
             </div>
-            
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Protein</div>
-              <div className="text-base font-bold text-orange-600">
-                {Math.round(summary.avgProtein)}g
-              </div>
-              <div className="text-xs text-gray-400">per day</div>
+          </div>
+          
+          {/* Bottom Row: Protein + Trend */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Protein</div>
+            <div className="text-sm font-bold text-orange-600 leading-none">
+              {Math.round(summary.avgProtein)}g/day
             </div>
-            
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-w-[95px]">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Trend</div>
-              <div className={`text-base font-bold ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)}
-              </div>
-              <div className="text-xs text-gray-400">vs start</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Cal Trend</div>
+            <div className={`text-sm font-bold leading-none ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)} vs start
             </div>
           </div>
         </div>
       )}
-      {/* Compact Chart Container */}
-      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-        <div className="mb-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
+      {/* Streamlined Chart Container */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+        <div className="mb-3">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
             {chartType === 'weight' && 'Weight Trend'}
             {chartType === 'bodyFat' && 'Body Fat %'}
             {chartType === 'calories' && 'Daily Calories'}
@@ -679,22 +675,22 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </p>
         </div>
         
-        <div className="w-full h-[200px]">
+        <div className="w-full h-[180px]">
           {renderChart()}
         </div>
       </div>
 
-      {/* Data Table Section */}
+      {/* Compact Data Table Section */}
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
         <div className="mb-2">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
-            Data Entries
+            Recent Entries
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {chartType === 'weight' && `Weight entries over ${timeRange}`}
-            {chartType === 'bodyFat' && `Body fat entries over ${timeRange}`}
-            {chartType === 'calories' && `Daily calories over ${timeRange}`}
-            {chartType === 'macros' && `Macro breakdown over ${timeRange}`}
+            {chartType === 'weight' && `Weight data • ${timeRange}`}
+            {chartType === 'bodyFat' && `Body fat data • ${timeRange}`}
+            {chartType === 'calories' && `Daily calories • ${timeRange}`}
+            {chartType === 'macros' && `Macro data • ${timeRange}`}
           </p>
         </div>
         
