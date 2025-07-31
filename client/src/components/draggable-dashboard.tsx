@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Responsive, WidthProvider, Layout } from 'react-grid-layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X, GripVertical } from 'lucide-react';
 import { getCardById } from './dashboard-card-library';
 import { DashboardEditor } from './dashboard-editor';
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -28,7 +26,7 @@ export function DraggableDashboard({
   trainingData,
   className = ""
 }: DraggableDashboardProps) {
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [selectedCards, setSelectedCards] = useState<string[]>(DEFAULT_CARDS);
   const [layouts, setLayouts] = useState<{ [key: string]: Layout[] }>({});
 
@@ -77,8 +75,10 @@ export function DraggableDashboard({
 
   const handleSaveLayout = () => {
     // Save to localStorage or API
-    localStorage.setItem('dashboard-layout', JSON.stringify(layouts));
-    localStorage.setItem('dashboard-cards', JSON.stringify(selectedCards));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dashboard-layout', JSON.stringify(layouts));
+      localStorage.setItem('dashboard-cards', JSON.stringify(selectedCards));
+    }
     setIsEditMode(false);
   };
 
@@ -95,15 +95,17 @@ export function DraggableDashboard({
 
   // Load saved layout on mount
   useEffect(() => {
-    const savedLayout = localStorage.getItem('dashboard-layout');
-    const savedCards = localStorage.getItem('dashboard-cards');
-    
-    if (savedLayout && savedCards) {
-      try {
-        setLayouts(JSON.parse(savedLayout));
-        setSelectedCards(JSON.parse(savedCards));
-      } catch (error) {
-        console.error('Error loading saved dashboard layout:', error);
+    if (typeof window !== 'undefined') {
+      const savedLayout = localStorage.getItem('dashboard-layout');
+      const savedCards = localStorage.getItem('dashboard-cards');
+      
+      if (savedLayout && savedCards) {
+        try {
+          setLayouts(JSON.parse(savedLayout));
+          setSelectedCards(JSON.parse(savedCards));
+        } catch (error) {
+          console.error('Error loading saved dashboard layout:', error);
+        }
       }
     }
   }, []);
@@ -147,6 +149,8 @@ export function DraggableDashboard({
 
   const breakpoints = { lg: 1200, md: 996, sm: 768, xs: 480 };
   const cols = { lg: 8, md: 6, sm: 4, xs: 4 };
+
+
 
   return (
     <div className={`relative ${className}`}>

@@ -27,7 +27,7 @@ export interface DashboardCardConfig {
   icon: any;
   defaultSize: { w: number; h: number };
   color: string;
-  component: React.ComponentType<any>;
+  component: any;
 }
 
 // Individual Card Components
