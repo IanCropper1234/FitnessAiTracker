@@ -11,6 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 
 import { RecentActivity } from "@/components/recent-activity";
+import { TransitionTest } from "@/components/transition-test";
 import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Scale, Heart } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -420,6 +421,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
           {/* Recent Activity */}
           <RecentActivity userId={user.id} />
+          
+          {/* Transition Test - Remove after testing */}
+          <TransitionTest />
         </div>
 
 
