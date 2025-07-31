@@ -1236,7 +1236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Direct session creation for testing
-  app.post("/api/training/sessions/direct", async (req, res) => {
+  app.post("/api/training/sessions/direct", requireAuth, async (req, res) => {
     try {
       const sessionData = req.body;
       const session = await storage.createWorkoutSession({
@@ -1388,7 +1388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Save workout session progress
-  app.put("/api/training/sessions/:sessionId/progress", async (req, res) => {
+  app.put("/api/training/sessions/:sessionId/progress", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const progressData = req.body;
@@ -1503,7 +1503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Complete workout session
-  app.put("/api/training/sessions/:sessionId/complete", async (req, res) => {
+  app.put("/api/training/sessions/:sessionId/complete", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const completionData = req.body;
@@ -1681,7 +1681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete workout session
-  app.delete("/api/training/sessions/:sessionId", async (req, res) => {
+  app.delete("/api/training/sessions/:sessionId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       
@@ -1704,7 +1704,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update workout session (edit session name and other properties)
-  app.put("/api/training/sessions/:sessionId", async (req, res) => {
+  app.put("/api/training/sessions/:sessionId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const updates = req.body;
@@ -1728,7 +1728,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Restart workout session (reset progress but keep structure)
-  app.post("/api/training/sessions/:sessionId/restart", async (req, res) => {
+  app.post("/api/training/sessions/:sessionId/restart", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       
@@ -1749,7 +1749,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Duplicate workout session
-  app.post("/api/training/sessions/:sessionId/duplicate", async (req, res) => {
+  app.post("/api/training/sessions/:sessionId/duplicate", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       
@@ -1847,7 +1847,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Step 3: Auto-Regulation System API Routes
 
   // Submit auto-regulation feedback
-  app.post("/api/training/auto-regulation-feedback", async (req, res) => {
+  app.post("/api/training/auto-regulation-feedback", requireAuth, async (req, res) => {
     try {
       console.log('Received feedback data:', JSON.stringify(req.body, null, 2));
       const feedbackData = req.body;
@@ -1889,7 +1889,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get auto-regulation feedback for session
-  app.get("/api/training/auto-regulation-feedback/:sessionId", async (req, res) => {
+  app.get("/api/training/auto-regulation-feedback/:sessionId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const feedback = await storage.getAutoRegulationFeedback(sessionId);
@@ -1958,7 +1958,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/auto-regulation", async (req, res) => {
+  app.post("/api/training/auto-regulation", requireAuth, async (req, res) => {
     try {
       const feedbackData = req.body;
       const result = await processAutoRegulation(
@@ -2157,7 +2157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/meal-plans", async (req, res) => {
+  app.post("/api/meal-plans", requireAuth, async (req, res) => {
     try {
       const planData = req.body;
       const plan = await storage.createMealPlan(planData);
@@ -2167,7 +2167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/meal-plans/:id", async (req, res) => {
+  app.put("/api/meal-plans/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const planData = req.body;
@@ -2183,7 +2183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/meal-plans/:id", async (req, res) => {
+  app.delete("/api/meal-plans/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteMealPlan(id);
@@ -2217,7 +2217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/weekly-nutrition-goal", async (req, res) => {
+  app.post("/api/weekly-nutrition-goal", requireAuth, async (req, res) => {
     try {
       const goalData = req.body;
       const goal = await storage.createWeeklyNutritionGoal(goalData);
@@ -2245,7 +2245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/diet-phases", async (req, res) => {
+  app.post("/api/diet-phases", requireAuth, async (req, res) => {
     try {
       const phaseData = req.body;
       const phase = await storage.createDietPhase(phaseData);
@@ -2266,7 +2266,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/meal-timing", async (req, res) => {
+  app.post("/api/meal-timing", requireAuth, async (req, res) => {
     try {
       const preferencesData = req.body;
       const preferences = await storage.createMealTimingPreferences(preferencesData);
@@ -2385,7 +2385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create or update weight goal
-  app.post("/api/weight-goals", async (req, res) => {
+  app.post("/api/weight-goals", requireAuth, async (req, res) => {
     try {
       const weightGoal = await storage.createWeightGoal(req.body);
       
@@ -2412,7 +2412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update weight goal
-  app.put("/api/weight-goals/:id", async (req, res) => {
+  app.put("/api/weight-goals/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const weightGoal = await storage.updateWeightGoal(id, req.body);
@@ -2443,7 +2443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete weight goal
-  app.delete("/api/weight-goals/:id", async (req, res) => {
+  app.delete("/api/weight-goals/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteWeightGoal(id);
@@ -2467,7 +2467,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/body-metrics", async (req, res) => {
+  app.post("/api/body-metrics", requireAuth, async (req, res) => {
     try {
       const metricData = {
         ...req.body,
@@ -2480,7 +2480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/body-metrics/:id", async (req, res) => {
+  app.delete("/api/body-metrics/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteBodyMetric(id);
@@ -2544,7 +2544,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/meal-plans/saved", async (req, res) => {
+  app.post("/api/meal-plans/saved", requireAuth, async (req, res) => {
     try {
       const mealPlan = await storage.createSavedMealPlan(req.body);
       res.json(mealPlan);
@@ -2553,7 +2553,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/meal-plans/saved/:id", async (req, res) => {
+  app.put("/api/meal-plans/saved/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const mealPlan = await storage.updateSavedMealPlan(id, req.body);
@@ -2568,7 +2568,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/meal-plans/saved/:id", async (req, res) => {
+  app.delete("/api/meal-plans/saved/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteSavedMealPlan(id);
@@ -2594,7 +2594,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/diet-goals", async (req, res) => {
+  app.post("/api/diet-goals", requireAuth, async (req, res) => {
     try {
       const goal = await storage.createDietGoal(req.body);
       res.json(goal);
@@ -2999,7 +2999,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update mesocycle (pause/restart/modify)
-  app.put("/api/training/mesocycles/:id", async (req, res) => {
+  app.put("/api/training/mesocycles/:id", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.id);
       const updateData = req.body;
@@ -3014,7 +3014,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete mesocycle
-  app.delete("/api/training/mesocycles/:id", async (req, res) => {
+  app.delete("/api/training/mesocycles/:id", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.id);
       
@@ -3028,7 +3028,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get mesocycle workout program
-  app.get("/api/training/mesocycles/:id/program", async (req, res) => {
+  app.get("/api/training/mesocycles/:id/program", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.id);
       
@@ -3042,7 +3042,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Advance mesocycle week (auto-progression)
-  app.post("/api/training/mesocycles/:id/advance-week", async (req, res) => {
+  app.post("/api/training/mesocycles/:id/advance-week", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.id);
       
@@ -3107,26 +3107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/training/templates/:templateId", async (req, res) => {
-    try {
-      const templateId = parseInt(req.params.templateId);
-      const updateData = req.body;
-      
-      const template = await TemplateEngine.updateTemplate(templateId, updateData);
-      
-      if (!template) {
-        return res.status(404).json({ error: "Template not found" });
-      }
-      
-      res.json(template);
-    } catch (error) {
-      console.error("Error updating template:", error);
-      res.status(500).json({ error: "Failed to update template" });
-    }
-  });
-
-  // Update training template
-  app.put("/api/training/templates/:templateId", async (req, res) => {
+  app.put("/api/training/templates/:templateId", requireAuth, async (req, res) => {
     try {
       const templateId = parseInt(req.params.templateId);
       const updateData = req.body;
@@ -3144,7 +3125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/training/templates/:templateId", async (req, res) => {
+  app.delete("/api/training/templates/:templateId", requireAuth, async (req, res) => {
     try {
       const templateId = parseInt(req.params.templateId);
       
@@ -3274,7 +3255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/load-progression", async (req, res) => {
+  app.post("/api/training/load-progression", requireAuth, async (req, res) => {
     try {
       const {
         userId,
@@ -3308,7 +3289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get exercise recommendations for specific session (for workout execution recommendations)
-  app.get("/api/training/exercise-recommendations/:sessionId", async (req, res) => {
+  app.get("/api/training/exercise-recommendations/:sessionId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       
@@ -3636,7 +3617,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Initialize system templates on startup
-  app.post("/api/training/init-templates", async (req, res) => {
+  app.post("/api/training/init-templates", requireAuth, async (req, res) => {
     try {
       await TemplateEngine.initializeSystemTemplates();
       res.json({ message: "System templates initialized successfully" });
@@ -3750,7 +3731,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { UnifiedMesocycleTemplate } = await import("./services/unified-mesocycle-template");
 
   // Add exercise to existing session
-  app.post("/api/training/sessions/:sessionId/exercises", async (req, res) => {
+  app.post("/api/training/sessions/:sessionId/exercises", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const { exerciseId, insertPosition } = req.body;
@@ -3773,7 +3754,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove exercise from session
-  app.delete("/api/training/sessions/:sessionId/exercises/:exerciseId", async (req, res) => {
+  app.delete("/api/training/sessions/:sessionId/exercises/:exerciseId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const exerciseId = parseInt(req.params.exerciseId);
@@ -3791,7 +3772,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Substitute exercise in session
-  app.put("/api/training/sessions/:sessionId/exercises/:exerciseId/substitute", async (req, res) => {
+  app.put("/api/training/sessions/:sessionId/exercises/:exerciseId/substitute", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const oldExerciseId = parseInt(req.params.exerciseId);
@@ -3814,7 +3795,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reorder exercises in session
-  app.put("/api/training/sessions/:sessionId/exercises/reorder", async (req, res) => {
+  app.put("/api/training/sessions/:sessionId/exercises/reorder", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const { exercises } = req.body; // Array of { exerciseId, orderIndex }
@@ -3841,7 +3822,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create additional session in mesocycle
-  app.post("/api/training/mesocycles/:mesocycleId/sessions", async (req, res) => {
+  app.post("/api/training/mesocycles/:mesocycleId/sessions", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);
       const { sessionName, targetDate, exerciseIds } = req.body;
@@ -3865,7 +3846,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create specialized extra training day
-  app.post("/api/training/mesocycles/:mesocycleId/extra-day", async (req, res) => {
+  app.post("/api/training/mesocycles/:mesocycleId/extra-day", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);
       const { sessionType, targetDate, customName } = req.body;
@@ -3908,7 +3889,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/training/mesocycles/:mesocycleId/validate", async (req, res) => {
+  app.get("/api/training/mesocycles/:mesocycleId/validate", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);
       
@@ -3970,7 +3951,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Template validation and cleanup endpoint
-  app.post("/api/training/templates/validate-and-cleanup", async (req, res) => {
+  app.post("/api/training/templates/validate-and-cleanup", requireAuth, async (req, res) => {
     try {
       console.log('Starting template validation and cleanup...');
       
