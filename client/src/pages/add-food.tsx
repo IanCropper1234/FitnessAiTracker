@@ -84,6 +84,7 @@ export function AddFood({ user }: AddFoodProps) {
   const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [savedMealsSearchQuery, setSavedMealsSearchQuery] = useState('');
   const [historyDisplayLimit, setHistoryDisplayLimit] = useState(10);
+  const [savedMealsDisplayLimit, setSavedMealsDisplayLimit] = useState(10);
   
   // Image recognition states
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -244,6 +245,28 @@ export function AddFood({ user }: AddFoodProps) {
       image: hasImage ? capturedImage : undefined,
       portionWeight: hasPortion ? portionWeight : undefined,
       portionUnit: hasPortion ? portionUnit : undefined
+    });
+  };
+
+  // Reset pagination when search queries change
+  React.useEffect(() => {
+    setHistoryDisplayLimit(10);
+  }, [historySearchQuery]);
+
+  React.useEffect(() => {
+    setSavedMealsDisplayLimit(10);
+  }, [savedMealsSearchQuery]);
+
+  // Auto-expand Load More functionality for Recent Foods
+  const handleLoadMoreHistory = () => {
+    setHistoryDisplayLimit(prev => {
+      const newLimit = prev + 10;
+      // Auto-expand: keep loading until all items are shown
+      if (filteredFoodHistory.length > newLimit) {
+        // If there are still more items, show them all at once
+        setTimeout(() => setHistoryDisplayLimit(filteredFoodHistory.length), 0);
+      }
+      return newLimit;
     });
   };
 
@@ -490,10 +513,20 @@ export function AddFood({ user }: AddFoodProps) {
   const displayedFoodHistory = filteredFoodHistory.slice(0, historyDisplayLimit);
   const hasMoreFoodHistory = filteredFoodHistory.length > historyDisplayLimit;
 
-  // Filter saved meals based on search query
+  // Filter saved meals based on search query with pagination
   const filteredSavedMeals = Array.isArray(savedMeals) ? savedMeals.filter((meal: any) => 
     meal.name.toLowerCase().includes(savedMealsSearchQuery.toLowerCase())
-  ).slice(0, 10) : []; // Limit to 10 items for better performance
+  ) : [];
+  
+  // Apply display limit for saved meals pagination
+  const displayedSavedMeals = filteredSavedMeals.slice(0, savedMealsDisplayLimit);
+  const hasMoreSavedMeals = filteredSavedMeals.length > savedMealsDisplayLimit;
+  
+  // Only show Load More for saved meals if there are 5+ total records
+  const shouldShowSavedMealsLoadMore = Array.isArray(savedMeals) && 
+    savedMeals.length >= 5 && 
+    hasMoreSavedMeals && 
+    !savedMealsSearchQuery;
 
   const categories = [
     { value: "protein", label: "Protein Sources", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
@@ -830,7 +863,7 @@ export function AddFood({ user }: AddFoodProps) {
                   {hasMoreFoodHistory && !historySearchQuery && (
                     <div className="text-center">
                       <span
-                        onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
+                        onClick={handleLoadMoreHistory}
                         className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
                       >
                         Load More
@@ -869,7 +902,7 @@ export function AddFood({ user }: AddFoodProps) {
 
                   {/* Saved Meals Items */}
                   <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {filteredSavedMeals.map((meal: any) => (
+                    {displayedSavedMeals.map((meal: any) => (
                       <div
                         key={meal.id}
                         className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
@@ -917,6 +950,18 @@ export function AddFood({ user }: AddFoodProps) {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Load More Link for Saved Meals - Only if 5+ total records */}
+                  {shouldShowSavedMealsLoadMore && (
+                    <div className="text-center">
+                      <span
+                        onClick={() => setSavedMealsDisplayLimit(prev => prev + 10)}
+                        className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
+                      >
+                        Load More
+                      </span>
+                    </div>
+                  )}
                 </>
               ) : (
                     <div className="text-center py-4 text-gray-500 dark:text-gray-400">
