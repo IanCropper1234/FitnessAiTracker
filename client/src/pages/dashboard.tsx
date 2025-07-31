@@ -11,7 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Droplets, Scale, Heart } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Moon, Scale, Heart } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
@@ -74,6 +74,60 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       return response.json();
     }
   });
+
+  // Get body metrics for weight and body composition data
+  const { data: bodyMetrics } = useQuery({
+    queryKey: ['/api/body-metrics'],
+    queryFn: async () => {
+      const response = await fetch(`/api/body-metrics`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch body metrics');
+      return response.json();
+    }
+  });
+
+  // Get user profile for additional metrics
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile'],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch user profile');
+      return response.json();
+    }
+  });
+
+  // Calculate current weight and weight trend from last 7 days
+  const currentWeight = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0].weight : null;
+  
+  // Calculate weekly weight trend
+  const getWeightTrend = () => {
+    if (!bodyMetrics || bodyMetrics.length < 2) return null;
+    
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    // Get most recent weight
+    const recentWeight = bodyMetrics[0].weight;
+    
+    // Find weight from approximately 7 days ago
+    const weekOldEntry = bodyMetrics.find((entry: any) => {
+      const entryDate = new Date(entry.date);
+      return entryDate <= sevenDaysAgo;
+    });
+    
+    if (weekOldEntry) {
+      return recentWeight - weekOldEntry.weight;
+    }
+    
+    // Fallback: compare with previous entry if no week-old data
+    return bodyMetrics.length > 1 ? recentWeight - bodyMetrics[1].weight : null;
+  };
+  
+  const weightTrend = getWeightTrend();
 
   const today = TimezoneUtils.formatForDisplay(selectedDate, 'en-US');
 
@@ -221,23 +275,23 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             </>)
           ) : (
             <>
-              {/* Water Intake Tracker */}
+              {/* Sleep Quality */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-                  <Droplets className="h-3 w-3 text-blue-600 dark:text-blue-400 mb-1 transition-colors duration-200" />
+                  <Moon className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mb-1 transition-colors duration-200" />
                   <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                    Water
+                    Sleep
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-2 pb-2">
-                  <div className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400 text-center">
-                    0.8L
+                  <div className="text-sm sm:text-lg font-bold text-indigo-600 dark:text-indigo-400 text-center">
+                    7.5h
                   </div>
                   <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                    /2.5L goal
+                    Last night
                   </p>
                   <Progress 
-                    value={32} 
+                    value={94} 
                     className="mt-1 h-1"
                   />
                 </CardContent>
@@ -253,10 +307,13 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                 </CardHeader>
                 <CardContent className="px-2 pb-2">
                   <div className="text-sm sm:text-lg font-bold text-green-600 dark:text-green-400 text-center">
-                    68.2kg
+                    {currentWeight ? `${currentWeight}kg` : '--'}
                   </div>
                   <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                    -0.3kg this week
+                    {weightTrend !== null ? 
+                      `${weightTrend > 0 ? '+' : ''}${weightTrend.toFixed(1)}kg this week` : 
+                      'Latest entry'
+                    }
                   </p>
                 </CardContent>
               </Card>
@@ -279,20 +336,21 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                 </CardContent>
               </Card>
 
-              {/* Wellness Score */}
+              {/* Body Fat Percentage */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
                   <Heart className="h-3 w-3 text-purple-600 dark:text-purple-400 mb-1" />
                   <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                    Wellness
+                    Body Fat
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-2 pb-2">
                   <div className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400 text-center">
-                    7.2/10
+                    {bodyMetrics && bodyMetrics[0]?.bodyFatPercentage ? 
+                      `${bodyMetrics[0].bodyFatPercentage}%` : '--'}
                   </div>
                   <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                    Energy level
+                    Latest entry
                   </p>
                 </CardContent>
               </Card>
