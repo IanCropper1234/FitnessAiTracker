@@ -260,13 +260,16 @@ export function AddFood({ user }: AddFoodProps) {
   // Auto-expand Load More functionality for Recent Foods
   const handleLoadMoreHistory = () => {
     setHistoryDisplayLimit(prev => {
-      const newLimit = prev + 10;
-      // Auto-expand: keep loading until all items are shown
-      if (filteredFoodHistory.length > newLimit) {
-        // If there are still more items, show them all at once
-        setTimeout(() => setHistoryDisplayLimit(filteredFoodHistory.length), 0);
+      const currentLimit = prev;
+      const totalItems = filteredFoodHistory.length;
+      const nextIncrement = currentLimit + 10;
+      
+      // If this would show most items (80% or more), show all remaining
+      if (nextIncrement >= totalItems * 0.8) {
+        return totalItems; // Show all remaining items
       }
-      return newLimit;
+      
+      return nextIncrement; // Otherwise, increment by 10
     });
   };
 
