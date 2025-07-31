@@ -88,6 +88,17 @@ export function IntegratedNutritionOverview({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDraggingActive, setIsDraggingActive] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
+  
+  // Touch drag state for mobile devices
+  const [touchDragState, setTouchDragState] = useState({
+    startY: 0,
+    startX: 0,
+    currentY: 0,
+    currentX: 0,
+    startTime: 0,
+    isDragging: false,
+    hasMovedThreshold: false
+  });
 
   const [copyOperation, setCopyOperation] = useState<{
     type: 'item' | 'section' | 'bulk';
@@ -236,7 +247,7 @@ export function IntegratedNutritionOverview({
 
   const updateMealTypeMutation = useMutation({
     mutationFn: async ({ logId, newMealType }: { logId: number; newMealType: string }) => {
-      return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { mealType: newMealType });
+      return await apiRequest("PUT", `/api/nutrition/logs/${logId}/meal-type`, { mealType: newMealType });
     },
     onSuccess: () => {
       // Invalidate with correct query keys to match the component's queries
@@ -719,6 +730,123 @@ export function IntegratedNutritionOverview({
     setDragOverIndex(null);
     setIsDraggingActive(false);
     setDragStartY(0);
+    setTouchDragState({
+      startY: 0,
+      startX: 0,
+      currentY: 0,
+      currentX: 0,
+      startTime: 0,
+      isDragging: false,
+      hasMovedThreshold: false
+    });
+  };
+
+  // Touch handlers for mobile drag and drop
+  const handleTouchStart = (e: React.TouchEvent, log: any) => {
+    if (bulkMode) return;
+    
+    const touch = e.touches[0];
+    const now = Date.now();
+    
+    setTouchDragState({
+      startY: touch.clientY,
+      startX: touch.clientX,
+      currentY: touch.clientY,
+      currentX: touch.clientX,
+      startTime: now,
+      isDragging: false,
+      hasMovedThreshold: false
+    });
+    
+    // Start long press timer for mobile drag
+    setTimeout(() => {
+      const timeDiff = Date.now() - now;
+      if (timeDiff >= 300 && !touchDragState.hasMovedThreshold) {
+        // Long press detected - start drag
+        setDraggedItem(log);
+        setIsDraggingActive(true);
+        setTouchDragState(prev => ({ ...prev, isDragging: true }));
+        
+        // Haptic feedback
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      }
+    }, 300);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (bulkMode) return;
+    
+    const touch = e.touches[0];
+    const deltaY = Math.abs(touch.clientY - touchDragState.startY);
+    const deltaX = Math.abs(touch.clientX - touchDragState.startX);
+    
+    // Check if moved enough to be considered intentional movement
+    if ((deltaY > 10 || deltaX > 10) && !touchDragState.hasMovedThreshold) {
+      setTouchDragState(prev => ({ ...prev, hasMovedThreshold: true }));
+      
+      // If we haven't started dragging yet, this is likely a scroll
+      if (!touchDragState.isDragging) {
+        return;
+      }
+    }
+    
+    if (touchDragState.isDragging && draggedItem) {
+      // Prevent scrolling when dragging
+      e.preventDefault();
+      
+      setTouchDragState(prev => ({
+        ...prev,
+        currentY: touch.clientY,
+        currentX: touch.clientX
+      }));
+      
+      // Find target meal section under touch point
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      const mealSection = element?.closest('[data-meal-type]');
+      if (mealSection) {
+        const targetMealType = mealSection.getAttribute('data-meal-type');
+        if (targetMealType && targetMealType !== draggedItem.mealType) {
+          setDragOverTarget(targetMealType);
+        }
+      } else {
+        setDragOverTarget(null);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (bulkMode) return;
+    
+    if (touchDragState.isDragging && draggedItem && dragOverTarget) {
+      // Perform the drop operation
+      console.log('Touch drop - moving', draggedItem.foodName, 'to', dragOverTarget);
+      
+      if (draggedItem.mealType !== dragOverTarget) {
+        updateMealTypeMutation.mutate({
+          logId: draggedItem.id,
+          newMealType: dragOverTarget
+        }, {
+          onSuccess: () => {
+            toast({
+              title: "Food Moved",
+              description: `${draggedItem.foodName} moved to ${formatMealType(dragOverTarget)}`,
+            });
+          },
+          onError: (error: any) => {
+            toast({
+              title: "Move Failed",
+              description: error.message || `Failed to move ${draggedItem.foodName}`,
+              variant: "destructive"
+            });
+          }
+        });
+      }
+    }
+    
+    // Reset all drag state
+    handleDragEnd();
   };
 
   // Handle opening nutrition facts dialog
@@ -1067,6 +1195,7 @@ export function IntegratedNutritionOverview({
               return (
                 <div 
                   key={mealType.key}
+                  data-meal-type={mealType.key}
                   className={`
                     border-b border-gray-200 dark:border-gray-700 last:border-b-0 overflow-hidden 
                     transition-all duration-300 ios-drag-item
@@ -1201,10 +1330,13 @@ export function IntegratedNutritionOverview({
                           onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
                           onDragEnd={handleDragEnd}
                           onDragOver={(e) => !bulkMode && handleDragOver(e, mealType.key, index)}
+                          onTouchStart={(e) => handleTouchStart(e, log)}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleTouchEnd}
                           style={{
                             transform: shouldShift ? 'translateY(4px)' : 'translateY(0)',
                             transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                            touchAction: 'manipulation',
+                            touchAction: 'none',
                             WebkitTouchCallout: 'none',
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
