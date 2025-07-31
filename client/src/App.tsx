@@ -350,20 +350,23 @@ export default function App() {
         const isIOSPWA = window.navigator.standalone === true;
         
         if (isIOSPWA) {
-          console.log('FitAI PWA: Attempting localStorage recovery');
+          console.log('FitAI PWA: Network error, checking localStorage');
           const cachedAuth = localStorage.getItem('fitai-auth-cache');
           if (cachedAuth) {
             try {
-              const { timestamp, user: cachedUser } = JSON.parse(cachedAuth);
-              if (Date.now() - timestamp < 3600000) {
-                console.log('FitAI PWA: Using cached auth for recovery');
+              const { timestamp, user: cachedUser, sessionValid } = JSON.parse(cachedAuth);
+              // Use cached auth if less than 30 minutes old and marked valid
+              if (Date.now() - timestamp < 1800000 && sessionValid) {
+                console.log('FitAI PWA: Using cached auth for PWA recovery');
                 setUser(cachedUser);
+                setAuthLoading(false);
                 return;
               }
             } catch (parseError) {
               console.error('FitAI PWA: Failed to parse cached auth');
             }
           }
+          // Clear invalid cache
           localStorage.removeItem('fitai-auth-cache');
         }
         setInitError(error instanceof Error ? error.message : 'Authentication failed');
