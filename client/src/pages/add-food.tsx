@@ -300,7 +300,16 @@ export function AddFood({ user }: AddFoodProps) {
       servingDetails: `${quantity} ${unit} (adjusted from original analysis)`,
       assumptions: baseAIResult.assumptions ? 
         `${baseAIResult.assumptions} • Volume adjusted from ${portionWeight || '1'} to ${quantity} ${unit}` :
-        `Volume adjusted from original analysis to ${quantity} ${unit}`
+        `Volume adjusted from original analysis to ${quantity} ${unit}`,
+      // Scale micronutrients proportionally if they exist
+      ...(baseAIResult.micronutrients && {
+        micronutrients: Object.fromEntries(
+          Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
+            key, 
+            typeof value === 'number' ? value * multiplier : value
+          ])
+        )
+      })
     };
 
     setDynamicMacros(recalculatedMacros);
@@ -505,7 +514,9 @@ export function AddFood({ user }: AddFoodProps) {
       protein: nutritionData.protein.toString(),
       carbs: nutritionData.carbs.toString(),
       fat: nutritionData.fat.toString(),
-      mealType: mealType
+      mealType: mealType,
+      // Include micronutrients from AI analysis if available
+      ...(nutritionData.micronutrients && { micronutrients: nutritionData.micronutrients })
     };
 
     logMutation.mutate(logData);
