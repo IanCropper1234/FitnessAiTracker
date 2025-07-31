@@ -489,10 +489,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   };
 
   const getProgressSummary = () => {
-    if (!progressionData || progressionData.length < 2) return null;
-
-    const latest = progressionData[progressionData.length - 1];
-    const previous = progressionData[0];
+    if (!progressionData || progressionData.length < 7) return null;
 
     // Sort body metrics by date and get latest entry per date to avoid duplicates
     const sortedBodyMetrics = bodyMetrics ? [...bodyMetrics]
@@ -534,13 +531,46 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       weightChange = latestWeight - earliestWeight;
     }
 
-    const calorieChange = latest.calories - previous.calories;
+    // Calculate rolling 7-day averages for trend analysis
+    const sortedData = [...progressionData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    // Filter out incomplete current day (calories < 500 suggests incomplete logging)
+    const today = new Date().toISOString().split('T')[0];
+    const filteredData = sortedData.filter(day => {
+      if (day.date === today && day.calories < 500) {
+        return false; // Exclude likely incomplete current day
+      }
+      return true;
+    });
+
+    if (filteredData.length < 7) {
+      // Fallback to simple comparison if not enough complete data
+      const latest = filteredData[filteredData.length - 1];
+      const previous = filteredData[0];
+      return {
+        weightChange,
+        calorieChange: latest.calories - previous.calories,
+        avgCalories: filteredData.reduce((sum, day) => sum + day.calories, 0) / filteredData.length,
+        avgProtein: filteredData.reduce((sum, day) => sum + day.protein, 0) / filteredData.length,
+      };
+    }
+
+    // Calculate recent 7-day average vs previous 7-day average
+    const recentWeek = filteredData.slice(-7);
+    const previousWeek = filteredData.slice(-14, -7);
+    
+    const recentAvgCalories = recentWeek.reduce((sum, day) => sum + day.calories, 0) / recentWeek.length;
+    const previousAvgCalories = previousWeek.length > 0 
+      ? previousWeek.reduce((sum, day) => sum + day.calories, 0) / previousWeek.length
+      : recentAvgCalories;
+
+    const calorieChange = recentAvgCalories - previousAvgCalories;
 
     return {
       weightChange,
       calorieChange,
-      avgCalories: progressionData.reduce((sum, day) => sum + day.calories, 0) / progressionData.length,
-      avgProtein: progressionData.reduce((sum, day) => sum + day.protein, 0) / progressionData.length,
+      avgCalories: filteredData.reduce((sum, day) => sum + day.calories, 0) / filteredData.length,
+      avgProtein: filteredData.reduce((sum, day) => sum + day.protein, 0) / filteredData.length,
     };
   };
 
@@ -651,9 +681,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </div>
           
           <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Cal Trend</div>
-            <div className={`text-sm font-bold leading-none ${summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {summary.calorieChange > 0 ? '+' : ''}{Math.round(summary.calorieChange)} vs start
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">7d Trend</div>
+            <div className={`text-sm font-bold leading-none ${Math.abs(summary.calorieChange) < 50 ? 'text-gray-600' : summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {Math.abs(summary.calorieChange) < 50 ? 'Stable' : 
+               `${summary.calorieChange > 0 ? '+' : ''}${Math.round(summary.calorieChange)} cal/day`}
             </div>
           </div>
         </div>
