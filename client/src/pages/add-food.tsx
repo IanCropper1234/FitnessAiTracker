@@ -29,7 +29,9 @@ import {
   X,
   Upload,
   Image as ImageIcon,
-  Trash2
+  Trash2,
+  FileText,
+  UtensilsCrossed
 } from "lucide-react";
 
 interface User {
@@ -84,6 +86,7 @@ export function AddFood({ user }: AddFoodProps) {
   
   // Image recognition states
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [imageAnalysisType, setImageAnalysisType] = useState<'nutrition_label' | 'actual_food'>('nutrition_label');
   const [showImageCapture, setShowImageCapture] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -113,7 +116,8 @@ export function AddFood({ user }: AddFoodProps) {
       
       const payload: any = {
         quantity: parseFloat(quantity),
-        unit: unit
+        unit: unit,
+        analysisType: imageAnalysisType // Pass the analysis type to backend
       };
       
       if (data.description) {
@@ -238,8 +242,8 @@ export function AddFood({ user }: AddFoodProps) {
     if (!hasDescription && !hasImage) {
       console.log("No description or image provided");
       toast({
-        title: "Missing Information",
-        description: "Please provide a food description or capture a nutrition label image",
+        title: "Missing Information",  
+        description: `Please provide a food description or capture ${imageAnalysisType === 'nutrition_label' ? 'a nutrition label image' : 'a food photo'}`,
         variant: "destructive"
       });
       return;
@@ -600,7 +604,7 @@ export function AddFood({ user }: AddFoodProps) {
                       variant="outline"
                       size="sm"
                       className="h-9 px-3 ios-button touch-target"
-                      title="Take photo of nutrition label"
+                      title={`Take photo of ${imageAnalysisType === 'nutrition_label' ? 'nutrition label' : 'actual food'}`}
                     >
                       <Camera className="w-4 h-4" />
                     </Button>
@@ -609,7 +613,7 @@ export function AddFood({ user }: AddFoodProps) {
                       variant="outline"
                       size="sm"
                       className="h-9 px-3 ios-button touch-target"
-                      title="Upload image from gallery"
+                      title={`Upload image of ${imageAnalysisType === 'nutrition_label' ? 'nutrition label' : 'actual food'}`}
                     >
                       <ImageIcon className="w-4 h-4" />
                     </Button>
@@ -618,6 +622,41 @@ export function AddFood({ user }: AddFoodProps) {
 
               </div>
             </div>
+
+            {/* Image Analysis Type Selection */}
+            {searchMode === 'ai' && (
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                  Photo Analysis Type
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => setImageAnalysisType('nutrition_label')}
+                    variant={imageAnalysisType === 'nutrition_label' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-8 text-xs ios-button touch-target"
+                  >
+                    <FileText className="w-3 h-3 mr-1" />
+                    Nutrition Label
+                  </Button>
+                  <Button
+                    onClick={() => setImageAnalysisType('actual_food')}
+                    variant={imageAnalysisType === 'actual_food' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-8 text-xs ios-button touch-target"
+                  >
+                    <UtensilsCrossed className="w-3 h-3 mr-1" />
+                    Actual Food
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  {imageAnalysisType === 'nutrition_label' 
+                    ? 'Analyze nutrition facts from product labels for precise macro data'
+                    : 'Analyze actual food portions to estimate nutrition content'
+                  }
+                </p>
+              </div>
+            )}
 
             {/* Hidden file input for image capture/upload */}
             <input
@@ -634,7 +673,7 @@ export function AddFood({ user }: AddFoodProps) {
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-medium text-green-600 dark:text-green-400">
                     <ImageIcon className="w-3 h-3 inline mr-1" />
-                    Nutrition Label Captured
+                    {imageAnalysisType === 'nutrition_label' ? 'Nutrition Label Captured' : 'Food Photo Captured'}
                   </Label>
                   <Button
                     onClick={clearCapturedImage}
@@ -648,7 +687,7 @@ export function AddFood({ user }: AddFoodProps) {
                 <div className="relative w-full max-w-xs mx-auto">
                   <img
                     src={capturedImage}
-                    alt="Captured nutrition label"
+                    alt={imageAnalysisType === 'nutrition_label' ? 'Captured nutrition label' : 'Captured food photo'}
                     className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
                   />
                 </div>

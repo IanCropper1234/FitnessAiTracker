@@ -673,7 +673,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unit, 
         image,
         portionWeight,
-        portionUnit 
+        portionUnit,
+        analysisType // New parameter for nutrition_label vs actual_food
       } = req.body;
       
       console.log("AI Analysis request received:", {
@@ -705,7 +706,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unit || "serving",
         image,
         portionWeight ? parseFloat(portionWeight) : undefined,
-        portionUnit
+        portionUnit,
+        analysisType || 'nutrition_label' // Default to nutrition label analysis
       );
       
       console.log("AI Analysis successful:", {

@@ -26,7 +26,8 @@ export async function analyzeNutrition(
   unit: string = "serving",
   nutritionLabelImage?: string,
   portionWeight?: number,
-  portionUnit?: string
+  portionUnit?: string,
+  analysisType: 'nutrition_label' | 'actual_food' = 'nutrition_label'
 ): Promise<NutritionAnalysis> {
   try {
     // Build prompt based on available inputs
@@ -34,13 +35,15 @@ export async function analyzeNutrition(
     let messageContent: any = [];
 
     if (nutritionLabelImage) {
-      // Image analysis mode
-      prompt = `Analyze the nutrition facts label in this image${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : foodDescription ? ` for ${quantity} ${unit}(s) of "${foodDescription}"` : ""}.`;
-      
-      messageContent = [
-        {
-          type: "text",
-          text: prompt + `
+      // Image analysis mode - different prompts based on analysis type
+      if (analysisType === 'nutrition_label') {
+        // Nutrition label analysis
+        prompt = `Analyze the nutrition facts label in this image${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : foodDescription ? ` for ${quantity} ${unit}(s) of "${foodDescription}"` : ""}.`;
+        
+        messageContent = [
+          {
+            type: "text",
+            text: prompt + `
 
 **Task:** Extract nutritional information from the nutrition facts label in the image.
 
@@ -62,14 +65,52 @@ export async function analyzeNutrition(
 - servingDetails: clarification of portion analyzed from label (string)
 
 Return only valid JSON with all required fields.`
-        },
-        {
-          type: "image_url",
-          image_url: {
-            url: nutritionLabelImage
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: nutritionLabelImage
+            }
           }
-        }
-      ];
+        ];
+      } else {
+        // Actual food photo analysis
+        prompt = `Analyze the actual food shown in this image${portionWeight && portionUnit ? ` estimating nutrition for ${portionWeight}${portionUnit}` : foodDescription ? ` for ${quantity} ${unit}(s) of "${foodDescription}"` : ""}.`;
+        
+        messageContent = [
+          {
+            type: "text",
+            text: prompt + `
+
+**Task:** Estimate nutritional content by analyzing the actual food portion shown in the image.
+
+**Required Analysis:**
+1. **Food Identification:** Identify all visible food items, ingredients, and preparation methods
+2. **Portion Estimation:** Estimate the serving size/weight based on visual cues (plate size, utensils, comparison objects)
+3. **Preparation Assessment:** Consider cooking methods, added oils, sauces, and seasonings visible
+4. **Nutrition Estimation:** Provide realistic nutritional estimates based on identified foods and estimated portions
+
+**Output Requirements - JSON format with these exact fields:**
+- calories: estimated total calories (number)
+- protein: estimated protein in grams (number) 
+- carbs: estimated carbohydrates in grams (number)
+- fat: estimated fat in grams (number)
+- confidence: confidence level 0-1 (number, 0.6-0.8 typical for food photos)
+- category: primary macro category (string: "protein", "carb", "fat", or "mixed")
+- mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
+- assumptions: key assumptions about portions, preparation, ingredients (string)
+- servingDetails: description of estimated portion size and food components (string)
+
+Return only valid JSON with all required fields.`
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: nutritionLabelImage
+            }
+          }
+        ];
+      }
     } else if (foodDescription) {
       // Text description mode
       prompt = `Analyze the nutritional content of: "${foodDescription}" for ${quantity} ${unit}(s).`;
