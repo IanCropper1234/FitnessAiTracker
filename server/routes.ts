@@ -290,14 +290,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log("Training templates already initialized");
   }
 
+  // Debug endpoint to investigate session data (temporary)
+  app.get("/api/debug/session", async (req, res) => {
+    try {
+      const sessionId = req.sessionID;
+      const sessionUserId = (req.session as any).userId;
+      const sessionData = req.session;
+      
+      console.log('=== SESSION DEBUG ===');
+      console.log('Session ID:', sessionId);
+      console.log('Session userId:', sessionUserId);
+      console.log('Full session data:', sessionData);
+      
+      // Check if user exists in database
+      let userFromDb = null;
+      if (sessionUserId) {
+        userFromDb = await storage.getUser(sessionUserId);
+      }
+      
+      res.json({
+        sessionId,
+        sessionUserId,
+        userFound: !!userFromDb,
+        userEmail: userFromDb?.email,
+        userId: userFromDb?.id
+      });
+    } catch (error: any) {
+      console.error('Session debug error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Debug endpoint to see all users (temporary - for investigation only)
+  app.get("/api/debug/users", async (req, res) => {
+    try {
+      // DANGER: This endpoint exposes all user data - only for debugging
+      const result = await db.execute(sql`
+        SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 10
+      `);
+      
+      console.log('=== USERS DEBUG ===');
+      console.log('Found users:', result.rows);
+      
+      res.json({
+        totalUsers: result.rows.length,
+        users: result.rows,
+        warning: "This is a debug endpoint - remove in production"
+      });
+    } catch (error: any) {
+      console.error('Users debug error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Debug endpoint to check specific user's data (temporary)
+  app.get("/api/debug/user-data/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Get user
+      const user = await storage.getUser(userId);
+      
+      // Get user's nutrition logs count
+      const nutritionLogs = await storage.getNutritionLogs(userId);
+      
+      // Get user's profile
+      const profile = await storage.getUserProfile(userId);
+      
+      console.log('=== USER DATA DEBUG ===');
+      console.log(`User ${userId} data:`, {
+        user: user ? { id: user.id, email: user.email, name: user.name } : null,
+        profileExists: !!profile,
+        nutritionLogsCount: nutritionLogs.length
+      });
+      
+      res.json({
+        userId,
+        user: user ? { id: user.id, email: user.email, name: user.name } : null,
+        profile: profile ? { userId: profile.userId, fitnessGoal: profile.fitnessGoal } : null,
+        nutritionLogsCount: nutritionLogs.length,
+        sampleNutritionLogs: nutritionLogs.slice(0, 3).map(log => ({
+          id: log.id,
+          userId: log.userId,
+          foodName: log.foodName,
+          date: log.date
+        }))
+      });
+    } catch (error: any) {
+      console.error('User data debug error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Auth routes
   app.post("/api/auth/signup", async (req, res) => {
     try {
       const { email, password, name, preferredLanguage } = insertUserSchema.parse(req.body);
       
+      console.log('=== SIGNUP ATTEMPT ===');
+      console.log('Email:', email);
+      console.log('Name:', name);
+      console.log('Session ID before signup:', req.sessionID);
+      
       // Check if user exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
+        console.log('User already exists:', existingUser.id, existingUser.email);
         return res.status(400).json({ message: "User already exists" });
       }
 
@@ -312,18 +410,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         theme: "dark"
       });
 
+      console.log('User created:', user.id, user.email);
+
       // Create default profile
-      await storage.createUserProfile({
+      const profile = await storage.createUserProfile({
         userId: user.id,
         activityLevel: "moderately_active",
         fitnessGoal: "muscle_gain",
         dietaryRestrictions: []
       });
 
+      console.log('Profile created for user:', profile.userId);
+
       // Automatically sign in the new user
       (req.session as any).userId = user.id;
-
-      res.json({ user: { id: user.id, email: user.email, name: user.name } });
+      console.log('Session userId set to:', user.id);
+      console.log('Session ID after signup:', req.sessionID);
+      
+      // Ensure session is saved for new user
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error during signup:', err);
+          return res.status(500).json({ message: "Session save failed" });
+        }
+        console.log('New user session saved successfully');
+        res.json({ user: { id: user.id, email: user.email, name: user.name } });
+      });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -451,21 +563,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth user data route (keep for legacy compatibility)
-  app.get("/api/auth/user", requireAuth, async (req, res) => {
-    try {
-      const userId = req.userId;
-      const user = await storage.getUser(userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json(user);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
+  // Duplicate route removed - causing routing conflicts
 
   // Developer settings route
   app.put("/api/auth/user/developer-settings", requireAuth, async (req, res) => {
