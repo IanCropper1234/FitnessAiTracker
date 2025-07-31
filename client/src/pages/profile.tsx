@@ -50,7 +50,8 @@ function ActivityGoalsCard() {
 
   const [profileData, setProfileData] = useState({
     activityLevel: '',
-    fitnessGoal: ''
+    fitnessGoal: '',
+    gender: ''
   });
 
   // Initialize profile data from fetched data
@@ -58,7 +59,8 @@ function ActivityGoalsCard() {
     if (userData?.profile) {
       setProfileData({
         activityLevel: userData.profile.activityLevel || '',
-        fitnessGoal: userData.profile.fitnessGoal || ''
+        fitnessGoal: userData.profile.fitnessGoal || '',
+        gender: userData.profile.gender || ''
       });
     }
   }, [userData]);
@@ -89,7 +91,8 @@ function ActivityGoalsCard() {
     const completeProfileData = {
       ...userData?.profile,
       activityLevel: profileData.activityLevel,
-      fitnessGoal: profileData.fitnessGoal
+      fitnessGoal: profileData.fitnessGoal,
+      gender: profileData.gender
     };
     updateProfileMutation.mutate(completeProfileData);
   };
@@ -123,6 +126,23 @@ function ActivityGoalsCard() {
               <SelectItem value="moderately_active">Moderately Active (Moderate exercise 3-5 days/week)</SelectItem>
               <SelectItem value="very_active">Very Active (Hard exercise 6-7 days/week)</SelectItem>
               <SelectItem value="extremely_active">Extremely Active (Very hard exercise, physical job)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-black dark:text-white">Gender *</Label>
+          <Select 
+            value={profileData.gender} 
+            onValueChange={(value) => setProfileData(prev => ({ ...prev, gender: value }))}
+          >
+            <SelectTrigger className="border-gray-300 dark:border-gray-600">
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -1139,21 +1139,31 @@ export function IntegratedNutritionOverview({
         
         if (micronutrientLogs.length === 0) return null;
         
-        // Calculate daily micronutrient totals
+        // Calculate daily micronutrient totals with improved validation
         const dailyTotals = micronutrientLogs.reduce((totals: any, log: any) => {
           const micronutrients = log.micronutrients;
-          Object.keys(micronutrients).forEach(nutrient => {
-            totals[nutrient] = (totals[nutrient] || 0) + parseFloat(micronutrients[nutrient]);
-          });
+          if (micronutrients && typeof micronutrients === 'object') {
+            Object.keys(micronutrients).forEach(nutrient => {
+              const value = parseFloat(micronutrients[nutrient]);
+              if (typeof value === 'number' && !isNaN(value) && value > 0) {
+                totals[nutrient] = (totals[nutrient] || 0) + value;
+              }
+            });
+          }
           return totals;
         }, {});
+
+        // Debug log to see what micronutrients are available
+        console.log('Micronutrient logs count:', micronutrientLogs.length);
+        console.log('Daily totals:', dailyTotals);
+        console.log('Available nutrients:', Object.keys(dailyTotals));
         
         // Calculate RDA recommendations based on user profile
         const userProfile = profileData?.user || {};
         const bodyMetrics = profileData?.bodyMetrics?.[0] || {};
         
-        // Simplified gender estimation (can be enhanced with actual profile field)
-        const estimatedGender: 'male' | 'female' = 'male'; // Default assumption
+        // Use actual gender from user profile or default to male for RDA calculations
+        const estimatedGender: 'male' | 'female' = userProfile.gender === 'female' ? 'female' : 'male';
         const age = userProfile.age || 30;
         const weight = bodyMetrics.weight ? parseFloat(bodyMetrics.weight) : (userProfile.weight ? parseFloat(userProfile.weight) : 70);
         const activityLevel = userProfile.activityLevel || 'moderately_active';

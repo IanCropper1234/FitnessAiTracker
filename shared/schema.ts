@@ -18,6 +18,7 @@ export const userProfiles = pgTable("user_profiles", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   age: integer("age"),
+  gender: text("gender"), // male, female, other
   weight: decimal("weight", { precision: 5, scale: 2 }),
   height: decimal("height", { precision: 5, scale: 2 }),
   weightUnit: text("weight_unit").default("metric"), // metric (kg) or imperial (lbs)
