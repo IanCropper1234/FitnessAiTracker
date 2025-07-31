@@ -289,6 +289,9 @@ export const workoutExercises = pgTable("workout_exercises", {
   specialMethod: text("special_method", { enum: ["myorep_match", "myorep_no_match", "drop_set", "superset", "giant_set"] }),
   specialConfig: jsonb("special_config"), // Method-specific configuration
   linkedExercises: integer("linked_exercises").array(), // For supersets/giant sets
+  // Legacy special training method columns (for database compatibility)
+  specialTrainingMethod: text("special_training_method"),
+  specialMethodData: jsonb("special_method_data")
 });
 
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {
