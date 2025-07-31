@@ -29,6 +29,15 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+// Extend Request type to include userId
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: number;
+    }
+  }
+}
+
 // Auto-progression algorithm for workout sessions
 async function getAutoProgressedValues(exerciseId: number, userId: number, previousExercise: any) {
   try {
@@ -811,9 +820,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Copy meals from another date
-  app.post("/api/nutrition/copy-meals", async (req, res) => {
+  app.post("/api/nutrition/copy-meals", requireAuth, async (req, res) => {
     try {
-      const { userId, fromDate, toDate, mealTypes } = req.body;
+      const userId = req.userId;
+      const { fromDate, toDate, mealTypes } = req.body;
       
       // Get logs from source date
       const sourceLogs = await storage.getNutritionLogs(userId, new Date(fromDate));
@@ -1265,10 +1275,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/session/complete", async (req, res) => {
+  app.post("/api/training/session/complete", requireAuth, async (req, res) => {
     try {
       const sessionData = req.body;
-      const result = await createWorkoutSession(sessionData.userId, sessionData.sessionId, sessionData);
+      const userId = req.userId;
+      const result = await createWorkoutSession(userId, sessionData.sessionId, sessionData);
       res.json(result);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1276,13 +1287,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new workout session
-  app.post("/api/training/sessions", async (req, res) => {
+  app.post("/api/training/sessions", requireAuth, async (req, res) => {
     try {
       const sessionData = req.body;
+      const userId = req.userId;
       
       // Create the workout session
       const session = await storage.createWorkoutSession({
-        userId: sessionData.userId,
+        userId: userId,
         programId: null, // No program required for individual sessions
         name: sessionData.name,
         date: new Date(),
@@ -1296,7 +1308,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Get auto-progressed values for new sessions
         const progressedValues = await getAutoProgressedValues(
           exercise.exerciseId, 
-          sessionData.userId, 
+          userId, 
           exercise
         );
 
@@ -1323,7 +1335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get workout session with exercises
-  app.get("/api/training/session/:sessionId", async (req, res) => {
+  app.get("/api/training/session/:sessionId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
       console.log(`API: Getting session ${sessionId}`);
@@ -2056,7 +2068,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Weight tracking
-  app.post("/api/weight/log", async (req, res) => {
+  app.post("/api/weight/log", requireAuth, async (req, res) => {
     try {
       const logData = insertWeightLogSchema.parse(req.body);
       const log = await storage.createWeightLog(logData);
