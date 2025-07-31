@@ -963,6 +963,18 @@ export function IntegratedNutritionOverview({
     { key: 'snack', label: 'Snack', icon: <Apple className="h-4 w-4" /> }
   ];
 
+  // Calculate meal totals for each section
+  const calculateMealTotals = (mealType: string) => {
+    const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
+    return mealLogs.reduce((totals, log) => ({
+      calories: totals.calories + (parseFloat(log.calories) || 0),
+      protein: totals.protein + (parseFloat(log.protein) || 0),
+      carbs: totals.carbs + (parseFloat(log.carbs) || 0),
+      fat: totals.fat + (parseFloat(log.fat) || 0),
+      count: totals.count + 1
+    }), { calories: 0, protein: 0, carbs: 0, fat: 0, count: 0 });
+  };
+
   if (summaryLoading || logsLoading) {
     return (
       <div className="space-y-6">
@@ -1224,13 +1236,35 @@ export function IntegratedNutritionOverview({
                 >
                   {/* Meal Header */}
                   <div className="flex items-center justify-between py-3 px-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-black dark:text-white text-lg">
-                        {mealType.label}
-                      </h3>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        ({mealLogs.length})
-                      </span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-black dark:text-white text-lg">
+                          {mealType.label}
+                        </h3>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          ({mealLogs.length})
+                        </span>
+                      </div>
+                      {/* Colored Macro Totals */}
+                      {mealLogs.length > 0 && (() => {
+                        const totals = calculateMealTotals(mealType.key);
+                        return (
+                          <div className="text-xs font-medium flex items-center gap-3">
+                            <span className="text-blue-500">
+                              Cals: {Math.round(totals.calories)}
+                            </span>
+                            <span className="text-blue-600">
+                              P: {Math.round(totals.protein)}
+                            </span>
+                            <span className="text-green-600">
+                              C: {Math.round(totals.carbs)}
+                            </span>
+                            <span className="text-yellow-600">
+                              F: {Math.round(totals.fat)}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
