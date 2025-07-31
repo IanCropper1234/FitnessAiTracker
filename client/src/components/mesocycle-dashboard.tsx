@@ -79,7 +79,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
   // Get current mesocycles
   const { data: mesocycles = [], isLoading: mesocyclesLoading } = useQuery({
-    queryKey: ['/api/training/mesocycles'],
+    queryKey: ['/api/training/mesocycles', userId],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/training/mesocycles`);
       const data = await response.json();
@@ -89,7 +89,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
   // Get mesocycle recommendations
   const { data: recommendations, isLoading: recommendationsLoading } = useQuery<MesocycleRecommendation>({
-    queryKey: ['/api/training/mesocycle-recommendations'],
+    queryKey: ['/api/training/mesocycle-recommendations', userId],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/training/mesocycle-recommendations`);
       return response.json();
@@ -98,7 +98,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
   // Get workout sessions to check completion status
   const { data: sessions = [] } = useQuery({
-    queryKey: ['/api/training/sessions'],
+    queryKey: ['/api/training/sessions', userId],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/training/sessions`);
       return response.json();
@@ -112,7 +112,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles', userId] });
       toast({
         title: "Mesocycle Updated",
         description: "Changes applied successfully.",
@@ -128,8 +128,8 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     },
     onSuccess: () => {
       // Invalidate both mesocycles and sessions cache since sessions are deleted
-      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions', userId] });
       toast({
         title: "Mesocycle Deleted",
         description: "The mesocycle has been removed successfully.",

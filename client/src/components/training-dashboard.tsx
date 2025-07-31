@@ -127,7 +127,7 @@ function WorkoutSessionsWithBulkActions({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -147,7 +147,7 @@ function WorkoutSessionsWithBulkActions({
       });
       setSelectedSessions([]);
       setBulkDeleteMode(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -158,7 +158,7 @@ function WorkoutSessionsWithBulkActions({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -476,7 +476,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
   // Fetch user data to check developer settings
   const { data: userData } = useQuery({
-    queryKey: ['/api/auth/user'],
+    queryKey: ['/api/auth/user', userId],
     queryFn: async () => {
       const response = await fetch(`/api/auth/user`);
       return response.json();
@@ -507,7 +507,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -517,7 +517,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
@@ -527,13 +527,13 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
     },
   });
 
   // Fetch exercises
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
-    queryKey: ["/api/exercises"],
+    queryKey: ["/api/exercises", userId],
   });
 
   // Helper function to get date based on filter
@@ -604,7 +604,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
   // Fetch current mesocycle information
   const { data: currentMesocycle } = useQuery({
-    queryKey: ["/api/training/mesocycles"],
+    queryKey: ["/api/training/mesocycles", userId],
     queryFn: async () => {
       const response = await fetch(`/api/training/mesocycles`);
       const data = await response.json();
@@ -1288,7 +1288,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                     sessionId={executingSessionId.toString()} 
                     onComplete={() => {
                       setExecutingSessionId(null);
-                      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
+                      queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
                     }}
                   />
                 </CardContent>

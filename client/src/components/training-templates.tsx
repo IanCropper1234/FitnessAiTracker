@@ -116,7 +116,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         description: `${data.totalWorkouts} workout sessions created and ready to start`,
       });
       // Invalidate training sessions to update dashboard
-      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions', userId] });
     },
   });
 
@@ -135,7 +135,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         description: `${workoutInfo} generated and ready to start`,
       });
       // Invalidate training sessions to update dashboard
-      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions', userId] });
     },
   });
 
@@ -521,13 +521,12 @@ export function TemplateDetailModal({
   const queryClient = useQueryClient();
 
   const generateWorkoutMutation = useMutation({
-    mutationFn: (data: { templateId: number; workoutDay: number }) =>
-      apiRequest('/api/training/templates/generate-workout', {
-        method: 'POST',
-        body: JSON.stringify({ userId, ...data }),
-      }),
+    mutationFn: async (data: { templateId: number; workoutDay: number }) => {
+      const response = await apiRequest('POST', '/api/training/templates/generate-workout', { userId, ...data });
+      return response.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions', userId] });
       onClose();
     },
   });

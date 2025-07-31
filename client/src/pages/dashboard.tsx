@@ -65,7 +65,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   // Get active workout sessions for smart Start Workout behavior
   const { data: workoutSessions } = useQuery({
-    queryKey: ['/api/training/sessions'],
+    queryKey: ['/api/training/sessions', user?.id],
     queryFn: async () => {
       const response = await fetch(`/api/training/sessions`, {
         credentials: 'include'
@@ -77,7 +77,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   // Get body metrics for weight and body composition data
   const { data: bodyMetrics } = useQuery({
-    queryKey: ['/api/body-metrics'],
+    queryKey: ['/api/body-metrics', user?.id],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`, {
         credentials: 'include'
@@ -89,7 +89,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   // Get user profile for additional metrics
   const { data: userProfile } = useQuery({
-    queryKey: ['/api/user/profile'],
+    queryKey: ['/api/user/profile', user?.id],
     queryFn: async () => {
       const response = await fetch(`/api/user/profile`, {
         credentials: 'include'
