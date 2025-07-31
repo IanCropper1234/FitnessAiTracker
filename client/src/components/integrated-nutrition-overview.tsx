@@ -2032,8 +2032,12 @@ export function IntegratedNutritionOverview({
                                   log.micronutrients.phosphorus || log.micronutrients.potassium || log.micronutrients.sodium || log.micronutrients.iron ||
                                   log.micronutrients.zinc || log.micronutrients.selenium || log.micronutrients.copper || log.micronutrients.manganese ||
                                   log.micronutrients.iodine || log.micronutrients.chromium || log.micronutrients.molybdenum ||
-                                  log.micronutrients.sugar || log.micronutrients.fiber || log.micronutrients.saturatedFat || log.micronutrients.cholesterol ||
-                                  log.micronutrients.monounsaturatedFat || log.micronutrients.polyunsaturatedFat
+                                  (log.micronutrients.sugar !== null && log.micronutrients.sugar !== undefined) || 
+                                  (log.micronutrients.fiber !== null && log.micronutrients.fiber !== undefined) || 
+                                  (log.micronutrients.saturatedFat !== null && log.micronutrients.saturatedFat !== undefined) || 
+                                  (log.micronutrients.cholesterol !== null && log.micronutrients.cholesterol !== undefined) ||
+                                  (log.micronutrients.monounsaturatedFat !== null && log.micronutrients.monounsaturatedFat !== undefined) ||
+                                  (log.micronutrients.polyunsaturatedFat !== null && log.micronutrients.polyunsaturatedFat !== undefined)
                                 ) && (
                                   <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
                                     Nutrients
@@ -2496,44 +2500,46 @@ export function IntegratedNutritionOverview({
                     ) : null}
 
                     {/* Macronutrient Components */}
-                    {selectedNutritionItem.micronutrients.sugar || 
-                     selectedNutritionItem.micronutrients.fiber || 
-                     selectedNutritionItem.micronutrients.saturatedFat ||
-                     selectedNutritionItem.micronutrients.cholesterol ? (
+                    {(selectedNutritionItem.micronutrients.sugar !== null && selectedNutritionItem.micronutrients.sugar !== undefined) || 
+                     (selectedNutritionItem.micronutrients.fiber !== null && selectedNutritionItem.micronutrients.fiber !== undefined) || 
+                     (selectedNutritionItem.micronutrients.saturatedFat !== null && selectedNutritionItem.micronutrients.saturatedFat !== undefined) ||
+                     (selectedNutritionItem.micronutrients.cholesterol !== null && selectedNutritionItem.micronutrients.cholesterol !== undefined) ||
+                     (selectedNutritionItem.micronutrients.monounsaturatedFat !== null && selectedNutritionItem.micronutrients.monounsaturatedFat !== undefined) ||
+                     (selectedNutritionItem.micronutrients.polyunsaturatedFat !== null && selectedNutritionItem.micronutrients.polyunsaturatedFat !== undefined) ? (
                       <div className="mt-[10px] mb-[10px]">
                         <h5 className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-2">Macronutrient Components</h5>
                         <div className="grid grid-cols-2 gap-2 text-xs">
-                          {selectedNutritionItem.micronutrients.sugar && (
+                          {selectedNutritionItem.micronutrients.sugar !== null && selectedNutritionItem.micronutrients.sugar !== undefined && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Total Sugar</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.sugar}g</span>
                             </div>
                           )}
-                          {selectedNutritionItem.micronutrients.fiber && (
+                          {selectedNutritionItem.micronutrients.fiber !== null && selectedNutritionItem.micronutrients.fiber !== undefined && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Dietary Fiber</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.fiber}g</span>
                             </div>
                           )}
-                          {selectedNutritionItem.micronutrients.saturatedFat && (
+                          {selectedNutritionItem.micronutrients.saturatedFat !== null && selectedNutritionItem.micronutrients.saturatedFat !== undefined && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Saturated Fat</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.saturatedFat}g</span>
                             </div>
                           )}
-                          {selectedNutritionItem.micronutrients.cholesterol && (
+                          {selectedNutritionItem.micronutrients.cholesterol !== null && selectedNutritionItem.micronutrients.cholesterol !== undefined && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Cholesterol</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.cholesterol}mg</span>
                             </div>
                           )}
-                          {selectedNutritionItem.micronutrients.monounsaturatedFat && (
+                          {selectedNutritionItem.micronutrients.monounsaturatedFat !== null && selectedNutritionItem.micronutrients.monounsaturatedFat !== undefined && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Monounsat. Fat</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.monounsaturatedFat}g</span>
                             </div>
                           )}
-                          {selectedNutritionItem.micronutrients.polyunsaturatedFat && (
+                          {selectedNutritionItem.micronutrients.polyunsaturatedFat !== null && selectedNutritionItem.micronutrients.polyunsaturatedFat !== undefined && (
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Polyunsat. Fat</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.polyunsaturatedFat}g</span>
