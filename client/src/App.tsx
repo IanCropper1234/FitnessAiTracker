@@ -22,6 +22,7 @@ import WellnessTestPage from "./pages/WellnessTestPage";
 import RPCoachPage from "./pages/RPCoachPage";
 import NutritionFactsPage from "./pages/nutrition-facts";
 import { NotFound } from "./components/NotFound";
+import { AnimatedPage } from "./components/page-transition";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -72,7 +73,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu || showTrainingMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
         <Route path="/">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? (
               <Dashboard 
                 user={user} 
@@ -84,18 +85,18 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             ) : (
               <div className="animate-pulse">Loading...</div>
             )}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/auth">
-          <div className="page-enter ios-animation">
+          <AnimatedPage>
             <Auth onSuccess={(userData: User) => {
               setUser(userData);
               setLocation("/");
             }} />
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/nutrition">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? (
               <Nutrition 
                 user={user} 
@@ -121,45 +122,47 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             ) : (
               <div className="animate-pulse">Loading...</div>
             )}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/add-food">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/training">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <TrainingPage user={user} activeTab={activeTrainingTab} onTabChange={setActiveTrainingTab} /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/reports">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <ReportsPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/profile">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/wellness-test">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <WellnessTestPage /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/rp-coach">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <RPCoachPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route path="/nutrition-facts">
-          <div className="page-enter ios-animation ios-smooth-transform">
+          <AnimatedPage>
             {user ? <NutritionFactsPage /> : <div className="animate-pulse">Loading...</div>}
-          </div>
+          </AnimatedPage>
         </Route>
         <Route>
-          <NotFound />
+          <AnimatedPage>
+            <NotFound />
+          </AnimatedPage>
         </Route>
       </Switch>
       
