@@ -176,6 +176,18 @@ export function IntegratedNutritionOverview({
     }
   });
 
+  // Fetch user profile data for RDA calculations
+  const { data: profileData } = useQuery({
+    queryKey: ['/api/user/profile'],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile`, {
+        credentials: 'include'
+      });
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
   // Helper function to intelligently get current target calories (custom or suggested)
   const getCurrentTargetCalories = () => {
     if (!dietGoals) return nutritionSummary?.goalCalories || 2000;
