@@ -67,7 +67,7 @@ export function AddFood({ user }: AddFoodProps) {
   const mealTypeParam = urlParams.get('mealType');
   
   const [selectedDate] = useState(dateParam || TimezoneUtils.getCurrentDate());
-  const [searchMode, setSearchMode] = useState<'search' | 'ai'>('ai');
+  // Simplified to AI-only mode - database search hidden
   const [foodQuery, setFoodQuery] = useState('');
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
@@ -99,16 +99,7 @@ export function AddFood({ user }: AddFoodProps) {
     setHistoryDisplayLimit(10);
   }, [historySearchQuery]);
 
-  const searchMutation = useMutation({
-    mutationFn: async (query: string) => {
-      let url = `/api/food/search?q=${encodeURIComponent(query)}`;
-      if (selectedCategory && selectedCategory !== 'any') url += `&category=${selectedCategory}`;
-      if (selectedMealSuitability && selectedMealSuitability !== 'any') url += `&mealType=${selectedMealSuitability}`;
-      
-      const response = await fetch(url);
-      return response.json();
-    }
-  });
+  // Database search functionality removed - AI-only mode
 
   const aiAnalyzeMutation = useMutation({
     mutationFn: async (data: { description?: string; image?: string; portionWeight?: string; portionUnit?: string }) => {
@@ -219,10 +210,7 @@ export function AddFood({ user }: AddFoodProps) {
     }
   });
 
-  const handleSearch = () => {
-    if (!foodQuery.trim()) return;
-    searchMutation.mutate(foodQuery);
-  };
+  // Database search handler removed - AI-only mode
 
   const handleAIAnalysis = () => {
     console.log("AI Analysis button clicked!");
@@ -558,105 +546,89 @@ export function AddFood({ user }: AddFoodProps) {
         {/* Main Content Card */}
         <Card className="ios-smooth-transform">
           <CardContent className="p-4 space-y-4 pt-[16px] pb-[16px] pl-[2px] pr-[2px] ml-[0px] mr-[0px]">
-            {/* Search Mode Toggle */}
-            <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <Button
-                variant={searchMode === 'ai' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSearchMode('ai')}
-                className="h-8 text-xs ios-button touch-target"
-              >
-                <Sparkles className="w-3 h-3 mr-1" />
-                AI Analysis
-              </Button>
-              <Button
-                variant={searchMode === 'search' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSearchMode('search')}
-                className="h-8 text-xs ios-button touch-target"
-              >
-                <Search className="w-3 h-3 mr-1" />
-                Database Search
-              </Button>
+            {/* AI Analysis Mode - Database Search Hidden */}
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <Label className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                  AI-Powered Food Analysis
+                </Label>
+              </div>
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                Analyze nutrition labels or food photos with advanced AI
+              </p>
             </div>
 
             {/* Search Input with Action Buttons */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">
-                {searchMode === 'ai' ? 'Describe your food (required) *' : 'Search food database'}
+                Describe your food (required) *
               </Label>
               <div className="flex gap-2">
                 <Input
                   value={foodQuery}
                   onChange={(e) => setFoodQuery(e.target.value)}
-                  placeholder={searchMode === 'ai' ? "Enter food name (e.g., Large chicken breast with vegetables)" : "Chicken breast"}
+                  placeholder="Enter food name (e.g., Large chicken breast with vegetables)"
                   className="flex-1 h-9 text-sm ios-touch-feedback"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      searchMode === 'ai' ? handleAIAnalysis() : handleSearch();
+                      handleAIAnalysis();
                     }
                   }}
                 />
-                {searchMode === 'ai' && (
-                  <>
-                    <Button
-                      onClick={handleTakePhoto}
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-3 ios-button touch-target"
-                      title={`Take photo of ${imageAnalysisType === 'nutrition_label' ? 'nutrition label' : 'actual food'}`}
-                    >
-                      <Camera className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      onClick={handleUploadImage}
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-3 ios-button touch-target"
-                      title={`Upload image of ${imageAnalysisType === 'nutrition_label' ? 'nutrition label' : 'actual food'}`}
-                    >
-                      <ImageIcon className="w-4 h-4" />
-                    </Button>
-                  </>
-                )}
-
+                <Button
+                  onClick={handleTakePhoto}
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 ios-button touch-target"
+                  title={`Take photo of ${imageAnalysisType === 'nutrition_label' ? 'nutrition label' : 'actual food'}`}
+                >
+                  <Camera className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={handleUploadImage}
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 ios-button touch-target"
+                  title={`Upload image of ${imageAnalysisType === 'nutrition_label' ? 'nutrition label' : 'actual food'}`}
+                >
+                  <ImageIcon className="w-4 h-4" />
+                </Button>
               </div>
             </div>
 
             {/* Image Analysis Type Selection */}
-            {searchMode === 'ai' && (
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                  Photo Analysis Type
-                </Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    onClick={() => setImageAnalysisType('nutrition_label')}
-                    variant={imageAnalysisType === 'nutrition_label' ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-8 text-xs ios-button touch-target"
-                  >
-                    <FileText className="w-3 h-3 mr-1" />
-                    Nutrition Label
-                  </Button>
-                  <Button
-                    onClick={() => setImageAnalysisType('actual_food')}
-                    variant={imageAnalysisType === 'actual_food' ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-8 text-xs ios-button touch-target"
-                  >
-                    <UtensilsCrossed className="w-3 h-3 mr-1" />
-                    Actual Food
-                  </Button>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {imageAnalysisType === 'nutrition_label' 
-                    ? 'Analyze nutrition facts from product labels for precise macro data'
-                    : 'Analyze actual food portions to estimate nutrition content'
-                  }
-                </p>
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                Photo Analysis Type
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  onClick={() => setImageAnalysisType('nutrition_label')}
+                  variant={imageAnalysisType === 'nutrition_label' ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 text-xs ios-button touch-target"
+                >
+                  <FileText className="w-3 h-3 mr-1" />
+                  Nutrition Label
+                </Button>
+                <Button
+                  onClick={() => setImageAnalysisType('actual_food')}
+                  variant={imageAnalysisType === 'actual_food' ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 text-xs ios-button touch-target"
+                >
+                  <UtensilsCrossed className="w-3 h-3 mr-1" />
+                  Actual Food
+                </Button>
               </div>
-            )}
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                {imageAnalysisType === 'nutrition_label' 
+                  ? 'Analyze nutrition facts from product labels for precise macro data'
+                  : 'Analyze actual food portions to estimate nutrition content'
+                }
+              </p>
+            </div>
 
             {/* Hidden file input for image capture/upload */}
             <input
@@ -694,180 +666,60 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
-            {/* Enhanced Portion Input (for AI mode) */}
-            {searchMode === 'ai' && (
-              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                  Portion Information (Optional)
-                </Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-blue-700 dark:text-blue-300">Weight/Volume</Label>
-                    <Input
-                      value={portionWeight}
-                      onChange={(e) => setPortionWeight(e.target.value)}
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      placeholder="100"
-                      className="h-8 text-sm ios-touch-feedback"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-blue-700 dark:text-blue-300">Unit</Label>
-                    <Input
-                      value={portionUnit}
-                      onChange={(e) => setPortionUnit(e.target.value)}
-                      type="text"
-                      placeholder="g, ml, oz, cups, etc."
-                      className="h-8 text-sm ios-touch-feedback"
-                    />
-                  </div>
+            {/* Enhanced Portion Input */}
+            <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                Portion Information (Optional)
+              </Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs text-blue-700 dark:text-blue-300">Weight/Volume</Label>
+                  <Input
+                    value={portionWeight}
+                    onChange={(e) => setPortionWeight(e.target.value)}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="100"
+                    className="h-8 text-sm ios-touch-feedback"
+                  />
                 </div>
-                <p className="text-xs text-blue-600 dark:text-blue-400">
-                  Enter any weight/volume unit (e.g., g, kg, ml, L, oz, cups, tbsp, tsp, pieces, slices)
-                </p>
+                <div className="space-y-1">
+                  <Label className="text-xs text-blue-700 dark:text-blue-300">Unit</Label>
+                  <Input
+                    value={portionUnit}
+                    onChange={(e) => setPortionUnit(e.target.value)}
+                    type="text"
+                    placeholder="g, ml, oz, cups, etc."
+                    className="h-8 text-sm ios-touch-feedback"
+                  />
+                </div>
               </div>
-            )}
+              <p className="text-xs text-blue-600 dark:text-blue-400">
+                Enter any weight/volume unit (e.g., g, kg, ml, L, oz, cups, tbsp, tsp, pieces, slices)
+              </p>
+            </div>
 
             {/* Action Button */}
             <Button
-              onClick={searchMode === 'ai' ? handleAIAnalysis : handleSearch}
-              disabled={searchMode === 'ai' ? !foodQuery.trim() || isLoading : !foodQuery.trim() || isLoading}
+              onClick={handleAIAnalysis}
+              disabled={!foodQuery.trim() || isLoading}
               className="w-full h-9 ios-button touch-target"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : searchMode === 'ai' ? (
-                <Brain className="w-4 h-4 mr-2" />
               ) : (
-                <Search className="w-4 h-4 mr-2" />
+                <Brain className="w-4 h-4 mr-2" />
               )}
-              {searchMode === 'ai' ? 'Analyze with AI' : 'Search Database'}
+              Analyze with AI
             </Button>
 
-            {/* Filters for Database Search */}
-            {searchMode === 'search' && (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium">Category</Label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                      <SelectValue placeholder="Any category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="any">Any category</SelectItem>
-                      {categories.map(cat => (
-                        <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium">Meal Type</Label>
-                  <Select value={selectedMealSuitability} onValueChange={setSelectedMealSuitability}>
-                    <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                      <SelectValue placeholder="Any meal" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="any">Any meal</SelectItem>
-                      {mealSuitabilityOptions.map(option => (
-                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
-            {/* Search Results */}
-            {searchMutation.data && searchMode === 'search' && (
-              <div className="space-y-2">
-                <Label className="text-xs font-medium">Search Results</Label>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {searchMutation.data.map((food: any, index: number) => (
-                    <div
-                      key={index}
-                      onClick={() => setSelectedFood(food)}
-                      className={`p-2 border rounded-lg cursor-pointer transition-colors ios-touch-feedback touch-target ${
-                        selectedFood?.name === food.name 
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                          : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium truncate">{food.name}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {Math.round(food.calories)}cal • {Math.round(food.protein)}g protein
-                          </p>
-                        </div>
-                        {food.category && (
-                          <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
-                            {food.category}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* AI Analysis Results - Dynamic Volume-Based Display */}
-            {dynamicMacros && searchMode === 'ai' && (
-              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-t border-gray-200 dark:border-gray-700 pt-3">
-                <div className="flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                    AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
-                  </Label>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Calories</p>
-                    <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
-                  </div>
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Protein</p>
-                    <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
-                  </div>
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Carbs</p>
-                    <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
-                  </div>
-                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                    <p className="text-gray-600 dark:text-gray-400">Fat</p>
-                    <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
-                  </div>
-                </div>
-                {dynamicMacros.servingDetails && (
-                  <div className="text-xs text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">Serving Details:</p>
-                    <p>{dynamicMacros.servingDetails}</p>
-                  </div>
-                )}
-                {dynamicMacros.assumptions && (
-                  <div className="text-xs text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">Assumptions:</p>
-                    <p>{dynamicMacros.assumptions}</p>
-                  </div>
-                )}
-                {quantity !== (portionWeight || '1') && (
-                  <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
-                    <p className="font-medium">✓ Dynamic Calculation Applied</p>
-                    <p>Macros automatically updated based on your volume adjustment</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Food History Section */}
+            {/* Recent Foods Section - Moved to replace Database Search */}
             {Array.isArray(foodHistory) && foodHistory.length > 0 && (
-              <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 pl-[5px] pr-[5px]">
+              <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2">
                   <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
+                  <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
                 </div>
                 
                 {/* History Search */}
@@ -882,11 +734,11 @@ export function AddFood({ user }: AddFoodProps) {
                 </div>
 
                 {/* History Items */}
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-2 max-h-40 overflow-y-auto">
                   {displayedFoodHistory.map((item: any, index: number) => (
                     <div
                       key={`${item.foodName}-${index}`}
-                      className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -922,7 +774,7 @@ export function AddFood({ user }: AddFoodProps) {
                 
                 {/* Load More Link */}
                 {hasMoreFoodHistory && !historySearchQuery && (
-                  <div className="text-center pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
+                  <div className="text-center">
                     <span
                       onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
                       className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
@@ -934,12 +786,12 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
-            {/* Saved Meals Section */}
+            {/* Saved Meals Section - Moved to replace Database Search */}
             {Array.isArray(savedMeals) && savedMeals.length > 0 && (
-              <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 pl-[5px] pr-[5px]">
+              <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2">
                   <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
+                  <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
                 </div>
                 
                 {/* Saved Meals Search */}
@@ -954,11 +806,11 @@ export function AddFood({ user }: AddFoodProps) {
                 </div>
 
                 {/* Saved Meals Items */}
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-2 max-h-40 overflow-y-auto">
                   {filteredSavedMeals.map((meal: any) => (
                     <div
                       key={meal.id}
-                      className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -1006,10 +858,60 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             )}
 
+            {/* AI Analysis Results - Dynamic Volume-Based Display */}
+            {dynamicMacros && (
+              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
+                    AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
+                  </Label>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Calories</p>
+                    <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Protein</p>
+                    <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Carbs</p>
+                    <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
+                  </div>
+                  <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                    <p className="text-gray-600 dark:text-gray-400">Fat</p>
+                    <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
+                  </div>
+                </div>
+                {dynamicMacros.servingDetails && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Serving Details:</p>
+                    <p>{dynamicMacros.servingDetails}</p>
+                  </div>
+                )}
+                {dynamicMacros.assumptions && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="font-medium mb-1">Assumptions:</p>
+                    <p>{dynamicMacros.assumptions}</p>
+                  </div>
+                )}
+                {quantity !== (portionWeight || '1') && (
+                  <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
+                    <p className="font-medium">✓ Dynamic Calculation Applied</p>
+                    <p>Macros automatically updated based on your volume adjustment</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+
+
 
 
             {/* Quantity and Meal Selection */}
-            {(selectedFood || (searchMode === 'ai' && aiAnalyzeMutation.data)) && (
+            {(selectedFood || aiAnalyzeMutation.data) && (
               <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
