@@ -615,15 +615,7 @@ export function AddFood({ user }: AddFoodProps) {
                     </Button>
                   </>
                 )}
-                <Button
-                  onClick={() => setShowBarcodeScanner(true)}
-                  variant="outline"
-                  size="sm"
-                  className="h-9 px-3 ios-button touch-target"
-                  title="Scan barcode"
-                >
-                  <ScanLine className="w-4 h-4" />
-                </Button>
+
               </div>
             </div>
 
