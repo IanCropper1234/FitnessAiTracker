@@ -1003,7 +1003,6 @@ export function IntegratedNutritionOverview({
 
   return (
     <div className="space-y-3">
-      
       {/* Macro Summary Cards - iOS Optimized Dark Style */}
       <div className="grid grid-cols-2 gap-2 w-full">
         {/* Calories Card */}
@@ -1126,7 +1125,6 @@ export function IntegratedNutritionOverview({
           </CardContent>
         </Card>
       </div>
-
       {/* Expandable Micronutrients Section with RDA Comparison */}
       {(() => {
         const todayLogs = nutritionLogs?.filter((log: any) => {
@@ -1718,7 +1716,6 @@ export function IntegratedNutritionOverview({
           </Card>
         );
       })()}
-
       {/* Daily Food Log Section */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="pb-2 pt-3">
@@ -2196,7 +2193,6 @@ export function IntegratedNutritionOverview({
           </div>
         </div>
       )}
-
       {/* Nutrition Facts Dialog */}
       <Dialog open={showNutritionDialog} onOpenChange={setShowNutritionDialog}>
         <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
@@ -2504,7 +2500,7 @@ export function IntegratedNutritionOverview({
                      selectedNutritionItem.micronutrients.fiber || 
                      selectedNutritionItem.micronutrients.saturatedFat ||
                      selectedNutritionItem.micronutrients.cholesterol ? (
-                      <div>
+                      <div className="mt-[10px] mb-[10px]">
                         <h5 className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-2">Macronutrient Components</h5>
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           {selectedNutritionItem.micronutrients.sugar && (
@@ -2565,7 +2561,6 @@ export function IntegratedNutritionOverview({
           )}
         </DialogContent>
       </Dialog>
-
       {/* Edit Food Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-md">
@@ -2669,7 +2664,6 @@ export function IntegratedNutritionOverview({
           )}
         </DialogContent>
       </Dialog>
-
       {/* Save as Meal Dialog */}
       <Dialog open={showSaveMealDialog} onOpenChange={setShowSaveMealDialog}>
         <DialogContent className="max-w-md">
