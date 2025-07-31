@@ -1250,68 +1250,76 @@ export function IntegratedNutritionOverview({
                       Total from {micronutrientLogs.length} foods with vitamin data
                     </div>
                     
+                    {/* Progress Bar Component */}
+                    {(() => {
+                      const renderNutrientWithProgress = (name: string, value: number, unit: string, adequacy: any, specialHandling?: 'monitor' | 'limit') => {
+                        const progressPercent = Math.min(adequacy.percentage || 0, 100);
+                        return (
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span>{name}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{value}{unit}</span>
+                                {specialHandling ? (
+                                  <span className="text-xs px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700">
+                                    {specialHandling === 'monitor' ? 'Monitor' : specialHandling === 'limit' ? '<10% cals' : ''}
+                                  </span>
+                                ) : (
+                                  <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
+                                    {adequacy.percentage}%
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {!specialHandling && (
+                              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                                <div 
+                                  className={`h-1 rounded-full transition-all duration-300 ${
+                                    adequacy.percentage < 50 ? 'bg-red-500' :
+                                    adequacy.percentage < 80 ? 'bg-orange-500' :
+                                    adequacy.percentage <= 120 ? 'bg-green-500' :
+                                    adequacy.percentage <= 200 ? 'bg-blue-500' : 'bg-purple-500'
+                                  }`}
+                                  style={{ width: `${progressPercent}%` }}
+                                ></div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      };
+                      return null;
+                    })()}
+                    
                     <div className="grid grid-cols-1 gap-4 text-xs">
                       {/* Fat-Soluble Vitamins */}
                       {(dailyTotals.vitaminA > 0 || dailyTotals.vitaminD > 0 || dailyTotals.vitaminE > 0 || dailyTotals.vitaminK > 0) && (
                         <div>
                           <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
-                          <div className="space-y-2">
-                            {dailyTotals.vitaminA > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminA, rda.vitaminA);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Vitamin A</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminA * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminD > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminD, rda.vitaminD);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Vitamin D</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminD * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminE > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminE, rda.vitaminE);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Vitamin E</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminE * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminK > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminK, rda.vitaminK);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Vitamin K</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminK * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
+                          <div className="space-y-3">
+                            {dailyTotals.vitaminA > 0 && renderNutrientWithProgress(
+                              "Vitamin A", 
+                              Math.round(dailyTotals.vitaminA * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.vitaminA, rda.vitaminA)
+                            )}
+                            {dailyTotals.vitaminD > 0 && renderNutrientWithProgress(
+                              "Vitamin D", 
+                              Math.round(dailyTotals.vitaminD * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.vitaminD, rda.vitaminD)
+                            )}
+                            {dailyTotals.vitaminE > 0 && renderNutrientWithProgress(
+                              "Vitamin E", 
+                              Math.round(dailyTotals.vitaminE * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminE, rda.vitaminE)
+                            )}
+                            {dailyTotals.vitaminK > 0 && renderNutrientWithProgress(
+                              "Vitamin K", 
+                              Math.round(dailyTotals.vitaminK * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.vitaminK, rda.vitaminK)
+                            )}
                           </div>
                         </div>
                       )}
@@ -1320,91 +1328,43 @@ export function IntegratedNutritionOverview({
                       {(dailyTotals.vitaminC > 0 || dailyTotals.vitaminB1 > 0 || dailyTotals.vitaminB2 > 0 || dailyTotals.vitaminB3 > 0 || dailyTotals.vitaminB6 > 0 || dailyTotals.vitaminB12 > 0) && (
                         <div>
                           <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
-                          <div className="space-y-2">
-                            {dailyTotals.vitaminC > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminC, rda.vitaminC);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Vitamin C</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminC * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminB1 > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminB1, rda.vitaminB1);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>B1 (Thiamine)</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminB1 * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminB2 > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminB2, rda.vitaminB2);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>B2 (Riboflavin)</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminB2 * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminB3 > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminB3, rda.vitaminB3);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>B3 (Niacin)</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminB3 * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminB6 > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminB6, rda.vitaminB6);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>B6 (Pyridoxine)</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminB6 * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.vitaminB12 > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>B12 (Cobalamin)</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.vitaminB12 * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
+                          <div className="space-y-3">
+                            {dailyTotals.vitaminC > 0 && renderNutrientWithProgress(
+                              "Vitamin C", 
+                              Math.round(dailyTotals.vitaminC * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminC, rda.vitaminC)
+                            )}
+                            {dailyTotals.vitaminB1 > 0 && renderNutrientWithProgress(
+                              "B1 (Thiamine)", 
+                              Math.round(dailyTotals.vitaminB1 * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminB1, rda.vitaminB1)
+                            )}
+                            {dailyTotals.vitaminB2 > 0 && renderNutrientWithProgress(
+                              "B2 (Riboflavin)", 
+                              Math.round(dailyTotals.vitaminB2 * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminB2, rda.vitaminB2)
+                            )}
+                            {dailyTotals.vitaminB3 > 0 && renderNutrientWithProgress(
+                              "B3 (Niacin)", 
+                              Math.round(dailyTotals.vitaminB3 * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminB3, rda.vitaminB3)
+                            )}
+                            {dailyTotals.vitaminB6 > 0 && renderNutrientWithProgress(
+                              "B6 (Pyridoxine)", 
+                              Math.round(dailyTotals.vitaminB6 * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminB6, rda.vitaminB6)
+                            )}
+                            {dailyTotals.vitaminB12 > 0 && renderNutrientWithProgress(
+                              "B12 (Cobalamin)", 
+                              Math.round(dailyTotals.vitaminB12 * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
+                            )}
                           </div>
                         </div>
                       )}
@@ -1413,63 +1373,31 @@ export function IntegratedNutritionOverview({
                       {(dailyTotals.calcium > 0 || dailyTotals.magnesium > 0 || dailyTotals.phosphorus > 0 || dailyTotals.potassium > 0 || dailyTotals.sodium > 0) && (
                         <div>
                           <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
-                          <div className="space-y-2">
-                            {dailyTotals.calcium > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.calcium, rda.calcium);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Calcium</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.calcium)}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.magnesium > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.magnesium, rda.magnesium);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Magnesium</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.magnesium)}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.phosphorus > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.phosphorus, rda.phosphorus);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Phosphorus</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.phosphorus)}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.potassium > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.potassium, rda.potassium);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Potassium</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.potassium)}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
+                          <div className="space-y-3">
+                            {dailyTotals.calcium > 0 && renderNutrientWithProgress(
+                              "Calcium", 
+                              Math.round(dailyTotals.calcium), 
+                              "mg", 
+                              getAdequacy(dailyTotals.calcium, rda.calcium)
+                            )}
+                            {dailyTotals.magnesium > 0 && renderNutrientWithProgress(
+                              "Magnesium", 
+                              Math.round(dailyTotals.magnesium), 
+                              "mg", 
+                              getAdequacy(dailyTotals.magnesium, rda.magnesium)
+                            )}
+                            {dailyTotals.phosphorus > 0 && renderNutrientWithProgress(
+                              "Phosphorus", 
+                              Math.round(dailyTotals.phosphorus), 
+                              "mg", 
+                              getAdequacy(dailyTotals.phosphorus, rda.phosphorus)
+                            )}
+                            {dailyTotals.potassium > 0 && renderNutrientWithProgress(
+                              "Potassium", 
+                              Math.round(dailyTotals.potassium), 
+                              "mg", 
+                              getAdequacy(dailyTotals.potassium, rda.potassium)
+                            )}
                             {dailyTotals.sodium > 0 && (() => {
                               // For sodium, lower is better (it's an upper limit)
                               const percentage = Math.round((dailyTotals.sodium / rda.sodium) * 100);
@@ -1478,17 +1406,7 @@ export function IntegratedNutritionOverview({
                                 percentage <= 150 ?
                                 { percentage, color: 'text-orange-600 dark:text-orange-400', description: 'High' } :
                                 { percentage, color: 'text-red-600 dark:text-red-400', description: 'Excess' };
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Sodium</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.sodium)}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
+                              return renderNutrientWithProgress("Sodium", Math.round(dailyTotals.sodium), "mg", adequacy);
                             })()}
                           </div>
                         </div>
@@ -1498,119 +1416,55 @@ export function IntegratedNutritionOverview({
                       {(dailyTotals.iron > 0 || dailyTotals.zinc > 0 || dailyTotals.selenium > 0 || dailyTotals.copper > 0 || dailyTotals.manganese > 0 || dailyTotals.iodine > 0 || dailyTotals.chromium > 0 || dailyTotals.molybdenum > 0) && (
                         <div>
                           <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
-                          <div className="space-y-2">
-                            {dailyTotals.iron > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.iron, rda.iron);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Iron</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.iron * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.zinc > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.zinc, rda.zinc);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Zinc</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.zinc * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.selenium > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.selenium, rda.selenium);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Selenium</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.selenium * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.copper > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.copper, rda.copper);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Copper</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.copper * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.manganese > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.manganese, rda.manganese);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Manganese</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.manganese * 10) / 10}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.iodine > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.iodine, rda.iodine);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Iodine</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.iodine * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.chromium > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.chromium, rda.chromium);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Chromium</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.chromium * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.molybdenum > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.molybdenum, rda.molybdenum);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Molybdenum</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.molybdenum * 10) / 10}μg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
+                          <div className="space-y-3">
+                            {dailyTotals.iron > 0 && renderNutrientWithProgress(
+                              "Iron", 
+                              Math.round(dailyTotals.iron * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.iron, rda.iron)
+                            )}
+                            {dailyTotals.zinc > 0 && renderNutrientWithProgress(
+                              "Zinc", 
+                              Math.round(dailyTotals.zinc * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.zinc, rda.zinc)
+                            )}
+                            {dailyTotals.selenium > 0 && renderNutrientWithProgress(
+                              "Selenium", 
+                              Math.round(dailyTotals.selenium * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.selenium, rda.selenium)
+                            )}
+                            {dailyTotals.copper > 0 && renderNutrientWithProgress(
+                              "Copper", 
+                              Math.round(dailyTotals.copper * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.copper, rda.copper)
+                            )}
+                            {dailyTotals.manganese > 0 && renderNutrientWithProgress(
+                              "Manganese", 
+                              Math.round(dailyTotals.manganese * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.manganese, rda.manganese)
+                            )}
+                            {dailyTotals.iodine > 0 && renderNutrientWithProgress(
+                              "Iodine", 
+                              Math.round(dailyTotals.iodine * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.iodine, rda.iodine)
+                            )}
+                            {dailyTotals.chromium > 0 && renderNutrientWithProgress(
+                              "Chromium", 
+                              Math.round(dailyTotals.chromium * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.chromium, rda.chromium)
+                            )}
+                            {dailyTotals.molybdenum > 0 && renderNutrientWithProgress(
+                              "Molybdenum", 
+                              Math.round(dailyTotals.molybdenum * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.molybdenum, rda.molybdenum)
+                            )}
                           </div>
                         </div>
                       )}
@@ -1619,42 +1473,24 @@ export function IntegratedNutritionOverview({
                       {(dailyTotals.sugar > 0 || dailyTotals.fiber > 0 || dailyTotals.saturatedFat > 0 || dailyTotals.cholesterol > 0) && (
                         <div>
                           <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Macronutrient Components</h5>
-                          <div className="space-y-2">
-                            {dailyTotals.sugar > 0 && (
-                              <div className="flex items-center justify-between">
-                                <span>Total Sugar</span>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{Math.round(dailyTotals.sugar * 10) / 10}g</span>
-                                  <span className="text-xs px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700">
-                                    Monitor
-                                  </span>
-                                </div>
-                              </div>
+                          <div className="space-y-3">
+                            {dailyTotals.sugar > 0 && renderNutrientWithProgress(
+                              "Total Sugar", 
+                              Math.round(dailyTotals.sugar * 10) / 10, 
+                              "g", 
+                              { percentage: 0, color: 'text-gray-600 dark:text-gray-400', description: 'Monitor' }
                             )}
-                            {dailyTotals.fiber > 0 && (() => {
-                              const adequacy = getAdequacy(dailyTotals.fiber, rda.fiber);
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Dietary Fiber</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.fiber * 10) / 10}g</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-                            {dailyTotals.saturatedFat > 0 && (
-                              <div className="flex items-center justify-between">
-                                <span>Saturated Fat</span>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{Math.round(dailyTotals.saturatedFat * 10) / 10}g</span>
-                                  <span className="text-xs px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700">
-                                    &lt;10% cals
-                                  </span>
-                                </div>
-                              </div>
+                            {dailyTotals.fiber > 0 && renderNutrientWithProgress(
+                              "Dietary Fiber", 
+                              Math.round(dailyTotals.fiber * 10) / 10, 
+                              "g", 
+                              getAdequacy(dailyTotals.fiber, rda.fiber)
+                            )}
+                            {dailyTotals.saturatedFat > 0 && renderNutrientWithProgress(
+                              "Saturated Fat", 
+                              Math.round(dailyTotals.saturatedFat * 10) / 10, 
+                              "g", 
+                              { percentage: 0, color: 'text-gray-600 dark:text-gray-400', description: '<10% cals' }
                             )}
                             {dailyTotals.cholesterol > 0 && (() => {
                               // For cholesterol, lower is better (it's an upper limit)
@@ -1664,17 +1500,7 @@ export function IntegratedNutritionOverview({
                                 percentage <= 150 ?
                                 { percentage, color: 'text-orange-600 dark:text-orange-400', description: 'High' } :
                                 { percentage, color: 'text-red-600 dark:text-red-400', description: 'Excess' };
-                              return (
-                                <div className="flex items-center justify-between">
-                                  <span>Cholesterol</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{Math.round(dailyTotals.cholesterol)}mg</span>
-                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                      {adequacy.percentage}%
-                                    </span>
-                                  </div>
-                                </div>
-                              );
+                              return renderNutrientWithProgress("Cholesterol", Math.round(dailyTotals.cholesterol), "mg", adequacy);
                             })()}
                           </div>
                         </div>
