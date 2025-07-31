@@ -317,22 +317,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/signin", async (req, res) => {
     try {
       const { email, password } = req.body;
+      console.log('Signin attempt for email:', email);
       
       const user = await storage.getUserByEmail(email);
       if (!user || !user.password) {
+        console.log('User not found or no password for:', email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
+        console.log('Invalid password for user:', email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       // Store user ID in session
       (req.session as any).userId = user.id;
+      console.log('Session userId set to:', user.id);
+      console.log('Session ID:', req.sessionID);
       
-      res.json({ user: { id: user.id, email: user.email, name: user.name } });
+      // Ensure session is saved
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: "Session save failed" });
+        }
+        console.log('Session saved successfully');
+        res.json({ user: { id: user.id, email: user.email, name: user.name } });
+      });
     } catch (error: any) {
+      console.error('Signin error:', error);
       res.status(400).json({ message: error.message });
     }
   });
@@ -352,18 +366,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/user", async (req, res) => {
     try {
+      console.log('Auth check - Session ID:', req.sessionID);
+      console.log('Auth check - Session userId:', (req.session as any).userId);
       const userId = (req.session as any).userId;
       if (!userId) {
+        console.log('No userId in session');
         return res.status(401).json({ message: "Not authenticated" });
       }
 
       const user = await storage.getUser(userId);
       if (!user) {
+        console.log('User not found for userId:', userId);
         return res.status(404).json({ message: "User not found" });
       }
 
+      console.log('Auth check successful for user:', user.email);
       res.json({ user: { id: user.id, email: user.email, name: user.name } });
     } catch (error: any) {
+      console.error('Auth check error:', error);
       res.status(400).json({ message: error.message });
     }
   });
