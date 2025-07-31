@@ -1823,7 +1823,7 @@ export function IntegratedNutritionOverview({
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
                           }}
-                          className="flex items-center gap-3 py-2 px-0 w-full max-w-full ios-touch-feedback ios-button touch-target hover:bg-gray-50 dark:hover:bg-gray-800 bg-[#032840]"
+                          className="flex items-center gap-3 py-3 px-3 w-full max-w-full ios-touch-feedback ios-button touch-target hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-800 rounded-lg mb-2 border border-gray-200 dark:border-gray-700"
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
                           {/* Selection Checkbox (always shown in bulk mode) */}
