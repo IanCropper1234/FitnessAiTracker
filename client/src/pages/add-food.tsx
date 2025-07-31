@@ -780,7 +780,17 @@ export function AddFood({ user }: AddFoodProps) {
                         AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
                       </Label>
                       {dynamicMacros.micronutrients && (
-                        <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-700">
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs px-1.5 py-0.5 h-auto bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors"
+                          onClick={() => {
+                            // Show micronutrient details in a toast or modal
+                            toast({
+                              title: "Micronutrients Available",
+                              description: "This food contains vitamin and mineral data. Log it to see detailed nutritional breakdown.",
+                            });
+                          }}
+                        >
                           Vitamins
                         </Badge>
                       )}
