@@ -59,24 +59,27 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     
     console.log('FitAI PWA Navigation - User:', !!user, 'Location:', location, 'iOS PWA:', isIOSPWA);
     
-    // For iOS PWA, always use window.location for navigation
-    if (isIOSPWA) {
-      if (!user && location !== "/auth") {
-        console.log('FitAI PWA: Redirecting to auth via window.location');
-        window.location.replace(window.location.origin + "/auth");
-        return;
-      } else if (user && location === "/auth") {
-        console.log('FitAI PWA: User authenticated, redirecting to dashboard via window.location');
-        window.location.replace(window.location.origin + "/");
-        return;
-      }
-    } else {
-      // Standard web navigation
-      if (!user && location !== "/auth") {
-        console.log('Web: Redirecting to auth');
+    // Simplified navigation logic to prevent redirect loops
+    if (!user && location !== "/auth") {
+      console.log('Redirecting to auth - no user found');
+      if (isIOSPWA) {
+        // Only redirect if we haven't just tried authentication
+        const lastAuthAttempt = localStorage.getItem('fitai-last-auth-attempt');
+        const now = Date.now();
+        if (!lastAuthAttempt || now - parseInt(lastAuthAttempt) > 5000) {
+          localStorage.setItem('fitai-last-auth-attempt', now.toString());
+          window.location.replace(window.location.origin + "/auth");
+        }
+      } else {
         setLocation("/auth");
-      } else if (user && location === "/auth") {
-        console.log('Web: User authenticated, redirecting to dashboard');
+      }
+    } else if (user && location === "/auth") {
+      console.log('User authenticated, redirecting to dashboard');
+      // Clear auth attempt timestamp on successful auth
+      localStorage.removeItem('fitai-last-auth-attempt');
+      if (isIOSPWA) {
+        window.location.replace(window.location.origin + "/");
+      } else {
         setLocation("/");
       }
     }
@@ -110,10 +113,18 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
               console.log('FitAI PWA: Auth success, user data received');
               setUser(userData);
               
-              // iOS PWA: Immediate navigation without delay
+              // iOS PWA: Cache auth and navigate
               const isIOSPWA = window.navigator.standalone === true;
               if (isIOSPWA) {
-                console.log('FitAI PWA: iOS detected, immediate redirect to dashboard');
+                console.log('FitAI PWA: Caching auth state and navigating');
+                // Cache the successful authentication
+                localStorage.setItem('fitai-auth-cache', JSON.stringify({
+                  timestamp: Date.now(),
+                  user: userData,
+                  sessionValid: true
+                }));
+                
+                // Navigate immediately
                 window.location.replace(window.location.origin + '/');
               } else {
                 setLocation("/");
@@ -302,16 +313,35 @@ export default function App() {
           console.log('FitAI PWA: Authentication successful');
           setUser(userData.user);
           
-          // Cache successful auth for PWA
+          // For iOS PWA, always cache authentication state
           if (isIOSPWA) {
-            localStorage.setItem('fitai-auth-cache', JSON.stringify({
+            const authCache = {
               timestamp: Date.now(),
-              user: userData.user
-            }));
+              user: userData.user,
+              sessionValid: true
+            };
+            localStorage.setItem('fitai-auth-cache', JSON.stringify(authCache));
+            console.log('FitAI PWA: Cached auth state for PWA');
           }
         } else {
           console.log('FitAI PWA: Not authenticated - no valid session');
+          
+          // For iOS PWA, check cache before giving up
           if (isIOSPWA) {
+            const cachedAuth = localStorage.getItem('fitai-auth-cache');
+            if (cachedAuth) {
+              try {
+                const { timestamp, user: cachedUser, sessionValid } = JSON.parse(cachedAuth);
+                // Use cached auth if less than 30 minutes old and marked valid
+                if (Date.now() - timestamp < 1800000 && sessionValid) {
+                  console.log('FitAI PWA: Using valid cached auth');
+                  setUser(cachedUser);
+                  return;
+                }
+              } catch (e) {
+                console.error('FitAI PWA: Failed to parse cached auth');
+              }
+            }
             localStorage.removeItem('fitai-auth-cache');
           }
         }
