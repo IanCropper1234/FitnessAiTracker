@@ -194,20 +194,11 @@ export function IntegratedNutritionOverview({
         credentials: 'include'
       });
       if (!response.ok) {
-        if (response.status === 401) {
-          // Redirect to login if unauthorized
-          window.location.href = '/auth';
-          throw new Error('Authentication required');
-        }
         throw new Error('Failed to fetch nutrition summary');
       }
       return response.json();
     },
-    retry: (failureCount, error: any) => {
-      // Don't retry on authentication errors
-      if (error.message?.includes('Authentication required')) return false;
-      return failureCount < 3;
-    }
+    retry: 3
   });
 
   // Fetch diet goals
@@ -275,21 +266,12 @@ export function IntegratedNutritionOverview({
         credentials: 'include'
       });
       if (!response.ok) {
-        if (response.status === 401) {
-          // Redirect to login if unauthorized
-          window.location.href = '/auth';
-          throw new Error('Authentication required');
-        }
         throw new Error('Failed to fetch nutrition logs');
       }
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },
-    retry: (failureCount, error: any) => {
-      // Don't retry on authentication errors
-      if (error.message?.includes('Authentication required')) return false;
-      return failureCount < 3;
-    }
+    retry: 3
   });
 
   const deleteMutation = useMutation({
