@@ -49,7 +49,7 @@ export const nutritionLogs = pgTable("nutrition_logs", {
   protein: decimal("protein", { precision: 6, scale: 2 }).notNull(),
   carbs: decimal("carbs", { precision: 6, scale: 2 }).notNull(),
   fat: decimal("fat", { precision: 6, scale: 2 }).notNull(),
-  mealType: text("meal_type"), // breakfast, lunch, dinner, snack
+  mealType: text("meal_type"), // breakfast, lunch, dinner, snack, supplementation
   mealOrder: integer("meal_order").default(1), // 1-6 for meal timing
   scheduledTime: timestamp("scheduled_time"), // planned meal time
   // Enhanced RP Diet Coach categorization
@@ -156,7 +156,7 @@ export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
 export const mealMacroDistribution = pgTable("meal_macro_distribution", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  mealType: text("meal_type").notNull(), // "breakfast", "lunch", "dinner", "snack1", etc.
+  mealType: text("meal_type").notNull(), // "breakfast", "lunch", "dinner", "snack", "supplementation", etc.
   mealTiming: text("meal_timing"), // "pre-workout", "post-workout", "regular"
   proteinPercentage: decimal("protein_percentage", { precision: 5, scale: 2 }),
   carbPercentage: decimal("carb_percentage", { precision: 5, scale: 2 }),
@@ -337,7 +337,7 @@ export const savedMealPlans = pgTable("saved_meal_plans", {
   userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack
+  mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack, supplementation
   foods: jsonb("foods").notNull(), // Array of food items with quantities
   totalCalories: decimal("total_calories", { precision: 8, scale: 2 }).notNull(),
   totalProtein: decimal("total_protein", { precision: 6, scale: 2 }).notNull(),

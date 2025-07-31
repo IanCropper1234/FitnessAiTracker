@@ -30,7 +30,8 @@ import {
   Check,
   CheckSquare,
   Edit,
-  Save
+  Save,
+  Pill
 } from "lucide-react";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -973,7 +974,8 @@ export function IntegratedNutritionOverview({
     { key: 'breakfast', label: 'Breakfast', icon: <Sunrise className="h-4 w-4" /> },
     { key: 'lunch', label: 'Lunch', icon: <Sun className="h-4 w-4" /> },
     { key: 'dinner', label: 'Dinner', icon: <Moon className="h-4 w-4" /> },
-    { key: 'snack', label: 'Snack', icon: <Apple className="h-4 w-4" /> }
+    { key: 'snack', label: 'Snack', icon: <Apple className="h-4 w-4" /> },
+    { key: 'supplementation', label: 'Supplementation', icon: <Pill className="h-4 w-4" /> }
   ];
 
   // Calculate meal totals for each section

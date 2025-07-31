@@ -1046,6 +1046,7 @@ export function AddFood({ user }: AddFoodProps) {
                       <SelectItem value="lunch">Lunch</SelectItem>
                       <SelectItem value="dinner">Dinner</SelectItem>
                       <SelectItem value="snack">Snack</SelectItem>
+                      <SelectItem value="supplementation">Supplementation</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

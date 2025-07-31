@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { TimezoneUtils } from "@shared/utils/timezone";
-import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan } from "lucide-react";
+import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan, Pill } from "lucide-react";
 import { BarcodeScanner } from "./barcode-scanner";
 
 interface NutritionLoggerProps {
@@ -343,6 +343,12 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                     <div className="flex items-center gap-2">
                       <Apple className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span className="text-sm">Snack</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="supplementation">
+                    <div className="flex items-center gap-2">
+                      <Pill className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="text-sm">Supplementation</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
