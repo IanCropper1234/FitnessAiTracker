@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'wouter';
 
 interface AnimatedPageProps {
@@ -9,27 +9,28 @@ interface AnimatedPageProps {
 export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className = '' }) => {
   const [location] = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const prevLocationRef = useRef(location);
+  const [isAnimating, setIsAnimating] = useState(true);
 
   useEffect(() => {
-    if (location !== prevLocationRef.current && containerRef.current) {
-      console.log('AnimatedPage: Location changed to:', location, 'starting animation');
+    console.log('AnimatedPage: Page mounted/changed:', location);
+    
+    if (containerRef.current) {
+      setIsAnimating(true);
       
-      // Use Web Animations API for reliable cross-browser animation
+      // Always animate on mount/location change
       const animation = containerRef.current.animate([
         { opacity: 0, transform: 'translateY(20px) scale(0.95)' },
         { opacity: 1, transform: 'translateY(0) scale(1)' }
       ], {
-        duration: 600,
-        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        duration: 500,
+        easing: 'ease-out',
         fill: 'both'
       });
 
       animation.addEventListener('finish', () => {
-        console.log('Page transition animation completed');
+        console.log('Page transition animation completed for:', location);
+        setIsAnimating(false);
       });
-
-      prevLocationRef.current = location;
     }
   }, [location]);
 
@@ -38,8 +39,8 @@ export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className 
       ref={containerRef}
       className={`page-content ${className}`}
       style={{
-        opacity: 1,
-        transform: 'translateY(0) scale(1)'
+        opacity: 0,
+        transform: 'translateY(20px) scale(0.95)'
       }}
     >
       {children}
