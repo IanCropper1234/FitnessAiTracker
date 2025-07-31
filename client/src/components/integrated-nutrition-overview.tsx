@@ -2029,8 +2029,17 @@ export function IntegratedNutritionOverview({
                                   {log.quantity} {log.unit}, {log.calories} calories
                                 </div>
                                 {log.micronutrients && (
+                                  log.micronutrients.vitaminA || log.micronutrients.vitaminD || log.micronutrients.vitaminE || log.micronutrients.vitaminK ||
+                                  log.micronutrients.vitaminC || log.micronutrients.vitaminB1 || log.micronutrients.vitaminB2 || log.micronutrients.vitaminB3 ||
+                                  log.micronutrients.vitaminB6 || log.micronutrients.vitaminB12 || log.micronutrients.calcium || log.micronutrients.magnesium ||
+                                  log.micronutrients.phosphorus || log.micronutrients.potassium || log.micronutrients.sodium || log.micronutrients.iron ||
+                                  log.micronutrients.zinc || log.micronutrients.selenium || log.micronutrients.copper || log.micronutrients.manganese ||
+                                  log.micronutrients.iodine || log.micronutrients.chromium || log.micronutrients.molybdenum ||
+                                  log.micronutrients.sugar || log.micronutrients.fiber || log.micronutrients.saturatedFat || log.micronutrients.cholesterol ||
+                                  log.micronutrients.monounsaturatedFat || log.micronutrients.polyunsaturatedFat
+                                ) && (
                                   <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
-                                    Vitamins
+                                    Nutrients
                                   </Badge>
                                 )}
                               </div>
@@ -2484,6 +2493,54 @@ export function IntegratedNutritionOverview({
                             <div className="flex justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Selenium</span>
                               <span className="font-medium">{selectedNutritionItem.micronutrients.selenium}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Macronutrient Components */}
+                    {selectedNutritionItem.micronutrients.sugar || 
+                     selectedNutritionItem.micronutrients.fiber || 
+                     selectedNutritionItem.micronutrients.saturatedFat ||
+                     selectedNutritionItem.micronutrients.cholesterol ? (
+                      <div>
+                        <h5 className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-2">Macronutrient Components</h5>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          {selectedNutritionItem.micronutrients.sugar && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Total Sugar</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.sugar}g</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.fiber && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Dietary Fiber</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.fiber}g</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.saturatedFat && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Saturated Fat</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.saturatedFat}g</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.cholesterol && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Cholesterol</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.cholesterol}mg</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.monounsaturatedFat && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Monounsat. Fat</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.monounsaturatedFat}g</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.polyunsaturatedFat && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Polyunsat. Fat</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.polyunsaturatedFat}g</span>
                             </div>
                           )}
                         </div>
