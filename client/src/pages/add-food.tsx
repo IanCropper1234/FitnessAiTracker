@@ -829,14 +829,22 @@ export function AddFood({ user }: AddFoodProps) {
                   {/* Load More Link */}
                   {hasMoreFoodHistory && !historySearchQuery && (
                     <div className="text-center">
-                      <span
-                        onClick={() => setHistoryDisplayLimit(prev => prev + 10)}
-                        className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target"
+                      <button
+                        onClick={() => {
+                          console.log('Load More clicked, current limit:', historyDisplayLimit);
+                          setHistoryDisplayLimit(prev => prev + 10);
+                        }}
+                        className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 transition-colors touch-target px-2 py-1 rounded-md border border-blue-200 dark:border-blue-700"
                       >
-                        Load More
-                      </span>
+                        Load More ({filteredFoodHistory.length - historyDisplayLimit} more)
+                      </button>
                     </div>
                   )}
+                  
+                  {/* Debug info - will remove after testing */}
+                  <div className="text-xs text-gray-500 text-center">
+                    Debug: Total items: {filteredFoodHistory.length}, Showing: {displayedFoodHistory.length}, Limit: {historyDisplayLimit}, Has More: {hasMoreFoodHistory ? 'Yes' : 'No'}
+                  </div>
                 </>
               ) : (
                     <div className="text-center py-4 text-gray-500 dark:text-gray-400">
