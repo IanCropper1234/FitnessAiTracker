@@ -56,8 +56,9 @@ export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className 
       ref={containerRef}
       className={`page-content ${className}`}
       style={{
-        opacity: 0,
-        transform: 'translateY(20px) scale(0.95)'
+        opacity: isAnimating ? 0 : 1,
+        transform: isAnimating ? 'translateY(20px) scale(0.95)' : 'translateY(0) scale(1)',
+        transition: 'opacity 0.3s ease, transform 0.3s ease'
       }}
     >
       {children}

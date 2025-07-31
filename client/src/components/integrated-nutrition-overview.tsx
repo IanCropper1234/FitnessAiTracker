@@ -111,6 +111,18 @@ export function IntegratedNutritionOverview({
     sourceSection?: string;
   } | null>(null);
 
+  // Bulk selection state - use external bulk mode if provided, otherwise internal state
+  const [internalBulkMode, setInternalBulkMode] = useState(false);
+  const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
+  
+  const bulkMode = externalBulkMode !== undefined ? externalBulkMode : internalBulkMode;
+  const setBulkMode = (enabled: boolean) => {
+    if (onBulkModeChange) {
+      onBulkModeChange(enabled);
+    } else {
+      setInternalBulkMode(enabled);
+    }
+  };
 
   // Effect to clear drag state when bulk mode is toggled off
   useEffect(() => {
@@ -167,19 +179,6 @@ export function IntegratedNutritionOverview({
   const [editingItem, setEditingItem] = useState<any>(null);
   const [editQuantity, setEditQuantity] = useState('');
   const [editUnit, setEditUnit] = useState('');
-  
-  // Bulk selection state - use external bulk mode if provided, otherwise internal state
-  const [internalBulkMode, setInternalBulkMode] = useState(false);
-  const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
-  
-  const bulkMode = externalBulkMode !== undefined ? externalBulkMode : internalBulkMode;
-  const setBulkMode = (enabled: boolean) => {
-    if (onBulkModeChange) {
-      onBulkModeChange(enabled);
-    } else {
-      setInternalBulkMode(enabled);
-    }
-  };
   
   // Save as meal dialog state
   const [showSaveMealDialog, setShowSaveMealDialog] = useState(false);
