@@ -609,7 +609,7 @@ export function IntegratedNutritionOverview({
 
   const handleDragStart = (e: React.DragEvent, log: any) => {
     console.log('Drag start triggered for:', log.foodName, 'from meal type:', log.mealType);
-    if (!e.dataTransfer || !log || bulkMode) return;
+    if (!e.dataTransfer || !log || !bulkMode) return;
     
     setDraggedItem(log);
     setIsDraggingActive(true);
@@ -782,7 +782,7 @@ export function IntegratedNutritionOverview({
 
   // Touch handlers for mobile drag and drop
   const handleTouchStart = (e: React.TouchEvent, log: any) => {
-    if (bulkMode) return;
+    if (!bulkMode) return;
     
     const touch = e.touches[0];
     const now = Date.now();
@@ -815,7 +815,7 @@ export function IntegratedNutritionOverview({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (bulkMode) return;
+    if (!bulkMode) return;
     
     const touch = e.touches[0];
     const deltaY = Math.abs(touch.clientY - touchDragState.startY);
@@ -856,7 +856,7 @@ export function IntegratedNutritionOverview({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (bulkMode) return;
+    if (!bulkMode) return;
     
     if (touchDragState.isDragging && draggedItem && dragOverTarget) {
       // Perform the drop operation
