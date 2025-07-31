@@ -49,6 +49,8 @@ interface IntegratedNutritionOverviewProps {
   onShowLogger?: (selectedDate?: string) => void;
   onDatePickerOpen?: () => void;
   selectedDate?: string;
+  bulkMode?: boolean;
+  onBulkModeChange?: (enabled: boolean) => void;
   copyFromDate?: string;
   setCopyFromDate?: (date: string) => void;
   showCopyFromDatePicker?: boolean;
@@ -65,6 +67,8 @@ export function IntegratedNutritionOverview({
   onShowLogger, 
   onDatePickerOpen, 
   selectedDate: externalSelectedDate,
+  bulkMode: externalBulkMode,
+  onBulkModeChange,
   copyFromDate: externalCopyFromDate,
   setCopyFromDate: externalSetCopyFromDate,
   showCopyFromDatePicker,
@@ -108,6 +112,29 @@ export function IntegratedNutritionOverview({
   } | null>(null);
 
 
+  // Effect to clear drag state when bulk mode is toggled off
+  useEffect(() => {
+    if (!bulkMode) {
+      // Immediately clear all drag state when bulk mode is turned off
+      setDraggedItem(null);
+      setDragOverTarget(null);
+      setDragPreview(null);
+      setDragOverIndex(null);
+      setIsDraggingActive(false);
+      setDragStartY(0);
+      setTouchDragState({
+        startY: 0,
+        startX: 0,
+        currentY: 0,
+        currentX: 0,
+        startTime: 0,
+        isDragging: false,
+        hasMovedThreshold: false
+      });
+      setSelectedLogs([]);
+    }
+  }, [bulkMode]);
+
   // Effect to handle copy operations when external date pickers close with a date
   useEffect(() => {
     if (copyOperation) {
@@ -141,9 +168,18 @@ export function IntegratedNutritionOverview({
   const [editQuantity, setEditQuantity] = useState('');
   const [editUnit, setEditUnit] = useState('');
   
-  // Bulk selection state
-  const [bulkMode, setBulkMode] = useState(false);
+  // Bulk selection state - use external bulk mode if provided, otherwise internal state
+  const [internalBulkMode, setInternalBulkMode] = useState(false);
   const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
+  
+  const bulkMode = externalBulkMode !== undefined ? externalBulkMode : internalBulkMode;
+  const setBulkMode = (enabled: boolean) => {
+    if (onBulkModeChange) {
+      onBulkModeChange(enabled);
+    } else {
+      setInternalBulkMode(enabled);
+    }
+  };
   
   // Save as meal dialog state
   const [showSaveMealDialog, setShowSaveMealDialog] = useState(false);
@@ -780,7 +816,11 @@ export function IntegratedNutritionOverview({
 
   // Touch handlers for mobile drag and drop
   const handleTouchStart = (e: React.TouchEvent, log: any) => {
-    if (!bulkMode) return;
+    if (!bulkMode) {
+      // Clear any existing drag state when not in bulk mode
+      handleDragEnd();
+      return;
+    }
     
     const touch = e.touches[0];
     const now = Date.now();
@@ -798,7 +838,7 @@ export function IntegratedNutritionOverview({
     // Start long press timer for mobile drag
     setTimeout(() => {
       const timeDiff = Date.now() - now;
-      if (timeDiff >= 300 && !touchDragState.hasMovedThreshold) {
+      if (timeDiff >= 300 && !touchDragState.hasMovedThreshold && bulkMode) {
         // Long press detected - start drag
         setDraggedItem(log);
         setIsDraggingActive(true);
@@ -813,7 +853,11 @@ export function IntegratedNutritionOverview({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!bulkMode) return;
+    if (!bulkMode) {
+      // Clear any existing drag state when not in bulk mode
+      handleDragEnd();
+      return;
+    }
     
     const touch = e.touches[0];
     const deltaY = Math.abs(touch.clientY - touchDragState.startY);
@@ -829,7 +873,7 @@ export function IntegratedNutritionOverview({
       }
     }
     
-    if (touchDragState.isDragging && draggedItem) {
+    if (touchDragState.isDragging && draggedItem && bulkMode) {
       // Prevent scrolling when dragging
       e.preventDefault();
       
@@ -854,9 +898,13 @@ export function IntegratedNutritionOverview({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!bulkMode) return;
+    if (!bulkMode) {
+      // Clear any existing drag state when not in bulk mode
+      handleDragEnd();
+      return;
+    }
     
-    if (touchDragState.isDragging && draggedItem && dragOverTarget) {
+    if (touchDragState.isDragging && draggedItem && dragOverTarget && bulkMode) {
       // Perform the drop operation
       console.log('Touch drop - moving', draggedItem.foodName, 'to', dragOverTarget);
       
@@ -1809,12 +1857,12 @@ export function IntegratedNutritionOverview({
                         <div 
                           key={log.id}
                           draggable={bulkMode} // Enable drag only in edit mode
-                          onDragStart={(e) => bulkMode && handleDragStart(e, log)}
+                          onDragStart={(e) => handleDragStart(e, log)}
                           onDragEnd={handleDragEnd}
-                          onDragOver={(e) => bulkMode && handleDragOver(e, mealType.key, index)}
-                          onTouchStart={(e) => bulkMode && handleTouchStart(e, log)}
-                          onTouchMove={bulkMode ? handleTouchMove : undefined}
-                          onTouchEnd={bulkMode ? handleTouchEnd : undefined}
+                          onDragOver={(e) => handleDragOver(e, mealType.key, index)}
+                          onTouchStart={(e) => handleTouchStart(e, log)}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleTouchEnd}
                           style={{
                             transform: shouldShift ? 'translateY(4px)' : 'translateY(0)',
                             transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
