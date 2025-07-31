@@ -164,7 +164,7 @@ export function DraggableDashboard({
         onResetLayout={handleResetLayout}
       />
 
-      <div className={`${isEditMode ? 'pt-16 pb-12' : ''} transition-all duration-300`}>
+      <div className={`${isEditMode ? 'pt-12 pb-10' : ''} transition-all duration-300`}>
         <ResponsiveGridLayout
           className="layout"
           layouts={layouts}

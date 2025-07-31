@@ -112,9 +112,9 @@ export function DashboardEditor({
         onClick={onToggleEditMode}
         variant="outline"
         size="sm"
-        className="fixed top-3 right-3 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-200 text-xs h-8 px-3"
+        className="fixed top-2 right-2 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-200 text-[10px] h-7 px-2"
       >
-        <Settings className="h-3 w-3 mr-1.5" />
+        <Settings className="h-2.5 w-2.5 mr-1" />
         Edit
       </Button>
     );
@@ -123,22 +123,22 @@ export function DashboardEditor({
   return (
     <>
       {/* Edit Mode Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900 dark:bg-gray-950 text-white p-3 shadow-lg border-b border-gray-700 dark:border-gray-800">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900 dark:bg-gray-950 text-white p-2 shadow-lg border-b border-gray-700 dark:border-gray-800">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-2">
-            <Grid3x3 className="h-4 w-4" />
-            <h2 className="font-medium text-sm">Dashboard Editor</h2>
-            <Badge variant="secondary" className="bg-gray-700 text-gray-200 text-xs px-2 py-0.5">
-              {selectedCards.length} cards
+          <div className="flex items-center gap-1 min-w-0 flex-shrink">
+            <Grid3x3 className="h-3 w-3 flex-shrink-0" />
+            <h2 className="font-medium text-xs truncate">Dashboard Editor</h2>
+            <Badge variant="secondary" className="bg-gray-700 text-gray-200 text-[10px] px-1 py-0.5 flex-shrink-0">
+              {selectedCards.length}
             </Badge>
           </div>
           
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 min-w-0">
             <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
               <DialogTrigger asChild>
-                <Button variant="secondary" size="sm" className="text-xs h-7 px-2">
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add Cards
+                <Button variant="secondary" size="sm" className="text-[10px] h-6 px-1.5 flex-shrink-0">
+                  <Plus className="h-2.5 w-2.5 mr-0.5" />
+                  <span className="hidden sm:inline">Add</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -183,38 +183,38 @@ export function DashboardEditor({
               onClick={onResetLayout}
               variant="outline"
               size="sm"
-              className="bg-gray-800/50 border-gray-600 text-white hover:bg-gray-700 text-xs h-7 px-2"
+              className="bg-gray-800/50 border-gray-600 text-white hover:bg-gray-700 text-[10px] h-6 px-1.5 flex-shrink-0"
             >
-              <RotateCcw className="h-3 w-3 mr-1" />
-              Reset
+              <RotateCcw className="h-2.5 w-2.5 sm:mr-0.5" />
+              <span className="hidden sm:inline">Reset</span>
             </Button>
 
             <Button
               onClick={onSaveLayout}
               variant="secondary"
               size="sm"
-              className="text-xs h-7 px-2"
+              className="text-[10px] h-6 px-1.5 flex-shrink-0"
             >
-              <Save className="h-3 w-3 mr-1" />
-              Save
+              <Save className="h-2.5 w-2.5 sm:mr-0.5" />
+              <span className="hidden sm:inline">Save</span>
             </Button>
 
             <Button
               onClick={onToggleEditMode}
               variant="outline"
               size="sm"
-              className="bg-gray-800/50 border-gray-600 text-white hover:bg-gray-700 text-xs h-7 px-2"
+              className="bg-gray-800/50 border-gray-600 text-white hover:bg-gray-700 text-[10px] h-6 px-1.5 flex-shrink-0"
             >
-              <X className="h-3 w-3 mr-1" />
-              Done
+              <X className="h-2.5 w-2.5 sm:mr-0.5" />
+              <span className="hidden sm:inline">Done</span>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Edit Mode Instructions */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900/90 text-white px-3 py-1.5 rounded-md text-xs backdrop-blur-sm border border-gray-700">
-        Drag to reorder • Add Cards to customize
+      <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900/90 text-white px-2 py-1 rounded text-[10px] backdrop-blur-sm border border-gray-700 max-w-[90vw] text-center">
+        Drag to reorder
       </div>
     </>
   );
