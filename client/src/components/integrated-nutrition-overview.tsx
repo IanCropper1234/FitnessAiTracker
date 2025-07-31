@@ -1153,7 +1153,7 @@ export function IntegratedNutritionOverview({
         const bodyMetrics = profileData?.bodyMetrics?.[0] || {};
         
         // Simplified gender estimation (can be enhanced with actual profile field)
-        const estimatedGender = 'male'; // Default assumption
+        const estimatedGender: 'male' | 'female' = 'male'; // Default assumption
         const age = userProfile.age || 30;
         const weight = bodyMetrics.weight ? parseFloat(bodyMetrics.weight) : (userProfile.weight ? parseFloat(userProfile.weight) : 70);
         const activityLevel = userProfile.activityLevel || 'moderately_active';
@@ -1242,11 +1242,11 @@ export function IntegratedNutritionOverview({
                     
                     <div className="grid grid-cols-1 gap-4 text-xs">
                       {/* Fat-Soluble Vitamins */}
-                      {(dailyTotals.vitaminA || dailyTotals.vitaminD || dailyTotals.vitaminE || dailyTotals.vitaminK) && (
+                      {(dailyTotals.vitaminA > 0 || dailyTotals.vitaminD > 0 || dailyTotals.vitaminE > 0 || dailyTotals.vitaminK > 0) && (
                         <div>
                           <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
                           <div className="space-y-2">
-                            {dailyTotals.vitaminA && (() => {
+                            {dailyTotals.vitaminA > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminA, rda.vitaminA);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1260,7 +1260,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminD && (() => {
+                            {dailyTotals.vitaminD > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminD, rda.vitaminD);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1274,7 +1274,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminE && (() => {
+                            {dailyTotals.vitaminE > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminE, rda.vitaminE);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1288,7 +1288,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminK && (() => {
+                            {dailyTotals.vitaminK > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminK, rda.vitaminK);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1307,11 +1307,11 @@ export function IntegratedNutritionOverview({
                       )}
                       
                       {/* Water-Soluble Vitamins */}
-                      {(dailyTotals.vitaminC || dailyTotals.vitaminB1 || dailyTotals.vitaminB2 || dailyTotals.vitaminB3 || dailyTotals.vitaminB6 || dailyTotals.vitaminB12) && (
+                      {(dailyTotals.vitaminC > 0 || dailyTotals.vitaminB1 > 0 || dailyTotals.vitaminB2 > 0 || dailyTotals.vitaminB3 > 0 || dailyTotals.vitaminB6 > 0 || dailyTotals.vitaminB12 > 0) && (
                         <div>
                           <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
                           <div className="space-y-2">
-                            {dailyTotals.vitaminC && (() => {
+                            {dailyTotals.vitaminC > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminC, rda.vitaminC);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1325,7 +1325,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminB1 && (() => {
+                            {dailyTotals.vitaminB1 > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminB1, rda.vitaminB1);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1339,7 +1339,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminB2 && (() => {
+                            {dailyTotals.vitaminB2 > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminB2, rda.vitaminB2);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1353,7 +1353,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminB3 && (() => {
+                            {dailyTotals.vitaminB3 > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminB3, rda.vitaminB3);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1367,7 +1367,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminB6 && (() => {
+                            {dailyTotals.vitaminB6 > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminB6, rda.vitaminB6);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1381,7 +1381,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.vitaminB12 && (() => {
+                            {dailyTotals.vitaminB12 > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1400,11 +1400,11 @@ export function IntegratedNutritionOverview({
                       )}
                       
                       {/* Major Minerals */}
-                      {(dailyTotals.calcium || dailyTotals.magnesium || dailyTotals.phosphorus || dailyTotals.potassium || dailyTotals.sodium) && (
+                      {(dailyTotals.calcium > 0 || dailyTotals.magnesium > 0 || dailyTotals.phosphorus > 0 || dailyTotals.potassium > 0 || dailyTotals.sodium > 0) && (
                         <div>
                           <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
                           <div className="space-y-2">
-                            {dailyTotals.calcium && (() => {
+                            {dailyTotals.calcium > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.calcium, rda.calcium);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1418,7 +1418,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.magnesium && (() => {
+                            {dailyTotals.magnesium > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.magnesium, rda.magnesium);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1432,7 +1432,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.phosphorus && (() => {
+                            {dailyTotals.phosphorus > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.phosphorus, rda.phosphorus);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1446,7 +1446,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.potassium && (() => {
+                            {dailyTotals.potassium > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.potassium, rda.potassium);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1460,7 +1460,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.sodium && (() => {
+                            {dailyTotals.sodium > 0 && (() => {
                               // For sodium, lower is better (it's an upper limit)
                               const percentage = Math.round((dailyTotals.sodium / rda.sodium) * 100);
                               const adequacy = percentage <= 100 ? 
@@ -1485,11 +1485,11 @@ export function IntegratedNutritionOverview({
                       )}
                       
                       {/* Trace Minerals */}
-                      {(dailyTotals.iron || dailyTotals.zinc || dailyTotals.selenium || dailyTotals.copper || dailyTotals.manganese || dailyTotals.iodine || dailyTotals.chromium || dailyTotals.molybdenum) && (
+                      {(dailyTotals.iron > 0 || dailyTotals.zinc > 0 || dailyTotals.selenium > 0 || dailyTotals.copper > 0 || dailyTotals.manganese > 0 || dailyTotals.iodine > 0 || dailyTotals.chromium > 0 || dailyTotals.molybdenum > 0) && (
                         <div>
                           <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
                           <div className="space-y-2">
-                            {dailyTotals.iron && (() => {
+                            {dailyTotals.iron > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.iron, rda.iron);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1503,7 +1503,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.zinc && (() => {
+                            {dailyTotals.zinc > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.zinc, rda.zinc);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1517,7 +1517,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.selenium && (() => {
+                            {dailyTotals.selenium > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.selenium, rda.selenium);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1531,7 +1531,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.copper && (() => {
+                            {dailyTotals.copper > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.copper, rda.copper);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1545,7 +1545,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.manganese && (() => {
+                            {dailyTotals.manganese > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.manganese, rda.manganese);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1559,7 +1559,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.iodine && (() => {
+                            {dailyTotals.iodine > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.iodine, rda.iodine);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1573,7 +1573,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.chromium && (() => {
+                            {dailyTotals.chromium > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.chromium, rda.chromium);
                               return (
                                 <div className="flex items-center justify-between">
@@ -1587,7 +1587,7 @@ export function IntegratedNutritionOverview({
                                 </div>
                               );
                             })()}
-                            {dailyTotals.molybdenum && (() => {
+                            {dailyTotals.molybdenum > 0 && (() => {
                               const adequacy = getAdequacy(dailyTotals.molybdenum, rda.molybdenum);
                               return (
                                 <div className="flex items-center justify-between">
