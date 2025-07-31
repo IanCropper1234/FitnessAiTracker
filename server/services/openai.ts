@@ -4,6 +4,42 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY environment variable is required");
 }
 
+export interface MicronutrientData {
+  // Fat-Soluble Vitamins
+  vitaminA?: number; // mcg RAE
+  vitaminD?: number; // mcg
+  vitaminE?: number; // mg
+  vitaminK?: number; // mcg
+  
+  // Water-Soluble Vitamins
+  vitaminB1?: number; // mg (Thiamine)
+  vitaminB2?: number; // mg (Riboflavin)
+  vitaminB3?: number; // mg (Niacin)
+  vitaminB5?: number; // mg (Pantothenic Acid)
+  vitaminB6?: number; // mg
+  vitaminB7?: number; // mcg (Biotin)
+  vitaminB9?: number; // mcg (Folate)
+  vitaminB12?: number; // mcg
+  vitaminC?: number; // mg
+  
+  // Major Minerals
+  calcium?: number; // mg
+  magnesium?: number; // mg
+  phosphorus?: number; // mg
+  potassium?: number; // mg
+  sodium?: number; // mg
+  
+  // Trace Minerals
+  iron?: number; // mg
+  zinc?: number; // mg
+  copper?: number; // mg
+  manganese?: number; // mg
+  iodine?: number; // mcg
+  selenium?: number; // mcg
+  chromium?: number; // mcg
+  molybdenum?: number; // mcg
+}
+
 export interface NutritionAnalysis {
   calories: number;
   protein: number;
@@ -14,6 +50,7 @@ export interface NutritionAnalysis {
   mealSuitability?: string[]; // pre-workout, post-workout, regular, snack
   assumptions?: string; // key assumptions made during analysis
   servingDetails?: string; // clarification of portion analyzed
+  micronutrients?: MicronutrientData; // comprehensive vitamin and mineral data
 }
 
 const openai = new OpenAI({ 
@@ -63,6 +100,13 @@ export async function analyzeNutrition(
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: any assumptions made if label is unclear (string)
 - servingDetails: clarification of portion analyzed from label (string)
+- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  
+  **Note:** Only include micronutrient values that are visible on the nutrition label or can be reasonably estimated from the food type. Use null for unknown values.
 
 Return only valid JSON with all required fields.`
           },
@@ -100,6 +144,13 @@ Return only valid JSON with all required fields.`
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions about portions, preparation, ingredients (string)
 - servingDetails: description of estimated portion size and food components (string)
+- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  
+  **Note:** Estimate key micronutrient values based on visible foods and typical nutritional profiles.
 
 Return only valid JSON with all required fields.`
           },
@@ -137,6 +188,13 @@ Return only valid JSON with all required fields.`
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions made (string)
 - servingDetails: clarification of portion analyzed (string)
+- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  
+  **Note:** Based on food type and ingredients, estimate key micronutrient values from USDA database knowledge. Focus on nutrients the food is known to be rich in.
 
 **Category Guidelines (Renaissance Periodization methodology):**
 - "protein": >20g protein per 100 calories (chicken, fish, eggs, protein powder)
@@ -199,7 +257,8 @@ Goal: Provide the most realistic, transparent, and actionable nutritional inform
       category: result.category || "mixed",
       mealSuitability: result.mealSuitability || ["regular"],
       assumptions: result.assumptions || "Standard serving size and preparation method assumed",
-      servingDetails: result.servingDetails || `${quantity} ${unit}(s) as described`
+      servingDetails: result.servingDetails || `${quantity} ${unit}(s) as described`,
+      micronutrients: result.micronutrients || {}
     };
 
   } catch (error: any) {

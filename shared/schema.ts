@@ -55,6 +55,8 @@ export const nutritionLogs = pgTable("nutrition_logs", {
   // Enhanced RP Diet Coach categorization
   category: text("category"), // protein, carb, fat, mixed
   mealSuitability: text("meal_suitability").array(), // pre-workout, post-workout, regular, snack
+  // Comprehensive micronutrient data
+  micronutrients: jsonb("micronutrients"), // stores MicronutrientData as JSON
   createdAt: timestamp("created_at").defaultNow(),
 });
 

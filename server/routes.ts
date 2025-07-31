@@ -543,6 +543,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: userId,
         date: new Date(req.body.date)
       };
+      
+      // Include micronutrient data if provided from AI analysis
+      if (req.body.micronutrients) {
+        logData.micronutrients = req.body.micronutrients;
+      }
+      
       const log = await storage.createNutritionLog(logData);
       res.json(log);
     } catch (error: any) {

@@ -1679,6 +1679,204 @@ export function IntegratedNutritionOverview({
                   </div>
                 </div>
 
+                {/* Micronutrients Section - Only show if data exists */}
+                {selectedNutritionItem.micronutrients && (
+                  <div className="bg-white dark:bg-gray-900 rounded p-3 mt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-black dark:text-white text-sm">Micronutrients</h4>
+                      <Badge variant="outline" className="text-xs">
+                        AI Analysis
+                      </Badge>
+                    </div>
+                    
+                    {/* Fat-Soluble Vitamins */}
+                    {selectedNutritionItem.micronutrients.vitaminA || 
+                     selectedNutritionItem.micronutrients.vitaminD || 
+                     selectedNutritionItem.micronutrients.vitaminE || 
+                     selectedNutritionItem.micronutrients.vitaminK ? (
+                      <div className="mb-3">
+                        <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          {selectedNutritionItem.micronutrients.vitaminA && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Vitamin A</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminA}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminD && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Vitamin D</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminD}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminE && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Vitamin E</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminE}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminK && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Vitamin K</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminK}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Water-Soluble Vitamins */}
+                    {selectedNutritionItem.micronutrients.vitaminC || 
+                     selectedNutritionItem.micronutrients.vitaminB1 || 
+                     selectedNutritionItem.micronutrients.vitaminB2 ||
+                     selectedNutritionItem.micronutrients.vitaminB3 ||
+                     selectedNutritionItem.micronutrients.vitaminB6 ||
+                     selectedNutritionItem.micronutrients.vitaminB12 ||
+                     selectedNutritionItem.micronutrients.folate ? (
+                      <div className="mb-3">
+                        <h5 className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          {selectedNutritionItem.micronutrients.vitaminC && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Vitamin C</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminC}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminB1 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">B1 (Thiamine)</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminB1}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminB2 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">B2 (Riboflavin)</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminB2}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminB3 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">B3 (Niacin)</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminB3}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminB6 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">B6 (Pyridoxine)</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminB6}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.vitaminB12 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">B12 (Cobalamin)</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.vitaminB12}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.folate && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Folate</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.folate}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Major Minerals */}
+                    {selectedNutritionItem.micronutrients.calcium || 
+                     selectedNutritionItem.micronutrients.magnesium || 
+                     selectedNutritionItem.micronutrients.phosphorus ||
+                     selectedNutritionItem.micronutrients.potassium ||
+                     selectedNutritionItem.micronutrients.sodium ? (
+                      <div className="mb-3">
+                        <h5 className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          {selectedNutritionItem.micronutrients.calcium && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Calcium</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.calcium}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.magnesium && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Magnesium</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.magnesium}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.phosphorus && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Phosphorus</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.phosphorus}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.potassium && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Potassium</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.potassium}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.sodium && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Sodium</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.sodium}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Trace Minerals */}
+                    {selectedNutritionItem.micronutrients.iron || 
+                     selectedNutritionItem.micronutrients.zinc || 
+                     selectedNutritionItem.micronutrients.copper ||
+                     selectedNutritionItem.micronutrients.manganese ||
+                     selectedNutritionItem.micronutrients.iodine ||
+                     selectedNutritionItem.micronutrients.selenium ? (
+                      <div>
+                        <h5 className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          {selectedNutritionItem.micronutrients.iron && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Iron</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.iron}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.zinc && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Zinc</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.zinc}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.copper && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Copper</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.copper}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.manganese && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Manganese</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.manganese}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.iodine && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Iodine</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.iodine}</span>
+                            </div>
+                          )}
+                          {selectedNutritionItem.micronutrients.selenium && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Selenium</span>
+                              <span className="font-medium">{selectedNutritionItem.micronutrients.selenium}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
                 {/* Additional Info */}
                 {selectedNutritionItem.scheduledTime && (
                   <div className="text-center text-sm text-blue-600 dark:text-blue-400">
