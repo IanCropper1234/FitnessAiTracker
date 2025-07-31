@@ -361,7 +361,7 @@ export function AddFood({ user }: AddFoodProps) {
       mealSuitability: foodData.mealSuitability
     });
     setShowBarcodeScanner(false);
-    setSearchMode('search');
+    // Note: Removed searchMode as interface is now AI-only
   };
 
   const handleQuickAddFromHistory = (historyItem: any) => {
@@ -709,10 +709,10 @@ export function AddFood({ user }: AddFoodProps) {
             </Button>
 
             {/* Recent Foods Section - Always Visible Now */}
-            <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="space-y-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-300 dark:border-yellow-700">
               <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
+                <History className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                <Label className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Recent Foods (Debug: Always Visible)</Label>
               </div>
               
               {Array.isArray(foodHistory) && foodHistory.length > 0 ? (
@@ -787,10 +787,10 @@ export function AddFood({ user }: AddFoodProps) {
             </div>
 
             {/* Saved Meals Section - Always Visible Now */}
-            <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="space-y-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300 dark:border-green-700">
               <div className="flex items-center gap-2">
-                <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
+                <Utensils className="w-4 h-4 text-green-600 dark:text-green-400" />
+                <Label className="text-sm font-medium text-green-800 dark:text-green-200">Saved Meals (Debug: Always Visible)</Label>
               </div>
               
               {Array.isArray(savedMeals) && savedMeals.length > 0 ? (
