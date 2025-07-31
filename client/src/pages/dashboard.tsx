@@ -11,7 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 
 import { RecentActivity } from "@/components/recent-activity";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Moon, Scale, Heart } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Scale, Heart } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
@@ -99,10 +99,23 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     }
   });
 
-  // Calculate current weight and weight trend from last 7 days
-  const currentWeight = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0].weight : null;
+  // Calculate current weight with unit conversion
+  const getCurrentWeight = () => {
+    if (!bodyMetrics || bodyMetrics.length === 0) return null;
+    const latestEntry = bodyMetrics[0];
+    const weight = latestEntry.weight;
+    const unit = latestEntry.unit;
+    
+    // Convert imperial (lbs) to metric (kg) if needed
+    if (unit === 'imperial') {
+      return (weight / 2.20462).toFixed(1); // Convert lbs to kg
+    }
+    return weight.toFixed(1);
+  };
   
-  // Calculate weekly weight trend
+  const currentWeight = getCurrentWeight();
+  
+  // Calculate weekly weight trend with unit conversion
   const getWeightTrend = () => {
     if (!bodyMetrics || bodyMetrics.length < 2) return null;
     
@@ -110,8 +123,10 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     
-    // Get most recent weight
-    const recentWeight = bodyMetrics[0].weight;
+    // Get most recent weight (convert if imperial)
+    const recentEntry = bodyMetrics[0];
+    const recentWeight = recentEntry.unit === 'imperial' ? 
+      recentEntry.weight / 2.20462 : recentEntry.weight;
     
     // Find weight from approximately 7 days ago
     const weekOldEntry = bodyMetrics.find((entry: any) => {
@@ -120,11 +135,20 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     });
     
     if (weekOldEntry) {
-      return recentWeight - weekOldEntry.weight;
+      const oldWeight = weekOldEntry.unit === 'imperial' ? 
+        weekOldEntry.weight / 2.20462 : weekOldEntry.weight;
+      return recentWeight - oldWeight;
     }
     
     // Fallback: compare with previous entry if no week-old data
-    return bodyMetrics.length > 1 ? recentWeight - bodyMetrics[1].weight : null;
+    if (bodyMetrics.length > 1) {
+      const prevEntry = bodyMetrics[1];
+      const prevWeight = prevEntry.unit === 'imperial' ? 
+        prevEntry.weight / 2.20462 : prevEntry.weight;
+      return recentWeight - prevWeight;
+    }
+    
+    return null;
   };
   
   const weightTrend = getWeightTrend();
@@ -275,25 +299,21 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             </>)
           ) : (
             <>
-              {/* Sleep Quality */}
+              {/* Steps/Activity */}
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-1 sm:px-2">
-                  <Moon className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mb-1 transition-colors duration-200" />
+                  <Activity className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mb-1 transition-colors duration-200" />
                   <CardTitle className="text-[10px] sm:text-caption text-gray-600 dark:text-gray-400 text-center leading-tight">
-                    Sleep
+                    Activity
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-2 pb-2">
                   <div className="text-sm sm:text-lg font-bold text-indigo-600 dark:text-indigo-400 text-center">
-                    7.5h
+                    {userProfile?.user?.activityLevel || 'Moderate'}
                   </div>
                   <p className="text-[10px] sm:text-caption-sm text-gray-600 dark:text-gray-400 text-center">
-                    Last night
+                    Profile level
                   </p>
-                  <Progress 
-                    value={94} 
-                    className="mt-1 h-1"
-                  />
                 </CardContent>
               </Card>
 
