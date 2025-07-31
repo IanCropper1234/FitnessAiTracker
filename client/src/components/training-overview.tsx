@@ -54,46 +54,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
   return (
     <div className="space-y-6">
       {/* Training Summary Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Weekly Progress Chart */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-black dark:text-white text-center">Weekly Progress</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="week" 
-                className="text-xs"
-                tick={{ fill: 'currentColor' }}
-              />
-              <YAxis 
-                className="text-xs"
-                tick={{ fill: 'currentColor' }}
-              />
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '6px'
-                }}
-              />
-              <Legend />
-              <Bar 
-                dataKey="sessions" 
-                fill="#3B82F6" 
-                name="Sessions"
-                radius={[2, 2, 0, 0]}
-              />
-              <Bar 
-                dataKey="volume" 
-                fill="#10B981" 
-                name="Volume (kg)"
-                radius={[2, 2, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
+      <div className="grid grid-cols-1 gap-6">
         {/* Exercise Type Distribution */}
         <div>
           <h3 className="text-lg font-semibold mb-4 text-black dark:text-white text-center">Exercise Distribution</h3>
