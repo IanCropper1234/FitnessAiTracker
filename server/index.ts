@@ -16,15 +16,31 @@ app.use(session({
     checkPeriod: 86400000 // prune expired entries every 24h
   }),
   secret: process.env.SESSION_SECRET || 'fitai-session-secret-key-2025',
+  name: 'fitai.session', // Explicit session cookie name
   resave: true, // Force session save for PWA compatibility
   saveUninitialized: true, // Create sessions for unauthenticated users
   cookie: {
     secure: false, // Allow cookies over HTTP for PWA development and Replit deployment
     httpOnly: false, // Allow JavaScript access for PWA functionality
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    sameSite: 'lax' // PWA-friendly sameSite setting
+    sameSite: 'lax', // PWA-friendly sameSite setting
+    path: '/' // Ensure cookie is available for all paths
   }
 }));
+
+// CORS configuration for PWA compatibility
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cookie');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Increase payload limit for image uploads (50MB limit)
 app.use(express.json({ limit: '50mb' }));

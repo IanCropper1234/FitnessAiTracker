@@ -22,10 +22,16 @@ import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   const userId = (req.session as any).userId;
+  console.log('RequireAuth - Session ID:', req.sessionID);
+  console.log('RequireAuth - Session userId:', userId);
+  console.log('RequireAuth - Headers:', req.headers.cookie);
+  
   if (!userId) {
+    console.log('RequireAuth failed - no userId in session');
     return res.status(401).json({ message: "Not authenticated" });
   }
   (req as any).userId = userId;
+  console.log('RequireAuth successful for userId:', userId);
   next();
 }
 
