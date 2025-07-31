@@ -38,8 +38,29 @@ interface AnimatedPageProps {
 }
 
 export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className = '' }) => {
+  const [location] = useLocation();
+  const [isAnimating, setIsAnimating] = useState(true);
+
+  useEffect(() => {
+    // Reset animation state on location change
+    setIsAnimating(true);
+    
+    // Start the fade in animation after a brief delay
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [location]);
+
   return (
-    <div className={`page-transition ${className}`}>
+    <div 
+      className={`transition-all duration-500 ease-out ${
+        isAnimating 
+          ? 'opacity-0 translate-y-4 scale-95' 
+          : 'opacity-100 translate-y-0 scale-100'
+      } ${className}`}
+    >
       {children}
     </div>
   );
