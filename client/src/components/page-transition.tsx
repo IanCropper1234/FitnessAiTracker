@@ -8,47 +8,43 @@ interface AnimatedPageProps {
 
 export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className = '' }) => {
   const [location] = useLocation();
+  const [animationKey, setAnimationKey] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const prevLocationRef = useRef(location);
 
   useEffect(() => {
-    // Only animate if location actually changed
-    if (location !== prevLocationRef.current) {
-      console.log('Page transition triggered:', prevLocationRef.current, '->', location);
-      
-      // Start invisible
-      setIsVisible(false);
-      
-      // Force reflow to ensure the invisible state is applied
-      if (containerRef.current) {
-        containerRef.current.offsetHeight;
-      }
-      
-      // Then make visible with animation
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 50);
-      
-      prevLocationRef.current = location;
-      return () => clearTimeout(timer);
-    } else {
-      // Initial mount - show immediately with animation
-      setIsVisible(true);
+    console.log('AnimatedPage: Location changed to:', location);
+    
+    // Force a new animation by resetting state
+    setIsVisible(false);
+    setAnimationKey(prev => prev + 1);
+    
+    // Force reflow
+    if (containerRef.current) {
+      containerRef.current.offsetHeight;
     }
+    
+    // Start animation after a brief delay
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [location]);
 
   return (
     <div 
+      key={animationKey}
       ref={containerRef}
-      className={`transform transition-all duration-1000 ease-out ${
+      className={`page-content transform transition-all duration-1000 ease-out ${
         isVisible 
           ? 'opacity-100 translate-y-0 scale-100' 
-          : 'opacity-0 translate-y-16 scale-90'
+          : 'opacity-0 translate-y-20 scale-95'
       } ${className}`}
       style={{
         willChange: 'transform, opacity',
-        backfaceVisibility: 'hidden'
+        backfaceVisibility: 'hidden',
+        transformStyle: 'preserve-3d'
       }}
     >
       {children}

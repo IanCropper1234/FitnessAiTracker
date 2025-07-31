@@ -23,6 +23,7 @@ import { useLocation } from "wouter";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
+import { TransitionTest } from "@/components/transition-test";
 import { 
   Plus, 
   Search, 
@@ -318,9 +319,8 @@ export function Nutrition({
           </div>
         )}
 
-
-
-
+        {/* Transition Test - Remove after testing */}
+        <TransitionTest />
       </div>
     </div>
   );
