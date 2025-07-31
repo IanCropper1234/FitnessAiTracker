@@ -20,6 +20,7 @@ import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
 import RPCoachPage from "./pages/RPCoachPage";
+import NutritionFactsPage from "./pages/nutrition-facts";
 import { NotFound } from "./components/NotFound";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -150,6 +151,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/rp-coach">
           <div className="page-enter ios-animation ios-smooth-transform">
             {user ? <RPCoachPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
+          </div>
+        </Route>
+        <Route path="/nutrition-facts">
+          <div className="page-enter ios-animation ios-smooth-transform">
+            {user ? <NutritionFactsPage /> : <div className="animate-pulse">Loading...</div>}
           </div>
         </Route>
         <Route>
