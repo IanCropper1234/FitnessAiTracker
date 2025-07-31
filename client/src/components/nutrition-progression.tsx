@@ -123,7 +123,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               month: '2-digit',
               year: '2-digit'
             }),
-            weight: weight.toFixed(1),
+            weight: (weight && !isNaN(weight)) ? Number(weight).toFixed(1) : 'N/A',
             unit: preferredUnit,
             bodyFat: metric.bodyFatPercentage ? `${metric.bodyFatPercentage}%` : '-'
           };
@@ -661,7 +661,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Weight</div>
             <div className={`text-sm font-bold leading-none ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {summary.weightChange > 0 ? '+' : ''}{Math.abs(summary.weightChange).toFixed(1)} {getUserPreferredWeightUnit()}
+              {summary.weightChange > 0 ? '+' : ''}{(summary.weightChange && !isNaN(summary.weightChange)) ? Math.abs(Number(summary.weightChange)).toFixed(1) : '0.0'} {getUserPreferredWeightUnit()}
             </div>
           </div>
           

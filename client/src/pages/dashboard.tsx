@@ -106,11 +106,14 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     const weight = latestEntry.weight;
     const unit = latestEntry.unit;
     
+    // Check if weight is a valid number
+    if (weight === null || weight === undefined || isNaN(weight)) return null;
+    
     // Convert imperial (lbs) to metric (kg) if needed
     if (unit === 'imperial') {
-      return (weight / 2.20462).toFixed(1); // Convert lbs to kg
+      return (Number(weight) / 2.20462).toFixed(1); // Convert lbs to kg
     }
-    return weight.toFixed(1);
+    return Number(weight).toFixed(1);
   };
   
   const currentWeight = getCurrentWeight();
@@ -125,8 +128,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     
     // Get most recent weight (convert if imperial)
     const recentEntry = bodyMetrics[0];
+    if (!recentEntry.weight || isNaN(recentEntry.weight)) return null;
     const recentWeight = recentEntry.unit === 'imperial' ? 
-      recentEntry.weight / 2.20462 : recentEntry.weight;
+      Number(recentEntry.weight) / 2.20462 : Number(recentEntry.weight);
     
     // Find weight from approximately 7 days ago
     const weekOldEntry = bodyMetrics.find((entry: any) => {
@@ -134,17 +138,18 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       return entryDate <= sevenDaysAgo;
     });
     
-    if (weekOldEntry) {
+    if (weekOldEntry && weekOldEntry.weight && !isNaN(weekOldEntry.weight)) {
       const oldWeight = weekOldEntry.unit === 'imperial' ? 
-        weekOldEntry.weight / 2.20462 : weekOldEntry.weight;
+        Number(weekOldEntry.weight) / 2.20462 : Number(weekOldEntry.weight);
       return recentWeight - oldWeight;
     }
     
     // Fallback: compare with previous entry if no week-old data
     if (bodyMetrics.length > 1) {
       const prevEntry = bodyMetrics[1];
+      if (!prevEntry.weight || isNaN(prevEntry.weight)) return null;
       const prevWeight = prevEntry.unit === 'imperial' ? 
-        prevEntry.weight / 2.20462 : prevEntry.weight;
+        Number(prevEntry.weight) / 2.20462 : Number(prevEntry.weight);
       return recentWeight - prevWeight;
     }
     
