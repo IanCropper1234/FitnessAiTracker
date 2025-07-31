@@ -966,7 +966,7 @@ export function IntegratedNutritionOverview({
   // Calculate meal totals for each section
   const calculateMealTotals = (mealType: string) => {
     const mealLogs = nutritionLogs?.filter((log: any) => log.mealType === mealType) || [];
-    return mealLogs.reduce((totals, log) => ({
+    return mealLogs.reduce((totals: { calories: number; protein: number; carbs: number; fat: number; count: number }, log: any) => ({
       calories: totals.calories + (parseFloat(log.calories) || 0),
       protein: totals.protein + (parseFloat(log.protein) || 0),
       carbs: totals.carbs + (parseFloat(log.carbs) || 0),
@@ -1006,7 +1006,7 @@ export function IntegratedNutritionOverview({
               </div>
               {dietGoals && (
                 <div className="text-xs font-medium text-blue-300 mb-2">
-                  Left: {Math.max(0, Math.round(getCurrentTargetCalories()) - (nutritionSummary?.totalCalories || 0))}
+                  Left: {Math.round(Math.max(0, getCurrentTargetCalories() - (nutritionSummary?.totalCalories || 0)))}
                 </div>
               )}
               <div className="nutrition-progress-bar">
