@@ -68,7 +68,8 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       setLocation("/auth");
     } else if (user && location === "/auth") {
       console.log('User authenticated, redirecting to dashboard');
-      setLocation("/");
+      // Use a timeout to ensure React has time to process the user state change
+      setTimeout(() => setLocation("/"), 50);
     }
   }, [user, location, setLocation]);
 
@@ -90,15 +91,22 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 setShowDatePicker={setShowDatePicker}
               />
             ) : (
-              <div className="animate-pulse">Loading...</div>
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-pulse text-gray-600 dark:text-gray-400">Loading dashboard...</div>
+              </div>
             )}
           </AnimatedPage>
         </Route>
         <Route path="/auth">
           <AnimatedPage>
             <Auth onSuccess={(userData: User) => {
+              console.log('Auth onSuccess called with user:', userData);
               setUser(userData);
-              setLocation("/");
+              // Use setTimeout to ensure state update completes before navigation
+              setTimeout(() => {
+                console.log('Navigating to dashboard after auth success');
+                setLocation("/");
+              }, 100);
             }} />
           </AnimatedPage>
         </Route>
