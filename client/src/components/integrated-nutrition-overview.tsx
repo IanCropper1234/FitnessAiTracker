@@ -1225,6 +1225,37 @@ export function IntegratedNutritionOverview({
           month: 'short', 
           day: 'numeric' 
         });
+
+        // Helper function to render complete nutrient with progress bar
+        const renderNutrientWithProgress = (name: string, value: number, unit: string, adequacy: any) => {
+          const progressPercent = Math.min(adequacy.percentage || 0, 100);
+          return (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span>{name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{value}{unit}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
+                    {adequacy.percentage > 0 ? `${adequacy.percentage}%` : adequacy.description}
+                  </span>
+                </div>
+              </div>
+              {adequacy.percentage > 0 && (
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                  <div 
+                    className={`h-1 rounded-full transition-all duration-300 ${
+                      adequacy.percentage < 50 ? 'bg-red-500' :
+                      adequacy.percentage < 80 ? 'bg-orange-500' :
+                      adequacy.percentage <= 120 ? 'bg-green-500' :
+                      adequacy.percentage <= 200 ? 'bg-blue-500' : 'bg-purple-500'
+                    }`}
+                    style={{ width: `${progressPercent}%` }}
+                  ></div>
+                </div>
+              )}
+            </div>
+          );
+        };
         
         return (
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -1250,45 +1281,7 @@ export function IntegratedNutritionOverview({
                       Total from {micronutrientLogs.length} foods with vitamin data
                     </div>
                     
-                    {/* Progress Bar Component */}
-                    {(() => {
-                      const renderNutrientWithProgress = (name: string, value: number, unit: string, adequacy: any, specialHandling?: 'monitor' | 'limit') => {
-                        const progressPercent = Math.min(adequacy.percentage || 0, 100);
-                        return (
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between">
-                              <span>{name}</span>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">{value}{unit}</span>
-                                {specialHandling ? (
-                                  <span className="text-xs px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700">
-                                    {specialHandling === 'monitor' ? 'Monitor' : specialHandling === 'limit' ? '<10% cals' : ''}
-                                  </span>
-                                ) : (
-                                  <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
-                                    {adequacy.percentage}%
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {!specialHandling && (
-                              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
-                                <div 
-                                  className={`h-1 rounded-full transition-all duration-300 ${
-                                    adequacy.percentage < 50 ? 'bg-red-500' :
-                                    adequacy.percentage < 80 ? 'bg-orange-500' :
-                                    adequacy.percentage <= 120 ? 'bg-green-500' :
-                                    adequacy.percentage <= 200 ? 'bg-blue-500' : 'bg-purple-500'
-                                  }`}
-                                  style={{ width: `${progressPercent}%` }}
-                                ></div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      };
-                      return null;
-                    })()}
+
                     
                     <div className="grid grid-cols-1 gap-4 text-xs">
                       {/* Fat-Soluble Vitamins */}
