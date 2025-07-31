@@ -176,8 +176,15 @@ export function AddFood({ user }: AddFoodProps) {
         description: "Food logged successfully!"
       });
       
-      // Navigate back to nutrition page
-      setLocation('/nutrition');
+      // Clear form after successful logging
+      setSelectedFood(null);
+      setFoodQuery('');
+      setQuantity('1');
+      setUnit('g');
+      setMealType('');
+      clearCapturedImage();
+      setBaseAIResult(null);
+      setDynamicMacros(null);
     },
     onError: (error: any) => {
       toast({
