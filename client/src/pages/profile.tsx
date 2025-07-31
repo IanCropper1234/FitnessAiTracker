@@ -354,7 +354,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => setLocation('/dashboard')}
+            onClick={() => setLocation('/')}
             className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -368,7 +368,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => setLocation('/dashboard')}
+            onClick={() => setLocation('/')}
             className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
             <Home className="w-4 h-4" />

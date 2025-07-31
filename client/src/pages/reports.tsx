@@ -105,7 +105,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => setLocation('/dashboard')}
+              onClick={() => setLocation('/')}
               className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback"
             >
               <ArrowLeft className="w-5 h-5" />
