@@ -1,0 +1,483 @@
+Making signin request...
+auth.tsx:74 Signin response received: 
+{user: {…}}
+auth.tsx:82 SignIn mutation success: 
+{user: {…}}
+auth.tsx:88 Calling onSuccess with user: 
+{id: 1, email: 'c0109009@gmail.com', name: 'Ian'}
+App.tsx:58 Redirecting to auth - no user found
+App.tsx:61 User authenticated, redirecting to dashboard
+add-food.tsx:225 AI Analysis button clicked!
+add-food.tsx:226 Food query: chicken breast
+add-food.tsx:227 Captured image: No image
+add-food.tsx:228 Portion weight: 100
+add-food.tsx:229 Portion unit: g
+add-food.tsx:249 Calling AI mutation...
+add-food.tsx:108 AI Analysis starting with data: 
+{description: 'chicken breast', image: undefined, portionWeight: '100', portionUnit: 'g'}
+description
+: 
+"chicken breast"
+image
+: 
+undefined
+portionUnit
+: 
+"g"
+portionWeight
+: 
+"100"
+[[Prototype]]
+: 
+Object
+add-food.tsx:129 Sending payload to AI analysis: 
+{quantity: 1, unit: 'serving', analysisType: 'nutrition_label', description: 'chicken breast', portionWeight: '100', …}
+analysisType
+: 
+"nutrition_label"
+description
+: 
+"chicken breast"
+portionUnit
+: 
+"g"
+portionWeight
+: 
+"100"
+quantity
+: 
+1
+unit
+: 
+"serving"
+[[Prototype]]
+: 
+Object
+add-food.tsx:134 AI Analysis result: 
+{calories: 165, protein: 31, carbs: 0, fat: 3.6, confidence: 0.95, …}
+assumptions
+: 
+"Assumed a standard serving size of 100g of skinless, boneless, cooked chicken breast. Cooking method presumed to be grilling or baking without added fats."
+calories
+: 
+165
+carbs
+: 
+0
+category
+: 
+"protein"
+confidence
+: 
+0.95
+fat
+: 
+3.6
+mealSuitability
+: 
+Array(3)
+0
+: 
+"pre-workout"
+1
+: 
+"post-workout"
+2
+: 
+"regular"
+length
+: 
+3
+[[Prototype]]
+: 
+Array(0)
+micronutrients
+: 
+calcium
+: 
+11
+chromium
+: 
+0
+copper
+: 
+0.04
+iodine
+: 
+0
+iron
+: 
+0.9
+magnesium
+: 
+29
+manganese
+: 
+0.02
+molybdenum
+: 
+0
+phosphorus
+: 
+220
+potassium
+: 
+256
+selenium
+: 
+27.6
+sodium
+: 
+74
+vitaminA
+: 
+13
+vitaminB1
+: 
+0.07
+vitaminB2
+: 
+0.1
+vitaminB3
+: 
+13.7
+vitaminB5
+: 
+1
+vitaminB6
+: 
+0.6
+vitaminB7
+: 
+4
+vitaminB9
+: 
+4
+vitaminB12
+: 
+0.3
+vitaminC
+: 
+0
+vitaminD
+: 
+0.1
+vitaminE
+: 
+0.3
+vitaminK
+: 
+0.3
+zinc
+: 
+1
+[[Prototype]]
+: 
+Object
+constructor
+: 
+ƒ Object()
+hasOwnProperty
+: 
+ƒ hasOwnProperty()
+isPrototypeOf
+: 
+ƒ isPrototypeOf()
+propertyIsEnumerable
+: 
+ƒ propertyIsEnumerable()
+toLocaleString
+: 
+ƒ toLocaleString()
+toString
+: 
+ƒ toString()
+valueOf
+: 
+ƒ valueOf()
+__defineGetter__
+: 
+ƒ __defineGetter__()
+__defineSetter__
+: 
+ƒ __defineSetter__()
+__lookupGetter__
+: 
+ƒ __lookupGetter__()
+__lookupSetter__
+: 
+ƒ __lookupSetter__()
+__proto__
+: 
+(...)
+get __proto__
+: 
+ƒ __proto__()
+set __proto__
+: 
+ƒ __proto__()
+protein
+: 
+31
+servingDetails
+: 
+"100g of cooked, skinless, boneless chicken breast"
+[[Prototype]]
+: 
+Object
+constructor
+: 
+ƒ Object()
+hasOwnProperty
+: 
+ƒ hasOwnProperty()
+isPrototypeOf
+: 
+ƒ isPrototypeOf()
+propertyIsEnumerable
+: 
+ƒ propertyIsEnumerable()
+toLocaleString
+: 
+ƒ toLocaleString()
+toString
+: 
+ƒ toString()
+valueOf
+: 
+ƒ valueOf()
+__defineGetter__
+: 
+ƒ __defineGetter__()
+__defineSetter__
+: 
+ƒ __defineSetter__()
+__lookupGetter__
+: 
+ƒ __lookupGetter__()
+__lookupSetter__
+: 
+ƒ __lookupSetter__()
+__proto__
+: 
+(...)
+get __proto__
+: 
+ƒ __proto__()
+set __proto__
+: 
+ƒ __proto__()
+add-food.tsx:146 AI Analysis successful: 
+{calories: 165, protein: 31, carbs: 0, fat: 3.6, confidence: 0.95, …}
+assumptions
+: 
+"Assumed a standard serving size of 100g of skinless, boneless, cooked chicken breast. Cooking method presumed to be grilling or baking without added fats."
+calories
+: 
+165
+carbs
+: 
+0
+category
+: 
+"protein"
+confidence
+: 
+0.95
+fat
+: 
+3.6
+mealSuitability
+: 
+Array(3)
+0
+: 
+"pre-workout"
+1
+: 
+"post-workout"
+2
+: 
+"regular"
+length
+: 
+3
+[[Prototype]]
+: 
+Array(0)
+micronutrients
+: 
+calcium
+: 
+11
+chromium
+: 
+0
+copper
+: 
+0.04
+iodine
+: 
+0
+iron
+: 
+0.9
+magnesium
+: 
+29
+manganese
+: 
+0.02
+molybdenum
+: 
+0
+phosphorus
+: 
+220
+potassium
+: 
+256
+selenium
+: 
+27.6
+sodium
+: 
+74
+vitaminA
+: 
+13
+vitaminB1
+: 
+0.07
+vitaminB2
+: 
+0.1
+vitaminB3
+: 
+13.7
+vitaminB5
+: 
+1
+vitaminB6
+: 
+0.6
+vitaminB7
+: 
+4
+vitaminB9
+: 
+4
+vitaminB12
+: 
+0.3
+vitaminC
+: 
+0
+vitaminD
+: 
+0.1
+vitaminE
+: 
+0.3
+vitaminK
+: 
+0.3
+zinc
+: 
+1
+[[Prototype]]
+: 
+Object
+constructor
+: 
+ƒ Object()
+hasOwnProperty
+: 
+ƒ hasOwnProperty()
+isPrototypeOf
+: 
+ƒ isPrototypeOf()
+propertyIsEnumerable
+: 
+ƒ propertyIsEnumerable()
+toLocaleString
+: 
+ƒ toLocaleString()
+toString
+: 
+ƒ toString()
+valueOf
+: 
+ƒ valueOf()
+__defineGetter__
+: 
+ƒ __defineGetter__()
+__defineSetter__
+: 
+ƒ __defineSetter__()
+__lookupGetter__
+: 
+ƒ __lookupGetter__()
+__lookupSetter__
+: 
+ƒ __lookupSetter__()
+__proto__
+: 
+(...)
+get __proto__
+: 
+ƒ __proto__()
+set __proto__
+: 
+ƒ __proto__()
+protein
+: 
+31
+servingDetails
+: 
+"100g of cooked, skinless, boneless chicken breast"
+[[Prototype]]
+: 
+Object
+constructor
+: 
+ƒ Object()
+hasOwnProperty
+: 
+ƒ hasOwnProperty()
+isPrototypeOf
+: 
+ƒ isPrototypeOf()
+propertyIsEnumerable
+: 
+ƒ propertyIsEnumerable()
+toLocaleString
+: 
+ƒ toLocaleString()
+toString
+: 
+ƒ toString()
+valueOf
+: 
+ƒ valueOf()
+__defineGetter__
+: 
+ƒ __defineGetter__()
+__defineSetter__
+: 
+ƒ __defineSetter__()
+__lookupGetter__
+: 
+ƒ __lookupGetter__()
+__lookupSetter__
+: 
+ƒ __lookupSetter__()
+__proto__
+: 
+(...)
+get __proto__
+: 
+ƒ __proto__()
+set __proto__
+: 
+ƒ __proto__()

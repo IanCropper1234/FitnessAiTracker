@@ -779,6 +779,11 @@ export function AddFood({ user }: AddFoodProps) {
                       <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
                         AI Analysis Result {quantity !== (portionWeight || '1') && '(Volume Adjusted)'}
                       </Label>
+                      {dynamicMacros.micronutrients && (
+                        <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-700">
+                          Vitamins
+                        </Badge>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">

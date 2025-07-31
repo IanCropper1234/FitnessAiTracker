@@ -136,6 +136,7 @@ export function IntegratedNutritionOverview({
   // Nutrition facts dialog state
   const [showNutritionDialog, setShowNutritionDialog] = useState(false);
   const [selectedNutritionItem, setSelectedNutritionItem] = useState<any>(null);
+  const [showMicronutrients, setShowMicronutrients] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [editQuantity, setEditQuantity] = useState('');
@@ -1111,6 +1112,111 @@ export function IntegratedNutritionOverview({
           </CardContent>
         </Card>
       </div>
+
+      {/* Expandable Micronutrients Section */}
+      {(() => {
+        const todayLogs = nutritionLogs?.filter((log: any) => {
+          const logDate = new Date(log.date).toLocaleDateString();
+          const today = new Date(selectedDate).toLocaleDateString();
+          return logDate === today;
+        }) || [];
+        
+        const micronutrientLogs = todayLogs.filter((log: any) => log.micronutrients && Object.keys(log.micronutrients).length > 0);
+        
+        if (micronutrientLogs.length === 0) return null;
+        
+        return (
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CardContent className="p-3">
+              <Button
+                variant="ghost"
+                className="w-full justify-between p-2 h-auto"
+                onClick={() => setShowMicronutrients(!showMicronutrients)}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                    Micronutrients ({micronutrientLogs.length} foods with vitamins)
+                  </span>
+                </div>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showMicronutrients ? 'rotate-180' : ''}`} />
+              </Button>
+              
+              {showMicronutrients && (
+                <div className="mt-3 space-y-3">
+                  {micronutrientLogs.map((log: any) => (
+                    <div key={log.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-sm text-gray-800 dark:text-gray-200">{log.foodName}</h4>
+                        <Badge variant="outline" className="text-xs">
+                          {log.quantity} {log.unit}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        {/* Fat-Soluble Vitamins */}
+                        {(log.micronutrients.vitaminA || log.micronutrients.vitaminD || log.micronutrients.vitaminE || log.micronutrients.vitaminK) && (
+                          <div>
+                            <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-1">Fat-Soluble</h5>
+                            <div className="space-y-1">
+                              {log.micronutrients.vitaminA && <div className="flex justify-between"><span>Vitamin A</span><span>{log.micronutrients.vitaminA}μg</span></div>}
+                              {log.micronutrients.vitaminD && <div className="flex justify-between"><span>Vitamin D</span><span>{log.micronutrients.vitaminD}μg</span></div>}
+                              {log.micronutrients.vitaminE && <div className="flex justify-between"><span>Vitamin E</span><span>{log.micronutrients.vitaminE}mg</span></div>}
+                              {log.micronutrients.vitaminK && <div className="flex justify-between"><span>Vitamin K</span><span>{log.micronutrients.vitaminK}μg</span></div>}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Water-Soluble Vitamins */}
+                        {(log.micronutrients.vitaminC || log.micronutrients.vitaminB1 || log.micronutrients.vitaminB2 || log.micronutrients.vitaminB3 || log.micronutrients.vitaminB6 || log.micronutrients.vitaminB12) && (
+                          <div>
+                            <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-1">Water-Soluble</h5>
+                            <div className="space-y-1">
+                              {log.micronutrients.vitaminC && <div className="flex justify-between"><span>Vitamin C</span><span>{log.micronutrients.vitaminC}mg</span></div>}
+                              {log.micronutrients.vitaminB1 && <div className="flex justify-between"><span>B1</span><span>{log.micronutrients.vitaminB1}mg</span></div>}
+                              {log.micronutrients.vitaminB2 && <div className="flex justify-between"><span>B2</span><span>{log.micronutrients.vitaminB2}mg</span></div>}
+                              {log.micronutrients.vitaminB3 && <div className="flex justify-between"><span>B3</span><span>{log.micronutrients.vitaminB3}mg</span></div>}
+                              {log.micronutrients.vitaminB6 && <div className="flex justify-between"><span>B6</span><span>{log.micronutrients.vitaminB6}mg</span></div>}
+                              {log.micronutrients.vitaminB12 && <div className="flex justify-between"><span>B12</span><span>{log.micronutrients.vitaminB12}μg</span></div>}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Major Minerals */}
+                        {(log.micronutrients.calcium || log.micronutrients.magnesium || log.micronutrients.phosphorus || log.micronutrients.potassium) && (
+                          <div>
+                            <h5 className="font-medium text-green-600 dark:text-green-400 mb-1">Major Minerals</h5>
+                            <div className="space-y-1">
+                              {log.micronutrients.calcium && <div className="flex justify-between"><span>Calcium</span><span>{log.micronutrients.calcium}mg</span></div>}
+                              {log.micronutrients.magnesium && <div className="flex justify-between"><span>Magnesium</span><span>{log.micronutrients.magnesium}mg</span></div>}
+                              {log.micronutrients.phosphorus && <div className="flex justify-between"><span>Phosphorus</span><span>{log.micronutrients.phosphorus}mg</span></div>}
+                              {log.micronutrients.potassium && <div className="flex justify-between"><span>Potassium</span><span>{log.micronutrients.potassium}mg</span></div>}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Trace Minerals */}
+                        {(log.micronutrients.iron || log.micronutrients.zinc || log.micronutrients.selenium || log.micronutrients.copper) && (
+                          <div>
+                            <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-1">Trace Minerals</h5>
+                            <div className="space-y-1">
+                              {log.micronutrients.iron && <div className="flex justify-between"><span>Iron</span><span>{log.micronutrients.iron}mg</span></div>}
+                              {log.micronutrients.zinc && <div className="flex justify-between"><span>Zinc</span><span>{log.micronutrients.zinc}mg</span></div>}
+                              {log.micronutrients.selenium && <div className="flex justify-between"><span>Selenium</span><span>{log.micronutrients.selenium}μg</span></div>}
+                              {log.micronutrients.copper && <div className="flex justify-between"><span>Copper</span><span>{log.micronutrients.copper}mg</span></div>}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })()}
+
       {/* Daily Food Log Section */}
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="pb-2 pt-3">
@@ -1582,7 +1688,7 @@ export function IntegratedNutritionOverview({
 
       {/* Nutrition Facts Dialog */}
       <Dialog open={showNutritionDialog} onOpenChange={setShowNutritionDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <span>Nutrition Facts</span>
