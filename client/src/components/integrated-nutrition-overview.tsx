@@ -1416,8 +1416,15 @@ export function IntegratedNutritionOverview({
                               <div className="font-medium text-black dark:text-white text-sm mb-1 truncate">
                                 {log.foodName}
                               </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                                {log.quantity} {log.unit}, {log.calories} calories
+                              <div className="flex items-center gap-2">
+                                <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                                  {log.quantity} {log.unit}, {log.calories} calories
+                                </div>
+                                {log.micronutrients && (
+                                  <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
+                                    Vitamins
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                           </div>

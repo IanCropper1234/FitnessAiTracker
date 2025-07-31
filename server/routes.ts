@@ -538,6 +538,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/nutrition/log", requireAuth, async (req, res) => {
     try {
       const userId = (req as any).userId;
+      console.log('Nutrition log request body:', JSON.stringify(req.body, null, 2));
+      console.log('Micronutrients in request:', req.body.micronutrients);
+      
       const logData = {
         ...req.body,
         userId: userId,
@@ -546,12 +549,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Include micronutrient data if provided from AI analysis
       if (req.body.micronutrients) {
+        console.log('Adding micronutrients to logData:', req.body.micronutrients);
         logData.micronutrients = req.body.micronutrients;
       }
       
+      console.log('Final logData before storage:', JSON.stringify(logData, null, 2));
       const log = await storage.createNutritionLog(logData);
+      console.log('Created log:', JSON.stringify(log, null, 2));
       res.json(log);
     } catch (error: any) {
+      console.error('Error creating nutrition log:', error);
       res.status(400).json({ message: error.message });
     }
   });
