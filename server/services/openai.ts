@@ -38,6 +38,14 @@ export interface MicronutrientData {
   selenium?: number; // mcg
   chromium?: number; // mcg
   molybdenum?: number; // mcg
+  
+  // Macronutrient Components
+  sugar?: number; // g (total sugars)
+  fiber?: number; // g (dietary fiber)
+  saturatedFat?: number; // g
+  monounsaturatedFat?: number; // g
+  polyunsaturatedFat?: number; // g
+  cholesterol?: number; // mg
 }
 
 export interface NutritionAnalysis {
@@ -105,8 +113,9 @@ export async function analyzeNutrition(
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  * Macronutrient Components: sugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), cholesterol (mg)
   
-  **Note:** Only include micronutrient values that are visible on the nutrition label or can be reasonably estimated from the food type. Use null for unknown values.
+  **Note:** Include sugar, fiber, and fat breakdown if visible on nutrition label. Use null for unknown values.
 
 Return only valid JSON with all required fields.`
           },
@@ -149,8 +158,9 @@ Return only valid JSON with all required fields.`
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  * Macronutrient Components: sugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), cholesterol (mg)
   
-  **Note:** Estimate key micronutrient values based on visible foods and typical nutritional profiles.
+  **Note:** Estimate key micronutrient values, sugar, fiber, and fat breakdown based on visible foods and typical nutritional profiles.
 
 Return only valid JSON with all required fields.`
           },
@@ -193,8 +203,9 @@ Return only valid JSON with all required fields.`
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  * Macronutrient Components: sugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), cholesterol (mg)
   
-  **Note:** Based on food type and ingredients, estimate key micronutrient values from USDA database knowledge. Focus on nutrients the food is known to be rich in.
+  **Note:** Based on food type and ingredients, estimate key micronutrient values, sugar, fiber, and fat breakdown from USDA database knowledge. Focus on nutrients the food is known to be rich in.
 
 **Category Guidelines (Renaissance Periodization methodology):**
 - "protein": >20g protein per 100 calories (chicken, fish, eggs, protein powder)

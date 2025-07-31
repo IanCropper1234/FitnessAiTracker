@@ -1153,10 +1153,7 @@ export function IntegratedNutritionOverview({
           return totals;
         }, {});
 
-        // Debug log to see what micronutrients are available
-        console.log('Micronutrient logs count:', micronutrientLogs.length);
-        console.log('Daily totals:', dailyTotals);
-        console.log('Available nutrients:', Object.keys(dailyTotals));
+
         
         // Calculate RDA recommendations based on user profile
         const userProfile = profileData?.user || {};
@@ -1197,6 +1194,11 @@ export function IntegratedNutritionOverview({
             iodine: 150, // μg
             chromium: estimatedGender === 'male' ? 35 : 25, // μg
             molybdenum: 45, // μg
+            // Macronutrient Components
+            sugar: null, // No specific RDA, monitoring only
+            fiber: (estimatedGender === 'male' ? 38 : 25) * (age > 50 ? 0.8 : 1.0), // g (adjusted for age)
+            saturatedFat: null, // No RDA, limit is <10% of calories
+            cholesterol: 300, // mg (upper limit)
           };
         };
         
@@ -1604,6 +1606,71 @@ export function IntegratedNutritionOverview({
                                   <span>Molybdenum</span>
                                   <div className="flex items-center gap-2">
                                     <span className="font-medium">{Math.round(dailyTotals.molybdenum * 10) / 10}μg</span>
+                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
+                                      {adequacy.percentage}%
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Macronutrient Components */}
+                      {(dailyTotals.sugar > 0 || dailyTotals.fiber > 0 || dailyTotals.saturatedFat > 0 || dailyTotals.cholesterol > 0) && (
+                        <div>
+                          <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Macronutrient Components</h5>
+                          <div className="space-y-2">
+                            {dailyTotals.sugar > 0 && (
+                              <div className="flex items-center justify-between">
+                                <span>Total Sugar</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{Math.round(dailyTotals.sugar * 10) / 10}g</span>
+                                  <span className="text-xs px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700">
+                                    Monitor
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            {dailyTotals.fiber > 0 && (() => {
+                              const adequacy = getAdequacy(dailyTotals.fiber, rda.fiber);
+                              return (
+                                <div className="flex items-center justify-between">
+                                  <span>Dietary Fiber</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium">{Math.round(dailyTotals.fiber * 10) / 10}g</span>
+                                    <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
+                                      {adequacy.percentage}%
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                            {dailyTotals.saturatedFat > 0 && (
+                              <div className="flex items-center justify-between">
+                                <span>Saturated Fat</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{Math.round(dailyTotals.saturatedFat * 10) / 10}g</span>
+                                  <span className="text-xs px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700">
+                                    &lt;10% cals
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            {dailyTotals.cholesterol > 0 && (() => {
+                              // For cholesterol, lower is better (it's an upper limit)
+                              const percentage = Math.round((dailyTotals.cholesterol / rda.cholesterol) * 100);
+                              const adequacy = percentage <= 100 ? 
+                                { percentage, color: 'text-green-600 dark:text-green-400', description: 'Good' } :
+                                percentage <= 150 ?
+                                { percentage, color: 'text-orange-600 dark:text-orange-400', description: 'High' } :
+                                { percentage, color: 'text-red-600 dark:text-red-400', description: 'Excess' };
+                              return (
+                                <div className="flex items-center justify-between">
+                                  <span>Cholesterol</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium">{Math.round(dailyTotals.cholesterol)}mg</span>
                                     <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
                                       {adequacy.percentage}%
                                     </span>
