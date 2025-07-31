@@ -52,27 +52,31 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // Enhanced PWA-compatible redirect logic with iOS blank page fix
+  // iOS PWA-compatible redirect logic with immediate navigation
   useEffect(() => {
     const isIOSPWA = window.navigator.standalone === true || 
                      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
     
-    console.log('Navigation check - User:', !!user, 'Location:', location, 'iOS PWA:', isIOSPWA);
+    console.log('FitAI PWA Navigation - User:', !!user, 'Location:', location, 'iOS PWA:', isIOSPWA);
     
-    if (!user && location !== "/auth") {
-      console.log('Redirecting to auth - no user found');
-      if (isIOSPWA) {
-        // Force a full page reload for iOS PWA to prevent blank page
-        window.location.href = window.location.origin + "/auth";
-      } else {
-        setLocation("/auth");
+    // For iOS PWA, always use window.location for navigation
+    if (isIOSPWA) {
+      if (!user && location !== "/auth") {
+        console.log('FitAI PWA: Redirecting to auth via window.location');
+        window.location.replace(window.location.origin + "/auth");
+        return;
+      } else if (user && location === "/auth") {
+        console.log('FitAI PWA: User authenticated, redirecting to dashboard via window.location');
+        window.location.replace(window.location.origin + "/");
+        return;
       }
-    } else if (user && location === "/auth") {
-      console.log('User authenticated, redirecting to dashboard');
-      if (isIOSPWA) {
-        // Force a full page reload for iOS PWA to ensure proper initialization
-        window.location.href = window.location.origin + "/";
-      } else {
+    } else {
+      // Standard web navigation
+      if (!user && location !== "/auth") {
+        console.log('Web: Redirecting to auth');
+        setLocation("/auth");
+      } else if (user && location === "/auth") {
+        console.log('Web: User authenticated, redirecting to dashboard');
         setLocation("/");
       }
     }
@@ -103,17 +107,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/auth">
           <div className="page-enter ios-animation">
             <Auth onSuccess={(userData: User) => {
-              console.log('FitAI PWA: Auth success, setting user and navigating');
+              console.log('FitAI PWA: Auth success, user data received');
               setUser(userData);
               
-              // iOS PWA-specific navigation handling
+              // iOS PWA: Immediate navigation without delay
               const isIOSPWA = window.navigator.standalone === true;
               if (isIOSPWA) {
-                console.log('FitAI PWA: iOS PWA detected, forcing page reload for proper initialization');
-                // Force a full page reload to prevent blank page in iOS PWA
-                setTimeout(() => {
-                  window.location.href = window.location.origin + '/';
-                }, 150);
+                console.log('FitAI PWA: iOS detected, immediate redirect to dashboard');
+                window.location.replace(window.location.origin + '/');
               } else {
                 setLocation("/");
               }

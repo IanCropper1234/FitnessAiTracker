@@ -89,9 +89,11 @@ self.addEventListener('fetch', (event) => {
 
   // Handle page navigation with network-first, fallback to cache
   if (request.mode === 'navigate') {
+    console.log('FitAI PWA SW: Navigation request to:', url.pathname);
     event.respondWith(
       fetch(request, { credentials: 'include' })
         .then((response) => {
+          console.log('FitAI PWA SW: Navigation response status:', response.status, 'for', url.pathname);
           // Cache successful navigation responses
           if (response.ok) {
             const responseClone = response.clone();
@@ -101,9 +103,11 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('FitAI PWA SW: Navigation failed for', url.pathname, error);
           // Fallback to cached version or offline page
           return caches.match(request).then((response) => {
+            console.log('FitAI PWA SW: Using cached response for', url.pathname);
             return response || caches.match('/');
           });
         })
