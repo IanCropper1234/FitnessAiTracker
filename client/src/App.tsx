@@ -52,36 +52,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // iOS PWA-compatible redirect logic with immediate navigation
+  // Redirect to auth if no user (but not if we're already checking auth)
   useEffect(() => {
-    const isIOSPWA = window.navigator.standalone === true || 
-                     (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-    
-    console.log('FitAI PWA Navigation - User:', !!user, 'Location:', location, 'iOS PWA:', isIOSPWA);
-    
-    // Simplified navigation logic to prevent redirect loops
     if (!user && location !== "/auth") {
       console.log('Redirecting to auth - no user found');
-      if (isIOSPWA) {
-        // Only redirect if we haven't just tried authentication
-        const lastAuthAttempt = localStorage.getItem('fitai-last-auth-attempt');
-        const now = Date.now();
-        if (!lastAuthAttempt || now - parseInt(lastAuthAttempt) > 5000) {
-          localStorage.setItem('fitai-last-auth-attempt', now.toString());
-          window.location.replace(window.location.origin + "/auth");
-        }
-      } else {
-        setLocation("/auth");
-      }
+      setLocation("/auth");
     } else if (user && location === "/auth") {
       console.log('User authenticated, redirecting to dashboard');
-      // Clear auth attempt timestamp on successful auth
-      localStorage.removeItem('fitai-last-auth-attempt');
-      if (isIOSPWA) {
-        window.location.replace(window.location.origin + "/");
-      } else {
-        setLocation("/");
-      }
+      setLocation("/");
     }
   }, [user, location, setLocation]);
 
@@ -110,25 +88,8 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/auth">
           <div className="page-enter ios-animation">
             <Auth onSuccess={(userData: User) => {
-              console.log('FitAI PWA: Auth success, user data received');
               setUser(userData);
-              
-              // iOS PWA: Cache auth and navigate
-              const isIOSPWA = window.navigator.standalone === true;
-              if (isIOSPWA) {
-                console.log('FitAI PWA: Caching auth state and navigating');
-                // Cache the successful authentication
-                localStorage.setItem('fitai-auth-cache', JSON.stringify({
-                  timestamp: Date.now(),
-                  user: userData,
-                  sessionValid: true
-                }));
-                
-                // Navigate immediately
-                window.location.replace(window.location.origin + '/');
-              } else {
-                setLocation("/");
-              }
+              setLocation("/");
             }} />
           </div>
         </Route>
@@ -269,117 +230,31 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [initError, setInitError] = useState<string | null>(null);
 
-  // iOS PWA-compatible authentication with blank page prevention
+  // Check authentication status on app initialization
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log('FitAI PWA: Starting authentication check...');
-        
-        // Detect iOS PWA mode
-        const isIOSPWA = window.navigator.standalone === true || 
-                         (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-        console.log('FitAI PWA: iOS PWA mode detected:', isIOSPWA);
-        
-        // For iOS PWA, check if we need to handle URL directly
-        if (isIOSPWA) {
-          const currentPath = window.location.pathname;
-          console.log('FitAI PWA: Current path:', currentPath);
-          
-          // If we're not on a valid route, redirect to home
-          const validRoutes = ['/', '/auth', '/nutrition', '/add-food', '/training', '/reports', '/profile', '/wellness-test', '/rp-coach'];
-          if (!validRoutes.includes(currentPath)) {
-            console.log('FitAI PWA: Invalid route detected, redirecting to home');
-            window.location.href = window.location.origin + '/';
-            return;
-          }
-        }
-        
+        console.log('Checking authentication status...');
         const response = await fetch('/api/auth/user', {
-          credentials: 'include',
-          cache: 'no-cache',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-            'X-PWA-Mode': isIOSPWA ? 'ios-standalone' : 'web'
-          }
+          credentials: 'include'
         });
-        
-        console.log('FitAI PWA: Auth check response status:', response.status);
-        
+        console.log('Auth check response status:', response.status);
         if (response.ok) {
           const userData = await response.json();
-          console.log('FitAI PWA: Authentication successful');
+          console.log('Authentication successful, user data:', userData);
           setUser(userData.user);
-          
-          // For iOS PWA, always cache authentication state
-          if (isIOSPWA) {
-            const authCache = {
-              timestamp: Date.now(),
-              user: userData.user,
-              sessionValid: true
-            };
-            localStorage.setItem('fitai-auth-cache', JSON.stringify(authCache));
-            console.log('FitAI PWA: Cached auth state for PWA');
-          }
         } else {
-          console.log('FitAI PWA: Not authenticated - no valid session');
-          
-          // For iOS PWA, check cache before giving up
-          if (isIOSPWA) {
-            const cachedAuth = localStorage.getItem('fitai-auth-cache');
-            if (cachedAuth) {
-              try {
-                const { timestamp, user: cachedUser, sessionValid } = JSON.parse(cachedAuth);
-                // Use cached auth if less than 30 minutes old and marked valid
-                if (Date.now() - timestamp < 1800000 && sessionValid) {
-                  console.log('FitAI PWA: Using valid cached auth');
-                  setUser(cachedUser);
-                  return;
-                }
-              } catch (e) {
-                console.error('FitAI PWA: Failed to parse cached auth');
-              }
-            }
-            localStorage.removeItem('fitai-auth-cache');
-          }
+          console.log('Not authenticated - no valid session');
         }
       } catch (error) {
-        console.error('FitAI PWA: Authentication check failed:', error);
-        const isIOSPWA = window.navigator.standalone === true;
-        
-        if (isIOSPWA) {
-          console.log('FitAI PWA: Network error, checking localStorage');
-          const cachedAuth = localStorage.getItem('fitai-auth-cache');
-          if (cachedAuth) {
-            try {
-              const { timestamp, user: cachedUser, sessionValid } = JSON.parse(cachedAuth);
-              // Use cached auth if less than 30 minutes old and marked valid
-              if (Date.now() - timestamp < 1800000 && sessionValid) {
-                console.log('FitAI PWA: Using cached auth for PWA recovery');
-                setUser(cachedUser);
-                setAuthLoading(false);
-                return;
-              }
-            } catch (parseError) {
-              console.error('FitAI PWA: Failed to parse cached auth');
-            }
-          }
-          // Clear invalid cache
-          localStorage.removeItem('fitai-auth-cache');
-        }
-        setInitError(error instanceof Error ? error.message : 'Authentication failed');
+        console.log('Authentication check failed:', error);
       } finally {
         setAuthLoading(false);
       }
     };
 
-    // Immediate check for iOS PWA, delayed for web
-    const isIOSPWA = window.navigator.standalone === true;
-    const delay = isIOSPWA ? 0 : 100;
-    const timer = setTimeout(checkAuth, delay);
-    return () => clearTimeout(timer);
+    checkAuth();
   }, []);
 
   if (authLoading) {
@@ -389,26 +264,7 @@ export default function App() {
           <LanguageProvider>
             <TooltipProvider>
               <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="animate-pulse">Loading FitAI...</div>
-                  <div className="text-xs text-gray-500">
-                    {typeof window !== 'undefined' && window.navigator.standalone ? 'PWA Mode' : 'Web Mode'}
-                  </div>
-                  {initError && (
-                    <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg max-w-sm">
-                      <div className="text-sm text-red-800 dark:text-red-200">
-                        Initialization Error: {initError}
-                      </div>
-                      <Button 
-                        onClick={() => window.location.reload()} 
-                        className="mt-2 w-full"
-                        size="sm"
-                      >
-                        Retry
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                <div className="animate-pulse">Loading...</div>
               </div>
             </TooltipProvider>
           </LanguageProvider>

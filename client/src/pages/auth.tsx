@@ -66,28 +66,12 @@ export default function Auth({ onSuccess }: AuthProps) {
     mutationFn: async (data: { email: string; password: string }) => {
       try {
         console.log('Making signin request...');
-        
-        // Check if running as iOS PWA for enhanced handling
-        const isIOSPWA = window.navigator.standalone === true || 
-                         (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-        console.log('iOS PWA signin mode:', isIOSPWA);
-        
         const response = await apiRequest("POST", "/api/auth/signin", data);
         if (!response.ok) {
           throw new Error(`Server error: ${response.status}`);
         }
         const result = await response.json();
         console.log('Signin response received:', result);
-        
-        // For PWA mode, ensure session is properly established
-        if (isIOSPWA && result?.user) {
-          console.log('PWA signin success, storing auth cache');
-          localStorage.setItem('fitai-auth-cache', JSON.stringify({
-            timestamp: Date.now(),
-            user: result.user
-          }));
-        }
-        
         return result;
       } catch (error) {
         console.error('API request failed:', error);
