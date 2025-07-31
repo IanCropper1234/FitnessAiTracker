@@ -52,14 +52,27 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // Redirect to auth if no user (but not if we're already checking auth)
+  // Enhanced PWA-compatible redirect logic
   useEffect(() => {
+    const isIOSPWA = window.navigator.standalone === true || 
+                     (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    
     if (!user && location !== "/auth") {
       console.log('Redirecting to auth - no user found');
-      setLocation("/auth");
+      // Add delay for PWA mode to ensure proper initialization
+      if (isIOSPWA) {
+        setTimeout(() => setLocation("/auth"), 100);
+      } else {
+        setLocation("/auth");
+      }
     } else if (user && location === "/auth") {
       console.log('User authenticated, redirecting to dashboard');
-      setLocation("/");
+      // Ensure smooth transition in PWA mode
+      if (isIOSPWA) {
+        setTimeout(() => setLocation("/"), 100);
+      } else {
+        setLocation("/");
+      }
     }
   }, [user, location, setLocation]);
 
@@ -230,31 +243,73 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [initError, setInitError] = useState<string | null>(null);
 
-  // Check authentication status on app initialization
+  // Check authentication status on app initialization with PWA-compatible handling
   useEffect(() => {
     const checkAuth = async () => {
       try {
         console.log('Checking authentication status...');
+        
+        // Check if running as iOS PWA
+        const isIOSPWA = window.navigator.standalone === true || 
+                         (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+        console.log('iOS PWA mode detected:', isIOSPWA);
+        
         const response = await fetch('/api/auth/user', {
-          credentials: 'include'
+          credentials: 'include',
+          cache: 'no-cache', // Prevent caching issues in PWA
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
         });
+        
         console.log('Auth check response status:', response.status);
+        
         if (response.ok) {
           const userData = await response.json();
           console.log('Authentication successful, user data:', userData);
           setUser(userData.user);
         } else {
           console.log('Not authenticated - no valid session');
+          // In PWA mode, ensure we clear any stale data
+          if (isIOSPWA) {
+            localStorage.removeItem('fitai-auth-cache');
+          }
         }
       } catch (error) {
-        console.log('Authentication check failed:', error);
+        console.error('Authentication check failed:', error);
+        // In case of network failure in PWA, try localStorage fallback
+        const isIOSPWA = window.navigator.standalone === true;
+        if (isIOSPWA) {
+          console.log('PWA auth check failed, attempting localStorage recovery');
+          const cachedAuth = localStorage.getItem('fitai-auth-cache');
+          if (cachedAuth) {
+            try {
+              const { timestamp, user: cachedUser } = JSON.parse(cachedAuth);
+              // Use cached user if less than 1 hour old
+              if (Date.now() - timestamp < 3600000) {
+                console.log('Using cached auth for PWA recovery');
+                setUser(cachedUser);
+              } else {
+                localStorage.removeItem('fitai-auth-cache');
+              }
+            } catch (parseError) {
+              console.error('Failed to parse cached auth:', parseError);
+              localStorage.removeItem('fitai-auth-cache');
+            }
+          }
+        }
+        setInitError(error instanceof Error ? error.message : 'Authentication failed');
       } finally {
         setAuthLoading(false);
       }
     };
 
-    checkAuth();
+    // Add a small delay to ensure PWA environment is fully initialized
+    const timer = setTimeout(checkAuth, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   if (authLoading) {
@@ -264,7 +319,26 @@ export default function App() {
           <LanguageProvider>
             <TooltipProvider>
               <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-                <div className="animate-pulse">Loading...</div>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="animate-pulse">Loading FitAI...</div>
+                  <div className="text-xs text-gray-500">
+                    {typeof window !== 'undefined' && window.navigator.standalone ? 'PWA Mode' : 'Web Mode'}
+                  </div>
+                  {initError && (
+                    <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg max-w-sm">
+                      <div className="text-sm text-red-800 dark:text-red-200">
+                        Initialization Error: {initError}
+                      </div>
+                      <Button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-2 w-full"
+                        size="sm"
+                      >
+                        Retry
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </TooltipProvider>
           </LanguageProvider>
