@@ -1809,17 +1809,17 @@ export function IntegratedNutritionOverview({
                       return (
                         <div 
                           key={log.id}
-                          draggable={!bulkMode}
-                          onDragStart={(e) => !bulkMode && handleDragStart(e, log)}
+                          draggable={bulkMode} // Enable drag only in edit mode
+                          onDragStart={(e) => bulkMode && handleDragStart(e, log)}
                           onDragEnd={handleDragEnd}
-                          onDragOver={(e) => !bulkMode && handleDragOver(e, mealType.key, index)}
-                          onTouchStart={(e) => handleTouchStart(e, log)}
-                          onTouchMove={handleTouchMove}
-                          onTouchEnd={handleTouchEnd}
+                          onDragOver={(e) => bulkMode && handleDragOver(e, mealType.key, index)}
+                          onTouchStart={(e) => bulkMode && handleTouchStart(e, log)}
+                          onTouchMove={bulkMode ? handleTouchMove : undefined}
+                          onTouchEnd={bulkMode ? handleTouchEnd : undefined}
                           style={{
                             transform: shouldShift ? 'translateY(4px)' : 'translateY(0)',
                             transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                            touchAction: 'none',
+                            touchAction: bulkMode ? 'none' : 'manipulation',
                             WebkitTouchCallout: 'none',
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
@@ -1835,21 +1835,19 @@ export function IntegratedNutritionOverview({
                               ? selectedLogs.includes(log.id) 
                                 ? 'ring-2 ring-blue-500 bg-white dark:bg-gray-900 transform scale-[1.02]' 
                                 : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' 
-                              : 'cursor-move hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-[0.98]'
+                              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                             }
                           `}
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
-                          {/* Selection/Drag Handle */}
+                          {/* Selection Checkbox (always shown in bulk mode) */}
                           <div className="flex-shrink-0">
-                            {bulkMode ? (
+                            {bulkMode && (
                               <Checkbox
                                 checked={selectedLogs.includes(log.id)}
                                 onCheckedChange={() => toggleLogSelection(log.id)}
                                 onClick={(e) => e.stopPropagation()}
                               />
-                            ) : (
-                              <GripVertical className="h-4 w-4 text-gray-400" />
                             )}
                           </div>
 
@@ -1891,92 +1889,100 @@ export function IntegratedNutritionOverview({
                             </div>
                           </div>
                           
-                          {/* Three-dot menu */}
+                          {/* Conditional Right Side: Drag Handle (bulk mode) or Three-dots Menu (default) */}
                           <div className="flex-shrink-0 w-6 flex justify-center">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <div
-                                  onTouchStart={(e) => {
-                                    // Track touch start position for scroll detection
-                                    e.currentTarget.dataset.touchY = e.touches[0].clientY.toString();
-                                    e.currentTarget.dataset.scrollDetected = 'false';
-                                  }}
-                                  onTouchMove={(e) => {
-                                    // Detect scrolling movement
-                                    const startY = parseInt(e.currentTarget.dataset.touchY || '0');
-                                    const currentY = e.touches[0].clientY;
-                                    const deltaY = Math.abs(currentY - startY);
-                                    if (deltaY > 10) {
-                                      e.currentTarget.dataset.scrollDetected = 'true';
-                                    }
-                                  }}
-                                >
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-6 w-6 p-0"
-                                    onClick={(e) => {
-                                      // Prevent menu opening if scroll was detected
-                                      const scrollDetected = e.currentTarget.parentElement?.dataset.scrollDetected === 'true';
-                                      if (scrollDetected) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        // Reset for next interaction
-                                        if (e.currentTarget.parentElement) {
-                                          e.currentTarget.parentElement.dataset.scrollDetected = 'false';
-                                        }
+                            {bulkMode ? (
+                              // Drag Handle (shown in edit/bulk mode)
+                              <div className="cursor-move">
+                                <GripVertical className="h-4 w-4 text-gray-400" />
+                              </div>
+                            ) : (
+                              // Three-dots Menu (shown in default mode)
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <div
+                                    onTouchStart={(e) => {
+                                      // Track touch start position for scroll detection
+                                      e.currentTarget.dataset.touchY = e.touches[0].clientY.toString();
+                                      e.currentTarget.dataset.scrollDetected = 'false';
+                                    }}
+                                    onTouchMove={(e) => {
+                                      // Detect scrolling movement
+                                      const startY = parseInt(e.currentTarget.dataset.touchY || '0');
+                                      const currentY = e.touches[0].clientY;
+                                      const deltaY = Math.abs(currentY - startY);
+                                      if (deltaY > 10) {
+                                        e.currentTarget.dataset.scrollDetected = 'true';
                                       }
                                     }}
                                   >
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {mealTypes
-                                  .filter(mt => mt.key !== log.mealType)
-                                  .map(mt => (
-                                    <DropdownMenuItem
-                                      key={mt.key}
-                                      onClick={() => handleCopyFood(log, mt.key)}
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="h-6 w-6 p-0"
+                                      onClick={(e) => {
+                                        // Prevent menu opening if scroll was detected
+                                        const scrollDetected = e.currentTarget.parentElement?.dataset.scrollDetected === 'true';
+                                        if (scrollDetected) {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          // Reset for next interaction
+                                          if (e.currentTarget.parentElement) {
+                                            e.currentTarget.parentElement.dataset.scrollDetected = 'false';
+                                          }
+                                        }
+                                      }}
                                     >
-                                      <Copy className="h-4 w-4 mr-2" />
-                                      Copy to {mt.label}
-                                    </DropdownMenuItem>
-                                  ))
-                                }
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setCopyOperation({
-                                      type: 'item',
-                                      data: log,
-                                      sourceSection: undefined
-                                    });
-                                    // Trigger iOS date picker for "copy to" date
-                                    if (setShowCopyToDatePicker) {
-                                      setShowCopyToDatePicker(true);
-                                    }
-                                  }}
-                                >
-                                  <CalendarIcon className="h-4 w-4 mr-2" />
-                                  Copy to date
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() => handleEditFood(log)}
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Edit Quantity
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => deleteMutation.mutate(log.id)}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  {mealTypes
+                                    .filter(mt => mt.key !== log.mealType)
+                                    .map(mt => (
+                                      <DropdownMenuItem
+                                        key={mt.key}
+                                        onClick={() => handleCopyFood(log, mt.key)}
+                                      >
+                                        <Copy className="h-4 w-4 mr-2" />
+                                        Copy to {mt.label}
+                                      </DropdownMenuItem>
+                                    ))
+                                  }
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setCopyOperation({
+                                        type: 'item',
+                                        data: log,
+                                        sourceSection: undefined
+                                      });
+                                      // Trigger iOS date picker for "copy to" date
+                                      if (setShowCopyToDatePicker) {
+                                        setShowCopyToDatePicker(true);
+                                      }
+                                    }}
+                                  >
+                                    <CalendarIcon className="h-4 w-4 mr-2" />
+                                    Copy to date
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => handleEditFood(log)}
+                                  >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit Quantity
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => deleteMutation.mutate(log.id)}
+                                    className="text-red-600 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
                           </div>
                         </div>
                       );
