@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 
 interface AnimatedPageProps {
@@ -8,43 +8,38 @@ interface AnimatedPageProps {
 
 export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children, className = '' }) => {
   const [location] = useLocation();
-  const [animationKey, setAnimationKey] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevLocationRef = useRef(location);
 
   useEffect(() => {
-    console.log('AnimatedPage: Location changed to:', location);
-    
-    // Force a new animation by resetting state
-    setIsVisible(false);
-    setAnimationKey(prev => prev + 1);
-    
-    // Force reflow
-    if (containerRef.current) {
-      containerRef.current.offsetHeight;
+    if (location !== prevLocationRef.current && containerRef.current) {
+      console.log('AnimatedPage: Location changed to:', location, 'starting animation');
+      
+      // Use Web Animations API for reliable cross-browser animation
+      const animation = containerRef.current.animate([
+        { opacity: 0, transform: 'translateY(20px) scale(0.95)' },
+        { opacity: 1, transform: 'translateY(0) scale(1)' }
+      ], {
+        duration: 600,
+        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        fill: 'both'
+      });
+
+      animation.addEventListener('finish', () => {
+        console.log('Page transition animation completed');
+      });
+
+      prevLocationRef.current = location;
     }
-    
-    // Start animation after a brief delay
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-    
-    return () => clearTimeout(timer);
   }, [location]);
 
   return (
     <div 
-      key={animationKey}
       ref={containerRef}
-      className={`page-content transform transition-all duration-1000 ease-out ${
-        isVisible 
-          ? 'opacity-100 translate-y-0 scale-100' 
-          : 'opacity-0 translate-y-20 scale-95'
-      } ${className}`}
+      className={`page-content ${className}`}
       style={{
-        willChange: 'transform, opacity',
-        backfaceVisibility: 'hidden',
-        transformStyle: 'preserve-3d'
+        opacity: 1,
+        transform: 'translateY(0) scale(1)'
       }}
     >
       {children}
