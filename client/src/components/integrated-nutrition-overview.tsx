@@ -1823,20 +1823,7 @@ export function IntegratedNutritionOverview({
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
                           }}
-                          className={`
-                            flex items-center gap-3 py-2 px-0 w-full max-w-full
-                            ios-touch-feedback ios-button touch-target
-                            ${isCurrentlyDragged
-                              ? 'opacity-30 scale-95 bg-blue-50 dark:bg-blue-900/20 shadow-lg z-10' 
-                              : isDragTarget
-                              ? 'bg-green-100 dark:bg-green-900/30 border-green-400 border-2 border-dashed transform translate-y-1'
-                              : bulkMode 
-                              ? selectedLogs.includes(log.id) 
-                                ? 'ring-2 ring-blue-500 bg-white dark:bg-gray-900 transform scale-[1.02]' 
-                                : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' 
-                              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                            }
-                          `}
+                          className="flex items-center gap-3 py-2 px-0 w-full max-w-full ios-touch-feedback ios-button touch-target hover:bg-gray-50 dark:hover:bg-gray-800 bg-[#032840]"
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
                           {/* Selection Checkbox (always shown in bulk mode) */}
@@ -1849,7 +1836,6 @@ export function IntegratedNutritionOverview({
                               />
                             )}
                           </div>
-
                           {/* Food Content */}
                           <div className="flex-1 min-w-0 pr-2">
                             <div 
@@ -1887,17 +1873,16 @@ export function IntegratedNutritionOverview({
                               </div>
                             </div>
                           </div>
-                          
                           {/* Conditional Right Side: Drag Handle (bulk mode) or Three-dots Menu (default) */}
                           <div className="flex-shrink-0 w-6 flex justify-center">
                             {bulkMode ? (
                               // Drag Handle (shown in edit/bulk mode)
-                              <div className="cursor-move">
+                              (<div className="cursor-move">
                                 <GripVertical className="h-4 w-4 text-gray-400" />
-                              </div>
+                              </div>)
                             ) : (
                               // Three-dots Menu (shown in default mode)
-                              <DropdownMenu>
+                              (<DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <div
                                     onTouchStart={(e) => {
@@ -1980,7 +1965,7 @@ export function IntegratedNutritionOverview({
                                     Delete
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
-                              </DropdownMenu>
+                              </DropdownMenu>)
                             )}
                           </div>
                         </div>
@@ -2047,7 +2032,6 @@ export function IntegratedNutritionOverview({
         </div>
       )}
       {/* Nutrition Facts Dialog removed - now using standalone page */}
-      
       {/* Edit Food Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-md">
