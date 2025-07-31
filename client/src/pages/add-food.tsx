@@ -824,7 +824,7 @@ export function AddFood({ user }: AddFoodProps) {
                   </div>
 
                   {/* History Items */}
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                  <div className="space-y-2">
                     {displayedFoodHistory.map((item: any, index: number) => (
                       <div
                         key={`${item.foodName}-${index}`}
@@ -904,7 +904,7 @@ export function AddFood({ user }: AddFoodProps) {
                   </div>
 
                   {/* Saved Meals Items */}
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                  <div className="space-y-2">
                     {displayedSavedMeals.map((meal: any) => (
                       <div
                         key={meal.id}
