@@ -20,6 +20,7 @@ import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
 import RPCoachPage from "./pages/RPCoachPage";
+import { NotFound } from "./components/NotFound";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -152,17 +153,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           </div>
         </Route>
         <Route>
-          <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold mb-4">404 - Page Not Found</h1>
-              <Button 
-                onClick={() => setLocation("/dashboard")}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-              >
-                Go to Dashboard
-              </Button>
-            </div>
-          </div>
+          <NotFound />
         </Route>
       </Switch>
       
