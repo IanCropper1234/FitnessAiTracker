@@ -38,38 +38,38 @@ export function DashboardEditor({
 
   const getColorClass = (color: string) => {
     const colorMap: Record<string, string> = {
-      blue: 'bg-blue-100 border-blue-300 text-blue-800',
-      green: 'bg-green-100 border-green-300 text-green-800',
-      yellow: 'bg-yellow-100 border-yellow-300 text-yellow-800',
-      orange: 'bg-orange-100 border-orange-300 text-orange-800',
-      purple: 'bg-purple-100 border-purple-300 text-purple-800',
-      red: 'bg-red-100 border-red-300 text-red-800',
-      pink: 'bg-pink-100 border-pink-300 text-pink-800',
-      indigo: 'bg-indigo-100 border-indigo-300 text-indigo-800',
-      teal: 'bg-teal-100 border-teal-300 text-teal-800'
+      blue: 'bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300',
+      green: 'bg-green-50 dark:bg-green-950/50 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300',
+      yellow: 'bg-yellow-50 dark:bg-yellow-950/50 border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300',
+      orange: 'bg-orange-50 dark:bg-orange-950/50 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300',
+      purple: 'bg-purple-50 dark:bg-purple-950/50 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300',
+      red: 'bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300',
+      pink: 'bg-pink-50 dark:bg-pink-950/50 border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300',
+      indigo: 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300',
+      teal: 'bg-teal-50 dark:bg-teal-950/50 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300'
     };
-    return colorMap[color] || 'bg-gray-100 border-gray-300 text-gray-800';
+    return colorMap[color] || 'bg-gray-50 dark:bg-gray-950/50 border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300';
   };
 
   const CardPreview = ({ card }: { card: DashboardCardConfig }) => {
     const IconComponent = card.icon;
     return (
-      <Card className={`relative group cursor-pointer transition-all duration-200 hover:shadow-md ${
-        selectedCards.includes(card.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-      }`}>
-        <CardHeader className="pb-2">
+      <Card className={`relative group cursor-pointer transition-all duration-200 hover:shadow-sm ${
+        selectedCards.includes(card.id) ? 'ring-1 ring-gray-400 dark:ring-gray-500 bg-gray-50 dark:bg-gray-800/50' : ''
+      } border-gray-200 dark:border-gray-700`}>
+        <CardHeader className="pb-1.5 pt-3 px-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <IconComponent className="h-4 w-4" />
-              <CardTitle className="text-sm">{card.title}</CardTitle>
+            <div className="flex items-center gap-1.5">
+              <IconComponent className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" />
+              <CardTitle className="text-xs font-medium">{card.title}</CardTitle>
             </div>
-            <Badge variant="outline" className={getColorClass(card.color)}>
+            <Badge variant="outline" className={`text-[10px] px-1.5 py-0.5 ${getColorClass(card.color)}`}>
               {card.type}
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
-          <p className="text-xs text-gray-600 mb-3">{card.description}</p>
+        <CardContent className="pt-0 px-3 pb-3">
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{card.description}</p>
           <div className="flex justify-between items-center">
             {selectedCards.includes(card.id) ? (
               <Button
@@ -79,9 +79,9 @@ export function DashboardEditor({
                   e.stopPropagation();
                   onRemoveCard(card.id);
                 }}
-                className="text-xs"
+                className="text-[10px] h-6 px-2"
               >
-                <X className="h-3 w-3 mr-1" />
+                <X className="h-2.5 w-2.5 mr-1" />
                 Remove
               </Button>
             ) : (
@@ -91,13 +91,13 @@ export function DashboardEditor({
                   e.stopPropagation();
                   onAddCard(card.id);
                 }}
-                className="text-xs"
+                className="text-[10px] h-6 px-2"
               >
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="h-2.5 w-2.5 mr-1" />
                 Add
               </Button>
             )}
-            <span className="text-xs text-gray-500">
+            <span className="text-[10px] text-gray-400">
               {card.defaultSize.w}×{card.defaultSize.h}
             </span>
           </div>
@@ -112,10 +112,10 @@ export function DashboardEditor({
         onClick={onToggleEditMode}
         variant="outline"
         size="sm"
-        className="fixed top-4 right-4 z-50 bg-white/90 backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-200"
+        className="fixed top-3 right-3 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-all duration-200 text-xs h-8 px-3"
       >
-        <Settings className="h-4 w-4 mr-2" />
-        Edit Dashboard
+        <Settings className="h-3 w-3 mr-1.5" />
+        Edit
       </Button>
     );
   }
@@ -123,21 +123,21 @@ export function DashboardEditor({
   return (
     <>
       {/* Edit Mode Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-blue-600 text-white p-4 shadow-lg">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900 dark:bg-gray-950 text-white p-3 shadow-lg border-b border-gray-700 dark:border-gray-800">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center gap-2">
-            <Grid3x3 className="h-5 w-5" />
-            <h2 className="font-semibold">Dashboard Editor</h2>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            <Grid3x3 className="h-4 w-4" />
+            <h2 className="font-medium text-sm">Dashboard Editor</h2>
+            <Badge variant="secondary" className="bg-gray-700 text-gray-200 text-xs px-2 py-0.5">
               {selectedCards.length} cards
             </Badge>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
               <DialogTrigger asChild>
-                <Button variant="secondary" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button variant="secondary" size="sm" className="text-xs h-7 px-2">
+                  <Plus className="h-3 w-3 mr-1" />
                   Add Cards
                 </Button>
               </DialogTrigger>
@@ -183,9 +183,9 @@ export function DashboardEditor({
               onClick={onResetLayout}
               variant="outline"
               size="sm"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-gray-800/50 border-gray-600 text-white hover:bg-gray-700 text-xs h-7 px-2"
             >
-              <RotateCcw className="h-4 w-4 mr-2" />
+              <RotateCcw className="h-3 w-3 mr-1" />
               Reset
             </Button>
 
@@ -193,8 +193,9 @@ export function DashboardEditor({
               onClick={onSaveLayout}
               variant="secondary"
               size="sm"
+              className="text-xs h-7 px-2"
             >
-              <Save className="h-4 w-4 mr-2" />
+              <Save className="h-3 w-3 mr-1" />
               Save
             </Button>
 
@@ -202,9 +203,9 @@ export function DashboardEditor({
               onClick={onToggleEditMode}
               variant="outline"
               size="sm"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-gray-800/50 border-gray-600 text-white hover:bg-gray-700 text-xs h-7 px-2"
             >
-              <X className="h-4 w-4 mr-2" />
+              <X className="h-3 w-3 mr-1" />
               Done
             </Button>
           </div>
@@ -212,8 +213,8 @@ export function DashboardEditor({
       </div>
 
       {/* Edit Mode Instructions */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-black/80 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
-        Drag cards to reorder • Click "Add Cards" to customize • Changes save automatically
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900/90 text-white px-3 py-1.5 rounded-md text-xs backdrop-blur-sm border border-gray-700">
+        Drag to reorder • Add Cards to customize
       </div>
     </>
   );

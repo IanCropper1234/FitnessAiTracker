@@ -121,24 +121,24 @@ export function DraggableDashboard({
       <Card 
         key={cardId}
         className={`relative overflow-hidden transition-all duration-200 ${
-          isEditMode ? 'ring-2 ring-blue-300 ring-opacity-50' : ''
-        } bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800`}
+          isEditMode ? 'ring-1 ring-gray-400 dark:ring-gray-500 ring-opacity-60' : ''
+        } bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md`}
       >
         {isEditMode && (
           <>
-            <div className="absolute top-2 left-2 z-10">
-              <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
+            <div className="absolute top-1.5 left-1.5 z-10">
+              <GripVertical className="h-3 w-3 text-gray-400 dark:text-gray-500 cursor-move" />
             </div>
             <Button
               size="sm"
               variant="destructive"
-              className="absolute top-2 right-2 z-10 h-6 w-6 p-0"
+              className="absolute top-1.5 right-1.5 z-10 h-5 w-5 p-0 text-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 handleRemoveCard(cardId);
               }}
             >
-              <X className="h-3 w-3" />
+              <X className="h-2.5 w-2.5" />
             </Button>
           </>
         )}
@@ -164,17 +164,17 @@ export function DraggableDashboard({
         onResetLayout={handleResetLayout}
       />
 
-      <div className={`${isEditMode ? 'pt-20 pb-16' : ''} transition-all duration-300`}>
+      <div className={`${isEditMode ? 'pt-16 pb-12' : ''} transition-all duration-300`}>
         <ResponsiveGridLayout
           className="layout"
           layouts={layouts}
           onLayoutChange={handleLayoutChange}
           breakpoints={breakpoints}
           cols={cols}
-          rowHeight={60}
+          rowHeight={55}
           isDraggable={isEditMode}
           isResizable={isEditMode}
-          margin={[8, 8]}
+          margin={[6, 6]}
           containerPadding={[0, 0]}
           compactType="vertical"
           preventCollision={false}
@@ -187,7 +187,7 @@ export function DraggableDashboard({
       </div>
 
       {isEditMode && (
-        <div className="fixed inset-0 bg-black/20 pointer-events-none z-30" />
+        <div className="fixed inset-0 bg-gray-900/10 dark:bg-black/20 pointer-events-none z-30" />
       )}
     </div>
   );
