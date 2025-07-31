@@ -274,7 +274,7 @@ export function AddFood({ user }: AddFoodProps) {
 
   // Auto-sync portion values to quantity/unit after AI analysis
   React.useEffect(() => {
-    if (aiAnalyzeMutation.data && searchMode === 'ai' && portionWeight && portionUnit) {
+    if (aiAnalyzeMutation.data && portionWeight && portionUnit) {
       setQuantity(portionWeight);
       setUnit(portionUnit === 'g' ? 'gram' : 
             portionUnit === 'ml' ? 'milliliter' :
@@ -283,22 +283,16 @@ export function AddFood({ user }: AddFoodProps) {
             portionUnit === 'piece' || portionUnit === 'pieces' ? 'piece' :
             portionUnit); // Use custom unit as-is for non-standard units
     }
-  }, [aiAnalyzeMutation.data, searchMode, portionWeight, portionUnit]);
+  }, [aiAnalyzeMutation.data, portionWeight, portionUnit]);
 
   // Recalculate macros when quantity or unit changes
   React.useEffect(() => {
-    if (baseAIResult && searchMode === 'ai') {
+    if (baseAIResult) {
       recalculateMacrosFromVolume();
     }
-  }, [quantity, unit, recalculateMacrosFromVolume, searchMode]);
+  }, [quantity, unit, recalculateMacrosFromVolume]);
 
-  // Reset dynamic calculations when switching search modes
-  React.useEffect(() => {
-    if (searchMode !== 'ai') {
-      setBaseAIResult(null);
-      setDynamicMacros(null);
-    }
-  }, [searchMode]);
+  // Dynamic calculations managed for AI-only mode
 
   // Image capture functions
   const handleTakePhoto = () => {
@@ -453,7 +447,7 @@ export function AddFood({ user }: AddFoodProps) {
   const handleLogFood = () => {
     let nutritionData;
     
-    if (searchMode === 'ai' && (dynamicMacros || aiAnalyzeMutation.data)) {
+    if (dynamicMacros || aiAnalyzeMutation.data) {
       // Use dynamic macros if available (already volume-adjusted), otherwise fall back to original AI result
       nutritionData = dynamicMacros || aiAnalyzeMutation.data;
     } else if (selectedFood) {
@@ -470,7 +464,7 @@ export function AddFood({ user }: AddFoodProps) {
 
     const logData = {
       date: selectedDate,
-      foodName: searchMode === 'ai' ? foodQuery : selectedFood?.name || foodQuery,
+      foodName: foodQuery || selectedFood?.name || foodQuery,
       quantity: quantity,
       unit: unit,
       calories: nutritionData.calories.toString(),
@@ -483,8 +477,8 @@ export function AddFood({ user }: AddFoodProps) {
     logMutation.mutate(logData);
   };
 
-  const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending || deleteSavedMealMutation.isPending;
-  const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
+  const isLoading = aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending || deleteSavedMealMutation.isPending;
+  const canLog = (aiAnalyzeMutation.data || selectedFood) && mealType.trim() !== '';
   
   // Filter food history based on search query with pagination
   const filteredFoodHistory = Array.isArray(foodHistory) ? foodHistory.filter((item: any) => 
