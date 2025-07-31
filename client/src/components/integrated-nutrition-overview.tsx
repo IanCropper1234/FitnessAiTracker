@@ -1125,6 +1125,20 @@ export function IntegratedNutritionOverview({
         
         if (micronutrientLogs.length === 0) return null;
         
+        // Calculate daily micronutrient totals
+        const dailyTotals = micronutrientLogs.reduce((totals: any, log: any) => {
+          const micronutrients = log.micronutrients;
+          Object.keys(micronutrients).forEach(nutrient => {
+            totals[nutrient] = (totals[nutrient] || 0) + parseFloat(micronutrients[nutrient]);
+          });
+          return totals;
+        }, {});
+        
+        const formatDate = new Date(selectedDate).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric' 
+        });
+        
         return (
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardContent className="p-3">
@@ -1134,82 +1148,82 @@ export function IntegratedNutritionOverview({
                 onClick={() => setShowMicronutrients(!showMicronutrients)}
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                    Micronutrients ({micronutrientLogs.length} foods with vitamins)
+                    Daily Micronutrients ({formatDate})
                   </span>
                 </div>
                 <ChevronDown className={`w-4 h-4 transition-transform ${showMicronutrients ? 'rotate-180' : ''}`} />
               </Button>
               
               {showMicronutrients && (
-                <div className="mt-3 space-y-3">
-                  {micronutrientLogs.map((log: any) => (
-                    <div key={log.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-sm text-gray-800 dark:text-gray-200">{log.foodName}</h4>
-                        <Badge variant="outline" className="text-xs">
-                          {log.quantity} {log.unit}
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-3 text-xs">
-                        {/* Fat-Soluble Vitamins */}
-                        {(log.micronutrients.vitaminA || log.micronutrients.vitaminD || log.micronutrients.vitaminE || log.micronutrients.vitaminK) && (
-                          <div>
-                            <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-1">Fat-Soluble</h5>
-                            <div className="space-y-1">
-                              {log.micronutrients.vitaminA && <div className="flex justify-between"><span>Vitamin A</span><span>{log.micronutrients.vitaminA}μg</span></div>}
-                              {log.micronutrients.vitaminD && <div className="flex justify-between"><span>Vitamin D</span><span>{log.micronutrients.vitaminD}μg</span></div>}
-                              {log.micronutrients.vitaminE && <div className="flex justify-between"><span>Vitamin E</span><span>{log.micronutrients.vitaminE}mg</span></div>}
-                              {log.micronutrients.vitaminK && <div className="flex justify-between"><span>Vitamin K</span><span>{log.micronutrients.vitaminK}μg</span></div>}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Water-Soluble Vitamins */}
-                        {(log.micronutrients.vitaminC || log.micronutrients.vitaminB1 || log.micronutrients.vitaminB2 || log.micronutrients.vitaminB3 || log.micronutrients.vitaminB6 || log.micronutrients.vitaminB12) && (
-                          <div>
-                            <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-1">Water-Soluble</h5>
-                            <div className="space-y-1">
-                              {log.micronutrients.vitaminC && <div className="flex justify-between"><span>Vitamin C</span><span>{log.micronutrients.vitaminC}mg</span></div>}
-                              {log.micronutrients.vitaminB1 && <div className="flex justify-between"><span>B1</span><span>{log.micronutrients.vitaminB1}mg</span></div>}
-                              {log.micronutrients.vitaminB2 && <div className="flex justify-between"><span>B2</span><span>{log.micronutrients.vitaminB2}mg</span></div>}
-                              {log.micronutrients.vitaminB3 && <div className="flex justify-between"><span>B3</span><span>{log.micronutrients.vitaminB3}mg</span></div>}
-                              {log.micronutrients.vitaminB6 && <div className="flex justify-between"><span>B6</span><span>{log.micronutrients.vitaminB6}mg</span></div>}
-                              {log.micronutrients.vitaminB12 && <div className="flex justify-between"><span>B12</span><span>{log.micronutrients.vitaminB12}μg</span></div>}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Major Minerals */}
-                        {(log.micronutrients.calcium || log.micronutrients.magnesium || log.micronutrients.phosphorus || log.micronutrients.potassium) && (
-                          <div>
-                            <h5 className="font-medium text-green-600 dark:text-green-400 mb-1">Major Minerals</h5>
-                            <div className="space-y-1">
-                              {log.micronutrients.calcium && <div className="flex justify-between"><span>Calcium</span><span>{log.micronutrients.calcium}mg</span></div>}
-                              {log.micronutrients.magnesium && <div className="flex justify-between"><span>Magnesium</span><span>{log.micronutrients.magnesium}mg</span></div>}
-                              {log.micronutrients.phosphorus && <div className="flex justify-between"><span>Phosphorus</span><span>{log.micronutrients.phosphorus}mg</span></div>}
-                              {log.micronutrients.potassium && <div className="flex justify-between"><span>Potassium</span><span>{log.micronutrients.potassium}mg</span></div>}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Trace Minerals */}
-                        {(log.micronutrients.iron || log.micronutrients.zinc || log.micronutrients.selenium || log.micronutrients.copper) && (
-                          <div>
-                            <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-1">Trace Minerals</h5>
-                            <div className="space-y-1">
-                              {log.micronutrients.iron && <div className="flex justify-between"><span>Iron</span><span>{log.micronutrients.iron}mg</span></div>}
-                              {log.micronutrients.zinc && <div className="flex justify-between"><span>Zinc</span><span>{log.micronutrients.zinc}mg</span></div>}
-                              {log.micronutrients.selenium && <div className="flex justify-between"><span>Selenium</span><span>{log.micronutrients.selenium}μg</span></div>}
-                              {log.micronutrients.copper && <div className="flex justify-between"><span>Copper</span><span>{log.micronutrients.copper}mg</span></div>}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                <div className="mt-3">
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 text-center">
+                      Total from {micronutrientLogs.length} foods with vitamin data
                     </div>
-                  ))}
+                    
+                    <div className="grid grid-cols-2 gap-4 text-xs">
+                      {/* Fat-Soluble Vitamins */}
+                      {(dailyTotals.vitaminA || dailyTotals.vitaminD || dailyTotals.vitaminE || dailyTotals.vitaminK) && (
+                        <div>
+                          <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
+                          <div className="space-y-1">
+                            {dailyTotals.vitaminA && <div className="flex justify-between"><span>Vitamin A</span><span className="font-medium">{Math.round(dailyTotals.vitaminA * 10) / 10}μg</span></div>}
+                            {dailyTotals.vitaminD && <div className="flex justify-between"><span>Vitamin D</span><span className="font-medium">{Math.round(dailyTotals.vitaminD * 10) / 10}μg</span></div>}
+                            {dailyTotals.vitaminE && <div className="flex justify-between"><span>Vitamin E</span><span className="font-medium">{Math.round(dailyTotals.vitaminE * 10) / 10}mg</span></div>}
+                            {dailyTotals.vitaminK && <div className="flex justify-between"><span>Vitamin K</span><span className="font-medium">{Math.round(dailyTotals.vitaminK * 10) / 10}μg</span></div>}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Water-Soluble Vitamins */}
+                      {(dailyTotals.vitaminC || dailyTotals.vitaminB1 || dailyTotals.vitaminB2 || dailyTotals.vitaminB3 || dailyTotals.vitaminB6 || dailyTotals.vitaminB12) && (
+                        <div>
+                          <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
+                          <div className="space-y-1">
+                            {dailyTotals.vitaminC && <div className="flex justify-between"><span>Vitamin C</span><span className="font-medium">{Math.round(dailyTotals.vitaminC * 10) / 10}mg</span></div>}
+                            {dailyTotals.vitaminB1 && <div className="flex justify-between"><span>B1 (Thiamine)</span><span className="font-medium">{Math.round(dailyTotals.vitaminB1 * 10) / 10}mg</span></div>}
+                            {dailyTotals.vitaminB2 && <div className="flex justify-between"><span>B2 (Riboflavin)</span><span className="font-medium">{Math.round(dailyTotals.vitaminB2 * 10) / 10}mg</span></div>}
+                            {dailyTotals.vitaminB3 && <div className="flex justify-between"><span>B3 (Niacin)</span><span className="font-medium">{Math.round(dailyTotals.vitaminB3 * 10) / 10}mg</span></div>}
+                            {dailyTotals.vitaminB6 && <div className="flex justify-between"><span>B6 (Pyridoxine)</span><span className="font-medium">{Math.round(dailyTotals.vitaminB6 * 10) / 10}mg</span></div>}
+                            {dailyTotals.vitaminB12 && <div className="flex justify-between"><span>B12 (Cobalamin)</span><span className="font-medium">{Math.round(dailyTotals.vitaminB12 * 10) / 10}μg</span></div>}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Major Minerals */}
+                      {(dailyTotals.calcium || dailyTotals.magnesium || dailyTotals.phosphorus || dailyTotals.potassium || dailyTotals.sodium) && (
+                        <div>
+                          <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
+                          <div className="space-y-1">
+                            {dailyTotals.calcium && <div className="flex justify-between"><span>Calcium</span><span className="font-medium">{Math.round(dailyTotals.calcium)}mg</span></div>}
+                            {dailyTotals.magnesium && <div className="flex justify-between"><span>Magnesium</span><span className="font-medium">{Math.round(dailyTotals.magnesium)}mg</span></div>}
+                            {dailyTotals.phosphorus && <div className="flex justify-between"><span>Phosphorus</span><span className="font-medium">{Math.round(dailyTotals.phosphorus)}mg</span></div>}
+                            {dailyTotals.potassium && <div className="flex justify-between"><span>Potassium</span><span className="font-medium">{Math.round(dailyTotals.potassium)}mg</span></div>}
+                            {dailyTotals.sodium && <div className="flex justify-between"><span>Sodium</span><span className="font-medium">{Math.round(dailyTotals.sodium)}mg</span></div>}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Trace Minerals */}
+                      {(dailyTotals.iron || dailyTotals.zinc || dailyTotals.selenium || dailyTotals.copper || dailyTotals.manganese || dailyTotals.iodine || dailyTotals.chromium || dailyTotals.molybdenum) && (
+                        <div>
+                          <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
+                          <div className="space-y-1">
+                            {dailyTotals.iron && <div className="flex justify-between"><span>Iron</span><span className="font-medium">{Math.round(dailyTotals.iron * 10) / 10}mg</span></div>}
+                            {dailyTotals.zinc && <div className="flex justify-between"><span>Zinc</span><span className="font-medium">{Math.round(dailyTotals.zinc * 10) / 10}mg</span></div>}
+                            {dailyTotals.selenium && <div className="flex justify-between"><span>Selenium</span><span className="font-medium">{Math.round(dailyTotals.selenium * 10) / 10}μg</span></div>}
+                            {dailyTotals.copper && <div className="flex justify-between"><span>Copper</span><span className="font-medium">{Math.round(dailyTotals.copper * 10) / 10}mg</span></div>}
+                            {dailyTotals.manganese && <div className="flex justify-between"><span>Manganese</span><span className="font-medium">{Math.round(dailyTotals.manganese * 10) / 10}mg</span></div>}
+                            {dailyTotals.iodine && <div className="flex justify-between"><span>Iodine</span><span className="font-medium">{Math.round(dailyTotals.iodine * 10) / 10}μg</span></div>}
+                            {dailyTotals.chromium && <div className="flex justify-between"><span>Chromium</span><span className="font-medium">{Math.round(dailyTotals.chromium * 10) / 10}μg</span></div>}
+                            {dailyTotals.molybdenum && <div className="flex justify-between"><span>Molybdenum</span><span className="font-medium">{Math.round(dailyTotals.molybdenum * 10) / 10}μg</span></div>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>
