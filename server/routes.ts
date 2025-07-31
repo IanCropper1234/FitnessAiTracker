@@ -1636,9 +1636,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bulk delete workout sessions (must come before individual delete route)
-  app.delete("/api/training/sessions/bulk", async (req, res) => {
+  app.delete("/api/training/sessions/bulk", requireAuth, async (req, res) => {
     try {
-      const { sessionIds, userId } = req.body;
+      const userId = req.userId;
+      const { sessionIds } = req.body;
       
       console.log('Bulk delete request:', { sessionIds, userId });
       
@@ -2302,9 +2303,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/daily-wellness-checkins", async (req, res) => {
+  app.post("/api/daily-wellness-checkins", requireAuth, async (req, res) => {
     try {
-      const { userId, date, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
+      const userId = req.userId;
+      const { date, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
       
       const checkin = await DailyWellnessService.upsertDailyCheckin(userId, new Date(date), {
         energyLevel,
@@ -2341,9 +2343,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/weekly-wellness-summary", async (req, res) => {
+  app.post("/api/weekly-wellness-summary", requireAuth, async (req, res) => {
     try {
-      const { userId, weekStartDate } = req.body;
+      const userId = req.userId;
+      const { weekStartDate } = req.body;
       
       const summary = await DailyWellnessService.upsertWeeklySummary(userId, new Date(weekStartDate));
       res.json(summary);
@@ -2834,9 +2837,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bulk copy nutrition logs
-  app.post("/api/nutrition/bulk-copy", async (req, res) => {
+  app.post("/api/nutrition/bulk-copy", requireAuth, async (req, res) => {
     try {
-      const { userId, logIds, targetDate } = req.body;
+      const userId = req.userId;
+      const { logIds, targetDate } = req.body;
       
       // Get the original logs
       const originalLogs = await db.select()
@@ -2878,9 +2882,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Log meal plan to nutrition logs
-  app.post("/api/nutrition/log-meal-plan", async (req, res) => {
+  app.post("/api/nutrition/log-meal-plan", requireAuth, async (req, res) => {
     try {
-      const { userId, planId, targetDate, mealType } = req.body;
+      const userId = req.userId;
+      const { planId, targetDate, mealType } = req.body;
       
       // Get the saved meal plan
       const mealPlan = await storage.getSavedMealPlan(userId, planId);
@@ -2973,9 +2978,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/mesocycles", async (req, res) => {
+  app.post("/api/training/mesocycles", requireAuth, async (req, res) => {
     try {
-      const { userId, name, templateId, totalWeeks, customProgram } = req.body;
+      const userId = req.userId;
+      const { name, templateId, totalWeeks, customProgram } = req.body;
       
       const mesocycleId = await MesocyclePeriodization.createMesocycleWithProgram(
         userId, 
@@ -3063,9 +3069,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Training templates
-  app.get("/api/training/templates", async (req, res) => {
+  app.get("/api/training/templates", requireAuth, async (req, res) => {
     try {
-      const { category, userId } = req.query;
+      const userId = req.userId;
+      const { category } = req.query;
       
       const templates = await TemplateEngine.getAvailableTemplates(
         category as string, 
@@ -3079,9 +3086,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/templates", async (req, res) => {
+  app.post("/api/training/templates", requireAuth, async (req, res) => {
     try {
-      const { userId, name, description, category, daysPerWeek, templateData } = req.body;
+      const userId = req.userId;
+      const { name, description, category, daysPerWeek, templateData } = req.body;
       
       const template = await TemplateEngine.createUserTemplate(
         userId,
@@ -3153,9 +3161,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/templates/generate-program", async (req, res) => {
+  app.post("/api/training/templates/generate-program", requireAuth, async (req, res) => {
     try {
-      const { userId, templateId, mesocycleId, startDate } = req.body;
+      const userId = req.userId;
+      const { templateId, mesocycleId, startDate } = req.body;
       
       if (!userId || !templateId) {
         return res.status(400).json({ error: "userId and templateId are required" });
@@ -3178,9 +3187,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/templates/generate-workout", async (req, res) => {
+  app.post("/api/training/templates/generate-workout", requireAuth, async (req, res) => {
     try {
-      const { userId, templateId, workoutDay } = req.body;
+      const userId = req.userId;
+      const { templateId, workoutDay } = req.body;
       
       // Get template data to determine total workouts
       const template = await storage.getTrainingTemplate(templateId);
@@ -3879,9 +3889,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Unified Template-Mesocycle Integration Routes
-  app.post("/api/training/mesocycles/from-template", async (req, res) => {
+  app.post("/api/training/mesocycles/from-template", requireAuth, async (req, res) => {
     try {
-      const { userId, templateId, startDate, totalWeeks } = req.body;
+      const userId = req.userId;
+      const { templateId, startDate, totalWeeks } = req.body;
       
       const result = await UnifiedMesocycleTemplate.createMesocycleFromTemplate(
         userId,
@@ -3910,10 +3921,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/mesocycles/:mesocycleId/fix-orphaned", async (req, res) => {
+  app.post("/api/training/mesocycles/:mesocycleId/fix-orphaned", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);
-      const { userId } = req.body;
+      const userId = req.userId;
       
       await UnifiedMesocycleTemplate.fixOrphanedSessions(userId, mesocycleId);
       await UnifiedMesocycleTemplate.reactivateMesocycle(mesocycleId);
@@ -3931,10 +3942,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/training/mesocycles/:mesocycleId/repair-data", async (req, res) => {
+  app.post("/api/training/mesocycles/:mesocycleId/repair-data", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);
-      const { userId } = req.body;
+      const userId = req.userId;
       
       const repair = await UnifiedMesocycleTemplate.repairExistingData(userId, mesocycleId);
       
