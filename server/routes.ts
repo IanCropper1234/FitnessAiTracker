@@ -16,7 +16,7 @@ import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
 import { validateAndCleanupTemplates } from "./validate-templates";
-import { workoutExercises, workoutSessions, exercises } from "@shared/schema";
+import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
 
 // Authentication middleware
@@ -3425,37 +3425,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get exercise history for reference data
+  // Get exercise history for reference data with set-specific matching
   app.get("/api/training/exercise-history/:exerciseId", requireAuth, async (req, res) => {
     try {
       const exerciseId = parseInt(req.params.exerciseId);
       const userId = req.userId;
+      const setNumber = parseInt(req.query.setNumber as string);
       const limit = parseInt(req.query.limit as string) || 5;
 
       if (isNaN(exerciseId)) {
         return res.status(400).json({ message: "Invalid exercise ID" });
       }
 
-      // Get recent completed sets for this exercise
+      let whereConditions = [
+        eq(workoutSessions.userId, userId),
+        eq(workoutExercises.exerciseId, exerciseId),
+        eq(workoutExercises.isCompleted, true),
+        isNotNull(workoutExercises.weight),
+        isNotNull(workoutExercises.actualReps),
+        isNotNull(workoutExercises.rpe),
+        gt(workoutExercises.weight, 0),
+        gt(workoutExercises.actualReps, 0)
+      ];
+
+      // If setNumber is provided, filter for that specific set number
+      if (!isNaN(setNumber) && setNumber > 0) {
+        whereConditions.push(eq(workoutExercises.setNumber, setNumber));
+      }
+
+      // Get recent completed sets for this exercise (and optionally specific set number)
       const historicalSets = await db
         .select({
           weight: workoutExercises.weight,
           reps: workoutExercises.actualReps,
           rpe: workoutExercises.rpe,
+          setNumber: workoutExercises.setNumber,
           date: workoutSessions.date
         })
         .from(workoutExercises)
         .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
-        .where(and(
-          eq(workoutSessions.userId, userId),
-          eq(workoutExercises.exerciseId, exerciseId),
-          eq(workoutExercises.isCompleted, true),
-          isNotNull(workoutExercises.weight),
-          isNotNull(workoutExercises.actualReps),
-          isNotNull(workoutExercises.rpe),
-          gt(workoutExercises.weight, 0),
-          gt(workoutExercises.actualReps, 0)
-        ))
+        .where(and(...whereConditions))
         .orderBy(desc(workoutSessions.date))
         .limit(limit);
 

@@ -40,6 +40,7 @@ interface HistoricalSetData {
   weight: number | string;
   reps: number | string;
   rpe: number | string;
+  setNumber: number;
   date: string;
 }
 
@@ -88,16 +89,16 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Fetch historical data for this exercise
+  // Fetch historical data for this specific exercise and set number
   const { data: historicalData } = useQuery<HistoricalSetData[]>({
-    queryKey: ['/api/training/exercise-history', exerciseId, userId],
+    queryKey: ['/api/training/exercise-history', exerciseId, set.setNumber, userId],
     queryFn: async () => {
       if (!exerciseId) return [];
-      const response = await fetch(`/api/training/exercise-history/${exerciseId}?userId=${userId}&limit=5`);
+      const response = await fetch(`/api/training/exercise-history/${exerciseId}?userId=${userId}&setNumber=${set.setNumber}&limit=5`);
       if (!response.ok) return [];
       return response.json();
     },
-    enabled: !!exerciseId && !!userId
+    enabled: !!exerciseId && !!userId && !!set.setNumber
   });
   const [useBodyWeight, setUseBodyWeight] = useState(false);
 
@@ -230,7 +231,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 size="sm"
                 onClick={() => setShowHistory(!showHistory)}
                 className="ios-touch-feedback touch-target p-0 flex-shrink-0"
-                title="Last set data"
+                title={`Set ${set.setNumber} history`}
               >
                 <History className="h-3 w-3 text-blue-400" />
               </Button>
@@ -288,7 +289,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="text-xs text-blue-300 truncate">
-                    Last: {typeof latestHistoricalData.weight === 'string' ? parseFloat(latestHistoricalData.weight) : latestHistoricalData.weight}kg • {typeof latestHistoricalData.reps === 'string' ? parseInt(latestHistoricalData.reps) : latestHistoricalData.reps}r • RPE {typeof latestHistoricalData.rpe === 'string' ? parseFloat(latestHistoricalData.rpe) : latestHistoricalData.rpe}
+                    Set {set.setNumber} Last: {typeof latestHistoricalData.weight === 'string' ? parseFloat(latestHistoricalData.weight) : latestHistoricalData.weight}kg • {typeof latestHistoricalData.reps === 'string' ? parseInt(latestHistoricalData.reps) : latestHistoricalData.reps}r • RPE {typeof latestHistoricalData.rpe === 'string' ? parseFloat(latestHistoricalData.rpe) : latestHistoricalData.rpe}
                     <span className="text-blue-300/70 ml-1">
                       ({new Date(latestHistoricalData.date).toLocaleDateString()})
                     </span>
@@ -311,7 +312,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     <div key={index} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs text-blue-300/60 truncate">
-                          {typeof histData.weight === 'string' ? parseFloat(histData.weight) : histData.weight}kg • {typeof histData.reps === 'string' ? parseInt(histData.reps) : histData.reps}r • RPE {typeof histData.rpe === 'string' ? parseFloat(histData.rpe) : histData.rpe}
+                          Set {set.setNumber}: {typeof histData.weight === 'string' ? parseFloat(histData.weight) : histData.weight}kg • {typeof histData.reps === 'string' ? parseInt(histData.reps) : histData.reps}r • RPE {typeof histData.rpe === 'string' ? parseFloat(histData.rpe) : histData.rpe}
                           <span className="text-blue-300/40 ml-1">
                             ({new Date(histData.date).toLocaleDateString()})
                           </span>
