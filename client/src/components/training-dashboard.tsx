@@ -360,11 +360,7 @@ function WorkoutSessionCard({
           {session.isCompleted && (
             <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
           )}
-          <div className={`px-1.5 py-0.5  text-xs font-medium ${
-            session.isCompleted 
-              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
-              : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
-          }`}>
+          <div className="px-1.5 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 mt-[0px] mb-[0px] pt-[2px] pb-[2px] pl-[6px] pr-[6px] ml-[-20px] mr-[-20px]">
             {session.isCompleted ? "Done" : "Active"}
           </div>
           <DropdownMenu>
@@ -396,7 +392,6 @@ function WorkoutSessionCard({
           </DropdownMenu>
         </div>
       </div>
-
       {/* Compact Stats Row */}
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 pb-2 border-b border-border/50">
         <div className="flex items-center gap-3">
@@ -408,7 +403,6 @@ function WorkoutSessionCard({
           {session.isCompleted ? "Completed" : "In Progress"}
         </div>
       </div>
-
       {/* Compact Action Button */}
       {!session.isCompleted ? (
         <Button 
@@ -430,7 +424,6 @@ function WorkoutSessionCard({
           View Details
         </Button>
       )}
-
       {/* Edit Session Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
