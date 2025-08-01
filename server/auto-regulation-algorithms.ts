@@ -28,7 +28,7 @@ interface FatigueAnalysis {
 // Auto-regulation algorithm based on Renaissance Periodization methodology
 export async function generateVolumeRecommendations(
   userId: number,
-  feedback: any
+  feedback?: any
 ): Promise<VolumeRecommendation[]> {
   try {
     const recommendations: VolumeRecommendation[] = [];
@@ -52,10 +52,7 @@ export async function generateVolumeRecommendations(
       )
       .orderBy(desc(workoutSessions.date));
 
-    // Calculate fatigue scores
-    const avgRecovery = (feedback.energyLevel + feedback.sleepQuality + (10 - feedback.muscleSoreness)) / 3;
-    const avgPerformance = (feedback.pumpQuality + (10 - feedback.perceivedEffort)) / 2;
-    const overallReadiness = (avgRecovery + avgPerformance) / 2;
+    console.log(`Generating volume recommendations for user ${userId}, found ${landmarks.length} muscle group landmarks`);
 
     for (const landmark of landmarks) {
       const [muscleGroup] = await db.select().from(muscleGroups).where(eq(muscleGroups.id, landmark.muscleGroupId));
@@ -70,10 +67,17 @@ export async function generateVolumeRecommendations(
       let reason = "";
       let confidence = 5;
 
-      // RP Auto-regulation Logic
-      if (overallReadiness >= 8) {
-        // High readiness - can increase volume
-        if (currentVolume < landmark.mavSets) {
+      // If we have feedback, use it for recommendations
+      if (feedback) {
+        // Calculate fatigue scores
+        const avgRecovery = (feedback.energyLevel + feedback.sleepQuality + (10 - feedback.muscleSoreness)) / 3;
+        const avgPerformance = (feedback.pumpQuality + (10 - feedback.perceivedEffort)) / 2;
+        const overallReadiness = (avgRecovery + avgPerformance) / 2;
+
+        // RP Auto-regulation Logic
+        if (overallReadiness >= 8) {
+          // High readiness - can increase volume
+        if (currentVolume < landmark.mav) {
           recommendation = "increase";
           adjustmentPercentage = 10; // 10% increase
           reason = "High recovery and performance scores indicate capacity for increased volume";
@@ -85,7 +89,7 @@ export async function generateVolumeRecommendations(
         }
       } else if (overallReadiness <= 4) {
         // Low readiness - reduce volume or deload
-        if (currentVolume > landmark.mevSets) {
+        if (currentVolume > landmark.mev) {
           recommendation = "decrease";
           adjustmentPercentage = -15; // 15% decrease
           reason = "Low recovery and performance scores indicate need for volume reduction";
@@ -98,7 +102,7 @@ export async function generateVolumeRecommendations(
         }
       } else if (overallReadiness <= 6) {
         // Moderate readiness - slight adjustments
-        if (currentVolume > landmark.mavSets * 0.9) {
+        if (currentVolume > landmark.mav * 0.9) {
           recommendation = "decrease";
           adjustmentPercentage = -5; // 5% decrease
           reason = "Moderate fatigue with high volume - slight reduction recommended";
@@ -110,7 +114,7 @@ export async function generateVolumeRecommendations(
         }
       } else {
         // Good readiness (6-8) - maintain or slight increase
-        if (currentVolume < landmark.mavSets * 0.8) {
+        if (currentVolume < landmark.mav * 0.8) {
           recommendation = "increase";
           adjustmentPercentage = 5; // 5% increase
           reason = "Good recovery with room for volume increase";
@@ -119,6 +123,30 @@ export async function generateVolumeRecommendations(
           recommendation = "maintain";
           reason = "Optimal volume with good recovery";
           confidence = 8;
+        }
+      }
+      } else {
+        // No recent feedback - provide basic volume guidance based on current vs landmarks
+        if (currentVolume === 0) {
+          recommendation = "increase";
+          adjustmentPercentage = 100;
+          reason = "No current training volume - start with MEV";
+          confidence = 5;
+        } else if (currentVolume < landmark.mev) {
+          recommendation = "increase";
+          adjustmentPercentage = 25;
+          reason = "Below minimum effective volume";
+          confidence = 6;
+        } else if (currentVolume > landmark.mav) {
+          recommendation = "maintain";
+          adjustmentPercentage = 0;
+          reason = "Optimal volume with good recovery";
+          confidence = 8;
+        } else {
+          recommendation = "maintain";
+          adjustmentPercentage = 0;
+          reason = "Current volume within optimal range";
+          confidence = 7;
         }
       }
 
@@ -131,6 +159,8 @@ export async function generateVolumeRecommendations(
         confidenceLevel: confidence,
         recommendation,
       });
+      
+      console.log(`Volume recommendation for ${muscleGroup.name}: ${currentVolume} sets/week, ${recommendation} ${adjustmentPercentage}%`);
     }
 
     return recommendations;
@@ -190,7 +220,7 @@ async function calculateMuscleGroupVolume(
           // Count actual completed sets from setsData instead of just the sets field
           if (exercise.setsData) {
             try {
-              const setsData = JSON.parse(exercise.setsData);
+              const setsData = JSON.parse(exercise.setsData as string);
               const completedSets = setsData.filter((set: any) => set.completed === true).length;
               totalSets += completedSets;
               console.log(`Exercise ${exercise.exerciseId}: ${completedSets} completed sets for muscle group ${muscleGroupId}`);
@@ -287,8 +317,8 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
         let volumeStress = 0;
         let fatigueLevel = overallFatigue; // Default to overall fatigue
         
-        if (landmark && landmark.mavSets > 0) {
-          volumeStress = volume / landmark.mavSets; // Ratio of current to MAV
+        if (landmark && landmark.mav > 0) {
+          volumeStress = volume / landmark.mav; // Ratio of current to MAV
           fatigueLevel = Math.min(10, overallFatigue * (1 + volumeStress * 0.2));
         }
 
@@ -322,19 +352,25 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
 // Get current volume recommendations for user
 export async function getVolumeRecommendations(userId: number): Promise<VolumeRecommendation[]> {
   try {
-    // Get the most recent feedback
+    // Get the most recent feedback (within last 7 days)
+    const recentDate = new Date();
+    recentDate.setDate(recentDate.getDate() - 7);
+    
     const recentFeedback = await db
       .select()
       .from(autoRegulationFeedback)
-      .where(eq(autoRegulationFeedback.userId, userId))
+      .where(
+        and(
+          eq(autoRegulationFeedback.userId, userId),
+          gte(autoRegulationFeedback.createdAt, recentDate)
+        )
+      )
       .orderBy(desc(autoRegulationFeedback.createdAt))
       .limit(1);
 
-    if (recentFeedback.length === 0) {
-      return [];
-    }
-
-    return await generateVolumeRecommendations(userId, recentFeedback[0]);
+    // Pass feedback if available, otherwise generate recommendations without feedback
+    const feedback = recentFeedback.length > 0 ? recentFeedback[0] : undefined;
+    return await generateVolumeRecommendations(userId, feedback);
   } catch (error) {
     console.error('Error getting volume recommendations:', error);
     return [];
