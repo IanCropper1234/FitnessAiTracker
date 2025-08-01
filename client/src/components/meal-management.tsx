@@ -18,7 +18,10 @@ import {
   CheckCircle,
   AlertTriangle,
   Calendar,
-  Dumbbell
+  Dumbbell,
+  Lightbulb,
+  Star,
+  Info
 } from "lucide-react";
 
 interface MealManagementProps {
@@ -180,6 +183,64 @@ export function MealManagement({ userId }: MealManagementProps) {
   const handleSaveDietaryRestrictions = () => {
     updateDietaryMutation.mutate(dietaryRestrictions);
   };
+
+  // RP Meal Timing Recommendations
+  const generateRPRecommendations = () => {
+    const recommendations = [];
+    
+    // Calculate awake hours
+    const wakeHour = parseInt(mealTimingData.wakeTime.split(':')[0]);
+    const sleepHour = parseInt(mealTimingData.sleepTime.split(':')[0]);
+    let awakeHours = sleepHour - wakeHour;
+    if (awakeHours <= 0) awakeHours += 24;
+
+    // RP Guidelines
+    if (mealTimingData.workoutTime && mealTimingData.workoutDays?.length > 0) {
+      const workoutHour = parseInt(mealTimingData.workoutTime.split(':')[0]);
+      
+      // Pre-workout timing (RP recommendation: 30min-2hr before)
+      recommendations.push({
+        type: 'pre-workout',
+        title: 'Pre-Workout Nutrition',
+        timing: '30 minutes - 2 hours before training',
+        description: 'RP recommends easily digestible carbs and moderate protein. Avoid high fat/fiber foods.',
+        example: 'White rice with lean protein, banana with whey protein'
+      });
+
+      // Post-workout timing (RP recommendation: within 2 hours)
+      recommendations.push({
+        type: 'post-workout',
+        title: 'Post-Workout Recovery',
+        timing: 'Within 2 hours after training',
+        description: 'RP emphasizes fast-digesting protein and carbs to maximize recovery and muscle protein synthesis.',
+        example: 'Whey protein shake with dextrose, chicken with white rice'
+      });
+    }
+
+    // Meal frequency recommendations
+    if (mealTimingData.mealsPerDay >= 4) {
+      recommendations.push({
+        type: 'frequency',
+        title: 'Optimal Meal Frequency',
+        timing: `${Math.round(awakeHours / mealTimingData.mealsPerDay)} hours between meals`,
+        description: 'RP suggests 3-6 meals for optimal muscle protein synthesis and metabolic benefits.',
+        example: 'Even spacing helps maintain stable blood sugar and energy levels'
+      });
+    }
+
+    // Sleep timing recommendation
+    recommendations.push({
+      type: 'sleep',
+      title: 'Pre-Sleep Nutrition',
+      timing: '1-2 hours before bed',
+      description: 'RP recommends slow-digesting protein to support overnight recovery.',
+      example: 'Casein protein, Greek yogurt, or cottage cheese'
+    });
+
+    return recommendations;
+  };
+
+  const rpRecommendations = generateRPRecommendations();
 
   const handleDietaryRestrictionChange = (restriction: string, checked: boolean) => {
     if (checked) {
@@ -364,6 +425,62 @@ export function MealManagement({ userId }: MealManagementProps) {
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* RP Meal Timing Recommendations */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-500" />
+                Renaissance Periodization Recommendations
+              </CardTitle>
+              <CardDescription>
+                Evidence-based meal timing strategies for optimal performance and recovery
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {rpRecommendations.map((rec, index) => (
+                <div 
+                  key={index}
+                  className="p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                      {rec.type === 'pre-workout' && <Dumbbell className="w-4 h-4 text-blue-600" />}
+                      {rec.type === 'post-workout' && <CheckCircle className="w-4 h-4 text-green-600" />}
+                      {rec.type === 'frequency' && <Clock className="w-4 h-4 text-purple-600" />}
+                      {rec.type === 'sleep' && <Lightbulb className="w-4 h-4 text-orange-600" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                        {rec.title}
+                      </h4>
+                      <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">
+                        {rec.timing}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                        {rec.description}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <Info className="w-3 h-3" />
+                        <span>Example: {rec.example}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <h4 className="font-medium text-blue-900 dark:text-blue-100 text-sm">RP Methodology</h4>
+                </div>
+                <p className="text-xs text-blue-800 dark:text-blue-200">
+                  These recommendations are based on Renaissance Periodization's evidence-based approach to nutrition timing, 
+                  optimized for muscle growth, performance, and recovery. Adjust based on your individual response and preferences.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
