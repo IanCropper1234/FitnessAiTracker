@@ -583,7 +583,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Mobile-Optimized Daily Wellness Check-in Section */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 pl-[0px] pr-[0px] ml-[-15px] mr-[-15px]">
                 <div className="p-3 sm:p-4">
                   {/* Header - Mobile stacked, Desktop inline */}
                   <div className="space-y-3 sm:space-y-0">
