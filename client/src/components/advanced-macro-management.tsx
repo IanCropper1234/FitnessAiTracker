@@ -714,7 +714,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Recommendation:</span>
-                        <span className="font-medium text-black dark:text-white capitalize">
+                        <span className="font-medium text-black dark:text-white capitalize pl-[7px] pr-[7px]">
                           {weeklyGoals[0].adjustmentRecommendation?.replace('_', ' ')}
                         </span>
                       </div>
