@@ -450,20 +450,20 @@ export class AdvancedMacroManagementService {
             adjustmentReason = 'poor_adherence_cutting';
           }
         } else if (goalType === 'bulking' || goalType === 'bulk') {
-          // Bulking phase: target weight gain
+          // Bulking phase: Scientific RP methodology - maintain when progressing optimally
           if (adherencePercentage >= 90 && weightChange <= 0) {
             adjustmentRecommendation = 'increase_calories';
             adjustmentReason = 'high_adherence_no_weight_gain';
-          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 2.0) {
-            // Only decrease if gaining more than 2x target (more conservative)
+          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 2.5) {
+            // Only decrease if gaining significantly more than target (very conservative)
             adjustmentRecommendation = 'decrease_calories';
             adjustmentReason = 'excessive_weight_gain';
           } else if (adherencePercentage < 80) {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_bulking';
-          } else if (adherencePercentage >= 90 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.0) {
-            // Good weight gain within reasonable range - maintain or slightly increase
-            adjustmentRecommendation = 'increase_calories';
+          } else if (adherencePercentage >= 90 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.5) {
+            // Optimal progress: maintain current approach until plateau occurs
+            adjustmentRecommendation = 'maintain';
             adjustmentReason = 'optimal_bulk_progress';
           }
         } else {
