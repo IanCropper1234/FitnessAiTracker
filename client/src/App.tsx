@@ -261,13 +261,17 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // Check authentication status on app initialization
+  // Check authentication status on app initialization with retry logic for iOS PWA
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuth = async (retryCount = 0) => {
       try {
-        console.log('Checking authentication status...');
+        console.log(`Checking authentication status... (attempt ${retryCount + 1})`);
         const response = await fetch('/api/auth/user', {
-          credentials: 'include'
+          credentials: 'include',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
         });
         console.log('Auth check response status:', response.status);
         if (response.ok) {
@@ -276,10 +280,29 @@ export default function App() {
           setUser(userData.user);
         } else {
           console.log('Not authenticated - no valid session');
+          // In iOS PWA, sometimes the first auth check fails due to timing issues
+          // Retry once after a short delay
+          if (retryCount === 0) {
+            console.log('Retrying authentication check in iOS PWA environment...');
+            setTimeout(() => checkAuth(1), 1000);
+            return;
+          }
         }
       } catch (error) {
         console.log('Authentication check failed:', error);
+        // Retry once on network error in PWA environment
+        if (retryCount === 0) {
+          console.log('Retrying authentication check due to network error...');
+          setTimeout(() => checkAuth(1), 1500);
+          return;
+        }
       } finally {
+        if (retryCount > 0) {
+          setAuthLoading(false);
+        }
+      }
+      
+      if (retryCount === 0) {
         setAuthLoading(false);
       }
     };

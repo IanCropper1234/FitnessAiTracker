@@ -42,15 +42,29 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
 
-  const { data: nutritionSummary, isLoading: nutritionLoading } = useQuery({
+  const { data: nutritionSummary, isLoading: nutritionLoading, error: nutritionError, refetch: refetchNutrition } = useQuery({
     queryKey: ['/api/nutrition/summary', dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/summary?date=${dateQueryParam}`, {
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to fetch nutrition summary');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Not authenticated');
+        }
+        throw new Error('Failed to fetch nutrition summary');
+      }
       return response.json();
-    }
+    },
+    enabled: !!user?.id,
+    retry: (failureCount, error) => {
+      // Only retry auth errors once, other errors retry normally
+      if (error.message === 'Not authenticated' && failureCount < 1) {
+        return true;
+      }
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
 
   // Fetch diet goals for accurate target values
@@ -80,15 +94,28 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     }
   });
 
-  const { data: trainingStats, isLoading: trainingLoading } = useQuery({
+  const { data: trainingStats, isLoading: trainingLoading, error: trainingError, refetch: refetchTraining } = useQuery({
     queryKey: ['/api/training/stats', dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/training/stats?date=${dateQueryParam}`, {
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to fetch training stats');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Not authenticated');
+        }
+        throw new Error('Failed to fetch training stats');
+      }
       return response.json();
-    }
+    },
+    enabled: !!user?.id,
+    retry: (failureCount, error) => {
+      if (error.message === 'Not authenticated' && failureCount < 1) {
+        return true;
+      }
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
 
   // Get active workout sessions for smart Start Workout behavior
@@ -105,16 +132,28 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   });
 
   // Get body metrics for weight and body composition data
-  const { data: bodyMetrics, isLoading: bodyMetricsLoading } = useQuery({
+  const { data: bodyMetrics, isLoading: bodyMetricsLoading, error: bodyMetricsError, refetch: refetchBodyMetrics } = useQuery({
     queryKey: ['/api/body-metrics', user?.id],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`, {
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to fetch body metrics');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Not authenticated');
+        }
+        throw new Error('Failed to fetch body metrics');
+      }
       return response.json();
     },
-    enabled: !!user?.id  // Only fetch when user is available
+    enabled: !!user?.id,
+    retry: (failureCount, error) => {
+      if (error.message === 'Not authenticated' && failureCount < 1) {
+        return true;
+      }
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
 
   // Get user profile for additional metrics
@@ -193,6 +232,18 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   // Check if we're in a loading state for the main dashboard
   const isDashboardLoading = nutritionLoading || trainingLoading || bodyMetricsLoading;
+  
+  // Check for authentication errors
+  const hasAuthError = nutritionError?.message === 'Not authenticated' || 
+                       trainingError?.message === 'Not authenticated' || 
+                       bodyMetricsError?.message === 'Not authenticated';
+  
+  // Add retry mechanism for failed queries
+  const retryAllQueries = () => {
+    if (nutritionError) refetchNutrition();
+    if (trainingError) refetchTraining();
+    if (bodyMetricsError) refetchBodyMetrics();
+  };
 
   // Smart Start Workout function
   const handleStartWorkout = () => {
@@ -223,6 +274,19 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             <div className="text-center py-8">
               <LoadingState />
               <p className="text-sm text-muted-foreground mt-4">Loading dashboard...</p>
+              {hasAuthError && (
+                <div className="mt-4">
+                  <p className="text-sm text-red-500 mb-2">Connection issue detected</p>
+                  <Button 
+                    onClick={retryAllQueries}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
+                    Retry Loading
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <DashboardCardSkeleton />
