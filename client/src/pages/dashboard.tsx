@@ -320,6 +320,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           </CardContent>
         </Card>
 
+        {/* Daily Wellness Check-in Reminder */}
+        <div className="mb-4">
+          <DailyWellnessReminder userId={user.id} />
+        </div>
+
         {/* Enhanced Metrics - Non-Duplicate Data */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full card-spacing">
           {!nutritionSummary ? (
@@ -455,10 +460,6 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           <RecentActivity userId={user.id} />
         </div>
 
-        {/* Daily Wellness Check-in Reminder */}
-        <div className="mt-6">
-          <DailyWellnessReminder userId={user.id} />
-        </div>
 
 
 

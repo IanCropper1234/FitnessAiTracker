@@ -108,7 +108,6 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
             {isCompleted ? 'Complete' : 'Pending'}
           </Badge>
         </CardTitle>
-        
       </CardHeader>
       <CardContent>
         {isCompleted ? (
