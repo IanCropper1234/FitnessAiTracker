@@ -145,6 +145,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             {user ? <AddFood user={user} /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
+        <Route path="/workout-feedback/:sessionId">
+          <AnimatedPage>
+            {user ? <WorkoutFeedbackPage /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
         <Route path="/training">
           <AnimatedPage>
             {user ? <TrainingPage user={user} activeTab={activeTrainingTab} onTabChange={setActiveTrainingTab} /> : <div className="animate-pulse">Loading...</div>}
@@ -173,11 +178,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/nutrition-facts">
           <AnimatedPage>
             {user ? <NutritionFactsPage /> : <div className="animate-pulse">Loading...</div>}
-          </AnimatedPage>
-        </Route>
-        <Route path="/workout-feedback/:sessionId">
-          <AnimatedPage>
-            {user ? <WorkoutFeedbackPage /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route>

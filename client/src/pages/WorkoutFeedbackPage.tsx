@@ -24,6 +24,8 @@ export default function WorkoutFeedbackPage() {
   const [match, params] = useRoute('/workout-feedback/:sessionId');
   const queryClient = useQueryClient();
   
+  console.log('WorkoutFeedbackPage - match:', match, 'params:', params);
+  
   const sessionId = params?.sessionId ? parseInt(params.sessionId) : null;
   
   const [feedback, setFeedback] = useState<FeedbackData>({
@@ -44,10 +46,7 @@ export default function WorkoutFeedbackPage() {
 
   const submitFeedbackMutation = useMutation({
     mutationFn: (data: FeedbackData) =>
-      apiRequest('/api/auto-regulation/feedback', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
+      apiRequest('POST', '/api/auto-regulation/feedback', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/training/fatigue-analysis'] });
       queryClient.invalidateQueries({ queryKey: ['/api/training/volume-recommendations'] });
@@ -71,11 +70,12 @@ export default function WorkoutFeedbackPage() {
   };
 
   if (!match || !sessionId) {
+    console.log('WorkoutFeedbackPage - Route not matched or invalid sessionId:', { match, sessionId, params });
     return (
       <div className="container max-w-2xl mx-auto p-4">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-8">
-            <p className="text-muted-foreground">Invalid session ID</p>
+            <p className="text-muted-foreground">Invalid session ID (match: {String(match)}, sessionId: {sessionId})</p>
             <Button onClick={() => setLocation('/training')} className="mt-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Training
