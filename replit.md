@@ -8,6 +8,13 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Mesocycle Name Labels Enhancement (Aug 1, 2025):**
+- ✅ Added mesocycle name labels to workout session titles for improved organization
+- ✅ Modified WorkoutSessionCard interface to include `mesocycleName` parameter
+- ✅ Implemented mesocycle lookup map for efficient name resolution
+- ✅ Blue mesocycle badges display only for sessions linked to mesocycles
+- ✅ Fixed runtime error with `currentMesocycle` reference after query structure changes
+
 **Auto-Regulation System Fixes (Aug 1, 2025):**
 - ✅ Fixed volume calculation algorithms to use `setsData` JSON for accurate set counting
 - ✅ Corrected database schema property references (`mav`/`mev` vs `mavSets`/`mevSets`)
@@ -20,7 +27,7 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 - ✅ Fixed decimal field data type conversions (string format required)
 - ✅ Added 8 load progression records for actual workout data
 - ✅ Verified API endpoints `/api/training/load-progression` and `/api/training/performance-analysis`
-- ⚠️ **Known Issue**: Load progression data requires user authentication to display in UI
+- ✅ **RESOLVED**: Load progression data authentication issue - system now properly displays user-isolated data
 
 ## User Preferences
 

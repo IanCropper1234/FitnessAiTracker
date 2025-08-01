@@ -628,6 +628,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
     return acc;
   }, {} as Record<number, string>);
 
+  // Get current mesocycle for status display
+  const currentMesocycle = mesocycles.find(m => m.isActive) || mesocycles[0] || null;
+
   // Group exercises by category
   const exercisesByCategory = exercises.reduce((acc, exercise) => {
     if (!acc[exercise.category]) {
