@@ -3431,44 +3431,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const exerciseId = parseInt(req.params.exerciseId);
       const userId = req.userId;
       const setNumber = parseInt(req.query.setNumber as string);
-      const limit = parseInt(req.query.limit as string) || 5;
+      const limit = parseInt(req.query.limit as string) || 10;
 
       if (isNaN(exerciseId)) {
         return res.status(400).json({ message: "Invalid exercise ID" });
       }
 
-      let whereConditions = [
-        eq(workoutSessions.userId, userId),
-        eq(workoutExercises.exerciseId, exerciseId),
-        eq(workoutExercises.isCompleted, true),
-        isNotNull(workoutExercises.weight),
-        isNotNull(workoutExercises.actualReps),
-        isNotNull(workoutExercises.rpe),
-        gt(workoutExercises.weight, 0),
-        gt(workoutExercises.actualReps, 0)
-      ];
-
-      // If setNumber is provided, filter for that specific set number
-      if (!isNaN(setNumber) && setNumber > 0) {
-        whereConditions.push(eq(workoutExercises.setNumber, setNumber));
-      }
-
-      // Get recent completed sets for this exercise (and optionally specific set number)
-      const historicalSets = await db
+      // Get recent completed workout exercises for this exercise
+      const historicalExercises = await db
         .select({
-          weight: workoutExercises.weight,
-          reps: workoutExercises.actualReps,
-          rpe: workoutExercises.rpe,
-          setNumber: workoutExercises.setNumber,
+          setsData: workoutExercises.setsData,
           date: workoutSessions.date
         })
         .from(workoutExercises)
         .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
-        .where(and(...whereConditions))
+        .where(and(
+          eq(workoutSessions.userId, userId),
+          eq(workoutExercises.exerciseId, exerciseId),
+          eq(workoutExercises.isCompleted, true),
+          isNotNull(workoutExercises.setsData)
+        ))
         .orderBy(desc(workoutSessions.date))
         .limit(limit);
 
-      res.json(historicalSets);
+      // Extract set-specific data from setsData JSON
+      const historicalSets: any[] = [];
+      
+      for (const exercise of historicalExercises) {
+        if (exercise.setsData && Array.isArray(exercise.setsData)) {
+          for (const set of exercise.setsData as any[]) {
+            // If setNumber is provided, only include matching set numbers
+            if (!isNaN(setNumber) && setNumber > 0 && set.setNumber !== setNumber) {
+              continue;
+            }
+            
+            // Only include completed sets with valid data
+            if (set.completed && set.weight > 0 && set.actualReps > 0 && set.rpe > 0) {
+              historicalSets.push({
+                weight: set.weight,
+                reps: set.actualReps,
+                rpe: set.rpe,
+                setNumber: set.setNumber,
+                date: exercise.date
+              });
+            }
+          }
+        }
+      }
+
+      // Sort by date descending and limit results
+      historicalSets.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      res.json(historicalSets.slice(0, 5));
     } catch (error: any) {
       console.error('Exercise history error:', error);
       res.status(400).json({ message: error.message });
