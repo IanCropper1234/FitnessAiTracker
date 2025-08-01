@@ -42,7 +42,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
 
-  const { data: nutritionSummary } = useQuery({
+  const { data: nutritionSummary, isLoading: nutritionLoading } = useQuery({
     queryKey: ['/api/nutrition/summary', dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/summary?date=${dateQueryParam}`, {
@@ -80,7 +80,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     }
   });
 
-  const { data: trainingStats } = useQuery({
+  const { data: trainingStats, isLoading: trainingLoading } = useQuery({
     queryKey: ['/api/training/stats', dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/training/stats?date=${dateQueryParam}`, {
@@ -100,11 +100,12 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       });
       if (!response.ok) throw new Error('Failed to fetch workout sessions');
       return response.json();
-    }
+    },
+    enabled: !!user?.id  // Only fetch when user is available
   });
 
   // Get body metrics for weight and body composition data
-  const { data: bodyMetrics } = useQuery({
+  const { data: bodyMetrics, isLoading: bodyMetricsLoading } = useQuery({
     queryKey: ['/api/body-metrics', user?.id],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`, {
@@ -112,7 +113,8 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       });
       if (!response.ok) throw new Error('Failed to fetch body metrics');
       return response.json();
-    }
+    },
+    enabled: !!user?.id  // Only fetch when user is available
   });
 
   // Get user profile for additional metrics
@@ -124,7 +126,8 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       });
       if (!response.ok) throw new Error('Failed to fetch user profile');
       return response.json();
-    }
+    },
+    enabled: !!user?.id  // Only fetch when user is available
   });
 
   // Calculate current weight with unit conversion
@@ -188,6 +191,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   const today = TimezoneUtils.formatForDisplay(selectedDate, 'en-US');
 
+  // Check if we're in a loading state for the main dashboard
+  const isDashboardLoading = nutritionLoading || trainingLoading || bodyMetricsLoading;
+
   // Smart Start Workout function
   const handleStartWorkout = () => {
     if (workoutSessions && workoutSessions.length > 0) {
@@ -207,6 +213,28 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     // No active sessions found, go to training page to create new workout
     setLocation('/training');
   };
+
+  // Show loading state for dashboard on initial load
+  if (isDashboardLoading && !nutritionSummary && !trainingStats && !bodyMetrics) {
+    return (
+      <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[5px] pr-[5px] ml-[-3px] mr-[-3px]">
+        <div className="content-container section-spacing !px-0">
+          <div className="space-y-6">
+            <div className="text-center py-8">
+              <LoadingState />
+              <p className="text-sm text-muted-foreground mt-4">Loading dashboard...</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+              <DashboardCardSkeleton />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[5px] pr-[5px] ml-[-3px] mr-[-3px]">
@@ -301,7 +329,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             {showTrainingOverview ? (
               <TrainingOverview userId={user.id} date={currentDate} />
             ) : (
-              nutritionSummary ? (
+              nutritionLoading ? (
+                <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
+                  <LoadingState />
+                </div>
+              ) : nutritionSummary ? (
                 <MacroChart
                   protein={nutritionSummary.totalProtein}
                   carbs={nutritionSummary.totalCarbs}
@@ -327,7 +359,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
         {/* Enhanced Metrics - Non-Duplicate Data */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full card-spacing">
-          {!nutritionSummary ? (
+          {nutritionLoading || trainingLoading || bodyMetricsLoading ? (
             // Loading skeletons for quick stats
             (<>
               <DashboardCardSkeleton />
