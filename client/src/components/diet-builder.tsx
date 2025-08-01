@@ -1058,10 +1058,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-medium text-foreground mb-2">How would you like to set your goals?</h3>
-                  <p className="text-sm text-muted-foreground">Choose your preferred approach for managing calories and macros</p>
-                </div>
+                
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Recommended Goals Card */}
