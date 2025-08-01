@@ -635,9 +635,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     });
   };
 
-  // TDEE Calculation Function
+  // TDEE Calculation Function for useEffect
   // Note: Harris-Benedict Formula expects weight in kg and height in cm
-  const calculateTDEE = (age: number, weight: number, height: number, activityLevel: string, gender: 'male' | 'female' = 'male') => {
+  const calculateTDEEWithParams = (age: number, weight: number, height: number, activityLevel: string, gender: 'male' | 'female' = 'male') => {
     // Harris-Benedict Formula (weight in kg, height in cm)
     let bmr;
     if (gender === 'male') {
@@ -677,14 +677,15 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           ? Number(userProfile.height) 
           : convertValue(Number(userProfile.height), 'measurement', 'imperial', 'metric');
         
-        const calculatedTDEE = calculateTDEE(
+        const calculatedTDEE = calculateTDEEWithParams(
           userProfile.age,
           weightInKg,
           heightInCm,
-          userProfile.activityLevel
+          userProfile.activityLevel,
+          'male' // default gender for now
         );
         
-        const targetCalories = calculateTargetCalories(calculatedTDEE, dietGoal.goal, dietGoal.weeklyWeightTarget);
+        const targetCalories = calculateTargetCaloriesWithParams(calculatedTDEE, dietGoal.goal, dietGoal.weeklyWeightTarget);
         
         setDietGoal(prev => ({
           ...prev,
@@ -696,7 +697,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   }, [userProfile, bodyMetrics, dietGoal.autoRegulation, dietGoal.goal, dietGoal.weeklyWeightTarget]);
 
   // Calculate target calories based on goal
-  const calculateTargetCalories = (tdee: number, goal: string, weeklyTarget?: number) => {
+  const calculateTargetCaloriesWithParams = (tdee: number, goal: string, weeklyTarget?: number) => {
     const dailyDeficitSurplus = (weeklyTarget || 0) * 7700 / 7; // 7700 calories per kg
     
     switch (goal) {
@@ -775,6 +776,75 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // Calculate current calorie total from macros
   const calculateCurrentCalories = () => {
     return Math.round((dietGoal.targetProtein * 4) + (dietGoal.targetCarbs * 4) + (dietGoal.targetFat * 9));
+  };
+
+  // BMR Calculation function
+  const calculateBMR = () => {
+    const latestWeight = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight;
+    if (!userProfile?.age || !userProfile?.height || !latestWeight) return 2000; // fallback
+    
+    const age = userProfile.age;
+    const height = userProfile.height;
+    const weight = latestWeight;
+    const gender = 'male'; // default gender
+    
+    // Harris-Benedict Formula
+    if (gender === 'male') {
+      return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+      return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+  };
+
+  // Updated TDEE calculation
+  const calculateTDEE = () => {
+    const bmr = calculateBMR();
+    const activityLevel = userProfile?.activityLevel || 'moderately_active';
+    
+    const activityMultipliers = {
+      'sedentary': 1.2,
+      'lightly_active': 1.375,
+      'moderately_active': 1.55,
+      'very_active': 1.725,
+      'extremely_active': 1.9
+    };
+
+    return bmr * (activityMultipliers[activityLevel as keyof typeof activityMultipliers] || 1.55);
+  };
+
+  // Updated target calories calculation
+  const calculateTargetCalories = (goal?: string) => {
+    const tdee = calculateTDEE();
+    const currentGoal = goal || dietGoal.goal || 'maintain';
+    
+    switch (currentGoal) {
+      case 'cut':
+        return tdee * 0.85; // 15% deficit
+      case 'bulk':
+        return tdee * 1.15; // 15% surplus
+      case 'maintain':
+      default:
+        return tdee;
+    }
+  };
+
+  // Recommended macro calculations
+  const calculateRecommendedProtein = () => {
+    const targetCalories = calculateTargetCalories();
+    const proteinPercentage = dietGoal.goal === 'cut' ? 0.35 : dietGoal.goal === 'bulk' ? 0.25 : 0.30;
+    return (targetCalories * proteinPercentage) / 4;
+  };
+
+  const calculateRecommendedCarbs = () => {
+    const targetCalories = calculateTargetCalories();
+    const carbsPercentage = dietGoal.goal === 'cut' ? 0.35 : dietGoal.goal === 'bulk' ? 0.50 : 0.40;
+    return (targetCalories * carbsPercentage) / 4;
+  };
+
+  const calculateRecommendedFat = () => {
+    const targetCalories = calculateTargetCalories();
+    const fatPercentage = dietGoal.goal === 'cut' ? 0.30 : dietGoal.goal === 'bulk' ? 0.25 : 0.30;
+    return (targetCalories * fatPercentage) / 9;
   };
 
 
