@@ -1056,128 +1056,128 @@ export function IntegratedNutritionOverview({
 
   return (
     <div className="space-y-2">
-      {/* Macro Summary Cards - iOS Optimized Dark Style */}
-      <div className="grid grid-cols-2 gap-1.5 w-full">
-        {/* Calories Card */}
-        <Card className="bg-gray-900 dark:bg-gray-800 border-blue-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-2">
-            <div className="text-center">
-              <div className="text-xs font-medium text-blue-400 mb-0.5">
+      {/* Macro Summary - Condensed List View */}
+      <Card className="bg-gray-900 dark:bg-gray-800 border-gray-700 border shadow-lg nutrition-card-ios">
+        <CardContent className="p-3">
+          <div className="space-y-3">
+            {/* Calories Row */}
+            <div className="flex items-center gap-3">
+              <div className="w-16 text-xs font-medium text-blue-400">
                 Calories
               </div>
-              <div className="text-xl font-bold text-white mb-0.5">
-                {Math.round(nutritionSummary?.totalCalories || 0)}
-              </div>
-              <div className="text-xs text-gray-300 mb-1">
-                of {Math.round(getCurrentTargetCalories())}
-              </div>
-              {dietGoals && (
-                <div className="text-xs font-medium text-blue-300 mb-1">
-                  Left: {Math.round(Math.max(0, getCurrentTargetCalories() - (nutritionSummary?.totalCalories || 0)))}
+              <div className="flex-1 flex items-center gap-2">
+                <div className="text-sm font-bold text-white min-w-[3rem]">
+                  {Math.round(nutritionSummary?.totalCalories || 0)}
                 </div>
-              )}
-              <div className="nutrition-progress-bar">
-                <div 
-                  className="nutrition-progress-fill bg-blue-500"
-                  style={{ 
-                    width: `${Math.min(100, (nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100)}%` 
-                  }}
-                />
+                <div className="text-xs text-gray-400">/</div>
+                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                  {Math.round(getCurrentTargetCalories())}
+                </div>
+                <div className="flex-1 relative">
+                  <div className="nutrition-progress-bar h-2">
+                    <div 
+                      className="nutrition-progress-fill bg-blue-500 h-2"
+                      style={{ 
+                        width: `${Math.min(100, (nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100)}%` 
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="text-xs font-medium text-blue-300 min-w-[2.5rem] text-right">
+                  {Math.round(((nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100))}%
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Protein Card */}
-        <Card className="bg-gray-900 dark:bg-gray-800 border-green-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-2">
-            <div className="text-center">
-              <div className="text-xs font-medium text-green-400 mb-0.5">
-                Protein (g)
+            {/* Protein Row */}
+            <div className="flex items-center gap-3">
+              <div className="w-16 text-xs font-medium text-green-400">
+                Protein
               </div>
-              <div className="text-xl font-bold text-white mb-0.5">
-                {Math.round(nutritionSummary?.totalProtein || 0)}
-              </div>
-              <div className="text-xs text-gray-300 mb-1">
-                of {Math.round(getCurrentTargetProtein())}g
-              </div>
-              {dietGoals && (
-                <div className="text-xs font-medium text-green-300 mb-1">
-                  Left: {Math.round(Math.max(0, getCurrentTargetProtein() - (nutritionSummary?.totalProtein || 0)))}g
+              <div className="flex-1 flex items-center gap-2">
+                <div className="text-sm font-bold text-white min-w-[3rem]">
+                  {Math.round(nutritionSummary?.totalProtein || 0)}g
                 </div>
-              )}
-              <div className="nutrition-progress-bar">
-                <div 
-                  className="nutrition-progress-fill bg-green-500"
-                  style={{ 
-                    width: `${Math.min(100, (nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100)}%` 
-                  }}
-                />
+                <div className="text-xs text-gray-400">/</div>
+                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                  {Math.round(getCurrentTargetProtein())}g
+                </div>
+                <div className="flex-1 relative">
+                  <div className="nutrition-progress-bar h-2">
+                    <div 
+                      className="nutrition-progress-fill bg-green-500 h-2"
+                      style={{ 
+                        width: `${Math.min(100, (nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100)}%` 
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="text-xs font-medium text-green-300 min-w-[2.5rem] text-right">
+                  {Math.round(((nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100))}%
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Carbs Card */}
-        <Card className="bg-gray-900 dark:bg-gray-800 border-orange-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-2">
-            <div className="text-center">
-              <div className="text-xs font-medium text-orange-400 mb-0.5">
-                Carbs (g)
+            {/* Carbs Row */}
+            <div className="flex items-center gap-3">
+              <div className="w-16 text-xs font-medium text-orange-400">
+                Carbs
               </div>
-              <div className="text-xl font-bold text-white mb-0.5">
-                {Math.round(nutritionSummary?.totalCarbs || 0)}
-              </div>
-              <div className="text-xs text-gray-300 mb-1">
-                of {Math.round(getCurrentTargetCarbs())}g
-              </div>
-              {dietGoals && (
-                <div className="text-xs font-medium text-orange-300 mb-1">
-                  Left: {Math.round(Math.max(0, getCurrentTargetCarbs() - (nutritionSummary?.totalCarbs || 0)))}g
+              <div className="flex-1 flex items-center gap-2">
+                <div className="text-sm font-bold text-white min-w-[3rem]">
+                  {Math.round(nutritionSummary?.totalCarbs || 0)}g
                 </div>
-              )}
-              <div className="nutrition-progress-bar">
-                <div 
-                  className="nutrition-progress-fill bg-orange-500"
-                  style={{ 
-                    width: `${Math.min(100, (nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100)}%` 
-                  }}
-                />
+                <div className="text-xs text-gray-400">/</div>
+                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                  {Math.round(getCurrentTargetCarbs())}g
+                </div>
+                <div className="flex-1 relative">
+                  <div className="nutrition-progress-bar h-2">
+                    <div 
+                      className="nutrition-progress-fill bg-orange-500 h-2"
+                      style={{ 
+                        width: `${Math.min(100, (nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100)}%` 
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="text-xs font-medium text-orange-300 min-w-[2.5rem] text-right">
+                  {Math.round(((nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100))}%
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Fat Card */}
-        <Card className="bg-gray-900 dark:bg-gray-800 border-purple-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-2">
-            <div className="text-center">
-              <div className="text-xs font-medium text-purple-400 mb-0.5">
-                Fat (g)
+            {/* Fat Row */}
+            <div className="flex items-center gap-3">
+              <div className="w-16 text-xs font-medium text-purple-400">
+                Fat
               </div>
-              <div className="text-xl font-bold text-white mb-0.5">
-                {Math.round(nutritionSummary?.totalFat || 0)}
-              </div>
-              <div className="text-xs text-gray-300 mb-1">
-                of {Math.round(getCurrentTargetFat())}g
-              </div>
-              {dietGoals && (
-                <div className="text-xs font-medium text-purple-300 mb-1">
-                  Left: {Math.round(Math.max(0, getCurrentTargetFat() - (nutritionSummary?.totalFat || 0)))}g
+              <div className="flex-1 flex items-center gap-2">
+                <div className="text-sm font-bold text-white min-w-[3rem]">
+                  {Math.round(nutritionSummary?.totalFat || 0)}g
                 </div>
-              )}
-              <div className="nutrition-progress-bar">
-                <div 
-                  className="nutrition-progress-fill bg-purple-500"
-                  style={{ 
-                    width: `${Math.min(100, (nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100)}%` 
-                  }}
-                />
+                <div className="text-xs text-gray-400">/</div>
+                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                  {Math.round(getCurrentTargetFat())}g
+                </div>
+                <div className="flex-1 relative">
+                  <div className="nutrition-progress-bar h-2">
+                    <div 
+                      className="nutrition-progress-fill bg-purple-500 h-2"
+                      style={{ 
+                        width: `${Math.min(100, (nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100)}%` 
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="text-xs font-medium text-purple-300 min-w-[2.5rem] text-right">
+                  {Math.round(((nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100))}%
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
       {/* Expandable Micronutrients Section with RDA Comparison */}
       {(() => {
         const todayLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => {
