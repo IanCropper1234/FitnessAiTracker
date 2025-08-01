@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User } from "lucide-react";
+import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User, AlertTriangle } from "lucide-react";
 import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
@@ -115,6 +117,10 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   
   // UI State
   const [activeTab, setActiveTab] = useState<'diet-goal' | 'meal-timing' | 'meal-builder' | 'saved-plans'>('diet-goal');
+  
+  // New state for goal selection mode
+  const [goalSelectionMode, setGoalSelectionMode] = useState<'selection' | 'recommended' | 'custom'>('selection');
+  const [goalSubTab, setGoalSubTab] = useState<'recommended' | 'custom'>('recommended');
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFoods, setSelectedFoods] = useState<FoodItem[]>([]);
   const [searchMode, setSearchMode] = useState<'database' | 'ai'>('database');
@@ -943,19 +949,175 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
         {/* Diet Goal Tab */}
         <TabsContent value="diet-goal" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="w-5 h-5" />
-                Diet Goal & TDEE Calculator
-              </CardTitle>
-              <CardDescription className="text-muted-foreground text-[12px]">
-                Set your diet goals with automatic TDEE calculation and macro distribution
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Loading State */}
-              {isDataLoading && (
+          {goalSelectionMode === 'selection' ? (
+            // Goal Selection Screen
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calculator className="w-5 h-5" />
+                  Calorie & Macro Goal Setup
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-[12px]">
+                  Choose how you want to set your daily nutrition goals
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-medium text-foreground mb-2">How would you like to set your goals?</h3>
+                  <p className="text-sm text-muted-foreground">Choose your preferred approach for managing calories and macros</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Recommended Goals Card */}
+                  <div 
+                    className="relative p-6 border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer transition-colors"
+                    onClick={() => {
+                      setGoalSelectionMode('recommended');
+                      setGoalSubTab('recommended');
+                    }}
+                  >
+                    <div className="text-center space-y-4">
+                      <div className="w-12 h-12 bg-blue-100 dark:bg-blue-800 mx-auto flex items-center justify-center">
+                        <Calculator className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Recommended</h4>
+                        <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1 text-left">
+                          <li>• TDEE-based calculations</li>
+                          <li>• Auto-regulation system</li>
+                          <li>• RP methodology</li>
+                          <li>• Smart adjustments</li>
+                        </ul>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => {
+                          setGoalSelectionMode('recommended');
+                          setGoalSubTab('recommended');
+                        }}
+                      >
+                        SELECT
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Custom Goals Card */}
+                  <div 
+                    className="relative p-6 border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 hover:border-green-300 dark:hover:border-green-700 cursor-pointer transition-colors"
+                    onClick={() => {
+                      setGoalSelectionMode('custom');
+                      setGoalSubTab('custom');
+                    }}
+                  >
+                    <div className="text-center space-y-4">
+                      <div className="w-12 h-12 bg-green-100 dark:bg-green-800 mx-auto flex items-center justify-center">
+                        <Settings className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">Custom</h4>
+                        <ul className="text-sm text-green-700 dark:text-green-300 space-y-1 text-left">
+                          <li>• Manual calorie entry</li>
+                          <li>• Full control over macros</li>
+                          <li>• Your own numbers</li>
+                          <li>• Flexible approach</li>
+                        </ul>
+                      </div>
+                      <Button 
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => {
+                          setGoalSelectionMode('custom');
+                          setGoalSubTab('custom');
+                        }}
+                      >
+                        SELECT
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Profile Warning for TDEE */}
+                {!isDataLoading && (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
+                  <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                      <h4 className="font-medium text-yellow-900 dark:text-yellow-100 text-sm">Profile Required for TDEE</h4>
+                    </div>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
+                      Complete your profile to use the recommended TDEE-based approach:
+                    </p>
+                    <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1 mb-3">
+                      {!userProfile?.age && <li>• Add your age</li>}
+                      {!userProfile?.height && <li>• Add your height</li>}
+                      {!userProfile?.activityLevel && <li>• Set activity level</li>}
+                      {(!bodyMetrics?.length && !userProfile?.weight) && <li>• Add current weight</li>}
+                    </ul>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setLocation('/profile')}
+                      className="text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600"
+                    >
+                      Complete Profile
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            // Goal Configuration Screen with Tabs
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calculator className="w-5 h-5" />
+                    {goalSelectionMode === 'recommended' ? 'Recommended Goals' : 'Custom Goals'}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setGoalSelectionMode('selection')}
+                    className="text-xs"
+                  >
+                    Change Mode
+                  </Button>
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-[12px]">
+                  {goalSelectionMode === 'recommended' 
+                    ? 'TDEE-based calculations with automatic macro distribution'
+                    : 'Manual calorie and macro goal management'
+                  }
+                </CardDescription>
+              </CardHeader>
+              
+              {/* Sub Tabs for Recommended vs Custom */}
+              <div className="px-6 pb-2">
+                <Tabs value={goalSubTab} onValueChange={(value) => setGoalSubTab(value as any)} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger 
+                      value="recommended" 
+                      disabled={goalSelectionMode !== 'recommended'}
+                      className={goalSelectionMode !== 'recommended' ? 'opacity-50' : ''}
+                    >
+                      Recommended
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="custom"
+                      disabled={goalSelectionMode !== 'custom'}
+                      className={goalSelectionMode !== 'custom' ? 'opacity-50' : ''}
+                    >
+                      Custom
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              <CardContent className="space-y-6">
+                {/* Content based on selected tab */}
+                {goalSubTab === 'recommended' && goalSelectionMode === 'recommended' && (
+                  // Recommended Goals Content
+                  <div className="space-y-6">
+                    {/* Loading State */}
+                    {isDataLoading && (
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                   <div className="flex items-center gap-3">
                     <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
@@ -1013,1174 +1175,333 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
               )}
 
-              {/* Auto-regulation Toggle - Read-only display */}
-              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700  bg-gray-50 dark:bg-gray-800/50">
-                <div className="space-y-1">
-                  <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Auto-regulation</Label>
-                  <p className="text-gray-600 dark:text-gray-400 text-[12px]">
-                    Connected to your body data and weight tracking system
-                  </p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                    {Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight)) 
-                      ? "✓ Active - automatically adjusting based on your progress data"
-                      : "○ Inactive - complete profile data to enable automatic adjustments"
-                    }
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight))}
-                    disabled={true}
-                    className="bg-gray-400 dark:bg-gray-600 pointer-events-none opacity-75"
-                  />
-                  <span className="text-xs text-gray-500 dark:text-gray-400">System managed</span>
-                </div>
-              </div>
-
-              {/* TDEE and Goal Settings */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-black dark:text-white">TDEE (Total Daily Energy Expenditure)</Label>
-                    <Input
-                      type="number"
-                      value={dietGoal.tdee}
-                      onChange={(e) => setDietGoal(prev => ({ ...prev, tdee: Number(e.target.value) }))}
-                      disabled={dietGoal.autoRegulation}
-                      className="border-gray-300 dark:border-gray-600"
-                    />
-                    {dietGoal.autoRegulation && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Auto-calculated from: {userProfile?.age}y, {(() => {
-                          const weight = bodyMetrics?.length > 0 ? bodyMetrics[0]?.weight : userProfile?.weight;
-                          const weightUnit = bodyMetrics?.length > 0 ? bodyMetrics[0]?.unit : (userProfile?.weightUnit || 'metric');
-                          if (!weight) return 'No weight';
-                          
-                          // Convert weight display with proper unit handling
-                          if (weightUnit === 'metric') {
-                            return `${weight}kg (≈${convertValue(weight, 'weight', 'metric', 'imperial')}lbs)`;
-                          } else {
-                            return `${weight}lbs (≈${convertValue(weight, 'weight', 'imperial', 'metric')}kg)`;
+                    {/* Auto-regulation Toggle - Read-only display */}
+                    <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                      <div className="space-y-1">
+                        <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Auto-regulation</Label>
+                        <p className="text-gray-600 dark:text-gray-400 text-[12px]">
+                          Connected to your body data and weight tracking system
+                        </p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                          {Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight)) 
+                            ? "✓ Active - automatically adjusting based on your progress data"
+                            : "○ Inactive - complete profile data to enable automatic adjustments"
                           }
-                        })()}, {(() => {
-                          const height = userProfile?.height;
-                          const heightUnit = userProfile?.heightUnit || 'metric';
-                          if (!height) return 'No height';
-                          
-                          // Convert height display with proper unit handling
-                          if (heightUnit === 'metric') {
-                            return `${height}cm (≈${convertValue(height, 'measurement', 'metric', 'imperial')}in)`;
-                          } else {
-                            return `${height}in (≈${convertValue(height, 'measurement', 'imperial', 'metric')}cm)`;
-                          }
-                        })()}, {userProfile?.activityLevel}
-                      </p>
-                    )}
-                    {!dietGoal.autoRegulation && (
-                      <p className="text-xs text-gray-500 mt-1">Manual entry mode</p>
-                    )}
-                  </div>
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={Boolean(dietGoal.autoRegulation && userProfile?.age && userProfile?.height && userProfile?.activityLevel && (bodyMetrics?.length > 0 || userProfile?.weight))}
+                          disabled={true}
+                          className="bg-gray-400 dark:bg-gray-600 pointer-events-none opacity-75"
+                        />
+                        <span className="text-xs text-gray-500 dark:text-gray-400">System managed</span>
+                      </div>
+                    </div>
 
-                  <div>
-                    <Label className="text-black dark:text-white">Diet Goal</Label>
-                    <Select value={dietGoal.goal} onValueChange={(value) => {
-                      const getDefaultWeightTarget = (goal: string) => {
-                        switch (goal) {
-                          case 'cut': return -0.5; // Default 0.5kg loss per week
-                          case 'bulk': return 0.3; // Default 0.3kg gain per week
-                          case 'maintain': return 0; // No weight change
-                          default: return 0;
+                    {/* TDEE Calculation Results */}
+                    <div className="bg-slate-50 dark:bg-slate-900 p-4 border">
+                      <h3 className="text-lg font-semibold mb-3 text-foreground">TDEE Calculation</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* BMR */}
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-primary">{Math.round(calculateBMR())}</div>
+                          <div className="text-sm text-muted-foreground">BMR</div>
+                          <div className="text-xs text-muted-foreground">Base metabolic rate</div>
+                        </div>
+
+                        {/* TDEE */}
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{Math.round(calculateTDEE())}</div>
+                          <div className="text-sm text-muted-foreground">TDEE</div>
+                          <div className="text-xs text-muted-foreground">Total daily energy expenditure</div>
+                        </div>
+
+                        {/* Target Calories */}
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{Math.round(calculateTargetCalories())}</div>
+                          <div className="text-sm text-muted-foreground">Target</div>
+                          <div className="text-xs text-muted-foreground">Daily calorie goal</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Goal Selection */}
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-foreground">Diet Goal</h3>
+                      <RadioGroup
+                        value={dietGoal.goal || 'maintain'}
+                        onValueChange={(value: 'cut' | 'bulk' | 'maintain') => 
+                          setDietGoal({...dietGoal, goal: value, targetCalories: calculateTargetCalories(value)})
                         }
-                      };
+                        className="grid grid-cols-3 gap-3"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="cut" id="cut" />
+                          <Label htmlFor="cut" className="cursor-pointer">Cut (Lose Weight)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="maintain" id="maintain" />
+                          <Label htmlFor="maintain" className="cursor-pointer">Maintain</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="bulk" id="bulk" />
+                          <Label htmlFor="bulk" className="cursor-pointer">Bulk (Gain Weight)</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
+                    {/* Calculated Macros Display */}
+                    <div className="bg-background border border-border p-4 space-y-4">
+                      <h3 className="text-lg font-semibold text-foreground">Calculated Daily Goals</h3>
                       
-                      setDietGoal(prev => ({ 
-                        ...prev, 
-                        goal: value as any,
-                        weeklyWeightTarget: getDefaultWeightTarget(value)
-                      }));
-                    }}>
-                      <SelectTrigger className="border-gray-300 dark:border-gray-600">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cut">Cut (Fat Loss)</SelectItem>
-                        <SelectItem value="bulk">Bulk (Muscle Gain)</SelectItem>
-                        <SelectItem value="maintain">Maintain</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {userProfile?.fitnessGoal && (
-                      <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800  text-xs">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                            <Target className="w-3 h-3 flex-shrink-0" />
-                            <span className="truncate">
-                              <strong className="text-gray-800 dark:text-gray-200">
-                                {userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                              </strong>
-                            </span>
+                      {/* Calorie Goal */}
+                      <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                        <span className="font-medium text-blue-900 dark:text-blue-100">Daily Calories</span>
+                        <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{Math.round(calculateTargetCalories())} kcal</span>
+                      </div>
+
+                      {/* Macro Breakdown */}
+                      <div className="grid grid-cols-3 gap-3">
+                        {/* Protein */}
+                        <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                          <div className="text-lg font-bold text-green-600 dark:text-green-400">{Math.round(calculateRecommendedProtein())}g</div>
+                          <div className="text-sm text-green-700 dark:text-green-300">Protein</div>
+                          <div className="text-xs text-green-600 dark:text-green-400">
+                            {Math.round((calculateRecommendedProtein() * 4) / calculateTargetCalories() * 100)}%
                           </div>
-                          <div className="text-xs">
-                            {(() => {
-                              let expectedGoal = 'maintain';
-                              switch (userProfile.fitnessGoal) {
-                                case 'Weight Loss':
-                                case 'weight_loss':
-                                  expectedGoal = 'cut';
-                                  break;
-                                case 'Muscle Gain':
-                                case 'muscle_gain':
-                                  expectedGoal = 'bulk';
-                                  break;
-                                default:
-                                  expectedGoal = 'maintain';
-                              }
-                              const isMatched = dietGoal.goal === expectedGoal;
-                              return (
-                                <span className={isMatched ? 'text-green-600 dark:text-green-400 font-medium' : 'text-orange-600 dark:text-orange-400 font-medium'}>
-                                  {isMatched ? '✓ Synced' : `→ Suggests ${expectedGoal}`}
-                                </span>
-                              );
-                            })()}
+                        </div>
+
+                        {/* Carbs */}
+                        <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+                          <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{Math.round(calculateRecommendedCarbs())}g</div>
+                          <div className="text-sm text-orange-700 dark:text-orange-300">Carbs</div>
+                          <div className="text-xs text-orange-600 dark:text-orange-400">
+                            {Math.round((calculateRecommendedCarbs() * 4) / calculateTargetCalories() * 100)}%
+                          </div>
+                        </div>
+
+                        {/* Fat */}
+                        <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                          <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{Math.round(calculateRecommendedFat())}g</div>
+                          <div className="text-sm text-purple-700 dark:text-purple-300">Fat</div>
+                          <div className="text-xs text-purple-600 dark:text-purple-400">
+                            {Math.round((calculateRecommendedFat() * 9) / calculateTargetCalories() * 100)}%
                           </div>
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {dietGoal.goal !== 'maintain' && (
-                    <div>
-                      <Label className="text-black dark:text-white">Weekly Weight Target</Label>
+                      {/* RP Methodology Info */}
+                      <div className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                        <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-2">Renaissance Periodization Guidelines</h4>
+                        <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                          <li>• Protein: 0.8-1.2g per lb bodyweight for muscle preservation</li>
+                          <li>• Fat: 20-35% of calories for hormone production</li>
+                          <li>• Carbs: Remainder for energy and performance</li>
+                        </ul>
+                      </div>
+
+                      {/* Save Button */}
+                      <div className="pt-4">
+                        <Button
+                          onClick={() => {
+                            const updatedGoal = {
+                              ...dietGoal,
+                              targetCalories: Math.round(calculateTargetCalories()),
+                              targetProtein: Math.round(calculateRecommendedProtein()),
+                              targetCarbs: Math.round(calculateRecommendedCarbs()),
+                              targetFat: Math.round(calculateRecommendedFat()),
+                              autoRegulation: true
+                            };
+                            setDietGoal(updatedGoal);
+                            handleSaveDietGoal();
+                          }}
+                          disabled={saveDietGoalMutation.isPending}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          {saveDietGoalMutation.isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Saving Recommended Goals...
+                            </>
+                          ) : (
+                            'Save Recommended Goals'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {goalSubTab === 'custom' && goalSelectionMode === 'custom' && (
+                  // Custom Goals Content
+                  <div className="space-y-6">
+                    {/* Manual Calorie Input */}
+                    <div className="bg-background border border-border p-4 space-y-4">
+                      <h4 className="font-medium text-foreground text-sm">Daily Calorie Target</h4>
                       <Input
                         type="number"
-                        step="0.1"
-                        value={dietGoal.weeklyWeightTarget || ''}
-                        onChange={(e) => setDietGoal(prev => ({ ...prev, weeklyWeightTarget: Number(e.target.value) }))}
-                        placeholder={dietGoal.goal === 'cut' ? '-0.5' : '0.3'}
+                        value={dietGoal.targetCalories}
+                        onChange={(e) => setDietGoal(prev => ({ ...prev, targetCalories: Number(e.target.value) }))}
                         className="border-gray-300 dark:border-gray-600"
+                        placeholder="Enter calories..."
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        kg/week (≈{convertValue(Math.abs(dietGoal.weeklyWeightTarget || (dietGoal.goal === 'cut' ? 0.5 : 0.3)), 'weight', 'metric', 'imperial')} lbs/week)
+                      <p className="text-xs text-muted-foreground">
+                        Enter your desired daily calorie target manually
                       </p>
                     </div>
-                  )}
-                </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-black dark:text-white">Target Calories</Label>
-                    <Input
-                      type="number"
-                      value={dietGoal.targetCalories}
-                      onChange={(e) => setDietGoal(prev => ({ ...prev, targetCalories: Number(e.target.value) }))}
-                      disabled={dietGoal.autoRegulation}
-                      className="border-gray-300 dark:border-gray-600"
-                    />
-                  </div>
+                    {/* MyFitnessPal-Style Macro Percentage Controls */}
+                    <div className="bg-background border border-border p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-foreground text-sm">Macro Distribution</h4>
+                          <p className="text-xs text-muted-foreground">Adjust percentages to total 100%</p>
+                        </div>
+                        <div className="text-right">
+                          <span className={`text-sm font-medium ${getTotalPercentage() === 100 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {getTotalPercentage()}%
+                          </span>
+                          <p className="text-xs text-muted-foreground">Total</p>
+                        </div>
+                      </div>
 
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <div className="min-w-0">
-                      <Label className="text-black dark:text-white text-xs truncate block">Protein</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(dietGoal.targetProtein)}
-                        onChange={(e) => setDietGoal(prev => ({ ...prev, targetProtein: Number(e.target.value) }))}
-                        disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600 text-xs h-8"
-                        placeholder="g"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <Label className="text-black dark:text-white text-xs truncate block">Carbs</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(dietGoal.targetCarbs)}
-                        onChange={(e) => setDietGoal(prev => ({ ...prev, targetCarbs: Number(e.target.value) }))}
-                        disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600 text-xs h-8"
-                        placeholder="g"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <Label className="text-black dark:text-white text-xs truncate block">Fat</Label>
-                      <Input
-                        type="number"
-                        value={Math.round(dietGoal.targetFat)}
-                        onChange={(e) => setDietGoal(prev => ({ ...prev, targetFat: Number(e.target.value) }))}
-                        disabled={dietGoal.autoRegulation}
-                        className="border-gray-300 dark:border-gray-600 text-xs h-8"
-                        placeholder="g"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+                      {/* Percentage Sliders */}
+                      <div className="space-y-4">
+                        {/* Protein */}
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <Label className="text-sm font-medium text-green-600 dark:text-green-400">Protein</Label>
+                            <div className="text-sm font-bold text-green-600 dark:text-green-400">
+                              {proteinPercentage}% ({Math.round(dietGoal.targetCalories * proteinPercentage / 100 / 4)}g)
+                            </div>
+                          </div>
+                          <Slider
+                            value={[proteinPercentage]}
+                            onValueChange={(value) => {
+                              setProteinPercentage(value[0]);
+                              setUserSetPercentages(true);
+                              updateMacrosFromPercentages(value[0], carbsPercentage, fatPercentage);
+                            }}
+                            max={80}
+                            min={10}
+                            step={1}
+                            className="w-full"
+                          />
+                        </div>
 
-              {/* Macro Distribution Chart */}
-              <div className="p-3 bg-gray-50 dark:bg-gray-800 ">
-                <h4 className="font-medium text-black dark:text-white mb-3 text-sm">Macro Distribution</h4>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20  min-w-0">
-                    <div className="text-blue-700 dark:text-blue-300 font-medium text-xs truncate">Protein</div>
-                    <div className="text-lg font-bold text-blue-900 dark:text-blue-100 leading-tight">
-                      {Math.round(Number(dietGoal.targetProtein))}g
-                    </div>
-                    <div className="text-xs text-blue-600 dark:text-blue-400">
-                      {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetProtein * 4) / dietGoal.targetCalories * 100) : 0}%
-                    </div>
-                  </div>
-                  <div className="p-2 bg-green-50 dark:bg-green-900/20  min-w-0">
-                    <div className="text-green-700 dark:text-green-300 font-medium text-xs truncate">Carbs</div>
-                    <div className="text-lg font-bold text-green-900 dark:text-green-100 leading-tight">
-                      {Math.round(Number(dietGoal.targetCarbs))}g
-                    </div>
-                    <div className="text-xs text-green-600 dark:text-green-400">
-                      {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetCarbs * 4) / dietGoal.targetCalories * 100) : 0}%
-                    </div>
-                  </div>
-                  <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20  min-w-0">
-                    <div className="text-yellow-700 dark:text-yellow-300 font-medium text-xs truncate">Fat</div>
-                    <div className="text-lg font-bold text-yellow-900 dark:text-yellow-100 leading-tight">
-                      {Math.round(Number(dietGoal.targetFat))}g
-                    </div>
-                    <div className="text-xs text-yellow-600 dark:text-yellow-400">
-                      {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetFat * 9) / dietGoal.targetCalories * 100) : 0}%
-                    </div>
-                  </div>
-                </div>
-              </div>
+                        {/* Carbs */}
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <Label className="text-sm font-medium text-orange-600 dark:text-orange-400">Carbs</Label>
+                            <div className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                              {carbsPercentage}% ({Math.round(dietGoal.targetCalories * carbsPercentage / 100 / 4)}g)
+                            </div>
+                          </div>
+                          <Slider
+                            value={[carbsPercentage]}
+                            onValueChange={(value) => {
+                              setCarbsPercentage(value[0]);
+                              setUserSetPercentages(true);
+                              updateMacrosFromPercentages(proteinPercentage, value[0], fatPercentage);
+                            }}
+                            max={80}
+                            min={10}
+                            step={1}
+                            className="w-full"
+                          />
+                        </div>
 
-              {/* MyFitnessPal-Style Macro Goals */}
-              <div className="bg-background border border-border  p-4 space-y-4">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-foreground text-sm">Daily Calorie & Macro Goals</h4>
-                    <p className="text-xs text-muted-foreground">MyFitnessPal-style setup</p>
-                  </div>
-                </div>
+                        {/* Fat */}
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <Label className="text-sm font-medium text-purple-600 dark:text-purple-400">Fat</Label>
+                            <div className="text-sm font-bold text-purple-600 dark:text-purple-400">
+                              {fatPercentage}% ({Math.round(dietGoal.targetCalories * fatPercentage / 100 / 9)}g)
+                            </div>
+                          </div>
+                          <Slider
+                            value={[fatPercentage]}
+                            onValueChange={(value) => {
+                              setFatPercentage(value[0]);
+                              setUserSetPercentages(true);
+                              updateMacrosFromPercentages(proteinPercentage, carbsPercentage, value[0]);
+                            }}
+                            max={60}
+                            min={15}
+                            step={1}
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
 
-                {/* Custom Calories Toggle */}
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium text-foreground">Custom Calorie Target</Label>
-                    <p className="text-xs text-muted-foreground">
-                      {dietGoal.useCustomCalories 
-                        ? 'Using your custom calorie target' 
-                        : `Using suggested: ${Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1))} calories`
-                      }
-                    </p>
-                  </div>
-                  <Switch
-                    checked={dietGoal.useCustomCalories}
-                    onCheckedChange={(checked) => {
-                      setUserSetPercentages(false); // Reset flag to allow percentage recalculation
-                      const newCalories = checked 
-                        ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
-                        : Math.round(dietGoal.tdee * (dietGoal.goal === 'cut' ? 0.85 : dietGoal.goal === 'bulk' ? 1.15 : 1));
-                      
-                      setDietGoal(prev => ({ 
-                        ...prev, 
-                        useCustomCalories: checked,
-                        targetCalories: newCalories
-                      }));
-                      
-                      // Apply optimal macro distribution for the calorie level
-                      if (newCalories > 0) {
-                        const optimalDistribution = getOptimalMacroDistribution(newCalories);
-                        setProteinPercentage(optimalDistribution.protein);
-                        setCarbsPercentage(optimalDistribution.carbs);
-                        setFatPercentage(optimalDistribution.fat);
-                        updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
-                      }
-                    }}
-                    className="bg-[#505d6e]"
-                  />
-                </div>
-                
-                {/* Daily Calorie Goal */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground">
-                    {dietGoal.useCustomCalories ? 'Custom Daily Calorie Goal' : 'Suggested Daily Calories'}
-                  </Label>
-                  <Input
-                    type="number"
-                    value={dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || '') : dietGoal.targetCalories || ''}
-                    onChange={(e) => {
-                      const calories = Number(e.target.value) || 0;
-                      if (dietGoal.useCustomCalories) {
-                        setShowMacroDistribution(true); // Expand macro section when user starts editing
-                        setUserSetPercentages(false); // Reset flag to allow percentage recalculation when calories change
-                        setDietGoal(prev => ({ 
-                          ...prev, 
-                          customTargetCalories: calories,
-                          targetCalories: calories
-                        }));
-                        
-                        // Apply optimal macro distribution for new calorie level
-                        if (calories > 0) {
-                          const optimalDistribution = getOptimalMacroDistribution(calories);
-                          setProteinPercentage(optimalDistribution.protein);
-                          setCarbsPercentage(optimalDistribution.carbs);
-                          setFatPercentage(optimalDistribution.fat);
-                          updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
-                        }
-                      }
-                    }}
-                    disabled={!dietGoal.useCustomCalories}
-                    className={`text-lg font-semibold text-center ${!dietGoal.useCustomCalories ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' : ''}`}
-                    placeholder="2000"
-                  />
-                  {!dietGoal.useCustomCalories && (
-                    <p className="text-xs text-muted-foreground text-center">
-                      Using suggested calories based on your TDEE and goal
-                    </p>
-                  )}
-                </div>
-
-                {/* Macro Percentages (MyFitnessPal Style) - Collapsible */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium text-foreground">Macro Distribution (%)</div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowMacroDistribution(!showMacroDistribution)}
-                      className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      {showMacroDistribution ? 'Hide' : 'Show'}
-                    </Button>
-                  </div>
-                  
-                  {showMacroDistribution && (
-                  <div className="space-y-4">
-                  {/* Protein Percentage */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">Protein</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {proteinPercentage}% = {Math.round(dietGoal.targetProtein)}g
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        value={proteinPercentage}
-                        onChange={(e) => {
-                          const newProtein = Math.max(5, Math.min(50, Number(e.target.value) || 20));
-                          const remaining = 100 - newProtein;
-                          
-                          // Proportionally adjust carbs and fat to fit remaining percentage
-                          const currentCarbsFat = carbsPercentage + fatPercentage;
-                          const newCarbs = currentCarbsFat > 0 ? Math.round((carbsPercentage / currentCarbsFat) * remaining) : Math.round(remaining * 0.6);
-                          const newFat = remaining - newCarbs;
-                          
-                          setUserSetPercentages(true); // Mark that user manually set percentages
-                          setProteinPercentage(newProtein);
-                          setCarbsPercentage(newCarbs);
-                          setFatPercentage(newFat);
-                          updateMacrosFromPercentages(newProtein, newCarbs, newFat);
-                        }}
-                        className="w-20 text-center"
-                        min="5"
-                        max="50"
-                      />
-                      <span className="text-sm text-muted-foreground">%</span>
-                    </div>
-                  </div>
-
-                  {/* Carbs Percentage */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-green-600 dark:text-green-400">Carbs</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {carbsPercentage}% = {Math.round(dietGoal.targetCarbs)}g
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        value={carbsPercentage}
-                        onChange={(e) => {
-                          const newCarbs = Math.max(10, Math.min(70, Number(e.target.value) || 45));
-                          const remaining = 100 - newCarbs;
-                          
-                          // Proportionally adjust protein and fat to fit remaining percentage
-                          const currentProteinFat = proteinPercentage + fatPercentage;
-                          const newProtein = currentProteinFat > 0 ? Math.round((proteinPercentage / currentProteinFat) * remaining) : Math.round(remaining * 0.4);
-                          const newFat = remaining - newProtein;
-                          
-                          setUserSetPercentages(true); // Mark that user manually set percentages
-                          setProteinPercentage(newProtein);
-                          setCarbsPercentage(newCarbs);
-                          setFatPercentage(newFat);
-                          updateMacrosFromPercentages(newProtein, newCarbs, newFat);
-                        }}
-                        className="w-20 text-center"
-                        min="10"
-                        max="70"
-                      />
-                      <span className="text-sm text-muted-foreground">%</span>
-                    </div>
-                  </div>
-
-                  {/* Fat Percentage */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Fat</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {fatPercentage}% = {Math.round(dietGoal.targetFat)}g
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        value={fatPercentage}
-                        onChange={(e) => {
-                          const newFat = Math.max(15, Math.min(60, Number(e.target.value) || 35));
-                          const remaining = 100 - newFat;
-                          
-                          // Proportionally adjust protein and carbs to fit remaining percentage
-                          const currentProteinCarbs = proteinPercentage + carbsPercentage;
-                          const newProtein = currentProteinCarbs > 0 ? Math.round((proteinPercentage / currentProteinCarbs) * remaining) : Math.round(remaining * 0.35);
-                          const newCarbs = remaining - newProtein;
-                          
-                          setUserSetPercentages(true); // Mark that user manually set percentages
-                          setProteinPercentage(newProtein);
-                          setCarbsPercentage(newCarbs);
-                          setFatPercentage(newFat);
-                          updateMacrosFromPercentages(newProtein, newCarbs, newFat);
-                        }}
-                        className="w-20 text-center"
-                        min="15"
-                        max="60"
-                      />
-                      <span className="text-sm text-muted-foreground">%</span>
-                    </div>
-                  </div>
-
-                  {/* Total Percentage Display */}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">% Total</span>
-                    <span className={`text-sm font-medium ${getTotalPercentage() === 100 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {getTotalPercentage()}%
-                    </span>
-                  </div>
-                  
-                  {getTotalPercentage() !== 100 && (
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Macronutrients must equal 100%
-                      </p>
-                      <Button
-                        onClick={autoAdjustMacros}
-                        variant="outline"
-                        size="sm"
-                        className="h-6 px-2 text-xs"
-                      >
-                        Auto-Adjust
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* MyFitnessPal-Style Save Button */}
-                  <div className="pt-4">
-                    <Button
-                      onClick={handleSaveDietGoal}
-                      disabled={saveDietGoalMutation.isPending || getTotalPercentage() !== 100}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      {saveDietGoalMutation.isPending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Saving Goals...
-                        </>
-                      ) : (
-                        'Save Daily Goals'
+                      {getTotalPercentage() !== 100 && (
+                        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+                          <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                            Please adjust percentages to total exactly 100% before saving
+                          </p>
+                        </div>
                       )}
-                    </Button>
-                    
-                    {getTotalPercentage() !== 100 && (
-                      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
-                        Please adjust macros to total 100% before saving
-                      </p>
-                    )}
+
+                      {/* Save Button */}
+                      <div className="pt-4">
+                        <Button
+                          onClick={handleSaveDietGoal}
+                          disabled={saveDietGoalMutation.isPending || getTotalPercentage() !== 100}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          {saveDietGoalMutation.isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Saving Custom Goals...
+                            </>
+                          ) : (
+                            'Save Custom Goals'
+                          )}
+                        </Button>
+                        
+                        {getTotalPercentage() !== 100 && (
+                          <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
+                            Please adjust macros to total 100% before saving
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  </div>
-                  )}
-                </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="auto-regulation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Auto-Regulation & Feedback</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                RP methodology-based automatic adjustments based on your progress
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Auto-regulation features coming soon...</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Meal Timing Tab */}
-        <TabsContent value="meal-timing" className="space-y-6">
+        <TabsContent value="meal-planning" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                Meal Timing & Distribution
-              </CardTitle>
-              <CardDescription>
-                Generate personalized meal schedules based on your timing preferences and training schedule
-              </CardDescription>
+              <CardTitle className="text-lg">Meal Planning & Templates</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Save and manage your meal plans
+              </p>
             </CardHeader>
-          </Card>
-
-          {!mealTimingPreferences ? (
-            <Card className="border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
-              <CardHeader>
-                <CardTitle className="text-yellow-900 dark:text-yellow-100 text-lg">
-                  Meal Timing Not Configured
-                </CardTitle>
-                <CardDescription className="text-yellow-700 dark:text-yellow-300">
-                  Please set up your meal timing preferences in the Profile page to generate personalized meal schedules.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  onClick={() => setLocation('/profile')}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Configure Meal Timing
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Today's Meal Schedule */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5" />
-                    Today's Meal Schedule
-                  </CardTitle>
-                  <CardDescription>
-                    Optimized timing based on your preferences and workout schedule
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {generateMealSchedule().map((meal, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-3 h-3  ${
-                            meal.type === 'pre-workout' ? 'bg-orange-500' :
-                            meal.type === 'post-workout' ? 'bg-green-500' :
-                            'bg-blue-500'
-                          }`}></div>
-                          <div>
-                            <span className="font-medium text-black dark:text-white">{meal.scheduledTime}</span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">{meal.description}</span>
-                          </div>
-                        </div>
-                        <div className={`px-2 py-1  text-xs font-medium ${
-                          meal.type === 'pre-workout' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
-                          meal.type === 'post-workout' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-                          'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                        }`}>
-                          {meal.type === 'pre-workout' ? 'Pre-Workout' :
-                           meal.type === 'post-workout' ? 'Post-Workout' :
-                           'Regular'}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Macro Distribution */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="w-5 h-5" />
-                    Macro Distribution
-                  </CardTitle>
-                  <CardDescription>
-                    Optimized nutrient timing for each meal
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {!currentDietGoal ? (
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 ">
-                      <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                        Please set up your diet goals first to see personalized macro distribution.
-                      </p>
-                      <Button
-                        onClick={() => setActiveTab('diet-goal')}
-                        className="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm"
-                        size="sm"
-                      >
-                        Set Diet Goals
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {distributeMacrosAcrossMeals().map((meal, index) => (
-                        <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 ">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-black dark:text-white">{meal.scheduledTime} - {meal.description}</span>
-                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{Math.round(meal.targetCalories)} cal</span>
-                          </div>
-                          <div className="grid grid-cols-3 gap-2 text-xs">
-                            <div className="text-center">
-                              <div className="text-green-600 dark:text-green-400 font-medium">{Number(meal.targetProtein).toFixed(1)}g</div>
-                              <div className="text-gray-500">Protein</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-orange-600 dark:text-orange-400 font-medium">{Number(meal.targetCarbs).toFixed(1)}g</div>
-                              <div className="text-gray-500">Carbs</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-purple-600 dark:text-purple-400 font-medium">{Number(meal.targetFat).toFixed(1)}g</div>
-                              <div className="text-gray-500">Fat</div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      
-                      {/* Total Summary */}
-                      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
-                        <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Daily Totals</div>
-                        <div className="grid grid-cols-4 gap-2 text-xs">
-                          <div className="text-center">
-                            <div className="font-medium text-blue-600 dark:text-blue-400">{Number(currentDietGoal.targetCalories).toFixed(0)}</div>
-                            <div className="text-gray-500">Calories</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="font-medium text-green-600 dark:text-green-400">{Number(currentDietGoal.targetProtein).toFixed(1)}g</div>
-                            <div className="text-gray-500">Protein</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="font-medium text-orange-600 dark:text-orange-400">{Number(currentDietGoal.targetCarbs).toFixed(1)}g</div>
-                            <div className="text-gray-500">Carbs</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="font-medium text-purple-600 dark:text-purple-400">{Number(currentDietGoal.targetFat).toFixed(1)}g</div>
-                            <div className="text-gray-500">Fat</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* RP Methodology Features */}
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    RP Diet Coach Features
-                  </CardTitle>
-                  <CardDescription>
-                    Advanced meal timing optimization using Renaissance Periodization methodology
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Nutrient Timing Principles */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 ">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 bg-orange-500 "></div>
-                        <h4 className="font-medium text-orange-900 dark:text-orange-100">Pre-Workout</h4>
-                      </div>
-                      <div className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
-                        <div>• Higher carbs for energy</div>
-                        <div>• Moderate protein</div>
-                        <div>• Lower fat for digestion</div>
-                        <div>• Timing: 1-2 hours before</div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 ">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 bg-green-500 "></div>
-                        <h4 className="font-medium text-green-900 dark:text-green-100">Post-Workout</h4>
-                      </div>
-                      <div className="text-sm text-green-700 dark:text-green-300 space-y-1">
-                        <div>• High protein for recovery</div>
-                        <div>• Moderate carbs for glycogen</div>
-                        <div>• Lower fat initially</div>
-                        <div>• Timing: Within 1-2 hours</div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 bg-blue-500 "></div>
-                        <h4 className="font-medium text-blue-900 dark:text-blue-100">Regular Meals</h4>
-                      </div>
-                      <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                        <div>• Balanced macro distribution</div>
-                        <div>• Higher fat for satiety</div>
-                        <div>• Steady protein throughout</div>
-                        <div>• Consistent timing</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Timing Configuration Summary */}
-                  <div className="p-4 bg-gray-50 dark:bg-gray-800 ">
-                    <h4 className="font-medium text-black dark:text-white mb-3">Current Configuration</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
-                        <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.wakeTime}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Wake Time</div>
-                      </div>
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
-                        <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.sleepTime}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Time</div>
-                      </div>
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
-                        <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.mealsPerDay}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Meals/Day</div>
-                      </div>
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
-                        <div className="text-lg font-semibold text-black dark:text-white">
-                          {mealTimingPreferences.workoutDays?.length || 0}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Workout Days</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {mealTimingPreferences.workoutTime && (
-                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
-                      <div className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
-                        <Activity className="w-4 h-4" />
-                        <span className="font-medium">Workout: {mealTimingPreferences.workoutTime}</span>
-                      </div>
-                      <div className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                        {mealTimingPreferences.preWorkoutMeals} pre-workout meal(s) • {mealTimingPreferences.postWorkoutMeals} post-workout meal(s)
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="mt-4 flex justify-center">
-                    <Button
-                      onClick={() => setLocation('/profile')}
-                      variant="outline"
-                      className="flex items-center gap-2"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Adjust Timing Preferences
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </TabsContent>
-
-        {/* Meal Builder Tab */}
-        <TabsContent value="meal-builder" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Food Search */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {searchMode === 'database' ? <Search className="w-5 h-5" /> : <Brain className="w-5 h-5" />}
-                  {searchMode === 'database' ? 'Food Database Search' : 'AI Food Analysis'}
-                </CardTitle>
-                <CardDescription>
-                  {searchMode === 'database' 
-                    ? 'Search from millions of foods in the Open Food Facts database'
-                    : 'Describe your food and get instant nutrition analysis'
-                  }
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Search Mode Toggle */}
-                <div className="flex gap-2">
-                  <Button
-                    variant={searchMode === 'database' ? 'default' : 'outline'}
-                    onClick={() => setSearchMode('database')}
-                    className={searchMode === 'database' 
-                      ? "bg-black dark:bg-white text-white dark:text-black" 
-                      : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }
-                  >
-                    <Database className="w-4 h-4 mr-2" />
-                    Food Database
-                  </Button>
-                  <Button
-                    variant={searchMode === 'ai' ? 'default' : 'outline'}
-                    onClick={() => setSearchMode('ai')}
-                    className={searchMode === 'ai' 
-                      ? "bg-black dark:bg-white text-white dark:text-black" 
-                      : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }
-                  >
-                    <Brain className="w-4 h-4 mr-2" />
-                    AI Analysis
-                  </Button>
-                </div>
-
-                {/* Search Input */}
-                <div className="flex gap-2">
-                  <Input
-                    type="text"
-                    placeholder={searchMode === 'database' 
-                      ? "Search for foods (e.g., 'chicken breast', 'apple')..." 
-                      : "Describe your food (e.g., '1 cup of cooked rice with butter')..."
-                    }
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (searchMode === 'ai' ? handleAIAnalysis() : null)}
-                    className="border-gray-300 dark:border-gray-600"
-                  />
-                  {searchMode === 'ai' && (
-                    <Button 
-                      onClick={handleAIAnalysis}
-                      disabled={!searchQuery.trim() || aiAnalyzeMutation.isPending}
-                      className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                    >
-                      {aiAnalyzeMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Brain className="w-4 h-4" />
-                      )}
-                    </Button>
-                  )}
-                </div>
-
-                {/* AI Analysis Results */}
-                {aiAnalyzeMutation.data && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">AI Analysis Result</h4>
-                    <div className="grid grid-cols-4 gap-2 text-sm">
-                      <div className="text-blue-700 dark:text-blue-300">
-                        <span className="font-medium">Calories:</span> {aiAnalyzeMutation.data.calories || 0}
-                      </div>
-                      <div className="text-blue-700 dark:text-blue-300">
-                        <span className="font-medium">Protein:</span> {aiAnalyzeMutation.data.protein || 0}g
-                      </div>
-                      <div className="text-blue-700 dark:text-blue-300">
-                        <span className="font-medium">Carbs:</span> {aiAnalyzeMutation.data.carbs || 0}g
-                      </div>
-                      <div className="text-blue-700 dark:text-blue-300">
-                        <span className="font-medium">Fat:</span> {aiAnalyzeMutation.data.fat || 0}g
-                      </div>
-                    </div>
-                    <Button 
-                      onClick={addAIAnalysisToMealPlan}
-                      className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add to Meal Plan
-                    </Button>
-                  </div>
-                )}
-
-                {/* Search Results */}
-                {searchMode === 'database' && (
-                  <div className="space-y-2">
-                    {isLoading && (
-                      <div className="flex items-center justify-center p-4">
-                        <Loader2 className="w-6 h-6 animate-spin text-black dark:text-white" />
-                      </div>
-                    )}
-                    {searchResults && searchResults.length > 0 && (
-                      <div className="max-h-96 overflow-y-auto space-y-2">
-                        {searchResults.map((food) => (
-                          <div
-                            key={food.id}
-                            className="p-3 border border-gray-200 dark:border-gray-700  hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                            onClick={() => addToMealPlan(food)}
-                          >
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <h4 className="font-medium text-black dark:text-white">{food.name}</h4>
-                                {food.brand && (
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">{food.brand}</p>
-                                )}
-                              </div>
-                              <Badge variant="outline" className="ml-2">
-                                {food.source === 'openfoodfacts' ? 'OpenFood' : 'Custom'}
-                              </Badge>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2 mt-2 text-sm text-gray-600 dark:text-gray-400">
-                              <span><strong>Cal:</strong> {food.calories}</span>
-                              <span><strong>P:</strong> {food.protein}g</span>
-                              <span><strong>C:</strong> {food.carbs}g</span>
-                              <span><strong>F:</strong> {food.fat}g</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {searchResults && searchResults.length === 0 && searchQuery.length > 2 && !isLoading && (
-                      <p className="text-center text-gray-500 dark:text-gray-400 py-4">
-                        No foods found. Try a different search term or use AI analysis.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Current Meal Plan */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
-                  Current Meal Plan
-                </CardTitle>
-                <CardDescription>
-                  Selected foods for your meal
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Meal Type Selection */}
-                <div>
-                  <Label className="text-black dark:text-white">Meal Type</Label>
-                  <Select value={selectedMealType} onValueChange={setSelectedMealType}>
-                    <SelectTrigger className="border-gray-300 dark:border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="breakfast">Breakfast</SelectItem>
-                      <SelectItem value="lunch">Lunch</SelectItem>
-                      <SelectItem value="dinner">Dinner</SelectItem>
-                      <SelectItem value="snacks">Snacks</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Meal Plan Name (for saving) */}
-                <div>
-                  <Label className="text-black dark:text-white">Meal Plan Name (Optional)</Label>
-                  <Input
-                    type="text"
-                    placeholder="e.g., High Protein Breakfast"
-                    value={mealPlanName}
-                    onChange={(e) => setMealPlanName(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-black dark:text-white">Description (Optional)</Label>
-                  <Textarea
-                    placeholder="Brief description of this meal plan..."
-                    value={mealPlanDescription}
-                    onChange={(e) => setMealPlanDescription(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600 min-h-[60px]"
-                  />
-                </div>
-
-                {/* Selected Foods */}
-                <div className="space-y-2">
-                  {selectedFoods.length === 0 ? (
-                    <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-                      No foods selected yet. Search and add foods to build your meal.
-                    </p>
-                  ) : (
-                    selectedFoods.map((food, index) => (
-                      <div key={`${food.id}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-black dark:text-white">{food.name}</h4>
-                          <div className="grid grid-cols-4 gap-2 mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            <span>{food.calories} cal</span>
-                            <span>{food.protein}g P</span>
-                            <span>{food.carbs}g C</span>
-                            <span>{food.fat}g F</span>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeFromMealPlan(index)}
-                          className="ml-2 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                {/* Totals */}
-                {selectedFoods.length > 0 && (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 ">
-                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">Meal Totals</h4>
-                    <div className="grid grid-cols-4 gap-2 text-sm text-green-700 dark:text-green-300">
-                      <div><strong>Calories:</strong> {totals.calories}</div>
-                      <div><strong>Protein:</strong> {totals.protein}g</div>
-                      <div><strong>Carbs:</strong> {totals.carbs}g</div>
-                      <div><strong>Fat:</strong> {totals.fat}g</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                {selectedFoods.length > 0 && (
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleSaveMeal}
-                      disabled={saveMealMutation.isPending}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      {saveMealMutation.isPending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4 mr-2" />
-                          Log Meal
-                        </>
-                      )}
-                    </Button>
-                    {mealPlanName.trim() && (
-                      <Button
-                        onClick={handleSaveMealPlan}
-                        disabled={saveMealPlanMutation.isPending}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        {saveMealPlanMutation.isPending ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="w-4 h-4 mr-2" />
-                            {isEditingPlan ? 'Update Plan' : 'Save Plan'}
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Saved Plans Tab */}
-        <TabsContent value="saved-plans" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                Saved Meal Plans
-              </CardTitle>
-              <CardDescription>
-                Manage your saved meal plans and quickly build meals
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!savedMealPlans || savedMealPlans.length === 0 ? (
-                <div className="text-center py-8">
-                  <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">
-                    No saved meal plans yet. Create your first meal plan in the Meal Builder tab.
-                  </p>
-                  <Button 
-                    onClick={() => setActiveTab('meal-builder')}
-                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Meal Plan
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {savedMealPlans.map((plan) => (
-                    <Card key={plan.id} className="border border-gray-200 dark:border-gray-700">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg text-black dark:text-white">{plan.name}</CardTitle>
-                            <Badge variant="outline" className="mt-1 capitalize">
-                              {plan.mealType}
-                            </Badge>
-                          </div>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => loadMealPlan(plan)}
-                              className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => deleteMealPlan(plan.id)}
-                              disabled={deleteMealPlanMutation.isPending}
-                              className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        {plan.description && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{plan.description}</p>
-                        )}
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="grid grid-cols-4 gap-2 mb-3 text-sm">
-                          <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 ">
-                            <div className="font-medium text-blue-900 dark:text-blue-100">{plan.totalCalories}</div>
-                            <div className="text-xs text-blue-600 dark:text-blue-400">Calories</div>
-                          </div>
-                          <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 ">
-                            <div className="font-medium text-green-900 dark:text-green-100">{plan.totalProtein}g</div>
-                            <div className="text-xs text-green-600 dark:text-green-400">Protein</div>
-                          </div>
-                          <div className="text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 ">
-                            <div className="font-medium text-yellow-900 dark:text-yellow-100">{plan.totalCarbs}g</div>
-                            <div className="text-xs text-yellow-600 dark:text-yellow-400">Carbs</div>
-                          </div>
-                          <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/20 ">
-                            <div className="font-medium text-orange-900 dark:text-orange-100">{plan.totalFat}g</div>
-                            <div className="text-xs text-orange-600 dark:text-orange-400">Fat</div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-1 mb-3">
-                          <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Foods ({plan.foods.length}):</p>
-                          {plan.foods.slice(0, 3).map((food, index) => (
-                            <p key={index} className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                              • {food.name}
-                            </p>
-                          ))}
-                          {plan.foods.length > 3 && (
-                            <p className="text-xs text-gray-500 dark:text-gray-500">
-                              +{plan.foods.length - 3} more foods...
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => handleLogMealPlan(plan)}
-                            disabled={logMealPlanMutation.isPending}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Log Meal
-                          </Button>
-                          <Button
-                            onClick={() => loadMealPlan(plan)}
-                            variant="outline"
-                            className="flex-1 border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                          >
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit Plan
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+            <CardContent className="space-y-4">
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Meal planning features coming soon...</p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
