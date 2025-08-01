@@ -688,7 +688,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && 'Weight progress slower than target despite good adherence. Increase calories to optimize results.'}
                     {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && 'Weight progress significantly faster than target. Reduce calories to optimize muscle-to-fat ratio.'}
                     {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && 'Focus on hitting nutrition targets consistently before making calorie adjustments.'}
-                    {weeklyGoals[0].adjustmentRecommendation === 'maintain' && 'Weight progressing within optimal range. Maintain current approach until plateau occurs.'}
+                    {weeklyGoals[0].adjustmentRecommendation === 'maintain' && 'Weight progressing within optimal range. Maintain calories during optimal progress, only adjust when significantly outside target range or when plateaus occur after 2+ weeks.'}
                   </p>
                   <div className="grid grid-cols-2 gap-4 text-xs">
                     <div className="space-y-1">

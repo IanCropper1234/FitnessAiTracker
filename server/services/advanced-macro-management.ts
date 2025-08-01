@@ -450,7 +450,7 @@ export class AdvancedMacroManagementService {
             adjustmentReason = 'poor_adherence_cutting';
           }
         } else if (goalType === 'bulking' || goalType === 'bulk') {
-          // Bulking phase: Scientific RP methodology - maintain when progressing optimally
+          // Bulking phase: RP methodology - maintain during optimal progress, adjust after 2+ week plateaus
           if (adherencePercentage >= 90 && weightChange <= 0) {
             adjustmentRecommendation = 'increase_calories';
             adjustmentReason = 'high_adherence_no_weight_gain';
@@ -462,7 +462,7 @@ export class AdvancedMacroManagementService {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_bulking';
           } else if (adherencePercentage >= 90 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.5) {
-            // Optimal progress: maintain current approach until plateau occurs
+            // Optimal progress: maintain calories, only adjust after 2+ week plateaus or if significantly outside range
             adjustmentRecommendation = 'maintain';
             adjustmentReason = 'optimal_bulk_progress';
           }
