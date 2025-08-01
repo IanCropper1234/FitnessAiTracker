@@ -170,9 +170,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
-    const totalCalories = dietGoal.useCustomCalories 
-      ? (dietGoal.customTargetCalories || 2000)
-      : (dietGoal.targetCalories || 2000);
+    const totalCalories = dietGoal.targetCalories || 2000;
     
     setDietGoal(prev => ({
       ...prev,
@@ -187,9 +185,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     // Don't override user's manual percentage changes
     if (userSetPercentages) return;
     
-    const currentCalories = dietGoal.useCustomCalories 
-      ? (dietGoal.customTargetCalories || dietGoal.targetCalories)
-      : dietGoal.targetCalories;
+    const currentCalories = dietGoal.targetCalories;
       
     if (currentCalories > 0) {
       // If we have existing goal data with macros, calculate percentages from saved values
@@ -212,7 +208,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
       }
     }
-  }, [dietGoal.targetCalories, dietGoal.customTargetCalories, dietGoal.useCustomCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
+  }, [dietGoal.targetCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
@@ -800,7 +796,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Helper function to get current target calories (custom or suggested)
   const getCurrentTargetCalories = () => {
-    return dietGoal.useCustomCalories ? (dietGoal.customTargetCalories || 0) : dietGoal.targetCalories;
+    return dietGoal.targetCalories;
   };
 
   // Calculate current calorie total from macros

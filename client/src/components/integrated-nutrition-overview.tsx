@@ -244,12 +244,8 @@ export function IntegratedNutritionOverview({
   const getCurrentTargetCalories = () => {
     if (!dietGoals) return nutritionSummary?.goalCalories || 2000;
     
-    // When custom calories toggle is enabled, use custom values
-    if (dietGoals.useCustomCalories && dietGoals.customTargetCalories) {
-      return dietGoals.customTargetCalories;
-    }
-    
-    // Otherwise use suggested values (even when custom toggle is on but no custom value set)
+    // Always use the current active target calories from the diet goal
+    // The diet builder manages which value is active based on user selection
     return dietGoals.targetCalories || nutritionSummary?.goalCalories || 2000;
   };
 
