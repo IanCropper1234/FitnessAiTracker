@@ -6,6 +6,22 @@ FitAI is a production-ready, enterprise-grade fitness platform that delivers int
 
 FitAI's vision is to provide intelligent, adaptive training through comprehensive nutrition and workout management, making personalized, evidence-based fitness coaching accessible at scale. The project aims to capture a significant share of the digital fitness market by offering a superior, scientifically-backed alternative to generic fitness applications, catering to serious fitness enthusiasts and bodybuilders.
 
+## Recent Changes (August 2025)
+
+**Auto-Regulation System Fixes (Aug 1, 2025):**
+- ✅ Fixed volume calculation algorithms to use `setsData` JSON for accurate set counting
+- ✅ Corrected database schema property references (`mav`/`mev` vs `mavSets`/`mevSets`)
+- ✅ Enhanced algorithm to work without recent feedback data
+- ✅ Added comprehensive logging for volume calculations per muscle group
+
+**Load Progression System Restoration (Aug 1, 2025):**
+- ✅ Fixed TypeScript compilation errors in load progression recording
+- ✅ Corrected database insertion format (array vs single object)
+- ✅ Fixed decimal field data type conversions (string format required)
+- ✅ Added 8 load progression records for actual workout data
+- ✅ Verified API endpoints `/api/training/load-progression` and `/api/training/performance-analysis`
+- ⚠️ **Known Issue**: Load progression data requires user authentication to display in UI
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
