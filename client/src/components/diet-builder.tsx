@@ -426,20 +426,27 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Diet goal mutations
   const saveDietGoalMutation = useMutation({
-    mutationFn: async (goal: DietGoal) => {
+    mutationFn: async (goal: DietGoal): Promise<DietGoal> => {
       // Always use PUT to update/create the goal for this user
-      return await apiRequest("PUT", `/api/diet-goals`, goal);
+      const response = await apiRequest("PUT", `/api/diet-goals`, goal);
+      return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (savedGoal: DietGoal) => {
       toast({
         title: "Success",
         description: "Diet goal saved successfully!"
       });
-      // Invalidate diet goals cache
-      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      // Invalidate weight goals cache for bidirectional sync
-      queryClient.invalidateQueries({ queryKey: ['/api/weight-goals', userId] });
+      
+      // Update local state with saved data
+      setDietGoal(savedGoal);
+      
+      // Invalidate all related caches to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
+      
+      // Force refetch to ensure UI updates
+      queryClient.refetchQueries({ queryKey: ['/api/diet-goals', userId] });
     },
     onError: (error: any) => {
       toast({
