@@ -102,18 +102,18 @@ export class AdvancedMacroManagementService {
     const allDays = Object.keys(dailyTotals);
     if (allDays.length === 0) return 0;
 
-    // Filter to only include days that have already passed (not today or future)
+    // Filter to include completed days (past days + today if it has food logs, exclude future days)
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to start of today for accurate comparison
     
-    const pastDays = allDays.filter(date => {
+    const completedDays = allDays.filter(date => {
       const dayDate = new Date(date);
       dayDate.setHours(0, 0, 0, 0);
-      return dayDate < today; // Only include days before today
+      return dayDate <= today; // Include days up to and including today
     });
 
-    // If no past days, return 0 (can't calculate adherence for future/today)
-    if (pastDays.length === 0) return 0;
+    // If no completed days, return 0
+    if (completedDays.length === 0) return 0;
 
     // Intelligently detect custom vs suggested target calories
     const getCurrentTargetCalories = () => {
@@ -131,13 +131,13 @@ export class AdvancedMacroManagementService {
     const targetCalories = getCurrentTargetCalories();
     let adherenceSum = 0;
 
-    pastDays.forEach(date => {
+    completedDays.forEach(date => {
       const actualCalories = dailyTotals[date].calories;
       const adherence = Math.max(0, 100 - Math.abs((actualCalories - targetCalories) / targetCalories * 100));
       adherenceSum += adherence;
     });
 
-    return Math.round(adherenceSum / pastDays.length);
+    return Math.round(adherenceSum / completedDays.length);
   }
 
   // Calculate RP-based macro adjustment using intelligent target detection and wellness data
