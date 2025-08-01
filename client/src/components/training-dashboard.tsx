@@ -349,20 +349,22 @@ function WorkoutSessionCard({
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {new Date(session.date).toLocaleDateString()}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                {new Date(session.date).toLocaleDateString()}
+              </p>
+              <div className="px-1.5 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                {session.isCompleted ? "Done" : "Active"}
+              </div>
+            </div>
           </div>
         </div>
         
-        {/* Compact Status & Actions */}
+        {/* Compact Actions */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {session.isCompleted && (
             <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
           )}
-          <div className="px-1.5 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 mt-[0px] mb-[0px] pt-[2px] pb-[2px] pl-[6px] pr-[6px] ml-[-20px] mr-[-20px]">
-            {session.isCompleted ? "Done" : "Active"}
-          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
