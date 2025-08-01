@@ -1011,7 +1011,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </div>
               <div className="flex flex-wrap gap-1">
                 {selectedExercises.map((exercise) => (
-                  <Badge key={exercise.id} variant="secondary" className="text-xs h-6 px-2">
+                  <Badge key={exercise.id} className="text-xs h-6 px-2 bg-[#479bf5] text-[#fcfcfc]">
                     <span className="truncate max-w-20">{exercise.name}</span>
                     <button
                       onClick={() => setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id))}
