@@ -83,9 +83,10 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
   }
 
   const nutritionConsistency = analytics?.overview?.nutritionConsistency || 0;
-  // Use the same adherence calculation as Progress Metrics in advanced-macro-management
+  // Use the same data sources as Progress Metrics in advanced-macro-management
   const adherenceScore = parseFloat(weeklyGoals?.[0]?.adherencePercentage || "0");
-  const weightTrend = analytics?.bodyProgress?.progress?.weightChange || 0;
+  const weightTrend = parseFloat(weeklyGoals?.[0]?.weightChange || "0");
+  const energyLevel = parseFloat(weeklyGoals?.[0]?.energyLevels || "5");
   
   // Calculate RP readiness score based on wellness metrics
   const calculateReadinessScore = () => {
@@ -201,7 +202,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
                 <Heart className="w-4 h-4 text-red-600" />
               </div>
               <div className="text-lg font-bold">
-                {(weeklyWellness?.averageEnergyLevel || 5).toFixed(1)}/10
+                {energyLevel.toFixed(1)}/10
               </div>
               <div className="text-xs text-muted-foreground">Energy Level</div>
             </div>

@@ -16,6 +16,11 @@ Preferred communication style: Simple, everyday language.
 - Animated progress bars should be maintained for visual appeal
 - Condensed list view layouts preferred for mobile optimization
 
+**Data Integrity Requirements:**
+- All RP components must use synchronized data sources from weekly goals API
+- Adherence percentages, weight changes, and energy levels must match across RP Analysis and Progress Metrics
+- Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
+
 ## System Architecture
 
 ### Frontend Architecture (Mobile-First Design)
