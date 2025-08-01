@@ -92,10 +92,7 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
       weekStart.setDate(now.getDate() - daysToMonday);
       const weekStartString = weekStart.toISOString().split('T')[0];
       
-      return apiRequest('/api/weekly-adjustment', {
-        method: 'POST',
-        body: { weekStartDate: weekStartString }
-      });
+      return apiRequest('POST', '/api/weekly-adjustment', { weekStartDate: weekStartString });
     },
     onSuccess: () => {
       toast({
