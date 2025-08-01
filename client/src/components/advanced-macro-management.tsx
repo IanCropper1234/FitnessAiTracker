@@ -153,7 +153,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       return result;
     },
     staleTime: 0, // Always refetch to get the latest status
-    cacheTime: 0 // Don't cache this data
+    gcTime: 0 // Don't cache this data
   });
 
   // Convert weight change to user's preferred unit

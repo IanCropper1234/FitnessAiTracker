@@ -32,7 +32,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
       return result;
     },
     staleTime: 0, // Always refetch to get the latest status
-    cacheTime: 0 // Don't cache this data
+    gcTime: 0 // Don't cache this data
   });
 
   const isCompleted = !!todayWellnessCheckin;
