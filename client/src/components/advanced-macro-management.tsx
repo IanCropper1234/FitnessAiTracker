@@ -132,6 +132,19 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
+  // Get today's wellness check-in status
+  const { data: todayWellnessCheckin } = useQuery({
+    queryKey: ['/api/daily-wellness-checkins', new Date().toISOString().split('T')[0]],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
   // Convert weight change to user's preferred unit
   const formatWeightChange = (weightChange: number) => {
     if (!weightChange) return '0.0kg';
@@ -587,6 +600,16 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                       <h3 className="font-semibold text-black dark:text-white text-sm sm:text-base truncate">Daily Wellness</h3>
                       <Badge variant="secondary" className="text-xs px-1.5 py-0.5">Required</Badge>
+                      <Badge 
+                        variant={todayWellnessCheckin ? "default" : "outline"} 
+                        className={`text-xs px-1.5 py-0.5 ${
+                          todayWellnessCheckin 
+                            ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800" 
+                            : "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800"
+                        }`}
+                      >
+                        {todayWellnessCheckin ? "Complete" : "Incomplete"}
+                      </Badge>
                     </div>
                     
                     {/* Buttons - Mobile full width, Desktop inline */}
