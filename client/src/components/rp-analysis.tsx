@@ -71,7 +71,8 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
   }
 
   const nutritionConsistency = analytics?.overview?.nutritionConsistency || 0;
-  const adherenceScore = analytics?.nutrition?.summary?.adherenceScore || 0;
+  // Use the same adherence calculation as Progress Metrics in advanced-macro-management
+  const adherenceScore = parseFloat(weeklyGoals?.[0]?.adherencePercentage || "0");
   const weightTrend = analytics?.bodyProgress?.progress?.weightChange || 0;
   
   // Calculate RP readiness score based on wellness metrics
