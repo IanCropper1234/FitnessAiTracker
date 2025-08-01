@@ -81,7 +81,8 @@ interface Exercise {
 interface WorkoutSession {
   id: number;
   userId: number;
-  programId: number;
+  programId: number | null;
+  mesocycleId: number | null;
   date: string;
   name: string;
   isCompleted: boolean;
@@ -104,6 +105,7 @@ interface TrainingStats {
 // WorkoutSessionsWithBulkActions Component
 interface WorkoutSessionsWithBulkActionsProps {
   sessions: WorkoutSession[];
+  mesocycleLookup: Record<number, string>;
   onStartSession: (sessionId: number) => void;
   onViewSession: (sessionId: number) => void;
   userId: number;
@@ -111,6 +113,7 @@ interface WorkoutSessionsWithBulkActionsProps {
 
 function WorkoutSessionsWithBulkActions({ 
   sessions, 
+  mesocycleLookup,
   onStartSession, 
   onViewSession, 
   userId 
@@ -991,6 +994,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   return (
                     <WorkoutSessionsWithBulkActions
                       sessions={filteredSessions}
+                      mesocycleLookup={mesocycleLookup}
                       onStartSession={(sessionId) => setExecutingSessionId(sessionId)}
                       onViewSession={(sessionId) => setViewingSessionId(sessionId)}
                       userId={userId}
