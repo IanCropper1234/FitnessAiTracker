@@ -161,9 +161,22 @@ export class LoadProgression {
    * Now supports metric conversion
    */
   private static getWeightIncrement(exerciseName: string, currentWeight: number, unit: 'kg' | 'lbs' = 'kg'): number {
-    // Import the utility function for consistent increment logic
-    const { getWeightIncrement } = require("../../shared/utils/metric-conversion");
-    return getWeightIncrement(exerciseName, currentWeight, unit);
+    // Standard weight increment logic for different exercise types
+    const baseIncrement = unit === 'kg' ? 1.25 : 2.5; // 1.25kg or 2.5lbs
+    
+    // Smaller increments for isolation exercises
+    if (exerciseName.toLowerCase().includes('curl') || 
+        exerciseName.toLowerCase().includes('raise') ||
+        exerciseName.toLowerCase().includes('extension')) {
+      return unit === 'kg' ? 0.5 : 1.25;
+    }
+    
+    // Larger increments for compound movements with heavier loads
+    if (currentWeight > (unit === 'kg' ? 100 : 220)) {
+      return unit === 'kg' ? 2.5 : 5;
+    }
+    
+    return baseIncrement;
   }
 
   /**
