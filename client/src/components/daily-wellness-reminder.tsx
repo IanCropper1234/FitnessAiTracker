@@ -108,9 +108,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
             {isCompleted ? 'Complete' : 'Pending'}
           </Badge>
         </CardTitle>
-        <CardDescription className="text-sm">
-          {today} • Track your daily wellness metrics for optimal RP coaching
-        </CardDescription>
+        
       </CardHeader>
       <CardContent>
         {isCompleted ? (
