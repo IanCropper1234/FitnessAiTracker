@@ -2860,9 +2860,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/weekly-goals", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const week = req.query.week as string;
+      const weekStartDate = req.query.weekStartDate as string;
       
-      const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(userId, week);
+      const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(userId, weekStartDate);
       res.json(weeklyGoals);
     } catch (error: any) {
       console.error('Get weekly goals error:', error);

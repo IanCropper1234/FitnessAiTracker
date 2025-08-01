@@ -96,7 +96,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     queryKey: ['/api/weekly-goals', selectedWeek],
     queryFn: async () => {
       if (!selectedWeek) return [];
-      const response = await fetch(`/api/weekly-goals?week=${selectedWeek}`, {
+      const response = await fetch(`/api/weekly-goals?weekStartDate=${selectedWeek}`, {
         credentials: 'include'
       });
       return response.json();

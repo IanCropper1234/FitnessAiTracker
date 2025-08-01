@@ -517,13 +517,12 @@ export class AdvancedMacroManagementService {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 6); // Week should be 7 days, so +6 from start
         
-        // First, try to get existing weekly goals
+        // First, try to get existing weekly goals for the exact week
         const existingGoals = await db.select()
           .from(weeklyNutritionGoals)
           .where(and(
             eq(weeklyNutritionGoals.userId, userId),
-            gte(weeklyNutritionGoals.weekStartDate, weekStart),
-            lte(weeklyNutritionGoals.weekStartDate, weekEnd)
+            eq(weeklyNutritionGoals.weekStartDate, weekStart)
           ))
           .orderBy(desc(weeklyNutritionGoals.weekStartDate))
           .limit(10);
