@@ -356,7 +356,18 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // Update local state when diet goal data is fetched
   useEffect(() => {
     if (currentDietGoal) {
-      setDietGoal(currentDietGoal);
+      // Convert string values to numbers for frontend state
+      const normalizedGoal = {
+        ...currentDietGoal,
+        tdee: Number(currentDietGoal.tdee),
+        targetCalories: Number(currentDietGoal.targetCalories),
+        customTargetCalories: Number(currentDietGoal.customTargetCalories),
+        targetProtein: Number(currentDietGoal.targetProtein),
+        targetCarbs: Number(currentDietGoal.targetCarbs),
+        targetFat: Number(currentDietGoal.targetFat),
+        weeklyWeightTarget: Number(currentDietGoal.weeklyWeightTarget)
+      };
+      setDietGoal(normalizedGoal);
     }
   }, [currentDietGoal]);
 
@@ -437,8 +448,20 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         description: "Diet goal saved successfully!"
       });
       
-      // Update local state with saved data
-      setDietGoal(savedGoal);
+      // Convert string values to numbers for frontend state
+      const normalizedGoal = {
+        ...savedGoal,
+        tdee: Number(savedGoal.tdee),
+        targetCalories: Number(savedGoal.targetCalories),
+        customTargetCalories: Number(savedGoal.customTargetCalories),
+        targetProtein: Number(savedGoal.targetProtein),
+        targetCarbs: Number(savedGoal.targetCarbs),
+        targetFat: Number(savedGoal.targetFat),
+        weeklyWeightTarget: Number(savedGoal.weeklyWeightTarget)
+      };
+      
+      // Update local state with normalized data
+      setDietGoal(normalizedGoal);
       
       // Invalidate all related caches to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });

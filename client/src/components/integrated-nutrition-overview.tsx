@@ -209,7 +209,22 @@ export function IntegratedNutritionOverview({
         credentials: 'include'
       });
       if (!response.ok) return null;
-      return response.json();
+      const data = await response.json();
+      
+      // Convert string values to numbers for consistent frontend usage
+      if (data) {
+        return {
+          ...data,
+          tdee: Number(data.tdee),
+          targetCalories: Number(data.targetCalories),
+          customTargetCalories: Number(data.customTargetCalories),
+          targetProtein: Number(data.targetProtein),
+          targetCarbs: Number(data.targetCarbs),
+          targetFat: Number(data.targetFat),
+          weeklyWeightTarget: Number(data.weeklyWeightTarget)
+        };
+      }
+      return data;
     }
   });
 
