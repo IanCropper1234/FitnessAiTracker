@@ -533,7 +533,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
   // Fetch exercises
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
-    queryKey: ["/api/exercises", userId],
+    queryKey: ["/api/training/exercises"],
   });
 
   // Helper function to get date based on filter

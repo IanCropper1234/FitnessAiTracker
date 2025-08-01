@@ -92,7 +92,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
         title: "Exercise Created",
         description: "New exercise has been added to the library.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/exercises"] });
       onSuccess();
       resetForm();
     },
@@ -114,7 +114,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
         title: "Exercise Updated",
         description: "Exercise has been successfully updated.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/exercises"] });
       onSuccess();
     },
     onError: () => {
@@ -367,7 +367,7 @@ export function ExerciseManagement({ exercise }: ExerciseManagementProps) {
         title: "Exercise Deleted",
         description: "Exercise has been removed from the library.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/exercises"] });
     },
     onError: () => {
       toast({

@@ -93,9 +93,9 @@ export default function MesocycleProgramBuilder({
 
   // Get exercises for custom program builder
   const { data: exercises = [] } = useQuery({
-    queryKey: ['/api/exercises'],
+    queryKey: ['/api/training/exercises'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/exercises');
+      const response = await apiRequest('GET', '/api/training/exercises');
       return response.json();
     },
   });

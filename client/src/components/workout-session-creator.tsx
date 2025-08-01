@@ -56,7 +56,7 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
 
   // Fetch exercises for the library
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
-    queryKey: ['/api/exercises'],
+    queryKey: ['/api/training/exercises'],
     enabled: showExerciseLibrary || isOpen,
   });
 

@@ -36,7 +36,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
-    queryKey: ['/api/exercises'],
+    queryKey: ['/api/training/exercises'],
   });
 
   const categories = ["all", "push", "pull", "legs", "cardio"];

@@ -57,7 +57,7 @@ export function ExerciseLibrarySelector({
 
   // Fetch exercises
   const { data: exercises = [], isLoading } = useQuery({
-    queryKey: ['/api/exercises'],
+    queryKey: ['/api/training/exercises'],
   });
 
   // Filter exercises based on search and category
