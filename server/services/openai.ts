@@ -21,6 +21,7 @@ export interface MicronutrientData {
   vitaminB9?: number; // mcg (Folate)
   vitaminB12?: number; // mcg
   vitaminC?: number; // mg
+  folate?: number; // mcg (alternative name for B9)
   
   // Major Minerals
   calcium?: number; // mg
@@ -28,6 +29,7 @@ export interface MicronutrientData {
   phosphorus?: number; // mg
   potassium?: number; // mg
   sodium?: number; // mg
+  chloride?: number; // mg
   
   // Trace Minerals
   iron?: number; // mg
@@ -38,14 +40,25 @@ export interface MicronutrientData {
   selenium?: number; // mcg
   chromium?: number; // mcg
   molybdenum?: number; // mcg
+  fluoride?: number; // mg
   
   // Macronutrient Components
   sugar?: number; // g (total sugars)
+  addedSugar?: number; // g (added sugars)
   fiber?: number; // g (dietary fiber)
+  solubleFiber?: number; // g
+  insolubleFiber?: number; // g
   saturatedFat?: number; // g
   monounsaturatedFat?: number; // g
   polyunsaturatedFat?: number; // g
+  transFat?: number; // g
   cholesterol?: number; // mg
+  
+  // Additional Nutrients
+  omega3?: number; // g (total omega-3 fatty acids)
+  omega6?: number; // g (total omega-6 fatty acids)
+  starch?: number; // g
+  alcohol?: number; // g
 }
 
 export interface NutritionAnalysis {
@@ -110,12 +123,12 @@ export async function analyzeNutrition(
 - servingDetails: clarification of portion analyzed from label (string)
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
-  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
-  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
-  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
-  * Macronutrient Components: sugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), cholesterol (mg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
   
-  **Note:** Include sugar, fiber, and fat breakdown if visible on nutrition label. Use null for unknown values.
+  **CRITICAL:** Extract ALL visible vitamins and minerals from the nutrition label. If % Daily Value is shown, convert to actual amounts using standard DV references (e.g., 100% calcium DV = 1000mg, 100% iron DV = 18mg, 100% vitamin C DV = 90mg). Always include fiber, sugar, saturated fat, trans fat, and cholesterol if visible. For fortified products, extract all added vitamins/minerals. Use ingredient lists to estimate micronutrients from key ingredients.
 
 Return only valid JSON with all required fields.`
           },
@@ -155,12 +168,12 @@ Return only valid JSON with all required fields.`
 - servingDetails: description of estimated portion size and food components (string)
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
-  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
-  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
-  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
-  * Macronutrient Components: sugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), cholesterol (mg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
   
-  **Note:** Estimate key micronutrient values, sugar, fiber, and fat breakdown based on visible foods and typical nutritional profiles.
+  **CRITICAL:** Analyze visible foods and estimate their natural micronutrient content. Include significant vitamins/minerals each food is known for (e.g., leafy greens = folate+iron+vitamin K, citrus = vitamin C, meat = B12+iron+zinc, dairy = calcium+B12, fish = omega3+vitamin D+selenium). Always estimate fiber, sugar content, fat breakdown, and key micronutrients the food is naturally rich in.
 
 Return only valid JSON with all required fields.`
           },
@@ -200,12 +213,20 @@ Return only valid JSON with all required fields.`
 - servingDetails: clarification of portion analyzed (string)
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
-  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg)
-  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg)
-  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
-  * Macronutrient Components: sugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), cholesterol (mg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
   
-  **Note:** Based on food type and ingredients, estimate key micronutrient values, sugar, fiber, and fat breakdown from USDA database knowledge. Focus on nutrients the food is known to be rich in.
+  **MANDATORY:** Provide comprehensive micronutrient estimates based on food composition knowledge. For example:
+  - Leafy greens: folate (40-200mcg), vitamin K (100-500mcg), iron (2-7mg), vitamin A (500-1000mcg)
+  - Citrus fruits: vitamin C (50-100mg), folate (20-40mcg), potassium (200-400mg)
+  - Dairy: calcium (200-400mg), vitamin B12 (1-3mcg), phosphorus (150-300mg)
+  - Meat/poultry: B vitamins (B1: 0.1-0.3mg, B6: 0.3-0.8mg, B12: 1-3mcg), iron (2-4mg), zinc (3-8mg), selenium (20-40mcg)
+  - Fish: vitamin D (5-15mcg), omega3 (0.5-2g), selenium (30-60mcg), B12 (2-8mcg)
+  - Grains: B vitamins (B1: 0.2-0.5mg, B3: 2-6mg), iron (1-4mg), magnesium (30-100mg)
+  - Nuts/seeds: vitamin E (5-15mg), magnesium (50-200mg), zinc (1-5mg)
+  Always include fiber content (estimate based on food type), sugar breakdown (natural vs added), and fat composition. Use established USDA nutritional profiles for realistic estimates.
 
 **Category Guidelines (Renaissance Periodization methodology):**
 - "protein": >20g protein per 100 calories (chicken, fish, eggs, protein powder)
@@ -225,16 +246,36 @@ Return only valid JSON with all required fields.`
       messages: [
         {
           role: "system",
-          content: `You are an expert nutrition assistant specializing in analyzing food descriptions and nutrition labels, estimating their nutritional content, especially calories and macronutrients (protein, carbohydrates, fat). Your expertise includes:
+          content: `You are an expert nutrition analyst with deep knowledge of food composition, vitamin and mineral content, and comprehensive nutritional data. Your specialized expertise includes:
 
-1. **Interpret User Descriptions & Images:** Carefully read food descriptions and analyze nutrition facts labels from images
-2. **Portion & Detail Recognition:** Accurately identify quantities, portion sizes, and preparation methods
-3. **Label Reading:** Extract precise nutritional data from nutrition facts labels in images
-4. **Database-Informed Estimation:** Base estimates on USDA FoodData Central, Open Food Facts, and trusted sources
-5. **Transparent Methodology:** Always indicate assumptions and reasoning for accuracy
-6. **Renaissance Periodization Integration:** Apply RP methodology for food categorization and meal timing recommendations
+**CORE RESPONSIBILITIES:**
+1. **Precise Label Reading:** Extract ALL visible nutritional data from nutrition facts labels, including every vitamin, mineral, and micronutrient listed
+2. **Comprehensive Food Analysis:** For any food, provide detailed micronutrient profiles based on USDA FoodData Central and nutritional databases
+3. **Ingredient-Based Estimation:** Break down mixed dishes into constituent ingredients and calculate comprehensive nutritional profiles
+4. **Micronutrient Focus:** Prioritize identifying and quantifying vitamins, minerals, and trace elements that foods naturally contain
 
-Goal: Provide the most realistic, transparent, and actionable nutritional information to support users in making healthy choices and accurately tracking their intake.`
+**MICRONUTRIENT EXPERTISE:**
+- **Fat-Soluble Vitamins:** A (retinol/carotenoids), D (cholecalciferol), E (tocopherols), K (phylloquinone)
+- **Water-Soluble Vitamins:** B-complex (B1-thiamine, B2-riboflavin, B3-niacin, B5-pantothenic acid, B6-pyridoxine, B7-biotin, B9-folate, B12-cobalamin), C (ascorbic acid)
+- **Major Minerals:** Calcium, magnesium, phosphorus, potassium, sodium, chloride
+- **Trace Elements:** Iron, zinc, copper, manganese, iodine, selenium, chromium, molybdenum, fluoride
+- **Macronutrient Components:** Total sugars, dietary fiber, saturated/mono/polyunsaturated fats, cholesterol
+
+**ANALYSIS PROTOCOLS:**
+1. **For Nutrition Labels:** Extract EVERY vitamin/mineral value visible on the label, including % Daily Value conversions
+2. **For Whole Foods:** Reference natural micronutrient content (e.g., oranges = vitamin C, spinach = folate + iron + vitamin K)
+3. **For Prepared Foods:** Estimate micronutrients from primary ingredients (e.g., pasta with tomato sauce = lycopene, vitamin C from tomatoes + B vitamins from wheat)
+4. **For Animal Products:** Include B12, heme iron, vitamin D (fatty fish), etc.
+5. **For Plant Foods:** Focus on antioxidants, plant sterols, specific vitamin/mineral profiles
+
+**QUALITY STANDARDS:**
+- Never leave micronutrients empty when foods naturally contain significant amounts
+- Use established nutritional databases as reference
+- Provide realistic estimates based on food composition knowledge
+- Include fiber, sugar breakdown, and fat composition details
+- Apply Renaissance Periodization methodology for meal timing recommendations
+
+Goal: Deliver the most comprehensive, accurate nutritional analysis possible, with special emphasis on capturing the full micronutrient profile that users need for complete nutritional tracking.`
         },
         {
           role: "user",
