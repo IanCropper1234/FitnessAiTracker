@@ -1605,9 +1605,9 @@ export function IntegratedNutritionOverview({
                     setBulkMode(!bulkMode);
                     setSelectedLogs([]);
                   }}
-                  className="text-xs h-6 px-1.5"
+                  className="text-xs h-6 px-2"
                 >
-                  <CheckSquare className="w-3 h-3" />
+                  Edit
                 </Button>
               )}
               <Button 
@@ -1615,11 +1615,11 @@ export function IntegratedNutritionOverview({
                   console.log('Add Food button clicked - navigating to add-food page with date:', selectedDate);
                   setLocation(`/add-food?date=${selectedDate}`);
                 }}
-                className="text-xs h-6 px-1.5"
+                className="text-xs h-6 px-2"
                 style={{ backgroundColor: '#479bf5', color: '#030303' }}
                 size="sm"
               >
-                <Plus className="w-3 h-3" />
+                Add
               </Button>
             </div>
           </div>
