@@ -317,11 +317,11 @@ export class LoadProgression {
       userId: parseInt(userId.toString()),
       exerciseId: parseInt(exerciseId.toString()),
       sessionId: parseInt(sessionId.toString()),
-      previousWeight: parseFloat((previousWeight || 0).toString()),
-      currentWeight: parseFloat((currentWeight || 0).toString()),
+      previousWeight: (previousWeight || 0).toString(),
+      currentWeight: (currentWeight || 0).toString(),
       targetWeight: null, // Will be calculated for next session
-      rpeAverage: parseFloat((averageRpe || 7).toString()),
-      rirAverage: parseFloat((averageRir || 2).toString()),
+      rpeAverage: (averageRpe || 7).toString(),
+      rirAverage: (averageRir || 2).toString(),
       progressionType: progressionType || 'volume',
       notes: notes || null
     };
@@ -330,7 +330,7 @@ export class LoadProgression {
     
     await db
       .insert(loadProgressionTracking)
-      .values(safeValues);
+      .values([safeValues]);
   }
 
   /**
