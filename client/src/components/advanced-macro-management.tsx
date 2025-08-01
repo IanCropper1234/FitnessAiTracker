@@ -552,7 +552,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
       </Card>
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
-        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1 pt-[4px] pb-[4px] mt-[-10px] mb-[-10px]">
           <TabsTrigger value="weekly-adjustment" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Weekly Adjustment</TabsTrigger>
           <TabsTrigger value="meal-distribution" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Meal Distribution</TabsTrigger>
           <TabsTrigger value="macro-flexibility" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Macro Flexibility</TabsTrigger>
