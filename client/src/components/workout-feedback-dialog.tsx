@@ -76,7 +76,12 @@ export default function WorkoutFeedbackDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent 
+        className="max-w-2xl z-[100] pointer-events-auto"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+      >
         <DialogHeader>
           <DialogTitle>Workout Feedback - Auto-Regulation</DialogTitle>
           <DialogDescription>
@@ -84,7 +89,13 @@ export default function WorkoutFeedbackDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div 
+          className="space-y-6"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           {/* Pump Quality */}
           <div className="space-y-2">
             <Label>Pump Quality (1-10)</Label>
