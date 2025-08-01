@@ -133,7 +133,29 @@ export class AdvancedMacroManagementService {
 
     completedDays.forEach(date => {
       const actualCalories = dailyTotals[date].calories;
-      const adherence = Math.max(0, 100 - Math.abs((actualCalories - targetCalories) / targetCalories * 100));
+      const deviation = Math.abs(actualCalories - targetCalories);
+      
+      // RP Diet Coach methodology: More realistic adherence calculation
+      // Excellent (95-100%): Within 5% or 100-150 calories of target
+      // Good (85-94%): Within 10% or 150-250 calories of target  
+      // Fair (75-84%): Within 15% or 250-350 calories of target
+      // Poor (<75%): More than 15% or 350+ calories off target
+      
+      let adherence;
+      const percentageDeviation = (deviation / targetCalories) * 100;
+      
+      if (deviation <= 150 || percentageDeviation <= 5) {
+        adherence = 100; // Excellent adherence
+      } else if (deviation <= 250 || percentageDeviation <= 10) {
+        adherence = 90; // Good adherence
+      } else if (deviation <= 350 || percentageDeviation <= 15) {
+        adherence = 80; // Fair adherence
+      } else {
+        // Poor adherence - scale down based on how far off
+        const excessDeviation = Math.max(0, deviation - 350);
+        adherence = Math.max(0, 75 - (excessDeviation / 100)); // Gradually decrease from 75%
+      }
+      
       adherenceSum += adherence;
     });
 
@@ -577,8 +599,7 @@ export class AdvancedMacroManagementService {
                 // Only update missing weight data, preserve all other stored values
                 if (!updatedGoal.currentWeight) updatedGoal.currentWeight = calculatedData.currentWeight;
                 if (!updatedGoal.previousWeight) updatedGoal.previousWeight = calculatedData.previousWeight;
-                if (!updatedGoal.weightChange) updatedGoal.weightChange = calculatedData.weightChange;
-                if (!updatedGoal.weightTrend) updatedGoal.weightTrend = calculatedData.weightTrend;
+                // These properties are calculated dynamically, not stored in database
                 // Never override stored adjustmentRecommendation
               }
             }
