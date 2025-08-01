@@ -2,9 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Remove all border radius globally */
-* {
-  border-radius: 0 !important;
+/* Remove all border radius globally - Must be after @tailwind utilities */
+@layer utilities {
+  *,
+  *::before,
+  *::after,
+  button,
+  .btn,
+  .card,
+  .rounded,
+  .rounded-sm,
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl,
+  .rounded-2xl,
+  .rounded-3xl,
+  .rounded-full,
+  .rounded-t,
+  .rounded-r,
+  .rounded-b,
+  .rounded-l,
+  .rounded-tl,
+  .rounded-tr,
+  .rounded-br,
+  .rounded-bl,
+  [data-radix-collection-item],
+  [role="button"],
+  [class*="rounded"],
+  div[class*="bg-"],
+  div[class*="border"] {
+    border-radius: 0 !important;
+  }
 }
 
 /* Hide scrollbars for better mobile UX */
@@ -643,7 +671,7 @@ button, .ios-button {
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
+    --radius: 0;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -713,7 +741,7 @@ button, .ios-button {
   --destructive: hsl(1, 79%, 55%);
   --destructive-foreground: hsl(0, 0%, 100%);
   --ring: hsl(211, 86%, 50%);
-  --radius: 0.75rem;
+  --radius: 0;
   
   /* iOS System Colors - Light Mode */
   --ios-bg-primary: hsl(0, 0%, 99%);
@@ -760,7 +788,7 @@ button, .ios-button {
   --border: hsl(220, 15%, 28%);
   --input: hsl(220, 15%, 20%);
   --ring: hsl(211, 90%, 62%);
-  --radius: 0.75rem;
+  --radius: 0;
   
   /* Enhanced iOS System Colors - Dark Mode */
   --ios-bg-primary: hsl(220, 15%, 8%);
