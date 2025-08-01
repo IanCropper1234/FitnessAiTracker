@@ -30,9 +30,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
           
           <p className="text-muted-foreground">Renaissance Periodization intelligent nutrition coaching</p>
         </div>
-        <Badge variant="default" className="ml-auto">
-          AI-Powered
-        </Badge>
+        
       </div>
 
       <Tabs defaultValue="checkin" className="w-full">
