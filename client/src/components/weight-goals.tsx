@@ -267,7 +267,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
   }
 
   return (
-    <Card>
+    <Card className="mt-[10px] mb-[10px]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />

@@ -1055,24 +1055,24 @@ export function IntegratedNutritionOverview({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Macro Summary Cards - iOS Optimized Dark Style */}
-      <div className="grid grid-cols-2 gap-2 w-full">
+      <div className="grid grid-cols-2 gap-1.5 w-full">
         {/* Calories Card */}
         <Card className="bg-gray-900 dark:bg-gray-800 border-blue-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="text-center">
-              <div className="text-xs font-medium text-blue-400 mb-1">
+              <div className="text-xs font-medium text-blue-400 mb-0.5">
                 Calories
               </div>
-              <div className="text-2xl font-bold text-white mb-1">
+              <div className="text-xl font-bold text-white mb-0.5">
                 {Math.round(nutritionSummary?.totalCalories || 0)}
               </div>
-              <div className="text-xs text-gray-300 mb-2">
+              <div className="text-xs text-gray-300 mb-1">
                 of {Math.round(getCurrentTargetCalories())}
               </div>
               {dietGoals && (
-                <div className="text-xs font-medium text-blue-300 mb-2">
+                <div className="text-xs font-medium text-blue-300 mb-1">
                   Left: {Math.round(Math.max(0, getCurrentTargetCalories() - (nutritionSummary?.totalCalories || 0)))}
                 </div>
               )}
@@ -1090,19 +1090,19 @@ export function IntegratedNutritionOverview({
 
         {/* Protein Card */}
         <Card className="bg-gray-900 dark:bg-gray-800 border-green-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="text-center">
-              <div className="text-xs font-medium text-green-400 mb-1">
+              <div className="text-xs font-medium text-green-400 mb-0.5">
                 Protein (g)
               </div>
-              <div className="text-2xl font-bold text-white mb-1">
+              <div className="text-xl font-bold text-white mb-0.5">
                 {Math.round(nutritionSummary?.totalProtein || 0)}
               </div>
-              <div className="text-xs text-gray-300 mb-2">
+              <div className="text-xs text-gray-300 mb-1">
                 of {Math.round(getCurrentTargetProtein())}g
               </div>
               {dietGoals && (
-                <div className="text-xs font-medium text-green-300 mb-2">
+                <div className="text-xs font-medium text-green-300 mb-1">
                   Left: {Math.round(Math.max(0, getCurrentTargetProtein() - (nutritionSummary?.totalProtein || 0)))}g
                 </div>
               )}
@@ -1120,19 +1120,19 @@ export function IntegratedNutritionOverview({
 
         {/* Carbs Card */}
         <Card className="bg-gray-900 dark:bg-gray-800 border-orange-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="text-center">
-              <div className="text-xs font-medium text-orange-400 mb-1">
+              <div className="text-xs font-medium text-orange-400 mb-0.5">
                 Carbs (g)
               </div>
-              <div className="text-2xl font-bold text-white mb-1">
+              <div className="text-xl font-bold text-white mb-0.5">
                 {Math.round(nutritionSummary?.totalCarbs || 0)}
               </div>
-              <div className="text-xs text-gray-300 mb-2">
+              <div className="text-xs text-gray-300 mb-1">
                 of {Math.round(getCurrentTargetCarbs())}g
               </div>
               {dietGoals && (
-                <div className="text-xs font-medium text-orange-300 mb-2">
+                <div className="text-xs font-medium text-orange-300 mb-1">
                   Left: {Math.round(Math.max(0, getCurrentTargetCarbs() - (nutritionSummary?.totalCarbs || 0)))}g
                 </div>
               )}
@@ -1150,19 +1150,19 @@ export function IntegratedNutritionOverview({
 
         {/* Fat Card */}
         <Card className="bg-gray-900 dark:bg-gray-800 border-purple-500 border-2 shadow-lg nutrition-card-ios">
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="text-center">
-              <div className="text-xs font-medium text-purple-400 mb-1">
+              <div className="text-xs font-medium text-purple-400 mb-0.5">
                 Fat (g)
               </div>
-              <div className="text-2xl font-bold text-white mb-1">
+              <div className="text-xl font-bold text-white mb-0.5">
                 {Math.round(nutritionSummary?.totalFat || 0)}
               </div>
-              <div className="text-xs text-gray-300 mb-2">
+              <div className="text-xs text-gray-300 mb-1">
                 of {Math.round(getCurrentTargetFat())}g
               </div>
               {dietGoals && (
-                <div className="text-xs font-medium text-purple-300 mb-2">
+                <div className="text-xs font-medium text-purple-300 mb-1">
                   Left: {Math.round(Math.max(0, getCurrentTargetFat() - (nutritionSummary?.totalFat || 0)))}g
                 </div>
               )}
@@ -1311,8 +1311,8 @@ export function IntegratedNutritionOverview({
         };
         
         return (
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardContent className="p-3">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-1">
+            <CardContent className="p-2">
               <Button
                 variant="ghost"
                 className="w-full justify-between p-2 h-auto"
@@ -1328,20 +1328,18 @@ export function IntegratedNutritionOverview({
               </Button>
               
               {showMicronutrients && (
-                <div className="mt-3">
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 text-center">
+                <div className="mt-2">
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 text-center">
                       Total from {micronutrientLogs.length} foods with vitamin data
                     </div>
                     
-
-                    
-                    <div className="grid grid-cols-1 gap-4 text-xs">
+                    <div className="grid grid-cols-1 gap-3 text-xs">
                       {/* Fat-Soluble Vitamins */}
                       {(dailyTotals.vitaminA > 0 || dailyTotals.vitaminD > 0 || dailyTotals.vitaminE > 0 || dailyTotals.vitaminK > 0) && (
                         <div>
-                          <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
-                          <div className="space-y-3">
+                          <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-1.5">Fat-Soluble Vitamins</h5>
+                          <div className="space-y-2">
                             {dailyTotals.vitaminA > 0 && renderNutrientWithProgress(
                               "Vitamin A", 
                               Math.round(dailyTotals.vitaminA * 10) / 10, 
@@ -1373,8 +1371,8 @@ export function IntegratedNutritionOverview({
                       {/* Water-Soluble Vitamins */}
                       {(dailyTotals.vitaminC > 0 || dailyTotals.vitaminB1 > 0 || dailyTotals.vitaminB2 > 0 || dailyTotals.vitaminB3 > 0 || dailyTotals.vitaminB6 > 0 || dailyTotals.vitaminB12 > 0) && (
                         <div>
-                          <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
-                          <div className="space-y-3">
+                          <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-1.5">Water-Soluble Vitamins</h5>
+                          <div className="space-y-2">
                             {dailyTotals.vitaminC > 0 && renderNutrientWithProgress(
                               "Vitamin C", 
                               Math.round(dailyTotals.vitaminC * 10) / 10, 
@@ -1418,8 +1416,8 @@ export function IntegratedNutritionOverview({
                       {/* Major Minerals */}
                       {(dailyTotals.calcium > 0 || dailyTotals.magnesium > 0 || dailyTotals.phosphorus > 0 || dailyTotals.potassium > 0 || dailyTotals.sodium > 0) && (
                         <div>
-                          <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
-                          <div className="space-y-3">
+                          <h5 className="font-medium text-green-600 dark:text-green-400 mb-1.5">Major Minerals</h5>
+                          <div className="space-y-2">
                             {dailyTotals.calcium > 0 && renderNutrientWithProgress(
                               "Calcium", 
                               Math.round(dailyTotals.calcium), 
@@ -1461,8 +1459,8 @@ export function IntegratedNutritionOverview({
                       {/* Trace Minerals */}
                       {(dailyTotals.iron > 0 || dailyTotals.zinc > 0 || dailyTotals.selenium > 0 || dailyTotals.copper > 0 || dailyTotals.manganese > 0 || dailyTotals.iodine > 0 || dailyTotals.chromium > 0 || dailyTotals.molybdenum > 0) && (
                         <div>
-                          <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
-                          <div className="space-y-3">
+                          <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-1.5">Trace Minerals</h5>
+                          <div className="space-y-2">
                             {dailyTotals.iron > 0 && renderNutrientWithProgress(
                               "Iron", 
                               Math.round(dailyTotals.iron * 10) / 10, 
@@ -1518,8 +1516,8 @@ export function IntegratedNutritionOverview({
                       {/* Macronutrient Components */}
                       {(dailyTotals.sugar > 0 || dailyTotals.fiber > 0 || dailyTotals.saturatedFat > 0 || dailyTotals.cholesterol > 0) && (
                         <div>
-                          <h5 className="font-medium text-green-600 dark:text-green-400 mb-2">Macronutrient Components</h5>
-                          <div className="space-y-3">
+                          <h5 className="font-medium text-green-600 dark:text-green-400 mb-1.5">Macronutrient Components</h5>
+                          <div className="space-y-2">
                             {dailyTotals.sugar > 0 && renderNutrientWithProgress(
                               "Total Sugar", 
                               Math.round(dailyTotals.sugar * 10) / 10, 
