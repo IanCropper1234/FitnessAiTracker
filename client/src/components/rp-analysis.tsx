@@ -40,11 +40,23 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
     }
   });
 
-  // Get current weekly goals
+  // Calculate current week start date (same logic as advanced-macro-management)
+  const getCurrentWeekStart = () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - daysToMonday);
+    return weekStart.toISOString().split('T')[0];
+  };
+
+  const currentWeekStart = getCurrentWeekStart();
+
+  // Get current weekly goals with specific week parameter (same as advanced-macro-management)
   const { data: weeklyGoals } = useQuery({
-    queryKey: ['/api/weekly-goals'],
+    queryKey: ['/api/weekly-goals', currentWeekStart],
     queryFn: async () => {
-      const response = await fetch('/api/weekly-goals', {
+      const response = await fetch(`/api/weekly-goals?weekStartDate=${currentWeekStart}`, {
         credentials: 'include'
       });
       if (!response.ok) return [];
