@@ -221,7 +221,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
                     <div>
                       <h4 className="font-medium">{progression.exerciseName}</h4>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Current: {progression.currentWeight}kg
+                        Current: {parseFloat(progression.currentWeight).toFixed(2)}kg
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -241,7 +241,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium">Recommended:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        {progression.recommendedWeight}kg × {progression.recommendedReps}
+                        {parseFloat(progression.recommendedWeight).toFixed(2)}kg × {progression.recommendedReps}
                       </span>
                     </div>
                     <Progress 

@@ -3377,11 +3377,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/training/load-progression", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const { exerciseIds } = req.query;
+      const { exerciseIds, timeframe } = req.query;
       
       const exerciseIdArray = exerciseIds 
         ? (exerciseIds as string).split(',').map(id => parseInt(id))
         : [];
+      
+      // Pass timeframe to filtering logic (though LoadProgression service doesn't currently use it)
+      const timeframeDays = timeframe ? parseInt(timeframe as string) : 28;
+      console.log(`Load progression request for user ${userId}, timeframe: ${timeframeDays} days`);
       
       const progressions = await LoadProgression.getWorkoutProgressions(userId, exerciseIdArray);
       
