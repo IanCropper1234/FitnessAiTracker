@@ -550,15 +550,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   return (
     <div className="space-y-6">
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-black dark:text-white flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            Advanced Macro Management
-          </CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">
-            RP-based weekly adjustments and meal-by-meal macro distribution
-          </CardDescription>
-        </CardHeader>
       </Card>
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
         <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
