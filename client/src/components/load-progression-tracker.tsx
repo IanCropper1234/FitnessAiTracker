@@ -108,8 +108,8 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
   if (progressionsLoading || analysisLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-        <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+        <div className="h-32 bg-gray-100 dark:bg-gray-800  animate-pulse" />
+        <div className="h-48 bg-gray-100 dark:bg-gray-800  animate-pulse" />
       </div>
     );
   }
@@ -131,7 +131,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
           <CardContent>
             <div className="grid grid-cols-4 gap-2 mb-6">
               {/* Overall Trend */}
-              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800  min-h-[80px] flex flex-col justify-between">
                 <div className="flex items-center justify-center mb-1 h-5">
                   {getTrendIcon(analysis.trend)}
                 </div>
@@ -144,7 +144,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
               </div>
 
               {/* Strength Gain */}
-              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800  min-h-[80px] flex flex-col justify-between">
                 <div className="flex items-center justify-center mb-1 h-5">
                   <Target className="h-3.5 w-3.5 text-blue-500" />
                 </div>
@@ -157,7 +157,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
               </div>
 
               {/* Volume Gain */}
-              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800  min-h-[80px] flex flex-col justify-between">
                 <div className="flex items-center justify-center mb-1 h-5">
                   <TrendingUp className="h-3.5 w-3.5 text-purple-500" />
                 </div>
@@ -170,7 +170,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
               </div>
 
               {/* Consistency */}
-              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[80px] flex flex-col justify-between">
+              <div className="text-center p-2 bg-gray-50 dark:bg-gray-800  min-h-[80px] flex flex-col justify-between">
                 <div className="flex items-center justify-center mb-1 h-5">
                   <Award className="h-3.5 w-3.5 text-orange-500" />
                 </div>
@@ -189,7 +189,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
                 <h4 className="font-medium">Recommendations</h4>
                 <div className="space-y-1">
                   {analysis.recommendations.map((rec, index) => (
-                    <div key={index} className="flex items-start gap-2 text-sm p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                    <div key={index} className="flex items-start gap-2 text-sm p-2 bg-blue-50 dark:bg-blue-900/20 ">
                       <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                       <span>{rec}</span>
                     </div>
@@ -216,7 +216,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
           <CardContent>
             <div className="space-y-4">
               {progressions.map((progression: LoadProgressionRecommendation, index: number) => (
-                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div key={index} className="border border-gray-200 dark:border-gray-700  p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h4 className="font-medium">{progression.exerciseName}</h4>
@@ -237,7 +237,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
                   </div>
 
                   {/* Progression Recommendation */}
-                  <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                  <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-800 ">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium">Recommended:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">

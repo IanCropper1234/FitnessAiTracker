@@ -175,7 +175,7 @@ export function Nutrition({
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback ios-smooth-transform button-press-animation"
             >
               <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
             </Button>
@@ -191,7 +191,7 @@ export function Nutrition({
               variant="ghost" 
               size="sm"
               onClick={() => setShowDatePicker(true)}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 rounded-lg ios-touch-feedback ios-smooth-transform button-press-animation"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback ios-smooth-transform button-press-animation"
             >
               <Calendar className="w-5 h-5 transition-transform duration-150" />
             </Button>
@@ -209,14 +209,14 @@ export function Nutrition({
                   queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                   queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
                 }}
-                className="ios-touch-feedback ios-smooth-transform p-2 text-foreground/60 hover:text-foreground transition-all duration-200 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
+                className="ios-touch-feedback ios-smooth-transform p-2 text-foreground/60 hover:text-foreground transition-all duration-200  min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
               >
                 <ChevronLeft className="h-4 w-4 transition-transform duration-150" />
               </button>
               
               <button
                 onClick={() => setShowDatePicker(true)}
-                className="ios-touch-feedback ios-smooth-transform flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent/50 transition-all duration-200 active:scale-98 min-h-[44px]"
+                className="ios-touch-feedback ios-smooth-transform flex items-center gap-2 px-4 py-2  hover:bg-accent/50 transition-all duration-200 active:scale-98 min-h-[44px]"
               >
                 <span className="text-sm font-medium text-foreground transition-colors duration-150">
                   {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
@@ -235,7 +235,7 @@ export function Nutrition({
                   queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', user.id] });
                   queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', user.id] });
                 }}
-                className="ios-touch-feedback ios-smooth-transform p-2 text-foreground/60 hover:text-foreground transition-all duration-200 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
+                className="ios-touch-feedback ios-smooth-transform p-2 text-foreground/60 hover:text-foreground transition-all duration-200  min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-accent/30 active:scale-95"
               >
                 <ChevronRight className="h-4 w-4 transition-transform duration-150" />
               </button>

@@ -150,7 +150,7 @@ export const ExerciseCardV2: React.FC<ExerciseCardV2Props> = ({
                 {workoutSets.map((set, index) => (
                   <div 
                     key={index}
-                    className={`flex items-center justify-between p-2 rounded text-sm ${
+                    className={`flex items-center justify-between p-2  text-sm ${
                       set.completed 
                         ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
                         : 'bg-muted text-muted-foreground'

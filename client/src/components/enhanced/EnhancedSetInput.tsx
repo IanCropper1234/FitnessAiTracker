@@ -189,7 +189,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Compact Recommendation Banner - Collapsed Design */}
         {(setRecommendation || recommendation) && showRecommendation && (
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded p-1.5">
+          <div className="bg-emerald-500/10 border border-emerald-500/20  p-1.5">
             <div className="flex items-center justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="text-xs text-emerald-300 truncate">
@@ -261,7 +261,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Special Method Configuration - Conditional based on selected method */}
         {!set.completed && isActive && specialMethod === 'giant_set' && (
-          <div className="bg-orange-500/10 border border-orange-500/20 rounded p-2 space-y-2">
+          <div className="bg-orange-500/10 border border-orange-500/20  p-2 space-y-2">
             <div className="flex items-center gap-2 text-xs text-orange-400 font-medium">
               <Timer className="h-3 w-3" />
               Giant Set Configuration
@@ -305,7 +305,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         )}
 
         {specialMethod === 'drop_set' && !set.completed && isActive && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded p-2 space-y-2">
+          <div className="bg-red-500/10 border border-red-500/20  p-2 space-y-2">
             <div className="flex items-center gap-2 text-xs text-red-400 font-medium">
               <Minus className="h-3 w-3" />
               Drop Set Configuration
@@ -345,7 +345,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         )}
 
         {specialMethod === 'myorep_match' && !set.completed && isActive && (
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 space-y-2">
+          <div className="bg-blue-500/10 border border-blue-500/20  p-2 space-y-2">
             <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
               <Target className="h-3 w-3" />
               Myorep Match Configuration
@@ -370,7 +370,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         )}
 
         {specialMethod === 'myorep_no_match' && !set.completed && isActive && (
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 space-y-2">
+          <div className="bg-blue-500/10 border border-blue-500/20  p-2 space-y-2">
             <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
               <Zap className="h-3 w-3" />
               Myorep No Match
@@ -386,7 +386,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <div className="space-y-1">
             {/* Body Weight Info - Shows only when active */}
             {useBodyWeight && bodyWeightValue > 0 && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded p-1">
+              <div className="bg-blue-500/10 border border-blue-500/20  p-1">
                 <div className="flex items-center gap-1 text-xs text-blue-400">
                   <Scale className="h-2.5 w-2.5" />
                   <span>Body: {getEffectiveWeight()}{weightUnit}</span>
@@ -520,7 +520,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Completed Set Display - Minimal and clean */}
         {set.completed && (
-          <div className="flex items-center justify-center p-1 bg-emerald-500/10 border border-emerald-500/20 rounded">
+          <div className="flex items-center justify-center p-1 bg-emerald-500/10 border border-emerald-500/20 ">
             <Check className="h-3 w-3 text-emerald-400 mr-1" />
             <span className="text-xs text-emerald-300 font-medium">
               {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
@@ -539,7 +539,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
         {/* Non-active set preview - Shows basic info for inactive sets */}
         {!set.completed && !isActive && (
-          <div className="p-1 bg-muted/20 rounded text-center">
+          <div className="p-1 bg-muted/20  text-center">
             <div className="flex items-center justify-center gap-1">
               <span className="text-xs text-muted-foreground">
                 {set.weight > 0 || set.actualReps > 0 || set.rpe > 0

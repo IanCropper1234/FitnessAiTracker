@@ -227,8 +227,8 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   if (mesocyclesLoading || recommendationsLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-        <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+        <div className="h-32 bg-gray-100 dark:bg-gray-800  animate-pulse" />
+        <div className="h-48 bg-gray-100 dark:bg-gray-800  animate-pulse" />
       </div>
     );
   }
@@ -282,7 +282,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
               {/* Week Completion Status */}
               {activeMesocycle && (
-                <div className="flex items-center justify-between p-3 dark:bg-gray-800 rounded-lg text-[17px] bg-[#3c81f6]">
+                <div className="flex items-center justify-between p-3 dark:bg-gray-800  text-[17px] bg-[#3c81f6]">
                   <div>
                     <p className="text-sm font-medium text-[#cccaca]">
                       Week {activeMesocycle.currentWeek} Progress
@@ -385,7 +385,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       {/* Recommendations */}
       {recommendations && (
         <Tabs defaultValue="volume" className="w-full">
-          <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800  p-1">
             <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Volume Progression</TabsTrigger>
             <TabsTrigger value="fatigue" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Fatigue Analysis</TabsTrigger>
             <TabsTrigger value="phase" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Phase Management</TabsTrigger>
@@ -405,7 +405,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               <CardContent>
                 <div className="space-y-3">
                   {recommendations.nextWeekVolume.map((volume: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
                       <div>
                         <p className="font-medium">{volume.muscleGroupName || `Muscle Group ${volume.muscleGroupId}`}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -435,13 +435,13 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 <div className="space-y-4">
                   {/* Fatigue Metrics */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 ">
                       <p className="text-sm text-gray-600 dark:text-gray-300">Overall Fatigue</p>
                       <p className={`text-2xl font-bold ${getFatigueColor(recommendations.fatigueFeedback.overallFatigue)}`}>
                         {recommendations.fatigueFeedback.overallFatigue.toFixed(1)}/10
                       </p>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 ">
                       <p className="text-sm text-gray-600 dark:text-gray-300">Recovery Level</p>
                       <p className={`text-2xl font-bold ${getFatigueColor(10 - recommendations.fatigueFeedback.recoveryLevel)}`}>
                         {recommendations.fatigueFeedback.recoveryLevel.toFixed(1)}/10
@@ -451,7 +451,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
 
                   {/* Deload Warning */}
                   {recommendations.shouldDeload && (
-                    <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 ">
                       <AlertTriangle className="h-5 w-5 text-yellow-600" />
                       <p className="text-yellow-800 dark:text-yellow-200 font-medium">
                         Deload recommended - High fatigue accumulation detected
@@ -487,7 +487,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               <CardContent>
                 {recommendations.phaseTransition ? (
                   <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                       <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
                         Phase Transition Recommended
                       </h4>
@@ -529,7 +529,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               {mesocycles.map((mesocycle: Mesocycle) => (
                 <div 
                   key={mesocycle.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${
+                  className={`flex items-center justify-between p-3  border ${
                     mesocycle.isActive 
                       ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20' 
                       : 'border-gray-200 dark:border-gray-700'

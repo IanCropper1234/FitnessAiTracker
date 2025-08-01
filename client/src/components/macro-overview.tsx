@@ -74,12 +74,12 @@ export function MacroOverview({ userId }: MacroOverviewProps) {
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader className="pb-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700  w-16"></div>
               </CardHeader>
               <CardContent>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-12 mb-2"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
-                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700  w-12 mb-2"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700  w-20 mb-2"></div>
+                <div className="h-2 bg-gray-200 dark:bg-gray-700 "></div>
               </CardContent>
             </Card>
           ))}

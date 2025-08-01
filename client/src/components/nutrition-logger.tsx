@@ -364,7 +364,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                     <div
                       key={index}
                       onClick={() => setSelectedFood(food)}
-                      className={`p-2 sm:p-3 rounded-lg cursor-pointer border transition-colors ${
+                      className={`p-2 sm:p-3  cursor-pointer border transition-colors ${
                         selectedFood === food
                           ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
                           : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -374,7 +374,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                         <div className="font-medium text-sm truncate flex-1 mr-2">{food.name}</div>
                         <div className="flex gap-1 flex-shrink-0">
                           {food.category && (
-                            <span className={`text-xs px-1.5 py-0.5 rounded ${
+                            <span className={`text-xs px-1.5 py-0.5  ${
                               food.category === 'protein' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
                               food.category === 'carb' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
                               food.category === 'fat' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
@@ -393,7 +393,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                         {food.mealSuitability && food.mealSuitability.length > 0 && (
                           <div className="flex gap-1 ml-2">
                             {food.mealSuitability.slice(0, 1).map((timing, idx) => (
-                              <span key={idx} className="text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                              <span key={idx} className="text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ">
                                 {timing}
                               </span>
                             ))}
@@ -413,7 +413,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
           {aiAnalyzeMutation.data && searchMode === 'ai' && (
             <div className="space-y-2">
               <Label className="text-black dark:text-white">Nutrition Analysis</Label>
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 ">
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
                     <div className="text-lg font-bold text-black dark:text-white">
@@ -447,7 +447,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                     </div>
                   )}
                   {aiAnalyzeMutation.data.category && (
-                    <span className={`text-xs px-2 py-1 rounded font-medium ${
+                    <span className={`text-xs px-2 py-1  font-medium ${
                       aiAnalyzeMutation.data.category === 'protein' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
                       aiAnalyzeMutation.data.category === 'carb' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
                       aiAnalyzeMutation.data.category === 'fat' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
@@ -462,7 +462,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                     <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">RP Meal Timing:</div>
                     <div className="flex justify-center gap-1 flex-wrap">
                       {aiAnalyzeMutation.data.mealSuitability.map((timing: string, idx: number) => (
-                        <span key={idx} className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800">
+                        <span key={idx} className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300  border border-blue-200 dark:border-blue-800">
                           {timing}
                         </span>
                       ))}

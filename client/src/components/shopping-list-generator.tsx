@@ -106,10 +106,10 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
           {Array.from({ length: 3 }).map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader className="pb-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700  w-20"></div>
               </CardHeader>
               <CardContent>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700  w-16"></div>
               </CardContent>
             </Card>
           ))}
@@ -133,21 +133,21 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 ">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Package className="w-5 h-5 text-blue-600" />
                 <span className="font-medium text-blue-900 dark:text-blue-100">Total Items</span>
               </div>
               <div className="text-2xl font-bold text-blue-600">{calculateTotalItems(currentShoppingList)}</div>
             </div>
-            <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-950 ">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <DollarSign className="w-5 h-5 text-green-600" />
                 <span className="font-medium text-green-900 dark:text-green-100">Estimated Cost</span>
               </div>
               <div className="text-2xl font-bold text-green-600">${calculateTotalCost(currentShoppingList)}</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 ">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Utensils className="w-5 h-5 text-purple-600" />
                 <span className="font-medium text-purple-900 dark:text-purple-100">Categories</span>
@@ -192,7 +192,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
               {optimizedShoppingList && optimizedShoppingList.length > 0 ? (
                 <div className="space-y-6">
                   {optimizedShoppingList.map((group: ShoppingListGroup, groupIndex: number) => (
-                    <div key={groupIndex} className="border rounded-lg p-4">
+                    <div key={groupIndex} className="border  p-4">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-semibold text-lg">{group.category}</h3>
                         <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
                       
                       <div className="grid gap-3">
                         {group.items.map((item: ShoppingListItem, itemIndex: number) => (
-                          <div key={itemIndex} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                          <div key={itemIndex} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
                             <div className="flex-1">
                               <div className="font-medium">{item.foodName}</div>
                               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -228,7 +228,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
                     </div>
                   ))}
                   
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 ">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
                       RP Shopping Tips:
                     </h4>
@@ -268,7 +268,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
                     type="date"
                     value={dateRange.startDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                    className="w-full mt-1 px-3 py-2 border rounded-md"
+                    className="w-full mt-1 px-3 py-2 border "
                   />
                 </div>
                 <div>
@@ -277,7 +277,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
                     type="date"
                     value={dateRange.endDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                    className="w-full mt-1 px-3 py-2 border rounded-md"
+                    className="w-full mt-1 px-3 py-2 border "
                   />
                 </div>
               </div>
@@ -285,7 +285,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
               {historyShoppingList && historyShoppingList.length > 0 ? (
                 <div className="space-y-4">
                   {historyShoppingList.map((group: ShoppingListGroup, groupIndex: number) => (
-                    <div key={groupIndex} className="border rounded-lg p-4">
+                    <div key={groupIndex} className="border  p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-semibold">{group.category}</h3>
                         <Badge variant="secondary">{group.totalItems} items</Badge>
@@ -293,7 +293,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
                       
                       <div className="grid gap-2">
                         {group.items.map((item: ShoppingListItem, itemIndex: number) => (
-                          <div key={itemIndex} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                          <div key={itemIndex} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 ">
                             <div>
                               <span className="font-medium">{item.foodName}</span>
                               <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">

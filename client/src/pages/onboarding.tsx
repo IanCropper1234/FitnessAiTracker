@@ -25,7 +25,7 @@ export default function Onboarding() {
     <div className="min-h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-br from-background to-muted">
       <div className="text-center max-w-sm mx-auto animate-fade-in">
         {/* App Logo */}
-        <div className="w-24 h-24 mx-auto mb-8 bg-gradient-primary rounded-3xl flex items-center justify-center shadow-2xl">
+        <div className="w-24 h-24 mx-auto mb-8 bg-gradient-primary  flex items-center justify-center shadow-2xl">
           <div className="text-white font-bold text-2xl">Fi</div>
         </div>
         
@@ -52,7 +52,7 @@ export default function Onboarding() {
         
         {/* Theme Toggle */}
         <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center space-x-3 bg-card border border-border rounded-xl px-4 py-3">
+          <div className="flex items-center space-x-3 bg-card border border-border  px-4 py-3">
             <span className="text-sm font-medium">
               {theme === "dark" ? "Dark Mode" : "Light Mode"}
             </span>

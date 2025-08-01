@@ -430,7 +430,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
           <div className="grid gap-2 max-h-96 overflow-y-auto">
             {foodItems.map((item) => (
               <div key={item.id} 
-                   className="flex justify-between items-center p-3 border rounded-lg hover:bg-accent cursor-pointer">
+                   className="flex justify-between items-center p-3 border  hover:bg-accent cursor-pointer">
                 <div className="flex-1">
                   <div className="font-medium">{item.name}</div>
                   <div className="text-sm text-muted-foreground">

@@ -104,25 +104,25 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
         <CardContent className="space-y-6">
           {/* Key Statistics */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 ">
               <Clock className="h-5 w-5 mx-auto mb-1 text-blue-600" />
               <div className="text-lg font-bold">{formatDuration(duration)}</div>
               <div className="text-sm text-muted-foreground">Duration</div>
             </div>
             
-            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 ">
               <Weight className="h-5 w-5 mx-auto mb-1 text-green-600" />
               <div className="text-lg font-bold">{totalVolume.toLocaleString()}</div>
               <div className="text-sm text-muted-foreground">Total Volume (kg)</div>
             </div>
             
-            <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+            <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 ">
               <Target className="h-5 w-5 mx-auto mb-1 text-purple-600" />
               <div className="text-lg font-bold">{completedSets}/{totalSets}</div>
               <div className="text-sm text-muted-foreground">Sets Completed</div>
             </div>
             
-            <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+            <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 ">
               <Star className="h-5 w-5 mx-auto mb-1 text-orange-600" />
               <div className="text-lg font-bold">{averageRPE.toFixed(1)}/10</div>
               <div className="text-sm text-muted-foreground">Avg RPE</div>
@@ -140,7 +140,7 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
                 {personalRecords.map((pr, index) => (
                   <div 
                     key={index}
-                    className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 "
                   >
                     <div>
                       <div className="font-medium">{pr.exercise}</div>
@@ -166,7 +166,7 @@ export const WorkoutSummaryModal: React.FC<WorkoutSummaryModalProps> = ({
                 const exerciseCompletion = exercise.sets.length > 0 ? (completedExerciseSets / exercise.sets.length) * 100 : 0;
                 
                 return (
-                  <div key={index} className="p-3 border rounded-lg">
+                  <div key={index} className="p-3 border ">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <div className="font-medium">{exercise.name}</div>

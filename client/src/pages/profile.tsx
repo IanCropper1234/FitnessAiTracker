@@ -168,7 +168,7 @@ function ActivityGoalsCard() {
         </div>
 
         {/* Activity Level Descriptions */}
-        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 ">
           <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Activity Level Guide</h4>
           <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
             <li><strong>Sedentary:</strong> Desk job, minimal physical activity</li>
@@ -250,14 +250,14 @@ function DietGoalsCard() {
       <CardContent className="p-4 space-y-3">
         {/* Compact Header */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30  flex items-center justify-center flex-shrink-0">
             <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </div>
           <h3 className="text-sm font-semibold text-black dark:text-white">Diet Goals</h3>
         </div>
 
         {/* Compact Info Banner */}
-        <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+        <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 ">
           <Info className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
           <p className="text-xs text-blue-800 dark:text-blue-200">
             Auto-set for <strong>{fitnessGoal}</strong> goal
@@ -284,19 +284,19 @@ function DietGoalsCard() {
             
             {/* Macro Grid - Compact Design */}
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2.5 text-center">
+              <div className="bg-gray-50 dark:bg-gray-800/50  p-2.5 text-center">
                 <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Calories</p>
                 <p className="text-sm font-bold text-black dark:text-white">{Math.round(Number(dietGoals.targetCalories))}</p>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2.5 text-center">
+              <div className="bg-blue-50 dark:bg-blue-900/20  p-2.5 text-center">
                 <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Protein</p>
                 <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{Math.round(Number(dietGoals.targetProtein))}g</p>
               </div>
-              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2.5 text-center">
+              <div className="bg-orange-50 dark:bg-orange-900/20  p-2.5 text-center">
                 <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Carbs</p>
                 <p className="text-sm font-bold text-orange-600 dark:text-orange-400">{Math.round(Number(dietGoals.targetCarbs))}g</p>
               </div>
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-2.5 text-center">
+              <div className="bg-green-50 dark:bg-green-900/20  p-2.5 text-center">
                 <p className="text-xs font-medium text-green-600 dark:text-green-400">Fat</p>
                 <p className="text-sm font-bold text-green-600 dark:text-green-400">{Math.round(Number(dietGoals.targetFat))}g</p>
               </div>
@@ -375,7 +375,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/')}
-            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
+            className="h-8 w-8  bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -389,7 +389,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/')}
-            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
+            className="h-8 w-8  bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
             <Home className="w-4 h-4" />
           </Button>
@@ -401,7 +401,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             <div className="space-y-4">
               {/* User Info Row */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800  flex items-center justify-center flex-shrink-0">
                   <UserIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -429,7 +429,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             <div className="space-y-4">
               {/* Header */}
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800  flex items-center justify-center flex-shrink-0">
                   <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -490,13 +490,13 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
               {userData?.email === 'c0109009@gmail.com' && (
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900  flex items-center justify-center flex-shrink-0">
                       <Code className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                     </div>
                     <h3 className="text-xs font-semibold text-black dark:text-white">Developer</h3>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+                  <div className="bg-gray-50 dark:bg-gray-800/50  p-3">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="developer-features" className="text-xs font-medium text-black dark:text-white">

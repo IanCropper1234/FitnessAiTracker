@@ -541,7 +541,7 @@ export function UserProfile({}: UserProfileProps) {
 
             {/* Fitness Health Index Display */}
             {fitnessHealthIndex && (
-              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="p-3 bg-gray-50 dark:bg-gray-800  border border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-black dark:text-white">Fitness Health Index</span>
                   <span className="text-lg font-bold text-black dark:text-white">{fitnessHealthIndex}</span>
@@ -805,7 +805,7 @@ export function UserProfile({}: UserProfileProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2 text-sm">
+                <div className="bg-gray-50 dark:bg-gray-800 p-4  space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Wake Time:</span>
                     <span className="font-medium text-black dark:text-white">{mealTimingData.wakeTime}</span>

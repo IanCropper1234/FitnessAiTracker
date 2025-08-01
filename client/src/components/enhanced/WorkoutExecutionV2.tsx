@@ -326,7 +326,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin  h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p>Loading enhanced workout session...</p>
         </div>
       </div>
@@ -675,7 +675,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {/* Exercise Index & Progress */}
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+              <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-1.5 py-0.5 ">
                 {currentExerciseIndex + 1}/{session.exercises.length}
               </span>
               <span className="text-xs font-semibold text-primary">
@@ -692,7 +692,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             
             {/* Special Method Indicator Dot */}
             {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
-              <div className={`w-2 h-2 rounded-full ${
+              <div className={`w-2 h-2  ${
                 specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500' :
                 specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500' :
                 specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500' :
@@ -744,9 +744,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
             {/* Special Training Method Details */}
             {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
-              <div className="border border-border/50 rounded-lg p-2 bg-background/50">
+              <div className="border border-border/50  p-2 bg-background/50">
                 <div className="flex items-center justify-between mb-1">
-                  <div className={`px-2 py-1 rounded text-xs font-medium border ${
+                  <div className={`px-2 py-1  text-xs font-medium border ${
                     specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                     specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                     specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
@@ -845,7 +845,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <h4 className="text-xs font-semibold text-foreground">Sets</h4>
-                    <div className="text-xs text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                    <div className="text-xs text-muted-foreground bg-muted/50 px-1.5 py-0.5 ">
                       {currentSets.filter(s => s.completed).length}/{currentSets.length}
                     </div>
                   </div>
@@ -853,7 +853,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => addSet(currentExercise.id)}
-                      className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/20"
+                      className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-1  bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/20"
                       title="Add Set"
                     >
                       <Plus className="h-3 w-3" />
@@ -862,7 +862,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                     {currentSets.length > 1 && (
                       <button
                         onClick={() => removeSet(currentExercise.id, currentSetIndex)}
-                        className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20"
+                        className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-1  bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20"
                         title="Remove Set"
                       >
                         <Minus className="h-3 w-3" />
@@ -877,7 +877,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   {currentSets.map((set, index) => (
                     <div
                       key={index}
-                      className={`p-2 rounded-lg cursor-pointer transition-all duration-200 border ${
+                      className={`p-2  cursor-pointer transition-all duration-200 border ${
                         index === currentSetIndex
                           ? 'bg-primary/10 border-primary shadow-sm'
                           : set.completed
@@ -890,7 +890,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                         {/* Set Info - Left Side */}
                         <div className="flex items-center gap-2">
                           {/* Set Number Badge - Compact */}
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                          <div className={`w-6 h-6  flex items-center justify-center text-xs font-bold ${
                             index === currentSetIndex
                               ? 'bg-primary text-primary-foreground'
                               : set.completed
@@ -940,7 +940,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                             {/* Special Training Method Indicator */}
                             {specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
                               <div className="flex items-center gap-1 mt-1">
-                                <div className={`px-1.5 py-0.5 rounded text-xs font-medium border ${
+                                <div className={`px-1.5 py-0.5  text-xs font-medium border ${
                                   specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                                   specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                                   specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
@@ -993,7 +993,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                                 e.stopPropagation();
                                 resetSet(currentExercise.id, index);
                               }}
-                              className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-orange-500/10 border border-orange-500/30 text-orange-600 hover:bg-orange-500/20"
+                              className="ios-touch-feedback flex items-center gap-0.5 px-1.5 py-0.5  bg-orange-500/10 border border-orange-500/30 text-orange-600 hover:bg-orange-500/20"
                               title="Reset Set"
                             >
                               <RotateCcw className="h-3 w-3" />
@@ -1001,7 +1001,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                             </button>
                           )}
                           {index === currentSetIndex && !set.completed && (
-                            <div className="text-xs text-primary font-medium bg-primary/10 px-1.5 py-0.5 rounded-md">
+                            <div className="text-xs text-primary font-medium bg-primary/10 px-1.5 py-0.5 ">
                               Active
                             </div>
                           )}
@@ -1022,7 +1022,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 setCurrentExerciseIndex(currentExerciseIndex - 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-button touch-target flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
+              className={`ios-button touch-target flex items-center gap-1.5 p-1.5  border border-border/30 ${
                 currentExerciseIndex === 0 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
@@ -1045,7 +1045,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 setCurrentExerciseIndex(currentExerciseIndex + 1);
                 setCurrentSetIndex(0);
               }}
-              className={`ios-button touch-target flex items-center gap-1.5 p-1.5 rounded-lg border border-border/30 ${
+              className={`ios-button touch-target flex items-center gap-1.5 p-1.5  border border-border/30 ${
                 currentExerciseIndex === session.exercises.length - 1 
                   ? 'opacity-50 cursor-not-allowed bg-muted/30' 
                   : 'bg-card hover:bg-muted/50'
@@ -1096,7 +1096,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           <button 
             onClick={saveAndExit} 
             disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5 rounded-lg border border-border/30 flex items-center justify-center gap-1 transition-colors"
+            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5  border border-border/30 flex items-center justify-center gap-1 transition-colors"
           >
             <Save className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Save & Exit</span>
@@ -1104,7 +1104,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           <button 
             onClick={completeWorkout} 
             disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors"
+            className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-1.5  flex items-center justify-center gap-1 transition-colors"
           >
             <CheckCircle className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Complete Workout</span>
@@ -1115,7 +1115,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         {saveProgressMutation.isPending && (
           <div className="mt-2 text-center">
             <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <div className="w-3 h-3 border border-primary border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-3 h-3 border border-primary border-t-transparent  animate-spin"></div>
               Saving...
             </div>
           </div>

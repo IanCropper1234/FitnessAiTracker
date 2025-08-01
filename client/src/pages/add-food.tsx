@@ -572,7 +572,7 @@ export function AddFood({ user }: AddFoodProps) {
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/nutrition')}
-            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
+            className="h-8 w-8  bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -586,7 +586,7 @@ export function AddFood({ user }: AddFoodProps) {
             variant="ghost" 
             size="sm"
             onClick={() => setLocation('/')}
-            className="h-8 w-8 rounded-full bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
+            className="h-8 w-8  bg-white/10 dark:bg-black/10 hover:bg-white/20 dark:hover:bg-black/20 p-0 ios-button touch-target transition-all duration-200"
           >
             <Home className="w-4 h-4" />
           </Button>
@@ -604,7 +604,7 @@ export function AddFood({ user }: AddFoodProps) {
               
               <TabsContent value="ai-analysis" className="space-y-4 mt-4">
                 {/* AI Analysis Mode - Database Search Hidden */}
-                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/20  border border-blue-200 dark:border-blue-700">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     <Label className="text-sm font-medium text-blue-800 dark:text-blue-200">
@@ -717,14 +717,14 @@ export function AddFood({ user }: AddFoodProps) {
                   <img
                     src={capturedImage}
                     alt={imageAnalysisType === 'nutrition_label' ? 'Captured nutrition label' : 'Captured food photo'}
-                    className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                    className="w-full h-32 object-cover  border border-gray-200 dark:border-gray-700"
                   />
                 </div>
               </div>
             )}
 
             {/* Enhanced Portion Input */}
-            <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 ">
               <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
                 Portion Information (Optional)
               </Label>
@@ -773,7 +773,7 @@ export function AddFood({ user }: AddFoodProps) {
 
                 {/* AI Analysis Results - Dynamic Volume-Based Display */}
                 {dynamicMacros && (
-                  <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-t border-gray-200 dark:border-gray-700 pt-3">
+                  <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20  border-t border-gray-200 dark:border-gray-700 pt-3">
                     <div className="flex items-center gap-2">
                       <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
@@ -796,19 +796,19 @@ export function AddFood({ user }: AddFoodProps) {
                       )}
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 ">
                         <p className="text-gray-600 dark:text-gray-400">Calories</p>
                         <p className="font-bold">{Math.round(dynamicMacros.calories)}</p>
                       </div>
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 ">
                         <p className="text-gray-600 dark:text-gray-400">Protein</p>
                         <p className="font-bold text-blue-600">{Math.round(dynamicMacros.protein)}g</p>
                       </div>
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 ">
                         <p className="text-gray-600 dark:text-gray-400">Carbs</p>
                         <p className="font-bold text-orange-600">{Math.round(dynamicMacros.carbs)}g</p>
                       </div>
-                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 ">
                         <p className="text-gray-600 dark:text-gray-400">Fat</p>
                         <p className="font-bold text-green-600">{Math.round(dynamicMacros.fat)}g</p>
                       </div>
@@ -826,7 +826,7 @@ export function AddFood({ user }: AddFoodProps) {
                       </div>
                     )}
                     {quantity !== (portionWeight || '1') && (
-                      <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
+                      <div className="text-xs text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 ">
                         <p className="font-medium">✓ Dynamic Calculation Applied</p>
                         <p>Macros automatically updated based on your volume adjustment</p>
                       </div>
@@ -861,7 +861,7 @@ export function AddFood({ user }: AddFoodProps) {
                     {displayedFoodHistory.map((item: any, index: number) => (
                       <div
                         key={`${item.foodName}-${index}`}
-                        className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                        className="flex items-center justify-between p-2 bg-white dark:bg-gray-800  transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
@@ -941,7 +941,7 @@ export function AddFood({ user }: AddFoodProps) {
                     {displayedSavedMeals.map((meal: any) => (
                       <div
                         key={meal.id}
-                        className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                        className="flex items-center justify-between p-2 bg-white dark:bg-gray-800  transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">

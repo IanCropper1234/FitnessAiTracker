@@ -232,12 +232,12 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-muted rounded w-1/3"></div>
+            <div className="h-6 bg-muted  w-1/3"></div>
             <div className="grid grid-cols-4 gap-4">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="space-y-2">
-                  <div className="h-8 bg-muted rounded"></div>
-                  <div className="h-4 bg-muted rounded"></div>
+                  <div className="h-8 bg-muted "></div>
+                  <div className="h-4 bg-muted "></div>
                 </div>
               ))}
             </div>
@@ -282,19 +282,19 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
           <div className="space-y-4">
             {/* Goals Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border ">
                 <div className="text-2xl font-bold">{weeklyGoal.dailyCalories}</div>
                 <div className="text-sm text-muted-foreground">{t("Calories")}</div>
               </div>
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border ">
                 <div className="text-2xl font-bold text-blue-600">{weeklyGoal.protein}g</div>
                 <div className="text-sm text-muted-foreground">{t("Protein")}</div>
               </div>
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border ">
                 <div className="text-2xl font-bold text-green-600">{weeklyGoal.carbs}g</div>
                 <div className="text-sm text-muted-foreground">{t("Carbs")}</div>
               </div>
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border ">
                 <div className="text-2xl font-bold text-yellow-600">{weeklyGoal.fat}g</div>
                 <div className="text-sm text-muted-foreground">{t("Fat")}</div>
               </div>

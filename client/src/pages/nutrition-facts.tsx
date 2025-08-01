@@ -122,7 +122,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
           </div>
 
           {/* Main Nutrition Info */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
+          <div className="bg-gray-50 dark:bg-gray-800  p-4 space-y-3">
             <div className="text-center border-b border-gray-200 dark:border-gray-600 pb-3">
               <div className="text-2xl font-bold text-black dark:text-white">
                 {Math.round(selectedNutritionItem.calories)} <span className="text-base font-normal">calories</span>
@@ -137,9 +137,9 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                   {Math.round(selectedNutritionItem.protein)}g
                 </span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700  h-2">
                 <div 
-                  className="bg-blue-500 h-2 rounded-full" 
+                  className="bg-blue-500 h-2 " 
                   style={{ 
                     width: `${Math.min(100, (selectedNutritionItem.protein * 4 / selectedNutritionItem.calories) * 100)}%` 
                   }}
@@ -152,9 +152,9 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                   {Math.round(selectedNutritionItem.carbs)}g
                 </span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700  h-2">
                 <div 
-                  className="bg-green-500 h-2 rounded-full" 
+                  className="bg-green-500 h-2 " 
                   style={{ 
                     width: `${Math.min(100, (selectedNutritionItem.carbs * 4 / selectedNutritionItem.calories) * 100)}%` 
                   }}
@@ -167,9 +167,9 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                   {Math.round(selectedNutritionItem.fat)}g
                 </span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700  h-2">
                 <div 
-                  className="bg-yellow-500 h-2 rounded-full" 
+                  className="bg-yellow-500 h-2 " 
                   style={{ 
                     width: `${Math.min(100, (selectedNutritionItem.fat * 9 / selectedNutritionItem.calories) * 100)}%` 
                   }}
@@ -178,7 +178,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
             </div>
 
             {/* Calorie Breakdown */}
-            <div className="bg-white dark:bg-gray-900 rounded p-3 mt-4">
+            <div className="bg-white dark:bg-gray-900  p-3 mt-4">
               <h4 className="font-medium text-black dark:text-white mb-2 text-sm">Calorie Breakdown</h4>
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div className="text-center">
@@ -204,7 +204,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
 
             {/* Micronutrients Section - Only show if data exists */}
             {selectedNutritionItem.micronutrients && (
-              <div className="bg-white dark:bg-gray-900 rounded p-3 mt-4">
+              <div className="bg-white dark:bg-gray-900  p-3 mt-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-medium text-black dark:text-white text-sm">Micronutrients</h4>
                   <Badge variant="outline" className="text-xs">

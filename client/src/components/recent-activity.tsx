@@ -113,11 +113,11 @@ export function RecentActivity({ userId }: RecentActivityProps) {
           {displayedActivities.map((activity) => (
             <div 
               key={activity.id}
-              className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer hover:shadow-sm px-4 py-3 ml-[-10px] mr-[-10px] mt-[10px] mb-[10px] pl-[30px] pr-[30px]"
+              className="flex items-start space-x-3 p-3  bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer hover:shadow-sm px-4 py-3 ml-[-10px] mr-[-10px] mt-[10px] mb-[10px] pl-[30px] pr-[30px]"
               onClick={() => handleActivityClick(activity)}
               title={`Click to go to ${activity.type === 'nutrition' ? 'nutrition' : 'training'} page`}
             >
-              <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
+              <div className={`p-2  ${getActivityColor(activity.type)}`}>
                 {getActivityIcon(activity.type)}
               </div>
               <div className="flex-1 min-w-0">
@@ -125,7 +125,7 @@ export function RecentActivity({ userId }: RecentActivityProps) {
                   <p className="text-body font-medium text-black dark:text-white truncate">
                     {activity.title}
                   </p>
-                  <Badge variant="outline" className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-caption-sm font-normal pl-[9px] pr-[9px] ml-[-23px] mr-[-23px]">
+                  <Badge variant="outline" className="inline-flex items-center  border px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-caption-sm font-normal pl-[9px] pr-[9px] ml-[-23px] mr-[-23px]">
                     {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
                   </Badge>
                 </div>

@@ -324,12 +324,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       <div className="space-y-6">
         <Card className="animate-pulse">
           <CardHeader>
-            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+            <div className="h-6 bg-gray-200 dark:bg-gray-700  w-32"></div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
-              <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700  w-48"></div>
+              <div className="h-16 bg-gray-200 dark:bg-gray-700 "></div>
             </div>
           </CardContent>
         </Card>
@@ -347,7 +347,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         </div>
         <Button
           onClick={() => setIsAddingMetric(true)}
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 font-medium shadow-lg ios-touch-feedback touch-target text-[12px] pl-[20px] pr-[20px]"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] bg-blue-600 hover:bg-blue-700 text-white  px-6 py-2 font-medium shadow-lg ios-touch-feedback touch-target text-[12px] pl-[20px] pr-[20px]"
         >
           <Plus className="w-4 h-4 mr-2" />
           Log Entry
@@ -359,7 +359,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           <CardContent className="p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold text-black dark:text-white">Current Stats</h3>
-              <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
+              <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 ">
                 {new Date(latestMetric.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>
@@ -367,9 +367,9 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             {/* Priority Metrics - Always Visible */}
             <div className="grid grid-cols-2 gap-2 mb-3">
               {/* Weight */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800  p-2 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30  flex items-center justify-center flex-shrink-0">
                     <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -387,9 +387,9 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </div>
 
               {/* Body Fat */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800  p-2 shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/30  flex items-center justify-center flex-shrink-0">
                     <TrendingUp className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -407,7 +407,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
               {/* Waist */}
               {latestMetric.waist && (
-                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                <div className="bg-white dark:bg-gray-800  p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
                   <div className="flex items-center gap-1.5 h-4">
                     <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-green-700 dark:text-green-300 truncate leading-none">Waist</span>
@@ -422,7 +422,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Chest */}
               {latestMetric.chest && (
-                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                <div className="bg-white dark:bg-gray-800  p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
                   <div className="flex items-center gap-1.5 h-4">
                     <User className="w-3 h-3 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-purple-700 dark:text-purple-300 truncate leading-none">Chest</span>
@@ -437,7 +437,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Neck */}
               {latestMetric.neck && (
-                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                <div className="bg-white dark:bg-gray-800  p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
                   <div className="flex items-center gap-1.5 h-4">
                     <Ruler className="w-3 h-3 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300 truncate leading-none">Neck</span>
@@ -452,7 +452,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Hips */}
               {latestMetric.hips && (
-                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                <div className="bg-white dark:bg-gray-800  p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
                   <div className="flex items-center gap-1.5 h-4">
                     <Target className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-pink-700 dark:text-pink-300 truncate leading-none">Hips</span>
@@ -467,7 +467,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Thigh */}
               {latestMetric.thigh && (
-                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                <div className="bg-white dark:bg-gray-800  p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
                   <div className="flex items-center gap-1.5 h-4">
                     <Ruler className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300 truncate leading-none">Thigh</span>
@@ -482,7 +482,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Bicep */}
               {latestMetric.bicep && (
-                <div className="bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
+                <div className="bg-white dark:bg-gray-800  p-2 border border-gray-100 dark:border-gray-700 h-16 flex flex-col justify-between">
                   <div className="flex items-center gap-1.5 h-4">
                     <User className="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" />
                     <span className="text-xs font-medium text-amber-700 dark:text-amber-300 truncate leading-none">Bicep</span>
@@ -503,7 +503,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800  flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Progress Data Yet</h3>
@@ -601,9 +601,9 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
 
               {/* Smart Conversion Helper */}
               {showConversionHelper && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700  p-3">
                   <div className="flex items-start gap-2">
-                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-800  flex items-center justify-center flex-shrink-0">
                       <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -780,7 +780,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                 >
                   {addMetricMutation.isPending ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent  animate-spin"></div>
                       Saving...
                     </div>
                   ) : (
@@ -838,12 +838,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   {/* Timeline Entry */}
                   <div className="flex gap-2 group">
                     {/* Timeline Dot - Smaller */}
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-150">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600  flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-150">
                       <Calendar className="w-2.5 h-2.5 text-white" />
                     </div>
                     
                     {/* Content Card - More Compact */}
-                    <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-150 group-hover:border-blue-200 dark:group-hover:border-blue-700">
+                    <div className="flex-1 bg-white dark:bg-gray-800  border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-150 group-hover:border-blue-200 dark:group-hover:border-blue-700">
                       <div className="p-2">
                         {/* Header - Compact */}
                         <div className="flex items-center justify-between mb-2">
@@ -872,7 +872,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                         {/* Metrics Grid - Ultra Compact */}
                         <div className="grid grid-cols-2 gap-1.5">
                           {metric.weight && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded p-1.5 border border-blue-100 dark:border-blue-800">
+                            <div className="bg-blue-50 dark:bg-blue-900/20  p-1.5 border border-blue-100 dark:border-blue-800">
                               <div className="flex items-center gap-1 mb-0.5">
                                 <Scale className="w-2.5 h-2.5 text-blue-600" />
                                 <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Weight</span>
@@ -885,7 +885,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           )}
 
                           {metric.bodyFatPercentage && (
-                            <div className="bg-orange-50 dark:bg-orange-900/20 rounded p-1.5 border border-orange-100 dark:border-orange-800">
+                            <div className="bg-orange-50 dark:bg-orange-900/20  p-1.5 border border-orange-100 dark:border-orange-800">
                               <div className="flex items-center gap-1 mb-0.5">
                                 <TrendingUp className="w-2.5 h-2.5 text-orange-600" />
                                 <span className="text-xs font-medium text-orange-700 dark:text-orange-300">Body Fat</span>
@@ -897,7 +897,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           )}
 
                           {metric.waist && (
-                            <div className="bg-green-50 dark:bg-green-900/20 rounded p-1.5 border border-green-100 dark:border-green-800">
+                            <div className="bg-green-50 dark:bg-green-900/20  p-1.5 border border-green-100 dark:border-green-800">
                               <div className="flex items-center gap-1 mb-0.5">
                                 <Target className="w-2.5 h-2.5 text-green-600" />
                                 <span className="text-xs font-medium text-green-700 dark:text-green-300">Waist</span>
@@ -910,7 +910,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           )}
 
                           {metric.chest && (
-                            <div className="bg-purple-50 dark:bg-purple-900/20 rounded p-1.5 border border-purple-100 dark:border-purple-800">
+                            <div className="bg-purple-50 dark:bg-purple-900/20  p-1.5 border border-purple-100 dark:border-purple-800">
                               <div className="flex items-center gap-1 mb-0.5">
                                 <User className="w-2.5 h-2.5 text-purple-600" />
                                 <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Chest</span>
@@ -928,22 +928,22 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700">
                             <div className="flex flex-wrap gap-1 text-xs">
                               {metric.neck && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
+                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
                                   Neck: {displayValue(metric.neck, 'measurement', metric.unit)}
                                 </span>
                               )}
                               {metric.hips && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
+                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
                                   Hips: {displayValue(metric.hips, 'measurement', metric.unit)}
                                 </span>
                               )}
                               {metric.thigh && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
+                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
                                   Thigh: {displayValue(metric.thigh, 'measurement', metric.unit)}
                                 </span>
                               )}
                               {metric.bicep && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">
+                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
                                   Bicep: {displayValue(metric.bicep, 'measurement', metric.unit)}
                                 </span>
                               )}
@@ -958,7 +958,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             </div>
           ) : (
             <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800  flex items-center justify-center mx-auto mb-6">
                 <TrendingUp className="w-10 h-10 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Progress Data Yet</h3>

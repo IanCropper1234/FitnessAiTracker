@@ -165,8 +165,8 @@ export function WorkoutSession({ userId, sessionName, exercises, onComplete }: W
           </CardHeader>
           <CardContent className="space-y-4">
             {currentSets.map((set, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-black dark:bg-white flex items-center justify-center">
+              <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 ">
+                <div className="w-8 h-8  bg-black dark:bg-white flex items-center justify-center">
                   <span className="text-white dark:text-black font-bold text-sm">{set.set}</span>
                 </div>
                 

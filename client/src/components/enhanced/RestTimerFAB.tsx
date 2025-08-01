@@ -201,7 +201,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       {isExpanded && (
         <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={() => setIsExpanded(false)}>
           <div 
-            className="bg-background border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm animate-in zoom-in-95 fade-in-0 duration-200"
+            className="bg-background border border-border -2xl shadow-2xl p-6 w-full max-w-sm animate-in zoom-in-95 fade-in-0 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {showCustomTime ? (
@@ -214,7 +214,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   </div>
                   <button
                     onClick={() => setShowCustomTime(false)}
-                    className="ios-button touch-target flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                    className="ios-button touch-target flex items-center justify-center  hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -272,7 +272,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   </div>
                   <button
                     onClick={() => setIsExpanded(false)}
-                    className="ios-button touch-target flex items-center justify-center rounded-full hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
+                    className="ios-button touch-target flex items-center justify-center  hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -323,7 +323,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                       <button
                         key={preset.label}
                         onClick={() => onCustomTimeSet?.(preset.seconds)}
-                        className="ios-button touch-target px-1.5 text-xs font-medium rounded-md bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
+                        className="ios-button touch-target px-1.5 text-xs font-medium  bg-accent/50 hover:bg-accent text-foreground/80 hover:text-foreground transition-colors border border-border/50"
                       >
                         {preset.label}
                       </button>
@@ -354,16 +354,16 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         onClick={() => !isDragging && setIsExpanded(true)}
         className={`fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        } relative flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
+        } relative flex items-center justify-center w-16 h-16  shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
         style={getSafePosition()}
       >
         {/* Outer pulsing ring when active */}
         {timeRemaining > 0 && (
-          <div className="absolute inset-0 rounded-full bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" />
+          <div className="absolute inset-0  bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" />
         )}
         
         {/* Main button with glassmorphism effect */}
-        <div className="relative w-12 h-12 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center">
+        <div className="relative w-12 h-12  bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center">
           {timeRemaining > 0 ? (
             // Active timer with modern ring progress
             <div className="relative">
@@ -406,13 +406,13 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
             <div className="relative">
               <Timer className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
               {/* Subtle indicator dot */}
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 dark:bg-blue-400  opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           )}
         </div>
         
         {/* Hover glow effect */}
-        <div className="absolute inset-0 rounded-full bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" />
+        <div className="absolute inset-0  bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" />
       </button>
     </>
   );

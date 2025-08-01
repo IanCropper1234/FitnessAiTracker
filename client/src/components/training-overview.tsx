@@ -60,7 +60,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           <h3 className="text-lg font-semibold text-black dark:text-white text-center mb-4">Training Progress</h3>
           
           {/* Training Frequency Card */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4  border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Weekly Frequency</h4>
@@ -76,7 +76,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           </div>
 
           {/* Volume Card */}
-          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+          <div className="bg-green-50 dark:bg-green-900/20 p-4  border border-green-200 dark:border-green-800">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-green-900 dark:text-green-100 text-sm">Total Volume</h4>
@@ -92,7 +92,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           </div>
 
           {/* Session Duration Card */}
-          <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-4  border border-purple-200 dark:border-purple-800">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-purple-900 dark:text-purple-100 text-sm">Avg Duration</h4>
@@ -117,7 +117,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
             {trainingStats.favoriteExercises.slice(0, 5).map((exercise, index) => (
               <span 
                 key={index}
-                className="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-700 dark:text-gray-300"
+                className="px-3 py-1 bg-gray-100 dark:bg-gray-800  text-sm text-gray-700 dark:text-gray-300"
               >
                 {exercise}
               </span>

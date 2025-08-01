@@ -91,7 +91,7 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> = ({
         </CardHeader>
         
         <CardContent className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 ">
             <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
               Testing Instructions
             </h3>
@@ -108,14 +108,14 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> = ({
             {features.map((feature) => (
               <div
                 key={feature.id}
-                className={`p-4 rounded-lg border ${
+                className={`p-4  border ${
                   feature.enabled 
                     ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800' 
                     : 'bg-gray-50 border-gray-200 dark:bg-gray-800/50 dark:border-gray-700'
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-full ${
+                  <div className={`p-2  ${
                     feature.enabled 
                       ? 'bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-200'
                       : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
@@ -145,7 +145,7 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> = ({
             ))}
           </div>
 
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 ">
             <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
               Feature Status Summary
             </h3>

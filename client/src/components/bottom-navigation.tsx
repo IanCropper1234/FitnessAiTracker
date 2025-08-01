@@ -53,7 +53,7 @@ export function BottomNavigation() {
           {/* Center Plus Button */}
           <button
             onClick={handleQuickAction}
-            className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 mx-1 sm:mx-2 my-1"
+            className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary hover:bg-primary/90 text-primary-foreground  shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 mx-1 sm:mx-2 my-1"
           >
             <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
@@ -151,10 +151,10 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[85vw] max-w-sm mx-auto rounded-xl bg-gray-900/95 backdrop-blur-md border-gray-700 p-4 sm:p-6">
+      <DialogContent className="w-[85vw] max-w-sm mx-auto  bg-gray-900/95 backdrop-blur-md border-gray-700 p-4 sm:p-6">
         <DialogHeader className="text-center">
           <DialogTitle className="flex items-center justify-center gap-2 sm:gap-3 text-headline text-white">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500  flex items-center justify-center">
               <Plus className="w-4 h-4 text-white" />
             </div>
             Quick Actions
@@ -168,9 +168,9 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
               <button
                 key={action.id}
                 onClick={() => handleActionPress(action.action)}
-                className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-lg bg-gray-800/50 hover:bg-gray-700/60 border border-gray-700/30 text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
+                className="w-full flex items-center gap-3 p-3 sm:p-4  bg-gray-800/50 hover:bg-gray-700/60 border border-gray-700/30 text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-700/80 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-700/80  flex items-center justify-center flex-shrink-0">
                   <Icon className="w-5 h-5 text-gray-300" />
                 </div>
                 <div className="flex flex-col items-start flex-1 min-w-0">
@@ -185,7 +185,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         <div className="flex justify-center pt-4">
           <button 
             onClick={onClose}
-            className="px-6 py-2 text-body-sm text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors duration-200"
+            className="px-6 py-2 text-body-sm text-gray-400 hover:text-gray-200 hover:bg-gray-800/50  transition-colors duration-200"
           >
             Cancel
           </button>

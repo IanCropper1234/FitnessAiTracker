@@ -79,9 +79,9 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
     return (
       <div className="space-y-6 p-6 max-w-4xl mx-auto">
         <div className="animate-pulse space-y-4">
-          <div className="h-20 bg-muted rounded-lg"></div>
-          <div className="h-32 bg-muted rounded-lg"></div>
-          <div className="h-48 bg-muted rounded-lg"></div>
+          <div className="h-20 bg-muted "></div>
+          <div className="h-32 bg-muted "></div>
+          <div className="h-48 bg-muted "></div>
         </div>
       </div>
     );
@@ -141,22 +141,22 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-center p-3 bg-muted ">
               <Calendar className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
               <p className="text-sm font-medium">{new Date(session.date).toLocaleDateString()}</p>
               <p className="text-xs text-muted-foreground">Date</p>
             </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-center p-3 bg-muted ">
               <Clock className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
               <p className="text-sm font-medium">{session.duration} min</p>
               <p className="text-xs text-muted-foreground">Duration</p>
             </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-center p-3 bg-muted ">
               <TrendingUp className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
               <p className="text-sm font-medium">{session.totalVolume} kg</p>
               <p className="text-xs text-muted-foreground">Total Volume</p>
             </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
+            <div className="text-center p-3 bg-muted ">
               <Target className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
               <p className="text-sm font-medium">{completedSets}/{totalSets}</p>
               <p className="text-xs text-muted-foreground">Sets Completed</p>
@@ -176,34 +176,34 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="text-center p-3 border rounded-lg">
+              <div className="text-center p-3 border ">
                 <p className="text-lg font-bold text-blue-600">{feedback.pumpQuality}/10</p>
                 <p className="text-sm text-muted-foreground">Pump Quality</p>
               </div>
-              <div className="text-center p-3 border rounded-lg">
+              <div className="text-center p-3 border ">
                 <p className="text-lg font-bold text-yellow-600">{feedback.muscleSoreness}/10</p>
                 <p className="text-sm text-muted-foreground">Soreness Level</p>
               </div>
-              <div className="text-center p-3 border rounded-lg">
+              <div className="text-center p-3 border ">
                 <p className="text-lg font-bold text-red-600">{feedback.perceivedEffort}/10</p>
                 <p className="text-sm text-muted-foreground">Perceived Effort</p>
               </div>
-              <div className="text-center p-3 border rounded-lg">
+              <div className="text-center p-3 border ">
                 <p className="text-lg font-bold text-green-600">{feedback.energyLevel}/10</p>
                 <p className="text-sm text-muted-foreground">Energy Level</p>
               </div>
-              <div className="text-center p-3 border rounded-lg">
+              <div className="text-center p-3 border ">
                 <p className="text-lg font-bold text-purple-600">{feedback.sleepQuality}/10</p>
                 <p className="text-sm text-muted-foreground">Sleep Quality</p>
               </div>
-              <div className="text-center p-3 border rounded-lg">
+              <div className="text-center p-3 border ">
                 <p className="text-lg font-bold text-orange-600">{Math.round((feedback.pumpQuality + feedback.energyLevel + feedback.sleepQuality) / 3)}/10</p>
                 <p className="text-sm text-muted-foreground">Overall Rating</p>
               </div>
             </div>
             
             {feedback.notes && (
-              <div className="p-4 bg-muted rounded-lg">
+              <div className="p-4 bg-muted ">
                 <h4 className="font-medium mb-2">Notes</h4>
                 <p className="text-sm">{feedback.notes}</p>
               </div>
@@ -268,7 +268,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                   {actualRepsArray.map((reps, setIndex) => (
                     <div 
                       key={setIndex}
-                      className="flex items-center justify-between p-3 rounded border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50"
+                      className="flex items-center justify-between p-3  border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50"
                     >
                       <span className="text-sm font-medium">Set {setIndex + 1}</span>
                       <div className="flex items-center gap-4 text-sm">

@@ -10,7 +10,7 @@ export function NotFound() {
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-center">
         <CardHeader>
-          <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 dark:bg-purple-900  flex items-center justify-center">
             <span className="text-2xl">🤖</span>
           </div>
           <CardTitle className="text-2xl font-bold text-black dark:text-white">

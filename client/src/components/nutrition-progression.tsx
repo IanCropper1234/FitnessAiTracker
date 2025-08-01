@@ -580,26 +580,26 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700  w-32 animate-pulse"></div>
           <div className="flex gap-2">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-full w-24 animate-pulse"></div>
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-full w-32 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700  w-24 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700  w-32 animate-pulse"></div>
           </div>
         </div>
         <div className="overflow-x-auto">
           <div className="flex gap-3 min-w-max">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 min-w-[120px] animate-pulse">
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-12 mb-2"></div>
-                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-1"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"></div>
+              <div key={i} className="bg-gray-100 dark:bg-gray-800  p-3 min-w-[120px] animate-pulse">
+                <div className="h-3 bg-gray-200 dark:bg-gray-700  w-12 mb-2"></div>
+                <div className="h-5 bg-gray-200 dark:bg-gray-700  w-16 mb-1"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700  w-8"></div>
               </div>
             ))}
           </div>
         </div>
-        <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 animate-pulse">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-2"></div>
-          <div className="h-[240px] bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div className="bg-gray-100 dark:bg-gray-800  p-3 animate-pulse">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700  w-24 mb-2"></div>
+          <div className="h-[240px] bg-gray-200 dark:bg-gray-700 "></div>
         </div>
       </div>
     );
@@ -616,12 +616,12 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         
         {/* Compact Pill Controls */}
         <div className="flex items-center gap-1.5">
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5">
+          <div className="flex bg-gray-100 dark:bg-gray-800  p-0.5">
             {(['7d', '30d', '90d', '1y'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
+                className={`px-2 py-0.5 text-xs font-medium  transition-all ${
                   timeRange === range 
                     ? 'bg-blue-600 text-white shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -632,7 +632,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             ))}
           </div>
           
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5">
+          <div className="flex bg-gray-100 dark:bg-gray-800  p-0.5">
             {([
               { key: 'weight', label: 'Weight' },
               { key: 'bodyFat', label: 'Fat%' },
@@ -642,7 +642,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <button
                 key={chart.key}
                 onClick={() => setChartType(chart.key)}
-                className={`px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
+                className={`px-2 py-0.5 text-xs font-medium  transition-all ${
                   chartType === chart.key 
                     ? 'bg-blue-600 text-white shadow-sm' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -658,14 +658,14 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       {summary && (
         <div className="grid grid-cols-2 gap-1.5 px-0.5">
           {/* Top Row: Weight Change + Avg Calories */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+          <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Weight</div>
             <div className={`text-sm font-bold leading-none ${summary.weightChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {summary.weightChange > 0 ? '+' : ''}{(summary.weightChange && !isNaN(summary.weightChange)) ? Math.abs(Number(summary.weightChange)).toFixed(1) : '0.0'} {getUserPreferredWeightUnit()}
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+          <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Avg Calories</div>
             <div className="text-sm font-bold text-blue-600 leading-none">
               {Math.round(summary.avgCalories)} cal/day
@@ -673,14 +673,14 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           </div>
           
           {/* Bottom Row: Protein + Trend */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+          <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">Protein</div>
             <div className="text-sm font-bold text-orange-600 leading-none">
               {Math.round(summary.avgProtein)}g/day
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
+          <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2 min-h-[45px] flex flex-col justify-center ios-touch-feedback">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 truncate">7d Trend</div>
             <div className={`text-sm font-bold leading-none ${Math.abs(summary.calorieChange) < 50 ? 'text-gray-600' : summary.calorieChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {Math.abs(summary.calorieChange) < 50 ? 'Stable' : 
@@ -690,7 +690,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         </div>
       )}
       {/* Streamlined Chart Container */}
-      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+      <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-3">
         <div className="mb-3">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
             {chartType === 'weight' && 'Weight Trend'}
@@ -712,7 +712,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       </div>
 
       {/* Compact Data Table Section */}
-      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
+      <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2">
         <div className="mb-2">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
             Recent Entries

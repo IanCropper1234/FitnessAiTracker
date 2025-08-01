@@ -52,7 +52,7 @@ export default function WellnessTestPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-4 bg-green-50 border border-green-200 ">
                 <h3 className="font-semibold text-green-800 mb-2">✅ Integration Complete</h3>
                 <ul className="text-sm text-green-700 space-y-1">
                   <li>• Weekly wellness check-ins save energy, hunger, sleep, stress, and adherence ratings</li>
@@ -64,7 +64,7 @@ export default function WellnessTestPage() {
                 </ul>
               </div>
               
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-blue-50 border border-blue-200 ">
                 <h3 className="font-semibold text-blue-800 mb-2">🔄 How to Test</h3>
                 <ol className="text-sm text-blue-700 space-y-1">
                   <li>1. Fill out the Weekly Check-in with your wellness ratings</li>

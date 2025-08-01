@@ -89,7 +89,7 @@ function DraggableFoodColumns({
     <div
       className={getItemClassName(
         index,
-        `flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
+        `flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800  border border-gray-200 dark:border-gray-700 transition-all duration-200 ${
           bulkMode && selectedLogs.includes(log.id) 
             ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' 
             : 'hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -155,7 +155,7 @@ function DraggableFoodColumns({
     
     return (
       <div 
-        className="flex-1 min-w-0 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+        className="flex-1 min-w-0 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-3"
         onDrop={(e) => {
           e.preventDefault();
           const logId = parseInt(e.dataTransfer.getData('text/plain'));
@@ -554,15 +554,15 @@ export function DailyFoodLog({
     return (
       <Card>
         <CardHeader>
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700  w-32"></div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
-                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-40 mb-1"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+              <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 p-4 ">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700  w-20 mb-2"></div>
+                <div className="h-5 bg-gray-200 dark:bg-gray-700  w-40 mb-1"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700  w-32"></div>
               </div>
             ))}
           </div>
@@ -657,7 +657,7 @@ export function DailyFoodLog({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700">
+              <div className="text-center p-3 bg-white dark:bg-gray-800  border border-blue-200 dark:border-blue-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Calories</div>
                 <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
                   {Math.max(0, Number(dietGoals.targetCalories) - (nutritionSummary?.totalCalories || 0))}
@@ -666,7 +666,7 @@ export function DailyFoodLog({
                   of {dietGoals.targetCalories} remaining
                 </div>
               </div>
-              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
+              <div className="text-center p-3 bg-white dark:bg-gray-800  border border-green-200 dark:border-green-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Protein</div>
                 <div className="text-xl font-bold text-green-600 dark:text-green-400">
                   {Math.max(0, Number(dietGoals.targetProtein) - (nutritionSummary?.totalProtein || 0)).toFixed(1)}g
@@ -675,7 +675,7 @@ export function DailyFoodLog({
                   of {Number(dietGoals.targetProtein).toFixed(1)}g remaining
                 </div>
               </div>
-              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
+              <div className="text-center p-3 bg-white dark:bg-gray-800  border border-orange-200 dark:border-orange-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Carbs</div>
                 <div className="text-xl font-bold text-orange-600 dark:text-orange-400">
                   {Math.max(0, Number(dietGoals.targetCarbs) - (nutritionSummary?.totalCarbs || 0)).toFixed(1)}g
@@ -684,7 +684,7 @@ export function DailyFoodLog({
                   of {Number(dietGoals.targetCarbs).toFixed(1)}g remaining
                 </div>
               </div>
-              <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-purple-200 dark:border-purple-700">
+              <div className="text-center p-3 bg-white dark:bg-gray-800  border border-purple-200 dark:border-purple-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Fat</div>
                 <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
                   {Math.max(0, Number(dietGoals.targetFat) - (nutritionSummary?.totalFat || 0)).toFixed(1)}g
@@ -715,7 +715,7 @@ export function DailyFoodLog({
               {quickAddSuggestions.map((suggestion: any, index: number) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700"
+                  className="flex items-center justify-between p-3 bg-white dark:bg-gray-800  border border-green-200 dark:border-green-700"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -763,7 +763,7 @@ export function DailyFoodLog({
               <label className="text-sm font-medium">Copy From:</label>
               <button
                 onClick={() => setShowCopyFromDatePicker && setShowCopyFromDatePicker(true)}
-                className="px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                className="px-3 py-2 border border-blue-300 dark:border-blue-600  bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               >
                 {copyFromDate ? new Date(copyFromDate).toLocaleDateString() : 'Select Date'}
               </button>
@@ -848,7 +848,7 @@ export function DailyFoodLog({
         <CardContent>
           {/* Bulk Operations Controls */}
           {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
-            <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+            <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20  border border-blue-200 dark:border-blue-700">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                 <div className="flex items-center gap-3">
                   <Checkbox
@@ -881,7 +881,7 @@ export function DailyFoodLog({
                   </Label>
                   <button
                     onClick={() => setShowCopyToDatePicker && setShowCopyToDatePicker(true)}
-                    className="px-3 py-2 text-sm border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white flex-1 sm:flex-initial hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                    className="px-3 py-2 text-sm border border-blue-300 dark:border-blue-600  bg-white dark:bg-gray-800 text-black dark:text-white flex-1 sm:flex-initial hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                   >
                     {copyToDate ? new Date(copyToDate).toLocaleDateString() : 'Select Date'}
                   </button>

@@ -187,7 +187,7 @@ function WorkoutSessionsWithBulkActions({
   return (
     <div className="space-y-3">
       {/* Compact Bulk Actions Header */}
-      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+      <div className="flex items-center gap-2 p-2 bg-muted/50 ">
         <Button
           variant={bulkDeleteMode ? "destructive" : "outline"}
           size="sm"
@@ -347,7 +347,7 @@ function WorkoutSessionCard({
           {session.isCompleted && (
             <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
           )}
-          <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${
+          <div className={`px-1.5 py-0.5  text-xs font-medium ${
             session.isCompleted 
               ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
               : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
@@ -704,8 +704,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           {[...Array(4)].map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700  w-3/4"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700  w-1/2"></div>
               </CardHeader>
             </Card>
           ))}
@@ -849,7 +849,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
               </p>
             </div>
-            <Button onClick={() => setShowSessionCreator(true)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] bg-[#3c81f6]">
+            <Button onClick={() => setShowSessionCreator(true)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap  text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] bg-[#3c81f6]">
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
@@ -873,22 +873,22 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             <div className="space-y-4">
               {/* Sticky Mesocycle Status */}
               {currentMesocycle && (
-                <div className="sticky top-0 z-10 bg-card/95 dark:bg-card/95 border border-border/50 rounded-xl p-3 mx-2 shadow-sm backdrop-blur-md">
+                <div className="sticky top-0 z-10 bg-card/95 dark:bg-card/95 border border-border/50  p-3 mx-2 shadow-sm backdrop-blur-md">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="relative">
-                        <div className="w-2.5 h-2.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-pulse"></div>
-                        <div className="absolute inset-0 w-2.5 h-2.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-ping opacity-75"></div>
+                        <div className="w-2.5 h-2.5 bg-blue-500 dark:bg-blue-400  animate-pulse"></div>
+                        <div className="absolute inset-0 w-2.5 h-2.5 bg-blue-500 dark:bg-blue-400  animate-ping opacity-75"></div>
                       </div>
                       <span className="text-sm font-medium text-foreground truncate">
                         {currentMesocycle.name}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs flex-shrink-0">
-                      <span className="bg-muted dark:bg-muted px-2 py-1 rounded-md font-medium text-muted-foreground">
+                      <span className="bg-muted dark:bg-muted px-2 py-1  font-medium text-muted-foreground">
                         {currentMesocycle.currentWeek}/{currentMesocycle.totalWeeks}
                       </span>
-                      <span className="bg-blue-500 dark:bg-blue-600 px-2 py-1 rounded-md font-medium text-white uppercase">
+                      <span className="bg-blue-500 dark:bg-blue-600 px-2 py-1  font-medium text-white uppercase">
                         {currentMesocycle.phase || 'Active'}
                       </span>
                     </div>
@@ -898,10 +898,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
               {/* Session Filter Tabs */}
               <div className="px-1">
-                <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5 rounded-lg backdrop-blur-sm">
+                <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5  backdrop-blur-sm">
                   <button
                     onClick={() => setSessionFilter('active')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'active'
                         ? 'bg-blue-500 dark:bg-blue-600 text-white shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
@@ -911,7 +911,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   </button>
                   <button
                     onClick={() => setSessionFilter('completed')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'completed'
                         ? 'bg-emerald-500 dark:bg-emerald-600 text-white shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
@@ -921,7 +921,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   </button>
                   <button
                     onClick={() => setSessionFilter('all')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'all'
                         ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
@@ -998,7 +998,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
           {/* Selected exercises indicator - Compact */}
           {selectedExercises.length > 0 && (
-            <div className="bg-muted p-3 rounded-lg">
+            <div className="bg-muted p-3 ">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-sm">Selected ({selectedExercises.length})</h4>
                 <Button 
@@ -1033,7 +1033,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="bg-background border border-input rounded-lg px-4 py-2.5 text-sm font-medium pr-10 min-w-32 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer shadow-sm hover:bg-accent/50 transition-colors"
+                    className="bg-background border border-input  px-4 py-2.5 text-sm font-medium pr-10 min-w-32 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer shadow-sm hover:bg-accent/50 transition-colors"
                     style={{ 
                       appearance: 'none',
                       WebkitAppearance: 'none',

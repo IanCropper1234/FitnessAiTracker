@@ -114,10 +114,10 @@ export function MealTimingSetup({ userId }: MealTimingSetupProps) {
       <Card>
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-muted rounded w-1/4"></div>
-            <div className="h-10 bg-muted rounded"></div>
-            <div className="h-4 bg-muted rounded w-1/3"></div>
-            <div className="h-10 bg-muted rounded"></div>
+            <div className="h-4 bg-muted  w-1/4"></div>
+            <div className="h-10 bg-muted "></div>
+            <div className="h-4 bg-muted  w-1/3"></div>
+            <div className="h-10 bg-muted "></div>
           </div>
         </CardContent>
       </Card>
@@ -258,7 +258,7 @@ export function MealTimingSetup({ userId }: MealTimingSetupProps) {
           </div>
 
           {/* Preview */}
-          <div className="space-y-2 p-4 bg-muted rounded-lg">
+          <div className="space-y-2 p-4 bg-muted ">
             <h5 className="font-medium text-sm">{t("Preview")}</h5>
             <div className="text-sm text-muted-foreground">
               <p>{t("Daily eating window")}: {formData.wakeTime} - {formData.sleepTime}</p>

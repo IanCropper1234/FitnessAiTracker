@@ -85,9 +85,9 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
     return (
       <div className="space-y-6 p-6 max-w-4xl mx-auto">
         <div className="animate-pulse space-y-4">
-          <div className="h-32 bg-muted rounded-lg"></div>
-          <div className="h-48 bg-muted rounded-lg"></div>
-          <div className="h-64 bg-muted rounded-lg"></div>
+          <div className="h-32 bg-muted "></div>
+          <div className="h-48 bg-muted "></div>
+          <div className="h-64 bg-muted "></div>
         </div>
       </div>
     );
@@ -193,7 +193,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
                 <h4 className="font-medium">Muscle Group Fatigue Levels</h4>
                 <div className="grid gap-3">
                   {fatigueAnalysis.muscleGroupFatigue.map((mg) => (
-                    <div key={mg.muscleGroupId} className="flex items-center justify-between p-3 rounded border">
+                    <div key={mg.muscleGroupId} className="flex items-center justify-between p-3  border">
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium">{mg.muscleGroupName}</span>

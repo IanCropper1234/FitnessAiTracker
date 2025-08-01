@@ -46,7 +46,7 @@ export const SetRowSpinner: React.FC<SetRowSpinnerProps> = ({
     <div className={`space-y-4 ${className}`}>
       {/* Recommendation banner */}
       {recommendation && isActive && (
-        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800  p-3">
           <div className="flex items-center gap-2 mb-2">
             <Zap className="h-4 w-4 text-blue-600" />
             <span className="text-sm font-medium text-blue-700 dark:text-blue-300">

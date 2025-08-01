@@ -107,10 +107,10 @@ export function VolumeLandmarks() {
           {[1, 2, 3].map((i) => (
             <Card key={i}>
               <CardContent className="p-6">
-                <div className="h-4 bg-muted rounded w-1/4 mb-4"></div>
+                <div className="h-4 bg-muted  w-1/4 mb-4"></div>
                 <div className="space-y-2">
-                  <div className="h-3 bg-muted rounded w-full"></div>
-                  <div className="h-3 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted  w-full"></div>
+                  <div className="h-3 bg-muted  w-3/4"></div>
                 </div>
               </CardContent>
             </Card>
@@ -220,7 +220,7 @@ export function VolumeLandmarks() {
                             className="h-3"
                           />
                           <div 
-                            className="absolute top-0 h-3 bg-green-500/30 rounded"
+                            className="absolute top-0 h-3 bg-green-500/30 "
                             style={{ 
                               left: `${(landmark.mev / landmark.mrv) * 100}%`,
                               width: `${((landmark.mav - landmark.mev) / landmark.mrv) * 100}%`

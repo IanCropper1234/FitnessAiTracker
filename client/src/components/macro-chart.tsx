@@ -55,7 +55,7 @@ export function MacroChart({
       const percentage = totalCals > 0 ? Math.round((data.value / totalCals) * 100) : 0;
       
       return (
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-3  shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="font-medium text-black dark:text-white">{data.name}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {Math.round(data.grams)}g • {Math.round(data.value)} cal ({percentage}%)
@@ -131,7 +131,7 @@ export function MacroChart({
           <div key={macro.name} className="space-y-1">
             <div className="flex items-center justify-center gap-2">
               <div 
-                className="w-3 h-3 rounded-full" 
+                className="w-3 h-3 " 
                 style={{ backgroundColor: macro.color }}
               />
               <span className="text-sm font-medium text-black dark:text-white">

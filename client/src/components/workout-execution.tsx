@@ -282,12 +282,12 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
     
     // Create custom drag image for better iOS compatibility
     const dragImage = document.createElement('div');
-    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-2 shadow-lg';
+    dragImage.className = 'bg-white dark:bg-gray-800 border-2 border-blue-500  p-2 shadow-lg';
     dragImage.style.position = 'absolute';
     dragImage.style.top = '-1000px';
     dragImage.innerHTML = `
       <div class="flex items-center gap-2">
-        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+        <div class="w-3 h-3 bg-blue-500 "></div>
         <span class="text-sm font-medium">${exercise.exercise.name}</span>
       </div>
     `;
@@ -422,7 +422,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin  h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p>Loading workout session...</p>
         </div>
       </div>
@@ -810,7 +810,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                     setDragPreview(null);
                   }}
                   data-exercise-index={index}
-                  className={`p-3 rounded-lg border transition-all duration-200 cursor-move ${
+                  className={`p-3  border transition-all duration-200 cursor-move ${
                     isDraggedOver ? 'border-blue-400 bg-blue-100 dark:bg-blue-900 scale-102 shadow-lg' : ''
                   } ${
                     isDragging ? 'opacity-50 scale-95' : ''
@@ -865,7 +865,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           {/* Drag Preview */}
           {dragPreview && draggedExercise && (
             <div
-              className="fixed pointer-events-none z-50 bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-lg p-3 shadow-xl max-w-xs opacity-90"
+              className="fixed pointer-events-none z-50 bg-white dark:bg-gray-800 border-2 border-blue-500  p-3 shadow-xl max-w-xs opacity-90"
               style={{
                 left: dragPreview.x + 10,
                 top: dragPreview.y - 10,
@@ -917,7 +917,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
           <CardContent className="space-y-4">
             {/* Current Set */}
             {currentSet && (
-              <div className="bg-muted p-4 rounded-lg">
+              <div className="bg-muted p-4 ">
                 <h4 className="font-medium mb-3">
                   Set {currentSet.setNumber} of {currentSets.length}
                   <span className="text-muted-foreground ml-2">
@@ -932,7 +932,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                     <div className="space-y-4">
                       {/* Mobile-optimized recommendations */}
                       {exerciseRec && (
-                        <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1 bg-blue-50 dark:bg-blue-950 p-2 rounded">
+                        <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1 bg-blue-50 dark:bg-blue-950 p-2 ">
                           <div>Recommend: {exerciseRec.recommendedWeight}kg | {exerciseRec.recommendedReps} reps | RPE {exerciseRec.recommendedRpe} (Week {exerciseRec.week})</div>
                         </div>
                       )}
@@ -994,7 +994,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                           <Button 
                             onClick={completeSet}
                             disabled={currentSet.completed}
-                            className={`h-10 w-full rounded-md border-2 font-medium transition-all p-1 ${
+                            className={`h-10 w-full  border-2 font-medium transition-all p-1 ${
                               currentSet.completed 
                                 ? 'bg-green-600 hover:bg-green-700 border-green-600 text-white' 
                                 : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:border-blue-700'
@@ -1035,7 +1035,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
                 {currentSets.map((set, index) => (
                   <div 
                     key={index}
-                    className={`flex items-center justify-between p-2 rounded border cursor-pointer hover:bg-muted/50 ${
+                    className={`flex items-center justify-between p-2  border cursor-pointer hover:bg-muted/50 ${
                       set.completed ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' :
                       index === currentSetIndex ? 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800' :
                       'bg-muted'

@@ -32,7 +32,7 @@ export const TransitionTest = () => {
       </Button>
       <div 
         ref={boxRef}
-        className="mt-4 p-4 bg-blue-500 text-white rounded"
+        className="mt-4 p-4 bg-blue-500 text-white "
         style={{ opacity: 1, transform: 'translateY(0) scale(1)' }}
       >
         Animation Test Box

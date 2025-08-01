@@ -46,7 +46,7 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
               onClick={() => handleItemClick(item.id)}
               className={`
                 flex flex-col items-center justify-center min-h-[48px] px-1.5 py-1 flex-1 max-w-[70px]
-                transition-all duration-200 rounded-lg ios-touch-feedback
+                transition-all duration-200  ios-touch-feedback
                 ${isActive 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"

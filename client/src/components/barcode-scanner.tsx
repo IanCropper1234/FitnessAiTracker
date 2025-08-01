@@ -177,7 +177,7 @@ export function BarcodeScanner({ isOpen, onClose, onScanSuccess }: BarcodeScanne
         
         <div className="space-y-4">
           {/* Camera View */}
-          <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+          <div className="relative bg-black  overflow-hidden aspect-video">
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                 <Loader2 className="w-8 h-8 text-white animate-spin" />
@@ -208,11 +208,11 @@ export function BarcodeScanner({ isOpen, onClose, onScanSuccess }: BarcodeScanne
             {/* Scanning overlay */}
             {isScanning && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="border-2 border-green-500 rounded-lg w-64 h-32 opacity-75">
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500 rounded-tl-lg"></div>
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-500 rounded-tr-lg"></div>
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-500 rounded-bl-lg"></div>
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-500 rounded-br-lg"></div>
+                <div className="border-2 border-green-500  w-64 h-32 opacity-75">
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500 -tl-lg"></div>
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-500 -tr-lg"></div>
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-500 -bl-lg"></div>
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-500 -br-lg"></div>
                 </div>
               </div>
             )}

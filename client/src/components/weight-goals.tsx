@@ -258,8 +258,8 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-3">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700  w-3/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700  w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -280,7 +280,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       <CardContent className="space-y-4">
         {activeGoal ? (
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 ">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   {activeGoal.goalType === 'cutting' && (
@@ -336,7 +336,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
             {activeGoal ? "Update Goal" : "Set Weight Goal"}
           </Button>
         ) : (
-          <div className="space-y-4 p-4 border rounded-lg">
+          <div className="space-y-4 p-4 border ">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="currentWeight">Current Weight</Label>
@@ -418,7 +418,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
             </div>
 
             {/* RP Methodology Indicator */}
-            <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 ">
               <Target className="w-4 h-4 text-blue-600" />
               <div className="text-sm text-blue-700 dark:text-blue-300">
                 <strong>Renaissance Periodization</strong> - Using evidence-based weight change recommendations for optimal body composition results

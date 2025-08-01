@@ -133,7 +133,7 @@ export function ExerciseLibrarySelector({
             </div>
             <div className="space-y-2">
               {selectedExercises.map((exercise) => (
-                <div key={exercise.exerciseId} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                <div key={exercise.exerciseId} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 ">
                   <div className="flex-1">
                     <span className="font-medium">{exercise.exerciseName}</span>
                     <div className="text-sm text-gray-600 dark:text-gray-400">

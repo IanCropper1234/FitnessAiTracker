@@ -956,7 +956,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             <CardContent className="space-y-6">
               {/* Loading State */}
               {isDataLoading && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                   <div className="flex items-center gap-3">
                     <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
                     <div>
@@ -971,7 +971,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
               {/* Profile Integration Section */}
               {!isDataLoading && userProfile?.fitnessGoal && (
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2 text-sm">
                       <User className="w-4 h-4 flex-shrink-0" />
@@ -999,7 +999,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
               {/* Data Validation Messages - Only show when data is loaded and actually missing */}
               {!isDataLoading && (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 ">
                   <h4 className="font-medium text-yellow-900 dark:text-yellow-100 mb-2">Missing Profile Data</h4>
                   <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
                     To use TDEE calculation and auto-regulation, please complete your profile first:
@@ -1014,7 +1014,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               )}
 
               {/* Auto-regulation Toggle - Read-only display */}
-              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+              <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700  bg-gray-50 dark:bg-gray-800/50">
                 <div className="space-y-1">
                   <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Auto-regulation</Label>
                   <p className="text-gray-600 dark:text-gray-400 text-[12px]">
@@ -1109,7 +1109,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </SelectContent>
                     </Select>
                     {userProfile?.fitnessGoal && (
-                      <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs">
+                      <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800  text-xs">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                             <Target className="w-3 h-3 flex-shrink-0" />
@@ -1216,10 +1216,10 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </div>
 
               {/* Macro Distribution Chart */}
-              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 ">
                 <h4 className="font-medium text-black dark:text-white mb-3 text-sm">Macro Distribution</h4>
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg min-w-0">
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20  min-w-0">
                     <div className="text-blue-700 dark:text-blue-300 font-medium text-xs truncate">Protein</div>
                     <div className="text-lg font-bold text-blue-900 dark:text-blue-100 leading-tight">
                       {Math.round(Number(dietGoal.targetProtein))}g
@@ -1228,7 +1228,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetProtein * 4) / dietGoal.targetCalories * 100) : 0}%
                     </div>
                   </div>
-                  <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg min-w-0">
+                  <div className="p-2 bg-green-50 dark:bg-green-900/20  min-w-0">
                     <div className="text-green-700 dark:text-green-300 font-medium text-xs truncate">Carbs</div>
                     <div className="text-lg font-bold text-green-900 dark:text-green-100 leading-tight">
                       {Math.round(Number(dietGoal.targetCarbs))}g
@@ -1237,7 +1237,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       {dietGoal.targetCalories > 0 ? Math.round((dietGoal.targetCarbs * 4) / dietGoal.targetCalories * 100) : 0}%
                     </div>
                   </div>
-                  <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg min-w-0">
+                  <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20  min-w-0">
                     <div className="text-yellow-700 dark:text-yellow-300 font-medium text-xs truncate">Fat</div>
                     <div className="text-lg font-bold text-yellow-900 dark:text-yellow-100 leading-tight">
                       {Math.round(Number(dietGoal.targetFat))}g
@@ -1250,7 +1250,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
               </div>
 
               {/* MyFitnessPal-Style Macro Goals */}
-              <div className="bg-background border border-border rounded-lg p-4 space-y-4">
+              <div className="bg-background border border-border  p-4 space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <div>
@@ -1260,7 +1260,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </div>
 
                 {/* Custom Calories Toggle */}
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
                   <div className="space-y-1">
                     <Label className="text-sm font-medium text-foreground">Custom Calorie Target</Label>
                     <p className="text-xs text-muted-foreground">
@@ -1563,9 +1563,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 <CardContent>
                   <div className="space-y-3">
                     {generateMealSchedule().map((meal, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
                         <div className="flex items-center gap-3">
-                          <div className={`w-3 h-3 rounded-full ${
+                          <div className={`w-3 h-3  ${
                             meal.type === 'pre-workout' ? 'bg-orange-500' :
                             meal.type === 'post-workout' ? 'bg-green-500' :
                             'bg-blue-500'
@@ -1575,7 +1575,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                             <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">{meal.description}</span>
                           </div>
                         </div>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${
+                        <div className={`px-2 py-1  text-xs font-medium ${
                           meal.type === 'pre-workout' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
                           meal.type === 'post-workout' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
                           'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
@@ -1603,7 +1603,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 </CardHeader>
                 <CardContent>
                   {!currentDietGoal ? (
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 ">
                       <p className="text-sm text-yellow-700 dark:text-yellow-300">
                         Please set up your diet goals first to see personalized macro distribution.
                       </p>
@@ -1618,7 +1618,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   ) : (
                     <div className="space-y-3">
                       {distributeMacrosAcrossMeals().map((meal, index) => (
-                        <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 ">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-medium text-black dark:text-white">{meal.scheduledTime} - {meal.description}</span>
                             <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{Math.round(meal.targetCalories)} cal</span>
@@ -1641,7 +1641,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       ))}
                       
                       {/* Total Summary */}
-                      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                         <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Daily Totals</div>
                         <div className="grid grid-cols-4 gap-2 text-xs">
                           <div className="text-center">
@@ -1681,9 +1681,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                 <CardContent className="space-y-6">
                   {/* Nutrient Timing Principles */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 ">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-orange-500 "></div>
                         <h4 className="font-medium text-orange-900 dark:text-orange-100">Pre-Workout</h4>
                       </div>
                       <div className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
@@ -1694,9 +1694,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     </div>
                     
-                    <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 ">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 "></div>
                         <h4 className="font-medium text-green-900 dark:text-green-100">Post-Workout</h4>
                       </div>
                       <div className="text-sm text-green-700 dark:text-green-300 space-y-1">
@@ -1707,9 +1707,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </div>
                     </div>
                     
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-blue-500 "></div>
                         <h4 className="font-medium text-blue-900 dark:text-blue-100">Regular Meals</h4>
                       </div>
                       <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
@@ -1722,22 +1722,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </div>
 
                   {/* Timing Configuration Summary */}
-                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 ">
                     <h4 className="font-medium text-black dark:text-white mb-3">Current Configuration</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
                         <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.wakeTime}</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">Wake Time</div>
                       </div>
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
                         <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.sleepTime}</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Time</div>
                       </div>
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
                         <div className="text-lg font-semibold text-black dark:text-white">{mealTimingPreferences.mealsPerDay}</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">Meals/Day</div>
                       </div>
-                      <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                      <div className="text-center p-3 bg-white dark:bg-gray-700 ">
                         <div className="text-lg font-semibold text-black dark:text-white">
                           {mealTimingPreferences.workoutDays?.length || 0}
                         </div>
@@ -1747,7 +1747,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </div>
                   
                   {mealTimingPreferences.workoutTime && (
-                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                       <div className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
                         <Activity className="w-4 h-4" />
                         <span className="font-medium">Workout: {mealTimingPreferences.workoutTime}</span>
@@ -1848,7 +1848,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                 {/* AI Analysis Results */}
                 {aiAnalyzeMutation.data && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">AI Analysis Result</h4>
                     <div className="grid grid-cols-4 gap-2 text-sm">
                       <div className="text-blue-700 dark:text-blue-300">
@@ -1887,7 +1887,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         {searchResults.map((food) => (
                           <div
                             key={food.id}
-                            className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                            className="p-3 border border-gray-200 dark:border-gray-700  hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
                             onClick={() => addToMealPlan(food)}
                           >
                             <div className="flex justify-between items-start">
@@ -1979,7 +1979,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     </p>
                   ) : (
                     selectedFoods.map((food, index) => (
-                      <div key={`${food.id}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div key={`${food.id}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
                         <div className="flex-1">
                           <h4 className="font-medium text-black dark:text-white">{food.name}</h4>
                           <div className="grid grid-cols-4 gap-2 mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -2004,7 +2004,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                 {/* Totals */}
                 {selectedFoods.length > 0 && (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 ">
                     <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">Meal Totals</h4>
                     <div className="grid grid-cols-4 gap-2 text-sm text-green-700 dark:text-green-300">
                       <div><strong>Calories:</strong> {totals.calories}</div>
@@ -2126,19 +2126,19 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       </CardHeader>
                       <CardContent className="pt-0">
                         <div className="grid grid-cols-4 gap-2 mb-3 text-sm">
-                          <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                          <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 ">
                             <div className="font-medium text-blue-900 dark:text-blue-100">{plan.totalCalories}</div>
                             <div className="text-xs text-blue-600 dark:text-blue-400">Calories</div>
                           </div>
-                          <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                          <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 ">
                             <div className="font-medium text-green-900 dark:text-green-100">{plan.totalProtein}g</div>
                             <div className="text-xs text-green-600 dark:text-green-400">Protein</div>
                           </div>
-                          <div className="text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+                          <div className="text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 ">
                             <div className="font-medium text-yellow-900 dark:text-yellow-100">{plan.totalCarbs}g</div>
                             <div className="text-xs text-yellow-600 dark:text-yellow-400">Carbs</div>
                           </div>
-                          <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+                          <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/20 ">
                             <div className="font-medium text-orange-900 dark:text-orange-100">{plan.totalFat}g</div>
                             <div className="text-xs text-orange-600 dark:text-orange-400">Fat</div>
                           </div>

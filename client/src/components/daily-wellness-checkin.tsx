@@ -142,7 +142,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent  animate-spin"></div>
             <span className="ml-2 text-gray-600 dark:text-gray-400">Loading wellness check-in...</span>
           </div>
         </CardContent>
@@ -307,7 +307,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
         >
           {submitCheckinMutation.isPending ? (
             <>
-              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <div className="w-4 h-4 mr-2 animate-spin  border-2 border-white border-t-transparent" />
               Saving Check-in...
             </>
           ) : existingCheckin ? (
@@ -324,7 +324,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
         </Button>
 
         {/* Impact Info */}
-        <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3 text-xs text-gray-600 dark:text-gray-400">
+        <div className="bg-blue-50 dark:bg-blue-950/30  p-3 text-xs text-gray-600 dark:text-gray-400">
           <p><strong>RP Methodology:</strong> Daily wellness data is averaged weekly and used to adjust next week's macro targets. Low energy (≤4) reduces calorie deficit by 1%, high hunger (≥8) makes adjustments 2% more conservative.</p>
         </div>
       </CardContent>

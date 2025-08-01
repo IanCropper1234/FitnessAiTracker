@@ -240,8 +240,8 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-        <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+        <div className="h-32 bg-gray-100 dark:bg-gray-800  animate-pulse" />
+        <div className="h-48 bg-gray-100 dark:bg-gray-800  animate-pulse" />
       </div>
     );
   }
@@ -260,7 +260,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         {/* Enhanced Action Buttons Layout */}
         <div className="space-y-3">
           {/* Database Maintenance Section */}
-          <div className="flex items-center gap-3 p-3 bg-muted/30 dark:bg-muted/20 rounded-lg border border-border">
+          <div className="flex items-center gap-3 p-3 bg-muted/30 dark:bg-muted/20  border border-border">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <Shield className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -395,7 +395,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                 <h4 className="font-medium text-sm">Workouts Preview:</h4>
                 <div className="space-y-1">
                   {template.templateData?.workouts?.slice(0, 2).map((workout, index) => (
-                    <div key={index} className="flex items-center justify-between text-xs p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                    <div key={index} className="flex items-center justify-between text-xs p-2 bg-gray-50 dark:bg-gray-800 ">
                       <span className="font-medium">{workout.name}</span>
                       <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <Clock className="h-3 w-3" />
@@ -535,7 +535,7 @@ export function TemplateDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800  max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-start mb-6">
             <div>
@@ -585,7 +585,7 @@ export function TemplateDetailModal({
                   <CardContent>
                     <div className="space-y-2">
                       {workout.exercises.map((exercise, i) => (
-                        <div key={i} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                        <div key={i} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 ">
                           <span className="font-medium">{exercise.exerciseName}</span>
                           <div className="text-sm text-gray-600 dark:text-gray-400">
                             {exercise.sets} × {exercise.repsRange} | {exercise.restPeriod}s rest
@@ -643,7 +643,7 @@ export function TemplateDetailModal({
                 <CardContent>
                   <div className="grid gap-4 md:grid-cols-2">
                     {Object.entries(template.rpMethodology.volumeGuidelines).map(([muscle, volumes]) => (
-                      <div key={muscle} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div key={muscle} className="p-3 bg-gray-50 dark:bg-gray-800 ">
                         <h4 className="font-medium capitalize mb-2">{muscle}</h4>
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
