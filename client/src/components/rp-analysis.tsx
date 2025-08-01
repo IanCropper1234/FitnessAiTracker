@@ -88,16 +88,17 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
   const weightTrend = parseFloat(weeklyGoals?.[0]?.weightChange || "0");
   const energyLevel = parseFloat(weeklyGoals?.[0]?.energyLevels || "5");
   
-  // Calculate RP readiness score based on wellness metrics
+  // Calculate RP readiness score based on wellness metrics - use consistent data sources
   const calculateReadinessScore = () => {
-    if (!weeklyWellness) return 5;
+    // Use energy level from weekly goals (same source as Progress Metrics)
+    const energyFromGoals = parseFloat(weeklyGoals?.[0]?.energyLevels || "5");
     
-    const energyLevel = weeklyWellness.averageEnergyLevel || 5;
-    const sleepQuality = weeklyWellness.averageSleepQuality || 5;
-    const stressLevel = 10 - (weeklyWellness.averageStressLevel || 5); // Invert stress (lower is better)
-    const adherencePerception = weeklyWellness.averageAdherencePerception || 5;
+    // Use other wellness metrics from weekly wellness if available, otherwise default values
+    const sleepQuality = weeklyWellness?.averageSleepQuality || 5;
+    const stressLevel = 10 - (weeklyWellness?.averageStressLevel || 5); // Invert stress (lower is better)
+    const adherencePerception = weeklyWellness?.averageAdherencePerception || 5;
     
-    return Math.round((energyLevel + sleepQuality + stressLevel + adherencePerception) / 4);
+    return Math.round((energyFromGoals + sleepQuality + stressLevel + adherencePerception) / 4);
   };
 
   const readinessScore = calculateReadinessScore();
