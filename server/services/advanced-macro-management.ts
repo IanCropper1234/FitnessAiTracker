@@ -174,6 +174,7 @@ export class AdvancedMacroManagementService {
       return {
         adjustmentPercentage: 0,
         adjustmentReason: 'low_adherence',
+        adjustmentRecommendation: 'improve_adherence', // Add recommendation for low adherence
         newCalories: targetCalories,
         newProtein: parseFloat(currentGoals.targetProtein),
         newCarbs: parseFloat(currentGoals.targetCarbs),
@@ -260,7 +261,7 @@ export class AdvancedMacroManagementService {
     const carbPerCalorie = parseFloat(currentGoals.targetCarbs) / targetCalories;
     const fatPerCalorie = parseFloat(currentGoals.targetFat) / targetCalories;
 
-    return {
+    const result = {
       adjustmentPercentage,
       adjustmentReason,
       adjustmentRecommendation: recommendationType, // Add this field for consistency
@@ -276,11 +277,25 @@ export class AdvancedMacroManagementService {
         adherencePerception
       }
     };
+    
+    console.log('calculateRPAdjustment returning:', {
+      adjustmentRecommendation: result.adjustmentRecommendation,
+      adjustmentPercentage: result.adjustmentPercentage,
+      adjustmentReason: result.adjustmentReason
+    });
+    
+    return result;
   }
 
   // Create weekly nutrition goal entry
   static async createWeeklyGoal(data: any) {
     try {
+      console.log('createWeeklyGoal received data:', {
+        adjustmentRecommendation: data.adjustmentRecommendation,
+        adjustmentReason: data.adjustmentReason,
+        adjustmentPercentage: data.adjustmentPercentage
+      });
+      
       const weeklyGoal = await db.insert(weeklyNutritionGoals).values({
         userId: data.userId,
         weekStartDate: new Date(data.weekStartDate),
@@ -298,6 +313,7 @@ export class AdvancedMacroManagementService {
         adjustmentPercentage: data.adjustmentPercentage?.toString()
       }).returning();
 
+      console.log('Created weekly goal with adjustmentRecommendation:', weeklyGoal[0].adjustmentRecommendation);
       return weeklyGoal[0];
     } catch (error) {
       console.error('Error creating weekly goal:', error);
