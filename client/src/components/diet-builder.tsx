@@ -1029,7 +1029,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   return (
     <div className="space-y-6">
-      
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
         
@@ -1038,7 +1037,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         <TabsContent value="diet-goal" className="space-y-6">
           {goalSelectionMode === 'selection' ? (
             // Goal Selection Screen
-            <Card>
+            (<Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="w-5 h-5" />
@@ -1146,10 +1145,10 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </div>
                 )}
               </CardContent>
-            </Card>
+            </Card>)
           ) : (
             // Goal Configuration Screen with Tabs
-            <Card>
+            (<Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1172,7 +1171,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   }
                 </CardDescription>
               </CardHeader>
-              
               {/* Sub Tabs for Recommended vs Custom */}
               <div className="px-6 pb-2">
                 <Tabs value={goalSubTab} onValueChange={(value) => setGoalSubTab(value as any)} className="w-full">
@@ -1194,12 +1192,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </TabsList>
                 </Tabs>
               </div>
-
               <CardContent className="space-y-6">
                 {/* Content based on selected tab */}
                 {goalSubTab === 'recommended' && goalSelectionMode === 'recommended' && (
                   // Recommended Goals Content
-                  <div className="space-y-6">
+                  (<div className="space-y-6 pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
                     {/* Loading State */}
                     {isDataLoading && (
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
@@ -1214,51 +1211,48 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </div>
                 </div>
               )}
-
-              {/* Profile Integration Section */}
-              {!isDataLoading && userProfile?.fitnessGoal && (
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2 text-sm">
-                      <User className="w-4 h-4 flex-shrink-0" />
-                      <span className="truncate">Profile Integration</span>
-                    </h4>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setLocation('/profile')}
-                      className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600 text-xs px-2 py-1 self-start sm:self-auto"
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-blue-700 dark:text-blue-300">
-                      <strong>Goal:</strong> <span className="break-words">{userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
-                    </p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
-                      Auto-synced with diet goals
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Data Validation Messages - Only show when data is loaded and actually missing */}
-              {!isDataLoading && (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 ">
-                  <h4 className="font-medium text-yellow-900 dark:text-yellow-100 mb-2">Missing Profile Data</h4>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
-                    To use TDEE calculation and auto-regulation, please complete your profile first:
-                  </p>
-                  <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                    {!userProfile?.age && <li>• Add your age in profile settings</li>}
-                    {!userProfile?.height && <li>• Add your height in profile settings</li>}
-                    {!userProfile?.activityLevel && <li>• Set your activity level in profile settings</li>}
-                    {(!bodyMetrics?.length && !userProfile?.weight) && <li>• Add your current weight in Body Tracking tab</li>}
-                  </ul>
-                </div>
-              )}
-
+                    {/* Profile Integration Section */}
+                    {!isDataLoading && userProfile?.fitnessGoal && (
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                          <h4 className="font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2 text-sm">
+                            <User className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Profile Integration</span>
+                          </h4>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setLocation('/profile')}
+                            className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600 text-xs px-2 py-1 self-start sm:self-auto"
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-blue-700 dark:text-blue-300">
+                            <strong>Goal:</strong> <span className="break-words">{userProfile.fitnessGoal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                          </p>
+                          <p className="text-xs text-blue-600 dark:text-blue-400">
+                            Auto-synced with diet goals
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {/* Data Validation Messages - Only show when data is loaded and actually missing */}
+                    {!isDataLoading && (!userProfile?.age || !userProfile?.height || !userProfile?.activityLevel || (!bodyMetrics?.length && !userProfile?.weight)) && (
+                      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 ">
+                        <h4 className="font-medium text-yellow-900 dark:text-yellow-100 mb-2">Missing Profile Data</h4>
+                        <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
+                          To use TDEE calculation and auto-regulation, please complete your profile first:
+                        </p>
+                        <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                          {!userProfile?.age && <li>• Add your age in profile settings</li>}
+                          {!userProfile?.height && <li>• Add your height in profile settings</li>}
+                          {!userProfile?.activityLevel && <li>• Set your activity level in profile settings</li>}
+                          {(!bodyMetrics?.length && !userProfile?.weight) && <li>• Add your current weight in Body Tracking tab</li>}
+                        </ul>
+                      </div>
+                    )}
                     {/* Auto-regulation Toggle - Read-only display */}
                     <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                       <div className="space-y-1">
@@ -1282,7 +1276,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         <span className="text-xs text-gray-500 dark:text-gray-400">System managed</span>
                       </div>
                     </div>
-
                     {/* TDEE Calculation Results */}
                     <div className="bg-slate-50 dark:bg-slate-900 p-4 border">
                       <h3 className="text-lg font-semibold mb-3 text-foreground">TDEE Calculation</h3>
@@ -1309,7 +1302,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         </div>
                       </div>
                     </div>
-
                     {/* Goal Selection */}
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-foreground">Diet Goal</h3>
@@ -1334,7 +1326,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         </div>
                       </RadioGroup>
                     </div>
-
                     {/* Calculated Macros Display */}
                     <div className="bg-background border border-border p-4 space-y-4">
                       <h3 className="text-lg font-semibold text-foreground">Calculated Daily Goals</h3>
@@ -1414,12 +1405,12 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         </Button>
                       </div>
                     </div>
-                  </div>
+                  </div>)
                 )}
 
                 {goalSubTab === 'custom' && goalSelectionMode === 'custom' && (
                   // Custom Goals Content
-                  <div className="space-y-6">
+                  (<div className="space-y-6">
                     {/* Manual Calorie Input */}
                     <div className="bg-background border border-border p-4 space-y-4">
                       <h4 className="font-medium text-foreground text-sm">Daily Calorie Target</h4>
@@ -1434,7 +1425,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         Enter your desired daily calorie target manually
                       </p>
                     </div>
-
                     {/* MyFitnessPal-Style Macro Percentage Controls */}
                     <div className="bg-background border border-border p-4 space-y-4">
                       <div className="flex items-center justify-between">
@@ -1551,10 +1541,10 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         )}
                       </div>
                     </div>
-                  </div>
+                  </div>)
                 )}
               </CardContent>
-            </Card>
+            </Card>)
           )}
         </TabsContent>
 
