@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
+import { TimezoneUtils } from "@shared/utils/timezone";
 import { useLocation } from "wouter";
 import DailyWellnessCheckin from "./daily-wellness-checkin";
 import { RPAnalysis } from "./rp-analysis";
@@ -134,12 +135,13 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
-  // Get today's wellness check-in status with cache busting
+  // Get today's wellness check-in status with user timezone support
   const { data: todayWellnessCheckin } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-advanced', new Date().toISOString().split('T')[0]],
+    queryKey: ['/api/daily-wellness-checkins-advanced', TimezoneUtils.getCurrentDate()],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      console.log('Advanced Macro Management - Checking wellness for date:', today);
+      // Use user's local date from TimezoneUtils
+      const today = TimezoneUtils.getCurrentDate();
+      console.log('Advanced Macro Management - Checking wellness for user local date:', today);
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
         credentials: 'include',
         headers: {
@@ -149,7 +151,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       });
       if (!response.ok) return null;
       const result = await response.json();
-      console.log('Advanced Macro Management - Wellness result:', result);
+      console.log('Advanced Macro Management - Wellness result for local date:', result);
       return result;
     },
     staleTime: 0, // Always refetch to get the latest status

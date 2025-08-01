@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, AlertTriangle, Calendar } from "lucide-react";
 import { useLocation } from "wouter";
+import { TimezoneUtils } from "@shared/utils/timezone";
 
 interface DailyWellnessReminderProps {
   userId: number;
@@ -13,12 +14,13 @@ interface DailyWellnessReminderProps {
 export function DailyWellnessReminder({ userId, compact = false }: DailyWellnessReminderProps) {
   const [, setLocation] = useLocation();
   
-  // Get today's wellness check-in status
+  // Get today's wellness check-in status with user timezone support
   const { data: todayWellnessCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-reminder', new Date().toISOString().split('T')[0]],
+    queryKey: ['/api/daily-wellness-checkins-reminder', TimezoneUtils.getCurrentDate()],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      console.log('Daily Wellness Reminder - Checking wellness for date:', today);
+      // Use user's local date from TimezoneUtils
+      const today = TimezoneUtils.getCurrentDate();
+      console.log('Daily Wellness Reminder - Checking wellness for user local date:', today);
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
         credentials: 'include',
         headers: {
@@ -28,7 +30,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
       });
       if (!response.ok) return null;
       const result = await response.json();
-      console.log('Daily Wellness Reminder - Wellness result:', result);
+      console.log('Daily Wellness Reminder - Wellness result for local date:', result);
       return result;
     },
     staleTime: 0, // Always refetch to get the latest status
