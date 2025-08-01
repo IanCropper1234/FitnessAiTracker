@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback",
   {
     variants: {
       variant: {
@@ -23,11 +23,11 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-11 px-5 py-2.5 min-w-[80px]",
-        sm: "h-9 rounded-lg px-4 py-2 text-[14px] min-w-[70px] [&_svg]:size-3.5",
-        lg: "h-12 rounded-xl px-7 py-3 text-[16px] min-w-[100px] [&_svg]:size-5",
+        sm: "h-9 px-4 py-2 text-[14px] min-w-[70px] [&_svg]:size-3.5",
+        lg: "h-12 px-7 py-3 text-[16px] min-w-[100px] [&_svg]:size-5",
         icon: "h-11 w-11 p-0",
-        "icon-sm": "h-9 w-9 p-0 rounded-lg [&_svg]:size-4",
-        "icon-lg": "h-12 w-12 p-0 rounded-xl [&_svg]:size-5",
+        "icon-sm": "h-9 w-9 p-0 [&_svg]:size-4",
+        "icon-lg": "h-12 w-12 p-0 [&_svg]:size-5",
       },
     },
     defaultVariants: {

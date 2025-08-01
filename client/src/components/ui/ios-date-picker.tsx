@@ -185,14 +185,14 @@ export function IOSDatePicker({
         <div className="flex items-center gap-1">
           <button
             onClick={handlePreviousDay}
-            className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+            className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors  min-h-[32px] min-w-[32px] flex items-center justify-center"
           >
             <ChevronLeft className="h-3 w-3" />
           </button>
           
           <button
             onClick={() => setShowDatePicker(true)}
-            className="ios-touch-feedback flex items-center gap-1 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
+            className="ios-touch-feedback flex items-center gap-1 px-2 py-1  hover:bg-accent/50 transition-colors"
           >
             <span className="text-xs font-medium text-foreground">
               {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
@@ -206,7 +206,7 @@ export function IOSDatePicker({
           
           <button
             onClick={handleNextDay}
-            className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+            className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors  min-h-[32px] min-w-[32px] flex items-center justify-center"
           >
             <ChevronRight className="h-3 w-3" />
           </button>
@@ -219,7 +219,7 @@ export function IOSDatePicker({
           className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center modal-overlay-enter ios-animation"
           style={{ touchAction: 'none' }} // Prevent background scrolling
         >
-          <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl modal-content-enter ios-smooth-transform">
+          <div className="bg-background w-full max-w-md mx-4 mb-4  shadow-2xl modal-content-enter ios-smooth-transform">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <button
@@ -242,12 +242,12 @@ export function IOSDatePicker({
               <div className="flex items-center gap-1">
                 <button
                   onClick={handlePreviousDay}
-                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors  min-h-[32px] min-w-[32px] flex items-center justify-center"
                 >
                   <ChevronLeft className="h-3 w-3" />
                 </button>
                 
-                <div className="flex items-center gap-1 px-3 py-1 rounded-md bg-accent/20">
+                <div className="flex items-center gap-1 px-3 py-1  bg-accent/20">
                   <span className="text-sm font-medium text-foreground">
                     {TimezoneUtils.isToday(selectedDate) ? 'Today' : 
                      TimezoneUtils.parseUserDate(selectedDate).toLocaleDateString('en-GB', { 
@@ -260,7 +260,7 @@ export function IOSDatePicker({
                 
                 <button
                   onClick={handleNextDay}
-                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors rounded-md min-h-[32px] min-w-[32px] flex items-center justify-center"
+                  className="ios-touch-feedback p-1 text-foreground/60 hover:text-foreground transition-colors  min-h-[32px] min-w-[32px] flex items-center justify-center"
                 >
                   <ChevronRight className="h-3 w-3" />
                 </button>
@@ -281,7 +281,7 @@ export function IOSDatePicker({
                       <button
                         key={day}
                         onClick={() => handleDateChange(day, currentMonth, currentYear)}
-                        className={`w-full text-base py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center ${
+                        className={`w-full text-base py-2 px-1  transition-colors touch-target min-h-[44px] flex items-center justify-center ${
                           day === currentDay 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
@@ -301,7 +301,7 @@ export function IOSDatePicker({
                       <button
                         key={month}
                         onClick={() => handleDateChange(currentDay, index, currentYear)}
-                        className={`w-full text-sm py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center truncate ${
+                        className={`w-full text-sm py-2 px-1  transition-colors touch-target min-h-[44px] flex items-center justify-center truncate ${
                           index === currentMonth 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
@@ -322,7 +322,7 @@ export function IOSDatePicker({
                       <button
                         key={year}
                         onClick={() => handleDateChange(currentDay, currentMonth, year)}
-                        className={`w-full text-base py-2 px-1 rounded-lg transition-colors touch-target min-h-[44px] flex items-center justify-center ${
+                        className={`w-full text-base py-2 px-1  transition-colors touch-target min-h-[44px] flex items-center justify-center ${
                           year === currentYear 
                             ? 'bg-blue-500 text-white font-semibold' 
                             : 'text-foreground/70 hover:bg-accent hover:text-foreground'
@@ -338,7 +338,7 @@ export function IOSDatePicker({
 
             {/* Home Indicator */}
             <div className="flex justify-center pb-2">
-              <div className="w-16 h-1 bg-foreground/20 rounded-full"></div>
+              <div className="w-16 h-1 bg-foreground/20 "></div>
             </div>
           </div>
         </div>
