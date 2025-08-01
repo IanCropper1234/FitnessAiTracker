@@ -3,8 +3,7 @@ import {
   Target,
   Brain,
   User,
-  TrendingUp,
-  Clock
+  TrendingUp
 } from "lucide-react";
 import { useScrollHide } from "@/hooks/use-scroll-hide";
 
@@ -19,7 +18,6 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   const menuItems = [
     { id: "overview", icon: Utensils, label: "Food Log" },
     { id: "builder", icon: Target, label: "Diet Goal" },
-    { id: "meal-management", icon: Clock, label: "Meal Management" },
     { id: "advanced", icon: Brain, label: "Adjustment" },
     { id: "body", icon: User, label: "Body" },
     { id: "progression", icon: TrendingUp, label: "Progress" },
