@@ -27,11 +27,23 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
   const queryClient = useQueryClient();
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
 
-  // Get current weekly goals for recommendations
+  // Calculate current week start date (same logic as RP Analysis)
+  const getCurrentWeekStart = () => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - daysToMonday);
+    return weekStart.toISOString().split('T')[0];
+  };
+
+  const currentWeekStart = getCurrentWeekStart();
+
+  // Get current weekly goals for recommendations (same as RP Analysis)
   const { data: weeklyGoals } = useQuery({
-    queryKey: ['/api/weekly-goals'],
+    queryKey: ['/api/weekly-goals', currentWeekStart],
     queryFn: async () => {
-      const response = await fetch('/api/weekly-goals', {
+      const response = await fetch(`/api/weekly-goals?weekStartDate=${currentWeekStart}`, {
         credentials: 'include'
       });
       if (!response.ok) return [];
@@ -90,7 +102,9 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
         title: "Recommendations Updated",
         description: "New RP-based recommendations have been generated based on your progress."
       });
+      // Invalidate both the general query and the specific week query
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals', currentWeekStart] });
     },
     onError: (error: any) => {
       toast({
@@ -133,13 +147,14 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
       });
     }
 
-    // Adherence recommendations
-    if (latestGoal?.adherencePercentage < 80) {
+    // Adherence recommendations - use synchronized data from weekly goals
+    const adherenceScore = parseFloat(latestGoal?.adherencePercentage || "0");
+    if (adherenceScore < 80) {
       recommendations.push({
         type: 'adherence',
         priority: 'high',
         title: 'Focus on Consistency',
-        description: 'Diet adherence is below 80%. Focus on meal planning and tracking accuracy.',
+        description: `Diet adherence is ${adherenceScore.toFixed(1)}%. Focus on meal planning and tracking accuracy.`,
         action: 'Implement meal prep strategies'
       });
     }
