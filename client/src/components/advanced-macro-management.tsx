@@ -952,63 +952,67 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               {flexibilityRules && flexibilityRules.length > 0 ? (
                 <div className="space-y-4">
                   {flexibilityRules.map((rule: any) => (
-                    <div key={rule.id} className="border p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-medium">{rule.ruleName}</h3>
-                        <Badge variant={rule.isActive ? "default" : "secondary"}>
+                    <div key={rule.id} className="border p-3 sm:p-4 overflow-hidden">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                        <h3 className="font-medium text-sm sm:text-base truncate">{rule.ruleName}</h3>
+                        <Badge variant={rule.isActive ? "default" : "secondary"} className="self-start sm:self-auto">
                           {rule.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Trigger Days:</p>
-                          <div className="flex gap-1 mt-1">
+                      
+                      {/* Mobile stacked layout, desktop grid */}
+                      <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 mb-3">
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Trigger Days:</p>
+                          <div className="flex flex-wrap gap-1">
                             {rule.triggerDays?.map((day: string) => (
-                              <Badge key={day} variant="outline" className="text-xs capitalize">
-                                {day}
+                              <Badge key={day} variant="outline" className="text-xs capitalize flex-shrink-0">
+                                {day.substring(0, 3)}
                               </Badge>
                             ))}
                           </div>
                         </div>
-                        <div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Compensation:</p>
-                          <p className="text-sm font-medium capitalize">
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Compensation:</p>
+                          <p className="text-xs sm:text-sm font-medium capitalize break-words">
                             {rule.compensationStrategy?.replace('_', ' ')}
                           </p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-3 text-sm">
-                        <div className="text-center">
-                          <div className="text-red-600 font-medium">
+                      
+                      {/* Macro flexibility grid - more compact on mobile */}
+                      <div className="grid grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
+                        <div className="text-center min-w-0">
+                          <div className="text-red-600 font-medium text-xs sm:text-sm">
                             ±{parseFloat(rule.flexProtein || 0).toFixed(0)}%
                           </div>
-                          <div className="text-gray-600 dark:text-gray-400">Protein</div>
+                          <div className="text-gray-600 dark:text-gray-400 text-xs truncate">Protein</div>
                         </div>
-                        <div className="text-center">
-                          <div className="text-blue-600 font-medium">
+                        <div className="text-center min-w-0">
+                          <div className="text-blue-600 font-medium text-xs sm:text-sm">
                             ±{parseFloat(rule.flexCarbs || 0).toFixed(0)}%
                           </div>
-                          <div className="text-gray-600 dark:text-gray-400">Carbs</div>
+                          <div className="text-gray-600 dark:text-gray-400 text-xs truncate">Carbs</div>
                         </div>
-                        <div className="text-center">
-                          <div className="text-yellow-600 font-medium">
+                        <div className="text-center min-w-0">
+                          <div className="text-yellow-600 font-medium text-xs sm:text-sm">
                             ±{parseFloat(rule.flexFat || 0).toFixed(0)}%
                           </div>
-                          <div className="text-gray-600 dark:text-gray-400">Fat</div>
+                          <div className="text-gray-600 dark:text-gray-400 text-xs truncate">Fat</div>
                         </div>
                       </div>
                     </div>
                   ))}
                   
-                  <div className="mt-6 p-4 bg-green-50 dark:bg-green-950">
-                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
+                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 dark:bg-green-950 overflow-hidden">
+                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-2 text-sm sm:text-base">
                       Flexibility Tips:
                     </h4>
-                    <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
-                      <li>• Weekend rules allow higher fat/carb flexibility</li>
-                      <li>• Business lunches can compensate with lighter dinner</li>
-                      <li>• Social events: Bank calories earlier in the day</li>
-                      <li>• Next-day compensation maintains weekly averages</li>
+                    <ul className="text-xs sm:text-sm text-green-800 dark:text-green-200 space-y-1">
+                      <li className="break-words">• Weekend rules allow higher fat/carb flexibility</li>
+                      <li className="break-words">• Business lunches can compensate with lighter dinner</li>
+                      <li className="break-words">• Social events: Bank calories earlier in the day</li>
+                      <li className="break-words">• Next-day compensation maintains weekly averages</li>
                     </ul>
                   </div>
                 </div>
