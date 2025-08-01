@@ -17,7 +17,7 @@ import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises } from "@shared/schema";
-import { eq, and, desc, sql, lt, inArray } from "drizzle-orm";
+import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
 
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -3422,6 +3422,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error recording load progression:", error);
       res.status(500).json({ error: "Failed to record load progression" });
+    }
+  });
+
+  // Get exercise history for reference data
+  app.get("/api/training/exercise-history/:exerciseId", requireAuth, async (req, res) => {
+    try {
+      const exerciseId = parseInt(req.params.exerciseId);
+      const userId = req.userId;
+      const limit = parseInt(req.query.limit as string) || 5;
+
+      if (isNaN(exerciseId)) {
+        return res.status(400).json({ message: "Invalid exercise ID" });
+      }
+
+      // Get recent completed sets for this exercise
+      const historicalSets = await db
+        .select({
+          weight: workoutExercises.weight,
+          reps: workoutExercises.actualReps,
+          rpe: workoutExercises.rpe,
+          date: workoutSessions.date
+        })
+        .from(workoutExercises)
+        .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+        .where(and(
+          eq(workoutSessions.userId, userId),
+          eq(workoutExercises.exerciseId, exerciseId),
+          eq(workoutExercises.isCompleted, true),
+          isNotNull(workoutExercises.weight),
+          isNotNull(workoutExercises.actualReps),
+          isNotNull(workoutExercises.rpe),
+          gt(workoutExercises.weight, 0),
+          gt(workoutExercises.actualReps, 0)
+        ))
+        .orderBy(desc(workoutSessions.date))
+        .limit(limit);
+
+      res.json(historicalSets);
+    } catch (error: any) {
+      console.error('Exercise history error:', error);
+      res.status(400).json({ message: error.message });
     }
   });
 

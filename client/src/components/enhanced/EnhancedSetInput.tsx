@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Check, Info, Plus, Minus, Scale, Timer, Zap, Target } from "lucide-react";
+import { Check, Info, Plus, Minus, Scale, Timer, Zap, Target, History } from "lucide-react";
 
 interface WorkoutSet {
   setNumber: number;
@@ -36,6 +36,13 @@ interface ExerciseRecommendation {
   difficulty?: string;
 }
 
+interface HistoricalSetData {
+  weight: number;
+  reps: number;
+  rpe: number;
+  date: string;
+}
+
 interface EnhancedSetInputProps {
   set: WorkoutSet;
   recommendation?: ExerciseRecommendation;
@@ -50,6 +57,7 @@ interface EnhancedSetInputProps {
   onWeightUnitChange?: (unit: 'kg' | 'lbs') => void;
   userId?: number;
   isBodyWeightExercise?: boolean;
+  exerciseId?: number; // For fetching historical data
   // Special Training Methods
   specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
   onSpecialMethodChange?: (method: string | null) => void;
@@ -71,12 +79,26 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   onWeightUnitChange,
   userId = 1,
   isBodyWeightExercise = false,
+  exerciseId,
   specialMethod = null,
   onSpecialMethodChange,
   specialConfig,
   onSpecialConfigChange,
 }) => {
   const [showRecommendation, setShowRecommendation] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Fetch historical data for this exercise
+  const { data: historicalData } = useQuery<HistoricalSetData[]>({
+    queryKey: ['/api/training/exercise-history', exerciseId, userId],
+    queryFn: async () => {
+      if (!exerciseId) return [];
+      const response = await fetch(`/api/training/exercise-history/${exerciseId}?userId=${userId}&limit=5`);
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!exerciseId && !!userId
+  });
   const [useBodyWeight, setUseBodyWeight] = useState(false);
 
   // Fetch user's latest body weight (always fetch to check availability)
@@ -153,8 +175,22 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
       
       onUpdateSet('actualReps', activeRecommendation.recommendedReps);
       onUpdateSet('rpe', activeRecommendation.recommendedRpe);
+      setShowRecommendation(false);
     }
   };
+
+  const handleUseHistoricalData = (historicalSet: HistoricalSetData) => {
+    if (!useBodyWeight) {
+      const convertedWeight = convertWeight(historicalSet.weight, 'kg', weightUnit);
+      onUpdateSet('weight', convertedWeight);
+    }
+    onUpdateSet('actualReps', historicalSet.reps);
+    onUpdateSet('rpe', historicalSet.rpe);
+    setShowHistory(false);
+  };
+
+  // Get the most recent historical data
+  const latestHistoricalData = historicalData?.[0];
 
   const isSetValid = set.weight > 0 && set.actualReps > 0 && set.rpe >= 1 && set.rpe <= 10;
 
@@ -175,16 +211,33 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </span>
           </div>
           
-          {(setRecommendation || recommendation) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowRecommendation(!showRecommendation)}
-              className="ios-touch-feedback touch-target p-0 flex-shrink-0"
-            >
-              <Info className="h-3 w-3" />
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+            {/* Historical Data Button */}
+            {latestHistoricalData && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHistory(!showHistory)}
+                className="ios-touch-feedback touch-target p-0 flex-shrink-0"
+                title="Last set data"
+              >
+                <History className="h-3 w-3 text-blue-400" />
+              </Button>
+            )}
+            
+            {/* Recommendation Button */}
+            {(setRecommendation || recommendation) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowRecommendation(!showRecommendation)}
+                className="ios-touch-feedback touch-target p-0 flex-shrink-0"
+                title="Recommended loads"
+              >
+                <Info className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Compact Recommendation Banner - Collapsed Design */}
@@ -213,6 +266,58 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               >
                 Use
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Historical Data Banner - Shows last completed set data */}
+        {latestHistoricalData && showHistory && (
+          <div className="bg-blue-500/10 border border-blue-500/20  p-1.5">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-blue-300 truncate">
+                    Last: {latestHistoricalData.weight}kg • {latestHistoricalData.reps}r • RPE {latestHistoricalData.rpe}
+                    <span className="text-blue-300/70 ml-1">
+                      ({new Date(latestHistoricalData.date).toLocaleDateString()})
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleUseHistoricalData(latestHistoricalData)}
+                  className="ios-touch-feedback touch-target text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border-blue-500/30 px-2 flex-shrink-0"
+                >
+                  Use
+                </Button>
+              </div>
+              
+              {/* Show additional historical sets if available */}
+              {historicalData && historicalData.length > 1 && (
+                <div className="space-y-1">
+                  {historicalData.slice(1, 3).map((histData, index) => (
+                    <div key={index} className="flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-blue-300/60 truncate">
+                          {histData.weight}kg • {histData.reps}r • RPE {histData.rpe}
+                          <span className="text-blue-300/40 ml-1">
+                            ({new Date(histData.date).toLocaleDateString()})
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleUseHistoricalData(histData)}
+                        className="ios-touch-feedback touch-target text-xs text-blue-300/60 hover:text-blue-300 px-1 flex-shrink-0"
+                      >
+                        Use
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

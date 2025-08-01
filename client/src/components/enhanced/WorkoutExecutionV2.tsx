@@ -834,6 +834,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   weightUnit={weightUnit}
                   onWeightUnitChange={setWeightUnit}
                   userId={session?.userId || 1}
+                  exerciseId={currentExercise.exerciseId}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
                   specialMethod={specialMethods[currentExercise.id] as any}
                   onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
