@@ -552,7 +552,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
       </Card>
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
-        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 rounded-lg p-1 pt-[4px] pb-[4px] mt-[-15px] mb-[-15px]">
+        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 p-1 pt-[4px] pb-[4px] mt-[-15px] mb-[-15px]">
           <TabsTrigger value="weekly-adjustment" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Weekly Adjustment</TabsTrigger>
           <TabsTrigger value="meal-distribution" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Meal Distribution</TabsTrigger>
           <TabsTrigger value="macro-flexibility" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Macro Flexibility</TabsTrigger>
@@ -583,7 +583,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Mobile-Optimized Daily Wellness Check-in Section */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 pl-[0px] pr-[0px] ml-[-15px] mr-[-15px]">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 pl-[0px] pr-[0px] ml-[-15px] mr-[-15px]">
                 <div className="p-3 sm:p-4">
                   {/* Header - Mobile stacked, Desktop inline */}
                   <div className="space-y-3 sm:space-y-0">
@@ -632,7 +632,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         Daily wellness ratings are averaged weekly for macro adjustments using RP methodology.
                       </p>
                       
-                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2">
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-2">
                         <div className="flex items-start gap-2">
                           <AlertCircle className="w-3 h-3 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
                           <div className="text-xs text-yellow-700 dark:text-yellow-300 min-w-0">
@@ -647,7 +647,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         </div>
                       </div>
                       
-                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2">
                         <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-xs">
                           Tracking:
                         </h4>
@@ -674,7 +674,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
               {/* Show enhanced RP methodology recommendation if available */}
               {weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].adjustmentRecommendation && selectedWeek && (
-                <div className="p-4 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-15px] mr-[-15px] mt-[10px] mb-[10px]">
+                <div className="p-4 border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-15px] mr-[-15px] mt-[10px] mb-[10px]">
                   <div className="flex items-center gap-2 mb-2">
                     {weeklyGoals[0].adjustmentRecommendation === 'increase_calories' && <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />}
                     {weeklyGoals[0].adjustmentRecommendation === 'decrease_calories' && <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />}
@@ -829,7 +829,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 >
                   {weeklyAdjustmentMutation.isPending ? (
                     <>
-                      <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      <div className="w-4 h-4 mr-2 animate-spin  border-2 border-white border-t-transparent" />
                       Applying Adjustment...
                     </>
                   ) : (
@@ -866,7 +866,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 <div className="space-y-4">
                   <div className="grid gap-4">
                     {mealDistribution.map((meal: any) => (
-                      <div key={meal.id} className="border rounded-lg p-4">
+                      <div key={meal.id} className="border p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <h3 className="font-medium capitalize">{meal.mealType}</h3>
@@ -904,7 +904,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     ))}
                   </div>
                   
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
                       RP Methodology Notes:
                     </h4>
@@ -952,7 +952,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
               {flexibilityRules && flexibilityRules.length > 0 ? (
                 <div className="space-y-4">
                   {flexibilityRules.map((rule: any) => (
-                    <div key={rule.id} className="border rounded-lg p-4">
+                    <div key={rule.id} className="border p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-medium">{rule.ruleName}</h3>
                         <Badge variant={rule.isActive ? "default" : "secondary"}>
@@ -1000,7 +1000,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     </div>
                   ))}
                   
-                  <div className="mt-6 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <div className="mt-6 p-4 bg-green-50 dark:bg-green-950">
                     <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
                       Flexibility Tips:
                     </h4>

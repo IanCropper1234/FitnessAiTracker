@@ -10,6 +10,12 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 Preferred communication style: Simple, everyday language.
 
+**Design Preferences:**
+- Sharp corner design aesthetic (border-radius: 0) - completely implemented across entire UI system
+- No rounded elements anywhere in the interface - user strongly prefers square corners
+- Animated progress bars should be maintained for visual appeal
+- Condensed list view layouts preferred for mobile optimization
+
 ## System Architecture
 
 ### Frontend Architecture (Mobile-First Design)
