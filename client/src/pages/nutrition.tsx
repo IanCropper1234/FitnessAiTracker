@@ -17,6 +17,7 @@ import { BodyTracking } from "@/components/body-tracking";
 import { NutritionProgression } from "@/components/nutrition-progression";
 import { AdvancedMacroManagement } from "@/components/advanced-macro-management";
 import { ShoppingListGenerator } from "@/components/shopping-list-generator";
+import { MealManagement } from "@/components/meal-management";
 
 import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
@@ -275,6 +276,10 @@ export function Nutrition({
 
             <TabsContent value="builder">
               <DietBuilder userId={user.id} />
+            </TabsContent>
+
+            <TabsContent value="meal-management">
+              <MealManagement userId={user.id} />
             </TabsContent>
 
             <TabsContent value="advanced">
