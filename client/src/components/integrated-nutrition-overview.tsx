@@ -1558,23 +1558,23 @@ export function IntegratedNutritionOverview({
                       </div>
                       <div className="grid grid-cols-5 gap-1 text-xs">
                         <div className="text-center">
-                          <div className="w-3 h-3 rounded bg-red-100 dark:bg-red-900 mx-auto mb-1"></div>
+                          <div className="w-3 h-3 bg-red-100 dark:bg-red-900 mx-auto mb-1"></div>
                           <span className="text-red-600 dark:text-red-400">Low</span>
                         </div>
                         <div className="text-center">
-                          <div className="w-3 h-3 rounded bg-orange-100 dark:bg-orange-900 mx-auto mb-1"></div>
+                          <div className="w-3 h-3 bg-orange-100 dark:bg-orange-900 mx-auto mb-1"></div>
                           <span className="text-orange-600 dark:text-orange-400">Below</span>
                         </div>
                         <div className="text-center">
-                          <div className="w-3 h-3 rounded bg-green-100 dark:bg-green-900 mx-auto mb-1"></div>
+                          <div className="w-3 h-3 bg-green-100 dark:bg-green-900 mx-auto mb-1"></div>
                           <span className="text-green-600 dark:text-green-400">Good</span>
                         </div>
                         <div className="text-center">
-                          <div className="w-3 h-3 rounded bg-blue-100 dark:bg-blue-900 mx-auto mb-1"></div>
+                          <div className="w-3 h-3 bg-blue-100 dark:bg-blue-900 mx-auto mb-1"></div>
                           <span className="text-blue-600 dark:text-blue-400">High</span>
                         </div>
                         <div className="text-center">
-                          <div className="w-3 h-3 rounded bg-purple-100 dark:bg-purple-900 mx-auto mb-1"></div>
+                          <div className="w-3 h-3 bg-purple-100 dark:bg-purple-900 mx-auto mb-1"></div>
                           <span className="text-purple-600 dark:text-purple-400">Excess</span>
                         </div>
                       </div>
@@ -1625,7 +1625,7 @@ export function IntegratedNutritionOverview({
         <CardContent className="pt-0 px-4 pb-4">
           {/* Bulk Operations Controls */}
           {bulkMode && nutritionLogs && nutritionLogs.length > 0 && (
-            <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded border border-blue-200 dark:border-blue-700">
+            <div className="mb-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
                   <Checkbox
@@ -1850,7 +1850,7 @@ export function IntegratedNutritionOverview({
                             WebkitUserSelect: 'none',
                             userSelect: 'none'
                           }}
-                          className="flex items-center gap-3 py-3 px-3 w-full max-w-full ios-touch-feedback ios-button touch-target hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-800 rounded-lg mb-2 border border-gray-200 dark:border-gray-700"
+                          className="flex items-center gap-3 py-3 px-3 w-full max-w-full ios-touch-feedback ios-button touch-target hover:bg-gray-100 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-800 mb-2 border border-gray-200 dark:border-gray-700"
                           onClick={() => bulkMode && toggleLogSelection(log.id)}
                         >
                           {/* Selection Checkbox (always shown in bulk mode) */}
@@ -2009,7 +2009,7 @@ export function IntegratedNutritionOverview({
                       >
                         {dragOverTarget === mealType.key ? (
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                            <div className="w-6 h-6 bg-blue-500  flex items-center justify-center">
                               <ArrowRight className="w-3 h-3 text-white" />
                             </div>
                             <div>
@@ -2019,7 +2019,7 @@ export function IntegratedNutritionOverview({
                           </div>
                         ) : draggedItem && draggedItem.mealType !== mealType.key ? (
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                            <div className="w-6 h-6 bg-green-500  flex items-center justify-center">
                               <Plus className="w-3 h-3 text-white" />
                             </div>
                             <div>
@@ -2048,7 +2048,7 @@ export function IntegratedNutritionOverview({
       {draggedItem && (
         <div className="fixed inset-0 pointer-events-none z-50">
           <div className="relative w-full h-full">
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2  shadow-lg flex items-center gap-2 animate-pulse">
               <GripVertical className="w-4 h-4" />
               <span className="text-sm font-medium">
                 Moving: {draggedItem.foodName}
@@ -2134,7 +2134,7 @@ export function IntegratedNutritionOverview({
               </div>
 
               {/* Current vs New Info */}
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-2">
+              <div className="bg-gray-50 dark:bg-gray-800  p-3 space-y-2">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   <div>Current: {editingItem.quantity} {editingItem.unit}</div>
                   <div>New: {editQuantity} {editUnit}</div>
@@ -2171,7 +2171,7 @@ export function IntegratedNutritionOverview({
           <div className="space-y-4">
             {/* Meal Preview */}
             {saveMealSection && (
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <div className="bg-gray-50 dark:bg-gray-800  p-3">
                 <div className="flex items-center gap-2 mb-2">
                   {getMealTypeIcon(saveMealSection)}
                   <span className="font-medium text-sm">{formatMealType(saveMealSection)} Section</span>
@@ -2212,7 +2212,7 @@ export function IntegratedNutritionOverview({
 
             {/* Nutritional Summary */}
             {saveMealSection && nutritionLogs && (
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <div className="bg-gray-50 dark:bg-gray-800  p-3">
                 <h4 className="font-medium text-black dark:text-white mb-2 text-sm">Nutritional Summary</h4>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="text-center">
