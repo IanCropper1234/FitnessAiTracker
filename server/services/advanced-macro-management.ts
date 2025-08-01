@@ -475,6 +475,16 @@ export class AdvancedMacroManagementService {
         }
       }
 
+      // Calculate adjustment percentage based on RP methodology
+      let adjustmentPercentage = '0.00';
+      if (adjustmentRecommendation === 'increase_calories') {
+        adjustmentPercentage = '5.00'; // 5% increase for bulking/cutting adjustments
+      } else if (adjustmentRecommendation === 'decrease_calories') {
+        adjustmentPercentage = '-5.00'; // 5% decrease for excessive gain/stalled progress
+      } else if (adjustmentRecommendation === 'maintain') {
+        adjustmentPercentage = '0.00'; // No adjustment needed - maintain current calories
+      }
+
       // Create calculated weekly summary with RP analysis and unit information
       const weeklyData = {
         userId,
@@ -487,6 +497,7 @@ export class AdvancedMacroManagementService {
         energyLevels: 7, // Default value - could be enhanced with user feedback
         hungerLevels: 5, // Default value
         adjustmentReason,
+        adjustmentPercentage, // RP-based calorie adjustment percentage
         // RP-specific fields with unit conversion - always store in kg for consistency
         currentWeight: currentWeight ? UnitConverter.convertWeight(currentWeight, currentWeightUnit).kg.toString() : null,
         previousWeight: previousWeight ? UnitConverter.convertWeight(previousWeight, previousWeightUnit).kg.toString() : null,
