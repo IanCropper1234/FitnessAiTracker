@@ -144,6 +144,7 @@ export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
   carbs: decimal("carbs", { precision: 6, scale: 2 }).notNull(),
   fat: decimal("fat", { precision: 6, scale: 2 }).notNull(),
   adjustmentReason: text("adjustment_reason"), // weight_loss_slow, weight_gain_fast, etc.
+  adjustmentRecommendation: text("adjustment_recommendation"), // increase_calories, decrease_calories, maintain, improve_adherence
   previousWeight: decimal("previous_weight", { precision: 5, scale: 2 }),
   currentWeight: decimal("current_weight", { precision: 5, scale: 2 }),
   adherencePercentage: decimal("adherence_percentage", { precision: 5, scale: 2 }), // % compliance
