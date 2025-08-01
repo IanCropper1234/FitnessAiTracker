@@ -1047,8 +1047,8 @@ export function IntegratedNutritionOverview({
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-48 bg-gray-200 dark:bg-gray-800 rounded-lg mb-4"></div>
-          <div className="h-32 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+          <div className="h-48 bg-gray-200 dark:bg-gray-800 mb-4"></div>
+          <div className="h-32 bg-gray-200 dark:bg-gray-800"></div>
         </div>
       </div>
     );
@@ -1288,15 +1288,15 @@ export function IntegratedNutritionOverview({
                 <span>{name}</span>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{value}{unit}</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
+                  <span className={`text-xs px-1.5 py-0.5 ${adequacy.color} bg-gray-100 dark:bg-gray-700`}>
                     {adequacy.percentage > 0 ? `${adequacy.percentage}%` : adequacy.description}
                   </span>
                 </div>
               </div>
               {adequacy.percentage > 0 && (
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 h-1">
                   <div 
-                    className={`h-1 rounded-full transition-all duration-300 ${
+                    className={`h-1 transition-all duration-300 ${
                       adequacy.percentage < 50 ? 'bg-red-500' :
                       adequacy.percentage < 80 ? 'bg-orange-500' :
                       adequacy.percentage <= 120 ? 'bg-green-500' :
@@ -1319,7 +1319,7 @@ export function IntegratedNutritionOverview({
                 onClick={() => setShowMicronutrients(!showMicronutrients)}
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-blue-500"></div>
                   <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                     Daily Micronutrients ({formatDate})
                   </span>
@@ -1329,7 +1329,7 @@ export function IntegratedNutritionOverview({
               
               {showMicronutrients && (
                 <div className="mt-2">
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                  <div className="bg-gray-50 dark:bg-gray-800 p-2">
                     <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 text-center">
                       Total from {micronutrientLogs.length} foods with vitamin data
                     </div>
