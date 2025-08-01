@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Clock, Timer, Settings, X, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -195,7 +196,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     };
   };
 
-  return (
+  const timerContent = (
     <>
       {/* Expanded timer modal */}
       {isExpanded && (
@@ -416,6 +417,9 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       </button>
     </>
   );
+
+  // Use createPortal to render the timer at the root level for proper floating behavior
+  return createPortal(timerContent, document.body);
 };
 
 export { RestTimerFAB };
