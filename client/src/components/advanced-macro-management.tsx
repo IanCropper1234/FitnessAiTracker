@@ -15,6 +15,8 @@ import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 import { useLocation } from "wouter";
 import DailyWellnessCheckin from "./daily-wellness-checkin";
+import { RPAnalysis } from "./rp-analysis";
+import { RPRecommendations } from "./rp-recommendations";
 
 
 interface AdvancedMacroManagementProps {
@@ -554,8 +556,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
         <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 p-1 pt-[4px] pb-[4px] mt-[-15px] mb-[-15px]">
           <TabsTrigger value="weekly-adjustment" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Weekly Adjustment</TabsTrigger>
-          <TabsTrigger value="meal-distribution" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Meal Distribution</TabsTrigger>
-          <TabsTrigger value="macro-flexibility" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Macro Flexibility</TabsTrigger>
+          <TabsTrigger value="rp-analysis" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">RP Analysis</TabsTrigger>
+          <TabsTrigger value="rp-recommendations" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Recommendations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="weekly-adjustment" className="space-y-4">
@@ -851,191 +853,12 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
           </Card>
         </TabsContent>
 
-        <TabsContent value="meal-distribution" className="space-y-4">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-black dark:text-white">
-                Meal-by-Meal Macro Distribution
-              </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Customize macro percentages for each meal based on RP principles
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {mealDistribution && mealDistribution.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="grid gap-4">
-                    {mealDistribution.map((meal: any) => (
-                      <div key={meal.id} className="border p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium capitalize">{meal.mealType}</h3>
-                            {meal.mealTiming && (
-                              <Badge variant="outline" className="text-xs">
-                                {meal.mealTiming.replace('_', ' ')}
-                              </Badge>
-                            )}
-                          </div>
-                          <Badge variant="secondary">
-                            {parseFloat(meal.caloriePercentage || 0).toFixed(0)}% calories
-                          </Badge>
-                        </div>
-                        <div className="grid grid-cols-3 gap-3 text-sm">
-                          <div className="text-center">
-                            <div className="text-red-600 font-medium">
-                              {parseFloat(meal.proteinPercentage || 0).toFixed(0)}%
-                            </div>
-                            <div className="text-gray-600 dark:text-gray-400">Protein</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-blue-600 font-medium">
-                              {parseFloat(meal.carbPercentage || 0).toFixed(0)}%
-                            </div>
-                            <div className="text-gray-600 dark:text-gray-400">Carbs</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-yellow-600 font-medium">
-                              {parseFloat(meal.fatPercentage || 0).toFixed(0)}%
-                            </div>
-                            <div className="text-gray-600 dark:text-gray-400">Fat</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                      RP Methodology Notes:
-                    </h4>
-                    <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                      <li>• Pre-workout: Higher carbs (60-70%) for energy</li>
-                      <li>• Post-workout: High protein (40-50%) + moderate carbs</li>
-                      <li>• Regular meals: Balanced macros based on daily targets</li>
-                      <li>• Evening meals: Lower carbs, higher fat for recovery</li>
-                    </ul>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Target className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    No meal distributions configured yet
-                  </p>
-                  <Button 
-                    onClick={() => createDefaultMealDistribution()}
-                    disabled={createDistributionMutation.isPending}
-                  >
-                    {createDistributionMutation.isPending ? (
-                      <>Creating...</>
-                    ) : (
-                      <>Create Default RP Distribution</>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="rp-analysis" className="space-y-4">
+          <RPAnalysis userId={userId} />
         </TabsContent>
 
-        <TabsContent value="macro-flexibility" className="space-y-4">
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-black dark:text-white">
-                Macro Flexibility Rules
-              </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Set up flexible macro ranges for social eating and special occasions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {flexibilityRules && flexibilityRules.length > 0 ? (
-                <div className="space-y-4">
-                  {flexibilityRules.map((rule: any) => (
-                    <div key={rule.id} className="border p-3 sm:p-4 overflow-hidden">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                        <h3 className="font-medium text-sm sm:text-base truncate">{rule.ruleName}</h3>
-                        <Badge variant={rule.isActive ? "default" : "secondary"} className="self-start sm:self-auto">
-                          {rule.isActive ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
-                      
-                      {/* Mobile stacked layout, desktop grid */}
-                      <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 mb-3">
-                        <div className="min-w-0">
-                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Trigger Days:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {rule.triggerDays?.map((day: string) => (
-                              <Badge key={day} variant="outline" className="text-xs capitalize flex-shrink-0">
-                                {day.substring(0, 3)}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Compensation:</p>
-                          <p className="text-xs sm:text-sm font-medium capitalize break-words">
-                            {rule.compensationStrategy?.replace('_', ' ')}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      {/* Macro flexibility grid - more compact on mobile */}
-                      <div className="grid grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
-                        <div className="text-center min-w-0">
-                          <div className="text-red-600 font-medium text-xs sm:text-sm">
-                            ±{parseFloat(rule.flexProtein || 0).toFixed(0)}%
-                          </div>
-                          <div className="text-gray-600 dark:text-gray-400 text-xs truncate">Protein</div>
-                        </div>
-                        <div className="text-center min-w-0">
-                          <div className="text-blue-600 font-medium text-xs sm:text-sm">
-                            ±{parseFloat(rule.flexCarbs || 0).toFixed(0)}%
-                          </div>
-                          <div className="text-gray-600 dark:text-gray-400 text-xs truncate">Carbs</div>
-                        </div>
-                        <div className="text-center min-w-0">
-                          <div className="text-yellow-600 font-medium text-xs sm:text-sm">
-                            ±{parseFloat(rule.flexFat || 0).toFixed(0)}%
-                          </div>
-                          <div className="text-gray-600 dark:text-gray-400 text-xs truncate">Fat</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 dark:bg-green-950 overflow-hidden">
-                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-2 text-sm sm:text-base">
-                      Flexibility Tips:
-                    </h4>
-                    <ul className="text-xs sm:text-sm text-green-800 dark:text-green-200 space-y-1">
-                      <li className="break-words">• Weekend rules allow higher fat/carb flexibility</li>
-                      <li className="break-words">• Business lunches can compensate with lighter dinner</li>
-                      <li className="break-words">• Social events: Bank calories earlier in the day</li>
-                      <li className="break-words">• Next-day compensation maintains weekly averages</li>
-                    </ul>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Settings className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    No flexibility rules configured yet
-                  </p>
-                  <Button 
-                    onClick={() => createDefaultFlexibilityRules()}
-                    disabled={createFlexibilityMutation.isPending}
-                  >
-                    {createFlexibilityMutation.isPending ? (
-                      <>Creating...</>
-                    ) : (
-                      <>Create Default Flexibility Rules</>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="rp-recommendations" className="space-y-4">
+          <RPRecommendations userId={userId} />
         </TabsContent>
       </Tabs>
     </div>

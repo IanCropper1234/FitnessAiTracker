@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Brain, TrendingUp, Calendar, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { RPAnalysis } from "@/components/rp-analysis";
+import { RPRecommendations } from "@/components/rp-recommendations";
 
 interface RPCoachPageProps {
   userId: number;
@@ -54,35 +56,11 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>RP Analysis Dashboard</CardTitle>
-              <CardDescription>
-                Your nutrition performance analyzed using Renaissance Periodization methodology
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                RP Analysis coming soon - will integrate with your weekly wellness data
-              </div>
-            </CardContent>
-          </Card>
+          <RPAnalysis userId={userId} />
         </TabsContent>
 
         <TabsContent value="recommendations" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Recommendations</CardTitle>
-              <CardDescription>
-                Personalized nutrition adjustments based on your wellness check-ins
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                AI Recommendations coming soon - will use your energy, hunger, and adherence data
-              </div>
-            </CardContent>
-          </Card>
+          <RPRecommendations userId={userId} />
         </TabsContent>
       </Tabs>
     </div>
