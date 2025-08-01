@@ -27,7 +27,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
         </Button>
         <Brain className="h-8 w-8 text-blue-600" />
         <div>
-          <h1 className="text-3xl font-bold">RP Diet Coach</h1>
+          
           <p className="text-muted-foreground">Renaissance Periodization intelligent nutrition coaching</p>
         </div>
         <Badge variant="default" className="ml-auto">
