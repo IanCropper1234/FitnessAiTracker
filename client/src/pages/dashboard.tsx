@@ -52,6 +52,33 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     }
   });
 
+  // Fetch diet goals for accurate target values
+  const { data: dietGoals } = useQuery({
+    queryKey: ['/api/diet-goals', user.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/diet-goals`, {
+        credentials: 'include'
+      });
+      if (!response.ok) return null;
+      const data = await response.json();
+      
+      // Convert string values to numbers for consistent frontend usage
+      if (data) {
+        return {
+          ...data,
+          tdee: Number(data.tdee),
+          targetCalories: Number(data.targetCalories),
+          customTargetCalories: Number(data.customTargetCalories),
+          targetProtein: Number(data.targetProtein),
+          targetCarbs: Number(data.targetCarbs),
+          targetFat: Number(data.targetFat),
+          weeklyWeightTarget: Number(data.weeklyWeightTarget)
+        };
+      }
+      return data;
+    }
+  });
+
   const { data: trainingStats } = useQuery({
     queryKey: ['/api/training/stats', dateQueryParam],
     queryFn: async () => {
@@ -278,10 +305,10 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   protein={nutritionSummary.totalProtein}
                   carbs={nutritionSummary.totalCarbs}
                   fat={nutritionSummary.totalFat}
-                  goalProtein={nutritionSummary.goalProtein}
-                  goalCarbs={nutritionSummary.goalCarbs}
-                  goalFat={nutritionSummary.goalFat}
-                  goalCalories={nutritionSummary.goalCalories}
+                  goalProtein={dietGoals?.targetProtein || nutritionSummary.goalProtein}
+                  goalCarbs={dietGoals?.targetCarbs || nutritionSummary.goalCarbs}
+                  goalFat={dietGoals?.targetFat || nutritionSummary.goalFat}
+                  goalCalories={dietGoals?.targetCalories || nutritionSummary.goalCalories}
                 />
               ) : (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
