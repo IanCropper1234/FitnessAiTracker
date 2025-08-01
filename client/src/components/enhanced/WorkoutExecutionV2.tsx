@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { useSwipeable } from 'react-swipeable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ import { DraggableExerciseList } from './DraggableExerciseList';
 
 // Import legacy component for fallback
 import WorkoutExecution from '../workout-execution';
-import WorkoutFeedbackDialog from "@/components/workout-feedback-dialog";
+
 
 interface WorkoutSet {
   setNumber: number;
@@ -123,7 +124,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }
   }, [headerExpanded]);
   const [activeTab, setActiveTab] = useState<'execution' | 'exercises'>('execution');
-  const [showFeedback, setShowFeedback] = useState(false);
+
   
   // Special training methods state
   const [specialMethods, setSpecialMethods] = useState<Record<number, string | null>>({});
@@ -131,6 +132,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   // Force V2 when the feature is enabled, regardless of session version
   if (!isV2Enabled) {
@@ -294,12 +296,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         });
         
         if (variables?.isCompleted) {
-          // Workout completed - show feedback dialog
+          // Workout completed - navigate to feedback page
           toast({
             title: "Workout Completed!",
-            description: "Great job! Time for auto-regulation feedback.",
+            description: "Great job! Redirecting to feedback...",
           });
-          setShowFeedback(true);
+          setLocation(`/workout-feedback/${sessionId}`);
         } else {
           // Just saving progress
           toast({
@@ -1144,28 +1146,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           }}
         />
       )}
-      {/* WorkoutFeedbackDialog - Critical Missing Component */}
-      {showFeedback && session && (
-        <WorkoutFeedbackDialog
-          isOpen={showFeedback}
-          onClose={() => setShowFeedback(false)}
-          sessionId={parseInt(sessionId, 10)}
-          userId={session.userId}
-          onSubmitComplete={() => {
-            setShowFeedback(false);
-            // Additional cache invalidation after feedback submission
-            queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
-            queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
-            queryClient.invalidateQueries({ predicate: (query) => 
-              query.queryKey[0] === "/api/training/sessions" && query.queryKey[1] === "1"
-            });
-            queryClient.invalidateQueries({ predicate: (query) => 
-              query.queryKey[0] === "/api/training/stats" && query.queryKey[1] === "1"
-            });
-            onComplete();
-          }}
-        />
-      )}
+
     </div>
   );
 };

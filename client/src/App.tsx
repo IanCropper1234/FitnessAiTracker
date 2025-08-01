@@ -21,6 +21,7 @@ import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
 import RPCoachPage from "./pages/RPCoachPage";
 import NutritionFactsPage from "./pages/nutrition-facts";
+import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
 import { NotFound } from "./components/NotFound";
 import { AnimatedPage } from "./components/page-transition";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
@@ -172,6 +173,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/nutrition-facts">
           <AnimatedPage>
             {user ? <NutritionFactsPage /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/workout-feedback/:sessionId">
+          <AnimatedPage>
+            {user ? <WorkoutFeedbackPage /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route>

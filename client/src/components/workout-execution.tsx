@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus, GripVertical } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import WorkoutFeedbackDialog from "./workout-feedback-dialog";
+
 
 interface WorkoutSet {
   setNumber: number;
@@ -77,6 +78,7 @@ interface WorkoutExecutionProps {
 function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
@@ -84,7 +86,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
   const [sessionStartTime] = useState(Date.now());
   const [workoutData, setWorkoutData] = useState<Record<number, WorkoutSet[]>>({});
-  const [showFeedback, setShowFeedback] = useState(false);
+
   
   // Drag and drop state (iOS compatible)
   const [draggedExercise, setDraggedExercise] = useState<WorkoutExercise | null>(null);
@@ -200,11 +202,11 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
     onSuccess: () => {
       toast({
         title: "Workout Completed!",
-        description: "Great job! Now let's collect some feedback to optimize your future training.",
+        description: "Great job! Redirecting to feedback...",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
       queryClient.invalidateQueries({ queryKey: ["/api/training/stats"] });
-      setShowFeedback(true);
+      setLocation(`/workout-feedback/${sessionId}`);
     },
     onError: () => {
       toast({
@@ -654,27 +656,7 @@ function WorkoutExecution({ sessionId, onComplete }: WorkoutExecutionProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Show auto-regulation feedback after workout completion
-  if (showFeedback && session.userId) {
-    return (
-      <>
-        <WorkoutFeedbackDialog
-          isOpen={showFeedback}
-          onClose={() => setShowFeedback(false)}
-          sessionId={sessionId}
-          userId={session.userId}
-          onSubmitComplete={() => {
-            setShowFeedback(false);
-            onComplete();
-          }}
-        />
-        <div className="p-6 text-center">
-          <p className="text-lg font-medium">Workout Complete!</p>
-          <p className="text-muted-foreground">Please provide your feedback to optimize future training.</p>
-        </div>
-      </>
-    );
-  }
+
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
