@@ -454,9 +454,9 @@ export class AdvancedMacroManagementService {
         energyLevels: 7, // Default value - could be enhanced with user feedback
         hungerLevels: 5, // Default value
         adjustmentReason,
-        // RP-specific fields with unit information
-        currentWeight: currentWeight?.toString() || null,
-        previousWeight: previousWeight?.toString() || null,
+        // RP-specific fields with unit conversion - always store in kg for consistency
+        currentWeight: currentWeight ? UnitConverter.convertWeight(currentWeight, currentWeightUnit).kg.toString() : null,
+        previousWeight: previousWeight ? UnitConverter.convertWeight(previousWeight, previousWeightUnit).kg.toString() : null,
         weightChange: weightChange.toFixed(2),
         weightTrend,
         adjustmentRecommendation,
@@ -527,14 +527,15 @@ export class AdvancedMacroManagementService {
               updatedGoal.hungerLevels = Math.round(parseFloat(wellnessAverages.avgHungerLevel));
             }
             
-            // Add calculated weight data if missing
-            if (!goal.currentWeight || !goal.previousWeight) {
-              const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
-              if (calculatedData && (calculatedData.currentWeight || calculatedData.previousWeight)) {
-                // Update only existing database fields
-                updatedGoal.currentWeight = calculatedData.currentWeight || goal.currentWeight;
-                updatedGoal.previousWeight = calculatedData.previousWeight || goal.previousWeight;
-              }
+            // Always recalculate weight data to ensure proper unit conversion
+            const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
+            if (calculatedData && (calculatedData.currentWeight !== null || calculatedData.previousWeight !== null)) {
+              // Use calculated data which has proper unit conversion
+              updatedGoal.currentWeight = calculatedData.currentWeight;
+              updatedGoal.previousWeight = calculatedData.previousWeight;
+              updatedGoal.weightChange = calculatedData.weightChange;
+              updatedGoal.weightTrend = calculatedData.weightTrend;
+              updatedGoal.adjustmentRecommendation = calculatedData.adjustmentRecommendation;
             }
             
             return updatedGoal;
