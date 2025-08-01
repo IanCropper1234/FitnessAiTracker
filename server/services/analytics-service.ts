@@ -473,23 +473,7 @@ export class AnalyticsService {
           
           nutrition.dailyData.forEach((day: any) => {
             if (day.calories > 0) {
-              const deviation = Math.abs(day.calories - targetCalories);
-              const percentageDeviation = (deviation / targetCalories) * 100;
-              
-              // RP Diet Coach methodology: More realistic adherence calculation
-              let dailyAdherence;
-              if (deviation <= 150 || percentageDeviation <= 5) {
-                dailyAdherence = 100; // Excellent adherence
-              } else if (deviation <= 250 || percentageDeviation <= 10) {
-                dailyAdherence = 90; // Good adherence
-              } else if (deviation <= 350 || percentageDeviation <= 15) {
-                dailyAdherence = 80; // Fair adherence
-              } else {
-                // Poor adherence - scale down based on how far off
-                const excessDeviation = Math.max(0, deviation - 350);
-                dailyAdherence = Math.max(0, 75 - (excessDeviation / 100)); // Gradually decrease from 75%
-              }
-              
+              const dailyAdherence = Math.max(0, 100 - Math.abs((day.calories - targetCalories) / targetCalories * 100));
               totalAdherence += dailyAdherence;
               daysWithLogs++;
             }
