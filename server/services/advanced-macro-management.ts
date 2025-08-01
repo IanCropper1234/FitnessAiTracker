@@ -449,17 +449,22 @@ export class AdvancedMacroManagementService {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_cutting';
           }
-        } else if (goalType === 'bulking') {
+        } else if (goalType === 'bulking' || goalType === 'bulk') {
           // Bulking phase: target weight gain
           if (adherencePercentage >= 90 && weightChange <= 0) {
             adjustmentRecommendation = 'increase_calories';
             adjustmentReason = 'high_adherence_no_weight_gain';
-          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 1.5) {
+          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 2.0) {
+            // Only decrease if gaining more than 2x target (more conservative)
             adjustmentRecommendation = 'decrease_calories';
             adjustmentReason = 'excessive_weight_gain';
           } else if (adherencePercentage < 80) {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_bulking';
+          } else if (adherencePercentage >= 90 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.0) {
+            // Good weight gain within reasonable range - maintain or slightly increase
+            adjustmentRecommendation = 'increase_calories';
+            adjustmentReason = 'optimal_bulk_progress';
           }
         } else {
           // Maintenance phase
@@ -554,15 +559,17 @@ export class AdvancedMacroManagementService {
               updatedGoal.hungerLevels = Math.round(parseFloat(wellnessAverages.avgHungerLevel));
             }
             
-            // Always recalculate weight data to ensure proper unit conversion
-            const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
-            if (calculatedData && (calculatedData.currentWeight !== null || calculatedData.previousWeight !== null)) {
-              // Use calculated data which has proper unit conversion
-              updatedGoal.currentWeight = calculatedData.currentWeight;
-              updatedGoal.previousWeight = calculatedData.previousWeight;
-              updatedGoal.weightChange = calculatedData.weightChange;
-              updatedGoal.weightTrend = calculatedData.weightTrend;
-              updatedGoal.adjustmentRecommendation = calculatedData.adjustmentRecommendation;
+            // Only update weight data if it doesn't exist, preserve all stored calculations
+            if (!updatedGoal.currentWeight || !updatedGoal.previousWeight) {
+              const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
+              if (calculatedData && (calculatedData.currentWeight !== null || calculatedData.previousWeight !== null)) {
+                // Only update missing weight data, preserve all other stored values
+                if (!updatedGoal.currentWeight) updatedGoal.currentWeight = calculatedData.currentWeight;
+                if (!updatedGoal.previousWeight) updatedGoal.previousWeight = calculatedData.previousWeight;
+                if (!updatedGoal.weightChange) updatedGoal.weightChange = calculatedData.weightChange;
+                if (!updatedGoal.weightTrend) updatedGoal.weightTrend = calculatedData.weightTrend;
+                // Never override stored adjustmentRecommendation
+              }
             }
             
             return updatedGoal;
