@@ -183,19 +183,19 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div className="text-center">
                   <div className="text-blue-600 dark:text-blue-400 font-semibold">
-                    {Math.round(selectedNutritionItem.protein * 4)}
+                    {Math.round(selectedNutritionItem.protein * 4)} Cal
                   </div>
                   <div className="text-gray-500">Protein</div>
                 </div>
                 <div className="text-center">
                   <div className="text-green-600 dark:text-green-400 font-semibold">
-                    {Math.round(selectedNutritionItem.carbs * 4)}
+                    {Math.round(selectedNutritionItem.carbs * 4)} Cal
                   </div>
                   <div className="text-gray-500">Carbs</div>
                 </div>
                 <div className="text-center">
                   <div className="text-yellow-600 dark:text-yellow-400 font-semibold">
-                    {Math.round(selectedNutritionItem.fat * 9)}
+                    {Math.round(selectedNutritionItem.fat * 9)} Cal
                   </div>
                   <div className="text-gray-500">Fat</div>
                 </div>
