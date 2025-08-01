@@ -192,7 +192,7 @@ export function Nutrition({
               variant="ghost" 
               size="sm"
               onClick={() => setShowDatePicker(true)}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback ios-smooth-transform button-press-animation"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback ios-smooth-transform button-press-animation invisible"
             >
               <Calendar className="w-5 h-5 transition-transform duration-150" />
             </Button>
