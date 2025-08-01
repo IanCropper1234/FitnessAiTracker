@@ -1381,7 +1381,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/training/exercises", async (req, res) => {
     try {
-      const exercises = await storage.getExercises();
+      // Check if user is authenticated to get user-specific exercises
+      const userId = req.userId; // May be undefined if not authenticated
+      const exercises = await storage.getExercises(userId);
       res.json(exercises);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2120,8 +2122,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new exercise
-  app.post("/api/exercises", async (req, res) => {
+  app.post("/api/exercises", requireAuth, async (req, res) => {
     try {
+      const userId = req.userId;
       const exerciseData = req.body;
       
       // Validate exercise name
@@ -2135,7 +2138,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Trim the name to prevent whitespace issues
       exerciseData.name = exerciseData.name.trim();
       
-      const exercise = await storage.createExercise(exerciseData);
+      // Add userId to exercise data for user-specific exercise
+      const exerciseWithUser = { ...exerciseData, userId };
+      
+      const exercise = await storage.createExercise(exerciseWithUser);
       res.json(exercise);
     } catch (error: any) {
       if (error.message.includes('already exists')) {
@@ -2149,16 +2155,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update exercise
-  app.put("/api/exercises/:id", async (req, res) => {
+  app.put("/api/exercises/:id", requireAuth, async (req, res) => {
     try {
+      const userId = req.userId;
       const id = parseInt(req.params.id);
       const exerciseData = req.body;
-      const exercise = await storage.updateExercise(id, exerciseData);
       
-      if (!exercise) {
+      // Check if exercise exists and user owns it
+      const existingExercise = await storage.getExercise(id);
+      if (!existingExercise) {
         return res.status(404).json({ message: "Exercise not found" });
       }
       
+      // Only allow update if user owns the exercise (userId matches) or if it's a system exercise (userId is null)
+      if (existingExercise.userId && existingExercise.userId !== userId) {
+        return res.status(403).json({ message: "You can only modify your own exercises" });
+      }
+      
+      const exercise = await storage.updateExercise(id, exerciseData);
       res.json(exercise);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -2166,15 +2180,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete exercise
-  app.delete("/api/exercises/:id", async (req, res) => {
+  app.delete("/api/exercises/:id", requireAuth, async (req, res) => {
     try {
+      const userId = req.userId;
       const id = parseInt(req.params.id);
-      const deleted = await storage.deleteExercise(id);
       
-      if (!deleted) {
+      // Check if exercise exists and user owns it
+      const existingExercise = await storage.getExercise(id);
+      if (!existingExercise) {
         return res.status(404).json({ message: "Exercise not found" });
       }
       
+      // Only allow delete if user owns the exercise (userId matches)
+      // System exercises (userId is null) cannot be deleted
+      if (!existingExercise.userId || existingExercise.userId !== userId) {
+        return res.status(403).json({ message: "You can only delete your own exercises" });
+      }
+      
+      const deleted = await storage.deleteExercise(id);
       res.json({ success: true });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

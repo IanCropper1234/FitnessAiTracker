@@ -203,17 +203,34 @@ export class DatabaseStorage implements IStorage {
     return updatedProgram || undefined;
   }
 
-  // Exercises
-  async getExercises(): Promise<Exercise[]> {
-    return await db.select().from(exercises);
+  // Exercises - returns both shared exercises (userId = null) and user-specific exercises
+  async getExercises(userId?: number): Promise<Exercise[]> {
+    if (userId) {
+      // Return shared exercises (userId = null) and user's own exercises
+      return await db.select().from(exercises)
+        .where(sql`user_id IS NULL OR user_id = ${userId}`);
+    } else {
+      // Return all exercises (for admin/system use)
+      return await db.select().from(exercises);
+    }
   }
 
-  async getExerciseByName(name: string): Promise<Exercise | undefined> {
-    const [exercise] = await db.select()
-      .from(exercises)
-      .where(sql`LOWER(TRIM(${exercises.name})) = LOWER(TRIM(${name}))`)
-      .limit(1);
-    return exercise || undefined;
+  async getExerciseByName(name: string, userId?: number): Promise<Exercise | undefined> {
+    if (userId) {
+      // Check for duplicate within user's scope (shared + own exercises)
+      const [exercise] = await db.select()
+        .from(exercises)
+        .where(sql`LOWER(TRIM(${exercises.name})) = LOWER(TRIM(${name})) AND (user_id IS NULL OR user_id = ${userId})`)
+        .limit(1);
+      return exercise || undefined;
+    } else {
+      // Original behavior for system use
+      const [exercise] = await db.select()
+        .from(exercises)
+        .where(sql`LOWER(TRIM(${exercises.name})) = LOWER(TRIM(${name}))`)
+        .limit(1);
+      return exercise || undefined;
+    }
   }
 
   async getExercisesByCategory(category: string): Promise<Exercise[]> {
@@ -226,8 +243,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
-    // Double-check for duplicates before insertion (case-insensitive)
-    const existingExercise = await this.getExerciseByName(exercise.name);
+    // Check for duplicates within user's scope (shared + own exercises)
+    const existingExercise = await this.getExerciseByName(exercise.name, exercise.userId);
     if (existingExercise) {
       throw new Error(`Exercise with name "${exercise.name}" already exists`);
     }

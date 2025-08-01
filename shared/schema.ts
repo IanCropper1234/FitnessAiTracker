@@ -235,6 +235,7 @@ export const trainingPrograms = pgTable("training_programs", {
 
 export const exercises = pgTable("exercises", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id), // null for shared/system exercises, user_id for user-created exercises
   name: text("name").notNull(),
   category: text("category").notNull(), // push, pull, legs, cardio
   muscleGroups: text("muscle_groups").array(),
@@ -246,6 +247,7 @@ export const exercises = pgTable("exercises", {
   videoUrl: text("video_url"),
   translations: jsonb("translations"), // multilingual names
   isBodyWeight: boolean("is_body_weight").default(false), // true for exercises using body weight only
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const workoutSessions = pgTable("workout_sessions", {
