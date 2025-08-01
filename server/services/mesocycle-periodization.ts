@@ -865,6 +865,22 @@ export class MesocyclePeriodization {
       throw new Error("Mesocycle not found");
     }
 
+    // CRITICAL SAFEGUARD: Check if sessions for this week already exist
+    const existingSessions = await db
+      .select()
+      .from(workoutSessions)
+      .where(
+        and(
+          eq(workoutSessions.mesocycleId, mesocycleId),
+          sql`${workoutSessions.name} LIKE '%Week ${week}%'`
+        )
+      );
+
+    if (existingSessions.length > 0) {
+      console.log(`⚠️ Week ${week} sessions already exist for mesocycle ${mesocycleId}. Skipping generation.`);
+      return { message: `Week ${week} sessions already exist`, existingSessions: existingSessions.length };
+    }
+
     // Get base program structure from Week 1 sessions
     const week1Sessions = await db
       .select()
