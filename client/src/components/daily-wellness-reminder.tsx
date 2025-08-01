@@ -15,15 +15,24 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
   
   // Get today's wellness check-in status
   const { data: todayWellnessCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins', new Date().toISOString().split('T')[0]],
+    queryKey: ['/api/daily-wellness-checkins-reminder', new Date().toISOString().split('T')[0]],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
+      console.log('Daily Wellness Reminder - Checking wellness for date:', today);
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
       });
       if (!response.ok) return null;
-      return response.json();
-    }
+      const result = await response.json();
+      console.log('Daily Wellness Reminder - Wellness result:', result);
+      return result;
+    },
+    staleTime: 0, // Always refetch to get the latest status
+    cacheTime: 0 // Don't cache this data
   });
 
   const isCompleted = !!todayWellnessCheckin;
