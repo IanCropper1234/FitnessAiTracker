@@ -150,6 +150,8 @@ async function calculateMuscleGroupVolume(
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
+    console.log(`Calculating volume for muscle group ${muscleGroupId} over ${days} days for user ${userId}`);
+
     // Get completed workout sessions in date range
     const sessions = await db
       .select()
@@ -162,6 +164,8 @@ async function calculateMuscleGroupVolume(
         )
       );
 
+    console.log(`Found ${sessions.length} completed sessions in date range`);
+
     let totalSets = 0;
 
     for (const session of sessions) {
@@ -171,7 +175,7 @@ async function calculateMuscleGroupVolume(
       for (const exercise of exercises) {
         if (!exercise.isCompleted) continue;
         
-        // Check if exercise targets this muscle group
+        // Check if exercise targets this muscle group (fix column name)
         const mapping = await db
           .select()
           .from(exerciseMuscleMapping)
@@ -183,11 +187,27 @@ async function calculateMuscleGroupVolume(
           );
 
         if (mapping.length > 0) {
-          totalSets += exercise.sets;
+          // Count actual completed sets from setsData instead of just the sets field
+          if (exercise.setsData) {
+            try {
+              const setsData = JSON.parse(exercise.setsData);
+              const completedSets = setsData.filter((set: any) => set.completed === true).length;
+              totalSets += completedSets;
+              console.log(`Exercise ${exercise.exerciseId}: ${completedSets} completed sets for muscle group ${muscleGroupId}`);
+            } catch (parseError) {
+              console.error('Error parsing setsData:', parseError);
+              // Fallback to sets field if setsData parsing fails
+              totalSets += exercise.sets || 0;
+            }
+          } else {
+            // Fallback to sets field if no setsData
+            totalSets += exercise.sets || 0;
+          }
         }
       }
     }
 
+    console.log(`Total volume for muscle group ${muscleGroupId}: ${totalSets} sets`);
     return totalSets;
   } catch (error) {
     console.error('Error calculating muscle group volume:', error);
