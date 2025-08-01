@@ -246,6 +246,7 @@ function WorkoutSessionsWithBulkActions({
           <WorkoutSessionCard
             key={session.id}
             session={session}
+            mesocycleName={session.mesocycleId ? mesocycleLookup[session.mesocycleId] : undefined}
             onStart={() => onStartSession(session.id)}
             onView={() => onViewSession(session.id)}
             onDelete={() => bulkDeleteMutation.mutate([session.id])}
@@ -271,6 +272,7 @@ function WorkoutSessionsWithBulkActions({
 // WorkoutSessionCard Component
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
+  mesocycleName?: string;
   onStart: () => void;
   onView: () => void;
   onDelete: () => void;
@@ -284,6 +286,7 @@ interface WorkoutSessionCardProps {
 
 function WorkoutSessionCard({ 
   session, 
+  mesocycleName,
   onStart, 
   onView, 
   onDelete, 
@@ -335,7 +338,14 @@ function WorkoutSessionCard({
             />
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-foreground truncate">{session.name}</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-sm font-medium text-foreground truncate">{session.name}</h3>
+              {mesocycleName && (
+                <span className="px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                  {mesocycleName}
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
               {new Date(session.date).toLocaleDateString()}
             </p>
@@ -602,16 +612,21 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
     }
   });
 
-  // Fetch current mesocycle information
-  const { data: currentMesocycle } = useQuery({
+  // Fetch all mesocycles for creating lookup map
+  const { data: mesocycles = [] } = useQuery({
     queryKey: ["/api/training/mesocycles", userId],
     queryFn: async () => {
       const response = await fetch(`/api/training/mesocycles`);
       const data = await response.json();
-      // Return the active mesocycle (first one should be active)
-      return Array.isArray(data) && data.length > 0 ? data.find(m => m.isActive) || data[0] : null;
+      return Array.isArray(data) ? data : [];
     }
   });
+
+  // Create mesocycle lookup map for session cards
+  const mesocycleLookup = mesocycles.reduce((acc, mesocycle) => {
+    acc[mesocycle.id] = mesocycle.name;
+    return acc;
+  }, {} as Record<number, string>);
 
   // Group exercises by category
   const exercisesByCategory = exercises.reduce((acc, exercise) => {
