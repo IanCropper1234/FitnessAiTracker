@@ -2791,6 +2791,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         carbs: adjustment.adjustment.newCarbs,
         fat: adjustment.adjustment.newFat,
         adjustmentReason: adjustment.adjustment.adjustmentReason,
+        adjustmentRecommendation: adjustment.adjustment.adjustmentRecommendation, // Add the recommendation
         adherencePercentage: adjustment.adherencePercentage,
         wellnessFactors: adjustment.adjustment.wellnessFactors, // Real daily wellness averages
         energyLevels: adjustment.adjustment.wellnessFactors?.energyLevel || 5,

@@ -245,6 +245,16 @@ export class AdvancedMacroManagementService {
       adjustmentPercentage = Math.max(0, Math.min(8, adjustmentPercentage)); // 0% to 8%
     }
 
+    // Determine recommendation based on final adjustment percentage
+    let recommendationType = 'maintain';
+    if (adjustmentPercentage > 0) {
+      recommendationType = 'increase_calories';
+    } else if (adjustmentPercentage < 0) {
+      recommendationType = 'decrease_calories';
+    } else if (adherencePercentage < 80) {
+      recommendationType = 'improve_adherence';
+    }
+
     const newCalories = Math.round(targetCalories * (1 + adjustmentPercentage / 100));
     const proteinPerCalorie = parseFloat(currentGoals.targetProtein) / targetCalories;
     const carbPerCalorie = parseFloat(currentGoals.targetCarbs) / targetCalories;
@@ -253,6 +263,7 @@ export class AdvancedMacroManagementService {
     return {
       adjustmentPercentage,
       adjustmentReason,
+      adjustmentRecommendation: recommendationType, // Add this field for consistency
       newCalories,
       newProtein: Math.round(newCalories * proteinPerCalorie),
       newCarbs: Math.round(newCalories * carbPerCalorie),
@@ -278,6 +289,7 @@ export class AdvancedMacroManagementService {
         carbs: data.carbs.toString(),
         fat: data.fat.toString(),
         adjustmentReason: data.adjustmentReason,
+        adjustmentRecommendation: data.adjustmentRecommendation, // Add the recommendation
         previousWeight: data.previousWeight?.toString(),
         currentWeight: data.currentWeight?.toString(),
         adherencePercentage: data.adherencePercentage?.toString(),
