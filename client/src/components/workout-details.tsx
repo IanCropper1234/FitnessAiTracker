@@ -26,13 +26,27 @@ interface WorkoutSet {
 interface WorkoutExercise {
   id: number;
   exerciseId: number;
-  exerciseName: string;
-  primaryMuscle: string;
-  muscleGroups: string[];
-  sets: WorkoutSet[];
-  targetSets: number;
-  targetReps: string;
-  restPeriod: number;
+  exerciseName?: string;
+  primaryMuscle?: string;
+  muscleGroups?: string[];
+  sets?: WorkoutSet[];
+  targetSets?: number;
+  targetReps?: string;
+  restPeriod?: number;
+  actualReps?: string;
+  weight?: string;
+  rpe?: number;
+  isCompleted?: boolean;
+  setsData?: WorkoutSet[];
+  exercise?: {
+    name: string;
+    primaryMuscle: string;
+    muscleGroups: string[];
+  };
+  specialMethod?: string;
+  special_method?: string;
+  specialConfig?: any;
+  special_config?: any;
 }
 
 interface WorkoutSessionDetails {
@@ -227,14 +241,22 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {session.exercises.map((workoutExercise, index) => {
-            // Parse the stored sets data from actualReps and weight
-            const actualRepsArray = workoutExercise.actualReps ? workoutExercise.actualReps.split(',').map(r => parseInt(r)) : [];
-            const exerciseWeight = parseFloat(workoutExercise.weight || '0');
-            const exerciseRpe = workoutExercise.rpe || 0;
-            const exerciseSets = parseInt(workoutExercise.sets?.toString() || '0');
+            // Use setsData if available, otherwise parse from actualReps
+            const setsData = workoutExercise.setsData || [];
+            const actualRepsArray = setsData.length > 0 
+              ? setsData.map(set => set.actualReps) 
+              : (workoutExercise.actualReps ? workoutExercise.actualReps.split(',').map((r: string) => parseInt(r)) : []);
+            
+            const exerciseWeight = setsData.length > 0 
+              ? setsData[0]?.weight || 0 
+              : parseFloat(workoutExercise.weight || '0');
+            const exerciseRpe = setsData.length > 0 
+              ? setsData[0]?.rpe || 0 
+              : workoutExercise.rpe || 0;
+            const exerciseSets = setsData.length || parseInt(workoutExercise.sets?.toString() || '0');
             
             // Calculate volume from stored data
-            const exerciseVolume = actualRepsArray.reduce((sum, reps) => sum + (exerciseWeight * reps), 0);
+            const exerciseVolume = actualRepsArray.reduce((sum: number, reps: number) => sum + (exerciseWeight * reps), 0);
             const exerciseCompletedSets = workoutExercise.isCompleted ? actualRepsArray.length : 0;
             const exerciseProgress = exerciseSets > 0 ? (exerciseCompletedSets / exerciseSets) * 100 : 0;
             
@@ -244,6 +266,22 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
             const primaryMuscle = exerciseDetails?.primaryMuscle || 'Unknown muscle';
             const muscleGroups = exerciseDetails?.muscleGroups || [];
             
+            // Get special training method information
+            const specialMethod = workoutExercise.specialMethod || workoutExercise.special_method;
+            const specialConfig = workoutExercise.specialConfig || workoutExercise.special_config;
+            
+            // Format special method display name
+            const getSpecialMethodName = (method: string) => {
+              switch (method) {
+                case 'myorep_match': return 'Myo-Rep Match';
+                case 'myorep_no_match': return 'Myo-Rep No Match';
+                case 'drop_set': return 'Drop Set';
+                case 'superset': return 'Superset';
+                case 'giant_set': return 'Giant Set';
+                default: return method;
+              }
+            };
+            
             return (
               <div key={workoutExercise.id} className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -252,6 +290,11 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                     <p className="text-sm text-muted-foreground">
                       {primaryMuscle} • {Array.isArray(muscleGroups) ? muscleGroups.join(", ") : 'Multiple muscles'}
                     </p>
+                    {specialMethod && (
+                      <Badge variant="outline" className="mt-1 text-xs">
+                        {getSpecialMethodName(specialMethod)}
+                      </Badge>
+                    )}
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium">{exerciseVolume.toFixed(1)} kg volume</p>
@@ -265,21 +308,47 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                 
                 {/* Sets breakdown */}
                 <div className="grid gap-2">
-                  {actualRepsArray.map((reps, setIndex) => (
+                  {(setsData.length > 0 ? setsData : actualRepsArray.map((reps: number, setIndex: number) => ({
+                    actualReps: reps,
+                    weight: exerciseWeight,
+                    rpe: exerciseRpe,
+                    completed: true
+                  }))).map((setData: any, setIndex: number) => (
                     <div 
                       key={setIndex}
-                      className="flex items-center justify-between p-3  border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50"
+                      className="flex items-center justify-between p-3 border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50"
                     >
                       <span className="text-sm font-medium">Set {setIndex + 1}</span>
                       <div className="flex items-center gap-4 text-sm">
-                        <span>{exerciseWeight} kg × {reps} reps</span>
-                        {exerciseRpe > 0 && (
-                          <span className="text-muted-foreground">RPE {exerciseRpe}</span>
+                        <span>{setData.weight} kg × {setData.actualReps} reps</span>
+                        {setData.rpe > 0 && (
+                          <span className="text-muted-foreground">RPE {setData.rpe}</span>
                         )}
                         <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Special Training Method Details */}
+                  {specialMethod && specialConfig && (
+                    <div className="mt-2 p-3 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/30 dark:border-blue-500/50">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                          {getSpecialMethodName(specialMethod)}
+                        </span>
+                        {specialMethod === 'myorep_match' && specialConfig.miniSetRepsString && (
+                          <span className="text-xs text-blue-600/80 dark:text-blue-400/80">
+                            Mini-sets: {specialConfig.miniSetRepsString} reps
+                          </span>
+                        )}
+                      </div>
+                      {specialMethod === 'myorep_match' && specialConfig.totalCalculatedReps && (
+                        <div className="text-xs text-blue-600/60 dark:text-blue-400/60 mt-1">
+                          Total calculated reps: {specialConfig.totalCalculatedReps}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 
                 {index < session.exercises.length - 1 && <Separator />}
