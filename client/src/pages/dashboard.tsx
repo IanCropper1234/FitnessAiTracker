@@ -11,6 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 
 import { RecentActivity } from "@/components/recent-activity";
+import { DailyWellnessReminder } from "@/components/daily-wellness-reminder";
 import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Scale, Heart } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -452,6 +453,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
           {/* Recent Activity */}
           <RecentActivity userId={user.id} />
+        </div>
+
+        {/* Daily Wellness Check-in Reminder */}
+        <div className="mt-6">
+          <DailyWellnessReminder userId={user.id} />
         </div>
 
 
