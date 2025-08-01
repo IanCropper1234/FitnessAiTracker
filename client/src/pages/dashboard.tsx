@@ -388,7 +388,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Quick Actions */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[15px] mb-[15px]">
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[0px] mb-[0px]">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">Quick Actions</CardTitle>
               <CardDescription className="text-gray-600 dark:text-gray-400">
