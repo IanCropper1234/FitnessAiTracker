@@ -360,7 +360,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   miniSetReps: e.target.value
                 })}
                 placeholder="e.g., 8,4 (total: 12)"
-                className="h-7 text-xs bg-background/50 border-blue-500/20"
+                className="h-7 text-xs border-blue-500/20 bg-[#111418]"
               />
             </div>
             <div className="text-xs text-blue-300/70">
