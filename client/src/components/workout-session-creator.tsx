@@ -254,7 +254,7 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
 
             {/* Exercise Library */}
             {showExerciseLibrary && (
-              <Card className="border-dashed">
+              <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm border-dashed pl-[0px] pr-[0px] ml-[-15px] mr-[-15px]"></Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
                     <Search className="h-4 w-4" />
