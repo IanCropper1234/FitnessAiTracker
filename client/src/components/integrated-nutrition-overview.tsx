@@ -1616,7 +1616,7 @@ export function IntegratedNutritionOverview({
                   }}
                   className="text-xs h-6 px-2"
                 >
-                  Edit
+                  {bulkMode ? "Done" : "Edit"}
                 </Button>
               )}
               <Button 
