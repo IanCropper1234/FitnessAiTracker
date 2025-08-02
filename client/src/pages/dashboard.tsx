@@ -230,8 +230,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   const today = TimezoneUtils.formatForDisplay(selectedDate, 'en-US');
 
-  // Check if we're in a loading state for the main dashboard
-  const isDashboardLoading = nutritionLoading || trainingLoading || bodyMetricsLoading;
+  // Check if we're in a loading state for the main dashboard (only on initial load)
+  const isDashboardLoading = (nutritionLoading || trainingLoading || bodyMetricsLoading) && 
+                              (!nutritionSummary && !trainingStats && !bodyMetrics);
   
   // Check for authentication errors
   const hasAuthError = nutritionError?.message === 'Not authenticated' || 
@@ -265,8 +266,8 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     setLocation('/training');
   };
 
-  // Show loading state for dashboard on initial load
-  if (isDashboardLoading && !nutritionSummary && !trainingStats && !bodyMetrics) {
+  // Show loading state for dashboard on initial load - show loading if any core data is still loading
+  if (isDashboardLoading) {
     return (
       <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[5px] pr-[5px] ml-[-3px] mr-[-3px]">
         <div className="content-container section-spacing !px-0">
