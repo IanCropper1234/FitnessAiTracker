@@ -196,24 +196,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           
           // Transform stored config format to UI format based on method
           if (exercise.specialMethod === 'myorep_match' || exercise.specialMethod === 'myorep_no_match') {
-            // For Myorep methods, handle different config formats
-            if (exercise.specialConfig.miniSetRepsString) {
-              // New string format from execution phase
-              uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
-            } else if (exercise.specialConfig.miniSetReps) {
-              // Already in correct string format
-              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
-            } else if (exercise.specialConfig.targetReps && exercise.specialConfig.miniSets) {
-              // Legacy format from creation phase - convert to string format
-              // Example: targetReps=15, miniSets=3 -> "15,15,15" (repeat target reps for each mini set)
-              const repsArray = Array(exercise.specialConfig.miniSets).fill(exercise.specialConfig.targetReps);
-              uiConfig.miniSetReps = repsArray.join(',');
-            }
-            
-            // Ensure other fields are preserved
-            uiConfig.targetReps = exercise.specialConfig.targetReps;
-            uiConfig.miniSets = exercise.specialConfig.miniSets;
-            uiConfig.restSeconds = exercise.specialConfig.restSeconds;
+            // For Myorep methods, use the same structure as creation phase
+            uiConfig.targetReps = exercise.specialConfig.targetReps || 15;
+            uiConfig.miniSets = exercise.specialConfig.miniSets || 3;
+            uiConfig.restSeconds = exercise.specialConfig.restSeconds || 20;
+            uiConfig.activationSet = exercise.specialConfig.activationSet !== false; // Default to true
           }
           
           if (exercise.specialMethod === 'drop_set') {

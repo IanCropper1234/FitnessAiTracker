@@ -467,21 +467,58 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <Target className="h-3 w-3" />
               Myorep Match Configuration
             </div>
-            <div>
-              <label className="text-xs text-blue-300">Mini-Set Reps</label>
-              <Input
-                type="text"
-                value={specialConfig?.miniSetReps || ''}
-                onChange={(e) => onSpecialConfigChange?.({
-                  ...specialConfig,
-                  miniSetReps: e.target.value
-                })}
-                placeholder="e.g., 8,4 (total: 12)"
-                className="h-7 text-xs border-blue-500/20 bg-[#111418]"
-              />
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-xs text-blue-300">Target Reps</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.targetReps || 15}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    targetReps: parseInt(e.target.value) || 15,
+                    miniSets: specialConfig?.miniSets || 3,
+                    restSeconds: specialConfig?.restSeconds || 20
+                  })}
+                  min="10"
+                  max="20"
+                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-blue-300">Mini Sets</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.miniSets || 3}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: parseInt(e.target.value) || 3,
+                    targetReps: specialConfig?.targetReps || 15,
+                    restSeconds: specialConfig?.restSeconds || 20
+                  })}
+                  min="1"
+                  max="5"
+                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-blue-300">Rest (sec)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.restSeconds || 20}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    restSeconds: parseInt(e.target.value) || 20,
+                    targetReps: specialConfig?.targetReps || 15,
+                    miniSets: specialConfig?.miniSets || 3
+                  })}
+                  min="15"
+                  max="30"
+                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                />
+              </div>
             </div>
             <div className="text-xs text-blue-300/70">
-              Enter comma-separated rep counts for each mini-set (e.g., "8,4" = 12 total reps)
+              Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets of {specialConfig?.targetReps || 15} reps with {specialConfig?.restSeconds || 20}s rest
             </div>
           </div>
         )}
@@ -490,10 +527,42 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <div className="bg-blue-500/10 border border-blue-500/20  p-2 space-y-2">
             <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
               <Zap className="h-3 w-3" />
-              Myorep No Match
+              Myorep No Match Configuration
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-blue-300">Mini Sets</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.miniSets || 3}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: parseInt(e.target.value) || 3,
+                    restSeconds: specialConfig?.restSeconds || 20
+                  })}
+                  min="1"
+                  max="5"
+                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-blue-300">Rest (sec)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.restSeconds || 20}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    restSeconds: parseInt(e.target.value) || 20,
+                    miniSets: specialConfig?.miniSets || 3
+                  })}
+                  min="15"
+                  max="30"
+                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                />
+              </div>
             </div>
             <div className="text-xs text-blue-300/70">
-              Perform activation set followed by mini-sets with 20-30s rest
+              Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets with as many reps as possible
             </div>
           </div>
         )}
