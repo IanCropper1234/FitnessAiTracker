@@ -189,7 +189,7 @@ export function CreateWorkoutSession() {
 
   const handleSpecialMethodChange = (index: number, method: string) => {
     const template = exerciseTemplates[index];
-    if (method === '') {
+    if (method === 'none' || method === '') {
       updateExerciseTemplate(index, 'specialMethod', undefined);
       updateExerciseTemplate(index, 'specialConfig', undefined);
     } else {
@@ -444,14 +444,14 @@ export function CreateWorkoutSession() {
                   <div className="space-y-2">
                     <Label>Special Training Method (optional)</Label>
                     <Select 
-                      value={template.specialMethod || ""} 
+                      value={template.specialMethod || "none"} 
                       onValueChange={(value) => handleSpecialMethodChange(index, value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select special method..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         <SelectItem value="myorep_match">Myorep Match</SelectItem>
                         <SelectItem value="myorep_no_match">Myorep No Match</SelectItem>
                         <SelectItem value="drop_set">Drop Set</SelectItem>
