@@ -16,6 +16,14 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 - ✅ Enhanced loading logic to prevent PWA-specific state issues
 - ✅ Added comprehensive debugging and error handling for PWA lifecycle
 
+**Dialog & Selector Fixes (Aug 2, 2025):**
+- ✅ Fixed critical dialog overlay z-index issues preventing selector interaction
+- ✅ Removed problematic backdrop-filter that blocked touch events
+- ✅ Adjusted z-index hierarchy: DialogOverlay (z-50), DialogContent (z-60), SelectContent (z-100/200)
+- ✅ Enhanced dialog overlay transparency from 50% to 80% for better visual contrast
+- ✅ Updated exercise library Card styling with extended width (ml-[-15px] mr-[-15px])
+- ✅ Ensured filter dropdown menu functionality within dialog modals
+
 **Smart UI & UX Improvements (Aug 2, 2025):**
 - ✅ Fixed bulk edit button text logic: "Edit" → "Done" when activated
 - ✅ Corrected 'Log Food' quick action redirect from `/nutrition` to `/add-food`
