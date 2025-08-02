@@ -31,6 +31,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
   const [customMinutes, setCustomMinutes] = useState(3);
   const [customSeconds, setCustomSeconds] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [hasDragged, setHasDragged] = useState(false);
   const [fabPosition, setFabPosition] = useState<{ x: number; y: number } | null>(null);
 
   // Format time to mm:ss
@@ -66,7 +67,9 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!draggable) return;
     
+    e.preventDefault();
     setIsDragging(true);
+    setHasDragged(false);
     
     // Get current position or default to current element position
     const rect = e.currentTarget.getBoundingClientRect();
@@ -75,10 +78,17 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     
     const startX = e.clientX;
     const startY = e.clientY;
+    let dragDistance = 0;
     
     const handleMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
+      dragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      
+      // Only mark as dragged if moved more than 5px
+      if (dragDistance > 5) {
+        setHasDragged(true);
+      }
       
       setFabPosition({
         x: currentX + deltaX,
@@ -87,8 +97,14 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     };
     
     const handleMouseUp = () => {
-      setIsDragging(false);
-      snapToEdge();
+      setTimeout(() => {
+        setIsDragging(false);
+        setHasDragged(false);
+      }, 100); // Small delay to prevent click after drag
+      
+      if (hasDragged) {
+        snapToEdge();
+      }
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -103,6 +119,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     
     e.preventDefault();
     setIsDragging(true);
+    setHasDragged(false);
     
     const rect = e.currentTarget.getBoundingClientRect();
     const currentX = fabPosition?.x ?? rect.left;
@@ -111,11 +128,18 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     const touch = e.touches[0];
     const startX = touch.clientX;
     const startY = touch.clientY;
+    let dragDistance = 0;
     
     const handleTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0];
       const deltaX = touch.clientX - startX;
       const deltaY = touch.clientY - startY;
+      dragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      
+      // Only mark as dragged if moved more than 5px
+      if (dragDistance > 5) {
+        setHasDragged(true);
+      }
       
       setFabPosition({
         x: currentX + deltaX,
@@ -124,8 +148,14 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     };
     
     const handleTouchEnd = () => {
-      setIsDragging(false);
-      snapToEdge();
+      setTimeout(() => {
+        setIsDragging(false);
+        setHasDragged(false);
+      }, 100); // Small delay to prevent click after drag
+      
+      if (hasDragged) {
+        snapToEdge();
+      }
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
     };
@@ -352,7 +382,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       <button
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
-        onClick={() => !isDragging && setIsExpanded(true)}
+        onClick={() => !hasDragged && !isDragging && setIsExpanded(true)}
         className={`fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
