@@ -351,12 +351,14 @@ body:has([data-radix-select-content][data-state="open"]) {
   }
 }
 
-@keyframes ios-spinner {
-  0% {
-    transform: rotate(0deg);
+@keyframes ios-pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
   }
-  100% {
-    transform: rotate(360deg);
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
   }
 }
 
@@ -453,10 +455,19 @@ body:has([data-radix-select-content][data-state="open"]) {
 .ios-spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--muted);
-  border-top: 2px solid var(--primary);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ios-spinner::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
   border-radius: 50%;
-  animation: ios-spinner 0.8s linear infinite;
+  animation: ios-pulse 1.2s ease-in-out infinite;
 }
 
 .ios-dots-loading {
