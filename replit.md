@@ -15,6 +15,8 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 - ✅ Fixed mesocycle status display to only show active mesocycles
 - ✅ Applied consistent button styling with brand colors
 - ✅ Enhanced user experience with intelligent defaults for food logging
+- ✅ Added meal type selectors to Recent Foods and Saved Meals tabs
+- ✅ Added "Today" quick navigation button to iOS date picker interface
 
 **Mesocycle Display Logic Enhancement (Aug 1, 2025):**
 - ✅ Added mesocycle name labels to workout session titles for improved organization
