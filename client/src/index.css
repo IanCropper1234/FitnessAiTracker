@@ -33,6 +33,14 @@
   div[class*="border"] {
     border-radius: 0 !important;
   }
+
+  /* Exception for circular timer FAB - force circular shape */
+  .timer-fab-circle,
+  .timer-fab-circle *,
+  .timer-fab-circle::before,
+  .timer-fab-circle::after {
+    border-radius: 50% !important;
+  }
 }
 
 /* Hide scrollbars for better mobile UX */

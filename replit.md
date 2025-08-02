@@ -13,6 +13,8 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 - ✅ Enhanced draggable functionality with smooth circular animations
 - ✅ Applied consistent circular shape to all timer states (active, inactive, hover)
 - ✅ Improved visual consistency with iOS-style floating action button design
+- ✅ Fixed global CSS override issue by creating .timer-fab-circle exception class
+- ✅ Ensured circular design works despite global border-radius: 0 !important rule
 
 **Workout Session Creator Architecture Change (Aug 2, 2025):**
 - ✅ Converted workout session creator from modal dialog to standalone page `/create-workout-session`
