@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { LoadingState } from "@/components/ui/loading";
 
 interface TrainingStats {
   totalSessions: number;
@@ -21,13 +22,16 @@ interface TrainingOverviewProps {
 export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
   const dateQueryParam = date ? date.toISOString().split('T')[0] : '';
   
-  const { data: trainingStats } = useQuery<TrainingStats>({
+  const { data: trainingStats, isLoading } = useQuery<TrainingStats>({
     queryKey: ['/api/training/stats', userId, dateQueryParam],
     queryFn: async () => {
       const url = dateQueryParam 
         ? `/api/training/stats?date=${dateQueryParam}`
         : `/api/training/stats`;
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch training stats');
       return response.json();
     }
   });
@@ -42,6 +46,14 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
     { name: 'Legs', value: 25, color: '#F59E0B' },
     { name: 'Cardio', value: 10, color: '#EF4444' }
   ];
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
+        <LoadingState />
+      </div>
+    );
+  }
 
   if (!trainingStats) {
     return (

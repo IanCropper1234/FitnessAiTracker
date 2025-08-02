@@ -20,6 +20,7 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 - ✅ Replaced square border loading animation with modern pulsing dot animation
 - ✅ Optimized "Today" button positioning to right edge for better visual balance
 - ✅ Fixed dashboard loading state logic to prevent indefinite loading after user authentication
+- ✅ Added consistent loading animations to training section matching nutrition section style
 
 **Mesocycle Display Logic Enhancement (Aug 1, 2025):**
 - ✅ Added mesocycle name labels to workout session titles for improved organization

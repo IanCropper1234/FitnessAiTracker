@@ -392,7 +392,13 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           </CardHeader>
           <CardContent className="p-6 pl-[0px] pr-[0px] pt-[0px] pb-[0px] mt-[0px] mb-[0px] ml-[0px] mr-[0px]">
             {showTrainingOverview ? (
-              <TrainingOverview userId={user.id} date={currentDate} />
+              trainingLoading ? (
+                <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
+                  <LoadingState />
+                </div>
+              ) : (
+                <TrainingOverview userId={user.id} date={currentDate} />
+              )
             ) : (
               nutritionLoading ? (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
