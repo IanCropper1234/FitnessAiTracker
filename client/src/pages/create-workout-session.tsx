@@ -28,6 +28,21 @@ interface ExerciseTemplate {
   targetReps: string;
   restPeriod: number;
   notes: string;
+  specialMethod?: string;
+  specialConfig?: {
+    // Myorep Configuration
+    activationSet?: boolean;
+    targetReps?: number;
+    restSeconds?: number;
+    miniSets?: number;
+    // Dropset Configuration
+    weightReductions?: number[];
+    dropRestSeconds?: number;
+    // Giant Set Configuration
+    totalTargetReps?: number;
+    miniSetReps?: number;
+    giantRestSeconds?: number;
+  };
 }
 
 export function CreateWorkoutSession() {
@@ -113,6 +128,8 @@ export function CreateWorkoutSession() {
       targetReps: "8-12",
       restPeriod: 90,
       notes: "",
+      specialMethod: undefined,
+      specialConfig: undefined,
     };
     setExerciseTemplates(prev => [...prev, template]);
   };
@@ -125,6 +142,60 @@ export function CreateWorkoutSession() {
     setExerciseTemplates(prev => prev.map((template, i) => 
       i === index ? { ...template, [field]: value } : template
     ));
+  };
+
+  const updateSpecialConfig = (index: number, configField: string, value: any) => {
+    setExerciseTemplates(prev => prev.map((template, i) => 
+      i === index ? { 
+        ...template, 
+        specialConfig: { 
+          ...template.specialConfig, 
+          [configField]: value 
+        } 
+      } : template
+    ));
+  };
+
+  const getSpecialMethodDefaults = (method: string) => {
+    switch (method) {
+      case 'myorep_match':
+        return {
+          activationSet: true,
+          targetReps: 15,
+          restSeconds: 20,
+          miniSets: 3
+        };
+      case 'myorep_no_match':
+        return {
+          activationSet: true,
+          restSeconds: 20,
+          miniSets: 3
+        };
+      case 'drop_set':
+        return {
+          weightReductions: [15, 15, 15],
+          dropRestSeconds: 10
+        };
+      case 'giant_set':
+        return {
+          totalTargetReps: 40,
+          miniSetReps: 8,
+          giantRestSeconds: 10
+        };
+      default:
+        return {};
+    }
+  };
+
+  const handleSpecialMethodChange = (index: number, method: string) => {
+    const template = exerciseTemplates[index];
+    if (method === '') {
+      updateExerciseTemplate(index, 'specialMethod', undefined);
+      updateExerciseTemplate(index, 'specialConfig', undefined);
+    } else {
+      updateExerciseTemplate(index, 'specialMethod', method);
+      updateExerciseTemplate(index, 'specialConfig', getSpecialMethodDefaults(method));
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -148,12 +219,15 @@ export function CreateWorkoutSession() {
 
     const sessionData = {
       name: sessionName.trim(),
-      exercises: exerciseTemplates.map(template => ({
+      exercises: exerciseTemplates.map((template, index) => ({
         exerciseId: template.exerciseId,
+        orderIndex: index + 1,
         sets: template.sets,
         targetReps: template.targetReps,
         restPeriod: template.restPeriod,
         notes: template.notes || null,
+        specialMethod: template.specialMethod || null,
+        specialConfig: template.specialConfig || null,
       })),
     };
 
@@ -365,6 +439,184 @@ export function CreateWorkoutSession() {
                       />
                     </div>
                   </div>
+                  
+                  {/* Special Training Method Selection */}
+                  <div className="space-y-2">
+                    <Label>Special Training Method (optional)</Label>
+                    <Select 
+                      value={template.specialMethod || ""} 
+                      onValueChange={(value) => handleSpecialMethodChange(index, value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select special method..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="myorep_match">Myorep Match</SelectItem>
+                        <SelectItem value="myorep_no_match">Myorep No Match</SelectItem>
+                        <SelectItem value="drop_set">Drop Set</SelectItem>
+                        <SelectItem value="giant_set">Giant Set</SelectItem>
+                        <SelectItem value="superset">Superset</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Special Method Configuration */}
+                  {template.specialMethod && template.specialConfig && (
+                    <div className="p-4 border bg-muted/50 space-y-3">
+                      <h4 className="font-medium text-sm">
+                        {template.specialMethod === 'myorep_match' && 'Myorep Match Configuration'}
+                        {template.specialMethod === 'myorep_no_match' && 'Myorep No Match Configuration'}
+                        {template.specialMethod === 'drop_set' && 'Drop Set Configuration'}
+                        {template.specialMethod === 'giant_set' && 'Giant Set Configuration'}
+                        {template.specialMethod === 'superset' && 'Superset Configuration'}
+                      </h4>
+                      
+                      {/* Myorep Match Configuration */}
+                      {template.specialMethod === 'myorep_match' && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Target Reps</Label>
+                            <Input
+                              type="number"
+                              min="10"
+                              max="20"
+                              value={template.specialConfig.targetReps || 15}
+                              onChange={(e) => updateSpecialConfig(index, 'targetReps', parseInt(e.target.value) || 15)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Mini Sets</Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="5"
+                              value={template.specialConfig.miniSets || 3}
+                              onChange={(e) => updateSpecialConfig(index, 'miniSets', parseInt(e.target.value) || 3)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Rest (seconds)</Label>
+                            <Input
+                              type="number"
+                              min="15"
+                              max="30"
+                              value={template.specialConfig.restSeconds || 20}
+                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 20)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Myorep No Match Configuration */}
+                      {template.specialMethod === 'myorep_no_match' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Mini Sets</Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="5"
+                              value={template.specialConfig.miniSets || 3}
+                              onChange={(e) => updateSpecialConfig(index, 'miniSets', parseInt(e.target.value) || 3)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Rest (seconds)</Label>
+                            <Input
+                              type="number"
+                              min="15"
+                              max="30"
+                              value={template.specialConfig.restSeconds || 20}
+                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 20)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Drop Set Configuration */}
+                      {template.specialMethod === 'drop_set' && (
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Weight Reductions (%)</Label>
+                            <div className="flex gap-2">
+                              {(template.specialConfig.weightReductions || [15, 15, 15]).map((reduction, dropIndex) => (
+                                <Input
+                                  key={dropIndex}
+                                  type="number"
+                                  min="5"
+                                  max="30"
+                                  value={reduction}
+                                  onChange={(e) => {
+                                    const newReductions = [...(template.specialConfig?.weightReductions || [15, 15, 15])];
+                                    newReductions[dropIndex] = parseInt(e.target.value) || 15;
+                                    updateSpecialConfig(index, 'weightReductions', newReductions);
+                                  }}
+                                  className="w-20"
+                                  placeholder={`Drop ${dropIndex + 1}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Rest Between Drops (seconds)</Label>
+                            <Input
+                              type="number"
+                              min="5"
+                              max="15"
+                              value={template.specialConfig.dropRestSeconds || 10}
+                              onChange={(e) => updateSpecialConfig(index, 'dropRestSeconds', parseInt(e.target.value) || 10)}
+                              className="w-32"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Giant Set Configuration */}
+                      {template.specialMethod === 'giant_set' && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Total Target Reps</Label>
+                            <Input
+                              type="number"
+                              min="30"
+                              max="60"
+                              value={template.specialConfig.totalTargetReps || 40}
+                              onChange={(e) => updateSpecialConfig(index, 'totalTargetReps', parseInt(e.target.value) || 40)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Mini Set Reps</Label>
+                            <Input
+                              type="number"
+                              min="5"
+                              max="15"
+                              value={template.specialConfig.miniSetReps || 8}
+                              onChange={(e) => updateSpecialConfig(index, 'miniSetReps', parseInt(e.target.value) || 8)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Rest (seconds)</Label>
+                            <Input
+                              type="number"
+                              min="5"
+                              max="15"
+                              value={template.specialConfig.giantRestSeconds || 10}
+                              onChange={(e) => updateSpecialConfig(index, 'giantRestSeconds', parseInt(e.target.value) || 10)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Show method description */}
+                      <div className="text-xs text-muted-foreground">
+                        {template.specialMethod === 'myorep_match' && 'Myorep Match: Perform activation set to near failure, then complete mini-sets matching the target reps until you can no longer achieve the target.'}
+                        {template.specialMethod === 'myorep_no_match' && 'Myorep No Match: Perform activation set to near failure, then complete mini-sets with as many reps as possible until significant drop-off.'}
+                        {template.specialMethod === 'drop_set' && 'Drop Set: Perform set to failure, then immediately reduce weight and continue for additional sets.'}
+                        {template.specialMethod === 'giant_set' && 'Giant Set: Perform one exercise with very short rest periods between mini-sets to accumulate high volume.'}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="space-y-2">
                     <Label>Notes (optional)</Label>
