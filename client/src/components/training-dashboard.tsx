@@ -685,10 +685,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       .trim();
   };
 
-
-
-
-
   // Start workout session
   const startWorkoutSession = (sessionId: number) => {
     setActiveSessionId(sessionId);
@@ -991,34 +987,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             />
           </div>
 
-          {/* Selected exercises indicator - Compact */}
-          {selectedExercises.length > 0 && (
-            <div className="bg-muted p-3 ">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium text-sm">Selected ({selectedExercises.length})</h4>
-                <Button 
-                  onClick={() => setShowSessionCreator(true)}
-                  disabled={selectedExercises.length === 0}
-                  size="sm"
-                >
-                  Create Session
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {selectedExercises.map((exercise) => (
-                  <Badge key={exercise.id} className="text-xs h-6 px-2 !bg-[#479bf5] !text-[#fcfcfc] !border-transparent hover:!bg-[#3a7dd8]">
-                    <span className="truncate max-w-20">{exercise.name}</span>
-                    <button
-                      onClick={() => setSelectedExercises(prev => prev.filter(ex => ex.id !== exercise.id))}
-                      className="ml-1 hover:text-destructive text-xs"
-                    >
-                      ×
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
+
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-3">
@@ -1156,21 +1125,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                       <Button 
                         size="sm" 
                         className="w-full h-7 text-xs font-medium"
-                        variant={isInWorkout(exercise.id) ? "secondary" : "default"}
-                        onClick={() => addToWorkout(exercise)}
-                        disabled={isInWorkout(exercise.id)}
+                        onClick={() => setLocation('/create-workout-session')}
                       >
-                        {isInWorkout(exercise.id) ? (
-                          <>
-                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                            Added
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-3 w-3 mr-1" />
-                            Add to Workout
-                          </>
-                        )}
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add to Workout
                       </Button>
                       <div className="flex justify-center">
                         <ExerciseManagement exercise={exercise} />

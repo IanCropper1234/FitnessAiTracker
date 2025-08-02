@@ -8,6 +8,15 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Workout Session Creator Architecture Change (Aug 2, 2025):**
+- ✅ Converted workout session creator from modal dialog to standalone page `/create-workout-session`
+- ✅ Added full-screen exercise library experience with search and filtering
+- ✅ Implemented navigation routing with back button to training dashboard
+- ✅ Removed all dialog-related code and state management from training dashboard
+- ✅ Fixed JavaScript runtime error: "selectedExercises is not defined"
+- ✅ Updated all "New Workout" buttons to navigate to standalone page
+- ✅ Cleaned up unused functions and imports for better code maintainability
+
 **iOS PWA Loading Bug Resolution (Aug 2, 2025):**
 - ✅ Fixed critical iOS PWA reload infinite loading issue
 - ✅ Implemented 3-second loading timeout failsafe mechanism
