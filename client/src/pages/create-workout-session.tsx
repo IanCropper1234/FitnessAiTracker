@@ -177,12 +177,6 @@ export function CreateWorkoutSession() {
           <ArrowLeft className="h-4 w-4" />
           Back to Training
         </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Dumbbell className="h-6 w-6" />
-            Create Workout Session
-          </h1>
-        </div>
       </div>
 
       <div className="space-y-6">
