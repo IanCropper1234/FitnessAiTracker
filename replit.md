@@ -8,6 +8,14 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**iOS PWA Loading Bug Resolution (Aug 2, 2025):**
+- ✅ Fixed critical iOS PWA reload infinite loading issue
+- ✅ Implemented 5-second loading timeout failsafe mechanism
+- ✅ Disabled aggressive cache clearing that caused reload problems
+- ✅ Optimized React Query cache strategy (10min staleTime, 30min gcTime)
+- ✅ Enhanced loading logic to prevent PWA-specific state issues
+- ✅ Added comprehensive debugging and error handling for PWA lifecycle
+
 **Smart UI & UX Improvements (Aug 2, 2025):**
 - ✅ Fixed bulk edit button text logic: "Edit" → "Done" when activated
 - ✅ Corrected 'Log Food' quick action redirect from `/nutrition` to `/add-food`
