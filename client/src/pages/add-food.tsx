@@ -856,6 +856,23 @@ export function AddFood({ user }: AddFoodProps) {
                     <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Recent Foods</Label>
                   </div>
                   
+                  {/* Meal Type Selection for Recent Foods */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">Add to Meal Type</Label>
+                    <Select value={mealType} onValueChange={setMealType}>
+                      <SelectTrigger className="h-8 text-xs ios-touch-feedback">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="breakfast">Breakfast</SelectItem>
+                        <SelectItem value="lunch">Lunch</SelectItem>
+                        <SelectItem value="dinner">Dinner</SelectItem>
+                        <SelectItem value="snack">Snack</SelectItem>
+                        <SelectItem value="supplementation">Supplementation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                   {Array.isArray(foodHistory) && foodHistory.length > 0 ? (
                 <>
                   {/* History Search */}
@@ -934,6 +951,23 @@ export function AddFood({ user }: AddFoodProps) {
                   <div className="flex items-center gap-2">
                     <Utensils className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Saved Meals</Label>
+                  </div>
+                  
+                  {/* Meal Type Selection for Saved Meals */}
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">Add to Meal Type</Label>
+                    <Select value={mealType} onValueChange={setMealType}>
+                      <SelectTrigger className="h-8 text-xs ios-touch-feedback">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="breakfast">Breakfast</SelectItem>
+                        <SelectItem value="lunch">Lunch</SelectItem>
+                        <SelectItem value="dinner">Dinner</SelectItem>
+                        <SelectItem value="snack">Snack</SelectItem>
+                        <SelectItem value="supplementation">Supplementation</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   {Array.isArray(savedMeals) && savedMeals.length > 0 ? (
