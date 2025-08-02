@@ -10,7 +10,7 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 **iOS PWA Loading Bug Resolution (Aug 2, 2025):**
 - ✅ Fixed critical iOS PWA reload infinite loading issue
-- ✅ Implemented 5-second loading timeout failsafe mechanism
+- ✅ Implemented 3-second loading timeout failsafe mechanism
 - ✅ Disabled aggressive cache clearing that caused reload problems
 - ✅ Optimized React Query cache strategy (10min staleTime, 30min gcTime)
 - ✅ Enhanced loading logic to prevent PWA-specific state issues

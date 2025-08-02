@@ -235,14 +235,14 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const hasAnyData = nutritionSummary || trainingStats || bodyMetrics;
   const isInitialLoad = !hasAnyData && (nutritionLoading || trainingLoading || bodyMetricsLoading);
   
-  // Add timeout failsafe: never show loading for more than 5 seconds on PWA reload
+  // Add timeout failsafe: never show loading for more than 3 seconds on PWA reload
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   useEffect(() => {
     if (isInitialLoad) {
       const timer = setTimeout(() => {
-        console.log('Loading timeout reached (5s) - displaying dashboard with available data');
+        console.log('Loading timeout reached (3s) - displaying dashboard with available data');
         setLoadingTimeout(true);
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     } else {
       setLoadingTimeout(false);
