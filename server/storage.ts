@@ -504,7 +504,12 @@ export class MemStorage implements IStorage {
       restPeriod: exercise.restPeriod || null,
       notes: exercise.notes || null,
       finishedAt: exercise.finishedAt || null,
-      weightUnit: exercise.weightUnit || null
+      weightUnit: exercise.weightUnit || null,
+      specialMethod: exercise.specialMethod || null,
+      specialConfig: exercise.specialConfig || null,
+      linkedExercises: exercise.linkedExercises || null,
+      specialTrainingMethod: exercise.specialTrainingMethod || null,
+      specialMethodData: exercise.specialMethodData || null
     };
     this.workoutExercises.set(newExercise.id, newExercise);
     return newExercise;

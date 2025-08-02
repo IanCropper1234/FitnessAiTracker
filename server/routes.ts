@@ -1440,7 +1440,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           actualReps: null,
           rpe: null,
           rir: null,
-          isCompleted: false
+          isCompleted: false,
+          specialMethod: exercise.specialMethod || null,
+          specialConfig: exercise.specialConfig || null
         });
       }
 
