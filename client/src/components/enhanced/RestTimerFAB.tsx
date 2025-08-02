@@ -97,14 +97,16 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     };
     
     const handleMouseUp = () => {
-      setTimeout(() => {
-        setIsDragging(false);
-        setHasDragged(false);
-      }, 100); // Small delay to prevent click after drag
+      setIsDragging(false);
       
       if (hasDragged) {
         snapToEdge();
+        // Reset hasDragged after a small delay to prevent immediate click
+        setTimeout(() => setHasDragged(false), 50);
+      } else {
+        setHasDragged(false);
       }
+      
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -148,14 +150,16 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     };
     
     const handleTouchEnd = () => {
-      setTimeout(() => {
-        setIsDragging(false);
-        setHasDragged(false);
-      }, 100); // Small delay to prevent click after drag
+      setIsDragging(false);
       
       if (hasDragged) {
         snapToEdge();
+        // Reset hasDragged after a small delay to prevent immediate click
+        setTimeout(() => setHasDragged(false), 50);
+      } else {
+        setHasDragged(false);
       }
+      
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
     };
@@ -382,7 +386,12 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       <button
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
-        onClick={() => !hasDragged && !isDragging && setIsExpanded(true)}
+        onClick={(e) => {
+          e.preventDefault();
+          if (!hasDragged && !isDragging) {
+            setIsExpanded(true);
+          }
+        }}
         className={`fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
