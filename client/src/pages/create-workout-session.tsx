@@ -165,7 +165,7 @@ export function CreateWorkoutSession() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
+    <div className="container mx-auto p-4 max-w-6xl pl-[5px] pr-[5px] pt-[16px] pb-[16px]">
       {/* Header with back button */}
       <div className="flex items-center gap-4 mb-6">
         <Button
@@ -178,7 +178,6 @@ export function CreateWorkoutSession() {
           Back to Training
         </Button>
       </div>
-
       <div className="space-y-6">
         {/* Session Name */}
         <Card>
