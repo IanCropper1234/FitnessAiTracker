@@ -129,7 +129,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
       label: "Log Food",
       description: "Add a meal to your nutrition diary",
       action: () => {
-        setLocation("/nutrition");
+        setLocation("/add-food");
         onClose();
       }
     },

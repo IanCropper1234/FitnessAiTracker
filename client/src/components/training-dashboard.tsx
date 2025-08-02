@@ -977,7 +977,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                         <Button 
                           onClick={() => setShowSessionCreator(true)} 
                           size="sm" 
-                          className="mt-2"
+                          className="mt-2 bg-[#3c81f6]"
                         >
                           <Plus className="h-4 w-4 mr-1" />
                           Start Workout
