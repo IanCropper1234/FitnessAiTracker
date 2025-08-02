@@ -16,6 +16,7 @@ import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
 import { AddFood } from "./pages/add-food";
 import { TrainingPage } from "./pages/training";
+import { CreateWorkoutSession } from "./pages/create-workout-session";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
@@ -153,6 +154,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/training">
           <AnimatedPage>
             {user ? <TrainingPage user={user} activeTab={activeTrainingTab} onTabChange={setActiveTrainingTab} /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/create-workout-session">
+          <AnimatedPage>
+            {user ? <CreateWorkoutSession /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route path="/reports">

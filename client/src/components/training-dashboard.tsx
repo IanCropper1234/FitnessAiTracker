@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,6 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
-import { WorkoutSessionCreator } from "./workout-session-creator";
 import { WorkoutExecutionWrapper } from "./WorkoutExecutionWrapper";
 import { WorkoutDetails } from "./workout-details";
 import { VolumeLandmarks } from "./volume-landmarks";
@@ -467,10 +467,10 @@ interface TrainingDashboardProps {
 }
 
 export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingDashboardProps) {
+  const [, setLocation] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
-  const [showSessionCreator, setShowSessionCreator] = useState(false);
+
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
@@ -685,23 +685,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       .trim();
   };
 
-  // Add exercise to workout function
-  const addToWorkout = (exercise: Exercise) => {
-    if (!selectedExercises.find(ex => ex.id === exercise.id)) {
-      setSelectedExercises([...selectedExercises, exercise]);
-    }
-  };
 
-  // Check if exercise is already in workout
-  const isInWorkout = (exerciseId: number) => {
-    return selectedExercises.some(ex => ex.id === exerciseId);
-  };
 
-  // Handle session creation success
-  const handleSessionCreated = () => {
-    setShowSessionCreator(false);
-    setSelectedExercises([]);
-  };
+
 
   // Start workout session
   const startWorkoutSession = (sessionId: number) => {
@@ -839,7 +825,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 <p className="text-gray-600 dark:text-gray-400">No scheduled workout for today</p>
                 <Button 
                   className="mt-2"
-                  onClick={() => setShowSessionCreator(true)}
+                  onClick={() => setLocation('/create-workout-session')}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create Quick Workout
@@ -857,7 +843,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
               </p>
             </div>
-            <Button onClick={() => setShowSessionCreator(true)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap  text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] bg-[#3c81f6]">
+            <Button onClick={() => setLocation('/create-workout-session')} className="inline-flex items-center justify-center gap-2 whitespace-nowrap  text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] bg-[#3c81f6]">
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
@@ -871,7 +857,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                 <p className="text-muted-foreground text-center mb-4">
                   Start your fitness journey by creating your first workout session.
                 </p>
-                <Button onClick={() => setShowSessionCreator(true)}>
+                <Button onClick={() => setLocation('/create-workout-session')}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Workout
                 </Button>
@@ -967,7 +953,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                           {sessionFilter === 'all' && 'No sessions found'}
                         </div>
                         <Button 
-                          onClick={() => setShowSessionCreator(true)} 
+                          onClick={() => setLocation('/create-workout-session')} 
                           size="sm" 
                           className="mt-2 bg-[#3c81f6]"
                         >
@@ -1267,13 +1253,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           <LoadProgressionTracker userId={userId} />
         </TabsContent>
       </Tabs>
-      {/* Workout Session Creator Dialog */}
-      <WorkoutSessionCreator
-        selectedExercises={selectedExercises}
-        isOpen={showSessionCreator}
-        onClose={() => setShowSessionCreator(false)}
-        onSuccess={handleSessionCreated}
-      />
+
       {/* Workout Execution Modal */}
       {executingSessionId && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
