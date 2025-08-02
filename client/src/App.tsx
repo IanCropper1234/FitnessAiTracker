@@ -56,15 +56,20 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // Clear cache on app initialization to prevent data contamination and PWA reload issues
+  // Disable aggressive cache clearing that causes infinite loading on PWA reload
+  // Only clear cache in development mode to prevent production PWA issues
   useEffect(() => {
-    // Only clear cache on hard refresh or PWA launch, not on navigation
-    const isHardRefresh = performance.navigation?.type === 1 || 
-                         performance.getEntriesByType('navigation')?.[0]?.type === 'reload';
-    
-    if (isHardRefresh) {
-      console.log('Hard refresh detected - clearing all user cache to prevent PWA reload issues...');
-      clearAllUserCache();
+    if (import.meta.env.DEV) {
+      // Only clear cache on hard refresh in development
+      const navigationType = (performance as any).navigation?.type;
+      const navigationEntries = performance.getEntriesByType('navigation');
+      const isHardRefresh = navigationType === 1 || 
+                           (navigationEntries.length > 0 && (navigationEntries[0] as any).type === 'reload');
+      
+      if (isHardRefresh) {
+        console.log('Development mode: clearing cache on hard refresh...');
+        clearAllUserCache();
+      }
     }
   }, []);
 

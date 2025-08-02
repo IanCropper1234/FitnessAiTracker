@@ -231,11 +231,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const today = TimezoneUtils.formatForDisplay(selectedDate, 'en-US');
 
   // Check if we're in a loading state for the main dashboard (only on initial load)
-  // Enhanced logic: only show loading if ANY query is loading AND we have NO data at all
-  // This prevents infinite loading on PWA reload where some queries might be stale
+  // Fixed logic: show loading only when all required queries are loading AND we have no data
+  // This prevents infinite loading on PWA reload
   const hasAnyData = nutritionSummary || trainingStats || bodyMetrics;
-  const isAnyLoading = nutritionLoading || trainingLoading || bodyMetricsLoading;
-  const isDashboardLoading = isAnyLoading && !hasAnyData;
+  const allQueriesLoading = nutritionLoading && trainingLoading && bodyMetricsLoading;
+  const isDashboardLoading = allQueriesLoading && !hasAnyData;
   
   // Check for authentication errors
   const hasAuthError = nutritionError?.message === 'Not authenticated' || 
