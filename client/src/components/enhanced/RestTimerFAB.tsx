@@ -356,15 +356,25 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         className={`fixed z-40 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
-        style={getSafePosition()}
+        style={{
+          ...getSafePosition(),
+          borderRadius: '50%',
+          overflow: 'hidden'
+        }}
       >
         {/* Outer pulsing ring when active */}
         {timeRemaining > 0 && (
-          <div className="absolute inset-0 timer-fab-circle bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" />
+          <div 
+            className="absolute inset-0 timer-fab-circle bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" 
+            style={{ borderRadius: '50%' }}
+          />
         )}
         
         {/* Main button with glassmorphism effect - Perfect Circle */}
-        <div className="relative w-12 h-12 timer-fab-circle bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center">
+        <div 
+          className="relative w-12 h-12 timer-fab-circle bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-black/20 flex items-center justify-center"
+          style={{ borderRadius: '50%' }}
+        >
           {timeRemaining > 0 ? (
             // Active timer with modern ring progress
             <div className="relative">
@@ -413,7 +423,10 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         </div>
         
         {/* Hover glow effect - Perfect Circle */}
-        <div className="absolute inset-0 timer-fab-circle bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" />
+        <div 
+          className="absolute inset-0 timer-fab-circle bg-blue-500/0 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10 transition-colors duration-300" 
+          style={{ borderRadius: '50%' }}
+        />
       </button>
     </>
   );

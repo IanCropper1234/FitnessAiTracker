@@ -34,12 +34,24 @@
     border-radius: 0 !important;
   }
 
-  /* Exception for circular timer FAB - force circular shape */
-  .timer-fab-circle,
-  .timer-fab-circle *,
-  .timer-fab-circle::before,
-  .timer-fab-circle::after {
+  /* Exception for circular timer FAB - force circular shape with highest specificity */
+  button.timer-fab-circle,
+  button.timer-fab-circle *,
+  button.timer-fab-circle::before,
+  button.timer-fab-circle::after,
+  .timer-fab-circle.timer-fab-circle,
+  .timer-fab-circle.timer-fab-circle *,
+  .timer-fab-circle.timer-fab-circle::before,
+  .timer-fab-circle.timer-fab-circle::after,
+  div.timer-fab-circle,
+  div.timer-fab-circle *,
+  div.timer-fab-circle::before,
+  div.timer-fab-circle::after {
     border-radius: 50% !important;
+    border-top-left-radius: 50% !important;
+    border-top-right-radius: 50% !important;
+    border-bottom-left-radius: 50% !important;
+    border-bottom-right-radius: 50% !important;
   }
 }
 
