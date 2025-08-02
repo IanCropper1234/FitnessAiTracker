@@ -715,17 +715,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
 
   if (exercisesLoading || statsLoading || sessionsLoading) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700  w-3/4"></div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700  w-1/2"></div>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
+      <div className="flex flex-col items-center justify-center py-16 space-y-4">
+        <LoadingState type="dots" />
+        <p className="text-sm text-muted-foreground">Loading training data...</p>
       </div>
     );
   }
