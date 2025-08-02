@@ -50,7 +50,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
   if (isLoading) {
     return (
       <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
-        <LoadingState />
+        <LoadingState type="dots" />
       </div>
     );
   }

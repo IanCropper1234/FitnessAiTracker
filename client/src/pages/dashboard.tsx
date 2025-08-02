@@ -273,7 +273,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
         <div className="content-container section-spacing !px-0">
           <div className="space-y-6">
             <div className="text-center py-8">
-              <LoadingState />
+              <LoadingState type="dots" />
               <p className="text-sm text-muted-foreground mt-4">Loading dashboard...</p>
               {hasAuthError && (
                 <div className="mt-4">
@@ -394,7 +394,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             {showTrainingOverview ? (
               trainingLoading ? (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
-                  <LoadingState />
+                  <LoadingState type="dots" />
                 </div>
               ) : (
                 <TrainingOverview userId={user.id} date={currentDate} />
@@ -402,7 +402,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             ) : (
               nutritionLoading ? (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
-                  <LoadingState />
+                  <LoadingState type="dots" />
                 </div>
               ) : nutritionSummary ? (
                 <MacroChart
