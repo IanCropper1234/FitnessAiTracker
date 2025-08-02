@@ -185,10 +185,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         
         // Restore special method data if available
         if (exercise.specialMethod) {
+          console.log(`Restoring special method for exercise ${exercise.id}:`, exercise.specialMethod);
           initialSpecialMethods[exercise.id] = exercise.specialMethod;
         }
         
         if (exercise.specialConfig) {
+          console.log(`Restoring special config for exercise ${exercise.id}:`, exercise.specialConfig);
           // Transform database format back to UI format
           let uiConfig = { ...exercise.specialConfig };
           
@@ -202,6 +204,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeightString;
           }
           
+          console.log(`Final UI config for exercise ${exercise.id}:`, uiConfig);
           initialSpecialConfigs[exercise.id] = uiConfig;
         }
       });
