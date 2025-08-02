@@ -1419,7 +1419,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Add exercises to session with auto-progression
-      for (const exercise of sessionData.exercises) {
+      for (let i = 0; i < sessionData.exercises.length; i++) {
+        const exercise = sessionData.exercises[i];
         // Get auto-progressed values for new sessions
         const progressedValues = await getAutoProgressedValues(
           exercise.exerciseId, 
@@ -1430,7 +1431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createWorkoutExercise({
           sessionId: session.id,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex,
+          orderIndex: i + 1, // Use 1-based index for order
           sets: progressedValues.sets,
           targetReps: progressedValues.targetReps,
           weight: progressedValues.weight,
