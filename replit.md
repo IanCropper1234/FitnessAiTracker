@@ -8,6 +8,12 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Rest Timer UI Enhancement (Aug 2, 2025):**
+- ✅ Converted REST Timer FAB to perfect circle design with rounded-full styling
+- ✅ Enhanced draggable functionality with smooth circular animations
+- ✅ Applied consistent circular shape to all timer states (active, inactive, hover)
+- ✅ Improved visual consistency with iOS-style floating action button design
+
 **Workout Session Creator Architecture Change (Aug 2, 2025):**
 - ✅ Converted workout session creator from modal dialog to standalone page `/create-workout-session`
 - ✅ Added full-screen exercise library experience with search and filtering
