@@ -182,9 +182,6 @@ export function CreateWorkoutSession() {
             <Dumbbell className="h-6 w-6" />
             Create Workout Session
           </h1>
-          <p className="text-muted-foreground">
-            Configure your workout session with selected exercises. Set target sets, reps, and rest periods.
-          </p>
         </div>
       </div>
 
