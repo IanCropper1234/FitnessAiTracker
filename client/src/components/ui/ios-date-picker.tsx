@@ -212,7 +212,6 @@ export function IOSDatePicker({
           </button>
         </div>
       </div>
-
       {/* iOS-Style Date Picker Modal */}
       {showDatePicker && (
         <div 
@@ -274,7 +273,7 @@ export function IOSDatePicker({
                     const today = TimezoneUtils.getCurrentDate();
                     onDateChange(today);
                   }}
-                  className="absolute right-1 ios-touch-feedback text-xs font-medium text-blue-500 hover:text-blue-600 transition-colors px-1 py-1  min-h-[28px] touch-target"
+                  className="absolute right-1 ios-touch-feedback text-xs font-medium hover:text-blue-600 transition-colors px-1 py-1 min-h-[28px] touch-target text-[#ffffff]"
                 >
                   Today
                 </button>
