@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/components/language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -230,12 +230,26 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   const today = TimezoneUtils.formatForDisplay(selectedDate, 'en-US');
 
-  // Check if we're in a loading state for the main dashboard (only on initial load)
-  // Fixed logic: show loading only when all required queries are loading AND we have no data
-  // This prevents infinite loading on PWA reload
+  // Enhanced loading logic to prevent infinite loading on iOS PWA reload
+  // Only show loading when we truly have no data AND initial queries are loading
   const hasAnyData = nutritionSummary || trainingStats || bodyMetrics;
-  const allQueriesLoading = nutritionLoading && trainingLoading && bodyMetricsLoading;
-  const isDashboardLoading = allQueriesLoading && !hasAnyData;
+  const isInitialLoad = !hasAnyData && (nutritionLoading || trainingLoading || bodyMetricsLoading);
+  
+  // Add timeout failsafe: never show loading for more than 10 seconds
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  useEffect(() => {
+    if (isInitialLoad) {
+      const timer = setTimeout(() => {
+        console.log('Loading timeout reached - forcing dashboard display');
+        setLoadingTimeout(true);
+      }, 10000);
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [isInitialLoad]);
+  
+  const isDashboardLoading = isInitialLoad && !loadingTimeout;
   
   // Check for authentication errors
   const hasAuthError = nutritionError?.message === 'Not authenticated' || 

@@ -56,22 +56,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // Disable aggressive cache clearing that causes infinite loading on PWA reload
-  // Only clear cache in development mode to prevent production PWA issues
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      // Only clear cache on hard refresh in development
-      const navigationType = (performance as any).navigation?.type;
-      const navigationEntries = performance.getEntriesByType('navigation');
-      const isHardRefresh = navigationType === 1 || 
-                           (navigationEntries.length > 0 && (navigationEntries[0] as any).type === 'reload');
-      
-      if (isHardRefresh) {
-        console.log('Development mode: clearing cache on hard refresh...');
-        clearAllUserCache();
-      }
-    }
-  }, []);
+  // Completely disable cache clearing to prevent iOS PWA reload issues
+  // Cache clearing was causing infinite loading states on PWA reload
+  // useEffect(() => {
+  //   // Cache clearing disabled to fix iOS PWA reload issue
+  // }, []);
 
   // Redirect to auth if no user (but not if we're already checking auth)
   useEffect(() => {
