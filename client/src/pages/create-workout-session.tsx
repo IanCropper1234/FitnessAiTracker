@@ -264,7 +264,7 @@ export function CreateWorkoutSession() {
                       ) : (
                         filteredExercises.map((exercise) => (
                           <Card key={exercise.id} className="cursor-pointer hover:bg-accent/50 transition-colors">
-                            <CardHeader className="pb-2 pl-[5px] pr-[5px] ml-[0px] mr-[0px]">
+                            <CardHeader className="pb-2 ml-[0px] mr-[0px] pl-[10px] pr-[10px]">
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
                                   <CardTitle className="text-sm leading-tight">{exercise.name}</CardTitle>
