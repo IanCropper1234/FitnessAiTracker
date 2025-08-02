@@ -196,37 +196,65 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           
           // Transform stored config format to UI format based on method
           if (exercise.specialMethod === 'myorep_match' || exercise.specialMethod === 'myorep_no_match') {
-            // For Myorep methods, transform targetReps to miniSetReps if needed
+            // For Myorep methods, handle different config formats
             if (exercise.specialConfig.miniSetRepsString) {
+              // New string format from execution phase
               uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
             } else if (exercise.specialConfig.miniSetReps) {
-              // Already in correct format
+              // Already in correct string format
               uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
+            } else if (exercise.specialConfig.targetReps && exercise.specialConfig.miniSets) {
+              // Legacy format from creation phase - convert to string format
+              // Example: targetReps=15, miniSets=3 -> "15,15,15" (repeat target reps for each mini set)
+              const repsArray = Array(exercise.specialConfig.miniSets).fill(exercise.specialConfig.targetReps);
+              uiConfig.miniSetReps = repsArray.join(',');
             }
+            
+            // Ensure other fields are preserved
+            uiConfig.targetReps = exercise.specialConfig.targetReps;
+            uiConfig.miniSets = exercise.specialConfig.miniSets;
+            uiConfig.restSeconds = exercise.specialConfig.restSeconds;
           }
           
           if (exercise.specialMethod === 'drop_set') {
-            // For Drop Set, restore dropset weight string
+            // For Drop Set, handle different config formats
             if (exercise.specialConfig.dropsetWeightString) {
               uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeightString;
             } else if (exercise.specialConfig.dropsetWeight) {
               // Already in correct format
               uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeight;
+            } else if (exercise.specialConfig.weightReductions) {
+              // Legacy format from creation phase - convert percentage reductions to weight string
+              // This will be filled during execution based on the actual weight
+              uiConfig.weightReductions = exercise.specialConfig.weightReductions;
+              uiConfig.dropsetWeight = ''; // Will be calculated during execution
             }
             
-            // Also handle miniSetReps for drop sets
+            // Handle miniSetReps for drop sets
             if (exercise.specialConfig.miniSetRepsString) {
               uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
             } else if (exercise.specialConfig.miniSetReps) {
               uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
             }
+            
+            // Preserve other fields
+            uiConfig.dropRestSeconds = exercise.specialConfig.dropRestSeconds;
           }
           
           if (exercise.specialMethod === 'giant_set') {
-            // For Giant Set, ensure all required fields are available
+            // For Giant Set, handle different config formats
             uiConfig.totalTargetReps = exercise.specialConfig.totalTargetReps || 40;
-            uiConfig.miniSetReps = exercise.specialConfig.miniSetReps || 5;
-            uiConfig.restSeconds = exercise.specialConfig.restSeconds || 10;
+            
+            // Handle both numeric and string formats for miniSetReps
+            if (typeof exercise.specialConfig.miniSetReps === 'string') {
+              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
+            } else {
+              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps || 5;
+            }
+            
+            // Handle different rest field names
+            uiConfig.restSeconds = exercise.specialConfig.restSeconds || 
+                                 exercise.specialConfig.giantRestSeconds || 10;
           }
           
           console.log(`Final UI config for exercise ${exercise.id}:`, uiConfig);
