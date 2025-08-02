@@ -56,10 +56,16 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
   
-  // Clear cache on app initialization to prevent data contamination
+  // Clear cache on app initialization to prevent data contamination and PWA reload issues
   useEffect(() => {
-    console.log('Clearing all user cache on app initialization...');
-    clearAllUserCache();
+    // Only clear cache on hard refresh or PWA launch, not on navigation
+    const isHardRefresh = performance.navigation?.type === 1 || 
+                         performance.getEntriesByType('navigation')?.[0]?.type === 'reload';
+    
+    if (isHardRefresh) {
+      console.log('Hard refresh detected - clearing all user cache to prevent PWA reload issues...');
+      clearAllUserCache();
+    }
   }, []);
 
   // Redirect to auth if no user (but not if we're already checking auth)
