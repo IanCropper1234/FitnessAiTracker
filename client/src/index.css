@@ -63,10 +63,9 @@
   -webkit-transform: translateZ(0);
 }
 
-/* Dialog overlay improvements for mobile */
+/* Dialog overlay improvements for mobile - backdrop-filter removed to fix selector issues */
 .dialog-overlay-mobile {
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  /* backdrop-filter removed to prevent selector issues on mobile devices */
 }
 
 /* Prevent background scroll on iOS when dialog is open */
