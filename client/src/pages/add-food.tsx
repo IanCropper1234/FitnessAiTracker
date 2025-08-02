@@ -73,7 +73,20 @@ export function AddFood({ user }: AddFoodProps) {
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
-  const [mealType, setMealType] = useState(mealTypeParam || 'breakfast');
+  // Smart meal type detection based on current time if no parameter provided
+  const getSmartMealType = () => {
+    if (mealTypeParam) return mealTypeParam;
+    
+    const now = new Date();
+    const hour = now.getHours();
+    
+    if (hour >= 5 && hour < 11) return 'breakfast';
+    if (hour >= 11 && hour < 16) return 'lunch';
+    if (hour >= 16 && hour < 21) return 'dinner';
+    return 'snack'; // Late night or early morning
+  };
+  
+  const [mealType, setMealType] = useState(getSmartMealType());
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
   

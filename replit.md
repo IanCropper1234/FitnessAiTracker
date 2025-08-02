@@ -8,7 +8,15 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
-**Mesocycle Name Labels Enhancement (Aug 1, 2025):**
+**Smart UI & UX Improvements (Aug 2, 2025):**
+- ✅ Fixed bulk edit button text logic: "Edit" → "Done" when activated
+- ✅ Corrected 'Log Food' quick action redirect from `/nutrition` to `/add-food`
+- ✅ Implemented smart meal type detection based on current time
+- ✅ Fixed mesocycle status display to only show active mesocycles
+- ✅ Applied consistent button styling with brand colors
+- ✅ Enhanced user experience with intelligent defaults for food logging
+
+**Mesocycle Display Logic Enhancement (Aug 1, 2025):**
 - ✅ Added mesocycle name labels to workout session titles for improved organization
 - ✅ Modified WorkoutSessionCard interface to include `mesocycleName` parameter
 - ✅ Implemented mesocycle lookup map for efficient name resolution
