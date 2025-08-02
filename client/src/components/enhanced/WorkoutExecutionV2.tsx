@@ -194,14 +194,39 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           // Transform database format back to UI format
           let uiConfig = { ...exercise.specialConfig };
           
-          // Restore mini-set reps string for UI display
-          if (exercise.specialConfig.miniSetRepsString) {
-            uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
+          // Transform stored config format to UI format based on method
+          if (exercise.specialMethod === 'myorep_match' || exercise.specialMethod === 'myorep_no_match') {
+            // For Myorep methods, transform targetReps to miniSetReps if needed
+            if (exercise.specialConfig.miniSetRepsString) {
+              uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
+            } else if (exercise.specialConfig.miniSetReps) {
+              // Already in correct format
+              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
+            }
           }
           
-          // Restore dropset weight string for UI display  
-          if (exercise.specialConfig.dropsetWeightString) {
-            uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeightString;
+          if (exercise.specialMethod === 'drop_set') {
+            // For Drop Set, restore dropset weight string
+            if (exercise.specialConfig.dropsetWeightString) {
+              uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeightString;
+            } else if (exercise.specialConfig.dropsetWeight) {
+              // Already in correct format
+              uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeight;
+            }
+            
+            // Also handle miniSetReps for drop sets
+            if (exercise.specialConfig.miniSetRepsString) {
+              uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
+            } else if (exercise.specialConfig.miniSetReps) {
+              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
+            }
+          }
+          
+          if (exercise.specialMethod === 'giant_set') {
+            // For Giant Set, ensure all required fields are available
+            uiConfig.totalTargetReps = exercise.specialConfig.totalTargetReps || 40;
+            uiConfig.miniSetReps = exercise.specialConfig.miniSetReps || 5;
+            uiConfig.restSeconds = exercise.specialConfig.restSeconds || 10;
           }
           
           console.log(`Final UI config for exercise ${exercise.id}:`, uiConfig);

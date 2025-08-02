@@ -382,7 +382,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <div className="flex items-center gap-2 text-xs text-orange-400 font-medium">
               <Timer className="h-3 w-3" />
               Giant Set Configuration
-              {console.log('Giant Set specialConfig:', specialConfig)}
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -427,7 +426,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <div className="flex items-center gap-2 text-xs text-red-400 font-medium">
               <Minus className="h-3 w-3" />
               Drop Set Configuration
-              {console.log('Drop Set specialConfig:', specialConfig)}
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -468,7 +466,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <div className="flex items-center gap-2 text-xs text-blue-400 font-medium">
               <Target className="h-3 w-3" />
               Myorep Match Configuration
-              {console.log('Myorep Match specialConfig:', specialConfig)}
             </div>
             <div>
               <label className="text-xs text-blue-300">Mini-Set Reps</label>
