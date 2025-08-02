@@ -267,14 +267,14 @@ export function IOSDatePicker({
                 </button>
               </div>
               
-              {/* Today Button - Positioned top right */}
+              {/* Today Button - Positioned far right */}
               {!TimezoneUtils.isToday(selectedDate) && (
                 <button
                   onClick={() => {
                     const today = TimezoneUtils.getCurrentDate();
                     onDateChange(today);
                   }}
-                  className="absolute right-4 ios-touch-feedback text-xs font-medium text-blue-500 hover:text-blue-600 transition-colors px-2 py-1  min-h-[28px] touch-target"
+                  className="absolute right-2 ios-touch-feedback text-xs font-medium text-blue-500 hover:text-blue-600 transition-colors px-2 py-1  min-h-[28px] touch-target"
                 >
                   Today
                 </button>

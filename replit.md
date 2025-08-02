@@ -41,7 +41,7 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+Preferred communication style: Traditional Chinese (ZH-TW) for all technical explanations and general communication.
 
 **Design Preferences:**
 - Sharp corner design aesthetic (border-radius: 0) - completely implemented across entire UI system
