@@ -626,8 +626,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
     return acc;
   }, {} as Record<number, string>);
 
-  // Get current mesocycle for status display
-  const currentMesocycle = mesocycles.find(m => m.isActive) || mesocycles[0] || null;
+  // Get current mesocycle for status display - only show if there's an active mesocycle
+  const currentMesocycle = mesocycles.find(m => m.isActive) || null;
 
   // Group exercises by category
   const exercisesByCategory = exercises.reduce((acc, exercise) => {
@@ -887,8 +887,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
             </Card>
           ) : (
             <div className="space-y-4">
-              {/* Sticky Mesocycle Status */}
-              {currentMesocycle && (
+              {/* Sticky Mesocycle Status - Only show for active mesocycles */}
+              {currentMesocycle && currentMesocycle.isActive && (
                 <div className="sticky top-0 z-10 bg-card/95 dark:bg-card/95 border border-border/50  p-3 mx-2 shadow-sm backdrop-blur-md">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
