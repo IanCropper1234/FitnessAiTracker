@@ -397,7 +397,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="40"
                   max="100"
-                  className="h-7 text-xs bg-background/50 border-orange-500/20"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
               <div>
@@ -411,7 +411,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="3"
                   max="15"
-                  className="h-7 text-xs bg-background/50 border-orange-500/20"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
             </div>

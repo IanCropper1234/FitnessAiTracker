@@ -38,11 +38,15 @@ interface ExerciseTemplate {
     // Dropset Configuration
     dropSets?: number;
     weightReductions?: number[];
+    dropSetWeights?: number[];
+    dropSetReps?: number[];
     dropRestSeconds?: number;
     // Giant Set Configuration
     totalTargetReps?: number;
     miniSetReps?: number;
     giantRestSeconds?: number;
+    // Superset Configuration
+    pairedExerciseId?: number;
   };
 }
 
@@ -176,13 +180,20 @@ export function CreateWorkoutSession() {
         return {
           dropSets: 3,
           weightReductions: [15, 15, 15],
+          dropSetWeights: [0, 0, 0],
+          dropSetReps: [8, 8, 8],
           dropRestSeconds: 10
         };
       case 'giant_set':
         return {
           totalTargetReps: 40,
           miniSetReps: 8,
-          giantRestSeconds: 10
+          restSeconds: 15
+        };
+      case 'superset':
+        return {
+          pairedExerciseId: null,
+          restSeconds: 60
         };
       default:
         return {};
@@ -568,15 +579,15 @@ export function CreateWorkoutSession() {
                           <div className="space-y-1">
                             <Label className="text-xs">Weight Reductions (%)</Label>
                             <div className="flex gap-2 flex-wrap">
-                              {Array(template.specialConfig.dropSets || 3).fill(0).map((_, dropIndex) => (
+                              {Array(template.specialConfig?.dropSets || 3).fill(0).map((_, dropIndex) => (
                                 <Input
                                   key={dropIndex}
                                   type="number"
                                   min="5"
                                   max="30"
-                                  value={(template.specialConfig.weightReductions || [])[dropIndex] || 15}
+                                  value={(template.specialConfig?.weightReductions || [])[dropIndex] || 15}
                                   onChange={(e) => {
-                                    const newReductions = [...(template.specialConfig?.weightReductions || Array(template.specialConfig.dropSets || 3).fill(15))];
+                                    const newReductions = [...(template.specialConfig?.weightReductions || Array(template.specialConfig?.dropSets || 3).fill(15))];
                                     newReductions[dropIndex] = parseInt(e.target.value) || 15;
                                     updateSpecialConfig(index, 'weightReductions', newReductions);
                                   }}
@@ -589,15 +600,15 @@ export function CreateWorkoutSession() {
                           <div className="space-y-1">
                             <Label className="text-xs">Target Reps per Drop Set</Label>
                             <div className="flex gap-2 flex-wrap">
-                              {Array(template.specialConfig.dropSets || 3).fill(0).map((_, dropIndex) => (
+                              {Array(template.specialConfig?.dropSets || 3).fill(0).map((_, dropIndex) => (
                                 <Input
                                   key={dropIndex}
                                   type="number"
                                   min="5"
                                   max="20"
-                                  value={(template.specialConfig.dropSetReps || [])[dropIndex] || 8}
+                                  value={(template.specialConfig?.dropSetReps || [])[dropIndex] || 8}
                                   onChange={(e) => {
-                                    const newReps = [...(template.specialConfig?.dropSetReps || Array(template.specialConfig.dropSets || 3).fill(8))];
+                                    const newReps = [...(template.specialConfig?.dropSetReps || Array(template.specialConfig?.dropSets || 3).fill(8))];
                                     newReps[dropIndex] = parseInt(e.target.value) || 8;
                                     updateSpecialConfig(index, 'dropSetReps', newReps);
                                   }}
