@@ -410,6 +410,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }));
   };
 
+  // Helper function to find superset paired exercise
+  const findSupersetPair = (exerciseId: number): WorkoutExercise | null => {
+    if (!session?.exercises) return null;
+    
+    const currentEx = session.exercises.find(ex => ex.id === exerciseId);
+    if (!currentEx || specialMethods[exerciseId] !== 'superset') return null;
+    
+    const pairedExerciseId = specialConfigs[exerciseId]?.pairedExerciseId;
+    if (!pairedExerciseId) return null;
+    
+    return session.exercises.find(ex => ex.exerciseId === pairedExerciseId) || null;
+  };
+
   const completeSet = () => {
     try {
       if (!currentSet?.weight || !currentSet?.actualReps) {
@@ -428,7 +441,42 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
       updateSet(currentExercise.id, currentSetIndex, 'completed', true);
       
-      // Start rest timer and advance
+      // Check for Superset auto-switching
+      const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
+      const pairedExercise = findSupersetPair(currentExercise.id);
+      
+      if (isCurrentSuperset && pairedExercise) {
+        // Find the index of the paired exercise in the session
+        const pairedExerciseIndex = session!.exercises.findIndex(ex => ex.id === pairedExercise.id);
+        
+        if (pairedExerciseIndex !== -1) {
+          // Check if the same set number exists in the paired exercise
+          const pairedSets = workoutData[pairedExercise.id] || [];
+          const correspondingSetIndex = currentSetIndex; // Same set number
+          
+          if (correspondingSetIndex < pairedSets.length && !pairedSets[correspondingSetIndex]?.completed) {
+            // Switch to the paired exercise at the same set number
+            setCurrentExerciseIndex(pairedExerciseIndex);
+            setCurrentSetIndex(correspondingSetIndex);
+            
+            // Shorter rest for superset transition
+            if (restTimerFABEnabled) {
+              const supersetRestTime = Math.min(specialConfigs[currentExercise.id]?.restSeconds || 30, 30);
+              setRestTimeRemaining(supersetRestTime);
+              setIsRestTimerActive(true);
+            }
+            
+            toast({
+              title: "Superset Switch!",
+              description: `Switching to ${pairedExercise.exercise.name} - Set ${correspondingSetIndex + 1}`,
+              duration: 3000,
+            });
+            return; // Early return to prevent normal progression
+          }
+        }
+      }
+      
+      // Normal progression logic (when not superset or no paired exercise available)
       if (currentSetIndex < currentSets.length - 1) {
         // Next set in same exercise
         if (restTimerFABEnabled) {
@@ -715,11 +763,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               </span>
             </div>
             
-            {/* Exercise Name */}
+            {/* Exercise Name with Superset Indicator */}
             {currentExercise && (
-              <span className="text-sm font-medium text-foreground truncate flex-1">
-                {currentExercise.exercise.name}
-              </span>
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <span className="text-sm font-medium text-foreground truncate">
+                  {currentExercise.exercise.name}
+                </span>
+                {specialMethods[currentExercise.id] === 'superset' && (() => {
+                  const pairedExercise = findSupersetPair(currentExercise.id);
+                  return pairedExercise ? (
+                    <span className="text-xs text-purple-400 bg-purple-500/10 px-1 py-0.5  border border-purple-500/20">
+                      ↔ {pairedExercise.exercise.name}
+                    </span>
+                  ) : null;
+                })()}
+              </div>
             )}
             
             {/* Special Method Indicator Dot */}
@@ -872,6 +930,28 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                       </div>
                     </>
                   )}
+                  
+                  {/* Superset Configuration */}
+                  {specialMethods[currentExercise.id] === 'superset' && (() => {
+                    const pairedExercise = findSupersetPair(currentExercise.id);
+                    return (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Paired With:</span>
+                          <span className="font-medium text-purple-400">
+                            {pairedExercise?.exercise.name || 'Not configured'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Rest Between:</span>
+                          <span className="font-medium">{specialConfigs[currentExercise.id]?.restSeconds || 60}s</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Performs back-to-back with minimal rest
+                        </div>
+                      </>
+                    );
+                  })()}
                   
                   {/* Giant Set Configuration */}
                   {specialMethods[currentExercise.id] === 'giant_set' && specialConfigs[currentExercise.id] && (
