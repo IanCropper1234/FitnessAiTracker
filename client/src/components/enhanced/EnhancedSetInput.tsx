@@ -462,12 +462,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     value={specialConfig?.dropSets ?? 3}
                     onChange={(e) => {
                       const dropSets = parseInt(e.target.value) || 3;
-                      const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
-                      const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
+                      const currentWeights = specialConfig?.dropSetWeights || [0, 0, 0];
+                      const newWeights = Array(dropSets).fill(0).map((_, i) => currentWeights[i] || 0);
                       onSpecialConfigChange?.({
                         ...specialConfig,
                         dropSets,
-                        weightReductions: newReductions
+                        dropSetWeights: newWeights
                       });
                     }}
                     min="2"
@@ -491,31 +491,31 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 </div>
               </div>
               
-              {/* Weight Reduction Inputs - One per drop set */}
+              {/* Drop Set Weight Inputs - Actual weights per set */}
               <div className="space-y-1">
-                <label className="text-xs text-red-300">Weight % Drop per Set</label>
+                <label className="text-xs text-red-300">Drop Set Weights</label>
                 <div className="space-y-1">
                   {Array.from({ length: specialConfig?.dropSets ?? 3 }, (_, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <span className="text-xs text-red-300/70 w-12">Set {index + 1}:</span>
                       <Input
                         type="number"
-                        value={specialConfig?.weightReductions?.[index] ?? 15}
+                        value={specialConfig?.dropSetWeights?.[index] ?? 0}
                         onChange={(e) => {
-                          const value = parseInt(e.target.value) || 15;
-                          const currentReductions = [...(specialConfig?.weightReductions || [])];
-                          currentReductions[index] = value;
+                          const value = parseFloat(e.target.value) || 0;
+                          const currentWeights = [...(specialConfig?.dropSetWeights || [])];
+                          currentWeights[index] = value;
                           onSpecialConfigChange?.({
                             ...specialConfig,
-                            weightReductions: currentReductions
+                            dropSetWeights: currentWeights
                           });
                         }}
-                        min="5"
-                        max="30"
+                        min="0"
+                        step="0.5"
                         className="h-7 text-xs bg-background/50 border-red-500/20 flex-1"
-                        placeholder="15"
+                        placeholder="0"
                       />
-                      <span className="text-xs text-red-300/50 w-4">%</span>
+                      <span className="text-xs text-red-300/50 w-8">{weightUnit}</span>
                     </div>
                   ))}
                 </div>
@@ -532,11 +532,11 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   onClick={() => {
                     const currentDropSets = specialConfig?.dropSets ?? 3;
                     const newDropSets = Math.max(2, currentDropSets - 1);
-                    const newReductions = (specialConfig?.weightReductions || [15, 15, 15]).slice(0, newDropSets);
+                    const newWeights = (specialConfig?.dropSetWeights || [0, 0, 0]).slice(0, newDropSets);
                     onSpecialConfigChange?.({
                       ...specialConfig,
                       dropSets: newDropSets,
-                      weightReductions: newReductions
+                      dropSetWeights: newWeights
                     });
                   }}
                   className="h-6 w-6 p-0 border-red-500/20 bg-red-500/10 hover:bg-red-500/20"
@@ -549,15 +549,15 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   onClick={() => {
                     const currentDropSets = specialConfig?.dropSets ?? 3;
                     const newDropSets = Math.min(6, currentDropSets + 1);
-                    const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
-                    const newReductions = [...currentReductions];
-                    while (newReductions.length < newDropSets) {
-                      newReductions.push(15);
+                    const currentWeights = specialConfig?.dropSetWeights || [0, 0, 0];
+                    const newWeights = [...currentWeights];
+                    while (newWeights.length < newDropSets) {
+                      newWeights.push(0);
                     }
                     onSpecialConfigChange?.({
                       ...specialConfig,
                       dropSets: newDropSets,
-                      weightReductions: newReductions
+                      dropSetWeights: newWeights
                     });
                   }}
                   className="h-6 w-6 p-0 border-red-500/20 bg-red-500/10 hover:bg-red-500/20"
