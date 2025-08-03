@@ -224,7 +224,7 @@ export default function MesocycleProgramBuilder({
         <ScrollArea className="flex-1 -mx-6 px-6">
           <div className="space-y-6 pb-6">
           {/* Basic Info */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="mesocycleName">Mesocycle Name</Label>
               <Input
@@ -255,7 +255,7 @@ export default function MesocycleProgramBuilder({
           {/* Build Mode Selection */}
           <div className="space-y-4">
             <Label>Program Design Method</Label>
-            <div className="flex gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card 
                 className={`cursor-pointer transition-colors ${buildMode === "template" ? "ring-2 ring-primary" : ""}`}
                 onClick={() => setBuildMode("template")}
@@ -383,12 +383,12 @@ export default function MesocycleProgramBuilder({
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                           <div>
                             <Label className="text-xs">Target Muscle Groups</Label>
-                            <div className="flex flex-wrap gap-1 mt-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-1">
                               {ALL_MUSCLE_GROUPS.map((muscle) => (
-                                <div key={muscle} className="flex items-center space-x-1">
+                                <div key={muscle} className="flex items-center space-x-2 py-1">
                                   <Checkbox
                                     id={`${index}-${muscle}`}
                                     checked={day.muscleGroups.includes(muscle)}
@@ -398,8 +398,9 @@ export default function MesocycleProgramBuilder({
                                         : day.muscleGroups.filter(m => m !== muscle);
                                       updateCustomWorkoutDay(index, "muscleGroups", newMuscleGroups);
                                     }}
+                                    className="h-4 w-4"
                                   />
-                                  <label htmlFor={`${index}-${muscle}`} className="text-xs">
+                                  <label htmlFor={`${index}-${muscle}`} className="text-xs cursor-pointer flex-1">
                                     {MUSCLE_GROUP_DISPLAY_NAMES[muscle]}
                                   </label>
                                 </div>
@@ -408,12 +409,16 @@ export default function MesocycleProgramBuilder({
                           </div>
                           <div>
                             <Label className="text-xs">Selected Muscle Groups</Label>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {day.muscleGroups.map((muscle) => (
-                                <Badge key={muscle} variant="secondary" className="text-xs">
-                                  {MUSCLE_GROUP_DISPLAY_NAMES[muscle] || muscle}
-                                </Badge>
-                              ))}
+                            <div className="flex flex-wrap gap-1 mt-1 min-h-[40px] p-2 bg-muted/20 rounded">
+                              {day.muscleGroups.length === 0 ? (
+                                <span className="text-xs text-muted-foreground">No muscle groups selected</span>
+                              ) : (
+                                day.muscleGroups.map((muscle) => (
+                                  <Badge key={muscle} variant="secondary" className="text-xs">
+                                    {MUSCLE_GROUP_DISPLAY_NAMES[muscle] || muscle}
+                                  </Badge>
+                                ))
+                              )}
                             </div>
                           </div>
                         </div>

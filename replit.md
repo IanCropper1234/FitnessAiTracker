@@ -8,6 +8,16 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Template Creation Interface iOS Optimization (Aug 3, 2025):**
+- ✅ Fixed iOS device layout issues in mesocycle template creation dialog
+- ✅ Enhanced ExerciseSelector component with responsive design for mobile devices
+- ✅ Optimized dialog sizing: max-w-[95vw] and max-h-[95vh] for iOS compatibility
+- ✅ Improved muscle group selection interface with grid layout for better touch interaction
+- ✅ Added ScrollArea wrapper to exercise configuration sections for better overflow handling
+- ✅ Enhanced special training method visibility in template creation workflow
+- ✅ Responsive layout improvements: single column on mobile, dual column on larger screens
+- ✅ Fixed checkbox and form element sizing for optimal touch targets on iOS devices
+
 **Special Training Method Data Storage & Display Enhancement (Aug 3, 2025):**
 - ✅ Fixed Drop Set details display issues using correct dropSetWeights and dropSetReps arrays
 - ✅ Enhanced backend storage logic for all special training methods (Drop Set, Myorep Match/No Match, Giant Set, Superset)
