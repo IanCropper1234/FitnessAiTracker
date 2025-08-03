@@ -415,8 +415,34 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 />
               </div>
             </div>
-            <div className="text-xs text-orange-300/70">
-              Perform mini-sets with {specialConfig?.restSeconds || 10}s rest until reaching target reps
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-orange-300/70">
+                Target: {specialConfig?.totalTargetReps || 40} reps in {Math.ceil((specialConfig?.totalTargetReps || 40) / (specialConfig?.miniSetReps || 5))} mini-sets
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    totalTargetReps: Math.max(20, (specialConfig?.totalTargetReps || 40) - 10)
+                  })}
+                  className="h-6 w-6 p-0 border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20"
+                >
+                  <Minus className="h-3 w-3 text-orange-400" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    totalTargetReps: Math.min(100, (specialConfig?.totalTargetReps || 40) + 10)
+                  })}
+                  className="h-6 w-6 p-0 border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20"
+                >
+                  <Plus className="h-3 w-3 text-orange-400" />
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -427,36 +453,102 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <Minus className="h-3 w-3" />
               Drop Set Configuration
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div>
-                <label className="text-xs text-red-300">Mini-Set Reps</label>
+                <label className="text-xs text-red-300">Drop Sets</label>
                 <Input
-                  type="text"
-                  value={specialConfig?.miniSetReps || ''}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    miniSetReps: e.target.value
-                  })}
-                  placeholder="e.g., 8,4"
+                  type="number"
+                  value={specialConfig?.dropSets || 3}
+                  onChange={(e) => {
+                    const dropSets = parseInt(e.target.value) || 3;
+                    const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
+                    const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      dropSets,
+                      weightReductions: newReductions
+                    });
+                  }}
+                  min="2"
+                  max="5"
                   className="h-7 text-xs bg-background/50 border-red-500/20"
                 />
               </div>
               <div>
-                <label className="text-xs text-red-300">Dropset Weight</label>
+                <label className="text-xs text-red-300">Weight % Drop</label>
                 <Input
                   type="text"
-                  value={specialConfig?.dropsetWeight || ''}
+                  value={specialConfig?.weightReductions?.join(',') || '15,15,15'}
+                  onChange={(e) => {
+                    const reductions = e.target.value.split(',').map(v => parseInt(v.trim()) || 15);
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      weightReductions: reductions
+                    });
+                  }}
+                  placeholder="15,15,15"
+                  className="h-7 text-xs bg-background/50 border-red-500/20"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-red-300">Rest (sec)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.dropRestSeconds || 10}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
-                    dropsetWeight: e.target.value
+                    dropRestSeconds: parseInt(e.target.value) || 10
                   })}
-                  placeholder="e.g., 70kg,60kg"
+                  min="5"
+                  max="15"
                   className="h-7 text-xs bg-background/50 border-red-500/20"
                 />
               </div>
             </div>
-            <div className="text-xs text-red-300/70">
-              Enter comma-separated values for each drop (e.g., "8,4" reps with "70kg,60kg" weights)
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-red-300/70">
+                Perform {specialConfig?.dropSets || 3} drop sets with {specialConfig?.dropRestSeconds || 10}s rest
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const currentDropSets = specialConfig?.dropSets || 3;
+                    const newDropSets = Math.max(2, currentDropSets - 1);
+                    const newReductions = (specialConfig?.weightReductions || [15, 15, 15]).slice(0, newDropSets);
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      dropSets: newDropSets,
+                      weightReductions: newReductions
+                    });
+                  }}
+                  className="h-6 w-6 p-0 border-red-500/20 bg-red-500/10 hover:bg-red-500/20"
+                >
+                  <Minus className="h-3 w-3 text-red-400" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const currentDropSets = specialConfig?.dropSets || 3;
+                    const newDropSets = Math.min(6, currentDropSets + 1);
+                    const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
+                    const newReductions = [...currentReductions];
+                    while (newReductions.length < newDropSets) {
+                      newReductions.push(15);
+                    }
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      dropSets: newDropSets,
+                      weightReductions: newReductions
+                    });
+                  }}
+                  className="h-6 w-6 p-0 border-red-500/20 bg-red-500/10 hover:bg-red-500/20"
+                >
+                  <Plus className="h-3 w-3 text-red-400" />
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -517,8 +609,34 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 />
               </div>
             </div>
-            <div className="text-xs text-blue-300/70">
-              Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets of {specialConfig?.targetReps || 15} reps with {specialConfig?.restSeconds || 20}s rest
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-blue-300/70">
+                Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: Math.max(1, (specialConfig?.miniSets || 3) - 1)
+                  })}
+                  className="h-6 w-6 p-0 border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20"
+                >
+                  <Minus className="h-3 w-3 text-blue-400" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: Math.min(8, (specialConfig?.miniSets || 3) + 1)
+                  })}
+                  className="h-6 w-6 p-0 border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20"
+                >
+                  <Plus className="h-3 w-3 text-blue-400" />
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -561,8 +679,36 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 />
               </div>
             </div>
-            <div className="text-xs text-blue-300/70">
-              Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets with as many reps as possible
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-blue-300/70">
+                Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: Math.max(1, (specialConfig?.miniSets || 3) - 1),
+                    restSeconds: specialConfig?.restSeconds || 20
+                  })}
+                  className="h-6 w-6 p-0 border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20"
+                >
+                  <Minus className="h-3 w-3 text-blue-400" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: Math.min(8, (specialConfig?.miniSets || 3) + 1),
+                    restSeconds: specialConfig?.restSeconds || 20
+                  })}
+                  className="h-6 w-6 p-0 border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20"
+                >
+                  <Plus className="h-3 w-3 text-blue-400" />
+                </Button>
+              </div>
             </div>
           </div>
         )}

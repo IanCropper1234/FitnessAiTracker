@@ -204,28 +204,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           }
           
           if (exercise.specialMethod === 'drop_set') {
-            // For Drop Set, handle different config formats
-            if (exercise.specialConfig.dropsetWeightString) {
-              uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeightString;
-            } else if (exercise.specialConfig.dropsetWeight) {
-              // Already in correct format
+            // For Drop Set, use the same structure as creation phase
+            uiConfig.dropSets = exercise.specialConfig.dropSets || 3;
+            uiConfig.weightReductions = exercise.specialConfig.weightReductions || [15, 15, 15];
+            uiConfig.dropRestSeconds = exercise.specialConfig.dropRestSeconds || 10;
+            
+            // Legacy support for execution-specific fields
+            if (exercise.specialConfig.dropsetWeight) {
               uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeight;
-            } else if (exercise.specialConfig.weightReductions) {
-              // Legacy format from creation phase - convert percentage reductions to weight string
-              // This will be filled during execution based on the actual weight
-              uiConfig.weightReductions = exercise.specialConfig.weightReductions;
-              uiConfig.dropsetWeight = ''; // Will be calculated during execution
             }
-            
-            // Handle miniSetReps for drop sets
-            if (exercise.specialConfig.miniSetRepsString) {
-              uiConfig.miniSetReps = exercise.specialConfig.miniSetRepsString;
-            } else if (exercise.specialConfig.miniSetReps) {
-              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
-            }
-            
-            // Preserve other fields
-            uiConfig.dropRestSeconds = exercise.specialConfig.dropRestSeconds;
           }
           
           if (exercise.specialMethod === 'giant_set') {

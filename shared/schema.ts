@@ -610,29 +610,62 @@ export interface WorkoutSet {
 }
 
 export interface MyorepConfig {
-  activationSet: boolean;
-  targetReps?: number; // For match sets
-  restSeconds: number; // 20-30s for myoreps
-  miniSets: WorkoutSet[];
+  activationSet?: boolean; // Default true
+  targetReps?: number; // For match sets (10-20 reps)
+  miniSets?: number; // Number of mini sets to perform (1-5)
+  restSeconds?: number; // 15-30s for myoreps
+  sets?: WorkoutSet[]; // Optional, for execution tracking
 }
 
 export interface DropSetConfig {
+  dropSets: number; // Number of drop sets to perform (2-5)
   weightReductions: number[]; // Percentages to drop (e.g., [15, 15, 15])
-  restSeconds: number; // 5-10s between drops
-  sets: WorkoutSet[];
+  dropRestSeconds: number; // 5-15s between drops
+  sets?: WorkoutSet[]; // Optional, for execution tracking
 }
 
 export interface GiantSetConfig {
-  totalTargetReps: number; // At least 40 reps
-  miniSetReps: number; // 5-10 reps per mini-set
-  restSeconds: number; // 5-10s between mini-sets
-  miniSets: WorkoutSet[];
+  totalTargetReps?: number; // At least 30-60 reps
+  miniSetReps?: number | string; // 5-15 reps per mini-set, can be string for dynamic
+  restSeconds?: number; // 5-15s between mini-sets
+  giantRestSeconds?: number; // Alternative field name
+  miniSets?: WorkoutSet[]; // Optional, for execution tracking
 }
 
 export interface SupersetConfig {
   pairedExerciseId: number;
   restBetween: number; // 30-60s between exercises
   restAfter: number; // 2-3min after complete superset
+}
+
+// General special configuration interface for compatibility
+export interface SpecialConfig {
+  // Myorep fields
+  activationSet?: boolean;
+  targetReps?: number;
+  miniSets?: number;
+  restSeconds?: number;
+  
+  // Drop set fields
+  dropSets?: number;
+  weightReductions?: number[];
+  dropRestSeconds?: number;
+  dropsetWeight?: string; // For execution phase
+  
+  // Giant set fields
+  totalTargetReps?: number;
+  miniSetReps?: number | string;
+  giantRestSeconds?: number;
+  
+  // Superset fields
+  pairedExerciseId?: number;
+  restBetween?: number;
+  restAfter?: number;
+  
+  // Dynamic execution fields
+  miniSetRepsString?: string; // For comma-separated values
+  weightReductionsString?: string; // For execution phase
+  sets?: WorkoutSet[]; // Execution tracking
 }
 
 export type SpecialMethodConfig = 

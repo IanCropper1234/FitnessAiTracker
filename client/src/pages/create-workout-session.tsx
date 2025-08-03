@@ -36,6 +36,7 @@ interface ExerciseTemplate {
     restSeconds?: number;
     miniSets?: number;
     // Dropset Configuration
+    dropSets?: number;
     weightReductions?: number[];
     dropRestSeconds?: number;
     // Giant Set Configuration
@@ -173,6 +174,7 @@ export function CreateWorkoutSession() {
         };
       case 'drop_set':
         return {
+          dropSets: 3,
           weightReductions: [15, 15, 15],
           dropRestSeconds: 10
         };
@@ -538,17 +540,40 @@ export function CreateWorkoutSession() {
                       {template.specialMethod === 'drop_set' && (
                         <div className="space-y-3">
                           <div className="space-y-1">
+                            <Label className="text-xs">Number of Drop Sets</Label>
+                            <Select
+                              value={(template.specialConfig.dropSets || 3).toString()}
+                              onValueChange={(value) => {
+                                const dropSets = parseInt(value);
+                                const currentReductions = template.specialConfig?.weightReductions || [15, 15, 15];
+                                const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
+                                updateSpecialConfig(index, 'dropSets', dropSets);
+                                updateSpecialConfig(index, 'weightReductions', newReductions);
+                              }}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="2">2 Drops</SelectItem>
+                                <SelectItem value="3">3 Drops</SelectItem>
+                                <SelectItem value="4">4 Drops</SelectItem>
+                                <SelectItem value="5">5 Drops</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
                             <Label className="text-xs">Weight Reductions (%)</Label>
-                            <div className="flex gap-2">
-                              {(template.specialConfig.weightReductions || [15, 15, 15]).map((reduction, dropIndex) => (
+                            <div className="flex gap-2 flex-wrap">
+                              {Array(template.specialConfig.dropSets || 3).fill(0).map((_, dropIndex) => (
                                 <Input
                                   key={dropIndex}
                                   type="number"
                                   min="5"
                                   max="30"
-                                  value={reduction}
+                                  value={(template.specialConfig.weightReductions || [])[dropIndex] || 15}
                                   onChange={(e) => {
-                                    const newReductions = [...(template.specialConfig?.weightReductions || [15, 15, 15])];
+                                    const newReductions = [...(template.specialConfig?.weightReductions || Array(template.specialConfig.dropSets || 3).fill(15))];
                                     newReductions[dropIndex] = parseInt(e.target.value) || 15;
                                     updateSpecialConfig(index, 'weightReductions', newReductions);
                                   }}
