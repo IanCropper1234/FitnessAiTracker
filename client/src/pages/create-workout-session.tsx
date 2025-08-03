@@ -546,9 +546,12 @@ export function CreateWorkoutSession() {
                               onValueChange={(value) => {
                                 const dropSets = parseInt(value);
                                 const currentReductions = template.specialConfig?.weightReductions || [15, 15, 15];
+                                const currentReps = template.specialConfig?.dropSetReps || [8, 8, 8];
                                 const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
+                                const newReps = Array(dropSets).fill(0).map((_, i) => currentReps[i] || 8);
                                 updateSpecialConfig(index, 'dropSets', dropSets);
                                 updateSpecialConfig(index, 'weightReductions', newReductions);
+                                updateSpecialConfig(index, 'dropSetReps', newReps);
                               }}
                             >
                               <SelectTrigger className="w-32">
@@ -579,6 +582,27 @@ export function CreateWorkoutSession() {
                                   }}
                                   className="w-20"
                                   placeholder={`Drop ${dropIndex + 1}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Target Reps per Drop Set</Label>
+                            <div className="flex gap-2 flex-wrap">
+                              {Array(template.specialConfig.dropSets || 3).fill(0).map((_, dropIndex) => (
+                                <Input
+                                  key={dropIndex}
+                                  type="number"
+                                  min="5"
+                                  max="20"
+                                  value={(template.specialConfig.dropSetReps || [])[dropIndex] || 8}
+                                  onChange={(e) => {
+                                    const newReps = [...(template.specialConfig?.dropSetReps || Array(template.specialConfig.dropSets || 3).fill(8))];
+                                    newReps[dropIndex] = parseInt(e.target.value) || 8;
+                                    updateSpecialConfig(index, 'dropSetReps', newReps);
+                                  }}
+                                  className="w-20"
+                                  placeholder={`Reps ${dropIndex + 1}`}
                                 />
                               ))}
                             </div>

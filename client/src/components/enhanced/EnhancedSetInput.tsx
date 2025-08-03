@@ -463,11 +463,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     onChange={(e) => {
                       const dropSets = parseInt(e.target.value) || 3;
                       const currentWeights = specialConfig?.dropSetWeights || [0, 0, 0];
+                      const currentReps = specialConfig?.dropSetReps || [8, 8, 8];
                       const newWeights = Array(dropSets).fill(0).map((_, i) => currentWeights[i] || 0);
+                      const newReps = Array(dropSets).fill(0).map((_, i) => currentReps[i] || 8);
                       onSpecialConfigChange?.({
                         ...specialConfig,
                         dropSets,
-                        dropSetWeights: newWeights
+                        dropSetWeights: newWeights,
+                        dropSetReps: newReps
                       });
                     }}
                     min="2"
@@ -496,35 +499,60 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-red-300">Drop Set Weights</label>
                 {specialConfig?.weightReductions && specialConfig.weightReductions.length > 0 && (
                   <div className="text-xs text-red-300/60 mb-1">
-                    Configured reductions: {specialConfig.weightReductions.map(r => `${r}%`).join(', ')}
+                    Configured: {specialConfig.weightReductions.map((r, i) => `${r}% / ${specialConfig.dropSetReps?.[i] || 8} reps`).join(', ')}
                   </div>
                 )}
                 <div className="space-y-1">
                   {Array.from({ length: specialConfig?.dropSets ?? 3 }, (_, index) => {
                     const suggestedReduction = specialConfig?.weightReductions?.[index];
+                    const suggestedReps = specialConfig?.dropSetReps?.[index];
                     return (
-                      <div key={index} className="flex items-center gap-2">
-                        <span className="text-xs text-red-300/70 w-12">Set {index + 1}:</span>
-                        <Input
-                          type="number"
-                          value={specialConfig?.dropSetWeights?.[index] ?? 0}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value) || 0;
-                            const currentWeights = [...(specialConfig?.dropSetWeights || [])];
-                            currentWeights[index] = value;
-                            onSpecialConfigChange?.({
-                              ...specialConfig,
-                              dropSetWeights: currentWeights
-                            });
-                          }}
-                          min="0"
-                          step="0.5"
-                          className="h-7 text-xs bg-background border border-border/50 flex-1"
-                          placeholder={suggestedReduction ? `${suggestedReduction}% drop` : "0"}
-                        />
-                        <span className="text-xs text-red-300/50 w-8">{weightUnit}</span>
-                        {suggestedReduction && (
-                          <span className="text-xs text-red-400/50 w-8">-{suggestedReduction}%</span>
+                      <div key={index} className="space-y-1">
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-red-300/70 w-12">Set {index + 1}:</span>
+                          <Input
+                            type="number"
+                            value={specialConfig?.dropSetWeights?.[index] ?? 0}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value) || 0;
+                              const currentWeights = [...(specialConfig?.dropSetWeights || [])];
+                              currentWeights[index] = value;
+                              onSpecialConfigChange?.({
+                                ...specialConfig,
+                                dropSetWeights: currentWeights
+                              });
+                            }}
+                            min="0"
+                            step="0.5"
+                            className="h-7 text-xs bg-background border border-border/50 flex-1"
+                            placeholder={suggestedReduction ? `${suggestedReduction}% drop` : "0"}
+                          />
+                          <span className="text-xs text-red-300/50 w-8">{weightUnit}</span>
+                          <Input
+                            type="number"
+                            value={specialConfig?.dropSetReps?.[index] ?? 8}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 8;
+                              const currentReps = [...(specialConfig?.dropSetReps || [])];
+                              currentReps[index] = value;
+                              onSpecialConfigChange?.({
+                                ...specialConfig,
+                                dropSetReps: currentReps
+                              });
+                            }}
+                            min="5"
+                            max="20"
+                            className="h-7 text-xs bg-background border border-border/50 w-12"
+                            placeholder="8"
+                          />
+                          <span className="text-xs text-red-300/50 w-8">reps</span>
+                        </div>
+                        {(suggestedReduction || suggestedReps) && (
+                          <div className="text-xs text-red-400/50 ml-14">
+                            {suggestedReduction && `-${suggestedReduction}%`}
+                            {suggestedReduction && suggestedReps && ' / '}
+                            {suggestedReps && `${suggestedReps} reps target`}
+                          </div>
                         )}
                       </div>
                     );
@@ -544,10 +572,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     const currentDropSets = specialConfig?.dropSets ?? 3;
                     const newDropSets = Math.max(2, currentDropSets - 1);
                     const newWeights = (specialConfig?.dropSetWeights || [0, 0, 0]).slice(0, newDropSets);
+                    const newReps = (specialConfig?.dropSetReps || [8, 8, 8]).slice(0, newDropSets);
                     onSpecialConfigChange?.({
                       ...specialConfig,
                       dropSets: newDropSets,
-                      dropSetWeights: newWeights
+                      dropSetWeights: newWeights,
+                      dropSetReps: newReps
                     });
                   }}
                   className="h-6 w-6 p-0 border-red-500/20 bg-red-500/10 hover:bg-red-500/20"
@@ -561,14 +591,18 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     const currentDropSets = specialConfig?.dropSets ?? 3;
                     const newDropSets = Math.min(6, currentDropSets + 1);
                     const currentWeights = specialConfig?.dropSetWeights || [0, 0, 0];
+                    const currentReps = specialConfig?.dropSetReps || [8, 8, 8];
                     const newWeights = [...currentWeights];
+                    const newReps = [...currentReps];
                     while (newWeights.length < newDropSets) {
                       newWeights.push(0);
+                      newReps.push(8);
                     }
                     onSpecialConfigChange?.({
                       ...specialConfig,
                       dropSets: newDropSets,
-                      dropSetWeights: newWeights
+                      dropSetWeights: newWeights,
+                      dropSetReps: newReps
                     });
                   }}
                   className="h-6 w-6 p-0 border-red-500/20 bg-red-500/10 hover:bg-red-500/20"

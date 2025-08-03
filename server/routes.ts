@@ -1574,6 +1574,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 transformedConfig.dropSets = exerciseData.specialConfig.dropSets || weightArray.length;
               }
               
+              // Handle drop set reps array (target reps per drop set)
+              if (exerciseData.specialConfig.dropSetReps && Array.isArray(exerciseData.specialConfig.dropSetReps)) {
+                const repsArray = exerciseData.specialConfig.dropSetReps
+                  .map((reps: number) => parseInt(reps.toString()) || 8)
+                  .filter((reps: number) => reps > 0);
+                
+                transformedConfig.dropSetRepsArray = repsArray;
+              }
+              
               // Preserve legacy weightReductions for backward compatibility
               if (exerciseData.specialConfig.weightReductions && Array.isArray(exerciseData.specialConfig.weightReductions)) {
                 transformedConfig.weightReductions = exerciseData.specialConfig.weightReductions;
