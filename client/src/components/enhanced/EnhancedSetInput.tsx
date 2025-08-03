@@ -371,6 +371,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     Giant Set (40+ reps)
                   </div>
                 </SelectItem>
+                <SelectItem value="superset">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-3 w-3" />
+                    Superset
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -499,7 +505,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-red-300">Drop Set Weights</label>
                 {specialConfig?.weightReductions && specialConfig.weightReductions.length > 0 && (
                   <div className="text-xs text-red-300/60 mb-1">
-                    Configured: {specialConfig.weightReductions.map((r, i) => `${r}% / ${specialConfig.dropSetReps?.[i] || 8} reps`).join(', ')}
+                    Configured: {specialConfig.weightReductions.map((r: number, i: number) => `${r}% / ${specialConfig.dropSetReps?.[i] || 8} reps`).join(', ')}
                   </div>
                 )}
                 <div className="space-y-1">
@@ -774,6 +780,44 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         )}
 
+        {/* Superset Configuration */}
+        {specialMethod === 'superset' && !set.completed && isActive && (
+          <div className="bg-purple-500/10 border border-purple-500/20 p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-purple-400 font-medium">
+              <Plus className="h-3 w-3" />
+              Superset Configuration
+            </div>
+            <div className="space-y-2">
+              <div>
+                <label className="text-xs text-purple-300">Paired Exercise</label>
+                <Input
+                  type="text"
+                  value={specialConfig?.pairedExerciseName || "Not configured"}
+                  disabled
+                  className="h-7 text-xs bg-background/50 border border-border/30 text-purple-300/70"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-purple-300">Rest Between Sets (seconds)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.restSeconds ?? 60}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    restSeconds: parseInt(e.target.value) || 60
+                  })}
+                  min="30"
+                  max="120"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+            </div>
+            <div className="text-xs text-purple-300/70">
+              Perform this exercise paired with the configured exercise back-to-back with minimal rest between them.
+            </div>
+          </div>
+        )}
+
         {/* Conditional Rendering: Show input only for active sets, compact view for completed */}
         {!set.completed && isActive ? (
           <div className="space-y-1">
@@ -924,6 +968,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
                 {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
                 {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'superset' && <Plus className="h-2 w-2 mr-0.5" />}
                 {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
               </Badge>
             )}
@@ -946,6 +991,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
                   {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
                   {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'superset' && <Plus className="h-2 w-2 mr-0.5" />}
                   {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
                 </Badge>
               )}
