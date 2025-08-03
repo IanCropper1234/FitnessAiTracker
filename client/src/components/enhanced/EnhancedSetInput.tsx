@@ -453,56 +453,72 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <Minus className="h-3 w-3" />
               Drop Set Configuration
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="text-xs text-red-300">Drop Sets</label>
-                <Input
-                  type="number"
-                  value={specialConfig?.dropSets ?? 3}
-                  onChange={(e) => {
-                    const dropSets = parseInt(e.target.value) || 3;
-                    const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
-                    const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
-                    onSpecialConfigChange?.({
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs text-red-300">Drop Sets</label>
+                  <Input
+                    type="number"
+                    value={specialConfig?.dropSets ?? 3}
+                    onChange={(e) => {
+                      const dropSets = parseInt(e.target.value) || 3;
+                      const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
+                      const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
+                      onSpecialConfigChange?.({
+                        ...specialConfig,
+                        dropSets,
+                        weightReductions: newReductions
+                      });
+                    }}
+                    min="2"
+                    max="6"
+                    className="h-7 text-xs bg-background/50 border-red-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-red-300">Rest (sec)</label>
+                  <Input
+                    type="number"
+                    value={specialConfig?.dropRestSeconds ?? 10}
+                    onChange={(e) => onSpecialConfigChange?.({
                       ...specialConfig,
-                      dropSets,
-                      weightReductions: newReductions
-                    });
-                  }}
-                  min="2"
-                  max="5"
-                  className="h-7 text-xs bg-background/50 border-red-500/20"
-                />
+                      dropRestSeconds: parseInt(e.target.value) || 10
+                    })}
+                    min="5"
+                    max="15"
+                    className="h-7 text-xs bg-background/50 border-red-500/20"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-xs text-red-300">Weight % Drop</label>
-                <Input
-                  type="text"
-                  value={specialConfig?.weightReductions?.join(',') ?? '15,15,15'}
-                  onChange={(e) => {
-                    const reductions = e.target.value.split(',').map(v => parseInt(v.trim()) || 15);
-                    onSpecialConfigChange?.({
-                      ...specialConfig,
-                      weightReductions: reductions
-                    });
-                  }}
-                  placeholder="15,15,15"
-                  className="h-7 text-xs bg-background/50 border-red-500/20"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-red-300">Rest (sec)</label>
-                <Input
-                  type="number"
-                  value={specialConfig?.dropRestSeconds ?? 10}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    dropRestSeconds: parseInt(e.target.value) || 10
-                  })}
-                  min="5"
-                  max="15"
-                  className="h-7 text-xs bg-background/50 border-red-500/20"
-                />
+              
+              {/* Weight Reduction Inputs - One per drop set */}
+              <div className="space-y-1">
+                <label className="text-xs text-red-300">Weight % Drop per Set</label>
+                <div className="space-y-1">
+                  {Array.from({ length: specialConfig?.dropSets ?? 3 }, (_, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span className="text-xs text-red-300/70 w-12">Set {index + 1}:</span>
+                      <Input
+                        type="number"
+                        value={specialConfig?.weightReductions?.[index] ?? 15}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value) || 15;
+                          const currentReductions = [...(specialConfig?.weightReductions || [])];
+                          currentReductions[index] = value;
+                          onSpecialConfigChange?.({
+                            ...specialConfig,
+                            weightReductions: currentReductions
+                          });
+                        }}
+                        min="5"
+                        max="30"
+                        className="h-7 text-xs bg-background/50 border-red-500/20 flex-1"
+                        placeholder="15"
+                      />
+                      <span className="text-xs text-red-300/50 w-4">%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex items-center justify-between">
