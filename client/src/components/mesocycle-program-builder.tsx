@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseSelector } from "./exercise-selector";
 import { useToast } from "@/hooks/use-toast";
@@ -50,6 +51,8 @@ interface SelectedExercise {
   sets: number;
   targetReps: string;
   restPeriod: number;
+  specialMethod?: string | null;
+  specialConfig?: any;
 }
 
 interface CustomProgram {
@@ -207,8 +210,8 @@ export default function MesocycleProgramBuilder({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
             Create New Mesocycle
@@ -218,7 +221,8 @@ export default function MesocycleProgramBuilder({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <ScrollArea className="flex-1 -mx-6 px-6">
+          <div className="space-y-6 pb-6">
           {/* Basic Info */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -475,21 +479,22 @@ export default function MesocycleProgramBuilder({
               </CardContent>
             </Card>
           )}
-
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateMesocycle}
-              disabled={createMesocycleMutation.isPending}
-              className="flex items-center gap-2"
-            >
-              <Play className="h-4 w-4" />
-              {createMesocycleMutation.isPending ? "Creating..." : "Start Mesocycle"}
-            </Button>
           </div>
+        </ScrollArea>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end space-x-2 pt-4 border-t bg-transparent flex-shrink-0">
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleCreateMesocycle}
+            disabled={createMesocycleMutation.isPending}
+            className="flex items-center gap-2"
+          >
+            <Play className="h-4 w-4" />
+            {createMesocycleMutation.isPending ? "Creating..." : "Start Mesocycle"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

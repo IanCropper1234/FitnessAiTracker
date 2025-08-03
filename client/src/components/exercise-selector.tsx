@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus, Dumbbell, Target } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Plus, Dumbbell, Target, Timer, Zap, Minus } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -22,6 +23,8 @@ interface SelectedExercise extends Exercise {
   sets: number;
   targetReps: string;
   restPeriod: number;
+  specialMethod?: string | null;
+  specialConfig?: any;
 }
 
 interface ExerciseSelectorProps {
@@ -74,12 +77,10 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
     onExercisesChange(selectedExercises.filter(ex => ex.id !== exerciseId));
   };
 
-  const updateExercise = (exerciseId: number, field: keyof SelectedExercise, value: any) => {
-    onExercisesChange(
-      selectedExercises.map(ex => 
-        ex.id === exerciseId ? { ...ex, [field]: value } : ex
-      )
-    );
+  const updateExercise = (exerciseId: number, field: string, value: any) => {
+    onExercisesChange(selectedExercises.map(ex => 
+      ex.id === exerciseId ? { ...ex, [field]: value } : ex
+    ));
   };
 
   return (
@@ -143,8 +144,8 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
               )}
               
               {/* Exercise List */}
-              <ScrollArea className="h-96">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ScrollArea className="h-[50vh] max-h-96">
+                <div className="grid grid-cols-1 gap-3 pr-2">
                   {isLoading ? (
                     <div className="col-span-full text-center py-8">Loading exercises...</div>
                   ) : filteredExercises.length === 0 ? (
@@ -241,35 +242,203 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                   </Button>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-sm font-medium">Sets</label>
-                    <Input
-                      type="number"
-                      value={exercise.sets || 1}
-                      onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
-                      min="1"
-                      max="10"
-                    />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Sets</label>
+                      <Input
+                        type="number"
+                        value={exercise.sets || 1}
+                        onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
+                        min="1"
+                        max="10"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Target Reps</label>
+                      <Input
+                        value={exercise.targetReps}
+                        onChange={(e) => updateExercise(exercise.id, 'targetReps', e.target.value)}
+                        placeholder="e.g., 8-12"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Rest (sec)</label>
+                      <Input
+                        type="number"
+                        value={exercise.restPeriod || 60}
+                        onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value) || 60)}
+                        min="30"
+                        max="600"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium">Target Reps</label>
-                    <Input
-                      value={exercise.targetReps}
-                      onChange={(e) => updateExercise(exercise.id, 'targetReps', e.target.value)}
-                      placeholder="e.g., 8-12"
-                    />
+
+                  {/* Special Training Method Configuration */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Training Method</label>
+                    <Select
+                      value={exercise.specialMethod || "standard"}
+                      onValueChange={(value) => updateExercise(exercise.id, 'specialMethod', value === "standard" ? null : value)}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Standard Set" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard">Standard Set</SelectItem>
+                        <SelectItem value="myorep_match">
+                          <div className="flex items-center gap-2">
+                            <Target className="h-3 w-3" />
+                            Myorep Match
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="myorep_no_match">
+                          <div className="flex items-center gap-2">
+                            <Zap className="h-3 w-3" />
+                            Myorep No Match
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="drop_set">
+                          <div className="flex items-center gap-2">
+                            <Minus className="h-3 w-3" />
+                            Drop Set
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="giant_set">
+                          <div className="flex items-center gap-2">
+                            <Timer className="h-3 w-3" />
+                            Giant Set (40+ reps)
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="superset">
+                          <div className="flex items-center gap-2">
+                            <Plus className="h-3 w-3" />
+                            Superset
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium">Rest (sec)</label>
-                    <Input
-                      type="number"
-                      value={exercise.restPeriod || 60}
-                      onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value) || 60)}
-                      min="30"
-                      max="600"
-                    />
-                  </div>
+
+                  {/* Special Method Configuration Details */}
+                  {exercise.specialMethod === 'myorep_match' && (
+                    <div className="bg-green-500/10 border border-green-500/20 p-3 space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-green-400 font-medium">
+                        <Target className="h-3 w-3" />
+                        Myorep Match Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-green-300">Activation Set Reps</label>
+                          <Input
+                            type="number"
+                            value={exercise.specialConfig?.activationReps ?? 12}
+                            onChange={(e) => updateExercise(exercise.id, 'specialConfig', {
+                              ...exercise.specialConfig,
+                              activationReps: parseInt(e.target.value) || 12
+                            })}
+                            min="8"
+                            max="20"
+                            className="h-8 text-xs bg-background border border-border/50"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-green-300">Mini-Set Reps</label>
+                          <Input
+                            type="number"
+                            value={exercise.specialConfig?.miniSetReps ?? 5}
+                            onChange={(e) => updateExercise(exercise.id, 'specialConfig', {
+                              ...exercise.specialConfig,
+                              miniSetReps: parseInt(e.target.value) || 5
+                            })}
+                            min="3"
+                            max="10"
+                            className="h-8 text-xs bg-background border border-border/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {exercise.specialMethod === 'drop_set' && (
+                    <div className="bg-red-500/10 border border-red-500/20 p-3 space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-red-400 font-medium">
+                        <Minus className="h-3 w-3" />
+                        Drop Set Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-red-300">Weight Reduction (%)</label>
+                          <Input
+                            type="number"
+                            value={exercise.specialConfig?.weightReduction ?? 20}
+                            onChange={(e) => updateExercise(exercise.id, 'specialConfig', {
+                              ...exercise.specialConfig,
+                              weightReduction: parseInt(e.target.value) || 20
+                            })}
+                            min="10"
+                            max="50"
+                            className="h-8 text-xs bg-background border border-border/50"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-red-300">Drop Set Reps</label>
+                          <Input
+                            type="number"
+                            value={exercise.specialConfig?.dropSetReps ?? 8}
+                            onChange={(e) => updateExercise(exercise.id, 'specialConfig', {
+                              ...exercise.specialConfig,
+                              dropSetReps: parseInt(e.target.value) || 8
+                            })}
+                            min="5"
+                            max="15"
+                            className="h-8 text-xs bg-background border border-border/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {exercise.specialMethod === 'giant_set' && (
+                    <div className="bg-orange-500/10 border border-orange-500/20 p-3 space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-orange-400 font-medium">
+                        <Timer className="h-3 w-3" />
+                        Giant Set Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-orange-300">Target Total Reps</label>
+                          <Input
+                            type="number"
+                            value={exercise.specialConfig?.totalTargetReps ?? 40}
+                            onChange={(e) => updateExercise(exercise.id, 'specialConfig', {
+                              ...exercise.specialConfig,
+                              totalTargetReps: parseInt(e.target.value) || 40,
+                              miniSetReps: exercise.specialConfig?.miniSetReps || 5,
+                              restSeconds: exercise.specialConfig?.restSeconds || 10
+                            })}
+                            min="40"
+                            max="100"
+                            className="h-8 text-xs bg-background border border-border/50"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-orange-300">Mini-Set Reps</label>
+                          <Input
+                            type="number"
+                            value={exercise.specialConfig?.miniSetReps ?? 5}
+                            onChange={(e) => updateExercise(exercise.id, 'specialConfig', {
+                              ...exercise.specialConfig,
+                              miniSetReps: parseInt(e.target.value) || 5
+                            })}
+                            min="3"
+                            max="15"
+                            className="h-8 text-xs bg-background border border-border/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
