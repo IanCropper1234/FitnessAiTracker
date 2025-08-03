@@ -472,7 +472,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     }}
                     min="2"
                     max="6"
-                    className="h-7 text-xs bg-background/50 border-red-500/20"
+                    className="h-7 text-xs bg-background border border-border/50"
                   />
                 </div>
                 <div>
@@ -486,7 +486,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     })}
                     min="5"
                     max="15"
-                    className="h-7 text-xs bg-background/50 border-red-500/20"
+                    className="h-7 text-xs bg-background border border-border/50"
                   />
                 </div>
               </div>
@@ -519,7 +519,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                           }}
                           min="0"
                           step="0.5"
-                          className="h-7 text-xs bg-background/50 border-red-500/20 flex-1"
+                          className="h-7 text-xs bg-background border border-border/50 flex-1"
                           placeholder={suggestedReduction ? `${suggestedReduction}% drop` : "0"}
                         />
                         <span className="text-xs text-red-300/50 w-8">{weightUnit}</span>
@@ -600,7 +600,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="10"
                   max="20"
-                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                  className="h-7 text-xs bg-background border border-border/50"
                 />
               </div>
               <div>
@@ -616,7 +616,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="1"
                   max="5"
-                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                  className="h-7 text-xs bg-background border border-border/50"
                 />
               </div>
               <div>
@@ -632,7 +632,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="15"
                   max="30"
-                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                  className="h-7 text-xs bg-background border border-border/50"
                 />
               </div>
             </div>
@@ -687,7 +687,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="1"
                   max="5"
-                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                  className="h-7 text-xs bg-background border border-border/50"
                 />
               </div>
               <div>
@@ -702,7 +702,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="15"
                   max="30"
-                  className="h-7 text-xs border-blue-500/20 bg-[#111418]"
+                  className="h-7 text-xs bg-background border border-border/50"
                 />
               </div>
             </div>
