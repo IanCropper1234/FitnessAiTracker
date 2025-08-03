@@ -94,7 +94,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
               Add Exercise
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
             <DialogHeader>
               <DialogTitle>Select Exercises</DialogTitle>
               <DialogDescription>
@@ -102,49 +102,52 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-4">
+            <div className="flex flex-col flex-1 overflow-hidden">
               {/* Search and Filter */}
-              <div className="flex gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search exercises..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  {categories.map(category => (
-                    <Button
-                      key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Target Muscle Groups Filter */}
-              {targetMuscleGroups?.length && (
-                <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4" />
-                  <span className="text-sm font-medium">Targeting:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {targetMuscleGroups.map(muscle => (
-                      <Badge key={muscle} variant="secondary" className="text-xs">
-                        {muscle}
-                      </Badge>
+              <div className="flex-shrink-0 space-y-4 pb-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search exercises..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCategory(category)}
+                        className="text-xs"
+                      >
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </Button>
                     ))}
                   </div>
                 </div>
-              )}
+
+                {/* Target Muscle Groups Filter */}
+                {targetMuscleGroups?.length && (
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4" />
+                    <span className="text-sm font-medium">Targeting:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {targetMuscleGroups.map(muscle => (
+                        <Badge key={muscle} variant="secondary" className="text-xs">
+                          {muscle}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               
               {/* Exercise List */}
-              <ScrollArea className="h-[50vh] max-h-96">
+              <ScrollArea className="flex-1">
                 <div className="grid grid-cols-1 gap-3 pr-2">
                   {isLoading ? (
                     <div className="col-span-full text-center py-8">Loading exercises...</div>
@@ -209,116 +212,120 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
       </div>
 
       {/* Selected Exercises */}
-      <div className="space-y-3">
-        {selectedExercises.length === 0 ? (
-          <Card className="p-6 text-center text-muted-foreground">
-            <Dumbbell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>No exercises selected</p>
-            <p className="text-sm">Click "Add Exercise" to get started</p>
-          </Card>
-        ) : (
-          selectedExercises.map(exercise => (
-            <Card key={exercise.id}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h4 className="font-medium">{exercise.name}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        {exercise.category}
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {exercise.primaryMuscle}
-                      </Badge>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeExercise(exercise.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    Remove
-                  </Button>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4">
+      <ScrollArea className="max-h-[60vh]">
+        <div className="space-y-3 pr-2">
+          {selectedExercises.length === 0 ? (
+            <Card className="p-6 text-center text-muted-foreground">
+              <Dumbbell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p>No exercises selected</p>
+              <p className="text-sm">Click "Add Exercise" to get started</p>
+            </Card>
+          ) : (
+            selectedExercises.map(exercise => (
+              <Card key={exercise.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
                     <div>
-                      <label className="text-sm font-medium">Sets</label>
-                      <Input
-                        type="number"
-                        value={exercise.sets || 1}
-                        onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
-                        min="1"
-                        max="10"
-                      />
+                      <h4 className="font-medium text-sm sm:text-base">{exercise.name}</h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {exercise.category}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {exercise.primaryMuscle}
+                        </Badge>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium">Target Reps</label>
-                      <Input
-                        value={exercise.targetReps}
-                        onChange={(e) => updateExercise(exercise.id, 'targetReps', e.target.value)}
-                        placeholder="e.g., 8-12"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Rest (sec)</label>
-                      <Input
-                        type="number"
-                        value={exercise.restPeriod || 60}
-                        onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value) || 60)}
-                        min="30"
-                        max="600"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Special Training Method Configuration */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Training Method</label>
-                    <Select
-                      value={exercise.specialMethod || "standard"}
-                      onValueChange={(value) => updateExercise(exercise.id, 'specialMethod', value === "standard" ? null : value)}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeExercise(exercise.id)}
+                      className="text-red-600 hover:text-red-700 text-xs"
                     >
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Standard Set" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="standard">Standard Set</SelectItem>
-                        <SelectItem value="myorep_match">
-                          <div className="flex items-center gap-2">
-                            <Target className="h-3 w-3" />
-                            Myorep Match
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="myorep_no_match">
-                          <div className="flex items-center gap-2">
-                            <Zap className="h-3 w-3" />
-                            Myorep No Match
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="drop_set">
-                          <div className="flex items-center gap-2">
-                            <Minus className="h-3 w-3" />
-                            Drop Set
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="giant_set">
-                          <div className="flex items-center gap-2">
-                            <Timer className="h-3 w-3" />
-                            Giant Set (40+ reps)
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="superset">
-                          <div className="flex items-center gap-2">
-                            <Plus className="h-3 w-3" />
-                            Superset
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      Remove
+                    </Button>
                   </div>
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+                      <div>
+                        <label className="text-sm font-medium">Sets</label>
+                        <Input
+                          type="number"
+                          value={exercise.sets || 1}
+                          onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
+                          min="1"
+                          max="10"
+                          className="h-9"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Target Reps</label>
+                        <Input
+                          value={exercise.targetReps}
+                          onChange={(e) => updateExercise(exercise.id, 'targetReps', e.target.value)}
+                          placeholder="e.g., 8-12"
+                          className="h-9"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Rest (sec)</label>
+                        <Input
+                          type="number"
+                          value={exercise.restPeriod || 60}
+                          onChange={(e) => updateExercise(exercise.id, 'restPeriod', parseInt(e.target.value) || 60)}
+                          min="30"
+                          max="600"
+                          className="h-9"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Special Training Method Configuration */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Training Method</label>
+                      <Select
+                        value={exercise.specialMethod || "standard"}
+                        onValueChange={(value) => updateExercise(exercise.id, 'specialMethod', value === "standard" ? null : value)}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder="Standard Set" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="standard">Standard Set</SelectItem>
+                          <SelectItem value="myorep_match">
+                            <div className="flex items-center gap-2">
+                              <Target className="h-3 w-3" />
+                              Myorep Match
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="myorep_no_match">
+                            <div className="flex items-center gap-2">
+                              <Zap className="h-3 w-3" />
+                              Myorep No Match
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="drop_set">
+                            <div className="flex items-center gap-2">
+                              <Minus className="h-3 w-3" />
+                              Drop Set
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="giant_set">
+                            <div className="flex items-center gap-2">
+                              <Timer className="h-3 w-3" />
+                              Giant Set (40+ reps)
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="superset">
+                            <div className="flex items-center gap-2">
+                              <Plus className="h-3 w-3" />
+                              Superset
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
                   {/* Special Method Configuration Details */}
                   {exercise.specialMethod === 'myorep_match' && (
@@ -439,12 +446,13 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                       </div>
                     </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 }
