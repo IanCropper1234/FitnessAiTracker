@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Search, Filter, Plus, Trash2, Target, ArrowLeft, Dumbbell, Check, ChevronsUpDown } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface Exercise {
@@ -96,19 +96,7 @@ export function CreateWorkoutSession() {
   // Create workout session mutation
   const createWorkoutSessionMutation = useMutation({
     mutationFn: async (sessionData: any) => {
-      const response = await fetch('/api/training/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sessionData),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create workout session');
-      }
-      
+      const response = await apiRequest('POST', '/api/training/sessions', sessionData);
       return response.json();
     },
     onSuccess: () => {
