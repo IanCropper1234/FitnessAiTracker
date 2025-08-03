@@ -798,24 +798,83 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 
                 {/* Method Configuration Details */}
                 <div className="space-y-1 text-xs">
-                  {(specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'drop_set') && 
-                   specialConfigs[currentExercise.id]?.miniSetReps && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Mini-Set Reps:</span>
-                      <span className="font-medium">{specialConfigs[currentExercise.id].miniSetReps}</span>
-                    </div>
+                  {/* Drop Set Configuration */}
+                  {specialMethods[currentExercise.id] === 'drop_set' && specialConfigs[currentExercise.id] && (
+                    <>
+                      {/* Drop Set Count */}
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Drop Sets:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].dropSets || 3}</span>
+                      </div>
+                      
+                      {/* Drop Set Weights */}
+                      {specialConfigs[currentExercise.id].dropSetWeights && specialConfigs[currentExercise.id].dropSetWeights.length > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Weights:</span>
+                          <span className="font-medium">
+                            {specialConfigs[currentExercise.id].dropSetWeights.map((weight: number, index: number) => 
+                              `${weight}kg`
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Drop Set Target Reps */}
+                      {specialConfigs[currentExercise.id].dropSetReps && specialConfigs[currentExercise.id].dropSetReps.length > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Target Reps:</span>
+                          <span className="font-medium">
+                            {specialConfigs[currentExercise.id].dropSetReps.map((reps: number, index: number) => 
+                              `${reps} reps`
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Rest Between Drops */}
+                      {specialConfigs[currentExercise.id].dropRestSeconds && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Rest:</span>
+                          <span className="font-medium">{specialConfigs[currentExercise.id].dropRestSeconds}s</span>
+                        </div>
+                      )}
+                    </>
                   )}
                   
-                  {specialMethods[currentExercise.id] === 'drop_set' && 
-                   specialConfigs[currentExercise.id]?.dropsetWeight && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Dropset Weights:</span>
-                      <span className="font-medium">{specialConfigs[currentExercise.id].dropsetWeight}</span>
-                    </div>
+                  {/* Myorep Match Configuration */}
+                  {specialMethods[currentExercise.id] === 'myorep_match' && specialConfigs[currentExercise.id] && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Target Reps:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].targetReps || 15}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Mini Sets:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].miniSets || 3}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Rest:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].restSeconds || 20}s</span>
+                      </div>
+                    </>
                   )}
                   
-                  {specialMethods[currentExercise.id] === 'giant_set' && 
-                   specialConfigs[currentExercise.id] && (
+                  {/* Myorep No Match Configuration */}
+                  {specialMethods[currentExercise.id] === 'myorep_no_match' && specialConfigs[currentExercise.id] && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Mini Sets:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].miniSets || 3}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Rest:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].restSeconds || 20}s</span>
+                      </div>
+                    </>
+                  )}
+                  
+                  {/* Giant Set Configuration */}
+                  {specialMethods[currentExercise.id] === 'giant_set' && specialConfigs[currentExercise.id] && (
                     <>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Target Reps:</span>
@@ -824,6 +883,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Per Mini-Set:</span>
                         <span className="font-medium">{specialConfigs[currentExercise.id].miniSetReps || 5}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Rest:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].restSeconds || 15}s</span>
                       </div>
                     </>
                   )}
