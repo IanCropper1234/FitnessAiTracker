@@ -153,15 +153,77 @@ export function CreateWorkoutSession() {
   };
 
   const updateSpecialConfig = (index: number, configField: string, value: any) => {
-    setExerciseTemplates(prev => prev.map((template, i) => 
-      i === index ? { 
-        ...template, 
-        specialConfig: { 
-          ...template.specialConfig, 
-          [configField]: value 
-        } 
-      } : template
-    ));
+    const currentTemplate = exerciseTemplates[index];
+    
+    setExerciseTemplates(prev => {
+      let newTemplates = prev.map((template, i) => 
+        i === index ? { 
+          ...template, 
+          specialConfig: { 
+            ...template.specialConfig, 
+            [configField]: value 
+          } 
+        } : template
+      );
+
+      // Auto-create paired exercise for Superset
+      if (currentTemplate.specialMethod === 'superset' && configField === 'pairedExerciseId' && value) {
+        const pairedExercise = exercises?.find(ex => ex.id === value);
+        if (pairedExercise) {
+          // Check if paired exercise already exists in the session
+          const existingPairedIndex = newTemplates.findIndex(template => template.exerciseId === value);
+          
+          if (existingPairedIndex === -1) {
+            // Create new paired exercise template
+            const pairedTemplate: ExerciseTemplate = {
+              exerciseId: pairedExercise.id,
+              exercise: pairedExercise,
+              sets: currentTemplate.sets, // Same number of sets
+              targetReps: currentTemplate.targetReps, // Same target reps
+              restPeriod: currentTemplate.restPeriod, // Same rest period
+              notes: `Superset pair with ${currentTemplate.exercise.name}`,
+              specialMethod: 'superset',
+              specialConfig: {
+                pairedExerciseId: currentTemplate.exerciseId, // Reference back to original exercise
+                restSeconds: currentTemplate.specialConfig?.restSeconds || 60
+              }
+            };
+            
+            // Insert the paired exercise immediately after the current exercise
+            const insertIndex = index + 1;
+            newTemplates = [
+              ...newTemplates.slice(0, insertIndex),
+              pairedTemplate,
+              ...newTemplates.slice(insertIndex)
+            ];
+            
+            toast({
+              title: "Paired Exercise Added",
+              description: `${pairedExercise.name} has been automatically added as your superset pair.`,
+            });
+          } else {
+            // Update existing paired exercise to reference this exercise
+            newTemplates[existingPairedIndex] = {
+              ...newTemplates[existingPairedIndex],
+              specialMethod: 'superset',
+              specialConfig: {
+                ...newTemplates[existingPairedIndex].specialConfig,
+                pairedExerciseId: currentTemplate.exerciseId,
+                restSeconds: currentTemplate.specialConfig?.restSeconds || 60
+              },
+              notes: `Superset pair with ${currentTemplate.exercise.name}`
+            };
+            
+            toast({
+              title: "Exercise Updated",
+              description: `${pairedExercise.name} has been configured as your superset pair.`,
+            });
+          }
+        }
+      }
+
+      return newTemplates;
+    });
   };
 
   const getSpecialMethodDefaults = (method: string) => {
@@ -398,7 +460,15 @@ export function CreateWorkoutSession() {
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <CardTitle className="text-base">{template.exercise.name}</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-base">{template.exercise.name}</CardTitle>
+                        {template.specialMethod === 'superset' && template.specialConfig?.pairedExerciseId && (
+                          <Badge variant="outline" className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs">
+                            <Plus className="h-2 w-2 mr-1" />
+                            Superset
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <Badge variant="outline" className="capitalize">
                           {template.exercise.category}
@@ -410,6 +480,11 @@ export function CreateWorkoutSession() {
                           {template.exercise.primaryMuscle.replace('_', ' ')}
                         </Badge>
                       </div>
+                      {template.specialMethod === 'superset' && template.specialConfig?.pairedExerciseId && (
+                        <div className="mt-2 text-xs text-purple-400">
+                          ↔ Paired with: {exercises?.find(ex => ex.id === template.specialConfig?.pairedExerciseId)?.name}
+                        </div>
+                      )}
                     </div>
                     <Button
                       size="sm"
