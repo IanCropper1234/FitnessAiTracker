@@ -1067,6 +1067,40 @@ export class MesocyclePeriodization {
           }
         }
 
+        // Get latest special training method data for this exercise to maintain consistency
+        let specialMethodData = null;
+        let specialConfigData = null;
+        
+        if (exercise.specialMethod) {
+          // Use existing special method from base exercise
+          specialMethodData = exercise.specialMethod;
+          specialConfigData = exercise.specialConfig;
+        } else {
+          // Look for latest special training method data from recent sessions
+          const recentSessions = await db
+            .select({
+              specialMethod: workoutExercises.specialMethod,
+              specialConfig: workoutExercises.specialConfig
+            })
+            .from(workoutExercises)
+            .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+            .where(
+              and(
+                eq(workoutExercises.exerciseId, exercise.exerciseId),
+                eq(workoutSessions.userId, mesocycle.userId),
+                isNotNull(workoutExercises.specialMethod)
+              )
+            )
+            .orderBy(desc(workoutSessions.date))
+            .limit(1);
+
+          if (recentSessions.length > 0) {
+            specialMethodData = recentSessions[0].specialMethod;
+            specialConfigData = recentSessions[0].specialConfig;
+            console.log(`🎯 Pre-filling special method for exercise ${exercise.exerciseId}: ${specialMethodData}`, specialConfigData);
+          }
+        }
+
         await db
           .insert(workoutExercises)
           .values({
@@ -1081,7 +1115,9 @@ export class MesocyclePeriodization {
             rir: progressedRir,
             restPeriod: exercise.restPeriod,
             notes: null,
-            isCompleted: false
+            isCompleted: false,
+            specialMethod: specialMethodData,
+            specialConfig: specialConfigData
           });
       }
     }

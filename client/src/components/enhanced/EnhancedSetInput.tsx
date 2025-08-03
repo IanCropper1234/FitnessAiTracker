@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Check, Info, Plus, Minus, Scale, Timer, Zap, Target, History } from "lucide-react";
+import { SpecialMethodHistoryButton } from '@/components/SpecialMethodHistoryButton';
 
 interface WorkoutSet {
   setNumber: number;
@@ -340,7 +341,22 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         {/* Special Training Methods Selector - Only for active sets */}
         {!set.completed && isActive && (
           <div className="space-y-1">
-            <label className="text-xs font-medium text-foreground">Training Method</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-foreground">Training Method</label>
+              {/* History Auto-Apply Icon */}
+              <SpecialMethodHistoryButton 
+                exerciseId={exerciseId}
+                userId={userId}
+                onApplyHistoricalData={(historicalData) => {
+                  if (historicalData.specialMethod && onSpecialMethodChange) {
+                    onSpecialMethodChange(historicalData.specialMethod);
+                    if (historicalData.specialConfig && onSpecialConfigChange) {
+                      onSpecialConfigChange(historicalData.specialConfig);
+                    }
+                  }
+                }}
+              />
+            </div>
             <Select
               value={specialMethod || "standard"}
               onValueChange={(value) => onSpecialMethodChange?.(value === "standard" ? null : value)}

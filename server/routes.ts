@@ -3872,6 +3872,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get exercise special training method history
+  app.get("/api/training/exercise-special-history/:exerciseId", requireAuth, async (req, res) => {
+    try {
+      const exerciseId = parseInt(req.params.exerciseId);
+      const userId = req.userId;
+      const limit = parseInt(req.query.limit as string) || 5;
+
+      // Find latest special training method data for this exercise
+      const specialHistory = await db
+        .select({
+          specialMethod: workoutExercises.specialMethod,
+          specialConfig: workoutExercises.specialConfig,
+          date: workoutSessions.date,
+          weight: workoutExercises.weight,
+          reps: workoutExercises.actualReps,
+          rpe: workoutExercises.rpe
+        })
+        .from(workoutExercises)
+        .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
+        .where(
+          and(
+            eq(workoutExercises.exerciseId, exerciseId),
+            eq(workoutSessions.userId, userId),
+            isNotNull(workoutExercises.specialMethod),
+            eq(workoutSessions.isCompleted, true)
+          )
+        )
+        .orderBy(desc(workoutSessions.date))
+        .limit(limit);
+
+      res.json(specialHistory);
+    } catch (error) {
+      console.error("Error fetching exercise special method history:", error);
+      res.status(500).json({ error: "Failed to fetch special method history" });
+    }
+  });
+
   // Analytics and Reporting Routes
   
   // Get nutrition analytics for a time period
