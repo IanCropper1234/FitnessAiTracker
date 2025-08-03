@@ -486,7 +486,7 @@ export function CreateWorkoutSession() {
                       </h4>
                       
                       {/* Myorep Match Configuration */}
-                      {template.specialMethod === 'myorep_match' && (
+                      {template.specialMethod === 'myorep_match' && template.specialConfig && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Target Reps</Label>
@@ -522,7 +522,7 @@ export function CreateWorkoutSession() {
                       )}
 
                       {/* Myorep No Match Configuration */}
-                      {template.specialMethod === 'myorep_no_match' && (
+                      {template.specialMethod === 'myorep_no_match' && template.specialConfig && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Mini Sets</Label>
@@ -548,12 +548,12 @@ export function CreateWorkoutSession() {
                       )}
 
                       {/* Drop Set Configuration */}
-                      {template.specialMethod === 'drop_set' && (
+                      {template.specialMethod === 'drop_set' && template.specialConfig && (
                         <div className="space-y-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Number of Drop Sets</Label>
                             <Select
-                              value={(template.specialConfig.dropSets || 3).toString()}
+                              value={(template.specialConfig?.dropSets || 3).toString()}
                               onValueChange={(value) => {
                                 const dropSets = parseInt(value);
                                 const currentReductions = template.specialConfig?.weightReductions || [15, 15, 15];
@@ -624,7 +624,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig.dropRestSeconds || 10}
+                              value={template.specialConfig?.dropRestSeconds || 10}
                               onChange={(e) => updateSpecialConfig(index, 'dropRestSeconds', parseInt(e.target.value) || 10)}
                               className="w-32"
                             />
@@ -633,7 +633,7 @@ export function CreateWorkoutSession() {
                       )}
 
                       {/* Giant Set Configuration */}
-                      {template.specialMethod === 'giant_set' && (
+                      {template.specialMethod === 'giant_set' && template.specialConfig && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Total Target Reps</Label>
@@ -641,7 +641,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="30"
                               max="60"
-                              value={template.specialConfig.totalTargetReps || 40}
+                              value={template.specialConfig?.totalTargetReps || 40}
                               onChange={(e) => updateSpecialConfig(index, 'totalTargetReps', parseInt(e.target.value) || 40)}
                             />
                           </div>
@@ -651,7 +651,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig.miniSetReps || 8}
+                              value={template.specialConfig?.miniSetReps || 8}
                               onChange={(e) => updateSpecialConfig(index, 'miniSetReps', parseInt(e.target.value) || 8)}
                             />
                           </div>
@@ -661,7 +661,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig.restSeconds || template.specialConfig.giantRestSeconds || 15}
+                              value={template.specialConfig?.restSeconds || template.specialConfig?.giantRestSeconds || 15}
                               onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 15)}
                             />
                           </div>
@@ -669,12 +669,12 @@ export function CreateWorkoutSession() {
                       )}
 
                       {/* Superset Configuration */}
-                      {template.specialMethod === 'superset' && (
+                      {template.specialMethod === 'superset' && template.specialConfig && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Paired Exercise</Label>
                             <Select 
-                              value={template.specialConfig.pairedExerciseId?.toString() || ""} 
+                              value={template.specialConfig?.pairedExerciseId?.toString() || ""} 
                               onValueChange={(value) => updateSpecialConfig(index, 'pairedExerciseId', parseInt(value) || null)}
                             >
                               <SelectTrigger>
@@ -695,7 +695,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="30"
                               max="120"
-                              value={template.specialConfig.restSeconds || 60}
+                              value={template.specialConfig?.restSeconds || 60}
                               onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 60)}
                             />
                           </div>
