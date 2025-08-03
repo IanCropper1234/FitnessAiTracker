@@ -475,7 +475,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     }}
                     min="2"
                     max="6"
-                    className="h-7 text-xs bg-background border border-border/50"
+                    className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                   />
                 </div>
                 <div>
@@ -489,7 +489,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     })}
                     min="5"
                     max="15"
-                    className="h-7 text-xs bg-background border border-border/50"
+                    className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                   />
                 </div>
               </div>
@@ -524,7 +524,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                             }}
                             min="0"
                             step="0.5"
-                            className="h-7 text-xs bg-background border border-border/50 flex-1"
+                            className="h-7 text-xs bg-background border border-border/50 flex-1 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                             placeholder={suggestedReduction ? `${suggestedReduction}% drop` : "0"}
                           />
                           <span className="text-xs text-red-300/50 w-8">{weightUnit}</span>
@@ -542,7 +542,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                             }}
                             min="5"
                             max="20"
-                            className="h-7 text-xs bg-background border border-border/50 w-12"
+                            className="h-7 text-xs bg-background border border-border/50 w-12 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                             placeholder="8"
                           />
                           <span className="text-xs text-red-300/50 w-8">reps</span>
@@ -634,7 +634,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="10"
                   max="20"
-                  className="h-7 text-xs bg-background border border-border/50"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
               <div>
@@ -650,7 +650,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="1"
                   max="5"
-                  className="h-7 text-xs bg-background border border-border/50"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
               <div>
@@ -666,7 +666,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="15"
                   max="30"
-                  className="h-7 text-xs bg-background border border-border/50"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
             </div>
@@ -721,7 +721,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="1"
                   max="5"
-                  className="h-7 text-xs bg-background border border-border/50"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
               <div>
@@ -736,7 +736,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   })}
                   min="15"
                   max="30"
-                  className="h-7 text-xs bg-background border border-border/50"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
             </div>
