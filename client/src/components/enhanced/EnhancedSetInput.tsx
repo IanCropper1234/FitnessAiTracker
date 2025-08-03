@@ -493,7 +493,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               
               {/* Drop Set Weight Inputs - Actual weights per set */}
               <div className="space-y-1">
-                <label className="text-xs text-red-300">Drop Set Weights</label>
+                <label className="text-xs text-red-300">Drop Set Weights (reduce 10-20% per drop)</label>
                 <div className="space-y-1">
                   {Array.from({ length: specialConfig?.dropSets ?? 3 }, (_, index) => (
                     <div key={index} className="flex items-center gap-2">
@@ -523,7 +523,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-xs text-red-300/70">
-                Perform {specialConfig?.dropSets ?? 3} drop sets with {specialConfig?.dropRestSeconds ?? 10}s rest
+                Perform {specialConfig?.dropSets ?? 3} drop sets with {specialConfig?.dropRestSeconds ?? 10}s rest (typically 10-20% weight reduction per drop)
               </div>
               <div className="flex gap-1">
                 <Button
