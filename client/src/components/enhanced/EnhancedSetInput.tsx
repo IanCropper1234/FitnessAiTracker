@@ -388,7 +388,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-orange-300">Target Total Reps</label>
                 <Input
                   type="number"
-                  value={specialConfig?.totalTargetReps || 40}
+                  value={specialConfig?.totalTargetReps ?? 40}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     totalTargetReps: parseInt(e.target.value) || 40,
@@ -404,7 +404,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-orange-300">Mini-Set Reps</label>
                 <Input
                   type="number"
-                  value={specialConfig?.miniSetReps || 5}
+                  value={specialConfig?.miniSetReps ?? 5}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     miniSetReps: parseInt(e.target.value) || 5
@@ -417,7 +417,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-xs text-orange-300/70">
-                Target: {specialConfig?.totalTargetReps || 40} reps in {Math.ceil((specialConfig?.totalTargetReps || 40) / (specialConfig?.miniSetReps || 5))} mini-sets
+                Target: {specialConfig?.totalTargetReps ?? 40} reps in {Math.ceil((specialConfig?.totalTargetReps ?? 40) / (specialConfig?.miniSetReps ?? 5))} mini-sets
               </div>
               <div className="flex gap-1">
                 <Button
@@ -425,7 +425,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   variant="outline"
                   onClick={() => onSpecialConfigChange?.({
                     ...specialConfig,
-                    totalTargetReps: Math.max(20, (specialConfig?.totalTargetReps || 40) - 10)
+                    totalTargetReps: Math.max(20, (specialConfig?.totalTargetReps ?? 40) - 10)
                   })}
                   className="h-6 w-6 p-0 border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20"
                 >
@@ -436,7 +436,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   variant="outline"
                   onClick={() => onSpecialConfigChange?.({
                     ...specialConfig,
-                    totalTargetReps: Math.min(100, (specialConfig?.totalTargetReps || 40) + 10)
+                    totalTargetReps: Math.min(100, (specialConfig?.totalTargetReps ?? 40) + 10)
                   })}
                   className="h-6 w-6 p-0 border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20"
                 >
@@ -458,7 +458,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-red-300">Drop Sets</label>
                 <Input
                   type="number"
-                  value={specialConfig?.dropSets || 3}
+                  value={specialConfig?.dropSets ?? 3}
                   onChange={(e) => {
                     const dropSets = parseInt(e.target.value) || 3;
                     const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
@@ -478,7 +478,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-red-300">Weight % Drop</label>
                 <Input
                   type="text"
-                  value={specialConfig?.weightReductions?.join(',') || '15,15,15'}
+                  value={specialConfig?.weightReductions?.join(',') ?? '15,15,15'}
                   onChange={(e) => {
                     const reductions = e.target.value.split(',').map(v => parseInt(v.trim()) || 15);
                     onSpecialConfigChange?.({
@@ -494,7 +494,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-red-300">Rest (sec)</label>
                 <Input
                   type="number"
-                  value={specialConfig?.dropRestSeconds || 10}
+                  value={specialConfig?.dropRestSeconds ?? 10}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     dropRestSeconds: parseInt(e.target.value) || 10
@@ -507,14 +507,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-xs text-red-300/70">
-                Perform {specialConfig?.dropSets || 3} drop sets with {specialConfig?.dropRestSeconds || 10}s rest
+                Perform {specialConfig?.dropSets ?? 3} drop sets with {specialConfig?.dropRestSeconds ?? 10}s rest
               </div>
               <div className="flex gap-1">
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    const currentDropSets = specialConfig?.dropSets || 3;
+                    const currentDropSets = specialConfig?.dropSets ?? 3;
                     const newDropSets = Math.max(2, currentDropSets - 1);
                     const newReductions = (specialConfig?.weightReductions || [15, 15, 15]).slice(0, newDropSets);
                     onSpecialConfigChange?.({
@@ -531,7 +531,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    const currentDropSets = specialConfig?.dropSets || 3;
+                    const currentDropSets = specialConfig?.dropSets ?? 3;
                     const newDropSets = Math.min(6, currentDropSets + 1);
                     const currentReductions = specialConfig?.weightReductions || [15, 15, 15];
                     const newReductions = [...currentReductions];
@@ -564,7 +564,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-blue-300">Target Reps</label>
                 <Input
                   type="number"
-                  value={specialConfig?.targetReps || 15}
+                  value={specialConfig?.targetReps ?? 15}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     targetReps: parseInt(e.target.value) || 15,
@@ -580,7 +580,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-blue-300">Mini Sets</label>
                 <Input
                   type="number"
-                  value={specialConfig?.miniSets || 3}
+                  value={specialConfig?.miniSets ?? 3}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     miniSets: parseInt(e.target.value) || 3,
@@ -596,7 +596,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-blue-300">Rest (sec)</label>
                 <Input
                   type="number"
-                  value={specialConfig?.restSeconds || 20}
+                  value={specialConfig?.restSeconds ?? 20}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     restSeconds: parseInt(e.target.value) || 20,
@@ -652,7 +652,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-blue-300">Mini Sets</label>
                 <Input
                   type="number"
-                  value={specialConfig?.miniSets || 3}
+                  value={specialConfig?.miniSets ?? 3}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     miniSets: parseInt(e.target.value) || 3,
@@ -667,7 +667,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-blue-300">Rest (sec)</label>
                 <Input
                   type="number"
-                  value={specialConfig?.restSeconds || 20}
+                  value={specialConfig?.restSeconds ?? 20}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     restSeconds: parseInt(e.target.value) || 20,
@@ -681,7 +681,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-xs text-blue-300/70">
-                Perform activation set to near failure, then {specialConfig?.miniSets || 3} mini-sets
+                Perform activation set to near failure, then {specialConfig?.miniSets ?? 3} mini-sets
               </div>
               <div className="flex gap-1">
                 <Button
