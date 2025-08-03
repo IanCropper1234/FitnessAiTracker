@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Plus, Trash2, Target, ArrowLeft, Dumbbell } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Search, Filter, Plus, Trash2, Target, ArrowLeft, Dumbbell, Check, ChevronsUpDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -61,6 +63,7 @@ export function CreateWorkoutSession() {
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
 
   // Load exercises
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
@@ -673,21 +676,56 @@ export function CreateWorkoutSession() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs">Paired Exercise</Label>
-                            <Select 
-                              value={template.specialConfig?.pairedExerciseId?.toString() || ""} 
-                              onValueChange={(value) => updateSpecialConfig(index, 'pairedExerciseId', parseInt(value) || null)}
+                            <Popover 
+                              open={pairedExerciseSearchOpen === index} 
+                              onOpenChange={(open) => setPairedExerciseSearchOpen(open ? index : null)}
                             >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select paired exercise..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {exercises?.filter(ex => ex.id !== template.exerciseId).map(exercise => (
-                                  <SelectItem key={exercise.id} value={exercise.id.toString()}>
-                                    {exercise.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={pairedExerciseSearchOpen === index}
+                                  className="w-full justify-between"
+                                >
+                                  {template.specialConfig?.pairedExerciseId
+                                    ? exercises?.find(ex => ex.id === template.specialConfig?.pairedExerciseId)?.name
+                                    : "Select paired exercise..."}
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-full p-0">
+                                <Command>
+                                  <CommandInput placeholder="Search exercises..." />
+                                  <CommandEmpty>No exercise found.</CommandEmpty>
+                                  <CommandGroup className="max-h-60 overflow-auto">
+                                    {exercises?.filter(ex => ex.id !== template.exerciseId).map(exercise => (
+                                      <CommandItem
+                                        key={exercise.id}
+                                        value={exercise.name}
+                                        onSelect={() => {
+                                          updateSpecialConfig(index, 'pairedExerciseId', exercise.id);
+                                          setPairedExerciseSearchOpen(null);
+                                        }}
+                                      >
+                                        <Check
+                                          className={`mr-2 h-4 w-4 ${
+                                            template.specialConfig?.pairedExerciseId === exercise.id
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          }`}
+                                        />
+                                        <div className="flex flex-col">
+                                          <span className="font-medium">{exercise.name}</span>
+                                          <span className="text-xs text-muted-foreground">
+                                            {exercise.primaryMuscle} • {exercise.category}
+                                          </span>
+                                        </div>
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                           </div>
                           <div className="space-y-1">
                             <Label className="text-xs">Rest Between Sets (seconds)</Label>
