@@ -8,6 +8,16 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Special Training Method Data Storage & Display Enhancement (Aug 3, 2025):**
+- ✅ Fixed Drop Set details display issues using correct dropSetWeights and dropSetReps arrays
+- ✅ Enhanced backend storage logic for all special training methods (Drop Set, Myorep Match/No Match, Giant Set, Superset)
+- ✅ Updated WorkoutExecutionV2 to show comprehensive configuration details during training execution
+- ✅ Enhanced workout-details.tsx to display complete special method configurations in exercise breakdown
+- ✅ Added Superset configuration options with paired exercise selection and rest period settings
+- ✅ Implemented color-coded visual themes for different special training methods
+- ✅ Added backward compatibility for legacy weightReductions data structure
+- ✅ Unified special method configuration storage with proper data transformation in server routes
+
 **Rest Timer UI Enhancement (Aug 2, 2025):**
 - ✅ Converted REST Timer FAB to perfect circle design with rounded-full styling
 - ✅ Enhanced draggable functionality with smooth circular animations

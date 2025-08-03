@@ -1594,6 +1594,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             }
             
+            // Transform Myorep No Match data
+            if (exerciseData.specialMethod === 'myorep_no_match') {
+              if (exerciseData.specialConfig.miniSets) {
+                transformedConfig.miniSets = parseInt(exerciseData.specialConfig.miniSets.toString()) || 3;
+              }
+              if (exerciseData.specialConfig.restSeconds) {
+                transformedConfig.restSeconds = parseInt(exerciseData.specialConfig.restSeconds.toString()) || 20;
+              }
+            }
+            
+            // Transform Giant Set data
+            if (exerciseData.specialMethod === 'giant_set') {
+              if (exerciseData.specialConfig.totalTargetReps) {
+                transformedConfig.totalTargetReps = parseInt(exerciseData.specialConfig.totalTargetReps.toString()) || 40;
+              }
+              if (exerciseData.specialConfig.miniSetReps) {
+                transformedConfig.miniSetReps = parseInt(exerciseData.specialConfig.miniSetReps.toString()) || 8;
+              }
+              if (exerciseData.specialConfig.restSeconds || exerciseData.specialConfig.giantRestSeconds) {
+                transformedConfig.restSeconds = parseInt((exerciseData.specialConfig.restSeconds || exerciseData.specialConfig.giantRestSeconds).toString()) || 15;
+              }
+            }
+            
+            // Transform Superset data
+            if (exerciseData.specialMethod === 'superset') {
+              if (exerciseData.specialConfig.pairedExerciseId) {
+                transformedConfig.pairedExerciseId = parseInt(exerciseData.specialConfig.pairedExerciseId.toString()) || null;
+              }
+              if (exerciseData.specialConfig.restSeconds) {
+                transformedConfig.restSeconds = parseInt(exerciseData.specialConfig.restSeconds.toString()) || 60;
+              }
+            }
+            
             updateData.specialConfig = transformedConfig;
           }
           

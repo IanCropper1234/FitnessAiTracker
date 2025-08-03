@@ -470,6 +470,24 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                           )}
                         </div>
                       )}
+                      
+                      {/* Superset Configuration */}
+                      {specialMethod === 'superset' && (
+                        <div className="space-y-1 text-xs">
+                          {specialConfig.pairedExerciseId && (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Paired Exercise:</span>
+                              <span className="font-medium">ID {specialConfig.pairedExerciseId}</span>
+                            </div>
+                          )}
+                          {specialConfig.restSeconds && (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Rest Between Sets:</span>
+                              <span className="font-medium">{specialConfig.restSeconds}s</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

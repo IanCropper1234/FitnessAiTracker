@@ -890,6 +890,22 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                       </div>
                     </>
                   )}
+                  
+                  {/* Superset Configuration */}
+                  {specialMethods[currentExercise.id] === 'superset' && specialConfigs[currentExercise.id] && (
+                    <>
+                      {specialConfigs[currentExercise.id].pairedExerciseId && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Paired Exercise:</span>
+                          <span className="font-medium text-xs">ID {specialConfigs[currentExercise.id].pairedExerciseId}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Rest Between Sets:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].restSeconds || 60}s</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}

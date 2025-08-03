@@ -650,8 +650,42 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig.giantRestSeconds || 10}
-                              onChange={(e) => updateSpecialConfig(index, 'giantRestSeconds', parseInt(e.target.value) || 10)}
+                              value={template.specialConfig.restSeconds || template.specialConfig.giantRestSeconds || 15}
+                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 15)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Superset Configuration */}
+                      {template.specialMethod === 'superset' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Paired Exercise</Label>
+                            <Select 
+                              value={template.specialConfig.pairedExerciseId?.toString() || ""} 
+                              onValueChange={(value) => updateSpecialConfig(index, 'pairedExerciseId', parseInt(value) || null)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select paired exercise..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {exercises?.filter(ex => ex.id !== template.exerciseId).map(exercise => (
+                                  <SelectItem key={exercise.id} value={exercise.id.toString()}>
+                                    {exercise.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Rest Between Sets (seconds)</Label>
+                            <Input
+                              type="number"
+                              min="30"
+                              max="120"
+                              value={template.specialConfig.restSeconds || 60}
+                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 60)}
                             />
                           </div>
                         </div>
@@ -663,6 +697,7 @@ export function CreateWorkoutSession() {
                         {template.specialMethod === 'myorep_no_match' && 'Myorep No Match: Perform activation set to near failure, then complete mini-sets with as many reps as possible until significant drop-off.'}
                         {template.specialMethod === 'drop_set' && 'Drop Set: Perform set to failure, then immediately reduce weight and continue for additional sets.'}
                         {template.specialMethod === 'giant_set' && 'Giant Set: Perform one exercise with very short rest periods between mini-sets to accumulate high volume.'}
+                        {template.specialMethod === 'superset' && 'Superset: Pair two exercises performed back-to-back with minimal rest between them, targeting different muscle groups for efficiency.'}
                       </div>
                     </div>
                   )}
