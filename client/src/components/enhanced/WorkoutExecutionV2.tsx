@@ -949,6 +949,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
                   specialConfig={specialConfigs[currentExercise.id]}
                   onSpecialConfigChange={(config) => handleSpecialConfigChange(currentExercise.id, config)}
+                  sessionExercises={session?.exercises}
                 />
               )}
 

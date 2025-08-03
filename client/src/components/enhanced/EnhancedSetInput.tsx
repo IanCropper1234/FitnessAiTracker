@@ -64,6 +64,8 @@ interface EnhancedSetInputProps {
   onSpecialMethodChange?: (method: string | null) => void;
   specialConfig?: any;
   onSpecialConfigChange?: (config: any) => void;
+  // Session exercises for lookup
+  sessionExercises?: Array<{id: number; exerciseId: number; exercise: {id: number; name: string}}>;
 }
 
 export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
@@ -85,6 +87,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   onSpecialMethodChange,
   specialConfig,
   onSpecialConfigChange,
+  sessionExercises,
 }) => {
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -792,7 +795,13 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <label className="text-xs text-purple-300">Paired Exercise</label>
                 <Input
                   type="text"
-                  value={specialConfig?.pairedExerciseName || "Not configured"}
+                  value={(() => {
+                    if (specialConfig?.pairedExerciseId && sessionExercises) {
+                      const pairedExercise = sessionExercises.find(ex => ex.exerciseId === specialConfig.pairedExerciseId);
+                      return pairedExercise?.exercise?.name || "Exercise not found";
+                    }
+                    return specialConfig?.pairedExerciseName || "Not configured";
+                  })()}
                   disabled
                   className="h-7 text-xs bg-background/50 border border-border/30 text-purple-300/70"
                 />
