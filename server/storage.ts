@@ -17,6 +17,7 @@ import {
   type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan,
   type SavedMeal, type InsertSavedMeal, type WeightGoal, type InsertWeightGoal
 } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Database access
@@ -737,11 +738,14 @@ export class MemStorage implements IStorage {
 
   // Saved Meals
   async getSavedMeals(userId: number): Promise<SavedMeal[]> {
-    return [];
+    const db = this.getDb();
+    return await db.select().from(savedMeals).where(eq(savedMeals.userId, userId));
   }
 
   async createSavedMeal(meal: InsertSavedMeal): Promise<SavedMeal> {
-    throw new Error("Not implemented in memory storage");
+    const db = this.getDb();
+    const [result] = await db.insert(savedMeals).values(meal).returning();
+    return result;
   }
 
   async deleteSavedMeal(id: number): Promise<boolean> {

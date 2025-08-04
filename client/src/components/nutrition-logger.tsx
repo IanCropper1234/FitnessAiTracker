@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { TimezoneUtils } from "@shared/utils/timezone";
-import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan, Pill } from "lucide-react";
+import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan, Pill, Save } from "lucide-react";
 import { BarcodeScanner } from "./barcode-scanner";
 
 interface NutritionLoggerProps {
@@ -34,7 +34,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   const { t } = useLanguage();
   const { toast } = useToast();
   
-  const [searchMode, setSearchMode] = useState<'search' | 'ai'>('ai');
+  const [searchMode, setSearchMode] = useState<'search' | 'ai' | 'saved'>('ai');
   const [foodQuery, setFoodQuery] = useState('');
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
@@ -44,6 +44,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [selectedSavedMeal, setSelectedSavedMeal] = useState<any>(null);
 
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
@@ -69,6 +70,12 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   });
 
   const queryClient = useQueryClient();
+
+  // Query for saved meals
+  const savedMealsQuery = useQuery({
+    queryKey: ['/api/saved-meals', userId],
+    enabled: searchMode === 'saved'
+  });
   
   const logMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -139,9 +146,20 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
     }
 
     let nutritionData;
+    let foodName;
     
-    if (searchMode === 'ai' && aiAnalyzeMutation.data) {
+    if (searchMode === 'saved' && selectedSavedMeal) {
+      // Handle saved meal logging
+      nutritionData = {
+        calories: parseFloat(selectedSavedMeal.totalCalories || '0'),
+        protein: parseFloat(selectedSavedMeal.totalProtein || '0'),
+        carbs: parseFloat(selectedSavedMeal.totalCarbs || '0'),
+        fat: parseFloat(selectedSavedMeal.totalFat || '0')
+      };
+      foodName = selectedSavedMeal.name;
+    } else if (searchMode === 'ai' && aiAnalyzeMutation.data) {
       nutritionData = aiAnalyzeMutation.data;
+      foodName = foodQuery;
     } else if (selectedFood) {
       const multiplier = parseFloat(quantity);
       nutritionData = {
@@ -150,6 +168,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
         carbs: selectedFood.carbs * multiplier,
         fat: selectedFood.fat * multiplier
       };
+      foodName = selectedFood.name;
     } else {
       toast({
         title: "Error",
@@ -165,7 +184,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
     const logData = {
       userId,
       date: finalDate,
-      foodName: searchMode === 'ai' ? foodQuery : selectedFood?.name || foodQuery,
+      foodName: foodName,
       quantity: quantity,
       unit: unit,
       calories: nutritionData.calories.toString(),
@@ -179,7 +198,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   };
 
   const isLoading = searchMutation.isPending || aiAnalyzeMutation.isPending || logMutation.isPending;
-  const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood) && mealType.trim() !== '';
+  const canLog = ((searchMode === 'ai' && aiAnalyzeMutation.data) || selectedFood || (searchMode === 'saved' && selectedSavedMeal)) && mealType.trim() !== '';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
@@ -204,38 +223,51 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
         <CardContent className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="space-y-4 sm:space-y-6">
             {/* Search Mode Toggle */}
-            <div className="flex gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <Button
                 variant={searchMode === 'ai' ? 'default' : 'outline'}
                 onClick={() => setSearchMode('ai')}
-                className={`flex-1 text-sm ${searchMode === 'ai' 
+                className={`text-xs ${searchMode === 'ai' 
                   ? "bg-black dark:bg-white text-white dark:text-black" 
                   : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
-                <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <Brain className="w-3 h-3 mr-1" />
                 <span className="hidden sm:inline">AI Analysis</span>
                 <span className="sm:hidden">AI</span>
               </Button>
               <Button
                 variant={searchMode === 'search' ? 'default' : 'outline'}
                 onClick={() => setSearchMode('search')}
-                className={`flex-1 text-sm ${searchMode === 'search' 
+                className={`text-xs ${searchMode === 'search' 
                   ? "bg-black dark:bg-white text-white dark:text-black" 
                   : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
-                <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Food Database</span>
-                <span className="sm:hidden">Database</span>
+                <Search className="w-3 h-3 mr-1" />
+                <span className="hidden sm:inline">Database</span>
+                <span className="sm:hidden">DB</span>
+              </Button>
+              <Button
+                variant={searchMode === 'saved' ? 'default' : 'outline'}
+                onClick={() => setSearchMode('saved')}
+                className={`text-xs ${searchMode === 'saved' 
+                  ? "bg-black dark:bg-white text-white dark:text-black" 
+                  : "border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                <Save className="w-3 h-3 mr-1" />
+                <span className="hidden sm:inline">Saved Meals</span>
+                <span className="sm:hidden">Saved</span>
               </Button>
             </div>
 
             {/* Food Input */}
-            <div className="space-y-2">
-              <Label htmlFor="food-input" className="text-black dark:text-white text-sm font-medium">
-                {searchMode === 'ai' ? 'Describe your food (e.g., "grilled chicken breast 150g")' : 'Search for food'}
-              </Label>
+            {searchMode !== 'saved' && (
+              <div className="space-y-2">
+                <Label htmlFor="food-input" className="text-black dark:text-white text-sm font-medium">
+                  {searchMode === 'ai' ? 'Describe your food (e.g., "grilled chicken breast 150g")' : 'Search for food'}
+                </Label>
               <div className="flex gap-2">
                 <Input
                   id="food-input"
@@ -272,7 +304,54 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                   <Scan className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </div>
-            </div>
+              </div>
+            )}
+
+            {/* Saved Meals Display */}
+            {searchMode === 'saved' && (
+              <div className="space-y-2">
+                <Label className="text-black dark:text-white text-sm font-medium">Your Saved Meals</Label>
+                {savedMealsQuery.isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                  </div>
+                ) : savedMealsQuery.data && savedMealsQuery.data.length > 0 ? (
+                  <div className="max-h-48 overflow-y-auto space-y-2">
+                    {savedMealsQuery.data.map((meal: any) => (
+                      <div
+                        key={meal.id}
+                        onClick={() => setSelectedSavedMeal(meal)}
+                        className={`p-3 cursor-pointer border transition-colors ${
+                          selectedSavedMeal?.id === meal.id
+                            ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
+                            : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-medium text-sm truncate flex-1 mr-2">{meal.name}</div>
+                          <Save className="w-4 h-4 opacity-50" />
+                        </div>
+                        {meal.description && (
+                          <div className="text-xs opacity-75 mb-2">{meal.description}</div>
+                        )}
+                        <div className="text-xs opacity-75">
+                          {Math.round(parseFloat(meal.totalCalories || '0'))} cal • 
+                          P: {Math.round(parseFloat(meal.totalProtein || '0'))}g • 
+                          C: {Math.round(parseFloat(meal.totalCarbs || '0'))}g • 
+                          F: {Math.round(parseFloat(meal.totalFat || '0'))}g
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <Save className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No saved meals found</p>
+                    <p className="text-xs mt-1">Save meals from your diary to see them here</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Quantity and Unit (for search mode) */}
             {searchMode === 'search' && (
