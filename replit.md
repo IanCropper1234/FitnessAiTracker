@@ -8,6 +8,17 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Training Template Creation Interface English Conversion & TypeScript Fixes (Aug 4, 2025):**
+- ✅ Completed full interface conversion from Chinese to English (EN-US)
+- ✅ Fixed all TypeScript compilation errors in training template creation system
+- ✅ Resolved type compatibility issues between TemplateExercise and SelectedExercise interfaces
+- ✅ Updated all form labels, placeholders, and button text to English
+- ✅ Translated special training method configurations (Drop Set, Myorep Match/No Match, Giant Set, Superset)
+- ✅ Maintained consistent English terminology throughout template creation workflow
+- ✅ Fixed type mapping between ExerciseSelector component and template data structure
+- ✅ Ensured proper exerciseId field assignment for TemplateExercise compatibility
+- ✅ Enhanced code maintainability with explicit TypeScript typing
+
 **Template Creation Interface iOS Optimization (Aug 3, 2025):**
 - ✅ Fixed iOS device layout issues in mesocycle template creation dialog
 - ✅ Enhanced ExerciseSelector component with responsive design for mobile devices
