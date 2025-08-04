@@ -149,7 +149,10 @@ export function IntegratedNutritionOverview({
 
   // Effect to handle copy operations when external date pickers close with a date
   useEffect(() => {
-    if (copyOperation) {
+    // Only proceed if we have a copyOperation AND a valid external date
+    if (copyOperation && (externalCopyFromDate || externalCopyToDate)) {
+      console.log('Copy operation triggered:', copyOperation, 'externalCopyFromDate:', externalCopyFromDate, 'externalCopyToDate:', externalCopyToDate);
+      
       if (copyOperation.type === 'section') {
         if (externalCopyFromDate && copyOperation.sourceSection) {
           // Handle "copy from" date operation - need to fetch logs from externalCopyFromDate and copy to current date
@@ -167,6 +170,7 @@ export function IntegratedNutritionOverview({
         setCopyOperation(null);
       } else if (copyOperation.type === 'bulk' && externalCopyToDate) {
         // Handle bulk copy to date
+        console.log('Executing bulk copy with selectedLogIds:', copyOperation.data, 'to date:', externalCopyToDate);
         handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
       }
@@ -673,12 +677,7 @@ export function IntegratedNutritionOverview({
     saveMealMutation.mutate({
       name: saveMealName.trim(),
       description: saveMealDescription.trim(),
-      foodItems,
-      totalCalories: totalCalories.toString(),
-      totalProtein: totalProtein.toString(),
-      totalCarbs: totalCarbs.toString(),
-      totalFat: totalFat.toString(),
-      totalMicronutrients: Object.keys(totalMicronutrients).length > 0 ? totalMicronutrients : null
+      foodItems
     });
   };
 
@@ -2023,6 +2022,7 @@ export function IntegratedNutritionOverview({
                                   }
                                   <DropdownMenuItem
                                     onClick={() => {
+                                      console.log('Setting copy operation for individual item:', log.id, log.foodName);
                                       setCopyOperation({
                                         type: 'item',
                                         data: log,
