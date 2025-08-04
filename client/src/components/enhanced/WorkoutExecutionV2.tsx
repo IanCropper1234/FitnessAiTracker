@@ -823,13 +823,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             {/* Special Method Indicator Dot */}
             {currentExercise && specialMethods[currentExercise.id] && specialMethods[currentExercise.id] !== null && (
               <div className={`w-2 h-2  ${
+                specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500' :
                 specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500' :
-                specialMethods[currentExercise.id] === 'rest_pause' ? 'bg-blue-500' :
-                specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500' :
-                specialMethods[currentExercise.id] === 'cluster_set' ? 'bg-green-500' :
+                specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500' :
                 specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500' :
-                specialMethods[currentExercise.id] === 'tempo' ? 'bg-purple-500' :
-                specialMethods[currentExercise.id] === 'lengthened_partials' ? 'bg-yellow-500' :
                 'bg-gray-500'
               }`} />
             )}
@@ -880,22 +877,18 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               <div className="border border-border/50  p-2 bg-background/50">
                 <div className="flex items-center justify-between mb-1">
                   <div className={`px-2 py-1  text-xs font-medium border ${
-                    specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
-                    specialMethods[currentExercise.id] === 'rest_pause' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
                     specialMethods[currentExercise.id] === 'myorep_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
-                    specialMethods[currentExercise.id] === 'cluster_set' ? 'bg-green-500/10 border-green-500/30 text-green-600' :
+                    specialMethods[currentExercise.id] === 'myorep_no_match' ? 'bg-blue-500/10 border-blue-500/30 text-blue-600' :
+                    specialMethods[currentExercise.id] === 'drop_set' ? 'bg-red-500/10 border-red-500/30 text-red-600' :
+                    specialMethods[currentExercise.id] === 'superset' ? 'bg-purple-500/10 border-purple-500/30 text-purple-600' :
                     specialMethods[currentExercise.id] === 'giant_set' ? 'bg-orange-500/10 border-orange-500/30 text-orange-600' :
-                    specialMethods[currentExercise.id] === 'tempo' ? 'bg-purple-500/10 border-purple-500/30 text-purple-600' :
-                    specialMethods[currentExercise.id] === 'lengthened_partials' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-600' :
                     'bg-gray-500/10 border-gray-500/30 text-gray-600'
                   }`}>
-                    {specialMethods[currentExercise.id] === 'drop_set' ? 'Drop Set' :
-                     specialMethods[currentExercise.id] === 'rest_pause' ? 'Rest-Pause' :
-                     specialMethods[currentExercise.id] === 'myorep_match' ? 'Myo-Reps' :
-                     specialMethods[currentExercise.id] === 'cluster_set' ? 'Cluster Set' :
+                    {specialMethods[currentExercise.id] === 'myorep_match' ? 'Myorep Match' :
+                     specialMethods[currentExercise.id] === 'myorep_no_match' ? 'Myorep No Match' :
+                     specialMethods[currentExercise.id] === 'drop_set' ? 'Drop Set' :
+                     specialMethods[currentExercise.id] === 'superset' ? 'Superset' :
                      specialMethods[currentExercise.id] === 'giant_set' ? 'Giant Set' :
-                     specialMethods[currentExercise.id] === 'tempo' ? 'Tempo' :
-                     specialMethods[currentExercise.id] === 'lengthened_partials' ? 'Lengthened Partials' :
                      specialMethods[currentExercise.id]}
                   </div>
                   <span className="text-xs text-muted-foreground">Active</span>

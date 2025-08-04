@@ -61,7 +61,7 @@ interface EnhancedSetInputProps {
   isBodyWeightExercise?: boolean;
   exerciseId?: number; // For fetching historical data
   // Special Training Methods
-  specialMethod?: 'drop_set' | 'rest_pause' | 'myorep_match' | 'cluster_set' | 'giant_set' | 'tempo' | 'lengthened_partials' | null;
+  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
   onSpecialMethodChange?: (method: string | null) => void;
   specialConfig?: any;
   onSpecialConfigChange?: (config: any) => void;
@@ -366,46 +366,34 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="standard">Standard Set</SelectItem>
+                <SelectItem value="myorep_match">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3" />
+                    Myorep Match
+                  </div>
+                </SelectItem>
+                <SelectItem value="myorep_no_match">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-3 w-3" />
+                    Myorep No Match
+                  </div>
+                </SelectItem>
                 <SelectItem value="drop_set">
                   <div className="flex items-center gap-2">
                     <Minus className="h-3 w-3" />
                     Drop Set
                   </div>
                 </SelectItem>
-                <SelectItem value="rest_pause">
-                  <div className="flex items-center gap-2">
-                    <Timer className="h-3 w-3" />
-                    Rest-Pause
-                  </div>
-                </SelectItem>
-                <SelectItem value="myorep_match">
-                  <div className="flex items-center gap-2">
-                    <Target className="h-3 w-3" />
-                    Myo-Reps
-                  </div>
-                </SelectItem>
-                <SelectItem value="cluster_set">
-                  <div className="flex items-center gap-2">
-                    <Plus className="h-3 w-3" />
-                    Cluster Set
-                  </div>
-                </SelectItem>
                 <SelectItem value="giant_set">
                   <div className="flex items-center gap-2">
-                    <Zap className="h-3 w-3" />
-                    Giant Set
+                    <Timer className="h-3 w-3" />
+                    Giant Set (40+ reps)
                   </div>
                 </SelectItem>
-                <SelectItem value="tempo">
+                <SelectItem value="superset">
                   <div className="flex items-center gap-2">
-                    <Scale className="h-3 w-3" />
-                    Tempo
-                  </div>
-                </SelectItem>
-                <SelectItem value="lengthened_partials">
-                  <div className="flex items-center gap-2">
-                    <Target className="h-3 w-3" />
-                    Lengthened Partials
+                    <Plus className="h-3 w-3" />
+                    Superset
                   </div>
                 </SelectItem>
               </SelectContent>
