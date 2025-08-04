@@ -363,7 +363,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                   <Button
                     onClick={() => generateWorkoutMutation.mutate({ 
                       templateId: template.id, 
-                      workoutDay: calculateNextWorkoutDay(template, userId),
+                      workoutDay: 0, // Always start from Day 1
                       userId 
                     })}
                     disabled={generateWorkoutMutation.isPending}
