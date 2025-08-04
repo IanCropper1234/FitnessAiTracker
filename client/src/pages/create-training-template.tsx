@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -528,6 +529,9 @@ export default function CreateTrainingTemplate() {
                                   method={exercise.specialTrainingMethod}
                                   config={exercise.specialMethodConfig}
                                   onConfigChange={(config) => updateExercise(index, { specialMethodConfig: config })}
+                                  formData={formData}
+                                  currentWorkoutIndex={currentWorkoutIndex}
+                                  updateWorkout={updateWorkout}
                                 />
                               </div>
                             )}
@@ -586,12 +590,28 @@ export default function CreateTrainingTemplate() {
 function SpecialMethodConfigurationPanel({
   method,
   config,
-  onConfigChange
+  onConfigChange,
+  formData,
+  currentWorkoutIndex,
+  updateWorkout
 }: {
   method: string;
   config: any;
   onConfigChange: (config: any) => void;
+  formData?: any;
+  currentWorkoutIndex?: number;
+  updateWorkout?: (index: number, workout: any) => void;
 }) {
+  const [exerciseSearchTerm, setExerciseSearchTerm] = useState(config?.pairedExercise || '');
+  const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
+  
+  const { data: exercises = [] } = useQuery<Exercise[]>({
+    queryKey: ['/api/training/exercises'],
+  });
+  
+  useEffect(() => {
+    setExerciseSearchTerm(config?.pairedExercise || '');
+  }, [config?.pairedExercise]);
   const renderConfig = () => {
     switch (method) {
       case 'dropSet':
@@ -691,18 +711,85 @@ function SpecialMethodConfigurationPanel({
         );
 
       case 'superset':
+        const filteredExercises = exercises.filter(exercise => 
+          exercise.name.toLowerCase().includes(exerciseSearchTerm.toLowerCase()) &&
+          exercise.name !== config?.currentExerciseName
+        ).slice(0, 5);
+
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
             <h5 className="text-xs font-medium">Superset Config</h5>
             <div className="space-y-2">
-              <div>
+              <div className="relative">
                 <Label className="text-[10px] font-medium">Paired Exercise</Label>
                 <Input
-                  value={config?.pairedExercise || ''}
-                  onChange={(e) => onConfigChange({ ...config, pairedExercise: e.target.value })}
-                  placeholder="Enter exercise name"
+                  value={exerciseSearchTerm}
+                  onChange={(e) => {
+                    setExerciseSearchTerm(e.target.value);
+                    setShowExerciseDropdown(true);
+                  }}
+                  onFocus={() => setShowExerciseDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowExerciseDropdown(false), 200)}
+                  placeholder="Search and select exercise"
                   className="h-7 text-xs"
                 />
+                {showExerciseDropdown && exerciseSearchTerm && filteredExercises.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-background border rounded shadow-lg max-h-32 overflow-y-auto">
+                    {filteredExercises.map((exercise) => (
+                      <div
+                        key={exercise.id}
+                        className="px-2 py-1 text-xs hover:bg-muted cursor-pointer"
+                        onClick={() => {
+                          // Add exercise to current workout
+                          const newExercise: TemplateExercise = {
+                            id: exercise.id,
+                            exerciseId: exercise.id,
+                            name: exercise.name,
+                            category: exercise.category,
+                            muscleGroups: exercise.muscleGroups || [],
+                            primaryMuscle: exercise.primaryMuscle,
+                            equipment: exercise.equipment || '',
+                            difficulty: exercise.difficulty || 'intermediate',
+                            sets: 3,
+                            targetReps: "8-12",
+                            restPeriod: 120,
+                            notes: "",
+                            specialTrainingMethod: 'superset',
+                            specialMethodConfig: { 
+                              pairedExercise: config?.currentExerciseName || '',
+                              restBetweenExercises: 10 
+                            }
+                          };
+                          
+                          // Get current workout and add the exercise
+                          if (formData && updateWorkout && currentWorkoutIndex !== undefined) {
+                            const currentWorkout = formData.templateData.workouts[currentWorkoutIndex];
+                            const updatedWorkout = {
+                              ...currentWorkout,
+                              exercises: [...currentWorkout.exercises, newExercise]
+                            };
+                            updateWorkout(currentWorkoutIndex, updatedWorkout);
+                          }
+                          
+                          // Update the current exercise's config with the paired exercise name
+                          onConfigChange({ 
+                            ...config, 
+                            pairedExercise: exercise.name,
+                            pairedExerciseId: exercise.id
+                          });
+                          
+                          setExerciseSearchTerm(exercise.name);
+                          setShowExerciseDropdown(false);
+                        }}
+                      >
+                        <div className="font-medium">{exercise.name}</div>
+                        <div className="text-muted-foreground text-[10px]">
+                          {exercise.primaryMuscle} • {exercise.category}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div>
                 <Label className="text-[10px] font-medium">Rest (sec)</Label>
