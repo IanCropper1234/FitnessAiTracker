@@ -143,7 +143,10 @@ export class TemplateEngine {
           repsRange: templateExercise.repsRange,
           restPeriod: templateExercise.restPeriod,
           orderIndex: templateExercise.orderIndex,
-          notes: templateExercise.notes
+          notes: templateExercise.notes,
+          // Include special training method data
+          specialTrainingMethod: templateExercise.specialTrainingMethod,
+          specialMethodConfig: templateExercise.specialMethodConfig
         });
       }
 
@@ -171,6 +174,11 @@ export class TemplateEngine {
       // Add exercises to the session
       for (let i = 0; i < customizedExercises.length; i++) {
         const exercise = customizedExercises[i];
+        // Get special training method data from template exercise
+        const templateExercise = workoutTemplate.exercises[i];
+        const specialMethod = templateExercise?.specialTrainingMethod;
+        const specialConfig = templateExercise?.specialMethodConfig;
+
         await db
           .insert(workoutExercises)
           .values({
@@ -185,7 +193,10 @@ export class TemplateEngine {
             rir: null,
             restPeriod: exercise.restPeriod || 120,
             isCompleted: false,
-            notes: exercise.notes || ""
+            notes: exercise.notes || "",
+            // Add special training method data
+            specialMethod: specialMethod || null,
+            specialConfig: specialConfig ? JSON.stringify(specialConfig) : null
           });
       }
 
@@ -292,7 +303,10 @@ export class TemplateEngine {
         repsRange: templateExercise.repsRange,
         restPeriod: templateExercise.restPeriod,
         orderIndex: templateExercise.orderIndex,
-        notes: templateExercise.notes
+        notes: templateExercise.notes,
+        // Include special training method data
+        specialTrainingMethod: templateExercise.specialTrainingMethod,
+        specialMethodConfig: templateExercise.specialMethodConfig
       });
     }
 
@@ -314,6 +328,11 @@ export class TemplateEngine {
     // Add exercises to session
     for (let i = 0; i < customizedExercises.length; i++) {
       const exercise = customizedExercises[i];
+      // Get special training method data from template exercise
+      const templateExercise = workoutTemplate.exercises[i];
+      const specialMethod = templateExercise?.specialTrainingMethod;
+      const specialConfig = templateExercise?.specialMethodConfig;
+
       await db
         .insert(workoutExercises)
         .values({
@@ -324,7 +343,10 @@ export class TemplateEngine {
           targetReps: exercise.repsRange || "8-12", // Default target reps if not provided  
           restPeriod: exercise.restPeriod || 120, // Default rest period
           isCompleted: false,
-          notes: exercise.notes || ""
+          notes: exercise.notes || "",
+          // Add special training method data
+          specialMethod: specialMethod || null,
+          specialConfig: specialConfig ? JSON.stringify(specialConfig) : null
         });
     }
 
