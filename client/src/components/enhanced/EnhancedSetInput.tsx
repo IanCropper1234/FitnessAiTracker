@@ -345,8 +345,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <label className="text-xs font-medium text-foreground">Training Method</label>
               {/* History Auto-Apply Icon */}
               <SpecialMethodHistoryButton 
-                exerciseId={exerciseId}
+                exerciseId={exerciseId || 0}
                 userId={userId}
+                setNumber={set.setNumber}
+                currentSpecialMethod={specialMethod || 'standard'}
                 onApplyHistoricalData={(historicalData) => {
                   if (historicalData.specialMethod && onSpecialMethodChange) {
                     onSpecialMethodChange(historicalData.specialMethod);

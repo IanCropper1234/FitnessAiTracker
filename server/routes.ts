@@ -3880,14 +3880,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get exercise special training method history
+  // Get exercise special training method history with filtering
   app.get("/api/training/exercise-special-history/:exerciseId", requireAuth, async (req, res) => {
     try {
       const exerciseId = parseInt(req.params.exerciseId);
       const userId = req.userId;
       const limit = parseInt(req.query.limit as string) || 5;
+      const setNumber = req.query.setNumber ? parseInt(req.query.setNumber as string) : null;
+      const specialMethod = req.query.specialMethod as string;
 
-      // Find latest special training method data for this exercise
+      console.log(`Fetching special history for exercise ${exerciseId}, set ${setNumber}, method ${specialMethod}`);
+
+      let whereConditions = [
+        eq(workoutExercises.exerciseId, exerciseId),
+        eq(workoutSessions.userId, userId),
+        isNotNull(workoutExercises.specialMethod),
+        eq(workoutSessions.isCompleted, true)
+      ];
+
+      // Filter by specific training method if provided
+      if (specialMethod && specialMethod !== 'standard') {
+        whereConditions.push(eq(workoutExercises.specialMethod, specialMethod));
+      }
+
+      // Filter by specific set number if provided
+      if (setNumber !== null) {
+        whereConditions.push(eq(workoutExercises.setNumber, setNumber));
+      }
+
+      // Find latest special training method data for this exercise with filters
       const specialHistory = await db
         .select({
           specialMethod: workoutExercises.specialMethod,
@@ -3895,21 +3916,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           date: workoutSessions.date,
           weight: workoutExercises.weight,
           reps: workoutExercises.actualReps,
-          rpe: workoutExercises.rpe
+          rpe: workoutExercises.rpe,
+          setNumber: workoutExercises.setNumber,
+          sessionId: workoutSessions.id
         })
         .from(workoutExercises)
         .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
-        .where(
-          and(
-            eq(workoutExercises.exerciseId, exerciseId),
-            eq(workoutSessions.userId, userId),
-            isNotNull(workoutExercises.specialMethod),
-            eq(workoutSessions.isCompleted, true)
-          )
-        )
+        .where(and(...whereConditions))
         .orderBy(desc(workoutSessions.date))
         .limit(limit);
 
+      console.log(`Found ${specialHistory.length} matching special method records`);
       res.json(specialHistory);
     } catch (error) {
       console.error("Error fetching exercise special method history:", error);
