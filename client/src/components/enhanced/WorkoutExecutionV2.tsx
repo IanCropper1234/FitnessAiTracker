@@ -190,10 +190,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         let specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
         if (specialMethod) {
           console.log(`Original special method for exercise ${exercise.id}:`, specialMethod, typeof specialMethod, `"${specialMethod}"`);
-          // Convert database format to UI format - trim whitespace and normalize
-          const normalizedMethod = specialMethod.trim();
-          console.log(`Checking conversion: "${normalizedMethod}" === "dropset"?`, normalizedMethod === 'dropset');
-          if (normalizedMethod === 'dropset') {
+          // Convert database format to UI format - normalize and handle different formats
+          let normalizedMethod = specialMethod.trim().toLowerCase();
+          console.log(`Normalized method: "${normalizedMethod}"`);
+          
+          // Handle multiple possible database formats
+          if (normalizedMethod === 'dropset' || normalizedMethod === 'drop_set') {
             console.log(`Converting ${normalizedMethod} to drop_set`);
             specialMethod = 'drop_set';
           } else {
