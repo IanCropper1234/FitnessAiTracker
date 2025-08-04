@@ -354,7 +354,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-lg">{template.name}</CardTitle>
-                    {template.createdBy === 'user' && (
+                    {template.createdBy?.startsWith('user_') && (
                       <Badge variant="outline" className="text-xs">
                         <User className="h-3 w-3 mr-1" />
                         Custom
@@ -439,7 +439,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                     <Eye className="h-4 w-4 mr-1" />
                     View Details
                   </Button>
-                  {template.createdBy === 'user' ? (
+                  {template.createdBy?.startsWith('user_') ? (
                     <>
                       <Button
                         onClick={() => setEditingTemplate(template)}

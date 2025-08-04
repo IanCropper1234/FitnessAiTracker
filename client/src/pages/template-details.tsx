@@ -119,7 +119,7 @@ export default function TemplateDetails() {
         </Button>
         
         <div className="flex gap-2">
-          {template.createdBy === 'user' && (
+          {template.createdBy?.startsWith('user_') && (
             <>
               <Button 
                 onClick={() => setLocation(`/training?tab=templates&edit=${template.id}`)}
@@ -148,7 +148,7 @@ export default function TemplateDetails() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <CardTitle className="text-2xl">{template.name}</CardTitle>
-                {template.createdBy === 'user' && (
+                {template.createdBy?.startsWith('user_') && (
                   <Badge variant="outline" className="text-sm">
                     <Users className="h-3 w-3 mr-1" />
                     Custom
