@@ -119,7 +119,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     const editWorkoutsId = params.get('editWorkouts');
     
     if (editId && templates) {
-      const templateToEdit = templates.find(t => t.id === parseInt(editId));
+      const templateToEdit = templates.find((t: TrainingTemplate) => t.id === parseInt(editId));
       if (templateToEdit) {
         setEditingTemplate(templateToEdit);
         // Clear the URL parameter
@@ -128,7 +128,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     }
     
     if (editWorkoutsId && templates) {
-      const templateToEditWorkouts = templates.find(t => t.id === parseInt(editWorkoutsId));
+      const templateToEditWorkouts = templates.find((t: TrainingTemplate) => t.id === parseInt(editWorkoutsId));
       if (templateToEditWorkouts) {
         setEditingWorkoutsTemplate(templateToEditWorkouts);
         // Clear the URL parameter
@@ -269,6 +269,17 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
 
         {/* Enhanced Action Buttons Layout */}
         <div className="space-y-3">
+          {/* Help Message */}
+          <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-start gap-2">
+              <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-blue-800 dark:text-blue-200">
+                <p className="font-medium mb-1">想要編輯運動模板？</p>
+                <p>只有您創建的自定義模板可以編輯。系統模板是唯讀的。點擊下方按鈕創建您的自定義模板。</p>
+              </div>
+            </div>
+          </div>
+
           {/* Database Maintenance Section */}
           <div className="flex items-center gap-3 p-3 bg-muted/30 dark:bg-muted/20 border border-border">
             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -431,7 +442,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                     <Eye className="h-4 w-4 mr-1" />
                     View Details
                   </Button>
-                  {template.createdBy === 'user' && (
+                  {template.createdBy === 'user' ? (
                     <>
                       <Button
                         onClick={() => setEditingTemplate(template)}
@@ -462,6 +473,10 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                         Delete
                       </Button>
                     </>
+                  ) : (
+                    <div className="flex-1 text-center py-2">
+                      <span className="text-xs text-muted-foreground">System Template (Read-only)</span>
+                    </div>
                   )}
                 </div>
               </div>
