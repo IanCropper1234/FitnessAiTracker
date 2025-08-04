@@ -8,6 +8,15 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**Enhanced Training Template Creation with Auto-Scroll UX (Aug 4, 2025):**
+- ✅ Implemented automatic scrolling to Exercise Configuration section when training methods are selected
+- ✅ Added smooth scroll behavior when new exercises are added from exercise library
+- ✅ Enhanced mobile layout optimization with compact sections and smaller input controls
+- ✅ Reduced button sizes, text labels, and spacing for mobile device compatibility
+- ✅ Fixed overflow issues with proper max-height constraints and responsive design
+- ✅ Applied abbreviated labels for special training methods (Myorep+, Drop Set Config, etc.)
+- ✅ Optimized touch targets and interaction elements for iOS devices
+
 **Training Template Creation Interface English Conversion & TypeScript Fixes (Aug 4, 2025):**
 - ✅ Completed full interface conversion from Chinese to English (EN-US)
 - ✅ Fixed all TypeScript compilation errors in training template creation system

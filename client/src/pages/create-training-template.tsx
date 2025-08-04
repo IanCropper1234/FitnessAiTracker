@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -60,6 +60,7 @@ export default function CreateTrainingTemplate() {
 
   const [step, setStep] = useState(1);
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
+  const exerciseConfigRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -155,6 +156,17 @@ export default function CreateTrainingTemplate() {
     };
 
     updateWorkout(currentWorkoutIndex, updatedWorkout);
+    
+    // Auto-scroll to Exercise Configuration section when training method is changed
+    if (updates.specialTrainingMethod && exerciseConfigRef.current) {
+      setTimeout(() => {
+        exerciseConfigRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }, 100);
+    }
   };
 
   const handleSubmit = () => {
@@ -382,6 +394,17 @@ export default function CreateTrainingTemplate() {
                           notes: exercise.notes || ""
                         }));
                         updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises: templateExercises });
+                        
+                        // Auto-scroll to Exercise Configuration when new exercise is added
+                        if (exercises.length > currentWorkout.exercises.length && exerciseConfigRef.current) {
+                          setTimeout(() => {
+                            exerciseConfigRef.current?.scrollIntoView({ 
+                              behavior: 'smooth', 
+                              block: 'start',
+                              inline: 'nearest'
+                            });
+                          }, 200);
+                        }
                       }}
                     />
                   </div>
@@ -389,7 +412,7 @@ export default function CreateTrainingTemplate() {
               </Card>
 
               {/* Selected Exercises Configuration */}
-              <Card>
+              <Card ref={exerciseConfigRef}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
