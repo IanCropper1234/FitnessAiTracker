@@ -118,15 +118,27 @@ export default function TemplateDetails() {
           Back to Templates
         </Button>
         
-        {template.createdBy === 'user' && (
-          <Button 
-            onClick={() => setLocation(`/training?tab=templates&edit=${template.id}`)}
-            className="flex items-center gap-2"
-          >
-            <Edit2 className="h-4 w-4" />
-            Edit Template
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {template.createdBy === 'user' && (
+            <>
+              <Button 
+                onClick={() => setLocation(`/training?tab=templates&edit=${template.id}`)}
+                className="flex items-center gap-2"
+              >
+                <Edit2 className="h-4 w-4" />
+                Edit Template
+              </Button>
+              <Button 
+                onClick={() => setLocation(`/training?tab=templates&editWorkouts=${template.id}`)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Calendar className="h-4 w-4" />
+                Edit Workouts
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Template Header */}
@@ -223,17 +235,69 @@ export default function TemplateDetails() {
                 {workout.exercises?.map((exercise: any, exIdx: number) => (
                   <div 
                     key={exIdx} 
-                    className="flex items-center justify-between p-4 bg-muted/20 border"
+                    className="p-4 bg-muted/20 border space-y-3"
                   >
-                    <div className="flex-1">
-                      <div className="font-medium text-base">{exercise.exerciseName}</div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {exercise.sets} sets × {exercise.repsRange} reps
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-base">{exercise.exerciseName}</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {exercise.sets} sets × {exercise.repsRange} reps
+                        </div>
+                      </div>
+                      <div className="text-sm text-muted-foreground font-medium">
+                        {exercise.restPeriod}s rest
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground font-medium">
-                      {exercise.restPeriod}s rest
-                    </div>
+                    
+                    {/* Training Method Details */}
+                    {exercise.specialTrainingMethod && (
+                      <div className="mt-2 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 text-xs">
+                            {exercise.specialTrainingMethod}
+                          </Badge>
+                        </div>
+                        {exercise.specialMethodConfig && (
+                          <div className="text-xs text-purple-700 dark:text-purple-300 space-y-1">
+                            {exercise.specialTrainingMethod === 'dropset' && exercise.specialMethodConfig.dropSetWeights && (
+                              <div>
+                                <span className="font-medium">Drop Set:</span>{' '}
+                                {exercise.specialMethodConfig.dropSetWeights.map((weight: number, idx: number) => (
+                                  <span key={idx}>
+                                    {weight}kg ({exercise.specialMethodConfig.dropSetReps?.[idx] || 'AMRAP'} reps)
+                                    {idx < exercise.specialMethodConfig.dropSetWeights.length - 1 ? ' → ' : ''}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {exercise.specialTrainingMethod === 'myorep_match' && (
+                              <div>
+                                <span className="font-medium">Myorep Match:</span> First set to failure, then match reps
+                              </div>
+                            )}
+                            {exercise.specialTrainingMethod === 'myorep_no_match' && (
+                              <div>
+                                <span className="font-medium">Myorep+:</span> First set to failure, then mini-sets until failure
+                              </div>
+                            )}
+                            {exercise.specialTrainingMethod === 'superset' && exercise.specialMethodConfig.pairedExercise && (
+                              <div>
+                                <span className="font-medium">Superset with:</span> {exercise.specialMethodConfig.pairedExercise}
+                                {exercise.specialMethodConfig.restBetweenExercises && (
+                                  <span> (Rest: {exercise.specialMethodConfig.restBetweenExercises}s between exercises)</span>
+                                )}
+                              </div>
+                            )}
+                            {exercise.specialTrainingMethod === 'giant_set' && exercise.specialMethodConfig.exercises && (
+                              <div>
+                                <span className="font-medium">Giant Set:</span>{' '}
+                                {exercise.specialMethodConfig.exercises.join(' → ')}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

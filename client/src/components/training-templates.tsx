@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,9 +95,35 @@ interface TrainingTemplatesProps {
 export default function TrainingTemplates({ userId, onTemplateSelect }: TrainingTemplatesProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [editingTemplate, setEditingTemplate] = useState<TrainingTemplate | null>(null);
+  const [editingWorkoutsTemplate, setEditingWorkoutsTemplate] = useState<TrainingTemplate | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  
+  // Check for query parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('edit');
+    const editWorkoutsId = params.get('editWorkouts');
+    
+    if (editId && templates) {
+      const templateToEdit = templates.find(t => t.id === parseInt(editId));
+      if (templateToEdit) {
+        setEditingTemplate(templateToEdit);
+        // Clear the URL parameter
+        window.history.replaceState({}, '', '/training?tab=templates');
+      }
+    }
+    
+    if (editWorkoutsId && templates) {
+      const templateToEditWorkouts = templates.find(t => t.id === parseInt(editWorkoutsId));
+      if (templateToEditWorkouts) {
+        setEditingWorkoutsTemplate(templateToEditWorkouts);
+        // Clear the URL parameter
+        window.history.replaceState({}, '', '/training?tab=templates');
+      }
+    }
+  }, [templates]);
 
   // Get available templates (includes user templates)
   const { data: templates = [], isLoading } = useQuery({
@@ -162,6 +188,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
       });
       queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
       setEditingTemplate(null);
+      setEditingWorkoutsTemplate(null);
     },
   });
 
@@ -416,6 +443,15 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                         Edit
                       </Button>
                       <Button
+                        onClick={() => setEditingWorkoutsTemplate(template)}
+                        variant="ghost"
+                        size="sm"
+                        className="flex-1"
+                      >
+                        <Calendar className="h-4 w-4 mr-1" />
+                        Workouts
+                      </Button>
+                      <Button
                         onClick={() => deleteTemplateMutation.mutate(template.id)}
                         variant="ghost"
                         size="sm"
@@ -458,6 +494,16 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
           template={editingTemplate}
           updateMutation={updateTemplateMutation}
           onClose={() => setEditingTemplate(null)}
+          userId={userId}
+        />
+      )}
+
+      {/* Edit Workouts Dialog */}
+      {editingWorkoutsTemplate && (
+        <WorkoutSessionEditor 
+          template={editingWorkoutsTemplate}
+          updateMutation={updateTemplateMutation}
+          onClose={() => setEditingWorkoutsTemplate(null)}
           userId={userId}
         />
       )}
@@ -955,6 +1001,520 @@ function EnhancedEditTemplateDialog({
                   Cancel
                 </Button>
               </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Workout Session Editor Component for editing and reordering workout sessions
+function WorkoutSessionEditor({ 
+  template, 
+  updateMutation, 
+  onClose,
+  userId
+}: { 
+  template: TrainingTemplate; 
+  updateMutation: any; 
+  onClose: () => void;
+  userId: number;
+}) {
+  const [formData, setFormData] = useState({
+    name: template.name,
+    description: template.description,
+    category: template.category,
+    daysPerWeek: template.daysPerWeek,
+    templateData: template.templateData
+  });
+
+  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState(0);
+  const [showExerciseSelector, setShowExerciseSelector] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Get available exercises
+  const { data: exercises = [] } = useQuery({
+    queryKey: ['/api/training/exercises'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/training/exercises');
+      return response.json();
+    },
+  });
+
+  const workouts = formData.templateData?.workouts || [];
+  const currentWorkout = workouts[selectedWorkoutIndex];
+  const filteredExercises = exercises.filter((ex: any) => 
+    ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSubmit = () => {
+    updateMutation.mutate({
+      templateId: template.id,
+      updateData: formData
+    });
+  };
+
+  const handleAddWorkout = () => {
+    const newWorkout = {
+      name: `Day ${workouts.length + 1}`,
+      exercises: [],
+      estimatedDuration: 45,
+      focus: []
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: [...workouts, newWorkout]
+      },
+      daysPerWeek: Math.max(prev.daysPerWeek, workouts.length + 1)
+    }));
+  };
+
+  const handleRemoveWorkout = (workoutIndex: number) => {
+    if (workouts.length <= 1) return; // Keep at least one workout
+
+    const updatedWorkouts = workouts.filter((_, idx) => idx !== workoutIndex);
+    
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      },
+      daysPerWeek: updatedWorkouts.length
+    }));
+
+    // Adjust selected workout index if needed
+    if (selectedWorkoutIndex >= updatedWorkouts.length) {
+      setSelectedWorkoutIndex(Math.max(0, updatedWorkouts.length - 1));
+    }
+  };
+
+  const handleMoveWorkout = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= workouts.length) return;
+
+    const updatedWorkouts = [...workouts];
+    const [movedWorkout] = updatedWorkouts.splice(fromIndex, 1);
+    updatedWorkouts.splice(toIndex, 0, movedWorkout);
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+
+    // Update selected index to follow the moved workout
+    if (selectedWorkoutIndex === fromIndex) {
+      setSelectedWorkoutIndex(toIndex);
+    }
+  };
+
+  const handleUpdateWorkout = (workoutIndex: number, field: string, value: any) => {
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[workoutIndex] = {
+      ...updatedWorkouts[workoutIndex],
+      [field]: value
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+  };
+
+  const handleAddExercise = (exercise: any) => {
+    if (!currentWorkout) return;
+
+    const newExercise = {
+      exerciseName: exercise.name,
+      sets: 3,
+      repsRange: "8-12",
+      restPeriod: 60
+    };
+
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[selectedWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: [...(currentWorkout.exercises || []), newExercise]
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+
+    setShowExerciseSelector(false);
+    setSearchTerm('');
+  };
+
+  const handleRemoveExercise = (exerciseIndex: number) => {
+    if (!currentWorkout) return;
+
+    const updatedExercises = currentWorkout.exercises.filter((_, idx) => idx !== exerciseIndex);
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[selectedWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: updatedExercises
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+  };
+
+  const handleMoveExercise = (fromIndex: number, toIndex: number) => {
+    if (!currentWorkout || toIndex < 0 || toIndex >= currentWorkout.exercises.length) return;
+
+    const updatedExercises = [...currentWorkout.exercises];
+    const [movedExercise] = updatedExercises.splice(fromIndex, 1);
+    updatedExercises.splice(toIndex, 0, movedExercise);
+
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[selectedWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: updatedExercises
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+  };
+
+  const handleUpdateExercise = (exerciseIndex: number, field: string, value: any) => {
+    if (!currentWorkout) return;
+
+    const updatedExercises = [...currentWorkout.exercises];
+    updatedExercises[exerciseIndex] = {
+      ...updatedExercises[exerciseIndex],
+      [field]: value
+    };
+
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[selectedWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: updatedExercises
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden">
+        <DialogHeader>
+          <DialogTitle>Edit Workout Sessions - {template.name}</DialogTitle>
+          <DialogDescription>
+            Manage workout sessions, exercises, and their order within your training template
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex h-[70vh]">
+          {/* Workout Sessions Sidebar */}
+          <div className="w-1/3 border-r pr-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium">Workout Sessions</h4>
+              <Button 
+                onClick={handleAddWorkout}
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" />
+                Add
+              </Button>
+            </div>
+
+            <div className="space-y-2 max-h-[calc(70vh-80px)] overflow-y-auto">
+              {workouts.map((workout: any, index: number) => (
+                <Card 
+                  key={index} 
+                  className={`cursor-pointer transition-colors ${
+                    selectedWorkoutIndex === index 
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' 
+                      : 'hover:bg-muted/50'
+                  }`}
+                  onClick={() => setSelectedWorkoutIndex(index)}
+                >
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{workout.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {workout.exercises?.length || 0} exercises
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveWorkout(index, index - 1);
+                          }}
+                          disabled={index === 0}
+                          className="p-1 h-6 w-6"
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveWorkout(index, index + 1);
+                          }}
+                          disabled={index === workouts.length - 1}
+                          className="p-1 h-6 w-6"
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </Button>
+                        {workouts.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveWorkout(index);
+                            }}
+                            className="p-1 h-6 w-6 text-red-600 hover:text-red-700"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Exercise Management */}
+          <div className="flex-1 pl-4 space-y-4">
+            {currentWorkout && (
+              <>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm">Workout Name</Label>
+                    <Input
+                      value={currentWorkout.name}
+                      onChange={(e) => handleUpdateWorkout(selectedWorkoutIndex, 'name', e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-sm">Estimated Duration (minutes)</Label>
+                      <Input
+                        type="number"
+                        value={currentWorkout.estimatedDuration || 45}
+                        onChange={(e) => handleUpdateWorkout(selectedWorkoutIndex, 'estimatedDuration', parseInt(e.target.value))}
+                        className="mt-1"
+                        min="15"
+                        max="180"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Exercise Count</Label>
+                      <div className="mt-1 px-3 py-2 bg-muted text-sm font-medium">
+                        {currentWorkout.exercises?.length || 0} exercises
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h5 className="font-medium">Exercises</h5>
+                    <Button 
+                      onClick={() => setShowExerciseSelector(true)}
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Add Exercise
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2 max-h-[calc(70vh-250px)] overflow-y-auto">
+                    {currentWorkout.exercises?.map((exercise: any, index: number) => (
+                      <Card key={index} className="p-3">
+                        <div className="flex items-center gap-3">
+                          {/* Reorder Controls */}
+                          <div className="flex flex-col gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleMoveExercise(index, index - 1)}
+                              disabled={index === 0}
+                              className="p-1 h-6 w-6"
+                            >
+                              <ChevronUp className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleMoveExercise(index, index + 1)}
+                              disabled={index === currentWorkout.exercises.length - 1}
+                              className="p-1 h-6 w-6"
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                            </Button>
+                          </div>
+
+                          {/* Exercise Details */}
+                          <div className="flex-1 grid grid-cols-4 gap-3">
+                            <div>
+                              <Label className="text-xs">Exercise</Label>
+                              <div className="font-medium text-sm">{exercise.exerciseName}</div>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Sets</Label>
+                              <Input
+                                type="number"
+                                value={exercise.sets}
+                                onChange={(e) => handleUpdateExercise(index, 'sets', parseInt(e.target.value))}
+                                className="h-8"
+                                min="1"
+                                max="10"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Reps Range</Label>
+                              <Input
+                                value={exercise.repsRange}
+                                onChange={(e) => handleUpdateExercise(index, 'repsRange', e.target.value)}
+                                className="h-8"
+                                placeholder="8-12"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Rest (sec)</Label>
+                              <Input
+                                type="number"
+                                value={exercise.restPeriod}
+                                onChange={(e) => handleUpdateExercise(index, 'restPeriod', parseInt(e.target.value))}
+                                className="h-8"
+                                min="15"
+                                max="300"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Remove Button */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveExercise(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+
+                    {(!currentWorkout.exercises || currentWorkout.exercises.length === 0) && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Dumbbell className="h-8 w-8 mx-auto mb-2" />
+                        <p>No exercises added yet</p>
+                        <p className="text-sm">Click "Add Exercise" to get started</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            onClick={handleSubmit}
+            disabled={updateMutation.isPending || !formData.templateData?.workouts?.length}
+          >
+            {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </DialogFooter>
+
+        {/* Exercise Selector Dialog */}
+        {showExerciseSelector && (
+          <Dialog open={true} onOpenChange={() => setShowExerciseSelector(false)}>
+            <DialogContent className="max-w-2xl max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle>Add Exercise</DialogTitle>
+                <DialogDescription>
+                  Search and select an exercise to add to this workout session
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search exercises..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                <div className="max-h-96 overflow-y-auto space-y-2">
+                  {filteredExercises.map((exercise: any) => (
+                    <Card 
+                      key={exercise.id} 
+                      className="p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleAddExercise(exercise)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">{exercise.name}</div>
+                          {exercise.primaryMuscleGroup && (
+                            <div className="text-sm text-muted-foreground">
+                              {exercise.primaryMuscleGroup}
+                            </div>
+                          )}
+                        </div>
+                        <Plus className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </Card>
+                  ))}
+                  
+                  {filteredExercises.length === 0 && searchTerm && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Search className="h-8 w-8 mx-auto mb-2" />
+                      <p>No exercises found matching "{searchTerm}"</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
         )}
