@@ -429,7 +429,7 @@ export default function CreateTrainingTemplate() {
                       </div>
                     ) : (
                       currentWorkout.exercises.map((exercise, index) => (
-                        <Card key={`${exercise.exerciseId}-${index}`} className="border-l-4 border-l-primary">
+                        <Card key={`${exercise.exerciseId}-${index}`} className="border-l-4 border-l-primary" data-exercise-index={index}>
                           <CardHeader className="pb-2 pt-3">
                             <div className="flex items-center justify-between">
                               <h4 className="font-medium text-sm truncate pr-2">{exercise.name}</h4>
@@ -493,6 +493,18 @@ export default function CreateTrainingTemplate() {
                                       specialTrainingMethod: value,
                                       specialMethodConfig: getDefaultSpecialMethodConfig(value)
                                     });
+                                    
+                                    // Auto-scroll to show the special method configuration
+                                    setTimeout(() => {
+                                      const configPanel = document.querySelector(`[data-exercise-index="${index}"] .special-method-config`);
+                                      if (configPanel) {
+                                        configPanel.scrollIntoView({ 
+                                          behavior: 'smooth', 
+                                          block: 'center',
+                                          inline: 'nearest'
+                                        });
+                                      }
+                                    }, 150);
                                   }
                                 }}
                               >
@@ -511,11 +523,13 @@ export default function CreateTrainingTemplate() {
                             </div>
 
                             {exercise.specialTrainingMethod && (
-                              <SpecialMethodConfigurationPanel
-                                method={exercise.specialTrainingMethod}
-                                config={exercise.specialMethodConfig}
-                                onConfigChange={(config) => updateExercise(index, { specialMethodConfig: config })}
-                              />
+                              <div className="special-method-config">
+                                <SpecialMethodConfigurationPanel
+                                  method={exercise.specialTrainingMethod}
+                                  config={exercise.specialMethodConfig}
+                                  onConfigChange={(config) => updateExercise(index, { specialMethodConfig: config })}
+                                />
+                              </div>
                             )}
 
                             <div>
