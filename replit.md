@@ -8,6 +8,13 @@ FitAI's vision is to provide intelligent, adaptive training through comprehensiv
 
 ## Recent Changes (August 2025)
 
+**CRITICAL ROUTING FIX: Standalone Page 404 Issue Resolution (Aug 4, 2025):**
+- ✅ **ROOT CAUSE IDENTIFIED**: Wouter router matches routes in order - catch-all `<Route>` (NotFound) was being matched before specific `/template/:id` route
+- ✅ **SOLUTION**: Moved specific parametrized routes BEFORE the catch-all NotFound route in App.tsx
+- ✅ **PREVENTION RULE**: Always place specific routes with parameters BEFORE generic catch-all routes in Wouter routing
+- ✅ **USER PREFERENCE CONFIRMED**: User strongly prefers standalone pages over modal dialogs for complex interfaces
+- 🔥 **CRITICAL NOTE**: When creating new standalone pages, ALWAYS place route definitions before the catch-all `<Route>` component to prevent 404 errors
+
 **Enhanced Training Template Creation with Auto-Scroll UX (Aug 4, 2025):**
 - ✅ Implemented automatic scrolling to Exercise Configuration section when training methods are selected
 - ✅ Added smooth scroll behavior when new exercises are added from exercise library

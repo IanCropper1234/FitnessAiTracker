@@ -168,11 +168,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             {user ? <CreateTrainingTemplate /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
-        <Route path="/template/:id">
-          <AnimatedPage>
-            {user ? <TemplateDetails /> : <div className="animate-pulse">Loading...</div>}
-          </AnimatedPage>
-        </Route>
         <Route path="/reports">
           <AnimatedPage>
             {user ? <ReportsPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
@@ -196,6 +191,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/nutrition-facts">
           <AnimatedPage>
             {user ? <NutritionFactsPage /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/template/:id">
+          <AnimatedPage>
+            {user ? <TemplateDetails /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route>
