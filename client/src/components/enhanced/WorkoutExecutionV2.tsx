@@ -194,6 +194,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             specialMethod = 'drop_set';
           }
           console.log(`Restoring special method for exercise ${exercise.id}:`, specialMethod);
+          console.log(`After conversion: ${specialMethod}`);
           initialSpecialMethods[exercise.id] = specialMethod;
         }
         
