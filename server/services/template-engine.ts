@@ -352,7 +352,7 @@ export class TemplateEngine {
         .values({
           sessionId,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex || (exerciseIndex + 1), // Ensure orderIndex is never null
+          orderIndex: exercise.orderIndex || (i + 1), // Ensure orderIndex is never null
           sets: exercise.sets,
           targetReps: exercise.repsRange || "8-12", // Default target reps if not provided  
           restPeriod: exercise.restPeriod || 120, // Default rest period
@@ -484,27 +484,54 @@ export class TemplateEngine {
       category: string;
       daysPerWeek: number;
       templateData: any;
-    }>
+    }>,
+    userId?: number
   ): Promise<any | null> {
-    const { templateData, ...otherUpdates } = updateData;
-    
-    const updateValues = {
-      ...otherUpdates,
-      ...(templateData ? { templateData: JSON.stringify(templateData) } : {})
-    };
+    try {
+      console.log('Updating template with ID:', templateId, 'userId:', userId);
+      
+      const { templateData, ...otherUpdates } = updateData;
+      
+      const updateValues = {
+        ...otherUpdates,
+        ...(templateData ? { templateData: JSON.stringify(templateData) } : {})
+      };
 
-    const [updated] = await db
-      .update(trainingTemplates)
-      .set(updateValues)
-      .where(
-        and(
-          eq(trainingTemplates.id, templateId),
-          eq(trainingTemplates.createdBy, 'user')
-        )
-      )
-      .returning();
+      // First check if template exists and user has permission
+      const existingTemplate = await db.select().from(trainingTemplates)
+        .where(
+          and(
+            eq(trainingTemplates.id, templateId),
+            eq(trainingTemplates.isActive, true)
+          )
+        );
 
-    return updated || null;
+      if (existingTemplate.length === 0) {
+        console.log('Template not found');
+        return null;
+      }
+
+      // Check if user has permission (either created by user or is system template)
+      const template = existingTemplate[0];
+      const userCreatedBy = `user_${userId}`;
+      
+      if (template.createdBy !== userCreatedBy && template.createdBy !== 'system') {
+        console.log('User not authorized to update template. createdBy:', template.createdBy, 'expected:', userCreatedBy);
+        return null;
+      }
+
+      const [updated] = await db
+        .update(trainingTemplates)
+        .set(updateValues)
+        .where(eq(trainingTemplates.id, templateId))
+        .returning();
+
+      console.log('Template updated successfully:', updated?.name);
+      return updated || null;
+    } catch (error) {
+      console.error('Error in updateTemplate:', error);
+      throw error;
+    }
   }
 
 

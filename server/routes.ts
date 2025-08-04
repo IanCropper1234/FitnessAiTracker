@@ -3305,9 +3305,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/training/templates/:templateId", requireAuth, async (req, res) => {
     try {
       const templateId = parseInt(req.params.templateId);
+      const userId = req.userId;
       const updateData = req.body;
       
-      const updatedTemplate = await TemplateEngine.updateTemplate(templateId, updateData);
+      const updatedTemplate = await TemplateEngine.updateTemplate(templateId, updateData, userId);
       
       if (!updatedTemplate) {
         return res.status(404).json({ error: "Template not found or unauthorized" });
