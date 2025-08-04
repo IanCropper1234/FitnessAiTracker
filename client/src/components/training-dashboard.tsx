@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AnimatedTabs, AnimatedTabsContent, AnimatedTabsList, AnimatedTabsTrigger } from "@/components/ui/animated-tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -807,9 +807,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
           </div>
         </div>
       )}
-      <Tabs value={activeTab} className="w-full">
+      <AnimatedTabs value={activeTab} className="w-full">
 
-        <TabsContent value="dashboard" className="space-y-6">
+        <AnimatedTabsContent value="dashboard" className="space-y-6" >
           {/* Today's Training Section */}
           <Card>
             <CardHeader>
@@ -829,9 +829,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="sessions" className="space-y-6">
+        <AnimatedTabsContent value="sessions" className="space-y-6" >
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-semibold pl-[0px] pr-[0px] ml-[10px] mr-[10px]">Workout Sessions</h3>
@@ -973,9 +973,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </div>
             </div>
           )}
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="exercise-library" className="space-y-6">
+        <AnimatedTabsContent value="exercise-library" className="space-y-6" >
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -1139,19 +1139,19 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </Card>
             ))}
           </div>
-        </TabsContent>
+        </AnimatedTabsContent>
 
 
 
-        <TabsContent value="volume" className="space-y-4">
+        <AnimatedTabsContent value="volume" className="space-y-4" >
           <VolumeLandmarks />
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="auto-regulation" className="space-y-4">
+        <AnimatedTabsContent value="auto-regulation" className="space-y-4" >
           <AutoRegulationDashboard userId={1} />
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="programs" className="space-y-4">
+        <AnimatedTabsContent value="programs" className="space-y-4" >
           <div className="flex justify-between items-center">
             <h3 className="text-base font-semibold">Training Programs</h3>
             <Button size="sm">
@@ -1173,9 +1173,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </Button>
             </CardContent>
           </Card>
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="progress" className="space-y-4">
+        <AnimatedTabsContent value="progress" className="space-y-4" >
           <div className="flex justify-between items-center">
             <h3 className="text-base font-semibold">Progress Tracking</h3>
             <Button variant="outline" size="sm">
@@ -1197,20 +1197,20 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </Button>
             </CardContent>
           </Card>
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="templates" className="space-y-4">
+        <AnimatedTabsContent value="templates" className="space-y-4" >
           <TrainingTemplates userId={userId} />
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="mesocycles" className="space-y-4">
+        <AnimatedTabsContent value="mesocycles" className="space-y-4" >
           <MesocycleDashboard userId={userId} />
-        </TabsContent>
+        </AnimatedTabsContent>
 
-        <TabsContent value="progression" className="space-y-4">
+        <AnimatedTabsContent value="progression" className="space-y-4" >
           <LoadProgressionTracker userId={userId} />
-        </TabsContent>
-      </Tabs>
+        </AnimatedTabsContent>
+      </AnimatedTabs>
 
       {/* Workout Execution Modal */}
       {executingSessionId && (

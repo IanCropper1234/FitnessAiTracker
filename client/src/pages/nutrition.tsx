@@ -22,7 +22,7 @@ import { ShoppingListGenerator } from "@/components/shopping-list-generator";
 import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AnimatedTabs, AnimatedTabsContent, AnimatedTabsList, AnimatedTabsTrigger } from "@/components/ui/animated-tabs";
 import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { 
   Plus, 
@@ -246,9 +246,9 @@ export function Nutrition({
 
         {/* Enhanced Nutrition Module */}
         <div className="mt-2 mb-32">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
+          <AnimatedTabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
 
-            <TabsContent value="overview">
+            <AnimatedTabsContent value="overview">
               <IntegratedNutritionOverview 
                 userId={user.id} 
                 selectedDate={selectedDate}
@@ -272,19 +272,17 @@ export function Nutrition({
                   console.log('Copy date selected:', date, 'operation:', operation);
                 }}
               />
-            </TabsContent>
+            </AnimatedTabsContent>
 
-            <TabsContent value="builder">
+            <AnimatedTabsContent value="builder">
               <DietBuilder userId={user.id} />
-            </TabsContent>
+            </AnimatedTabsContent>
 
-
-
-            <TabsContent value="advanced">
+            <AnimatedTabsContent value="advanced">
               <AdvancedMacroManagement userId={user.id} />
-            </TabsContent>
+            </AnimatedTabsContent>
 
-            <TabsContent value="body">
+            <AnimatedTabsContent value="body">
               <BodyTracking 
                 userId={user.id}
                 selectedDate={bodyTrackingDate}
@@ -292,16 +290,16 @@ export function Nutrition({
                 showDatePicker={showBodyDatePicker}
                 setShowDatePicker={setShowBodyDatePicker}
               />
-            </TabsContent>
+            </AnimatedTabsContent>
 
-            <TabsContent value="progression">
+            <AnimatedTabsContent value="progression">
               <NutritionProgression userId={user.id} />
-            </TabsContent>
+            </AnimatedTabsContent>
 
-            <TabsContent value="shopping">
+            <AnimatedTabsContent value="shopping">
               <ShoppingListGenerator userId={user.id} />
-            </TabsContent>
-          </Tabs>
+            </AnimatedTabsContent>
+          </AnimatedTabs>
         </div>
 
         {/* Nutrition Logger Modal */}
