@@ -86,20 +86,26 @@ export default function CreateTrainingTemplate() {
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return apiRequest('/api/training/templates', 'POST', data);
+      try {
+        return await apiRequest('/api/training/templates', 'POST', data);
+      } catch (error) {
+        console.error('Template creation error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({
-        title: "成功創建訓練範本",
-        description: "您的自定義訓練範本已成功創建"
+        title: "Success",
+        description: "Training template created successfully"
       });
       queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
       setLocation('/training');
     },
     onError: (error: any) => {
+      console.error('Mutation error:', error);
       toast({
-        title: "創建失敗",
-        description: error.message || "創建訓練範本時發生錯誤",
+        title: "Creation Failed",
+        description: error.message || "Failed to create training template. Please check your connection and try again.",
         variant: "destructive"
       });
     }
@@ -159,22 +165,25 @@ export default function CreateTrainingTemplate() {
     updateWorkout(currentWorkoutIndex, updatedWorkout);
     
     // Auto-scroll to Exercise Configuration section when training method is changed
-    if (updates.specialTrainingMethod && exerciseConfigRef.current) {
+    if (updates.specialTrainingMethod) {
       setTimeout(() => {
-        exerciseConfigRef.current?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
-      }, 100);
+        const exerciseCard = document.querySelector(`[data-exercise-index="${exerciseIndex}"]`);
+        if (exerciseCard) {
+          exerciseCard.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 150);
     }
   };
 
   const handleSubmit = () => {
     if (!formData.name.trim() || !formData.description.trim()) {
       toast({
-        title: "請填寫必要資訊",
-        description: "範本名稱和描述為必填項目",
+        title: "Missing Required Information",
+        description: "Template name and description are required",
         variant: "destructive"
       });
       return;
@@ -182,8 +191,8 @@ export default function CreateTrainingTemplate() {
 
     if (formData.templateData.workouts.some(w => w.exercises.length === 0)) {
       toast({
-        title: "請添加運動",
-        description: "每個訓練日都需要至少添加一個運動",
+        title: "Add Exercises",
+        description: "Each training day needs at least one exercise",
         variant: "destructive"
       });
       return;
@@ -497,15 +506,26 @@ export default function CreateTrainingTemplate() {
                                     
                                     // Auto-scroll to show the special method configuration
                                     setTimeout(() => {
-                                      const configPanel = document.querySelector(`[data-exercise-index="${index}"] .special-method-config`);
-                                      if (configPanel) {
-                                        configPanel.scrollIntoView({ 
+                                      const exerciseCard = document.querySelector(`[data-exercise-index="${index}"]`);
+                                      if (exerciseCard) {
+                                        exerciseCard.scrollIntoView({ 
                                           behavior: 'smooth', 
                                           block: 'center',
                                           inline: 'nearest'
                                         });
+                                        
+                                        // Then scroll specifically to the config panel if it exists
+                                        setTimeout(() => {
+                                          const configPanel = exerciseCard.querySelector('.special-method-config');
+                                          if (configPanel) {
+                                            configPanel.scrollIntoView({ 
+                                              behavior: 'smooth', 
+                                              block: 'nearest'
+                                            });
+                                          }
+                                        }, 100);
                                       }
-                                    }, 150);
+                                    }, 200);
                                   }
                                 }}
                               >
