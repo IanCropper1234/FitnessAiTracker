@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { History, Loader2 } from 'lucide-react';
+import { History, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,6 +29,7 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
   onApplyHistoricalData
 }) => {
   const [isApplying, setIsApplying] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
 
   // Fetch latest special training method data for this exercise, set, and method
@@ -126,33 +127,53 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
   };
 
   return (
-    <div className="bg-blue-500/10 border border-blue-500/20 p-1.5 overflow-hidden pt-[0px] pb-[0px] pl-[5px] pr-[5px] mt-[10px] mb-[10px]">
-      <div className="flex items-center justify-between gap-2">
+    <div className="bg-blue-500/10 border border-blue-500/20 overflow-hidden mt-1">
+      {/* Collapsed Header - Always Visible */}
+      <div 
+        className="flex items-center justify-between gap-2 p-1.5 cursor-pointer hover:bg-blue-500/20 transition-colors"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <History className="h-3 w-3 text-blue-400 flex-shrink-0" />
-          <div className="min-w-0 flex-1">
-            <div className="text-xs text-blue-300 truncate leading-tight">
-              {getSpecialMethodDisplay(latestSpecialMethod)}
-            </div>
-            <div className="text-xs text-blue-300/60 truncate leading-tight">
-              {formatDate(latestSpecialMethod.date)}
-            </div>
+          <div className="text-xs text-blue-300 truncate">
+            Last: {latestSpecialMethod.specialMethod.replace('_', ' ')} ({formatDate(latestSpecialMethod.date)})
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleApplyHistoricalData}
-          disabled={isLoading || isApplying}
-          className="ios-touch-feedback h-7 px-2 py-0 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 hover:text-blue-100 border border-blue-500/30 flex-shrink-0"
-        >
-          {isLoading || isApplying ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {isExpanded ? (
+            <ChevronUp className="h-3 w-3 text-blue-400" />
           ) : (
-            "Use"
+            <ChevronDown className="h-3 w-3 text-blue-400" />
           )}
-        </Button>
+        </div>
       </div>
+
+      {/* Expanded Content - Only Visible When Expanded */}
+      {isExpanded && (
+        <div className="border-t border-blue-500/20 p-1.5 space-y-2">
+          <div className="text-xs text-blue-300/90 leading-relaxed">
+            {getSpecialMethodDisplay(latestSpecialMethod)}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleApplyHistoricalData();
+              }}
+              disabled={isLoading || isApplying}
+              className="ios-touch-feedback h-7 px-3 py-0 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 hover:text-blue-100 border border-blue-500/30"
+            >
+              {isLoading || isApplying ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                "Use Configuration"
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
