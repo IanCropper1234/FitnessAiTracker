@@ -154,7 +154,7 @@ export class TemplateEngine {
           sets: Math.round(adjustedSets),
           repsRange: templateExercise.repsRange,
           restPeriod: templateExercise.restPeriod,
-          orderIndex: templateExercise.orderIndex || i + 1,
+          orderIndex: templateExercise.orderIndex || (templateIndex + 1),
           notes: templateExercise.notes,
           // Include special training method data
           specialTrainingMethod: templateExercise.specialTrainingMethod,
@@ -184,10 +184,10 @@ export class TemplateEngine {
         .returning({ id: workoutSessions.id });
 
       // Add exercises to the session
-      for (let i = 0; i < customizedExercises.length; i++) {
-        const exercise = customizedExercises[i];
+      for (let exerciseIndex = 0; exerciseIndex < customizedExercises.length; exerciseIndex++) {
+        const exercise = customizedExercises[exerciseIndex];
         // Get special training method data from template exercise
-        const templateExercise = workoutTemplate.exercises[i];
+        const templateExercise = workoutTemplate.exercises[exerciseIndex];
         const specialMethod = templateExercise?.specialTrainingMethod;
         const specialConfig = templateExercise?.specialMethodConfig;
 
@@ -196,7 +196,7 @@ export class TemplateEngine {
           .values({
             sessionId: session.id,
             exerciseId: exercise.exerciseId,
-            orderIndex: exercise.orderIndex || i + 1, // Ensure order_index is never null
+            orderIndex: exercise.orderIndex || exerciseIndex + 1, // Ensure order_index is never null
             sets: exercise.sets,
             targetReps: exercise.repsRange || "8-12", // Default target reps if not provided
             actualReps: null,
@@ -314,7 +314,7 @@ export class TemplateEngine {
         sets: Math.round(adjustedSets),
         repsRange: templateExercise.repsRange,
         restPeriod: templateExercise.restPeriod,
-        orderIndex: templateExercise.orderIndex || i + 1,
+        orderIndex: templateExercise.orderIndex || (templateIndex + 1),
         notes: templateExercise.notes,
         // Include special training method data
         specialTrainingMethod: templateExercise.specialTrainingMethod,
@@ -350,7 +350,7 @@ export class TemplateEngine {
         .values({
           sessionId,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex || i + 1, // Ensure orderIndex is never null
+          orderIndex: exercise.orderIndex || (exerciseIndex + 1), // Ensure orderIndex is never null
           sets: exercise.sets,
           targetReps: exercise.repsRange || "8-12", // Default target reps if not provided  
           restPeriod: exercise.restPeriod || 120, // Default rest period
