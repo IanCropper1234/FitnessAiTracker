@@ -288,15 +288,44 @@ export default function EditTemplatePage() {
   };
 
   const handleUpdateTrainingMethod = (exerciseIndex: number, methodValue: string) => {
+    if (!currentWorkout) return;
+
+    const updatedExercises = [...currentWorkout.exercises];
+    const exercise = updatedExercises[exerciseIndex];
+    if (!exercise) return;
+
     if (methodValue === 'standard' || methodValue === 'none') {
-      handleUpdateExercise(exerciseIndex, 'specialTrainingMethod', undefined);
-      handleUpdateExercise(exerciseIndex, 'specialMethodConfig', undefined);
+      // Clear special training method and config
+      updatedExercises[exerciseIndex] = {
+        ...exercise,
+        specialTrainingMethod: undefined,
+        specialMethodConfig: undefined
+      };
     } else {
-      handleUpdateExercise(exerciseIndex, 'specialTrainingMethod', methodValue);
-      // Set default config for the method
+      // Set new training method and default config
       const defaultConfig = getDefaultMethodConfig(methodValue);
-      handleUpdateExercise(exerciseIndex, 'specialMethodConfig', defaultConfig);
+      updatedExercises[exerciseIndex] = {
+        ...exercise,
+        specialTrainingMethod: methodValue,
+        specialMethodConfig: defaultConfig
+      };
     }
+
+    const updatedWorkouts = [...(formData.templateData?.workouts || [])];
+    updatedWorkouts[activeWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: updatedExercises
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+
+    console.log(`Updated training method for exercise ${exerciseIndex} to: ${methodValue}`);
   };
 
   const handleUpdateMethodConfig = (exerciseIndex: number, configField: string, value: any) => {
@@ -842,7 +871,10 @@ export default function EditTemplatePage() {
                                 <Label className="text-xs">Training Method</Label>
                                 <Select 
                                   value={exercise.specialTrainingMethod || exercise.trainingMethod || 'standard'} 
-                                  onValueChange={(value) => handleUpdateTrainingMethod(index, value)}
+                                  onValueChange={(value) => {
+                                    console.log(`Training method selection changed to: ${value} for exercise ${index}`);
+                                    handleUpdateTrainingMethod(index, value);
+                                  }}
                                 >
                                   <SelectTrigger className="h-7 text-xs">
                                     <SelectValue placeholder="None" />
@@ -882,7 +914,7 @@ export default function EditTemplatePage() {
                             </div>
                             
                             {/* Special Method Configuration */}
-                            {exercise.specialTrainingMethod && exercise.specialTrainingMethod !== 'none' && (
+                            {exercise.specialTrainingMethod && exercise.specialTrainingMethod !== 'none' && exercise.specialTrainingMethod !== 'standard' && (
                               <div className="bg-muted/30 p-2 rounded border">
                                 <Label className="text-xs font-medium">Method Configuration</Label>
                                 {renderSpecialMethodConfigInputs(exercise.specialTrainingMethod, exercise.specialMethodConfig || {}, index)}
