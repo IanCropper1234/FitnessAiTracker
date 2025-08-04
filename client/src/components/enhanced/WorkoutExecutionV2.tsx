@@ -189,12 +189,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         // Restore special method data if available - check both field names for compatibility
         let specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
         if (specialMethod) {
+          console.log(`Original special method for exercise ${exercise.id}:`, specialMethod);
           // Convert database format to UI format
           if (specialMethod === 'dropset') {
             specialMethod = 'drop_set';
           }
-          console.log(`Restoring special method for exercise ${exercise.id}:`, specialMethod);
-          console.log(`After conversion: ${specialMethod}`);
+          console.log(`After conversion for exercise ${exercise.id}:`, specialMethod);
           initialSpecialMethods[exercise.id] = specialMethod;
         }
         
