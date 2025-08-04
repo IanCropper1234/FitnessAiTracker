@@ -150,11 +150,11 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
 
       {/* Expanded Content - Only Visible When Expanded */}
       {isExpanded && (
-        <div className="border-t border-blue-500/20 p-1.5 space-y-2">
-          <div className="text-xs text-blue-300/90 leading-relaxed">
-            {getSpecialMethodDisplay(latestSpecialMethod)}
-          </div>
-          <div className="flex justify-end">
+        <div className="border-t border-blue-500/20 p-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-xs text-blue-300/90 leading-tight flex-1 min-w-0">
+              {getSpecialMethodDisplay(latestSpecialMethod)}
+            </div>
             <Button
               variant="ghost"
               size="sm"
@@ -163,12 +163,12 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
                 handleApplyHistoricalData();
               }}
               disabled={isLoading || isApplying}
-              className="ios-touch-feedback h-7 px-3 py-0 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 hover:text-blue-100 border border-blue-500/30"
+              className="ios-touch-feedback h-6 px-2 py-0 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 hover:text-blue-100 border border-blue-500/30 flex-shrink-0"
             >
               {isLoading || isApplying ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                "Use Configuration"
+                "Use"
               )}
             </Button>
           </div>
