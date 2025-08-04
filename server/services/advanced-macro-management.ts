@@ -556,6 +556,9 @@ export class AdvancedMacroManagementService {
             // Return calculated data as if it were from the database
             return [calculatedData];
           }
+          
+          // Return empty array if no data can be calculated
+          return [];
         } else {
           // Enhance existing goals with real daily wellness data and weight data
           const enhancedGoals = await Promise.all(existingGoals.map(async (goal) => {
@@ -587,8 +590,6 @@ export class AdvancedMacroManagementService {
           }));
           return enhancedGoals;
         }
-
-        return existingGoals;
       }
 
       return await db.select()
