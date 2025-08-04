@@ -607,6 +607,7 @@ function SpecialMethodConfigurationPanel({
   
   const { data: exercises = [] } = useQuery<Exercise[]>({
     queryKey: ['/api/training/exercises'],
+    enabled: method === 'superset',
   });
   
   useEffect(() => {
@@ -711,10 +712,10 @@ function SpecialMethodConfigurationPanel({
         );
 
       case 'superset':
-        const filteredExercises = exercises.filter(exercise => 
+        const filteredExercises = exercises?.filter(exercise => 
           exercise.name.toLowerCase().includes(exerciseSearchTerm.toLowerCase()) &&
           exercise.name !== config?.currentExerciseName
-        ).slice(0, 5);
+        ).slice(0, 5) || [];
 
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
@@ -733,8 +734,8 @@ function SpecialMethodConfigurationPanel({
                   placeholder="Search and select exercise"
                   className="h-7 text-xs"
                 />
-                {showExerciseDropdown && exerciseSearchTerm && filteredExercises.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-background border rounded shadow-lg max-h-32 overflow-y-auto">
+                {showExerciseDropdown && exerciseSearchTerm.length >= 2 && filteredExercises.length > 0 && (
+                  <div className="absolute z-[100] w-full mt-1 bg-background border rounded shadow-lg max-h-32 overflow-y-auto">
                     {filteredExercises.map((exercise) => (
                       <div
                         key={exercise.id}
