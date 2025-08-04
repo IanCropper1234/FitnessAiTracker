@@ -202,10 +202,10 @@ export default function CreateTrainingTemplate() {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={step === 1 ? "default" : "secondary"}>
-              步驟 1: 基本設定
+              Step 1: Basic Setup
             </Badge>
             <Badge variant={step === 2 ? "default" : "secondary"}>
-              步驟 2: 配置運動
+              Step 2: Configure Exercises
             </Badge>
           </div>
         </div>
@@ -219,47 +219,47 @@ export default function CreateTrainingTemplate() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>範本基本資訊</CardTitle>
+                <CardTitle>Template Basic Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">範本名稱 *</Label>
+                    <Label htmlFor="name">Template Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="例如：我的自定義推拉訓練"
+                      placeholder="e.g., My Custom Push/Pull Training"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="category">難度等級</Label>
+                    <Label htmlFor="category">Difficulty Level</Label>
                     <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="beginner">初學者</SelectItem>
-                        <SelectItem value="intermediate">中級</SelectItem>
-                        <SelectItem value="advanced">高級</SelectItem>
+                        <SelectItem value="beginner">Beginner</SelectItem>
+                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                        <SelectItem value="advanced">Advanced</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="description">範本描述 *</Label>
+                  <Label htmlFor="description">Template Description *</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="描述您的訓練範本的特色和目標..."
+                    placeholder="Describe your training template's features and goals..."
                     rows={4}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="daysPerWeek">每週訓練天數</Label>
+                  <Label htmlFor="daysPerWeek">Training Days Per Week</Label>
                   <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
                     const days = parseInt(value);
                     setFormData(prev => ({ 
@@ -268,7 +268,7 @@ export default function CreateTrainingTemplate() {
                       templateData: {
                         ...prev.templateData,
                         workouts: Array.from({ length: days }, (_, i) => ({
-                          name: `第 ${i + 1} 天`,
+                          name: `Day ${i + 1}`,
                           exercises: [],
                           estimatedDuration: 45,
                           focus: []
@@ -281,10 +281,10 @@ export default function CreateTrainingTemplate() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="3">3 天</SelectItem>
-                      <SelectItem value="4">4 天</SelectItem>
-                      <SelectItem value="5">5 天</SelectItem>
-                      <SelectItem value="6">6 天</SelectItem>
+                      <SelectItem value="3">3 Days</SelectItem>
+                      <SelectItem value="4">4 Days</SelectItem>
+                      <SelectItem value="5">5 Days</SelectItem>
+                      <SelectItem value="6">6 Days</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -297,7 +297,7 @@ export default function CreateTrainingTemplate() {
                 disabled={!canProceedToStep2}
                 className="flex items-center gap-2"
               >
-                下一步：配置運動
+                Next: Configure Exercises
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -313,8 +313,7 @@ export default function CreateTrainingTemplate() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>配置訓練日</CardTitle>
-                    
+                    <CardTitle>Configure Training Day</CardTitle>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -324,7 +323,7 @@ export default function CreateTrainingTemplate() {
                       disabled={currentWorkoutIndex === 0}
                     >
                       <ChevronLeft className="h-4 w-4" />
-                      上一個
+                      Previous
                     </Button>
                     <span className="text-sm font-medium px-3 py-1 bg-muted rounded">
                       {currentWorkoutIndex + 1} / {formData.templateData.workouts.length}
@@ -335,7 +334,7 @@ export default function CreateTrainingTemplate() {
                       onClick={() => setCurrentWorkoutIndex(Math.min(formData.templateData.workouts.length - 1, currentWorkoutIndex + 1))}
                       disabled={currentWorkoutIndex === formData.templateData.workouts.length - 1}
                     >
-                      下一個
+                      Next
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
@@ -343,13 +342,13 @@ export default function CreateTrainingTemplate() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4 mb-4">
-                  <Label htmlFor="workoutName">訓練日名稱：</Label>
+                  <Label htmlFor="workoutName">Workout Day Name:</Label>
                   <Input
                     id="workoutName"
                     value={currentWorkout.name}
                     onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
                     className="w-64"
-                    placeholder="例如：胸部和三頭肌"
+                    placeholder="e.g., Chest & Triceps"
                   />
                 </div>
               </CardContent>
@@ -363,18 +362,18 @@ export default function CreateTrainingTemplate() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Plus className="h-5 w-5" />
-                    添加運動
+                    Add Exercise
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-96 overflow-y-auto">
                     <ExerciseSelector
                       selectedExercises={currentWorkout.exercises}
-                      onExercisesChange={(exercises) => {
-                        // Ensure each exercise has the required exerciseId property for TemplateExercise compatibility
+                      onExercisesChange={(exercises: any[]) => {
+                        // Map to TemplateExercise format
                         const templateExercises = exercises.map(exercise => ({
                           ...exercise,
-                          exerciseId: exercise.exerciseId || exercise.id, // Ensure exerciseId is present
+                          exerciseId: exercise.id,
                           sets: exercise.sets || 3,
                           targetReps: exercise.targetReps || "8-12",
                           restPeriod: exercise.restPeriod || 120,
@@ -392,7 +391,7 @@ export default function CreateTrainingTemplate() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
-                    運動配置
+                    Exercise Configuration
                     <Badge variant="secondary">{currentWorkout.exercises.length}</Badge>
                   </CardTitle>
                 </CardHeader>
@@ -400,8 +399,8 @@ export default function CreateTrainingTemplate() {
                   <div className="space-y-4 max-h-[600px] overflow-y-auto">
                     {currentWorkout.exercises.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
-                        <p>還沒有添加任何運動</p>
-                        <p className="text-sm">從左側選擇運動來開始配置</p>
+                        <p>No exercises added yet</p>
+                        <p className="text-sm">Select exercises from the left to start configuring</p>
                       </div>
                     ) : (
                       currentWorkout.exercises.map((exercise, index) => (
@@ -421,7 +420,7 @@ export default function CreateTrainingTemplate() {
                           <CardContent className="space-y-3">
                             <div className="grid grid-cols-3 gap-3">
                               <div>
-                                <Label className="text-xs">組數</Label>
+                                <Label className="text-xs">Sets</Label>
                                 <Input
                                   type="number"
                                   value={exercise.sets}
@@ -431,7 +430,7 @@ export default function CreateTrainingTemplate() {
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs">目標次數</Label>
+                                <Label className="text-xs">Target Reps</Label>
                                 <Input
                                   value={exercise.targetReps}
                                   onChange={(e) => updateExercise(index, { targetReps: e.target.value })}
@@ -439,7 +438,7 @@ export default function CreateTrainingTemplate() {
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs">休息時間(秒)</Label>
+                                <Label className="text-xs">Rest (sec)</Label>
                                 <Input
                                   type="number"
                                   value={exercise.restPeriod}
@@ -451,7 +450,7 @@ export default function CreateTrainingTemplate() {
                             </div>
 
                             <div>
-                              <Label className="text-xs">特殊訓練方法</Label>
+                              <Label className="text-xs">Training Method</Label>
                               <Select 
                                 value={exercise.specialTrainingMethod || "none"} 
                                 onValueChange={(value) => {
@@ -472,12 +471,12 @@ export default function CreateTrainingTemplate() {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="none">無特殊方法</SelectItem>
-                                  <SelectItem value="dropSet">遞減組 (Drop Set)</SelectItem>
+                                  <SelectItem value="none">Standard Set</SelectItem>
+                                  <SelectItem value="dropSet">Drop Set</SelectItem>
                                   <SelectItem value="myorepMatch">Myorep Match</SelectItem>
                                   <SelectItem value="myorepNoMatch">Myorep No Match</SelectItem>
-                                  <SelectItem value="giantSet">巨大組 (Giant Set)</SelectItem>
-                                  <SelectItem value="superset">超級組 (Superset)</SelectItem>
+                                  <SelectItem value="giantSet">Giant Set</SelectItem>
+                                  <SelectItem value="superset">Superset</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
@@ -491,11 +490,11 @@ export default function CreateTrainingTemplate() {
                             )}
 
                             <div>
-                              <Label className="text-xs">備註</Label>
+                              <Label className="text-xs">Notes</Label>
                               <Textarea
                                 value={exercise.notes || ''}
                                 onChange={(e) => updateExercise(index, { notes: e.target.value })}
-                                placeholder="運動相關備註..."
+                                placeholder="Exercise notes..."
                                 rows={2}
                               />
                             </div>
@@ -516,19 +515,19 @@ export default function CreateTrainingTemplate() {
                 className="flex items-center gap-2"
               >
                 <ChevronLeft className="h-4 w-4" />
-                返回基本設定
+                Back to Basic Setup
               </Button>
               
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={() => setLocation('/training')}>
-                  取消
+                  Cancel
                 </Button>
                 <Button 
                   onClick={handleSubmit}
                   disabled={createMutation.isPending || !canComplete}
                   className="flex items-center gap-2"
                 >
-                  {createMutation.isPending ? '創建中...' : '創建範本'}
+                  {createMutation.isPending ? 'Creating...' : 'Create Template'}
                 </Button>
               </div>
             </div>
@@ -554,10 +553,10 @@ function SpecialMethodConfigurationPanel({
       case 'dropSet':
         return (
           <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">遞減組設定</h5>
+            <h5 className="text-sm font-medium">Drop Set Configuration</h5>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">遞減次數</Label>
+                <Label className="text-xs">Number of Drops</Label>
                 <Input
                   type="number"
                   value={config?.drops || 2}
@@ -567,7 +566,7 @@ function SpecialMethodConfigurationPanel({
                 />
               </div>
               <div>
-                <Label className="text-xs">重量減少(%)</Label>
+                <Label className="text-xs">Weight Reduction (%)</Label>
                 <Input
                   type="number"
                   value={config?.weightReduction || 20}
@@ -585,11 +584,11 @@ function SpecialMethodConfigurationPanel({
         return (
           <div className="space-y-3 p-3 bg-muted/50 rounded">
             <h5 className="text-sm font-medium">
-              {method === 'myorepMatch' ? 'Myorep Match 設定' : 'Myorep No Match 設定'}
+              {method === 'myorepMatch' ? 'Myorep Match Configuration' : 'Myorep No Match Configuration'}
             </h5>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">激活組次數</Label>
+                <Label className="text-xs">Activation Reps</Label>
                 <Input
                   type="number"
                   value={config?.activationReps || 12}
@@ -599,7 +598,7 @@ function SpecialMethodConfigurationPanel({
                 />
               </div>
               <div>
-                <Label className="text-xs">追加組次數</Label>
+                <Label className="text-xs">Back-off Reps</Label>
                 <Input
                   type="number"
                   value={config?.backoffReps || 5}
@@ -615,9 +614,9 @@ function SpecialMethodConfigurationPanel({
       case 'giantSet':
         return (
           <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">巨大組設定</h5>
+            <h5 className="text-sm font-medium">Giant Set Configuration</h5>
             <div>
-              <Label className="text-xs">運動數量</Label>
+              <Label className="text-xs">Exercise Count</Label>
               <Input
                 type="number"
                 value={config?.exerciseCount || 4}
@@ -627,7 +626,7 @@ function SpecialMethodConfigurationPanel({
               />
             </div>
             <div>
-              <Label className="text-xs">組間休息(秒)</Label>
+              <Label className="text-xs">Rest Between Exercises (sec)</Label>
               <Input
                 type="number"
                 value={config?.restBetweenExercises || 15}
@@ -642,17 +641,17 @@ function SpecialMethodConfigurationPanel({
       case 'superset':
         return (
           <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">超級組設定</h5>
+            <h5 className="text-sm font-medium">Superset Configuration</h5>
             <div>
-              <Label className="text-xs">配對運動</Label>
+              <Label className="text-xs">Paired Exercise</Label>
               <Input
                 value={config?.pairedExercise || ''}
                 onChange={(e) => onConfigChange({ ...config, pairedExercise: e.target.value })}
-                placeholder="輸入配對運動名稱"
+                placeholder="Enter paired exercise name"
               />
             </div>
             <div>
-              <Label className="text-xs">運動間休息(秒)</Label>
+              <Label className="text-xs">Rest Between Exercises (sec)</Label>
               <Input
                 type="number"
                 value={config?.restBetweenExercises || 10}
