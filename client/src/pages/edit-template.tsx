@@ -325,7 +325,7 @@ export default function EditTemplatePage() {
       }
     }));
 
-    console.log(`Updated training method for exercise ${exerciseIndex} to: ${methodValue}`);
+
   };
 
   const handleUpdateMethodConfig = (exerciseIndex: number, configField: string, value: any) => {
@@ -871,10 +871,7 @@ export default function EditTemplatePage() {
                                 <Label className="text-xs">Training Method</Label>
                                 <Select 
                                   value={exercise.specialTrainingMethod || exercise.trainingMethod || 'standard'} 
-                                  onValueChange={(value) => {
-                                    console.log(`Training method selection changed to: ${value} for exercise ${index}`);
-                                    handleUpdateTrainingMethod(index, value);
-                                  }}
+                                  onValueChange={(value) => handleUpdateTrainingMethod(index, value)}
                                 >
                                   <SelectTrigger className="h-7 text-xs">
                                     <SelectValue placeholder="None" />
