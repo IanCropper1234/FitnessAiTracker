@@ -100,6 +100,18 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   
+  // Get available templates (includes user templates)
+  const { data: templates = [], isLoading } = useQuery({
+    queryKey: ['/api/training/templates', selectedCategory],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (selectedCategory !== 'all') params.append('category', selectedCategory);
+      
+      const response = await apiRequest('GET', `/api/training/templates?${params.toString()}`);
+      return response.json();
+    },
+  });
+
   // Check for query parameters
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -124,18 +136,6 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
       }
     }
   }, [templates]);
-
-  // Get available templates (includes user templates)
-  const { data: templates = [], isLoading } = useQuery({
-    queryKey: ['/api/training/templates', selectedCategory],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (selectedCategory !== 'all') params.append('category', selectedCategory);
-      
-      const response = await apiRequest('GET', `/api/training/templates?${params.toString()}`);
-      return response.json();
-    },
-  });
 
   // Generate full program from template
   const generateProgramMutation = useMutation({
