@@ -176,16 +176,16 @@ export class TemplateEngine {
           .values({
             sessionId: session.id,
             exerciseId: exercise.exerciseId,
-            orderIndex: exercise.orderIndex,
+            orderIndex: exercise.orderIndex || i + 1, // Ensure order_index is never null
             sets: exercise.sets,
-            targetReps: exercise.repsRange,
+            targetReps: exercise.repsRange || "8-12", // Default target reps if not provided
             actualReps: null,
             weight: null,
             rpe: null,
             rir: null,
-            restPeriod: exercise.restPeriod,
+            restPeriod: exercise.restPeriod || 120,
             isCompleted: false,
-            notes: exercise.notes
+            notes: exercise.notes || ""
           });
       }
 
@@ -312,18 +312,19 @@ export class TemplateEngine {
     const sessionId = sessionResult[0].id;
 
     // Add exercises to session
-    for (const exercise of customizedExercises) {
+    for (let i = 0; i < customizedExercises.length; i++) {
+      const exercise = customizedExercises[i];
       await db
         .insert(workoutExercises)
         .values({
           sessionId,
           exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex || 1, // Ensure orderIndex is never null
+          orderIndex: exercise.orderIndex || i + 1, // Ensure orderIndex is never null
           sets: exercise.sets,
-          targetReps: exercise.repsRange,
-          restPeriod: exercise.restPeriod || 60, // Default rest period
+          targetReps: exercise.repsRange || "8-12", // Default target reps if not provided  
+          restPeriod: exercise.restPeriod || 120, // Default rest period
           isCompleted: false,
-          notes: exercise.notes
+          notes: exercise.notes || ""
         });
     }
 

@@ -135,7 +135,9 @@ export default function CreateTrainingTemplate() {
       sets: 3,
       targetReps: "8-12",
       restPeriod: 120,
-      notes: ""
+      notes: "",
+      orderIndex: currentWorkout.exercises.length + 1, // Add orderIndex to ensure proper ordering
+      repsRange: "8-12" // Add repsRange for template compatibility
     };
 
     const updatedWorkout = {
