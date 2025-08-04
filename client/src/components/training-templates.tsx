@@ -262,9 +262,6 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
       <div className="space-y-4">
         <div>
           <h3 className="text-lg font-semibold mb-2">Training Templates</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Choose from RP-based templates or create your own custom training programs
-          </p>
         </div>
 
         {/* Enhanced Action Buttons Layout */}
