@@ -216,37 +216,42 @@ export function CreateWorkoutSession() {
 
   const getSpecialMethodDefaults = (method: string) => {
     switch (method) {
-      case 'myorep_match':
-        return {
-          activationSet: true,
-          targetReps: 15,
-          restSeconds: 20,
-          miniSets: 3
-        };
-      case 'myorep_no_match':
-        return {
-          activationSet: true,
-          restSeconds: 20,
-          miniSets: 3
-        };
       case 'drop_set':
         return {
-          dropSets: 3,
-          weightReductions: [15, 15, 15],
-          dropSetWeights: [0, 0, 0],
-          dropSetReps: [8, 8, 8],
-          dropRestSeconds: 10
+          drops: 2,
+          weightReduction: 20
+        };
+      case 'rest_pause':
+        return {
+          pauseDuration: 15,
+          totalReps: 20
+        };
+      case 'myorep_match':
+        return {
+          activationReps: 12,
+          backoffReps: 3
+        };
+      case 'cluster_set':
+        return {
+          repsPerCluster: 3,
+          clusters: 5,
+          restBetween: 15
         };
       case 'giant_set':
         return {
-          totalTargetReps: 40,
-          miniSetReps: 8,
-          restSeconds: 15
+          exerciseCount: 4,
+          restBetweenExercises: 15
         };
-      case 'superset':
+      case 'tempo':
         return {
-          pairedExerciseId: null,
-          restSeconds: 60
+          eccentric: 3,
+          pause: 1,
+          concentric: 1
+        };
+      case 'lengthened_partials':
+        return {
+          partialReps: 5,
+          rangeOfMotion: 'lengthened'
         };
       default:
         return {};
@@ -531,11 +536,13 @@ export function CreateWorkoutSession() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">None</SelectItem>
-                        <SelectItem value="myorep_match">Myorep Match</SelectItem>
-                        <SelectItem value="myorep_no_match">Myorep No Match</SelectItem>
                         <SelectItem value="drop_set">Drop Set</SelectItem>
+                        <SelectItem value="rest_pause">Rest-Pause</SelectItem>
+                        <SelectItem value="myorep_match">Myo-Reps</SelectItem>
+                        <SelectItem value="cluster_set">Cluster Set</SelectItem>
                         <SelectItem value="giant_set">Giant Set</SelectItem>
-                        <SelectItem value="superset">Superset</SelectItem>
+                        <SelectItem value="tempo">Tempo</SelectItem>
+                        <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -544,155 +551,124 @@ export function CreateWorkoutSession() {
                   {template.specialMethod && template.specialConfig && (
                     <div className="p-4 border bg-muted/50 space-y-3">
                       <h4 className="font-medium text-sm">
-                        {template.specialMethod === 'myorep_match' && 'Myorep Match Configuration'}
-                        {template.specialMethod === 'myorep_no_match' && 'Myorep No Match Configuration'}
                         {template.specialMethod === 'drop_set' && 'Drop Set Configuration'}
+                        {template.specialMethod === 'rest_pause' && 'Rest-Pause Configuration'}
+                        {template.specialMethod === 'myorep_match' && 'Myo-Reps Configuration'}
+                        {template.specialMethod === 'cluster_set' && 'Cluster Set Configuration'}
                         {template.specialMethod === 'giant_set' && 'Giant Set Configuration'}
-                        {template.specialMethod === 'superset' && 'Superset Configuration'}
+                        {template.specialMethod === 'tempo' && 'Tempo Configuration'}
+                        {template.specialMethod === 'lengthened_partials' && 'Lengthened Partials Configuration'}
                       </h4>
                       
-                      {/* Myorep Match Configuration */}
-                      {template.specialMethod === 'myorep_match' && template.specialConfig && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {/* Drop Set Configuration */}
+                      {template.specialMethod === 'drop_set' && template.specialConfig && (
+                        <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-1">
-                            <Label className="text-xs">Target Reps</Label>
+                            <Label className="text-xs">Drops</Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="5"
+                              value={template.specialConfig.drops || 2}
+                              onChange={(e) => updateSpecialConfig(index, 'drops', parseInt(e.target.value) || 2)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Weight Reduction (%)</Label>
                             <Input
                               type="number"
                               min="10"
+                              max="50"
+                              value={template.specialConfig.weightReduction || 20}
+                              onChange={(e) => updateSpecialConfig(index, 'weightReduction', parseInt(e.target.value) || 20)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Rest-Pause Configuration */}
+                      {template.specialMethod === 'rest_pause' && template.specialConfig && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Pause Duration (s)</Label>
+                            <Input
+                              type="number"
+                              min="10"
+                              max="30"
+                              value={template.specialConfig.pauseDuration || 15}
+                              onChange={(e) => updateSpecialConfig(index, 'pauseDuration', parseInt(e.target.value) || 15)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Total Reps</Label>
+                            <Input
+                              type="number"
+                              min="15"
+                              max="30"
+                              value={template.specialConfig.totalReps || 20}
+                              onChange={(e) => updateSpecialConfig(index, 'totalReps', parseInt(e.target.value) || 20)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Myo-Reps Configuration */}
+                      {template.specialMethod === 'myorep_match' && template.specialConfig && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Activation Reps</Label>
+                            <Input
+                              type="number"
+                              min="8"
                               max="20"
-                              value={template.specialConfig.targetReps || 15}
-                              onChange={(e) => updateSpecialConfig(index, 'targetReps', parseInt(e.target.value) || 15)}
+                              value={template.specialConfig.activationReps || 12}
+                              onChange={(e) => updateSpecialConfig(index, 'activationReps', parseInt(e.target.value) || 12)}
                             />
                           </div>
                           <div className="space-y-1">
-                            <Label className="text-xs">Mini Sets</Label>
+                            <Label className="text-xs">Backoff Reps</Label>
                             <Input
                               type="number"
-                              min="1"
+                              min="2"
                               max="5"
-                              value={template.specialConfig.miniSets || 3}
-                              onChange={(e) => updateSpecialConfig(index, 'miniSets', parseInt(e.target.value) || 3)}
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs">Rest (seconds)</Label>
-                            <Input
-                              type="number"
-                              min="15"
-                              max="30"
-                              value={template.specialConfig.restSeconds || 20}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 20)}
+                              value={template.specialConfig.backoffReps || 3}
+                              onChange={(e) => updateSpecialConfig(index, 'backoffReps', parseInt(e.target.value) || 3)}
                             />
                           </div>
                         </div>
                       )}
 
-                      {/* Myorep No Match Configuration */}
-                      {template.specialMethod === 'myorep_no_match' && template.specialConfig && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Cluster Set Configuration */}
+                      {template.specialMethod === 'cluster_set' && template.specialConfig && (
+                        <div className="grid grid-cols-3 gap-3">
                           <div className="space-y-1">
-                            <Label className="text-xs">Mini Sets</Label>
+                            <Label className="text-xs">Reps/Cluster</Label>
                             <Input
                               type="number"
                               min="1"
-                              max="5"
-                              value={template.specialConfig.miniSets || 3}
-                              onChange={(e) => updateSpecialConfig(index, 'miniSets', parseInt(e.target.value) || 3)}
+                              max="8"
+                              value={template.specialConfig.repsPerCluster || 3}
+                              onChange={(e) => updateSpecialConfig(index, 'repsPerCluster', parseInt(e.target.value) || 3)}
                             />
                           </div>
                           <div className="space-y-1">
-                            <Label className="text-xs">Rest (seconds)</Label>
+                            <Label className="text-xs">Clusters</Label>
                             <Input
                               type="number"
-                              min="15"
+                              min="2"
+                              max="8"
+                              value={template.specialConfig.clusters || 5}
+                              onChange={(e) => updateSpecialConfig(index, 'clusters', parseInt(e.target.value) || 5)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Rest (s)</Label>
+                            <Input
+                              type="number"
+                              min="10"
                               max="30"
-                              value={template.specialConfig.restSeconds || 20}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 20)}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Drop Set Configuration */}
-                      {template.specialMethod === 'drop_set' && template.specialConfig && (
-                        <div className="space-y-3">
-                          <div className="space-y-1">
-                            <Label className="text-xs">Number of Drop Sets</Label>
-                            <Select
-                              value={(template.specialConfig?.dropSets || 3).toString()}
-                              onValueChange={(value) => {
-                                const dropSets = parseInt(value);
-                                const currentReductions = template.specialConfig?.weightReductions || [15, 15, 15];
-                                const currentReps = template.specialConfig?.dropSetReps || [8, 8, 8];
-                                const newReductions = Array(dropSets).fill(0).map((_, i) => currentReductions[i] || 15);
-                                const newReps = Array(dropSets).fill(0).map((_, i) => currentReps[i] || 8);
-                                updateSpecialConfig(index, 'dropSets', dropSets);
-                                updateSpecialConfig(index, 'weightReductions', newReductions);
-                                updateSpecialConfig(index, 'dropSetReps', newReps);
-                              }}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="2">2 Drops</SelectItem>
-                                <SelectItem value="3">3 Drops</SelectItem>
-                                <SelectItem value="4">4 Drops</SelectItem>
-                                <SelectItem value="5">5 Drops</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs">Weight Reductions (%)</Label>
-                            <div className="flex gap-2 flex-wrap">
-                              {Array(template.specialConfig?.dropSets || 3).fill(0).map((_, dropIndex) => (
-                                <Input
-                                  key={dropIndex}
-                                  type="number"
-                                  min="5"
-                                  max="30"
-                                  value={(template.specialConfig?.weightReductions || [])[dropIndex] || 15}
-                                  onChange={(e) => {
-                                    const newReductions = [...(template.specialConfig?.weightReductions || Array(template.specialConfig?.dropSets || 3).fill(15))];
-                                    newReductions[dropIndex] = parseInt(e.target.value) || 15;
-                                    updateSpecialConfig(index, 'weightReductions', newReductions);
-                                  }}
-                                  className="w-20"
-                                  placeholder={`Drop ${dropIndex + 1}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs">Target Reps per Drop Set</Label>
-                            <div className="flex gap-2 flex-wrap">
-                              {Array(template.specialConfig?.dropSets || 3).fill(0).map((_, dropIndex) => (
-                                <Input
-                                  key={dropIndex}
-                                  type="number"
-                                  min="5"
-                                  max="20"
-                                  value={(template.specialConfig?.dropSetReps || [])[dropIndex] || 8}
-                                  onChange={(e) => {
-                                    const newReps = [...(template.specialConfig?.dropSetReps || Array(template.specialConfig?.dropSets || 3).fill(8))];
-                                    newReps[dropIndex] = parseInt(e.target.value) || 8;
-                                    updateSpecialConfig(index, 'dropSetReps', newReps);
-                                  }}
-                                  className="w-20"
-                                  placeholder={`Reps ${dropIndex + 1}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs">Rest Between Drops (seconds)</Label>
-                            <Input
-                              type="number"
-                              min="5"
-                              max="15"
-                              value={template.specialConfig?.dropRestSeconds || 10}
-                              onChange={(e) => updateSpecialConfig(index, 'dropRestSeconds', parseInt(e.target.value) || 10)}
-                              className="w-32"
+                              value={template.specialConfig.restBetween || 15}
+                              onChange={(e) => updateSpecialConfig(index, 'restBetween', parseInt(e.target.value) || 15)}
                             />
                           </div>
                         </div>
@@ -700,155 +676,223 @@ export function CreateWorkoutSession() {
 
                       {/* Giant Set Configuration */}
                       {template.specialMethod === 'giant_set' && template.specialConfig && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-1">
-                            <Label className="text-xs">Total Target Reps</Label>
+                            <Label className="text-xs">Exercise Count</Label>
                             <Input
                               type="number"
-                              min="30"
-                              max="60"
-                              value={template.specialConfig?.totalTargetReps || 40}
-                              onChange={(e) => updateSpecialConfig(index, 'totalTargetReps', parseInt(e.target.value) || 40)}
+                              min="3"
+                              max="6"
+                              value={template.specialConfig.exerciseCount || 4}
+                              onChange={(e) => updateSpecialConfig(index, 'exerciseCount', parseInt(e.target.value) || 4)}
                             />
                           </div>
                           <div className="space-y-1">
-                            <Label className="text-xs">Mini Set Reps</Label>
+                            <Label className="text-xs">Rest Between (s)</Label>
                             <Input
                               type="number"
-                              min="5"
-                              max="15"
-                              value={template.specialConfig?.miniSetReps || 8}
-                              onChange={(e) => updateSpecialConfig(index, 'miniSetReps', parseInt(e.target.value) || 8)}
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs">Rest (seconds)</Label>
-                            <Input
-                              type="number"
-                              min="5"
-                              max="15"
-                              value={template.specialConfig?.restSeconds || template.specialConfig?.giantRestSeconds || 15}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 15)}
+                              min="10"
+                              max="30"
+                              value={template.specialConfig.restBetweenExercises || 15}
+                              onChange={(e) => updateSpecialConfig(index, 'restBetweenExercises', parseInt(e.target.value) || 15)}
                             />
                           </div>
                         </div>
                       )}
 
-                      {/* Superset Configuration */}
-                      {template.specialMethod === 'superset' && template.specialConfig && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Tempo Configuration */}
+                      {template.specialMethod === 'tempo' && template.specialConfig && (
+                        <div className="grid grid-cols-3 gap-3">
                           <div className="space-y-1">
-                            <Label className="text-xs">Paired Exercise</Label>
-                            <Popover 
-                              open={pairedExerciseSearchOpen === index} 
-                              onOpenChange={(open) => setPairedExerciseSearchOpen(open ? index : null)}
+                            <Label className="text-xs">Eccentric (s)</Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="8"
+                              value={template.specialConfig.eccentric || 3}
+                              onChange={(e) => updateSpecialConfig(index, 'eccentric', parseInt(e.target.value) || 3)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Pause (s)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="3"
+                              value={template.specialConfig.pause || 1}
+                              onChange={(e) => updateSpecialConfig(index, 'pause', parseInt(e.target.value) || 1)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Concentric (s)</Label>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="3"
+                              value={template.specialConfig.concentric || 1}
+                              onChange={(e) => updateSpecialConfig(index, 'concentric', parseInt(e.target.value) || 1)}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Lengthened Partials Configuration */}
+                      {template.specialMethod === 'lengthened_partials' && template.specialConfig && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Partial Reps</Label>
+                            <Input
+                              type="number"
+                              min="3"
+                              max="10"
+                              value={template.specialConfig.partialReps || 5}
+                              onChange={(e) => updateSpecialConfig(index, 'partialReps', parseInt(e.target.value) || 5)}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Range of Motion</Label>
+                            <Select
+                              value={template.specialConfig.rangeOfMotion || 'lengthened'}
+                              onValueChange={(value) => updateSpecialConfig(index, 'rangeOfMotion', value)}
                             >
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  aria-expanded={pairedExerciseSearchOpen === index}
-                                  className="w-full justify-between"
-                                >
-                                  {template.specialConfig?.pairedExerciseId
-                                    ? exercises?.find(ex => ex.id === template.specialConfig?.pairedExerciseId)?.name
-                                    : "Select paired exercise..."}
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-full p-0">
-                                <Command>
-                                  <CommandInput placeholder="Search exercises..." />
-                                  <CommandEmpty>No exercise found.</CommandEmpty>
-                                  <CommandGroup className="max-h-60 overflow-auto">
-                                    {exercises?.filter(ex => ex.id !== template.exerciseId).map(exercise => (
-                                      <CommandItem
-                                        key={exercise.id}
-                                        value={exercise.name}
-                                        onSelect={() => {
-                                          updateSpecialConfig(index, 'pairedExerciseId', exercise.id);
-                                          setPairedExerciseSearchOpen(null);
-                                        }}
-                                      >
-                                        <Check
-                                          className={`mr-2 h-4 w-4 ${
-                                            template.specialConfig?.pairedExerciseId === exercise.id
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          }`}
-                                        />
-                                        <div className="flex flex-col">
-                                          <span className="font-medium">{exercise.name}</span>
-                                          <span className="text-xs text-muted-foreground">
-                                            {exercise.primaryMuscle} • {exercise.category}
-                                          </span>
-                                        </div>
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs">Rest Between Sets (seconds)</Label>
-                            <Input
-                              type="number"
-                              min="30"
-                              max="120"
-                              value={template.specialConfig?.restSeconds || 60}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 60)}
-                            />
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="lengthened">Lengthened</SelectItem>
+                                <SelectItem value="shortened">Shortened</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
                       )}
-
-                      {/* Show method description */}
-                      <div className="text-xs text-muted-foreground">
-                        {template.specialMethod === 'myorep_match' && 'Myorep Match: Perform activation set to near failure, then complete mini-sets matching the target reps until you can no longer achieve the target.'}
-                        {template.specialMethod === 'myorep_no_match' && 'Myorep No Match: Perform activation set to near failure, then complete mini-sets with as many reps as possible until significant drop-off.'}
-                        {template.specialMethod === 'drop_set' && 'Drop Set: Perform set to failure, then immediately reduce weight and continue for additional sets.'}
-                        {template.specialMethod === 'giant_set' && 'Giant Set: Perform one exercise with very short rest periods between mini-sets to accumulate high volume.'}
-                        {template.specialMethod === 'superset' && 'Superset: Pair two exercises performed back-to-back with minimal rest between them, targeting different muscle groups for efficiency.'}
-                      </div>
                     </div>
                   )}
-                  
+
+                  {/* Notes Section */}
                   <div className="space-y-2">
                     <Label>Notes (optional)</Label>
                     <Input
                       value={template.notes}
                       onChange={(e) => updateExerciseTemplate(index, 'notes', e.target.value)}
-                      placeholder="Any specific instructions or modifications..."
+                      placeholder="Add any special notes for this exercise..."
                     />
                   </div>
                 </CardContent>
               </Card>
             ))}
 
-            {exerciseTemplates.length === 0 && !showExerciseLibrary && (
-              <div className="text-center py-8 text-muted-foreground">
-                <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p className="text-lg font-medium mb-1">No exercises selected</p>
-                <p className="text-sm">Click "Add Exercises" to select from the exercise library</p>
-              </div>
+            {exerciseTemplates.length === 0 && (
+              <Card className="p-8 text-center border-2 border-dashed">
+                <Dumbbell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No exercises added yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Start by adding exercises from the library below
+                </p>
+                <Button onClick={() => setShowExerciseLibrary(true)} variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add First Exercise
+                </Button>
+              </Card>
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Exercise Library */}
+      {showExerciseLibrary && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              Exercise Library
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowExerciseLibrary(false)}
+              >
+                Close
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Search and Filters */}
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search exercises..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="All categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Exercise List */}
+            <ScrollArea className="h-96">
+              <div className="space-y-2">
+                {filteredExercises.map((exercise) => (
+                  <Card
+                    key={exercise.id}
+                    className="p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => addExercise(exercise)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">{exercise.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {exercise.category} • {exercise.difficulty}
+                        </div>
+                      </div>
+                      <Button size="sm" variant="ghost">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
+      )}
 
-        {/* Action Buttons */}
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2">
-          <Button type="button" variant="outline" onClick={handleGoBack}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={createWorkoutSessionMutation.isPending || exerciseTemplates.length === 0 || !sessionName.trim()}
-            className="w-full sm:w-auto"
-          >
-            {createWorkoutSessionMutation.isPending ? "Creating..." : "Create Session"}
-          </Button>
-        </div>
+      {/* Create Session Button */}
+      <div className="flex justify-end space-x-2">
+        <Button
+          variant="outline"
+          onClick={() => setLocation('/training')}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={createSession}
+          disabled={createSessionMutation.isPending || !sessionName || exerciseTemplates.length === 0}
+        >
+          {createSessionMutation.isPending ? (
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              Creating...
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4" />
+              Create Session
+            </div>
+          )}
+        </Button>
       </div>
     </div>
   );
