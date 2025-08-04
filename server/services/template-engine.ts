@@ -19,11 +19,23 @@ interface ExerciseTemplate {
   restPeriod: number;
   orderIndex: number;
   notes?: string;
+  specialTrainingMethod?: string;
+  specialMethodConfig?: any;
 }
 
 interface WorkoutTemplate {
   name: string;
-  exercises: ExerciseTemplate[];
+  exercises: Array<{
+    exerciseId: number;
+    exerciseName?: string;
+    sets: number;
+    repsRange: string;
+    restPeriod: number;
+    orderIndex?: number;
+    notes?: string;
+    specialTrainingMethod?: string;
+    specialMethodConfig?: any;
+  }>;
   estimatedDuration: number;
   focus: string[];
 }
@@ -124,7 +136,7 @@ export class TemplateEngine {
         
         // Adjust sets based on recovery and current volume
         if (relevantLandmarks.length > 0) {
-          const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + (l.recoveryLevel || 5), 0) / relevantLandmarks.length;
+          const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + ((l.recoveryLevel ?? 5)), 0) / relevantLandmarks.length;
           
           if (avgRecovery < 5) {
             // Poor recovery: reduce volume
@@ -142,7 +154,7 @@ export class TemplateEngine {
           sets: Math.round(adjustedSets),
           repsRange: templateExercise.repsRange,
           restPeriod: templateExercise.restPeriod,
-          orderIndex: templateExercise.orderIndex,
+          orderIndex: templateExercise.orderIndex || i + 1,
           notes: templateExercise.notes,
           // Include special training method data
           specialTrainingMethod: templateExercise.specialTrainingMethod,
@@ -194,9 +206,9 @@ export class TemplateEngine {
             restPeriod: exercise.restPeriod || 120,
             isCompleted: false,
             notes: exercise.notes || "",
-            // Add special training method data
-            specialMethod: specialMethod || null,
-            specialConfig: specialConfig ? JSON.stringify(specialConfig) : null
+            // Add special training method data  
+            specialMethod: specialMethod as any || null,
+            specialConfig: specialConfig ? specialConfig : null
           });
       }
 
@@ -302,7 +314,7 @@ export class TemplateEngine {
         sets: Math.round(adjustedSets),
         repsRange: templateExercise.repsRange,
         restPeriod: templateExercise.restPeriod,
-        orderIndex: templateExercise.orderIndex,
+        orderIndex: templateExercise.orderIndex || i + 1,
         notes: templateExercise.notes,
         // Include special training method data
         specialTrainingMethod: templateExercise.specialTrainingMethod,
@@ -345,8 +357,8 @@ export class TemplateEngine {
           isCompleted: false,
           notes: exercise.notes || "",
           // Add special training method data
-          specialMethod: specialMethod || null,
-          specialConfig: specialConfig ? JSON.stringify(specialConfig) : null
+          specialMethod: specialMethod as any || null,
+          specialConfig: specialConfig ? specialConfig : null
         });
     }
 
@@ -519,7 +531,7 @@ export class TemplateEngine {
 
     // Customize based on user's recovery and volume tolerance
     if (userLandmarks.length > 0) {
-      const avgRecovery = userLandmarks.reduce((sum, l) => sum + l.recoveryLevel, 0) / userLandmarks.length;
+      const avgRecovery = userLandmarks.reduce((sum, l) => sum + (l.recoveryLevel ?? 5), 0) / userLandmarks.length;
       
       // Adjust volume recommendations based on user's current capacity
       for (const landmark of userLandmarks) {
@@ -553,11 +565,12 @@ export class TemplateEngine {
           // Add extra volume for specialized muscle group
           return {
             ...workout,
-            exercises: workout.exercises.map(ex => 
-              ex.muscleGroups.includes(specialization) 
+            exercises: workout.exercises.map(ex => {
+              const exerciseMuscleGroups = (ex as any).muscleGroups || [];
+              return exerciseMuscleGroups.includes(specialization) 
                 ? { ...ex, sets: ex.sets + 1 }
-                : ex
-            )
+                : ex;
+            })
           };
         }
         return workout;
