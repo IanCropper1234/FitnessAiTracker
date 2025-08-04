@@ -38,72 +38,17 @@ const AnimatedTabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const [isAnimating, setIsAnimating] = React.useState(false);
-
-
-  React.useEffect(() => {
-    // Get the current active tab value from the parent Tabs context
-    const tabsElement = containerRef.current?.closest('[role="tablist"]')?.parentElement;
-    const activeTabValue = tabsElement?.getAttribute('data-state') || 
-                           tabsElement?.querySelector('[data-state="active"]')?.getAttribute('value');
-    
-    // Only animate when this tab becomes active
-    if (activeTabValue === props.value && containerRef.current) {
-      setIsAnimating(true);
-      
-      // Apply the same animation style as page transitions
-      const animation = containerRef.current.animate([
-        { 
-          opacity: 0, 
-          transform: 'translateY(30px) scale(0.95) rotateX(8deg)',
-          filter: 'blur(3px)'
-        },
-        { 
-          opacity: 0.6, 
-          transform: 'translateY(15px) scale(0.975) rotateX(4deg)',
-          filter: 'blur(1.5px)'
-        },
-        { 
-          opacity: 1, 
-          transform: 'translateY(0) scale(1) rotateX(0deg)',
-          filter: 'blur(0px)'
-        }
-      ], {
-        duration: 500, // Slightly faster than page transitions for better UX
-        easing: 'cubic-bezier(0.23, 1, 0.32, 1)', // Same easing as page transitions
-        fill: 'both'
-      });
-
-      animation.addEventListener('finish', () => {
-        setIsAnimating(false);
-      });
-
-      return () => {
-        animation.cancel();
-      };
-    }
-  }, [props.value]);
 
   return (
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 animate-slide-in-right",
         className
       )}
       {...props}
     >
-      <div 
-        ref={containerRef}
-        style={{
-          opacity: isAnimating ? 0 : 1,
-          transform: isAnimating ? 'translateY(20px) scale(0.98)' : 'translateY(0) scale(1)',
-          transition: isAnimating ? 'none' : 'opacity 0.2s ease, transform 0.2s ease'
-        }}
-      >
-        {children}
-      </div>
+      {children}
     </TabsPrimitive.Content>
   )
 })
