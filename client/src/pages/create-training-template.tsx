@@ -198,10 +198,6 @@ export default function CreateTrainingTemplate() {
               返回
             </Button>
             <div>
-              <h1 className="text-xl font-semibold">創建自定義訓練範本</h1>
-              <p className="text-sm text-muted-foreground">
-                設計您自己的訓練計劃，包含自定義運動和特殊訓練方法
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -318,9 +314,7 @@ export default function CreateTrainingTemplate() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>配置訓練日</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      為每個訓練日添加運動和設定特殊訓練方法
-                    </p>
+                    
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -377,7 +371,16 @@ export default function CreateTrainingTemplate() {
                     <ExerciseSelector
                       selectedExercises={currentWorkout.exercises}
                       onExercisesChange={(exercises) => {
-                        updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises });
+                        // Ensure each exercise has the required exerciseId property for TemplateExercise compatibility
+                        const templateExercises = exercises.map(exercise => ({
+                          ...exercise,
+                          exerciseId: exercise.exerciseId || exercise.id, // Ensure exerciseId is present
+                          sets: exercise.sets || 3,
+                          targetReps: exercise.targetReps || "8-12",
+                          restPeriod: exercise.restPeriod || 120,
+                          notes: exercise.notes || ""
+                        }));
+                        updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises: templateExercises });
                       }}
                     />
                   </div>
