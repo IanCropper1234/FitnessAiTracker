@@ -623,13 +623,47 @@ export function IntegratedNutritionOverview({
       carbs: log.carbs,
       fat: log.fat,
       category: log.category,
-      mealSuitability: log.mealSuitability || []
+      mealSuitability: log.mealSuitability || [],
+      micronutrients: log.micronutrients || null // Include complete micronutrient data
     }));
+
+    // Calculate totals including micronutrients
+    const totalCalories = foodItems.reduce((sum, item) => sum + item.calories, 0);
+    const totalProtein = foodItems.reduce((sum, item) => sum + item.protein, 0);
+    const totalCarbs = foodItems.reduce((sum, item) => sum + item.carbs, 0);
+    const totalFat = foodItems.reduce((sum, item) => sum + item.fat, 0);
+
+    // Calculate total micronutrients by aggregating from all food items
+    const totalMicronutrients = foodItems.reduce((aggregated: any, item: any) => {
+      if (item.micronutrients && typeof item.micronutrients === 'object') {
+        // Iterate through each micronutrient category
+        Object.keys(item.micronutrients).forEach(category => {
+          if (!aggregated[category]) aggregated[category] = {};
+          
+          // Aggregate individual nutrient amounts
+          Object.keys(item.micronutrients[category]).forEach(nutrient => {
+            const amount = parseFloat(item.micronutrients[category][nutrient]?.amount || 0);
+            const unit = item.micronutrients[category][nutrient]?.unit || 'mg';
+            
+            if (!aggregated[category][nutrient]) {
+              aggregated[category][nutrient] = { amount: 0, unit };
+            }
+            aggregated[category][nutrient].amount += amount;
+          });
+        });
+      }
+      return aggregated;
+    }, {});
 
     saveMealMutation.mutate({
       name: saveMealName.trim(),
       description: saveMealDescription.trim(),
-      foodItems
+      foodItems,
+      totalCalories: totalCalories.toString(),
+      totalProtein: totalProtein.toString(),
+      totalCarbs: totalCarbs.toString(),
+      totalFat: totalFat.toString(),
+      totalMicronutrients: Object.keys(totalMicronutrients).length > 0 ? totalMicronutrients : null
     });
   };
 

@@ -149,12 +149,13 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
     let foodName;
     
     if (searchMode === 'saved' && selectedSavedMeal) {
-      // Handle saved meal logging
+      // Handle saved meal logging - log as single entry with enhanced micronutrient data
       nutritionData = {
         calories: parseFloat(selectedSavedMeal.totalCalories || '0'),
         protein: parseFloat(selectedSavedMeal.totalProtein || '0'),
         carbs: parseFloat(selectedSavedMeal.totalCarbs || '0'),
-        fat: parseFloat(selectedSavedMeal.totalFat || '0')
+        fat: parseFloat(selectedSavedMeal.totalFat || '0'),
+        micronutrients: selectedSavedMeal.totalMicronutrients || null
       };
       foodName = selectedSavedMeal.name;
     } else if (searchMode === 'ai' && aiAnalyzeMutation.data) {
@@ -191,7 +192,8 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       protein: nutritionData.protein.toString(),
       carbs: nutritionData.carbs.toString(),
       fat: nutritionData.fat.toString(),
-      mealType: mealType
+      mealType: mealType,
+      micronutrients: nutritionData.micronutrients || null
     };
 
     logMutation.mutate(logData);
@@ -315,7 +317,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
                   </div>
-                ) : savedMealsQuery.data && savedMealsQuery.data.length > 0 ? (
+                ) : savedMealsQuery.data && Array.isArray(savedMealsQuery.data) && savedMealsQuery.data.length > 0 ? (
                   <div className="max-h-48 overflow-y-auto space-y-2">
                     {savedMealsQuery.data.map((meal: any) => (
                       <div
@@ -334,12 +336,18 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                         {meal.description && (
                           <div className="text-xs opacity-75 mb-2">{meal.description}</div>
                         )}
-                        <div className="text-xs opacity-75">
+                        <div className="text-xs opacity-75 mb-1">
                           {Math.round(parseFloat(meal.totalCalories || '0'))} cal • 
                           P: {Math.round(parseFloat(meal.totalProtein || '0'))}g • 
                           C: {Math.round(parseFloat(meal.totalCarbs || '0'))}g • 
                           F: {Math.round(parseFloat(meal.totalFat || '0'))}g
                         </div>
+                        {meal.totalMicronutrients && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Pill className="w-3 h-3 opacity-50" />
+                            <span className="text-xs opacity-60">Contains vitamins & minerals</span>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
