@@ -10,9 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Target, Dumbbell, Settings, Play, Loader2, ChevronLeft, ChevronRight, Plus, X, Search } from "lucide-react";
+import { ArrowLeft, Target, Dumbbell, Play, Loader2 } from "lucide-react";
 
 // Muscle group constants
 const ALL_MUSCLE_GROUPS = [
@@ -70,9 +70,7 @@ interface WorkoutDay {
   focus: string[];
 }
 
-interface CustomProgram {
-  weeklyStructure: WorkoutDay[];
-}
+
 
 export default function CreateMesocyclePage() {
   const [, setLocation] = useLocation();
@@ -81,28 +79,17 @@ export default function CreateMesocyclePage() {
   // Form state
   const [mesocycleName, setMesocycleName] = useState("");
   const [totalWeeks, setTotalWeeks] = useState(6);
-  const [buildMode, setBuildMode] = useState<"template" | "custom">("template");
+  const [buildMode] = useState<"template">("template");
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
-  const [customProgram, setCustomProgram] = useState<CustomProgram>({
-    weeklyStructure: []
-  });
-  const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
-  const [showExerciseSelector, setShowExerciseSelector] = useState(false);
+
+
 
   // Fetch templates
   const { data: templates = [], isLoading: templatesLoading } = useQuery<any[]>({
-    queryKey: ['/api/training/templates'],
-    enabled: buildMode === "template"
+    queryKey: ['/api/training/templates']
   });
 
-  // Fetch exercises
-  const { data: exercises = [] } = useQuery({
-    queryKey: ['/api/training/exercises'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/training/exercises');
-      return response.json();
-    }
-  });
+
 
   // Create mesocycle mutation
   const createMesocycleMutation = useMutation({
@@ -127,98 +114,7 @@ export default function CreateMesocyclePage() {
     },
   });
 
-  // Custom program handlers
-  const addCustomWorkoutDay = () => {
-    setCustomProgram(prev => ({
-      ...prev,
-      weeklyStructure: [
-        ...prev.weeklyStructure,
-        {
-          name: `Workout ${prev.weeklyStructure.length + 1}`,
-          muscleGroups: [],
-          exercises: [],
-          estimatedDuration: 45,
-          focus: []
-        }
-      ]
-    }));
-  };
 
-  const updateCustomWorkoutDay = (index: number, field: keyof WorkoutDay, value: any) => {
-    setCustomProgram(prev => ({
-      ...prev,
-      weeklyStructure: prev.weeklyStructure.map((day, i) => 
-        i === index ? { ...day, [field]: value } : day
-      )
-    }));
-  };
-
-  const removeCustomWorkoutDay = (index: number) => {
-    setCustomProgram(prev => ({
-      ...prev,
-      weeklyStructure: prev.weeklyStructure.filter((_, i) => i !== index)
-    }));
-    if (currentWorkoutIndex >= index && currentWorkoutIndex > 0) {
-      setCurrentWorkoutIndex(currentWorkoutIndex - 1);
-    }
-  };
-
-  const addExerciseToCurrentWorkout = (exercise: Exercise) => {
-    const newExercise: TemplateExercise = {
-      id: Date.now(),
-      exerciseId: exercise.id,
-      name: exercise.name,
-      category: exercise.category,
-      muscleGroups: exercise.muscleGroups,
-      primaryMuscle: exercise.primaryMuscle,
-      equipment: exercise.equipment,
-      difficulty: exercise.difficulty,
-      sets: 3,
-      targetReps: "8-12",
-      restPeriod: 60,
-      notes: "",
-      specialTrainingMethod: "standard",
-      specialMethodConfig: {}
-    };
-
-    setCustomProgram(prev => ({
-      ...prev,
-      weeklyStructure: prev.weeklyStructure.map((day, i) => 
-        i === currentWorkoutIndex ? {
-          ...day,
-          exercises: [...day.exercises, newExercise]
-        } : day
-      )
-    }));
-    
-    setShowExerciseSelector(false);
-  };
-
-  const removeExerciseFromWorkout = (workoutIndex: number, exerciseIndex: number) => {
-    setCustomProgram(prev => ({
-      ...prev,
-      weeklyStructure: prev.weeklyStructure.map((day, i) => 
-        i === workoutIndex ? {
-          ...day,
-          exercises: day.exercises.filter((_, ei) => ei !== exerciseIndex)
-        } : day
-      )
-    }));
-  };
-
-  const updateExercise = (workoutIndex: number, exerciseIndex: number, field: keyof TemplateExercise, value: any) => {
-    setCustomProgram(prev => ({
-      ...prev,
-      weeklyStructure: prev.weeklyStructure.map((day, i) => 
-        i === workoutIndex ? {
-          ...day,
-          exercises: day.exercises.map((ex, ei) => 
-            ei === exerciseIndex ? { ...ex, [field]: value } : ex
-          )
-        } : day
-      )
-    }));
-  };
 
   const handleCreateMesocycle = () => {
     if (!mesocycleName.trim()) {
@@ -230,7 +126,7 @@ export default function CreateMesocyclePage() {
       return;
     }
 
-    if (buildMode === "template" && !selectedTemplateId) {
+    if (!selectedTemplateId) {
       toast({
         title: "Error", 
         description: "Please select a training template",
@@ -239,21 +135,10 @@ export default function CreateMesocyclePage() {
       return;
     }
 
-    if (buildMode === "custom" && customProgram.weeklyStructure.length === 0) {
-      toast({
-        title: "Error",
-        description: "Please add at least one workout day",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const mesocycleData = {
       name: mesocycleName,
       totalWeeks,
-      buildMode,
-      templateId: buildMode === "template" ? selectedTemplateId : null,
-      customProgram: buildMode === "custom" ? customProgram : null,
+      templateId: selectedTemplateId
     };
 
     createMesocycleMutation.mutate(mesocycleData);
@@ -321,57 +206,29 @@ export default function CreateMesocyclePage() {
             </CardContent>
           </Card>
 
-          {/* Build Mode Selection */}
+          {/* Template Selection Info */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Program Design Method</CardTitle>
+              <CardTitle className="text-base">Training Templates</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Choose from proven RP training templates. Need a custom template? 
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-primary underline" 
+                  onClick={() => setLocation('/training/create-template')}
+                >
+                  Create one first
+                </Button> before starting your mesocycle.
+              </p>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card 
-                  className={`cursor-pointer transition-colors ${buildMode === "template" ? "ring-2 ring-primary" : ""}`}
-                  onClick={() => setBuildMode("template")}
-                >
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Dumbbell className="h-4 w-4" />
-                      Use Template
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-xs text-muted-foreground">
-                      Choose from proven RP training templates
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className={`cursor-pointer transition-colors ${buildMode === "custom" ? "ring-2 ring-primary" : ""}`}
-                  onClick={() => setBuildMode("custom")}
-                >
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Settings className="h-4 w-4" />
-                      Custom Program
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-xs text-muted-foreground">
-                      Build your own training program
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
           </Card>
 
-          {/* Template Selection */}
-          {buildMode === "template" && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Training Templates</CardTitle>
-              </CardHeader>
-              <CardContent>
+          {/* Available Templates */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Available Templates</CardTitle>
+            </CardHeader>
+            <CardContent>
                 {templatesLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-8 w-8 animate-spin" />
@@ -420,198 +277,8 @@ export default function CreateMesocyclePage() {
                 )}
               </CardContent>
             </Card>
-          )}
 
-          {/* Custom Program Builder */}
-          {buildMode === "custom" && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Weekly Training Structure</CardTitle>
-                  <Button 
-                    size="sm" 
-                    onClick={addCustomWorkoutDay}
-                    disabled={customProgram.weeklyStructure.length >= 7}
-                  >
-                    Add Workout Day
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {customProgram.weeklyStructure.length === 0 ? (
-                  <Card className="p-8 text-center">
-                    <p className="text-muted-foreground">No workout days added yet.</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Click "Add Workout Day" to start building your program.
-                    </p>
-                  </Card>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Workout Day Navigation */}
-                    <div className="flex items-center justify-between p-3 bg-muted/20 rounded">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentWorkoutIndex(Math.max(0, currentWorkoutIndex - 1))}
-                        disabled={currentWorkoutIndex === 0}
-                        className="flex items-center gap-2"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                        Previous
-                      </Button>
-                      
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">
-                          {customProgram.weeklyStructure[currentWorkoutIndex]?.name || `Day ${currentWorkoutIndex + 1}`}
-                        </span>
-                        <Badge variant="outline">
-                          {currentWorkoutIndex + 1} of {customProgram.weeklyStructure.length}
-                        </Badge>
-                      </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentWorkoutIndex(Math.min(customProgram.weeklyStructure.length - 1, currentWorkoutIndex + 1))}
-                        disabled={currentWorkoutIndex === customProgram.weeklyStructure.length - 1}
-                        className="flex items-center gap-2"
-                      >
-                        Next
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
 
-                    {/* Current Workout Configuration */}
-                    {customProgram.weeklyStructure[currentWorkoutIndex] && (
-                      <Card>
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center justify-between">
-                            <Input
-                              value={customProgram.weeklyStructure[currentWorkoutIndex].name}
-                              onChange={(e) => updateCustomWorkoutDay(currentWorkoutIndex, "name", e.target.value)}
-                              className="max-w-xs font-medium"
-                              placeholder="Workout name..."
-                            />
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => removeCustomWorkoutDay(currentWorkoutIndex)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <X className="h-4 w-4" />
-                              Remove Day
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          {/* Muscle Groups Selection */}
-                          <div>
-                            <Label className="text-sm font-medium">Target Muscle Groups</Label>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mt-2">
-                              {ALL_MUSCLE_GROUPS.map((muscle) => (
-                                <div key={muscle} className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={`${currentWorkoutIndex}-${muscle}`}
-                                    checked={customProgram.weeklyStructure[currentWorkoutIndex].muscleGroups.includes(muscle)}
-                                    onCheckedChange={(checked) => {
-                                      const newMuscleGroups = checked
-                                        ? [...customProgram.weeklyStructure[currentWorkoutIndex].muscleGroups, muscle]
-                                        : customProgram.weeklyStructure[currentWorkoutIndex].muscleGroups.filter(m => m !== muscle);
-                                      updateCustomWorkoutDay(currentWorkoutIndex, "muscleGroups", newMuscleGroups);
-                                    }}
-                                    className="h-4 w-4"
-                                  />
-                                  <label htmlFor={`${currentWorkoutIndex}-${muscle}`} className="text-sm cursor-pointer">
-                                    {MUSCLE_GROUP_DISPLAY_NAMES[muscle]}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                            
-                            {/* Selected Muscle Groups Display */}
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {customProgram.weeklyStructure[currentWorkoutIndex].muscleGroups.map((muscle) => (
-                                <Badge key={muscle} variant="secondary" className="text-xs">
-                                  {MUSCLE_GROUP_DISPLAY_NAMES[muscle] || muscle}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Exercises Section */}
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <Label className="text-sm font-medium">Exercises</Label>
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  setShowExerciseSelector(true);
-                                }}
-                                className="flex items-center gap-2"
-                              >
-                                <Plus className="h-4 w-4" />
-                                Add Exercise
-                              </Button>
-                            </div>
-                            
-                            <div className="space-y-2 mt-2">
-                              {customProgram.weeklyStructure[currentWorkoutIndex].exercises.length === 0 ? (
-                                <Card className="p-4 text-center">
-                                  <p className="text-sm text-muted-foreground">No exercises added yet</p>
-                                  <p className="text-xs text-muted-foreground mt-1">
-                                    Click "Add Exercise" to start building this workout
-                                  </p>
-                                </Card>
-                              ) : (
-                                customProgram.weeklyStructure[currentWorkoutIndex].exercises.map((exercise, exerciseIndex) => (
-                                  <Card key={exercise.id} className="p-3">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">{exercise.name}</div>
-                                        <div className="text-xs text-muted-foreground">
-                                          {exercise.muscleGroups.join(', ')}
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <div className="flex items-center gap-1 text-xs">
-                                          <Input
-                                            type="number"
-                                            value={exercise.sets}
-                                            onChange={(e) => updateExercise(currentWorkoutIndex, exerciseIndex, 'sets', parseInt(e.target.value) || 1)}
-                                            className="w-12 h-6 text-xs"
-                                            min="1"
-                                          />
-                                          <span>×</span>
-                                          <Input
-                                            value={exercise.targetReps}
-                                            onChange={(e) => updateExercise(currentWorkoutIndex, exerciseIndex, 'targetReps', e.target.value)}
-                                            className="w-16 h-6 text-xs"
-                                            placeholder="8-12"
-                                          />
-                                        </div>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={() => removeExerciseFromWorkout(currentWorkoutIndex, exerciseIndex)}
-                                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
-                                        >
-                                          <X className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </Card>
-                                ))
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
 
           {/* Preview Selected Template */}
           {selectedTemplate && (
@@ -669,70 +336,7 @@ export default function CreateMesocyclePage() {
         </Button>
       </div>
 
-      {/* Exercise Selector Dialog */}
-      {showExerciseSelector && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background rounded-lg max-w-2xl w-full max-h-[80vh] flex flex-col">
-            <div className="p-4 border-b">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Add Exercise</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowExerciseSelector(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                Choose exercises for {customProgram.weeklyStructure[currentWorkoutIndex]?.name || `Day ${currentWorkoutIndex + 1}`}
-              </p>
-            </div>
-            <div className="flex-1 overflow-hidden p-4">
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search exercises..."
-                      className="pl-10"
-                    />
-                  </div>
-                  <Select defaultValue="all">
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="push">Push</SelectItem>
-                      <SelectItem value="pull">Pull</SelectItem>
-                      <SelectItem value="legs">Legs</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <ScrollArea className="h-96">
-                  <div className="space-y-2">
-                    {exercises.slice(0, 20).map((exercise: any) => (
-                      <Card key={exercise.id} className="p-3 cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => addExerciseToCurrentWorkout(exercise)}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{exercise.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {exercise.muscleGroups?.join(', ') || exercise.primaryMuscle}
-                            </div>
-                          </div>
-                          <Plus className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
