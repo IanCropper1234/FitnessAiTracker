@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +12,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ExerciseLibrarySelector } from "./exercise-library-selector";
 import { 
   Calendar, 
   Users, 
@@ -87,10 +87,10 @@ interface TrainingTemplatesProps {
 
 export default function TrainingTemplates({ userId, onTemplateSelect }: TrainingTemplatesProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<TrainingTemplate | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   // Get available templates (includes user templates)
   const { data: templates = [], isLoading } = useQuery({
@@ -139,58 +139,13 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     },
   });
 
-  // Create template mutation
-  const createTemplateMutation = useMutation({
-    mutationFn: async (templateData: any) => {
-      const response = await apiRequest('POST', '/api/training/templates', {
-        userId,
-        ...templateData
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Template Created",
-        description: "Your custom training template has been created successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
-      setShowCreateDialog(false);
-    },
-  });
-
-  // Template validation and cleanup mutation
-  const validateTemplatesMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/training/templates/validate-and-cleanup');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      let description = `Found ${data.totalTemplates} templates. Deleted ${data.deletedTemplates} invalid templates.`;
-      
-      if (data.skippedTemplates > 0) {
-        description += ` Skipped ${data.skippedTemplates} templates (in use by active mesocycles).`;
-      }
-      
-      toast({
-        title: "Template Validation Complete",
-        description,
-        variant: data.deletedTemplates > 0 ? "default" : "default"
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Validation Failed",
-        description: error.message || "Failed to validate templates",
-        variant: "destructive"
-      });
-    }
-  });
-
   // Update template mutation
   const updateTemplateMutation = useMutation({
     mutationFn: async (data: { templateId: number; updateData: any }) => {
-      const response = await apiRequest('PUT', `/api/training/templates/${data.templateId}`, data.updateData);
+      const response = await apiRequest('PATCH', `/api/training/templates/${data.templateId}`, {
+        userId,
+        ...data.updateData
+      });
       return response.json();
     },
     onSuccess: () => {
@@ -218,6 +173,27 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     },
   });
 
+  // Template validation and cleanup mutation
+  const validateTemplatesMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/training/templates/validate-and-cleanup');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      let description = `Found ${data.totalTemplates} templates. Deleted ${data.deletedTemplates} invalid templates.`;
+      
+      if (data.skippedTemplates > 0) {
+        description += ` Skipped ${data.skippedTemplates} templates (in use by active mesocycles).`;
+      }
+      
+      toast({
+        title: "Template Validation Complete",
+        description,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
+    },
+  });
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
@@ -240,8 +216,8 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-32 bg-gray-100 dark:bg-gray-800  animate-pulse" />
-        <div className="h-48 bg-gray-100 dark:bg-gray-800  animate-pulse" />
+        <div className="h-32 bg-gray-100 dark:bg-gray-800 animate-pulse" />
+        <div className="h-48 bg-gray-100 dark:bg-gray-800 animate-pulse" />
       </div>
     );
   }
@@ -260,7 +236,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         {/* Enhanced Action Buttons Layout */}
         <div className="space-y-3">
           {/* Database Maintenance Section */}
-          <div className="flex items-center gap-3 p-3 bg-muted/30 dark:bg-muted/20  border border-border">
+          <div className="flex items-center gap-3 p-3 bg-muted/30 dark:bg-muted/20 border border-border">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <Shield className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -301,21 +277,29 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
           </div>
           
           {/* Create Template Button */}
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 w-full"
-              >
-                <Plus className="w-4 h-4" />
-                Create Template
-              </Button>
-            </DialogTrigger>
-            <CreateTemplateDialog 
-              userId={userId}
-              createMutation={createTemplateMutation}
-              onClose={() => setShowCreateDialog(false)}
-            />
-          </Dialog>
+          <Button 
+            onClick={() => setLocation('/create-training-template')}
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 w-full"
+          >
+            <Plus className="w-4 h-4" />
+            Create Custom Template
+          </Button>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm font-medium">Filter by Level:</span>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Templates</SelectItem>
+              <SelectItem value="beginner">Beginner</SelectItem>
+              <SelectItem value="intermediate">Intermediate</SelectItem>
+              <SelectItem value="advanced">Advanced</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -344,135 +328,87 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                     </div>
                   </div>
                 </div>
-                
-                {/* Edit/Delete Actions for User Templates */}
-                {template.createdBy === 'user' && (
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingTemplate(template);
-                      }}
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteTemplateMutation.mutate(template.id);
-                      }}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
               </div>
-              <CardDescription className="line-clamp-2">
+              <CardDescription className="text-sm line-clamp-2">
                 {template.description}
               </CardDescription>
             </CardHeader>
-            
-            <CardContent className="space-y-4">
-              {/* Template Stats */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <span>{template.daysPerWeek} days/week</span>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Template Metrics */}
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="flex flex-col items-center">
+                    <Calendar className="h-4 w-4 text-muted-foreground mb-1" />
+                    <span className="text-xs text-muted-foreground">Days/Week</span>
+                    <span className="font-semibold">{template.daysPerWeek}</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <Clock className="h-4 w-4 text-muted-foreground mb-1" />
+                    <span className="text-xs text-muted-foreground">Duration</span>
+                    <span className="font-semibold">
+                      {template.templateData?.workouts?.[0]?.estimatedDuration || 45}m
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <Dumbbell className="h-4 w-4 text-muted-foreground mb-1" />
+                    <span className="text-xs text-muted-foreground">Exercises</span>
+                    <span className="font-semibold">
+                      {template.templateData?.workouts?.reduce((acc, w) => acc + (w.exercises?.length || 0), 0) || 0}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4 text-gray-500" />
-                  <span className="capitalize">{template.specialization}</span>
-                </div>
-              </div>
 
-              {/* Workout Preview */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Workouts Preview:</h4>
-                <div className="space-y-1">
-                  {template.templateData?.workouts?.slice(0, 2).map((workout, index) => (
-                    <div key={index} className="flex items-center justify-between text-xs p-2 bg-gray-50 dark:bg-gray-800 ">
-                      <span className="font-medium">{workout.name}</span>
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Clock className="h-3 w-3" />
-                        <span>{workout.estimatedDuration}min</span>
-                      </div>
-                    </div>
-                  )) || [<div key="no-workouts" className="text-gray-500 text-xs text-center">No workouts configured</div>]}
-                  {template.templateData?.workouts?.length > 2 && (
-                    <p className="text-xs text-gray-500 text-center">
-                      +{template.templateData.workouts.length - 2} more workouts
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* RP Methodology Highlights */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm flex items-center gap-1">
-                  <TrendingUp className="h-4 w-4" />
-                  RP Methodology
-                </h4>
-                <div className="text-xs space-y-1">
-                  {template.rpMethodology?.progressionRules?.slice(0, 2).map((rule, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-600 dark:text-gray-400">{rule}</span>
-                    </div>
-                  )) || [<div key="no-rules" className="text-gray-500 text-xs">No progression rules defined</div>]}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
-                <Button 
-                  size="sm" 
-                  className="flex-1"
-                  onClick={() => {
-                    generateProgramMutation.mutate({ 
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => generateWorkoutMutation.mutate({ 
                       templateId: template.id, 
-                      userId: userId 
-                    });
-                  }}
-                  disabled={generateProgramMutation.isPending}
-                >
-                  <Dumbbell className="h-4 w-4 mr-1" />
-                  {generateProgramMutation.isPending ? "Creating..." : "Start Workout"}
-                </Button>
-                
-                {/* User template management */}
-                {template.createdBy === 'user' && template.userId === userId && (
-                  <div className="flex gap-1">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
+                      workoutDay: calculateNextWorkoutDay(template, userId),
+                      userId 
+                    })}
+                    disabled={generateWorkoutMutation.isPending}
+                    className="flex-1"
+                    size="sm"
+                  >
+                    <Dumbbell className="h-4 w-4 mr-1" />
+                    Start Workout
+                  </Button>
+                  
+                  <Button
+                    onClick={() => generateProgramMutation.mutate({ templateId: template.id, userId })}
+                    disabled={generateProgramMutation.isPending}
+                    variant="outline"
+                    className="flex-1"
+                    size="sm"
+                  >
+                    <Calendar className="h-4 w-4 mr-1" />
+                    Full Program
+                  </Button>
+                </div>
+
+                {/* Custom Template Actions */}
+                {template.createdBy === 'user' && (
+                  <div className="flex gap-2 pt-2 border-t">
+                    <Button
                       onClick={() => setEditingTemplate(template)}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1"
                     >
-                      <Edit2 className="h-3 w-3" />
+                      <Edit2 className="h-4 w-4 mr-1" />
+                      Edit
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
+                    <Button
                       onClick={() => deleteTemplateMutation.mutate(template.id)}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 text-red-600 hover:text-red-700"
                       disabled={deleteTemplateMutation.isPending}
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
                     </Button>
                   </div>
-                )}
-                
-                {onTemplateSelect && (
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => onTemplateSelect(template)}
-                  >
-                    Details
-                  </Button>
                 )}
               </div>
             </CardContent>
@@ -480,17 +416,21 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         ))}
       </div>
 
+      {/* Empty State */}
       {templates.length === 0 && (
         <div className="text-center py-12">
-          <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-            No templates found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
+          <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Templates Found</h3>
+          <p className="text-muted-foreground mb-6">
             {selectedCategory === 'all' 
-              ? "No training templates are available yet." 
-              : `No ${selectedCategory} templates are available.`}
+              ? 'No training templates are available at the moment.'
+              : `No ${selectedCategory} templates found. Try changing the filter.`
+            }
           </p>
+          <Button onClick={() => setLocation('/create-training-template')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Your First Template
+          </Button>
         </div>
       )}
 
@@ -503,419 +443,6 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         />
       )}
     </div>
-  );
-}
-
-// Template Detail Modal Component
-export function TemplateDetailModal({ 
-  template, 
-  isOpen, 
-  onClose, 
-  userId 
-}: { 
-  template: TrainingTemplate | null; 
-  isOpen: boolean; 
-  onClose: () => void;
-  userId: number;
-}) {
-  const queryClient = useQueryClient();
-
-  const generateWorkoutMutation = useMutation({
-    mutationFn: async (data: { templateId: number; workoutDay: number }) => {
-      const response = await apiRequest('POST', '/api/training/templates/generate-workout', { userId, ...data });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions', userId] });
-      onClose();
-    },
-  });
-
-  if (!template || !isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800  max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h2 className="text-2xl font-bold">{template.name}</h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">{template.description}</p>
-            </div>
-            <Button variant="outline" onClick={onClose}>
-              Close
-            </Button>
-          </div>
-
-          <Tabs defaultValue="workouts" className="w-full">
-            <TabsList>
-              <TabsTrigger value="workouts">Workouts</TabsTrigger>
-              <TabsTrigger value="methodology">RP Methodology</TabsTrigger>
-              <TabsTrigger value="volume">Volume Guidelines</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="workouts" className="space-y-4">
-              {template.templateData.workouts.map((workout, index) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-lg">{workout.name}</CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{workout.estimatedDuration} min</span>
-                        </div>
-                        <Button 
-                          size="sm"
-                          onClick={() => generateWorkoutMutation.mutate({ templateId: template.id, workoutDay: index })}
-                          disabled={generateWorkoutMutation.isPending}
-                        >
-                          Start This Workout
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex gap-1 flex-wrap">
-                      {workout.focus.map((focus, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {focus}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {workout.exercises.map((exercise, i) => (
-                        <div key={i} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 ">
-                          <span className="font-medium">{exercise.exerciseName}</span>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            {exercise.sets} × {exercise.repsRange} | {exercise.restPeriod}s rest
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </TabsContent>
-
-            <TabsContent value="methodology" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Progression Rules</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {template.rpMethodology.progressionRules.map((rule, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span>{rule}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Deload Guidelines</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {template.rpMethodology.deloadGuidelines.map((guideline, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                        <span>{guideline}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="volume" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>RP Volume Landmarks</CardTitle>
-                  <CardDescription>
-                    Minimum Effective Volume (MEV), Maximum Adaptive Volume (MAV), and Maximum Recoverable Volume (MRV) per muscle group
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {Object.entries(template.rpMethodology.volumeGuidelines).map(([muscle, volumes]) => (
-                      <div key={muscle} className="p-3 bg-gray-50 dark:bg-gray-800 ">
-                        <h4 className="font-medium capitalize mb-2">{muscle}</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span>MEV:</span>
-                            <span className="font-medium">{volumes.mev} sets/week</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>MAV:</span>
-                            <span className="font-medium">{volumes.mav} sets/week</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>MRV:</span>
-                            <span className="font-medium">{volumes.mrv} sets/week</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Create Template Dialog Component
-function CreateTemplateDialog({ 
-  userId, 
-  createMutation, 
-  onClose 
-}: { 
-  userId: number; 
-  createMutation: any; 
-  onClose: () => void; 
-}) {
-  const [step, setStep] = useState(1); // 1: Basic info, 2: Workout setup
-  const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: 'beginner' as 'beginner' | 'intermediate' | 'advanced',
-    daysPerWeek: 3,
-    templateData: {
-      workouts: [
-        {
-          name: 'Day 1',
-          exercises: [],
-          estimatedDuration: 45,
-          focus: []
-        }
-      ]
-    }
-  });
-
-  const currentWorkout = formData.templateData.workouts[currentWorkoutIndex];
-
-  const addWorkoutDay = () => {
-    setFormData(prev => ({
-      ...prev,
-      templateData: {
-        ...prev.templateData,
-        workouts: [
-          ...prev.templateData.workouts,
-          {
-            name: `Day ${prev.templateData.workouts.length + 1}`,
-            exercises: [],
-            estimatedDuration: 45,
-            focus: []
-          }
-        ]
-      }
-    }));
-  };
-
-  const updateWorkout = (workoutIndex: number, workout: any) => {
-    setFormData(prev => ({
-      ...prev,
-      templateData: {
-        ...prev.templateData,
-        workouts: prev.templateData.workouts.map((w, i) => i === workoutIndex ? workout : w)
-      }
-    }));
-  };
-
-  const addExerciseToCurrentWorkout = (exercise: any) => {
-    updateWorkout(currentWorkoutIndex, {
-      ...currentWorkout,
-      exercises: [...currentWorkout.exercises, exercise]
-    });
-  };
-
-  const removeExerciseFromCurrentWorkout = (exerciseId: number) => {
-    updateWorkout(currentWorkoutIndex, {
-      ...currentWorkout,
-      exercises: currentWorkout.exercises.filter((ex: any) => ex.exerciseId !== exerciseId)
-    });
-  };
-
-  const handleSubmit = () => {
-    createMutation.mutate(formData);
-  };
-
-  return (
-    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-      <DialogHeader>
-        <DialogTitle>Create Custom Training Template</DialogTitle>
-        <DialogDescription>
-          Design your own training program with custom workouts and exercises
-        </DialogDescription>
-      </DialogHeader>
-
-      <div className="space-y-6">
-        {step === 1 && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Template Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g., My Custom Push/Pull"
-                />
-              </div>
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Beginner</SelectItem>
-                    <SelectItem value="intermediate">Intermediate</SelectItem>
-                    <SelectItem value="advanced">Advanced</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe your training template..."
-                rows={3}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="daysPerWeek">Days Per Week</Label>
-              <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
-                const days = parseInt(value);
-                setFormData(prev => ({ 
-                  ...prev, 
-                  daysPerWeek: days,
-                  templateData: {
-                    ...prev.templateData,
-                    workouts: Array.from({ length: days }, (_, i) => ({
-                      name: `Day ${i + 1}`,
-                      exercises: [],
-                      estimatedDuration: 45,
-                      focus: []
-                    }))
-                  }
-                }));
-              }}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="3">3 Days</SelectItem>
-                  <SelectItem value="4">4 Days</SelectItem>
-                  <SelectItem value="5">5 Days</SelectItem>
-                  <SelectItem value="6">6 Days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold">Configure Workouts</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Add exercises to each workout day
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentWorkoutIndex(Math.max(0, currentWorkoutIndex - 1))}
-                  disabled={currentWorkoutIndex === 0}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <span className="text-sm font-medium">
-                  {currentWorkoutIndex + 1} of {formData.templateData.workouts.length}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentWorkoutIndex(Math.min(formData.templateData.workouts.length - 1, currentWorkoutIndex + 1))}
-                  disabled={currentWorkoutIndex === formData.templateData.workouts.length - 1}
-                >
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>{currentWorkout.name}</CardTitle>
-                  <Input
-                    value={currentWorkout.name}
-                    onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
-                    className="w-40"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ExerciseLibrarySelector
-                  onAddExercise={addExerciseToCurrentWorkout}
-                  selectedExercises={currentWorkout.exercises}
-                  onRemoveExercise={removeExerciseFromCurrentWorkout}
-                />
-              </CardContent>
-            </Card>
-          </>
-        )}
-
-      </div>
-
-      <DialogFooter>
-        <Button variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-        {step === 1 && (
-          <Button 
-            onClick={() => setStep(2)}
-            disabled={!formData.name || !formData.description}
-          >
-            Next: Configure Workouts
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        )}
-        {step === 2 && (
-          <>
-            <Button variant="outline" onClick={() => setStep(1)}>
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Back
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={createMutation.isPending || formData.templateData.workouts.some(w => w.exercises.length === 0)}
-            >
-              {createMutation.isPending ? 'Creating...' : 'Create Template'}
-            </Button>
-          </>
-        )}
-      </DialogFooter>
-    </DialogContent>
   );
 }
 
