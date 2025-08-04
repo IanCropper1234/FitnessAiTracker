@@ -27,10 +27,15 @@ import {
 } from "lucide-react";
 
 interface Exercise {
+  exerciseId?: number;
   exerciseName: string;
+  muscleGroups?: string[];
   sets: number;
   repsRange: string;
   restPeriod: number;
+  orderIndex?: number;
+  trainingMethod?: string;
+  notes?: string;
 }
 
 interface Workout {
@@ -155,10 +160,13 @@ export default function EditTemplatePage() {
     if (!currentWorkout) return;
 
     const newExercise = {
+      exerciseId: exercise.id,
       exerciseName: exercise.name,
+      muscleGroups: exercise.muscleGroups || [],
       sets: 3,
       repsRange: "8-12",
-      restPeriod: 60
+      restPeriod: 60,
+      orderIndex: (currentWorkout.exercises?.length || 0) + 1
     };
 
     const updatedWorkouts = [...(formData.templateData?.workouts || [])];
@@ -414,27 +422,39 @@ export default function EditTemplatePage() {
                     {currentWorkout.exercises?.map((exercise: Exercise, index: number) => (
                       <Card key={index} className="p-3">
                         <div className="space-y-3">
-                          {/* Exercise Name */}
+                          {/* Exercise Name and Details */}
                           <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm truncate flex-1">{exercise.exerciseName}</h4>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-sm truncate">{exercise.exerciseName || 'Unknown Exercise'}</h4>
+                              {exercise.muscleGroups && exercise.muscleGroups.length > 0 && (
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {exercise.muscleGroups.join(', ')}
+                                </p>
+                              )}
+                              {exercise.trainingMethod && (
+                                <Badge variant="outline" className="text-xs mt-1">
+                                  {exercise.trainingMethod}
+                                </Badge>
+                              )}
+                            </div>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleRemoveExercise(index)}
-                              className="text-red-600 hover:text-red-700 h-6 w-6 p-0"
+                              className="text-red-600 hover:text-red-700 h-6 w-6 p-0 ml-2"
                             >
                               <X className="h-3 w-3" />
                             </Button>
                           </div>
                           
                           {/* Exercise Controls - Mobile Optimized */}
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          <div className="grid grid-cols-3 gap-2">
                             <div>
                               <Label className="text-xs">Sets</Label>
                               <Input
                                 type="number"
-                                value={exercise.sets}
-                                onChange={(e) => handleUpdateExercise(index, 'sets', parseInt(e.target.value))}
+                                value={exercise.sets || 0}
+                                onChange={(e) => handleUpdateExercise(index, 'sets', parseInt(e.target.value) || 1)}
                                 className="h-7 text-xs"
                                 min="1"
                                 max="10"
@@ -443,7 +463,7 @@ export default function EditTemplatePage() {
                             <div>
                               <Label className="text-xs">Reps</Label>
                               <Input
-                                value={exercise.repsRange}
+                                value={exercise.repsRange || ''}
                                 onChange={(e) => handleUpdateExercise(index, 'repsRange', e.target.value)}
                                 className="h-7 text-xs"
                                 placeholder="8-12"
@@ -453,12 +473,36 @@ export default function EditTemplatePage() {
                               <Label className="text-xs">Rest (sec)</Label>
                               <Input
                                 type="number"
-                                value={exercise.restPeriod}
-                                onChange={(e) => handleUpdateExercise(index, 'restPeriod', parseInt(e.target.value))}
+                                value={exercise.restPeriod || 60}
+                                onChange={(e) => handleUpdateExercise(index, 'restPeriod', parseInt(e.target.value) || 60)}
                                 className="h-7 text-xs"
                                 min="15"
                                 max="300"
                               />
+                            </div>
+                          </div>
+                          
+                          {/* Training Method and Reorder Controls */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0 mr-2">
+                              <Label className="text-xs">Training Method</Label>
+                              <Select 
+                                value={exercise.trainingMethod || ''} 
+                                onValueChange={(value) => handleUpdateExercise(index, 'trainingMethod', value)}
+                              >
+                                <SelectTrigger className="h-7 text-xs">
+                                  <SelectValue placeholder="None" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">None</SelectItem>
+                                  <SelectItem value="drop_set">Drop Set</SelectItem>
+                                  <SelectItem value="rest_pause">Rest-Pause</SelectItem>
+                                  <SelectItem value="myo_reps">Myo-Reps</SelectItem>
+                                  <SelectItem value="cluster_set">Cluster Set</SelectItem>
+                                  <SelectItem value="tempo">Tempo</SelectItem>
+                                  <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="flex items-end gap-1">
                               <Button
@@ -467,6 +511,7 @@ export default function EditTemplatePage() {
                                 onClick={() => handleMoveExercise(index, index - 1)}
                                 disabled={index === 0}
                                 className="h-7 w-7 p-0"
+                                title="Move Up"
                               >
                                 <ChevronUp className="h-3 w-3" />
                               </Button>
@@ -476,6 +521,7 @@ export default function EditTemplatePage() {
                                 onClick={() => handleMoveExercise(index, index + 1)}
                                 disabled={index === currentWorkout.exercises.length - 1}
                                 className="h-7 w-7 p-0"
+                                title="Move Down"
                               >
                                 <ChevronDown className="h-3 w-3" />
                               </Button>
