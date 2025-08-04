@@ -94,23 +94,38 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
     }
   };
 
-  // Only show button if there's historical data available
+  // Only show if there's historical data available
   if (!latestSpecialMethod) return null;
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      month: '2-digit', 
+      day: '2-digit', 
+      year: 'numeric' 
+    });
+  };
+
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleApplyHistoricalData}
-      disabled={isLoading || isApplying}
-      className="ios-touch-feedback h-6 w-6 p-0 hover:bg-muted/50"
-      title={`Apply ${latestSpecialMethod.specialMethod} config for Set ${setNumber} from ${new Date(latestSpecialMethod.date).toLocaleDateString()}`}
-    >
-      {isLoading || isApplying ? (
-        <Loader2 className="h-3 w-3 animate-spin" />
-      ) : (
-        <History className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-      )}
-    </Button>
+    <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 rounded px-2 py-1 mt-1">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <History className="h-3 w-3 text-blue-400 flex-shrink-0" />
+        <span className="text-xs text-blue-300 truncate">
+          Set {setNumber} Last: {typeof latestSpecialMethod.weight === 'string' ? parseFloat(latestSpecialMethod.weight) : latestSpecialMethod.weight}kg • {latestSpecialMethod.reps}r • RPE {latestSpecialMethod.rpe} ({formatDate(latestSpecialMethod.date)})
+        </span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleApplyHistoricalData}
+        disabled={isLoading || isApplying}
+        className="ios-touch-feedback h-6 px-2 py-0 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 hover:text-blue-100 border border-blue-500/30 ml-2 flex-shrink-0"
+      >
+        {isLoading || isApplying ? (
+          <Loader2 className="h-3 w-3 animate-spin" />
+        ) : (
+          "Use"
+        )}
+      </Button>
+    </div>
   );
 };
