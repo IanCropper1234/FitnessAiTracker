@@ -313,41 +313,43 @@ export default function CreateTrainingTemplate() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Configure Training Day</CardTitle>
+                    <CardTitle className="text-headline text-[12px]">Configure Training Day</CardTitle>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentWorkoutIndex(Math.max(0, currentWorkoutIndex - 1))}
                       disabled={currentWorkoutIndex === 0}
+                      className="h-8 px-2"
                     >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
+                      <ChevronLeft className="h-3 w-3" />
+                      <span className="hidden sm:inline">Previous</span>
                     </Button>
-                    <span className="text-sm font-medium px-3 py-1 bg-muted rounded">
-                      {currentWorkoutIndex + 1} / {formData.templateData.workouts.length}
+                    <span className="text-xs font-medium px-2 py-1 bg-muted rounded min-w-[40px] text-center">
+                      {currentWorkoutIndex + 1}/{formData.templateData.workouts.length}
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentWorkoutIndex(Math.min(formData.templateData.workouts.length - 1, currentWorkoutIndex + 1))}
                       disabled={currentWorkoutIndex === formData.templateData.workouts.length - 1}
+                      className="h-8 px-2"
                     >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
+                      <span className="hidden sm:inline">Next</span>
+                      <ChevronRight className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-4 mb-4">
-                  <Label htmlFor="workoutName">Workout Day Name:</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
+                  <Label htmlFor="workoutName" className="text-xs font-medium min-w-fit">Day Name:</Label>
                   <Input
                     id="workoutName"
                     value={currentWorkout.name}
                     onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
-                    className="w-64"
+                    className="flex-1 h-8 text-sm"
                     placeholder="e.g., Chest & Triceps"
                   />
                 </div>
@@ -355,7 +357,7 @@ export default function CreateTrainingTemplate() {
             </Card>
 
             {/* Exercise Configuration */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6">
               
               {/* Exercise Library */}
               <Card>
@@ -366,7 +368,7 @@ export default function CreateTrainingTemplate() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-96 overflow-y-auto">
+                  <div className="h-80 lg:h-96 overflow-y-auto">
                     <ExerciseSelector
                       selectedExercises={currentWorkout.exercises}
                       onExercisesChange={(exercises: any[]) => {
@@ -396,7 +398,7 @@ export default function CreateTrainingTemplate() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                  <div className="space-y-3 max-h-[500px] lg:max-h-[600px] overflow-y-auto">
                     {currentWorkout.exercises.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
                         <p>No exercises added yet</p>
@@ -405,52 +407,56 @@ export default function CreateTrainingTemplate() {
                     ) : (
                       currentWorkout.exercises.map((exercise, index) => (
                         <Card key={`${exercise.exerciseId}-${index}`} className="border-l-4 border-l-primary">
-                          <CardHeader className="pb-3">
+                          <CardHeader className="pb-2 pt-3">
                             <div className="flex items-center justify-between">
-                              <h4 className="font-medium">{exercise.name}</h4>
+                              <h4 className="font-medium text-sm truncate pr-2">{exercise.name}</h4>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => removeExerciseFromCurrentWorkout(exercise.exerciseId)}
+                                className="h-6 w-6 p-0 flex-shrink-0"
                               >
-                                <X className="h-4 w-4" />
+                                <X className="h-3 w-3" />
                               </Button>
                             </div>
                           </CardHeader>
-                          <CardContent className="space-y-3">
-                            <div className="grid grid-cols-3 gap-3">
+                          <CardContent className="space-y-2 pt-0">
+                            <div className="grid grid-cols-3 gap-2">
                               <div>
-                                <Label className="text-xs">Sets</Label>
+                                <Label className="text-[10px] font-medium">Sets</Label>
                                 <Input
                                   type="number"
                                   value={exercise.sets}
                                   onChange={(e) => updateExercise(index, { sets: parseInt(e.target.value) || 1 })}
                                   min="1"
                                   max="10"
+                                  className="h-8 text-xs"
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs">Target Reps</Label>
+                                <Label className="text-[10px] font-medium">Reps</Label>
                                 <Input
                                   value={exercise.targetReps}
                                   onChange={(e) => updateExercise(index, { targetReps: e.target.value })}
                                   placeholder="8-12"
+                                  className="h-8 text-xs"
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs">Rest (sec)</Label>
+                                <Label className="text-[10px] font-medium">Rest</Label>
                                 <Input
                                   type="number"
                                   value={exercise.restPeriod}
                                   onChange={(e) => updateExercise(index, { restPeriod: parseInt(e.target.value) || 60 })}
                                   min="30"
                                   max="300"
+                                  className="h-8 text-xs"
                                 />
                               </div>
                             </div>
 
                             <div>
-                              <Label className="text-xs">Training Method</Label>
+                              <Label className="text-[10px] font-medium">Method</Label>
                               <Select 
                                 value={exercise.specialTrainingMethod || "none"} 
                                 onValueChange={(value) => {
@@ -467,14 +473,14 @@ export default function CreateTrainingTemplate() {
                                   }
                                 }}
                               >
-                                <SelectTrigger>
+                                <SelectTrigger className="h-8 text-xs">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="none">Standard Set</SelectItem>
+                                  <SelectItem value="none">Standard</SelectItem>
                                   <SelectItem value="dropSet">Drop Set</SelectItem>
-                                  <SelectItem value="myorepMatch">Myorep Match</SelectItem>
-                                  <SelectItem value="myorepNoMatch">Myorep No Match</SelectItem>
+                                  <SelectItem value="myorepMatch">Myorep +</SelectItem>
+                                  <SelectItem value="myorepNoMatch">Myorep</SelectItem>
                                   <SelectItem value="giantSet">Giant Set</SelectItem>
                                   <SelectItem value="superset">Superset</SelectItem>
                                 </SelectContent>
@@ -490,12 +496,13 @@ export default function CreateTrainingTemplate() {
                             )}
 
                             <div>
-                              <Label className="text-xs">Notes</Label>
+                              <Label className="text-[10px] font-medium">Notes</Label>
                               <Textarea
                                 value={exercise.notes || ''}
                                 onChange={(e) => updateExercise(index, { notes: e.target.value })}
                                 placeholder="Exercise notes..."
                                 rows={2}
+                                className="text-xs resize-none"
                               />
                             </div>
                           </CardContent>
@@ -552,27 +559,29 @@ function SpecialMethodConfigurationPanel({
     switch (method) {
       case 'dropSet':
         return (
-          <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">Drop Set Configuration</h5>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2 p-2 bg-muted/50 rounded">
+            <h5 className="text-xs font-medium">Drop Set Config</h5>
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="text-xs">Number of Drops</Label>
+                <Label className="text-[10px] font-medium">Drops</Label>
                 <Input
                   type="number"
                   value={config?.drops || 2}
                   onChange={(e) => onConfigChange({ ...config, drops: parseInt(e.target.value) || 2 })}
                   min="1"
                   max="4"
+                  className="h-7 text-xs"
                 />
               </div>
               <div>
-                <Label className="text-xs">Weight Reduction (%)</Label>
+                <Label className="text-[10px] font-medium">Reduction %</Label>
                 <Input
                   type="number"
                   value={config?.weightReduction || 20}
                   onChange={(e) => onConfigChange({ ...config, weightReduction: parseInt(e.target.value) || 20 })}
                   min="10"
                   max="50"
+                  className="h-7 text-xs"
                 />
               </div>
             </div>
@@ -582,29 +591,31 @@ function SpecialMethodConfigurationPanel({
       case 'myorepMatch':
       case 'myorepNoMatch':
         return (
-          <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">
-              {method === 'myorepMatch' ? 'Myorep Match Configuration' : 'Myorep No Match Configuration'}
+          <div className="space-y-2 p-2 bg-muted/50 rounded">
+            <h5 className="text-xs font-medium">
+              {method === 'myorepMatch' ? 'Myorep+ Config' : 'Myorep Config'}
             </h5>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="text-xs">Activation Reps</Label>
+                <Label className="text-[10px] font-medium">Activation</Label>
                 <Input
                   type="number"
                   value={config?.activationReps || 12}
                   onChange={(e) => onConfigChange({ ...config, activationReps: parseInt(e.target.value) || 12 })}
                   min="8"
                   max="20"
+                  className="h-7 text-xs"
                 />
               </div>
               <div>
-                <Label className="text-xs">Back-off Reps</Label>
+                <Label className="text-[10px] font-medium">Back-off</Label>
                 <Input
                   type="number"
                   value={config?.backoffReps || 5}
                   onChange={(e) => onConfigChange({ ...config, backoffReps: parseInt(e.target.value) || 5 })}
                   min="3"
                   max="10"
+                  className="h-7 text-xs"
                 />
               </div>
             </div>
@@ -613,52 +624,60 @@ function SpecialMethodConfigurationPanel({
 
       case 'giantSet':
         return (
-          <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">Giant Set Configuration</h5>
-            <div>
-              <Label className="text-xs">Exercise Count</Label>
-              <Input
-                type="number"
-                value={config?.exerciseCount || 4}
-                onChange={(e) => onConfigChange({ ...config, exerciseCount: parseInt(e.target.value) || 4 })}
-                min="3"
-                max="6"
-              />
-            </div>
-            <div>
-              <Label className="text-xs">Rest Between Exercises (sec)</Label>
-              <Input
-                type="number"
-                value={config?.restBetweenExercises || 15}
-                onChange={(e) => onConfigChange({ ...config, restBetweenExercises: parseInt(e.target.value) || 15 })}
-                min="0"
-                max="60"
-              />
+          <div className="space-y-2 p-2 bg-muted/50 rounded">
+            <h5 className="text-xs font-medium">Giant Set Config</h5>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[10px] font-medium">Exercises</Label>
+                <Input
+                  type="number"
+                  value={config?.exerciseCount || 4}
+                  onChange={(e) => onConfigChange({ ...config, exerciseCount: parseInt(e.target.value) || 4 })}
+                  min="3"
+                  max="6"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium">Rest (sec)</Label>
+                <Input
+                  type="number"
+                  value={config?.restBetweenExercises || 15}
+                  onChange={(e) => onConfigChange({ ...config, restBetweenExercises: parseInt(e.target.value) || 15 })}
+                  min="0"
+                  max="60"
+                  className="h-7 text-xs"
+                />
+              </div>
             </div>
           </div>
         );
 
       case 'superset':
         return (
-          <div className="space-y-3 p-3 bg-muted/50 rounded">
-            <h5 className="text-sm font-medium">Superset Configuration</h5>
-            <div>
-              <Label className="text-xs">Paired Exercise</Label>
-              <Input
-                value={config?.pairedExercise || ''}
-                onChange={(e) => onConfigChange({ ...config, pairedExercise: e.target.value })}
-                placeholder="Enter paired exercise name"
-              />
-            </div>
-            <div>
-              <Label className="text-xs">Rest Between Exercises (sec)</Label>
-              <Input
-                type="number"
-                value={config?.restBetweenExercises || 10}
-                onChange={(e) => onConfigChange({ ...config, restBetweenExercises: parseInt(e.target.value) || 10 })}
-                min="0"
-                max="30"
-              />
+          <div className="space-y-2 p-2 bg-muted/50 rounded">
+            <h5 className="text-xs font-medium">Superset Config</h5>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-[10px] font-medium">Paired Exercise</Label>
+                <Input
+                  value={config?.pairedExercise || ''}
+                  onChange={(e) => onConfigChange({ ...config, pairedExercise: e.target.value })}
+                  placeholder="Enter exercise name"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium">Rest (sec)</Label>
+                <Input
+                  type="number"
+                  value={config?.restBetweenExercises || 10}
+                  onChange={(e) => onConfigChange({ ...config, restBetweenExercises: parseInt(e.target.value) || 10 })}
+                  min="0"
+                  max="30"
+                  className="h-7 text-xs"
+                />
+              </div>
             </div>
           </div>
         );
