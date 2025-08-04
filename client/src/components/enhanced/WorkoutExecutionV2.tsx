@@ -189,13 +189,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         // Restore special method data if available - check both field names for compatibility
         let specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
         if (specialMethod) {
-          console.log(`Original special method for exercise ${exercise.id}:`, specialMethod, typeof specialMethod);
-          // Convert database format to UI format
-          if (specialMethod === 'dropset') {
-            console.log(`Converting ${specialMethod} to drop_set`);
+          console.log(`Original special method for exercise ${exercise.id}:`, specialMethod, typeof specialMethod, `"${specialMethod}"`);
+          // Convert database format to UI format - trim whitespace and normalize
+          const normalizedMethod = specialMethod.trim();
+          if (normalizedMethod === 'dropset') {
+            console.log(`Converting ${normalizedMethod} to drop_set`);
             specialMethod = 'drop_set';
           } else {
-            console.log(`No conversion needed for: ${specialMethod}`);
+            console.log(`No conversion needed for: "${normalizedMethod}" (length: ${normalizedMethod.length})`);
           }
           console.log(`After conversion for exercise ${exercise.id}:`, specialMethod);
           initialSpecialMethods[exercise.id] = specialMethod;
