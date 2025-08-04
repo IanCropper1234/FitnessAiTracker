@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { TimezoneUtils } from "@shared/utils/timezone";
+import NutrientDetailsModal from "@/components/NutrientDetailsModal";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { 
@@ -108,6 +109,10 @@ export function AddFood({ user }: AddFoodProps) {
   // Enhanced portion input states
   const [portionWeight, setPortionWeight] = useState('');
   const [portionUnit, setPortionUnit] = useState('g');
+  
+  // Nutrient details modal states
+  const [showNutrientModal, setShowNutrientModal] = useState(false);
+  const [selectedItemForNutrients, setSelectedItemForNutrients] = useState<any>(null);
 
   // Reset history display limit when search query changes
   useEffect(() => {
@@ -432,7 +437,8 @@ export function AddFood({ user }: AddFoodProps) {
       fat: historyItem.fat,
       mealType: mealType,
       category: historyItem.category,
-      mealSuitability: historyItem.mealSuitability
+      mealSuitability: historyItem.mealSuitability,
+      micronutrients: historyItem.micronutrients // Include micronutrient data from history
     };
 
     logMutation.mutate(nutritionData);
@@ -454,7 +460,8 @@ export function AddFood({ user }: AddFoodProps) {
           fat: parseFloat(item.fat),
           mealType: mealType,
           category: item.category || null,
-          mealSuitability: item.mealSuitability || []
+          mealSuitability: item.mealSuitability || [],
+          micronutrients: item.micronutrients // Include micronutrient data from saved meal item
         };
         return apiRequest("POST", "/api/nutrition/log", logData);
       });
@@ -902,6 +909,18 @@ export function AddFood({ user }: AddFoodProps) {
                               </p>
                               <p className="text-xs text-gray-600 dark:text-gray-400">
                                 {Math.round(item.calories)}cal • {Math.round(item.protein)}g protein • {item.quantity} {item.unit}
+                                {item.micronutrients && (
+                                  <span 
+                                    className="ml-1 text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedItemForNutrients(item);
+                                      setShowNutrientModal(true);
+                                    }}
+                                  >
+                                    • Vitamins
+                                  </span>
+                                )}
                               </p>
                             </div>
                           </div>
@@ -999,6 +1018,18 @@ export function AddFood({ user }: AddFoodProps) {
                               </p>
                               <p className="text-xs text-gray-600 dark:text-gray-400">
                                 {Math.round(parseFloat(meal.totalCalories))}cal • {Math.round(parseFloat(meal.totalProtein))}g protein
+                                {meal.totalMicronutrients && (
+                                  <span 
+                                    className="ml-1 text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedItemForNutrients(meal);
+                                      setShowNutrientModal(true);
+                                    }}
+                                  >
+                                    • Vitamins
+                                  </span>
+                                )}
                                 {meal.description && ` • ${meal.description}`}
                               </p>
                             </div>
@@ -1130,6 +1161,17 @@ export function AddFood({ user }: AddFoodProps) {
           isOpen={showBarcodeScanner}
           onClose={() => setShowBarcodeScanner(false)}
           onScanSuccess={handleBarcodeSuccess}
+        />
+
+        {/* Nutrient Details Modal */}
+        <NutrientDetailsModal
+          isOpen={showNutrientModal}
+          onClose={() => {
+            setShowNutrientModal(false);
+            setSelectedItemForNutrients(null);
+          }}
+          foodName={selectedItemForNutrients?.foodName || selectedItemForNutrients?.name || "Unknown Food"}
+          micronutrients={selectedItemForNutrients?.micronutrients || selectedItemForNutrients?.totalMicronutrients}
         />
       </div>
     </div>

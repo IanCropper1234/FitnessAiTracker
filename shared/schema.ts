@@ -212,11 +212,12 @@ export const savedMeals = pgTable("saved_meals", {
   userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  foodItems: jsonb("food_items").notNull(), // Array of food items with nutrition info
+  foodItems: jsonb("food_items").notNull(), // Array of food items with nutrition info including micronutrients
   totalCalories: decimal("total_calories", { precision: 8, scale: 2 }).notNull(),
   totalProtein: decimal("total_protein", { precision: 6, scale: 2 }).notNull(),
   totalCarbs: decimal("total_carbs", { precision: 6, scale: 2 }).notNull(),
   totalFat: decimal("total_fat", { precision: 6, scale: 2 }).notNull(),
+  totalMicronutrients: jsonb("total_micronutrients"), // Aggregated micronutrient totals
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

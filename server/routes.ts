@@ -898,13 +898,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fat,
           category,
           meal_suitability,
+          micronutrients,
           COUNT(*) as frequency,
           MAX(date) as last_logged
         FROM nutrition_logs 
         WHERE user_id = ${userId} 
           AND date >= ${ninetyDaysAgo}
           AND food_name IS NOT NULL
-        GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability
+        GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability, micronutrients
         HAVING COUNT(*) >= 1
         ORDER BY MAX(date) DESC, COUNT(*) DESC
         LIMIT 50
@@ -920,6 +921,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fat: parseFloat(row.fat),
         category: row.category,
         mealSuitability: row.meal_suitability,
+        micronutrients: row.micronutrients, // Include full micronutrient data
         frequency: parseInt(row.frequency),
         lastLogged: row.last_logged
       }));
@@ -1012,6 +1014,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const fat = parseFloat(item.fat) || 0;
         return sum + fat;
       }, 0);
+
+      // Aggregate micronutrients from all food items
+      const totalMicronutrients = foodItems.reduce((totals: any, item: any) => {
+        if (!item.micronutrients) return totals;
+        
+        // Initialize totals if not already done
+        if (!totals.vitamins) totals.vitamins = {};
+        if (!totals.minerals) totals.minerals = {};
+        if (!totals.other) totals.other = {};
+        
+        // Add vitamins
+        if (item.micronutrients.vitamins) {
+          Object.entries(item.micronutrients.vitamins).forEach(([key, value]: [string, any]) => {
+            if (typeof value === 'number') {
+              totals.vitamins[key] = (totals.vitamins[key] || 0) + value;
+            }
+          });
+        }
+        
+        // Add minerals
+        if (item.micronutrients.minerals) {
+          Object.entries(item.micronutrients.minerals).forEach(([key, value]: [string, any]) => {
+            if (typeof value === 'number') {
+              totals.minerals[key] = (totals.minerals[key] || 0) + value;
+            }
+          });
+        }
+        
+        // Add other nutrients
+        if (item.micronutrients.other) {
+          Object.entries(item.micronutrients.other).forEach(([key, value]: [string, any]) => {
+            if (typeof value === 'number') {
+              totals.other[key] = (totals.other[key] || 0) + value;
+            }
+          });
+        }
+        
+        return totals;
+      }, {});
       
       console.log('Calculated totals:', { totalCalories, totalProtein, totalCarbs, totalFat });
       
@@ -1019,11 +1060,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: userId,
         name,
         description: description || null,
-        foodItems: foodItems, // Already an array, no need to stringify
+        foodItems: foodItems.map((item: any) => ({
+          ...item,
+          micronutrients: item.micronutrients || null // Preserve micronutrient data
+        })),
         totalCalories: totalCalories.toFixed(2),
         totalProtein: totalProtein.toFixed(2),  
         totalCarbs: totalCarbs.toFixed(2),
-        totalFat: totalFat.toFixed(2)
+        totalFat: totalFat.toFixed(2),
+        totalMicronutrients: Object.keys(totalMicronutrients).length > 0 ? totalMicronutrients : null
       };
       
       console.log('Final meal data:', mealData);
