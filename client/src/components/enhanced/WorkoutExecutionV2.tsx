@@ -53,8 +53,11 @@ interface WorkoutExercise {
   restPeriod: number;
   exercise: Exercise;
   setsData?: WorkoutSet[];
+  // Support both field names for backward compatibility
   specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
+  specialTrainingMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
   specialConfig?: any;
+  specialMethodConfig?: any;
 }
 
 interface SetRecommendation {
@@ -183,31 +186,33 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           initialData[exercise.id] = defaultSets;
         }
         
-        // Restore special method data if available
-        if (exercise.specialMethod) {
-          console.log(`Restoring special method for exercise ${exercise.id}:`, exercise.specialMethod);
-          initialSpecialMethods[exercise.id] = exercise.specialMethod;
+        // Restore special method data if available - check both field names for compatibility
+        const specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
+        if (specialMethod) {
+          console.log(`Restoring special method for exercise ${exercise.id}:`, specialMethod);
+          initialSpecialMethods[exercise.id] = specialMethod;
         }
         
-        if (exercise.specialConfig) {
-          console.log(`Restoring special config for exercise ${exercise.id}:`, exercise.specialConfig);
+        const specialConfig = exercise.specialConfig || exercise.specialMethodConfig;
+        if (specialConfig) {
+          console.log(`Restoring special config for exercise ${exercise.id}:`, specialConfig);
           // Transform database format back to UI format
-          let uiConfig = { ...exercise.specialConfig };
+          let uiConfig = { ...specialConfig };
           
           // Transform stored config format to UI format based on method
-          if (exercise.specialMethod === 'myorep_match' || exercise.specialMethod === 'myorep_no_match') {
+          if (specialMethod === 'myorep_match' || specialMethod === 'myorep_no_match') {
             // For Myorep methods, use the same structure as creation phase
-            uiConfig.targetReps = exercise.specialConfig.targetReps || 15;
-            uiConfig.miniSets = exercise.specialConfig.miniSets || 3;
-            uiConfig.restSeconds = exercise.specialConfig.restSeconds || 20;
-            uiConfig.activationSet = exercise.specialConfig.activationSet !== false; // Default to true
+            uiConfig.targetReps = specialConfig.targetReps || 15;
+            uiConfig.miniSets = specialConfig.miniSets || 3;
+            uiConfig.restSeconds = specialConfig.restSeconds || 20;
+            uiConfig.activationSet = specialConfig.activationSet !== false; // Default to true
           }
           
-          if (exercise.specialMethod === 'drop_set') {
+          if (specialMethod === 'drop_set') {
             // For Drop Set, use the same structure as creation phase
-            uiConfig.dropSets = exercise.specialConfig.dropSets || 3;
-            uiConfig.weightReductions = exercise.specialConfig.weightReductions || [15, 15, 15];
-            uiConfig.dropRestSeconds = exercise.specialConfig.dropRestSeconds || 10;
+            uiConfig.dropSets = specialConfig.dropSets || 3;
+            uiConfig.weightReductions = specialConfig.weightReductions || [15, 15, 15];
+            uiConfig.dropRestSeconds = specialConfig.dropRestSeconds || 10;
             
             // Legacy support for execution-specific fields
             if (exercise.specialConfig.dropsetWeight) {
