@@ -221,10 +221,23 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           }
           
           if (specialMethod === 'drop_set' || specialMethod === 'dropset') {
-            // For Drop Set, use the same structure as creation phase
-            uiConfig.dropSets = specialConfig.dropSets || 3;
-            uiConfig.weightReductions = specialConfig.weightReductions || [15, 15, 15];
-            uiConfig.dropRestSeconds = specialConfig.dropRestSeconds || 10;
+            // Handle both template database format and UI format
+            if (specialConfig.drops !== undefined && specialConfig.weightReduction !== undefined) {
+              // Database format from template: {"drops": 1, "weightReduction": 20}
+              console.log('Converting database format to UI format:', specialConfig);
+              uiConfig.dropSets = specialConfig.drops;
+              uiConfig.weightReductions = Array(specialConfig.drops).fill(specialConfig.weightReduction);
+              uiConfig.dropRestSeconds = specialConfig.restSeconds || 10;
+              
+              // Initialize dropSetWeights array for execution
+              uiConfig.dropSetWeights = Array(specialConfig.drops).fill(0);
+              uiConfig.dropSetReps = Array(specialConfig.drops).fill(8);
+            } else {
+              // UI format (already converted)
+              uiConfig.dropSets = specialConfig.dropSets || 3;
+              uiConfig.weightReductions = specialConfig.weightReductions || [15, 15, 15];
+              uiConfig.dropRestSeconds = specialConfig.dropRestSeconds || 10;
+            }
             
             // Legacy support for execution-specific fields
             if (specialConfig.dropsetWeight) {
