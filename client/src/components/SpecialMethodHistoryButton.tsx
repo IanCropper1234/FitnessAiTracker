@@ -53,6 +53,16 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
     enabled: !!exerciseId && !!userId && !!currentSpecialMethod && currentSpecialMethod !== 'standard'
   });
 
+  // Debug logging
+  console.log('SpecialMethodHistoryButton render:', {
+    exerciseId,
+    setNumber,
+    currentSpecialMethod,
+    hasLatestData: !!latestSpecialMethod,
+    isLoading,
+    queryEnabled: !!exerciseId && !!userId && !!currentSpecialMethod && currentSpecialMethod !== 'standard'
+  });
+
   const handleApplyHistoricalData = async () => {
     if (!latestSpecialMethod) {
       toast({

@@ -3903,10 +3903,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         whereConditions.push(eq(workoutExercises.specialMethod, specialMethod));
       }
 
-      // Filter by specific set number if provided
-      if (setNumber !== null) {
-        whereConditions.push(eq(workoutExercises.setNumber, setNumber));
-      }
+      // Note: setNumber filtering will be done after query since workoutExercises doesn't have setNumber field
 
       // Find latest special training method data for this exercise with filters
       const specialHistory = await db
@@ -3917,7 +3914,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           weight: workoutExercises.weight,
           reps: workoutExercises.actualReps,
           rpe: workoutExercises.rpe,
-          setNumber: workoutExercises.setNumber,
+          setsData: workoutExercises.setsData,
           sessionId: workoutSessions.id
         })
         .from(workoutExercises)
@@ -3926,8 +3923,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy(desc(workoutSessions.date))
         .limit(limit);
 
-      console.log(`Found ${specialHistory.length} matching special method records`);
-      res.json(specialHistory);
+      // Filter by setNumber if provided (since it's stored in setsData JSONB)
+      let filteredHistory = specialHistory;
+      if (setNumber !== null) {
+        filteredHistory = specialHistory.filter(record => {
+          // Check if setsData contains data for the specific set number
+          const setsData = record.setsData as any;
+          if (setsData && Array.isArray(setsData)) {
+            return setsData.some((setData: any) => setData.setNumber === setNumber);
+          }
+          return true; // Include if no setsData filtering is possible
+        });
+      }
+
+      console.log(`Found ${filteredHistory.length} matching special method records (after set filtering)`);
+      res.json(filteredHistory);
     } catch (error) {
       console.error("Error fetching exercise special method history:", error);
       res.status(500).json({ error: "Failed to fetch special method history" });
