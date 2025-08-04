@@ -187,8 +187,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         }
         
         // Restore special method data if available - check both field names for compatibility
-        const specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
+        let specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
         if (specialMethod) {
+          // Convert database format to UI format
+          if (specialMethod === 'dropset') {
+            specialMethod = 'drop_set';
+          }
           console.log(`Restoring special method for exercise ${exercise.id}:`, specialMethod);
           initialSpecialMethods[exercise.id] = specialMethod;
         }
@@ -208,7 +212,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             uiConfig.activationSet = specialConfig.activationSet !== false; // Default to true
           }
           
-          if (specialMethod === 'drop_set') {
+          if (specialMethod === 'drop_set' || specialMethod === 'dropset') {
             // For Drop Set, use the same structure as creation phase
             uiConfig.dropSets = specialConfig.dropSets || 3;
             uiConfig.weightReductions = specialConfig.weightReductions || [15, 15, 15];
