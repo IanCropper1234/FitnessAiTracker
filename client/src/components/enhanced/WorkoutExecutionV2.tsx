@@ -192,6 +192,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           console.log(`Original special method for exercise ${exercise.id}:`, specialMethod, typeof specialMethod, `"${specialMethod}"`);
           // Convert database format to UI format - trim whitespace and normalize
           const normalizedMethod = specialMethod.trim();
+          console.log(`Checking conversion: "${normalizedMethod}" === "dropset"?`, normalizedMethod === 'dropset');
           if (normalizedMethod === 'dropset') {
             console.log(`Converting ${normalizedMethod} to drop_set`);
             specialMethod = 'drop_set';
