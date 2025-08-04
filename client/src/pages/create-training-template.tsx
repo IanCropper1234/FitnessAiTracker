@@ -26,8 +26,14 @@ interface Exercise {
 }
 
 interface TemplateExercise {
+  id: number;
   exerciseId: number;
   name: string;
+  category: string;
+  muscleGroups: string[];
+  primaryMuscle: string;
+  equipment: string;
+  difficulty: string;
   sets: number;
   targetReps: string;
   restPeriod: number;
@@ -109,8 +115,14 @@ export default function CreateTrainingTemplate() {
 
   const addExerciseToCurrentWorkout = (exercise: Exercise) => {
     const newExercise: TemplateExercise = {
+      id: exercise.id,
       exerciseId: exercise.id,
       name: exercise.name,
+      category: exercise.category,
+      muscleGroups: exercise.muscleGroups,
+      primaryMuscle: exercise.primaryMuscle,
+      equipment: exercise.equipment,
+      difficulty: exercise.difficulty,
       sets: 3,
       targetReps: "8-12",
       restPeriod: 120,
@@ -363,9 +375,10 @@ export default function CreateTrainingTemplate() {
                 <CardContent>
                   <div className="h-96 overflow-y-auto">
                     <ExerciseSelector
-                      onAddExercise={addExerciseToCurrentWorkout}
                       selectedExercises={currentWorkout.exercises}
-                      onRemoveExercise={removeExerciseFromCurrentWorkout}
+                      onExercisesChange={(exercises) => {
+                        updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises });
+                      }}
                     />
                   </div>
                 </CardContent>
