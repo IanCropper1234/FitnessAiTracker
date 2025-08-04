@@ -72,6 +72,10 @@ export interface IStorage {
   getWorkoutSession(id: number): Promise<WorkoutSession | undefined>;
   createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession>;
   updateWorkoutSession(id: number, session: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
+  deleteWorkoutSession(id: number): Promise<boolean>;
+  resetWorkoutSessionProgress(sessionId: number): Promise<WorkoutSession | undefined>;
+  getUserWorkoutSessions(userId: number): Promise<WorkoutSession[]>;
+  getTrainingTemplate(id: number): Promise<any | undefined>;
   
   // Workout Exercises
   getWorkoutExercises(sessionId: number): Promise<WorkoutExercise[]>;
@@ -335,7 +339,8 @@ export class MemStorage implements IStorage {
       mealType: log.mealType || null,
       mealOrder: log.mealOrder || null,
       scheduledTime: log.scheduledTime || null,
-      mealSuitability: log.mealSuitability || null
+      mealSuitability: log.mealSuitability || null,
+      micronutrients: log.micronutrients || {}
     };
     this.nutritionLogs.set(newLog.id, newLog);
     return newLog;
@@ -407,6 +412,7 @@ export class MemStorage implements IStorage {
     const newExercise: Exercise = { 
       ...exercise, 
       id: this.currentExerciseId++,
+      createdAt: new Date(),
       muscleGroups: exercise.muscleGroups || null,
       equipment: exercise.equipment || null,
       movementPattern: exercise.movementPattern || null,
@@ -485,6 +491,28 @@ export class MemStorage implements IStorage {
     return updatedSession;
   }
 
+  async deleteWorkoutSession(id: number): Promise<boolean> {
+    return this.workoutSessions.delete(id);
+  }
+
+  async resetWorkoutSessionProgress(sessionId: number): Promise<WorkoutSession | undefined> {
+    const session = this.workoutSessions.get(sessionId);
+    if (!session) return undefined;
+    
+    const resetSession = { ...session, isCompleted: false };
+    this.workoutSessions.set(sessionId, resetSession);
+    return resetSession;
+  }
+
+  async getUserWorkoutSessions(userId: number): Promise<WorkoutSession[]> {
+    return Array.from(this.workoutSessions.values()).filter(session => session.userId === userId);
+  }
+
+  async getTrainingTemplate(id: number): Promise<any | undefined> {
+    // Mock implementation for training templates
+    return undefined;
+  }
+
   // Workout Exercises
   async getWorkoutExercises(sessionId: number): Promise<WorkoutExercise[]> {
     return Array.from(this.workoutExercises.values())
@@ -509,7 +537,8 @@ export class MemStorage implements IStorage {
       specialConfig: exercise.specialConfig || null,
       linkedExercises: exercise.linkedExercises || null,
       specialTrainingMethod: exercise.specialTrainingMethod || null,
-      specialMethodData: exercise.specialMethodData || null
+      specialMethodData: exercise.specialMethodData || null,
+      setsData: exercise.setsData || []
     };
     this.workoutExercises.set(newExercise.id, newExercise);
     return newExercise;

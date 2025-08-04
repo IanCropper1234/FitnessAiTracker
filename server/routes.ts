@@ -7,7 +7,7 @@ import { initializeVolumeLandmarks } from "./init-volume-landmarks";
 import { searchFoodDatabase, getFoodByBarcode } from "./data/foods";
 import { getNutritionSummary, logFood, generateNutritionGoal, searchFood } from "./services/nutrition";
 import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorkoutPlan } from "./services/training";
-import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema, nutritionLogs } from "@shared/schema";
+import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
 import { db } from "./db";
 import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendations } from "./auto-regulation-algorithms";
@@ -22,16 +22,15 @@ import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
 // Authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   const userId = (req.session as any).userId;
-  console.log('RequireAuth - Session ID:', req.sessionID);
-  console.log('RequireAuth - Session userId:', userId);
-  console.log('RequireAuth - Headers:', req.headers.cookie);
+  console.log('Auth check - Session ID:', req.sessionID);
+  console.log('Auth check - Session userId:', userId);
   
-  if (!userId) {
-    console.log('RequireAuth failed - no userId in session');
+  if (!userId || typeof userId !== 'number') {
+    console.log('No userId in session');
     return res.status(401).json({ message: "Not authenticated" });
   }
-  (req as any).userId = userId;
-  console.log('RequireAuth successful for userId:', userId);
+  
+  req.userId = userId;
   next();
 }
 
@@ -39,7 +38,7 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 declare global {
   namespace Express {
     interface Request {
-      userId?: number;
+      userId: number;
     }
   }
 }
@@ -518,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.get("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const user = await storage.getUser(userId);
       const profile = await storage.getUserProfile(userId);
       
@@ -534,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const profileData = insertUserProfileSchema.parse(req.body);
       
       // Get current profile to check if fitness goal changed
@@ -586,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Recent activities route
   app.get("/api/activities", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const limit = parseInt(req.query.limit as string) || 10;
       
       // Get recent nutrition logs (last 7 days)
@@ -629,7 +628,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Nutrition routes
   app.get("/api/nutrition/summary", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const date = req.query.date ? new Date(req.query.date as string) : new Date();
       
       const summary = await getNutritionSummary(userId, date);
@@ -641,7 +640,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/nutrition/log", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const logData = {
         ...req.body,
         userId: userId,
@@ -663,7 +662,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/nutrition/logs", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const date = req.query.date ? new Date(req.query.date as string) : undefined;
       
       const logs = await storage.getNutritionLogs(userId, date);
@@ -988,7 +987,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Save a meal
   app.post("/api/saved-meals", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const { name, description, foodItems } = req.body;
       
       console.log('Save meal request:', { userId, name, foodItems: foodItems?.length });
@@ -2057,7 +2056,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Developer settings route
   app.put("/api/auth/user/developer-settings", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const { showDeveloperFeatures } = req.body;
       
       // Update user's developer settings (this would need to be added to user schema)
@@ -2070,7 +2069,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get fatigue analysis for user
   app.get("/api/training/fatigue-analysis", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const days = parseInt(req.query.days as string) || 14; // Default 14 days
       
       const fatigueAnalysis = await getFatigueAnalysis(userId, days);
@@ -2083,7 +2082,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get volume recommendations for user
   app.get("/api/training/volume-recommendations", requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).userId;
+      const userId = req.userId;
       const recommendations = await getVolumeRecommendations(userId);
       res.json(recommendations);
     } catch (error: any) {
