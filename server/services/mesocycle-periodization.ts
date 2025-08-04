@@ -514,6 +514,296 @@ export class MesocyclePeriodization {
   }
 
   /**
+   * Advance mesocycle to next week with intelligent progression
+   */
+  static async advanceWeek(mesocycleId: number): Promise<{
+    success: boolean;
+    newWeek: number;
+    progressions: any[];
+    specialMethodAdjustments: any[];
+  }> {
+    try {
+      // Get current mesocycle
+      const mesocycle = await db
+        .select()
+        .from(mesocycles)
+        .where(eq(mesocycles.id, mesocycleId))
+        .limit(1);
+
+      if (mesocycle.length === 0) {
+        throw new Error('Mesocycle not found');
+      }
+
+      const currentMesocycle = mesocycle[0];
+      const newWeek = currentMesocycle.currentWeek + 1;
+
+      if (newWeek > currentMesocycle.totalWeeks) {
+        throw new Error('Mesocycle already completed');
+      }
+
+      // Calculate volume progressions for next week
+      const progressions = await this.calculateVolumeProgression(
+        currentMesocycle.userId,
+        newWeek,
+        currentMesocycle.totalWeeks
+      );
+
+      // Apply special training method adjustments
+      const specialMethodAdjustments = await this.adjustSpecialTrainingMethods(
+        currentMesocycle.userId,
+        mesocycleId,
+        newWeek,
+        progressions
+      );
+
+      // Update mesocycle current week
+      await db
+        .update(mesocycles)
+        .set({
+          currentWeek: newWeek,
+          lastAdvanced: new Date()
+        })
+        .where(eq(mesocycles.id, mesocycleId));
+
+      // Generate new workout sessions for the advanced week
+      await this.generateWeekWorkoutSessions(mesocycleId, newWeek, progressions);
+
+      return {
+        success: true,
+        newWeek,
+        progressions,
+        specialMethodAdjustments
+      };
+    } catch (error) {
+      console.error('Error advancing mesocycle week:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Adjust special training methods based on volume progression
+   */
+  static async adjustSpecialTrainingMethods(
+    userId: number,
+    mesocycleId: number,
+    week: number,
+    progressions: VolumeProgression[]
+  ): Promise<any[]> {
+    const adjustments: any[] = [];
+
+    // Get all upcoming workout sessions for this week
+    const upcomingSessions = await db
+      .select()
+      .from(workoutSessions)
+      .where(and(
+        eq(workoutSessions.mesocycleId, mesocycleId),
+        eq(workoutSessions.week, week),
+        eq(workoutSessions.isCompleted, false)
+      ));
+
+    for (const session of upcomingSessions) {
+      const sessionExercises = await db
+        .select()
+        .from(workoutExercises)
+        .where(eq(workoutExercises.sessionId, session.id));
+
+      for (const exercise of sessionExercises) {
+        if (!exercise.specialTrainingMethod || exercise.specialTrainingMethod === 'standard') {
+          continue;
+        }
+
+        // Determine volume change direction for this exercise's muscle groups
+        const volumeChange = this.determineVolumeChange(exercise.exerciseId, progressions);
+        
+        // Apply special training method adjustments
+        const adjustment = this.applySpecialMethodProgression(
+          exercise,
+          volumeChange,
+          week
+        );
+
+        if (adjustment.changed) {
+          // Update the exercise in database
+          await db
+            .update(workoutExercises)
+            .set({
+              specialMethodConfig: adjustment.newConfig,
+              targetReps: adjustment.newTargetReps,
+              notes: adjustment.reasoning
+            })
+            .where(eq(workoutExercises.id, exercise.id));
+
+          adjustments.push({
+            exerciseId: exercise.id,
+            exerciseName: exercise.name,
+            method: exercise.specialTrainingMethod,
+            change: adjustment.change,
+            reasoning: adjustment.reasoning
+          });
+        }
+      }
+    }
+
+    return adjustments;
+  }
+
+  /**
+   * Apply special training method progression rules
+   */
+  static applySpecialMethodProgression(
+    exercise: any,
+    volumeChange: 'increase' | 'maintain' | 'decrease',
+    week: number
+  ): {
+    changed: boolean;
+    newConfig: any;
+    newTargetReps: string;
+    change: string;
+    reasoning: string;
+  } {
+    const currentConfig = exercise.specialMethodConfig || {};
+    let newConfig = { ...currentConfig };
+    let newTargetReps = exercise.targetReps;
+    let changed = false;
+    let change = '';
+    let reasoning = '';
+
+    switch (exercise.specialTrainingMethod) {
+      case 'myorep_match':
+        if (volumeChange === 'increase') {
+          // Add Target Reps +1
+          const currentReps = this.parseRepsRange(exercise.targetReps);
+          newTargetReps = `${currentReps.min + 1}-${currentReps.max + 1}`;
+          change = '+1 target reps';
+          reasoning = `Week ${week}: Increased training volume - MyoRep Match +1 rep`;
+          changed = true;
+        } else if (volumeChange === 'decrease') {
+          // Add Target Reps -1
+          const currentReps = this.parseRepsRange(exercise.targetReps);
+          newTargetReps = `${Math.max(1, currentReps.min - 1)}-${Math.max(2, currentReps.max - 1)}`;
+          change = '-1 target reps';
+          reasoning = `Week ${week}: Decreased training volume - MyoRep Match -1 rep`;
+          changed = true;
+        }
+        // MyoRep No Match: remain unchanged for all volume changes
+        break;
+
+      case 'drop_set':
+        if (volumeChange === 'increase') {
+          // +1 rep on the first mini set
+          newConfig.firstMiniSetReps = (newConfig.firstMiniSetReps || 8) + 1;
+          change = '+1 rep on first mini set';
+          reasoning = `Week ${week}: Increased training volume - Drop Set first mini set +1 rep`;
+          changed = true;
+        } else if (volumeChange === 'decrease') {
+          // -1 rep on the first mini set
+          newConfig.firstMiniSetReps = Math.max(3, (newConfig.firstMiniSetReps || 8) - 1);
+          change = '-1 rep on first mini set';
+          reasoning = `Week ${week}: Decreased training volume - Drop Set first mini set -1 rep`;
+          changed = true;
+        }
+        break;
+
+      case 'giant_set':
+        if (volumeChange === 'increase') {
+          // +5 reps total across the giant set
+          newConfig.totalReps = (newConfig.totalReps || 20) + 5;
+          change = '+5 reps total';
+          reasoning = `Week ${week}: Increased training volume - Giant Set +5 total reps`;
+          changed = true;
+        } else if (volumeChange === 'decrease') {
+          // -5 reps total across the giant set
+          newConfig.totalReps = Math.max(10, (newConfig.totalReps || 20) - 5);
+          change = '-5 reps total';
+          reasoning = `Week ${week}: Decreased training volume - Giant Set -5 total reps`;
+          changed = true;
+        }
+        break;
+
+      case 'superset':
+        // Superset: remain unchanged for all volume changes
+        reasoning = `Week ${week}: Superset parameters maintained regardless of volume change`;
+        break;
+
+      default:
+        break;
+    }
+
+    return {
+      changed,
+      newConfig,
+      newTargetReps,
+      change,
+      reasoning
+    };
+  }
+
+  /**
+   * Parse reps range string (e.g., "8-12" -> {min: 8, max: 12})
+   */
+  static parseRepsRange(repsString: string): { min: number; max: number } {
+    const parts = repsString.split('-');
+    if (parts.length === 2) {
+      return {
+        min: parseInt(parts[0]) || 8,
+        max: parseInt(parts[1]) || 12
+      };
+    }
+    const single = parseInt(repsString) || 8;
+    return { min: single, max: single };
+  }
+
+  /**
+   * Determine volume change direction for an exercise based on muscle group progressions
+   */
+  static determineVolumeChange(
+    exerciseId: number,
+    progressions: VolumeProgression[]
+  ): 'increase' | 'maintain' | 'decrease' {
+    // This would need to be implemented based on exercise-to-muscle-group mapping
+    // For now, we'll use a simple heuristic based on the progression phase
+    const avgProgression = progressions.reduce((sum, p) => {
+      if (p.phase === 'accumulation') return sum + 1;
+      if (p.phase === 'deload') return sum - 1;
+      return sum;
+    }, 0) / progressions.length;
+
+    if (avgProgression > 0.3) return 'increase';
+    if (avgProgression < -0.3) return 'decrease';
+    return 'maintain';
+  }
+
+  /**
+   * Generate workout sessions for a specific week
+   */
+  static async generateWeekWorkoutSessions(
+    mesocycleId: number,
+    week: number,
+    progressions: VolumeProgression[]
+  ): Promise<void> {
+    // Get mesocycle template/program
+    const mesocycle = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId))
+      .limit(1);
+
+    if (mesocycle.length === 0) return;
+
+    const templateId = mesocycle[0].templateId;
+    if (!templateId) return;
+
+    // Use TemplateEngine to generate sessions with progression
+    await TemplateEngine.createWorkoutSessionsFromTemplate(
+      mesocycle[0].userId,
+      templateId,
+      mesocycleId,
+      new Date(),
+      week
+    );
+  }
+
+  /**
    * Create new mesocycle with custom program builder
    */
   static async createMesocycleWithProgram(
@@ -641,64 +931,7 @@ export class MesocyclePeriodization {
     };
   }
 
-  /**
-   * Advance to next week with auto-regulation adjustments
-   */
-  static async advanceWeek(mesocycleId: number) {
-    const [mesocycle] = await db
-      .select()
-      .from(mesocycles)
-      .where(eq(mesocycles.id, mesocycleId));
 
-    if (!mesocycle) {
-      throw new Error("Mesocycle not found");
-    }
-
-    const nextWeek = mesocycle.currentWeek + 1;
-    
-    // Check if mesocycle is complete
-    if (nextWeek > mesocycle.totalWeeks) {
-      // Complete mesocycle and suggest deload
-      await db
-        .update(mesocycles)
-        .set({
-          isActive: false,
-          phase: 'deload',
-          updatedAt: new Date()
-        })
-        .where(eq(mesocycles.id, mesocycleId));
-
-      return {
-        mesocycleComplete: true,
-        recommendation: "Mesocycle completed. Time for a deload week!"
-      };
-    }
-
-    // Apply auto-regulation adjustments for next week
-    const volumeAdjustments = await this.calculateVolumeProgression(
-      mesocycle.userId, 
-      nextWeek, 
-      mesocycle.totalWeeks
-    );
-
-    // Update mesocycle week
-    await db
-      .update(mesocycles)
-      .set({
-        currentWeek: nextWeek,
-        updatedAt: new Date()
-      })
-      .where(eq(mesocycles.id, mesocycleId));
-
-    // Generate next week's workouts with adjusted volumes
-    await this.generateWeekWorkouts(mesocycleId, nextWeek, volumeAdjustments);
-
-    return {
-      newWeek: nextWeek,
-      volumeAdjustments,
-      message: `Advanced to week ${nextWeek}. Volume adjusted based on auto-regulation feedback.`
-    };
-  }
 
   /**
    * Generate mesocycle program from template - FIXED to properly use TemplateEngine
