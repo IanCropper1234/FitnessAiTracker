@@ -194,13 +194,23 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           let normalizedMethod = specialMethod.trim().toLowerCase();
           console.log(`Normalized method: "${normalizedMethod}"`);
           
-          // Handle multiple possible database formats
+          // Handle multiple possible database formats - normalize all to underscore format
           if (normalizedMethod === 'dropset' || normalizedMethod === 'drop_set') {
-            console.log(`Converting ${normalizedMethod} to drop_set`);
             specialMethod = 'drop_set';
+          } else if (normalizedMethod === 'restpause' || normalizedMethod === 'rest_pause') {
+            specialMethod = 'rest_pause';
+          } else if (normalizedMethod === 'myorepmatch' || normalizedMethod === 'myorep_match') {
+            specialMethod = 'myorep_match';
+          } else if (normalizedMethod === 'clusterset' || normalizedMethod === 'cluster_set') {
+            specialMethod = 'cluster_set';
+          } else if (normalizedMethod === 'giantset' || normalizedMethod === 'giant_set') {
+            specialMethod = 'giant_set';
           } else {
-            console.log(`No conversion needed for: "${normalizedMethod}" (length: ${normalizedMethod.length})`);
+            // Keep as is for other methods like tempo, lengthened_partials
+            specialMethod = normalizedMethod;
           }
+          console.log(`Normalized method from "${normalizedMethod}" to "${specialMethod}"`);
+          
           console.log(`After conversion for exercise ${exercise.id}:`, specialMethod);
           initialSpecialMethods[exercise.id] = specialMethod;
         }

@@ -327,15 +327,15 @@ export default function EditTemplatePage() {
     if (!method || !config) return '';
     
     switch (method) {
-      case 'dropSet':
+      case 'drop_set':
         return `${config.drops || 2} drops, ${config.weightReduction || 20}% reduction`;
-      case 'restPause':
+      case 'rest_pause':
         return `${config.pauseDuration || 15}s pause, ${config.totalReps || 20} total reps`;
-      case 'myorepMatch':
+      case 'myorep_match':
         return `${config.activationReps || 12} activation, ${config.backoffReps || 3} backoff`;
-      case 'clusterSet':
+      case 'cluster_set':
         return `${config.repsPerCluster || 3} reps × ${config.clusters || 5} clusters`;
-      case 'giantSet':
+      case 'giant_set':
         return `${config.exerciseCount || 4} exercises, ${config.restBetweenExercises || 15}s rest`;
       case 'tempo':
         return `${config.eccentric || 3}-${config.pause || 1}-${config.concentric || 1} tempo`;
@@ -348,7 +348,7 @@ export default function EditTemplatePage() {
     if (!method) return null;
     
     switch (method) {
-      case 'dropSet':
+      case 'drop_set':
         return (
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
@@ -375,7 +375,7 @@ export default function EditTemplatePage() {
             </div>
           </div>
         );
-      case 'restPause':
+      case 'rest_pause':
         return (
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
@@ -402,7 +402,7 @@ export default function EditTemplatePage() {
             </div>
           </div>
         );
-      case 'myorepMatch':
+      case 'myorep_match':
         return (
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
@@ -429,7 +429,7 @@ export default function EditTemplatePage() {
             </div>
           </div>
         );
-      case 'clusterSet':
+      case 'cluster_set':
         return (
           <div className="grid grid-cols-3 gap-2 mt-2">
             <div>
@@ -467,7 +467,7 @@ export default function EditTemplatePage() {
             </div>
           </div>
         );
-      case 'giantSet':
+      case 'giant_set':
         return (
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div>
@@ -788,11 +788,11 @@ export default function EditTemplatePage() {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="none">None</SelectItem>
-                                    <SelectItem value="dropSet">Drop Set</SelectItem>
-                                    <SelectItem value="restPause">Rest-Pause</SelectItem>
-                                    <SelectItem value="myorepMatch">Myo-Reps</SelectItem>
-                                    <SelectItem value="clusterSet">Cluster Set</SelectItem>
-                                    <SelectItem value="giantSet">Giant Set</SelectItem>
+                                    <SelectItem value="drop_set">Drop Set</SelectItem>
+                                    <SelectItem value="rest_pause">Rest-Pause</SelectItem>
+                                    <SelectItem value="myorep_match">Myo-Reps</SelectItem>
+                                    <SelectItem value="cluster_set">Cluster Set</SelectItem>
+                                    <SelectItem value="giant_set">Giant Set</SelectItem>
                                     <SelectItem value="tempo">Tempo</SelectItem>
                                     <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
                                   </SelectContent>
