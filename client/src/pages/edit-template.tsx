@@ -288,7 +288,7 @@ export default function EditTemplatePage() {
   };
 
   const handleUpdateTrainingMethod = (exerciseIndex: number, methodValue: string) => {
-    if (methodValue === 'none') {
+    if (methodValue === 'standard' || methodValue === 'none') {
       handleUpdateExercise(exerciseIndex, 'specialTrainingMethod', undefined);
       handleUpdateExercise(exerciseIndex, 'specialMethodConfig', undefined);
     } else {
@@ -334,45 +334,40 @@ export default function EditTemplatePage() {
   const getDefaultMethodConfig = (method: string) => {
     switch (method) {
       case 'drop_set':
-        return { drops: 2, weightReduction: 20 };
-      case 'rest_pause':
-        return { pauseDuration: 15, totalReps: 20 };
+        return { drops: 1, weightReduction: 20 };
       case 'myorep_match':
-        return { activationReps: 12, backoffReps: 3 };
-      case 'cluster_set':
-        return { repsPerCluster: 3, clusters: 5, restBetween: 15 };
+        return { targetReps: 15, miniSets: 3, restSeconds: 20 };
+      case 'myorep_no_match':
+        return { targetReps: 15, miniSets: 3, restSeconds: 20 };
       case 'giant_set':
-        return { exerciseCount: 4, restBetweenExercises: 15 };
-      case 'tempo':
-        return { eccentric: 3, pause: 1, concentric: 1 };
+        return { totalTargetReps: 40, miniSetReps: 5, restSeconds: 10 };
+      case 'superset':
+        return { supersetExercises: [], restBetween: 30 };
       default:
         return {};
     }
   };
 
   const renderSpecialMethodConfig = (method: string | undefined, config: any) => {
-    if (!method || !config) return '';
+    if (!method || !config || method === 'standard') return '';
     
     switch (method) {
       case 'drop_set':
-        return `${config.drops || 2} drops, ${config.weightReduction || 20}% reduction`;
-      case 'rest_pause':
-        return `${config.pauseDuration || 15}s pause, ${config.totalReps || 20} total reps`;
+        return `${config.drops || 1} drops, ${config.weightReduction || 20}% reduction`;
       case 'myorep_match':
-        return `${config.activationReps || 12} activation, ${config.backoffReps || 3} backoff`;
-      case 'cluster_set':
-        return `${config.repsPerCluster || 3} reps × ${config.clusters || 5} clusters`;
+      case 'myorep_no_match':
+        return `${config.targetReps || 15} target reps, ${config.miniSets || 3} mini sets`;
       case 'giant_set':
-        return `${config.exerciseCount || 4} exercises, ${config.restBetweenExercises || 15}s rest`;
-      case 'tempo':
-        return `${config.eccentric || 3}-${config.pause || 1}-${config.concentric || 1} tempo`;
+        return `${config.totalTargetReps || 40} total reps, ${config.miniSetReps || 5} per mini set`;
+      case 'superset':
+        return `${config.restBetween || 30}s rest between`;
       default:
         return '';
     }
   };
 
   const renderSpecialMethodConfigInputs = (method: string | undefined, config: any, exerciseIndex: number) => {
-    if (!method) return null;
+    if (!method || method === 'standard') return null;
     
     switch (method) {
       case 'drop_set':
@@ -382,7 +377,7 @@ export default function EditTemplatePage() {
               <Label className="text-xs">Drops</Label>
               <Input
                 type="number"
-                value={config.drops || 2}
+                value={config.drops || 1}
                 onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'drops', parseInt(e.target.value))}
                 className="h-6 text-xs"
                 min="1"
@@ -430,28 +425,40 @@ export default function EditTemplatePage() {
           </div>
         );
       case 'myorep_match':
+      case 'myorep_no_match':
         return (
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="grid grid-cols-3 gap-2 mt-2">
             <div>
-              <Label className="text-xs">Activation Reps</Label>
+              <Label className="text-xs">Target Reps</Label>
               <Input
                 type="number"
-                value={config.activationReps || 12}
-                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'activationReps', parseInt(e.target.value))}
+                value={config.targetReps || 15}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'targetReps', parseInt(e.target.value))}
                 className="h-6 text-xs"
                 min="8"
-                max="20"
+                max="25"
               />
             </div>
             <div>
-              <Label className="text-xs">Backoff Reps</Label>
+              <Label className="text-xs">Mini Sets</Label>
               <Input
                 type="number"
-                value={config.backoffReps || 3}
-                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'backoffReps', parseInt(e.target.value))}
+                value={config.miniSets || 3}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'miniSets', parseInt(e.target.value))}
                 className="h-6 text-xs"
                 min="2"
                 max="8"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Rest (s)</Label>
+              <Input
+                type="number"
+                value={config.restSeconds || 20}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'restSeconds', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="10"
+                max="30"
               />
             </div>
           </div>
@@ -496,27 +503,54 @@ export default function EditTemplatePage() {
         );
       case 'giant_set':
         return (
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="grid grid-cols-3 gap-2 mt-2">
             <div>
-              <Label className="text-xs">Exercise Count</Label>
+              <Label className="text-xs">Total Target Reps</Label>
               <Input
                 type="number"
-                value={config.exerciseCount || 4}
-                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'exerciseCount', parseInt(e.target.value))}
+                value={config.totalTargetReps || 40}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'totalTargetReps', parseInt(e.target.value))}
                 className="h-6 text-xs"
-                min="3"
-                max="6"
+                min="20"
+                max="60"
               />
             </div>
+            <div>
+              <Label className="text-xs">Mini Set Reps</Label>
+              <Input
+                type="number"
+                value={config.miniSetReps || 5}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'miniSetReps', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="3"
+                max="10"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Rest (s)</Label>
+              <Input
+                type="number"
+                value={config.restSeconds || 10}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'restSeconds', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="5"
+                max="30"
+              />
+            </div>
+          </div>
+        );
+      case 'superset':
+        return (
+          <div className="grid grid-cols-1 gap-2 mt-2">
             <div>
               <Label className="text-xs">Rest Between (s)</Label>
               <Input
                 type="number"
-                value={config.restBetweenExercises || 15}
-                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'restBetweenExercises', parseInt(e.target.value))}
+                value={config.restBetween || 30}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'restBetween', parseInt(e.target.value))}
                 className="h-6 text-xs"
-                min="10"
-                max="30"
+                min="15"
+                max="60"
               />
             </div>
           </div>
@@ -807,21 +841,19 @@ export default function EditTemplatePage() {
                               <div className="flex-1 min-w-0 mr-2">
                                 <Label className="text-xs">Training Method</Label>
                                 <Select 
-                                  value={exercise.specialTrainingMethod || exercise.trainingMethod || 'none'} 
+                                  value={exercise.specialTrainingMethod || exercise.trainingMethod || 'standard'} 
                                   onValueChange={(value) => handleUpdateTrainingMethod(index, value)}
                                 >
                                   <SelectTrigger className="h-7 text-xs">
                                     <SelectValue placeholder="None" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value="standard">Standard Set</SelectItem>
+                                    <SelectItem value="myorep_match">Myorep Match</SelectItem>
+                                    <SelectItem value="myorep_no_match">Myorep No Match</SelectItem>
                                     <SelectItem value="drop_set">Drop Set</SelectItem>
-                                    <SelectItem value="rest_pause">Rest-Pause</SelectItem>
-                                    <SelectItem value="myorep_match">Myo-Reps</SelectItem>
-                                    <SelectItem value="cluster_set">Cluster Set</SelectItem>
-                                    <SelectItem value="giant_set">Giant Set</SelectItem>
-                                    <SelectItem value="tempo">Tempo</SelectItem>
-                                    <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
+                                    <SelectItem value="giant_set">Giant Set (40+ reps)</SelectItem>
+                                    <SelectItem value="superset">Superset</SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
