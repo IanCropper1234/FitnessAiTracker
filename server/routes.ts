@@ -3262,6 +3262,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get individual template by ID
+  app.get("/api/training/templates/:templateId", requireAuth, async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.templateId);
+      const userId = req.userId;
+      
+      const template = await TemplateEngine.getTemplateById(templateId, userId ? parseInt(userId) : undefined);
+      
+      if (!template) {
+        return res.status(404).json({ error: "Template not found" });
+      }
+      
+      res.json(template);
+    } catch (error) {
+      console.error("Error fetching template:", error);
+      res.status(500).json({ error: "Failed to fetch template" });
+    }
+  });
+
   app.post("/api/training/templates", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;

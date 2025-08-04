@@ -95,7 +95,6 @@ interface TrainingTemplatesProps {
 export default function TrainingTemplates({ userId, onTemplateSelect }: TrainingTemplatesProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [editingTemplate, setEditingTemplate] = useState<TrainingTemplate | null>(null);
-  const [viewingTemplate, setViewingTemplate] = useState<TrainingTemplate | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
@@ -397,7 +396,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                 {/* Template Actions */}
                 <div className="flex gap-2 pt-2 border-t">
                   <Button
-                    onClick={() => setViewingTemplate(template)}
+                    onClick={() => setLocation(`/template/${template.id}`)}
                     variant="ghost"
                     size="sm"
                     className="flex-1"
@@ -451,18 +450,6 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
             Create Your First Template
           </Button>
         </div>
-      )}
-
-      {/* View Template Dialog */}
-      {viewingTemplate && (
-        <ViewTemplateDialog 
-          template={viewingTemplate}
-          onClose={() => setViewingTemplate(null)}
-          onEdit={() => {
-            setEditingTemplate(viewingTemplate);
-            setViewingTemplate(null);
-          }}
-        />
       )}
 
       {/* Edit Template Dialog */}
@@ -578,119 +565,7 @@ function EditTemplateDialog({
   );
 }
 
-// View Template Dialog Component
-function ViewTemplateDialog({ 
-  template, 
-  onClose, 
-  onEdit 
-}: { 
-  template: TrainingTemplate; 
-  onClose: () => void; 
-  onEdit?: () => void; 
-}) {
-  const workouts = template.templateData?.workouts || [];
 
-  return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Eye className="h-5 w-5" />
-            {template.name}
-          </DialogTitle>
-          <DialogDescription>
-            {template.description}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto">
-          <div className="space-y-6">
-            {/* Template Info */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 border">
-              <div className="text-center">
-                <div className="text-sm font-medium text-muted-foreground">Category</div>
-                <div className="text-lg font-semibold capitalize">{template.category}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-medium text-muted-foreground">Days/Week</div>
-                <div className="text-lg font-semibold">{template.daysPerWeek}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-medium text-muted-foreground">Workouts</div>
-                <div className="text-lg font-semibold">{workouts.length}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-medium text-muted-foreground">Total Exercises</div>
-                <div className="text-lg font-semibold">
-                  {workouts.reduce((acc, w) => acc + (w.exercises?.length || 0), 0)}
-                </div>
-              </div>
-            </div>
-
-            {/* Workouts List */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold">Workout Breakdown</h4>
-              {workouts.map((workout, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">
-                        Day {index + 1}: {workout.name}
-                      </CardTitle>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {workout.estimatedDuration}m
-                      </div>
-                    </div>
-                    {workout.focus && workout.focus.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {workout.focus.map((muscle, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {muscle}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="space-y-2">
-                      {workout.exercises?.map((exercise, exIdx) => (
-                        <div 
-                          key={exIdx} 
-                          className="flex items-center justify-between p-3 bg-muted/20 border"
-                        >
-                          <div className="flex-1">
-                            <div className="font-medium">{exercise.exerciseName}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {exercise.sets} sets × {exercise.repsRange} reps
-                            </div>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {exercise.restPeriod}s rest
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <DialogFooter className="flex-shrink-0">
-          <Button variant="outline" onClick={onClose}>Close</Button>
-          {template.createdBy === 'user' && onEdit && (
-            <Button onClick={onEdit}>
-              <Edit2 className="h-4 w-4 mr-2" />
-              Edit Template
-            </Button>
-          )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 // Enhanced Edit Template Dialog Component with Exercise Management
 function EnhancedEditTemplateDialog({ 

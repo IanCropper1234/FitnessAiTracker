@@ -417,6 +417,34 @@ export class TemplateEngine {
   }
 
   /**
+   * Get a specific template by ID
+   */
+  static async getTemplateById(templateId: number, userId?: number): Promise<any | null> {
+    try {
+      console.log('Fetching template with ID:', templateId, 'userId:', userId);
+      
+      const result = await db.select().from(trainingTemplates)
+        .where(
+          and(
+            eq(trainingTemplates.id, templateId),
+            eq(trainingTemplates.isActive, true)
+          )
+        );
+      
+      if (result.length === 0) {
+        console.log('Template not found');
+        return null;
+      }
+      
+      console.log('Found template:', result[0].name);
+      return result[0];
+    } catch (error) {
+      console.error('Error in getTemplateById:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Create a user-defined training template
    */
   static async createUserTemplate(
