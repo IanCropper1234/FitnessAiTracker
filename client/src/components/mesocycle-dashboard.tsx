@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -22,7 +23,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import MesocycleProgramBuilder from "./mesocycle-program-builder";
+// import MesocycleProgramBuilder from "./mesocycle-program-builder"; // Replaced with standalone page
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,8 +75,7 @@ interface MesocycleDashboardProps {
 export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
-  const [showProgramBuilder, setShowProgramBuilder] = useState(false);
+  const [, setLocation] = useLocation();
 
   // Get current mesocycles
   const { data: mesocycles = [], isLoading: mesocyclesLoading } = useQuery({
@@ -373,7 +373,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </CardHeader>
           <CardContent>
             <Button 
-              onClick={() => setShowProgramBuilder(true)}
+              onClick={() => setLocation('/create-mesocycle')}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -562,7 +562,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
         <CardContent className="pt-6">
           <div className="flex flex-wrap gap-2 justify-center">
             <Button
-              onClick={() => setShowProgramBuilder(true)}
+              onClick={() => setLocation('/create-mesocycle')}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -571,15 +571,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </div>
         </CardContent>
       </Card>
-      {/* Program Builder Dialog */}
-      <MesocycleProgramBuilder
-        isOpen={showProgramBuilder}
-        onClose={() => setShowProgramBuilder(false)}
-        userId={userId}
-        onCreateSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
-        }}
-      />
+      {/* Program Builder moved to standalone page: /create-mesocycle */}
     </div>
   );
 }

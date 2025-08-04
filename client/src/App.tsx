@@ -20,6 +20,7 @@ import { CreateWorkoutSession } from "./pages/create-workout-session";
 import CreateTrainingTemplate from "./pages/create-training-template";
 import TemplateDetails from "./pages/template-details";
 import EditTemplatePage from "./pages/edit-template";
+import CreateMesocyclePage from "./pages/create-mesocycle";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
@@ -167,6 +168,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/create-training-template">
           <AnimatedPage>
             {user ? <CreateTrainingTemplate /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/create-mesocycle">
+          <AnimatedPage>
+            {user ? <CreateMesocyclePage /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route path="/reports">
