@@ -54,8 +54,8 @@ interface WorkoutExercise {
   exercise: Exercise;
   setsData?: WorkoutSet[];
   // Support both field names for backward compatibility
-  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'rest_pause' | 'cluster_set' | 'giant_set' | 'tempo' | null;
-  specialTrainingMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'rest_pause' | 'cluster_set' | 'giant_set' | 'tempo' | null;
+  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
+  specialTrainingMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
   specialConfig?: any;
   specialMethodConfig?: any;
 }
@@ -194,28 +194,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           let normalizedMethod = specialMethod.trim().toLowerCase();
           console.log(`Normalized method: "${normalizedMethod}"`);
           
-          // Handle multiple possible database formats and normalize to UI format
+          // Handle multiple possible database formats
           if (normalizedMethod === 'dropset' || normalizedMethod === 'drop_set') {
             console.log(`Converting ${normalizedMethod} to drop_set`);
             specialMethod = 'drop_set';
-          } else if (normalizedMethod === 'myorepmatch' || normalizedMethod === 'myorep_match') {
-            console.log(`Converting ${normalizedMethod} to myorep_match`);
-            specialMethod = 'myorep_match';
-          } else if (normalizedMethod === 'myorepnomatch' || normalizedMethod === 'myorep_no_match') {
-            console.log(`Converting ${normalizedMethod} to myorep_no_match`);
-            specialMethod = 'myorep_no_match';
-          } else if (normalizedMethod === 'restpause' || normalizedMethod === 'rest_pause') {
-            console.log(`Converting ${normalizedMethod} to rest_pause`);
-            specialMethod = 'rest_pause';
-          } else if (normalizedMethod === 'clusterset' || normalizedMethod === 'cluster_set') {
-            console.log(`Converting ${normalizedMethod} to cluster_set`);
-            specialMethod = 'cluster_set';
-          } else if (normalizedMethod === 'giantset' || normalizedMethod === 'giant_set') {
-            console.log(`Converting ${normalizedMethod} to giant_set`);
-            specialMethod = 'giant_set';
-          } else if (normalizedMethod === 'tempo') {
-            console.log(`No conversion needed for tempo`);
-            specialMethod = 'tempo';
           } else {
             console.log(`No conversion needed for: "${normalizedMethod}" (length: ${normalizedMethod.length})`);
           }
@@ -238,7 +220,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             uiConfig.activationSet = specialConfig.activationSet !== false; // Default to true
           }
           
-          if (specialMethod === 'drop_set') {
+          if (specialMethod === 'drop_set' || specialMethod === 'dropset') {
             // Handle both template database format and UI format
             if (specialConfig.drops !== undefined && specialConfig.weightReduction !== undefined) {
               // Database format from template: {"drops": 1, "weightReduction": 20}
@@ -263,21 +245,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             }
           }
           
-          if (specialMethod === 'rest_pause') {
-            // Rest Pause method configuration
-            uiConfig.totalReps = specialConfig.totalReps || 25;
-            uiConfig.miniSets = specialConfig.miniSets || 4;
-            uiConfig.restSeconds = specialConfig.restSeconds || 10;
-          }
-          
-          if (specialMethod === 'cluster_set') {
-            // Cluster Set method configuration
-            uiConfig.repsPerCluster = specialConfig.repsPerCluster || 3;
-            uiConfig.clusters = specialConfig.clusters || 4;
-            uiConfig.intraSetRest = specialConfig.intraSetRest || 20;
-            uiConfig.interSetRest = specialConfig.interSetRest || 180;
-          }
-          
           if (specialMethod === 'giant_set') {
             // For Giant Set, handle different config formats
             uiConfig.totalTargetReps = specialConfig.totalTargetReps || 40;
@@ -292,14 +259,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             // Handle different rest field names
             uiConfig.restSeconds = specialConfig.restSeconds || 
                                  specialConfig.giantRestSeconds || 10;
-          }
-          
-          if (specialMethod === 'tempo') {
-            // Tempo method configuration
-            uiConfig.eccentric = specialConfig.eccentric || 4;
-            uiConfig.pause = specialConfig.pause || 2;
-            uiConfig.concentric = specialConfig.concentric || 1;
-            uiConfig.topPause = specialConfig.topPause || 1;
           }
           
           console.log(`Final UI config for exercise ${exercise.id}:`, uiConfig);
