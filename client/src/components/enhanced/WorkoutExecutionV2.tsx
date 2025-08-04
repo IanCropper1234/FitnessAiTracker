@@ -215,25 +215,25 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             uiConfig.dropRestSeconds = specialConfig.dropRestSeconds || 10;
             
             // Legacy support for execution-specific fields
-            if (exercise.specialConfig.dropsetWeight) {
-              uiConfig.dropsetWeight = exercise.specialConfig.dropsetWeight;
+            if (specialConfig.dropsetWeight) {
+              uiConfig.dropsetWeight = specialConfig.dropsetWeight;
             }
           }
           
-          if (exercise.specialMethod === 'giant_set') {
+          if (specialMethod === 'giant_set') {
             // For Giant Set, handle different config formats
-            uiConfig.totalTargetReps = exercise.specialConfig.totalTargetReps || 40;
+            uiConfig.totalTargetReps = specialConfig.totalTargetReps || 40;
             
             // Handle both numeric and string formats for miniSetReps
-            if (typeof exercise.specialConfig.miniSetReps === 'string') {
-              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps;
+            if (typeof specialConfig.miniSetReps === 'string') {
+              uiConfig.miniSetReps = specialConfig.miniSetReps;
             } else {
-              uiConfig.miniSetReps = exercise.specialConfig.miniSetReps || 5;
+              uiConfig.miniSetReps = specialConfig.miniSetReps || 5;
             }
             
             // Handle different rest field names
-            uiConfig.restSeconds = exercise.specialConfig.restSeconds || 
-                                 exercise.specialConfig.giantRestSeconds || 10;
+            uiConfig.restSeconds = specialConfig.restSeconds || 
+                                 specialConfig.giantRestSeconds || 10;
           }
           
           console.log(`Final UI config for exercise ${exercise.id}:`, uiConfig);
