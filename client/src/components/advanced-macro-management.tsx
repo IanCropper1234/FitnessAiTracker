@@ -562,10 +562,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-      </Card>
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 bg-muted p-1 h-10" role="tablist">
+        <TabsList className="grid w-full grid-cols-3 bg-muted p-1 h-10 border-0 shadow-none" role="tablist">
           <TabsTrigger 
             value="weekly-adjustment" 
             className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap rounded-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"

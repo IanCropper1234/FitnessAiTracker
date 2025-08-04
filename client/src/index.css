@@ -40,6 +40,8 @@
   [data-state="active"],
   [data-state="inactive"] {
     border-radius: revert !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* Exception for circular timer FAB - force circular shape with highest specificity */
