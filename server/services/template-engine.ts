@@ -117,14 +117,14 @@ export class TemplateEngine {
         
         // Find relevant muscle group landmarks for this exercise
         const relevantLandmarks = userLandmarks.filter(landmark =>
-          exercise.muscleGroups.includes(landmark.muscleGroupName)
+          exercise.muscleGroups?.includes(landmark.muscleGroupName)
         );
 
         let adjustedSets = templateExercise.sets;
         
         // Adjust sets based on recovery and current volume
         if (relevantLandmarks.length > 0) {
-          const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + l.recoveryLevel, 0) / relevantLandmarks.length;
+          const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + (l.recoveryLevel || 5), 0) / relevantLandmarks.length;
           
           if (avgRecovery < 5) {
             // Poor recovery: reduce volume
@@ -138,7 +138,7 @@ export class TemplateEngine {
         customizedExercises.push({
           exerciseId: exercise.id,
           exerciseName: exercise.name,
-          muscleGroups: exercise.muscleGroups,
+          muscleGroups: exercise.muscleGroups || [],
           sets: Math.round(adjustedSets),
           repsRange: templateExercise.repsRange,
           restPeriod: templateExercise.restPeriod,
@@ -266,14 +266,14 @@ export class TemplateEngine {
       
       // Find relevant muscle group landmarks for this exercise
       const relevantLandmarks = userLandmarks.filter(landmark =>
-        exercise.muscleGroups.includes(landmark.muscleGroupName)
+        exercise.muscleGroups?.includes(landmark.muscleGroupName)
       );
 
       let adjustedSets = templateExercise.sets;
       
       // Adjust sets based on recovery and current volume
       if (relevantLandmarks.length > 0) {
-        const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + l.recoveryLevel, 0) / relevantLandmarks.length;
+        const avgRecovery = relevantLandmarks.reduce((sum, l) => sum + (l.recoveryLevel || 5), 0) / relevantLandmarks.length;
         
         if (avgRecovery < 5) {
           // Poor recovery: reduce volume
@@ -287,7 +287,7 @@ export class TemplateEngine {
       customizedExercises.push({
         exerciseId: exercise.id,
         exerciseName: exercise.name,
-        muscleGroups: exercise.muscleGroups,
+        muscleGroups: exercise.muscleGroups || [],
         sets: Math.round(adjustedSets),
         repsRange: templateExercise.repsRange,
         restPeriod: templateExercise.restPeriod,
@@ -393,7 +393,6 @@ export class TemplateEngine {
     const [template] = await db
       .insert(trainingTemplates)
       .values({
-        userId,
         name,
         description,
         category,
@@ -402,7 +401,7 @@ export class TemplateEngine {
         templateData: JSON.stringify(templateData),
         rpMethodology: {},
         isActive: true,
-        createdBy: 'user'
+        createdBy: `user_${userId}`
       })
       .returning();
 
@@ -443,29 +442,7 @@ export class TemplateEngine {
     return updated || null;
   }
 
-  /**
-   * Update a user-created template
-   */
-  static async updateTemplate(templateId: number, updateData: any): Promise<TrainingTemplate | null> {
-    const [updated] = await db
-      .update(trainingTemplates)
-      .set({
-        name: updateData.name,
-        description: updateData.description,
-        category: updateData.category,
-        daysPerWeek: updateData.daysPerWeek,
-        templateData: updateData.templateData
-      })
-      .where(
-        and(
-          eq(trainingTemplates.id, templateId),
-          eq(trainingTemplates.createdBy, 'user')
-        )
-      )
-      .returning();
 
-    return updated || null;
-  }
 
   /**
    * Delete a user-created template

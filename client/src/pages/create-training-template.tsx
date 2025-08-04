@@ -87,7 +87,8 @@ export default function CreateTrainingTemplate() {
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       try {
-        return await apiRequest('/api/training/templates', 'POST', data);
+        const response = await apiRequest('POST', '/api/training/templates', data);
+        return await response.json();
       } catch (error) {
         console.error('Template creation error:', error);
         throw error;
