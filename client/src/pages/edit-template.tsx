@@ -130,12 +130,39 @@ export default function EditTemplatePage() {
   // Initialize form data when template is loaded
   useEffect(() => {
     if (template) {
+      // Normalize the template data to use consistent naming format
+      const normalizedTemplateData = template.templateData ? {
+        ...template.templateData,
+        workouts: template.templateData.workouts?.map((workout: any) => ({
+          ...workout,
+          exercises: workout.exercises?.map((exercise: any) => {
+            // Normalize specialTrainingMethod to use underscore format
+            let normalizedMethod = exercise.specialTrainingMethod || exercise.specialMethod;
+            if (normalizedMethod) {
+              // Convert old camelCase to new underscore format
+              if (normalizedMethod === 'dropSet') normalizedMethod = 'drop_set';
+              else if (normalizedMethod === 'restPause') normalizedMethod = 'rest_pause';
+              else if (normalizedMethod === 'myorepMatch') normalizedMethod = 'myorep_match';
+              else if (normalizedMethod === 'clusterSet') normalizedMethod = 'cluster_set';
+              else if (normalizedMethod === 'giantSet') normalizedMethod = 'giant_set';
+            }
+            
+            return {
+              ...exercise,
+              specialTrainingMethod: normalizedMethod,
+              // Ensure specialMethodConfig is preserved
+              specialMethodConfig: exercise.specialMethodConfig || exercise.specialConfig
+            };
+          }) || []
+        })) || []
+      } : { workouts: [] };
+
       setFormData({
         name: template.name,
         description: template.description,
         category: template.category,
         daysPerWeek: template.daysPerWeek,
-        templateData: template.templateData || { workouts: [] }
+        templateData: normalizedTemplateData
       });
     }
   }, [template]);
@@ -306,15 +333,15 @@ export default function EditTemplatePage() {
 
   const getDefaultMethodConfig = (method: string) => {
     switch (method) {
-      case 'dropSet':
+      case 'drop_set':
         return { drops: 2, weightReduction: 20 };
-      case 'restPause':
+      case 'rest_pause':
         return { pauseDuration: 15, totalReps: 20 };
-      case 'myorepMatch':
+      case 'myorep_match':
         return { activationReps: 12, backoffReps: 3 };
-      case 'clusterSet':
+      case 'cluster_set':
         return { repsPerCluster: 3, clusters: 5, restBetween: 15 };
-      case 'giantSet':
+      case 'giant_set':
         return { exerciseCount: 4, restBetweenExercises: 15 };
       case 'tempo':
         return { eccentric: 3, pause: 1, concentric: 1 };
