@@ -110,7 +110,8 @@ export class TemplateEngine {
       // Customize exercises for this workout
       const customizedExercises: ExerciseTemplate[] = [];
       
-      for (const templateExercise of workoutTemplate.exercises) {
+      for (let templateIndex = 0; templateIndex < workoutTemplate.exercises.length; templateIndex++) {
+        const templateExercise = workoutTemplate.exercises[templateIndex];
         // Get exercise details
         const exerciseDetails = await db
           .select({
@@ -270,7 +271,8 @@ export class TemplateEngine {
     // Customize template based on user's current needs
     const customizedExercises: ExerciseTemplate[] = [];
     
-    for (const templateExercise of workoutTemplate.exercises) {
+    for (let templateIndex = 0; templateIndex < workoutTemplate.exercises.length; templateIndex++) {
+      const templateExercise = workoutTemplate.exercises[templateIndex];
       // Get exercise details
       const exerciseDetails = await db
         .select({
