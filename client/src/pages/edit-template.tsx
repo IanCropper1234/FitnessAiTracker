@@ -27,14 +27,18 @@ import {
 } from "lucide-react";
 
 interface Exercise {
+  id?: number;
   exerciseId?: number;
-  exerciseName: string;
+  name?: string;
+  exerciseName?: string; // for backward compatibility
   muscleGroups?: string[];
   sets: number;
-  repsRange: string;
+  targetReps?: string;
+  repsRange?: string; // for backward compatibility
   restPeriod: number;
   orderIndex?: number;
-  trainingMethod?: string;
+  specialTrainingMethod?: string;
+  trainingMethod?: string; // for backward compatibility
   notes?: string;
 }
 
@@ -160,11 +164,14 @@ export default function EditTemplatePage() {
     if (!currentWorkout) return;
 
     const newExercise = {
+      id: exercise.id,
       exerciseId: exercise.id,
-      exerciseName: exercise.name,
+      name: exercise.name,
+      exerciseName: exercise.name, // for backward compatibility
       muscleGroups: exercise.muscleGroups || [],
       sets: 3,
-      repsRange: "8-12",
+      targetReps: "8-12",
+      repsRange: "8-12", // for backward compatibility
       restPeriod: 60,
       orderIndex: (currentWorkout.exercises?.length || 0) + 1
     };
@@ -425,15 +432,15 @@ export default function EditTemplatePage() {
                           {/* Exercise Name and Details */}
                           <div className="flex items-center justify-between">
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-sm truncate">{exercise.exerciseName || 'Unknown Exercise'}</h4>
+                              <h4 className="font-medium text-sm truncate">{exercise.name || exercise.exerciseName || 'Unknown Exercise'}</h4>
                               {exercise.muscleGroups && exercise.muscleGroups.length > 0 && (
                                 <p className="text-xs text-muted-foreground truncate">
                                   {exercise.muscleGroups.join(', ')}
                                 </p>
                               )}
-                              {exercise.trainingMethod && (
+                              {(exercise.specialTrainingMethod || exercise.trainingMethod) && (
                                 <Badge variant="outline" className="text-xs mt-1">
-                                  {exercise.trainingMethod}
+                                  {exercise.specialTrainingMethod || exercise.trainingMethod}
                                 </Badge>
                               )}
                             </div>
@@ -463,8 +470,8 @@ export default function EditTemplatePage() {
                             <div>
                               <Label className="text-xs">Reps</Label>
                               <Input
-                                value={exercise.repsRange || ''}
-                                onChange={(e) => handleUpdateExercise(index, 'repsRange', e.target.value)}
+                                value={exercise.targetReps || exercise.repsRange || ''}
+                                onChange={(e) => handleUpdateExercise(index, 'targetReps', e.target.value)}
                                 className="h-7 text-xs"
                                 placeholder="8-12"
                               />
@@ -487,18 +494,19 @@ export default function EditTemplatePage() {
                             <div className="flex-1 min-w-0 mr-2">
                               <Label className="text-xs">Training Method</Label>
                               <Select 
-                                value={exercise.trainingMethod || 'none'} 
-                                onValueChange={(value) => handleUpdateExercise(index, 'trainingMethod', value === 'none' ? undefined : value)}
+                                value={exercise.specialTrainingMethod || exercise.trainingMethod || 'none'} 
+                                onValueChange={(value) => handleUpdateExercise(index, 'specialTrainingMethod', value === 'none' ? undefined : value)}
                               >
                                 <SelectTrigger className="h-7 text-xs">
                                   <SelectValue placeholder="None" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="none">None</SelectItem>
-                                  <SelectItem value="drop_set">Drop Set</SelectItem>
-                                  <SelectItem value="rest_pause">Rest-Pause</SelectItem>
-                                  <SelectItem value="myo_reps">Myo-Reps</SelectItem>
-                                  <SelectItem value="cluster_set">Cluster Set</SelectItem>
+                                  <SelectItem value="dropSet">Drop Set</SelectItem>
+                                  <SelectItem value="restPause">Rest-Pause</SelectItem>
+                                  <SelectItem value="myorepMatch">Myo-Reps</SelectItem>
+                                  <SelectItem value="clusterSet">Cluster Set</SelectItem>
+                                  <SelectItem value="giantSet">Giant Set</SelectItem>
                                   <SelectItem value="tempo">Tempo</SelectItem>
                                   <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
                                 </SelectContent>
