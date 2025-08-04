@@ -61,7 +61,7 @@ interface EnhancedSetInputProps {
   isBodyWeightExercise?: boolean;
   exerciseId?: number; // For fetching historical data
   // Special Training Methods
-  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
+  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'rest_pause' | 'cluster_set' | 'giant_set' | 'tempo' | null;
   onSpecialMethodChange?: (method: string | null) => void;
   specialConfig?: any;
   onSpecialConfigChange?: (config: any) => void;
@@ -345,8 +345,8 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <label className="text-xs font-medium text-foreground">Training Method</label>
               {/* History Auto-Apply Icon */}
               <SpecialMethodHistoryButton 
-                exerciseId={exerciseId}
-                userId={userId}
+                exerciseId={exerciseId || 0}
+                userId={userId || 0}
                 onApplyHistoricalData={(historicalData) => {
                   if (historicalData.specialMethod && onSpecialMethodChange) {
                     onSpecialMethodChange(historicalData.specialMethod);
@@ -388,6 +388,24 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   <div className="flex items-center gap-2">
                     <Timer className="h-3 w-3" />
                     Giant Set (40+ reps)
+                  </div>
+                </SelectItem>
+                <SelectItem value="rest_pause">
+                  <div className="flex items-center gap-2">
+                    <Timer className="h-3 w-3" />
+                    Rest Pause
+                  </div>
+                </SelectItem>
+                <SelectItem value="cluster_set">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3" />
+                    Cluster Set
+                  </div>
+                </SelectItem>
+                <SelectItem value="tempo">
+                  <div className="flex items-center gap-2">
+                    <Scale className="h-3 w-3" />
+                    Tempo
                   </div>
                 </SelectItem>
                 <SelectItem value="superset">
@@ -799,6 +817,237 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         )}
 
+        {/* Rest Pause Configuration */}
+        {specialMethod === 'rest_pause' && !set.completed && isActive && (
+          <div className="bg-purple-500/10 border border-purple-500/20 p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-purple-400 font-medium">
+              <Timer className="h-3 w-3" />
+              Rest Pause Configuration
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-xs text-purple-300">Total Reps</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.totalReps ?? 25}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    totalReps: parseInt(e.target.value) || 25,
+                    miniSets: specialConfig?.miniSets || 4,
+                    restSeconds: specialConfig?.restSeconds || 10
+                  })}
+                  min="20"
+                  max="50"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-purple-300">Mini Sets</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.miniSets ?? 4}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    miniSets: parseInt(e.target.value) || 4,
+                    totalReps: specialConfig?.totalReps || 25,
+                    restSeconds: specialConfig?.restSeconds || 10
+                  })}
+                  min="3"
+                  max="8"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-purple-300">Rest (sec)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.restSeconds ?? 10}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    restSeconds: parseInt(e.target.value) || 10,
+                    totalReps: specialConfig?.totalReps || 25,
+                    miniSets: specialConfig?.miniSets || 4
+                  })}
+                  min="5"
+                  max="20"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+            </div>
+            <div className="text-xs text-purple-300/70">
+              Perform {specialConfig?.totalReps || 25} total reps across {specialConfig?.miniSets || 4} mini-sets with {specialConfig?.restSeconds || 10}s rest
+            </div>
+          </div>
+        )}
+
+        {/* Cluster Set Configuration */}
+        {specialMethod === 'cluster_set' && !set.completed && isActive && (
+          <div className="bg-cyan-500/10 border border-cyan-500/20 p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-cyan-400 font-medium">
+              <Target className="h-3 w-3" />
+              Cluster Set Configuration
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-cyan-300">Reps/Cluster</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.repsPerCluster ?? 3}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    repsPerCluster: parseInt(e.target.value) || 3,
+                    clusters: specialConfig?.clusters || 4,
+                    intraSetRest: specialConfig?.intraSetRest || 20,
+                    interSetRest: specialConfig?.interSetRest || 180
+                  })}
+                  min="2"
+                  max="8"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-cyan-300">Clusters</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.clusters ?? 4}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    clusters: parseInt(e.target.value) || 4,
+                    repsPerCluster: specialConfig?.repsPerCluster || 3,
+                    intraSetRest: specialConfig?.intraSetRest || 20,
+                    interSetRest: specialConfig?.interSetRest || 180
+                  })}
+                  min="3"
+                  max="8"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-cyan-300">Intra-Set Rest (sec)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.intraSetRest ?? 20}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    intraSetRest: parseInt(e.target.value) || 20,
+                    repsPerCluster: specialConfig?.repsPerCluster || 3,
+                    clusters: specialConfig?.clusters || 4,
+                    interSetRest: specialConfig?.interSetRest || 180
+                  })}
+                  min="10"
+                  max="60"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-cyan-300">Inter-Set Rest (sec)</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.interSetRest ?? 180}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    interSetRest: parseInt(e.target.value) || 180,
+                    repsPerCluster: specialConfig?.repsPerCluster || 3,
+                    clusters: specialConfig?.clusters || 4,
+                    intraSetRest: specialConfig?.intraSetRest || 20
+                  })}
+                  min="120"
+                  max="300"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+            </div>
+            <div className="text-xs text-cyan-300/70">
+              {specialConfig?.clusters || 4} clusters × {specialConfig?.repsPerCluster || 3} reps with {specialConfig?.intraSetRest || 20}s between clusters
+            </div>
+          </div>
+        )}
+
+        {/* Tempo Configuration */}
+        {specialMethod === 'tempo' && !set.completed && isActive && (
+          <div className="bg-green-500/10 border border-green-500/20 p-2 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-green-400 font-medium">
+              <Scale className="h-3 w-3" />
+              Tempo Configuration
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              <div>
+                <label className="text-xs text-green-300">Eccentric</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.eccentric ?? 4}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    eccentric: parseInt(e.target.value) || 4,
+                    pause: specialConfig?.pause || 2,
+                    concentric: specialConfig?.concentric || 1,
+                    topPause: specialConfig?.topPause || 1
+                  })}
+                  min="1"
+                  max="8"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-green-300">Pause</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.pause ?? 2}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    pause: parseInt(e.target.value) || 2,
+                    eccentric: specialConfig?.eccentric || 4,
+                    concentric: specialConfig?.concentric || 1,
+                    topPause: specialConfig?.topPause || 1
+                  })}
+                  min="0"
+                  max="5"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-green-300">Concentric</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.concentric ?? 1}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    concentric: parseInt(e.target.value) || 1,
+                    eccentric: specialConfig?.eccentric || 4,
+                    pause: specialConfig?.pause || 2,
+                    topPause: specialConfig?.topPause || 1
+                  })}
+                  min="1"
+                  max="3"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-green-300">Top Pause</label>
+                <Input
+                  type="number"
+                  value={specialConfig?.topPause ?? 1}
+                  onChange={(e) => onSpecialConfigChange?.({
+                    ...specialConfig,
+                    topPause: parseInt(e.target.value) || 1,
+                    eccentric: specialConfig?.eccentric || 4,
+                    pause: specialConfig?.pause || 2,
+                    concentric: specialConfig?.concentric || 1
+                  })}
+                  min="0"
+                  max="3"
+                  className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                />
+              </div>
+            </div>
+            <div className="text-xs text-green-300/70">
+              Tempo: {specialConfig?.eccentric || 4}-{specialConfig?.pause || 2}-{specialConfig?.concentric || 1}-{specialConfig?.topPause || 1} (Ecc-Pause-Con-Top)
+            </div>
+          </div>
+        )}
+
         {/* Superset Configuration */}
         {specialMethod === 'superset' && !set.completed && isActive && (
           <div className="bg-purple-500/10 border border-purple-500/20 p-2 space-y-2">
@@ -993,6 +1242,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
                 {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
                 {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'rest_pause' && <Timer className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'cluster_set' && <Target className="h-2 w-2 mr-0.5" />}
+                {specialMethod === 'tempo' && <Scale className="h-2 w-2 mr-0.5" />}
                 {specialMethod === 'superset' && <Plus className="h-2 w-2 mr-0.5" />}
                 {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
               </Badge>
@@ -1016,6 +1268,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   {specialMethod === 'drop_set' && <Minus className="h-2 w-2 mr-0.5" />}
                   {specialMethod === 'myorep_match' && <Target className="h-2 w-2 mr-0.5" />}
                   {specialMethod === 'myorep_no_match' && <Zap className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'rest_pause' && <Timer className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'cluster_set' && <Target className="h-2 w-2 mr-0.5" />}
+                  {specialMethod === 'tempo' && <Scale className="h-2 w-2 mr-0.5" />}
                   {specialMethod === 'superset' && <Plus className="h-2 w-2 mr-0.5" />}
                   {specialMethod.replace('_', ' ').toUpperCase().slice(0, 3)}
                 </Badge>
