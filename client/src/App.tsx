@@ -194,14 +194,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             {user ? <NutritionFactsPage /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
-        <Route path="/template/:id">
-          <AnimatedPage>
-            {user ? <TemplateDetails /> : <div className="animate-pulse">Loading...</div>}
-          </AnimatedPage>
-        </Route>
         <Route path="/edit-template/:id">
           <AnimatedPage>
             {user ? <EditTemplatePage /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/template/:id">
+          <AnimatedPage>
+            {user ? <TemplateDetails /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route>

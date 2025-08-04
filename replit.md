@@ -19,6 +19,12 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Adherence percentages, weight changes, and energy levels must match across RP Analysis and Progress Metrics
 - Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
 
+**Critical Routing Rules (Wouter):**
+- **ROUTE ORDER MATTERS**: More specific routes must be placed BEFORE more generic routes
+- Example: `/edit-template/:id` must come BEFORE `/template/:id` to prevent incorrect matching
+- Parameterized routes should be ordered from most specific to least specific
+- Always place catch-all routes (`<Route>` without path) at the very end
+
 ## System Architecture
 
 ### Frontend Architecture (Mobile-First Design)
