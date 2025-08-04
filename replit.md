@@ -24,6 +24,7 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Example: `/edit-template/:id` must come BEFORE `/template/:id` to prevent incorrect matching
 - Parameterized routes should be ordered from most specific to least specific
 - Always place catch-all routes (`<Route>` without path) at the very end
+- **Key Route Paths**: `/create-training-template` (not `/training/create-template`), `/create-mesocycle` (not `/training/create-mesocycle`)
 
 ## System Architecture
 

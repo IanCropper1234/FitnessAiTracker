@@ -215,7 +215,7 @@ export default function CreateMesocyclePage() {
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-primary underline" 
-                  onClick={() => setLocation('/training/create-template')}
+                  onClick={() => setLocation('/create-training-template')}
                 >
                   Create one first
                 </Button> before starting your mesocycle.
