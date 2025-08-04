@@ -795,6 +795,7 @@ export function CreateWorkoutSession() {
                 </Button>
               </Card>
             )}
+          </div>
         </CardContent>
       </Card>
 
