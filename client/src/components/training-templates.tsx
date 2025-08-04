@@ -242,7 +242,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
     return Array.from({ length: 3 }, (_, i) => (
       <Star 
         key={i} 
-        className={`h-4 w-4 ${i < stars ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+        className={`h-2.5 w-2.5 ${i < stars ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
       />
     ));
   };
@@ -345,137 +345,140 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         </div>
       </div>
 
-      {/* Templates Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* Templates Grid - Optimized for iOS */}
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {templates.map((template: TrainingTemplate) => (
           <Card key={template.id} className="overflow-hidden">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-lg">{template.name}</CardTitle>
-                    {template.createdBy?.startsWith('user_') && (
-                      <Badge variant="outline" className="text-xs">
-                        <User className="h-3 w-3 mr-1" />
-                        Custom
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge className={getCategoryColor(template.category)}>
-                      {template.category}
+            <CardHeader className="p-3 pb-2">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base leading-tight truncate flex-1 mr-2">{template.name}</CardTitle>
+                  {template.createdBy?.startsWith('user_') && (
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 h-auto">
+                      <User className="h-2.5 w-2.5 mr-0.5" />
+                      Custom
                     </Badge>
-                    <div className="flex items-center">
-                      {getDifficultyStars(template.category)}
-                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <Badge className={getCategoryColor(template.category) + " text-[10px] px-1.5 py-0.5 h-auto"}>
+                    {template.category}
+                  </Badge>
+                  <div className="flex items-center gap-0.5">
+                    {getDifficultyStars(template.category)}
                   </div>
                 </div>
               </div>
-              <CardDescription className="text-sm line-clamp-2">
+              <CardDescription className="text-xs line-clamp-2 mt-2 leading-tight">
                 {template.description}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Template Metrics */}
-                <div className="grid grid-cols-3 gap-3 text-center">
+            <CardContent className="p-3">
+              <div className="space-y-3">
+                {/* Compact Template Metrics */}
+                <div className="grid grid-cols-3 gap-2 text-center py-2 bg-muted/20 rounded">
                   <div className="flex flex-col items-center">
-                    <Calendar className="h-4 w-4 text-muted-foreground mb-1" />
-                    <span className="text-xs text-muted-foreground">Days/Week</span>
-                    <span className="font-semibold">{template.daysPerWeek}</span>
+                    <Calendar className="h-3 w-3 text-muted-foreground mb-0.5" />
+                    <span className="text-[10px] text-muted-foreground leading-tight">Days</span>
+                    <span className="text-sm font-semibold">{template.daysPerWeek}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Clock className="h-4 w-4 text-muted-foreground mb-1" />
-                    <span className="text-xs text-muted-foreground">Duration</span>
-                    <span className="font-semibold">
+                    <Clock className="h-3 w-3 text-muted-foreground mb-0.5" />
+                    <span className="text-[10px] text-muted-foreground leading-tight">Duration</span>
+                    <span className="text-sm font-semibold">
                       {template.templateData?.workouts?.[0]?.estimatedDuration || 45}m
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Dumbbell className="h-4 w-4 text-muted-foreground mb-1" />
-                    <span className="text-xs text-muted-foreground">Exercises</span>
-                    <span className="font-semibold">
+                    <Dumbbell className="h-3 w-3 text-muted-foreground mb-0.5" />
+                    <span className="text-[10px] text-muted-foreground leading-tight">Exercises</span>
+                    <span className="text-sm font-semibold">
                       {template.templateData?.workouts?.reduce((acc, w) => acc + (w.exercises?.length || 0), 0) || 0}
                     </span>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-2">
+                {/* Primary Action Buttons - More Compact */}
+                <div className="flex gap-1.5">
                   <Button
                     onClick={() => generateWorkoutMutation.mutate({ 
                       templateId: template.id, 
-                      workoutDay: 0, // Always start from Day 1
+                      workoutDay: 0,
                       userId 
                     })}
                     disabled={generateWorkoutMutation.isPending}
-                    className="flex-1"
+                    className="flex-1 h-8 text-xs"
                     size="sm"
                   >
-                    <Dumbbell className="h-4 w-4 mr-1" />
-                    Start Workout
+                    <Dumbbell className="h-3 w-3 mr-1" />
+                    Start
                   </Button>
                   
                   <Button
                     onClick={() => generateProgramMutation.mutate({ templateId: template.id, userId })}
                     disabled={generateProgramMutation.isPending}
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 h-8 text-xs"
                     size="sm"
                   >
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Full Program
+                    <Calendar className="h-3 w-3 mr-1" />
+                    Program
                   </Button>
                 </div>
 
-                {/* Template Actions */}
-                <div className="flex gap-2 pt-2 border-t">
-                  <Button
-                    onClick={() => setLocation(`/template/${template.id}`)}
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View Details
-                  </Button>
-                  {template.createdBy?.startsWith('user_') ? (
-                    <>
-                      <Button
-                        onClick={() => setEditingTemplate(template)}
-                        variant="ghost"
-                        size="sm"
-                        className="flex-1"
-                      >
-                        <Edit2 className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() => setEditingWorkoutsTemplate(template)}
-                        variant="ghost"
-                        size="sm"
-                        className="flex-1"
-                      >
-                        <Calendar className="h-4 w-4 mr-1" />
-                        Workouts
-                      </Button>
-                      <Button
-                        onClick={() => deleteTemplateMutation.mutate(template.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="flex-1 text-red-600 hover:text-red-700"
-                        disabled={deleteTemplateMutation.isPending}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="flex-1 text-center py-2">
-                      <span className="text-xs text-muted-foreground">System Template (Read-only)</span>
+                {/* Secondary Actions - Ultra Compact for iOS */}
+                {template.createdBy?.startsWith('user_') ? (
+                  <div className="grid grid-cols-4 gap-1 pt-2 border-t border-border/50">
+                    <Button
+                      onClick={() => setLocation(`/template/${template.id}`)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-[10px] px-1"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      onClick={() => setEditingTemplate(template)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-[10px] px-1"
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      onClick={() => setEditingWorkoutsTemplate(template)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-[10px] px-1"
+                    >
+                      <Calendar className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      onClick={() => deleteTemplateMutation.mutate(template.id)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-[10px] px-1 text-red-600 hover:text-red-700"
+                      disabled={deleteTemplateMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-1 pt-2 border-t border-border/50">
+                    <Button
+                      onClick={() => setLocation(`/template/${template.id}`)}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 h-7 text-[10px]"
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      View Details
+                    </Button>
+                    <div className="flex-1 flex items-center justify-center">
+                      <span className="text-[10px] text-muted-foreground">Read-only</span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
