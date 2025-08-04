@@ -39,6 +39,7 @@ interface Exercise {
   orderIndex?: number;
   specialTrainingMethod?: string;
   trainingMethod?: string; // for backward compatibility
+  specialMethodConfig?: any; // Configuration for special training methods
   notes?: string;
 }
 
@@ -259,6 +260,283 @@ export default function EditTemplatePage() {
     }));
   };
 
+  const handleUpdateTrainingMethod = (exerciseIndex: number, methodValue: string) => {
+    if (methodValue === 'none') {
+      handleUpdateExercise(exerciseIndex, 'specialTrainingMethod', undefined);
+      handleUpdateExercise(exerciseIndex, 'specialMethodConfig', undefined);
+    } else {
+      handleUpdateExercise(exerciseIndex, 'specialTrainingMethod', methodValue);
+      // Set default config for the method
+      const defaultConfig = getDefaultMethodConfig(methodValue);
+      handleUpdateExercise(exerciseIndex, 'specialMethodConfig', defaultConfig);
+    }
+  };
+
+  const handleUpdateMethodConfig = (exerciseIndex: number, configField: string, value: any) => {
+    if (!currentWorkout) return;
+    
+    const updatedExercises = [...currentWorkout.exercises];
+    const exercise = updatedExercises[exerciseIndex];
+    if (!exercise) return;
+    
+    const updatedConfig = {
+      ...exercise.specialMethodConfig,
+      [configField]: value
+    };
+    
+    updatedExercises[exerciseIndex] = {
+      ...exercise,
+      specialMethodConfig: updatedConfig
+    };
+    
+    const updatedWorkouts = [...(formData.templateData?.workouts || [])];
+    updatedWorkouts[activeWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: updatedExercises
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+  };
+
+  const getDefaultMethodConfig = (method: string) => {
+    switch (method) {
+      case 'dropSet':
+        return { drops: 2, weightReduction: 20 };
+      case 'restPause':
+        return { pauseDuration: 15, totalReps: 20 };
+      case 'myorepMatch':
+        return { activationReps: 12, backoffReps: 3 };
+      case 'clusterSet':
+        return { repsPerCluster: 3, clusters: 5, restBetween: 15 };
+      case 'giantSet':
+        return { exerciseCount: 4, restBetweenExercises: 15 };
+      case 'tempo':
+        return { eccentric: 3, pause: 1, concentric: 1 };
+      default:
+        return {};
+    }
+  };
+
+  const renderSpecialMethodConfig = (method: string | undefined, config: any) => {
+    if (!method || !config) return '';
+    
+    switch (method) {
+      case 'dropSet':
+        return `${config.drops || 2} drops, ${config.weightReduction || 20}% reduction`;
+      case 'restPause':
+        return `${config.pauseDuration || 15}s pause, ${config.totalReps || 20} total reps`;
+      case 'myorepMatch':
+        return `${config.activationReps || 12} activation, ${config.backoffReps || 3} backoff`;
+      case 'clusterSet':
+        return `${config.repsPerCluster || 3} reps × ${config.clusters || 5} clusters`;
+      case 'giantSet':
+        return `${config.exerciseCount || 4} exercises, ${config.restBetweenExercises || 15}s rest`;
+      case 'tempo':
+        return `${config.eccentric || 3}-${config.pause || 1}-${config.concentric || 1} tempo`;
+      default:
+        return '';
+    }
+  };
+
+  const renderSpecialMethodConfigInputs = (method: string | undefined, config: any, exerciseIndex: number) => {
+    if (!method) return null;
+    
+    switch (method) {
+      case 'dropSet':
+        return (
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div>
+              <Label className="text-xs">Drops</Label>
+              <Input
+                type="number"
+                value={config.drops || 2}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'drops', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="1"
+                max="5"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Weight Reduction (%)</Label>
+              <Input
+                type="number"
+                value={config.weightReduction || 20}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'weightReduction', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="10"
+                max="50"
+              />
+            </div>
+          </div>
+        );
+      case 'restPause':
+        return (
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div>
+              <Label className="text-xs">Pause Duration (s)</Label>
+              <Input
+                type="number"
+                value={config.pauseDuration || 15}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'pauseDuration', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="10"
+                max="30"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Total Reps</Label>
+              <Input
+                type="number"
+                value={config.totalReps || 20}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'totalReps', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="15"
+                max="30"
+              />
+            </div>
+          </div>
+        );
+      case 'myorepMatch':
+        return (
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div>
+              <Label className="text-xs">Activation Reps</Label>
+              <Input
+                type="number"
+                value={config.activationReps || 12}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'activationReps', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="8"
+                max="20"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Backoff Reps</Label>
+              <Input
+                type="number"
+                value={config.backoffReps || 3}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'backoffReps', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="2"
+                max="8"
+              />
+            </div>
+          </div>
+        );
+      case 'clusterSet':
+        return (
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <div>
+              <Label className="text-xs">Reps/Cluster</Label>
+              <Input
+                type="number"
+                value={config.repsPerCluster || 3}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'repsPerCluster', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="1"
+                max="8"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Clusters</Label>
+              <Input
+                type="number"
+                value={config.clusters || 5}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'clusters', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="3"
+                max="8"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Rest (s)</Label>
+              <Input
+                type="number"
+                value={config.restBetween || 15}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'restBetween', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="10"
+                max="30"
+              />
+            </div>
+          </div>
+        );
+      case 'giantSet':
+        return (
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div>
+              <Label className="text-xs">Exercise Count</Label>
+              <Input
+                type="number"
+                value={config.exerciseCount || 4}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'exerciseCount', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="3"
+                max="6"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Rest Between (s)</Label>
+              <Input
+                type="number"
+                value={config.restBetweenExercises || 15}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'restBetweenExercises', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="10"
+                max="30"
+              />
+            </div>
+          </div>
+        );
+      case 'tempo':
+        return (
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <div>
+              <Label className="text-xs">Eccentric (s)</Label>
+              <Input
+                type="number"
+                value={config.eccentric || 3}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'eccentric', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="1"
+                max="8"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Pause (s)</Label>
+              <Input
+                type="number"
+                value={config.pause || 1}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'pause', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="0"
+                max="5"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Concentric (s)</Label>
+              <Input
+                type="number"
+                value={config.concentric || 1}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'concentric', parseInt(e.target.value))}
+                className="h-6 text-xs"
+                min="1"
+                max="3"
+              />
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   if (templateLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -439,9 +717,16 @@ export default function EditTemplatePage() {
                                 </p>
                               )}
                               {(exercise.specialTrainingMethod || exercise.trainingMethod) && (
-                                <Badge variant="outline" className="text-xs mt-1">
-                                  {exercise.specialTrainingMethod || exercise.trainingMethod}
-                                </Badge>
+                                <div className="mt-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    {exercise.specialTrainingMethod || exercise.trainingMethod}
+                                  </Badge>
+                                  {exercise.specialMethodConfig && (
+                                    <div className="text-xs text-muted-foreground mt-1">
+                                      {renderSpecialMethodConfig(exercise.specialTrainingMethod, exercise.specialMethodConfig)}
+                                    </div>
+                                  )}
+                                </div>
                               )}
                             </div>
                             <Button
@@ -489,51 +774,61 @@ export default function EditTemplatePage() {
                             </div>
                           </div>
                           
-                          {/* Training Method and Reorder Controls */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0 mr-2">
-                              <Label className="text-xs">Training Method</Label>
-                              <Select 
-                                value={exercise.specialTrainingMethod || exercise.trainingMethod || 'none'} 
-                                onValueChange={(value) => handleUpdateExercise(index, 'specialTrainingMethod', value === 'none' ? undefined : value)}
-                              >
-                                <SelectTrigger className="h-7 text-xs">
-                                  <SelectValue placeholder="None" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">None</SelectItem>
-                                  <SelectItem value="dropSet">Drop Set</SelectItem>
-                                  <SelectItem value="restPause">Rest-Pause</SelectItem>
-                                  <SelectItem value="myorepMatch">Myo-Reps</SelectItem>
-                                  <SelectItem value="clusterSet">Cluster Set</SelectItem>
-                                  <SelectItem value="giantSet">Giant Set</SelectItem>
-                                  <SelectItem value="tempo">Tempo</SelectItem>
-                                  <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
-                                </SelectContent>
-                              </Select>
+                          {/* Training Method and Configuration */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0 mr-2">
+                                <Label className="text-xs">Training Method</Label>
+                                <Select 
+                                  value={exercise.specialTrainingMethod || exercise.trainingMethod || 'none'} 
+                                  onValueChange={(value) => handleUpdateTrainingMethod(index, value)}
+                                >
+                                  <SelectTrigger className="h-7 text-xs">
+                                    <SelectValue placeholder="None" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value="dropSet">Drop Set</SelectItem>
+                                    <SelectItem value="restPause">Rest-Pause</SelectItem>
+                                    <SelectItem value="myorepMatch">Myo-Reps</SelectItem>
+                                    <SelectItem value="clusterSet">Cluster Set</SelectItem>
+                                    <SelectItem value="giantSet">Giant Set</SelectItem>
+                                    <SelectItem value="tempo">Tempo</SelectItem>
+                                    <SelectItem value="lengthened_partials">Lengthened Partials</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="flex items-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleMoveExercise(index, index - 1)}
+                                  disabled={index === 0}
+                                  className="h-7 w-7 p-0"
+                                  title="Move Up"
+                                >
+                                  <ChevronUp className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleMoveExercise(index, index + 1)}
+                                  disabled={index === currentWorkout.exercises.length - 1}
+                                  className="h-7 w-7 p-0"
+                                  title="Move Down"
+                                >
+                                  <ChevronDown className="h-3 w-3" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-end gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleMoveExercise(index, index - 1)}
-                                disabled={index === 0}
-                                className="h-7 w-7 p-0"
-                                title="Move Up"
-                              >
-                                <ChevronUp className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleMoveExercise(index, index + 1)}
-                                disabled={index === currentWorkout.exercises.length - 1}
-                                className="h-7 w-7 p-0"
-                                title="Move Down"
-                              >
-                                <ChevronDown className="h-3 w-3" />
-                              </Button>
-                            </div>
+                            
+                            {/* Special Method Configuration */}
+                            {exercise.specialTrainingMethod && exercise.specialTrainingMethod !== 'none' && (
+                              <div className="bg-muted/30 p-2 rounded border">
+                                <Label className="text-xs font-medium">Method Configuration</Label>
+                                {renderSpecialMethodConfigInputs(exercise.specialTrainingMethod, exercise.specialMethodConfig || {}, index)}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </Card>
