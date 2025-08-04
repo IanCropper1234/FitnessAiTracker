@@ -28,10 +28,18 @@
   .rounded-bl,
   [data-radix-collection-item],
   [role="button"],
-  [class*="rounded"],
-  div[class*="bg-"],
-  div[class*="border"] {
+  [class*="rounded"]:not([role="tablist"]):not([data-state]),
+  div[class*="bg-"]:not([role="tablist"]):not([data-state]),
+  div[class*="border"]:not([role="tablist"]):not([data-state]) {
     border-radius: 0 !important;
+  }
+
+  /* Allow tabs to maintain their design system appearance */
+  [role="tablist"],
+  [role="tablist"] *,
+  [data-state="active"],
+  [data-state="inactive"] {
+    border-radius: revert !important;
   }
 
   /* Exception for circular timer FAB - force circular shape with highest specificity */

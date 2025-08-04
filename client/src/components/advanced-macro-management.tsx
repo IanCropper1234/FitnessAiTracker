@@ -565,10 +565,25 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
       </Card>
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 p-1">
-          <TabsTrigger value="weekly-adjustment" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-black dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-white">Weekly Adjustment</TabsTrigger>
-          <TabsTrigger value="rp-analysis" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-black dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-white">RP Analysis</TabsTrigger>
-          <TabsTrigger value="rp-recommendations" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-black dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-white">Recommendations</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-muted p-1 h-10" role="tablist">
+          <TabsTrigger 
+            value="weekly-adjustment" 
+            className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap rounded-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            Weekly Adjustment
+          </TabsTrigger>
+          <TabsTrigger 
+            value="rp-analysis" 
+            className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap rounded-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            RP Analysis
+          </TabsTrigger>
+          <TabsTrigger 
+            value="rp-recommendations" 
+            className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap rounded-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            Recommendations
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="weekly-adjustment" className="space-y-4 tab-content-animated">
