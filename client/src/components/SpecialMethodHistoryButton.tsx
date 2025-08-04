@@ -126,7 +126,7 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
   };
 
   return (
-    <div className="bg-blue-500/10 border border-blue-500/20 p-1.5 mt-1 overflow-hidden">
+    <div className="bg-blue-500/10 border border-blue-500/20 p-1.5 overflow-hidden pt-[0px] pb-[0px] pl-[5px] pr-[5px] mt-[10px] mb-[10px]">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <History className="h-3 w-3 text-blue-400 flex-shrink-0" />
