@@ -342,7 +342,9 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                           C: {Math.round(parseFloat(meal.totalCarbs || '0'))}g • 
                           F: {Math.round(parseFloat(meal.totalFat || '0'))}g
                         </div>
-                        {meal.totalMicronutrients && (
+                        {meal.totalMicronutrients && 
+                         typeof meal.totalMicronutrients === 'object' && 
+                         Object.keys(meal.totalMicronutrients).length > 0 && (
                           <div className="flex items-center gap-1 mt-1">
                             <Pill className="w-3 h-3 opacity-50" />
                             <span className="text-xs opacity-60">Contains vitamins & minerals</span>

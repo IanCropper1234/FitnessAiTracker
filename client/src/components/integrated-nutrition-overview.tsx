@@ -635,22 +635,37 @@ export function IntegratedNutritionOverview({
 
     // Calculate total micronutrients by aggregating from all food items
     const totalMicronutrients = foodItems.reduce((aggregated: any, item: any) => {
-      if (item.micronutrients && typeof item.micronutrients === 'object') {
-        // Iterate through each micronutrient category
-        Object.keys(item.micronutrients).forEach(category => {
-          if (!aggregated[category]) aggregated[category] = {};
-          
-          // Aggregate individual nutrient amounts
-          Object.keys(item.micronutrients[category]).forEach(nutrient => {
-            const amount = parseFloat(item.micronutrients[category][nutrient]?.amount || 0);
-            const unit = item.micronutrients[category][nutrient]?.unit || 'mg';
-            
-            if (!aggregated[category][nutrient]) {
-              aggregated[category][nutrient] = { amount: 0, unit };
+      // Safely check for micronutrients data
+      if (item.micronutrients && 
+          typeof item.micronutrients === 'object' && 
+          item.micronutrients !== null &&
+          !Array.isArray(item.micronutrients)) {
+        
+        try {
+          // Iterate through each micronutrient category
+          Object.keys(item.micronutrients).forEach(category => {
+            const categoryData = item.micronutrients[category];
+            if (categoryData && typeof categoryData === 'object') {
+              if (!aggregated[category]) aggregated[category] = {};
+              
+              // Aggregate individual nutrient amounts
+              Object.keys(categoryData).forEach(nutrient => {
+                const nutrientData = categoryData[nutrient];
+                if (nutrientData && typeof nutrientData === 'object') {
+                  const amount = parseFloat(nutrientData.amount || 0);
+                  const unit = nutrientData.unit || 'mg';
+                  
+                  if (!aggregated[category][nutrient]) {
+                    aggregated[category][nutrient] = { amount: 0, unit };
+                  }
+                  aggregated[category][nutrient].amount += amount;
+                }
+              });
             }
-            aggregated[category][nutrient].amount += amount;
           });
-        });
+        } catch (error) {
+          console.warn('Error processing micronutrients for item:', item.foodName, error);
+        }
       }
       return aggregated;
     }, {});
