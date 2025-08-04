@@ -893,6 +893,7 @@ export function CreateWorkoutSession() {
           )}
         </Button>
       </div>
+      </div>
     </div>
   );
 }
