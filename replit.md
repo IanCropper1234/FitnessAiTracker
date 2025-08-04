@@ -4,7 +4,9 @@
 FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, adaptive training through comprehensive nutrition and workout management. Based on the Renaissance Periodization (RP) methodology, it combines evidence-based training science with AI recommendations for personalized coaching at scale. The project aims to capture a significant share of the digital fitness market by offering a superior, scientifically-backed alternative, targeting serious fitness enthusiasts and bodybuilders.
 
 ## User Preferences
-Preferred communication style: Traditional Chinese (ZH-TW) for all technical explanations and general communication.
+**Communication Language**: 
+- Agent responses: Traditional Chinese (ZH-TW) for technical explanations and general communication
+- Application UI: English (EN-US) for all user interface text, labels, and messages
 
 **Design Preferences:**
 - Sharp corner design aesthetic (border-radius: 0) - completely implemented across entire UI system

@@ -274,8 +274,8 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-blue-800 dark:text-blue-200">
-                <p className="font-medium mb-1">想要編輯運動模板？</p>
-                <p>只有您創建的自定義模板可以編輯。系統模板是唯讀的。點擊下方按鈕創建您的自定義模板。</p>
+                <p className="font-medium mb-1">Want to edit workout templates?</p>
+                <p>Only custom templates that you create can be edited. System templates are read-only. Click the button below to create your custom template.</p>
               </div>
             </div>
           </div>
