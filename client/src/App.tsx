@@ -19,6 +19,7 @@ import { TrainingPage } from "./pages/training";
 import { CreateWorkoutSession } from "./pages/create-workout-session";
 import CreateTrainingTemplate from "./pages/create-training-template";
 import TemplateDetails from "./pages/template-details";
+import EditTemplatePage from "./pages/edit-template";
 import { ReportsPage } from "./pages/reports";
 import { ProfilePage } from "./pages/profile";
 import WellnessTestPage from "./pages/WellnessTestPage";
@@ -196,6 +197,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/template/:id">
           <AnimatedPage>
             {user ? <TemplateDetails /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/edit-template/:id">
+          <AnimatedPage>
+            {user ? <EditTemplatePage /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route>
