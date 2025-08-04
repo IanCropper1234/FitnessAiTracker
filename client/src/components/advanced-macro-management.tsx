@@ -565,13 +565,13 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
       </Card>
       <Tabs defaultValue="weekly-adjustment" className="space-y-4">
-        <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 p-1 pt-[4px] pb-[4px] mt-[-15px] mb-[-15px]">
-          <TabsTrigger value="weekly-adjustment" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Weekly Adjustment</TabsTrigger>
-          <TabsTrigger value="rp-analysis" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">RP Analysis</TabsTrigger>
-          <TabsTrigger value="rp-recommendations" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Recommendations</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 p-1">
+          <TabsTrigger value="weekly-adjustment" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-black dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-white">Weekly Adjustment</TabsTrigger>
+          <TabsTrigger value="rp-analysis" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-black dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-white">RP Analysis</TabsTrigger>
+          <TabsTrigger value="rp-recommendations" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-black dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-white">Recommendations</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="weekly-adjustment" className="space-y-4">
+        <TabsContent value="weekly-adjustment" className="space-y-4 tab-content-animated">
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-black dark:text-white flex items-center gap-2">
@@ -864,11 +864,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
           </Card>
         </TabsContent>
 
-        <TabsContent value="rp-analysis" className="space-y-4">
+        <TabsContent value="rp-analysis" className="space-y-4 tab-content-animated">
           <RPAnalysis userId={userId} />
         </TabsContent>
 
-        <TabsContent value="rp-recommendations" className="space-y-4">
+        <TabsContent value="rp-recommendations" className="space-y-4 tab-content-animated">
           <RPRecommendations userId={userId} />
         </TabsContent>
       </Tabs>
