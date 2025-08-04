@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -105,6 +105,42 @@ export function Nutrition({
   const [, setLocation] = useLocation();
   const activeTab = externalActiveTab || "overview";
   const setActiveTab = onTabChange || (() => {});
+
+  // Memoized tab content to prevent re-rendering
+  const memoizedTabs = React.useMemo(() => ({
+    overview: <IntegratedNutritionOverview 
+      userId={user.id} 
+      selectedDate={selectedDate}
+      onShowLogger={(selectedDate) => {
+        console.log('onShowLogger called from IntegratedNutritionOverview with date:', selectedDate, 'setting showLogger to true');
+        setLoggerSelectedDate(selectedDate);
+        setShowLogger(true);
+      }}
+      onDatePickerOpen={() => setShowDatePicker(true)}
+      copyFromDate={copyFromDate}
+      setCopyFromDate={setCopyFromDate}
+      showCopyFromDatePicker={showCopyFromDatePicker}
+      setShowCopyFromDatePicker={setShowCopyFromDatePicker}
+      copyToDate={copyToDate}
+      setCopyToDate={setCopyToDate}
+      showCopyToDatePicker={showCopyToDatePicker}
+      setShowCopyToDatePicker={setShowCopyToDatePicker}
+      onCopyDateSelected={(date, operation) => {
+        console.log('Copy date selected:', date, 'operation:', operation);
+      }}
+    />,
+    builder: <DietBuilder userId={user.id} />,
+    advanced: <AdvancedMacroManagement userId={user.id} />,
+    body: <BodyTracking 
+      userId={user.id}
+      selectedDate={bodyTrackingDate}
+      setSelectedDate={setBodyTrackingDate}
+      showDatePicker={showBodyDatePicker}
+      setShowDatePicker={setShowBodyDatePicker}
+    />,
+    progression: <NutritionProgression userId={user.id} />,
+    shopping: <ShoppingListGenerator userId={user.id} />
+  }), [user.id, selectedDate, bodyTrackingDate, copyFromDate, showCopyFromDatePicker, copyToDate, showCopyToDatePicker]);
 
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id, selectedDate],
@@ -249,55 +285,27 @@ export function Nutrition({
           <AnimatedTabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
 
             <AnimatedTabsContent value="overview">
-              <IntegratedNutritionOverview 
-                userId={user.id} 
-                selectedDate={selectedDate}
-                onShowLogger={(selectedDate) => {
-                  console.log('onShowLogger called from IntegratedNutritionOverview with date:', selectedDate, 'setting showLogger to true');
-                  setLoggerSelectedDate(selectedDate);
-                  setShowLogger(true);
-                }}
-                onDatePickerOpen={() => setShowDatePicker(true)}
-                copyFromDate={copyFromDate}
-                setCopyFromDate={setCopyFromDate}
-                showCopyFromDatePicker={showCopyFromDatePicker}
-                setShowCopyFromDatePicker={setShowCopyFromDatePicker}
-                copyToDate={copyToDate}
-                setCopyToDate={setCopyToDate}
-                showCopyToDatePicker={showCopyToDatePicker}
-                setShowCopyToDatePicker={setShowCopyToDatePicker}
-                onCopyDateSelected={(date, operation) => {
-                  // The copy operation will be handled by the IntegratedNutritionOverview component
-                  // through the useEffect that triggers handleCopySection
-                  console.log('Copy date selected:', date, 'operation:', operation);
-                }}
-              />
+              {memoizedTabs.overview}
             </AnimatedTabsContent>
 
             <AnimatedTabsContent value="builder">
-              <DietBuilder userId={user.id} />
+              {memoizedTabs.builder}
             </AnimatedTabsContent>
 
             <AnimatedTabsContent value="advanced">
-              <AdvancedMacroManagement userId={user.id} />
+              {memoizedTabs.advanced}
             </AnimatedTabsContent>
 
             <AnimatedTabsContent value="body">
-              <BodyTracking 
-                userId={user.id}
-                selectedDate={bodyTrackingDate}
-                setSelectedDate={setBodyTrackingDate}
-                showDatePicker={showBodyDatePicker}
-                setShowDatePicker={setShowBodyDatePicker}
-              />
+              {memoizedTabs.body}
             </AnimatedTabsContent>
 
             <AnimatedTabsContent value="progression">
-              <NutritionProgression userId={user.id} />
+              {memoizedTabs.progression}
             </AnimatedTabsContent>
 
             <AnimatedTabsContent value="shopping">
-              <ShoppingListGenerator userId={user.id} />
+              {memoizedTabs.shopping}
             </AnimatedTabsContent>
           </AnimatedTabs>
         </div>

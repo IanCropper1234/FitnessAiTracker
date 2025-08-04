@@ -89,27 +89,22 @@
   }
 }
 
-/* Tab content animation - matches page transitions */
-@keyframes tab-slide-in-right {
-  0% {
+/* Tab content animation - ultra-fast and smooth */
+@keyframes tab-fade-slide {
+  from {
     opacity: 0;
-    transform: translateY(25px) scale(0.96) rotateX(6deg);
-    filter: blur(2px);
+    transform: translateY(8px);
   }
-  60% {
-    opacity: 0.7;
-    transform: translateY(12px) scale(0.98) rotateX(3deg);
-    filter: blur(1px);
-  }
-  100% {
+  to {
     opacity: 1;
-    transform: translateY(0) scale(1) rotateX(0deg);
-    filter: blur(0px);
+    transform: translateY(0);
   }
 }
 
-.animate-slide-in-right {
-  animation: tab-slide-in-right 400ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+.tab-content-animated {
+  animation: tab-fade-slide 120ms ease-out forwards;
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Hardware acceleration */
 }
 
 /* iOS-optimized animations and transitions */

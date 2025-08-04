@@ -809,7 +809,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
       )}
       <AnimatedTabs value={activeTab} className="w-full">
 
-        <AnimatedTabsContent value="dashboard" className="space-y-6" >
+        <AnimatedTabsContent value="dashboard" className="space-y-6">
           {/* Today's Training Section */}
           <Card>
             <CardHeader>
