@@ -487,14 +487,14 @@ export default function EditTemplatePage() {
                             <div className="flex-1 min-w-0 mr-2">
                               <Label className="text-xs">Training Method</Label>
                               <Select 
-                                value={exercise.trainingMethod || ''} 
-                                onValueChange={(value) => handleUpdateExercise(index, 'trainingMethod', value)}
+                                value={exercise.trainingMethod || 'none'} 
+                                onValueChange={(value) => handleUpdateExercise(index, 'trainingMethod', value === 'none' ? undefined : value)}
                               >
                                 <SelectTrigger className="h-7 text-xs">
                                   <SelectValue placeholder="None" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">None</SelectItem>
+                                  <SelectItem value="none">None</SelectItem>
                                   <SelectItem value="drop_set">Drop Set</SelectItem>
                                   <SelectItem value="rest_pause">Rest-Pause</SelectItem>
                                   <SelectItem value="myo_reps">Myo-Reps</SelectItem>
