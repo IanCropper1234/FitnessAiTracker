@@ -74,7 +74,7 @@ export default function TemplateDetails() {
         <div className="text-center py-12">
           <h2 className="text-xl font-semibold mb-2">Template Not Found</h2>
           <p className="text-muted-foreground mb-4">The requested training template could not be found.</p>
-          <Button onClick={() => setLocation('/training-templates')}>
+          <Button onClick={() => setLocation('/training?tab=templates')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Templates
           </Button>
@@ -111,7 +111,7 @@ export default function TemplateDetails() {
       <div className="flex items-center justify-between">
         <Button 
           variant="ghost" 
-          onClick={() => setLocation('/training-templates')}
+          onClick={() => setLocation('/training?tab=templates')}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -120,7 +120,7 @@ export default function TemplateDetails() {
         
         {template.createdBy === 'user' && (
           <Button 
-            onClick={() => setLocation(`/training-templates?edit=${template.id}`)}
+            onClick={() => setLocation(`/training?tab=templates&edit=${template.id}`)}
             className="flex items-center gap-2"
           >
             <Edit2 className="h-4 w-4" />
