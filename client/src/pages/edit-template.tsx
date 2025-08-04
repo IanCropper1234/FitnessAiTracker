@@ -83,6 +83,8 @@ export default function EditTemplatePage() {
   const [activeTab, setActiveTab] = useState('basic');
   const [activeWorkoutIndex, setActiveWorkoutIndex] = useState(0);
   const [showExerciseSelector, setShowExerciseSelector] = useState(false);
+  const [showSupersetSelector, setShowSupersetSelector] = useState(false);
+  const [supersetParentIndex, setSupersetParentIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch template data
@@ -222,6 +224,68 @@ export default function EditTemplatePage() {
     setSearchTerm('');
   };
 
+  const handleAddSupersetPair = (pairedExercise: { id: number; name: string; muscleGroups?: string[] }) => {
+    if (!currentWorkout || supersetParentIndex === null) return;
+
+    const updatedExercises = [...currentWorkout.exercises];
+    const parentExercise = updatedExercises[supersetParentIndex];
+    
+    if (!parentExercise) return;
+
+    // Update parent exercise to superset
+    updatedExercises[supersetParentIndex] = {
+      ...parentExercise,
+      specialTrainingMethod: 'superset',
+      specialMethodConfig: {
+        restBetween: 30,
+        pairedExerciseId: pairedExercise.id,
+        pairedExerciseName: pairedExercise.name
+      }
+    };
+
+    // Create paired exercise with synchronized sets
+    const pairedExerciseObj = {
+      id: pairedExercise.id,
+      exerciseId: pairedExercise.id,
+      name: pairedExercise.name,
+      exerciseName: pairedExercise.name,
+      muscleGroups: pairedExercise.muscleGroups || [],
+      sets: parentExercise.sets || 3, // Sync sets with parent
+      targetReps: '8-12',
+      repsRange: '8-12',
+      restPeriod: parentExercise.restPeriod || 60,
+      orderIndex: (currentWorkout.exercises?.length || 0) + 1,
+      specialTrainingMethod: 'superset',
+      specialMethodConfig: {
+        restBetween: 30,
+        pairedExerciseId: parentExercise.id,
+        pairedExerciseName: parentExercise.name || parentExercise.exerciseName,
+        isSecondaryExercise: true
+      }
+    };
+
+    // Insert paired exercise right after parent
+    updatedExercises.splice(supersetParentIndex + 1, 0, pairedExerciseObj);
+
+    const updatedWorkouts = [...(formData.templateData?.workouts || [])];
+    updatedWorkouts[activeWorkoutIndex] = {
+      ...currentWorkout,
+      exercises: updatedExercises
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      templateData: {
+        ...prev.templateData,
+        workouts: updatedWorkouts
+      }
+    }));
+
+    setShowSupersetSelector(false);
+    setSupersetParentIndex(null);
+    setSearchTerm('');
+  };
+
   const handleRemoveExercise = (exerciseIndex: number) => {
     if (!currentWorkout) return;
 
@@ -267,10 +331,27 @@ export default function EditTemplatePage() {
     if (!currentWorkout) return;
 
     const updatedExercises = [...currentWorkout.exercises];
+    const exercise = updatedExercises[exerciseIndex];
+    
     updatedExercises[exerciseIndex] = {
-      ...updatedExercises[exerciseIndex],
+      ...exercise,
       [field]: value
     };
+
+    // If this is a superset exercise and we're updating sets, sync with paired exercise
+    if (field === 'sets' && exercise.specialTrainingMethod === 'superset' && exercise.specialMethodConfig?.pairedExerciseId) {
+      const pairedExerciseIndex = updatedExercises.findIndex(ex => 
+        ex.id === exercise.specialMethodConfig?.pairedExerciseId ||
+        (ex.specialMethodConfig?.pairedExerciseId === exercise.id)
+      );
+      
+      if (pairedExerciseIndex !== -1 && pairedExerciseIndex !== exerciseIndex) {
+        updatedExercises[pairedExerciseIndex] = {
+          ...updatedExercises[pairedExerciseIndex],
+          sets: value
+        };
+      }
+    }
 
     const updatedWorkouts = [...(formData.templateData?.workouts || [])];
     updatedWorkouts[activeWorkoutIndex] = {
@@ -301,6 +382,11 @@ export default function EditTemplatePage() {
         specialTrainingMethod: undefined,
         specialMethodConfig: undefined
       };
+    } else if (methodValue === 'superset') {
+      // For superset, show selector to choose paired exercise
+      setSupersetParentIndex(exerciseIndex);
+      setShowSupersetSelector(true);
+      return; // Don't update state yet, wait for paired exercise selection
     } else {
       // Set new training method and default config
       const defaultConfig = getDefaultMethodConfig(methodValue);
@@ -324,8 +410,6 @@ export default function EditTemplatePage() {
         workouts: updatedWorkouts
       }
     }));
-
-
   };
 
   const handleUpdateMethodConfig = (exerciseIndex: number, configField: string, value: any) => {
@@ -389,7 +473,10 @@ export default function EditTemplatePage() {
       case 'giant_set':
         return `${config.totalTargetReps || 40} total reps, ${config.miniSetReps || 5} per mini set`;
       case 'superset':
-        return `${config.restBetween || 30}s rest between`;
+        const pairedName = config.pairedExerciseName || 'Unknown Exercise';
+        return config.isSecondaryExercise 
+          ? `Paired with: ${pairedName}`
+          : `${config.restBetween || 30}s rest, paired with: ${pairedName}`;
       default:
         return '';
     }
@@ -569,10 +656,17 @@ export default function EditTemplatePage() {
           </div>
         );
       case 'superset':
+        if (config.isSecondaryExercise) {
+          return (
+            <div className="text-xs text-muted-foreground">
+              This is the second exercise in the superset pair.
+            </div>
+          );
+        }
         return (
           <div className="grid grid-cols-1 gap-2 mt-2">
             <div>
-              <Label className="text-xs">Rest Between (s)</Label>
+              <Label className="text-xs">Rest Between Exercises (s)</Label>
               <Input
                 type="number"
                 value={config.restBetween || 30}
@@ -582,6 +676,11 @@ export default function EditTemplatePage() {
                 max="60"
               />
             </div>
+            {config.pairedExerciseName && (
+              <div className="text-xs text-muted-foreground">
+                Paired with: {config.pairedExerciseName}
+              </div>
+            )}
           </div>
         );
       case 'tempo':
@@ -987,6 +1086,66 @@ export default function EditTemplatePage() {
 
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowExerciseSelector(false)} size="sm">
+                Cancel
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Superset Pair Selector Dialog */}
+      {showSupersetSelector && (
+        <Dialog open={true} onOpenChange={() => {
+          setShowSupersetSelector(false);
+          setSupersetParentIndex(null);
+        }}>
+          <DialogContent className="max-w-md max-h-[80vh] m-4">
+            <DialogHeader>
+              <DialogTitle className="text-base">Select Superset Pair</DialogTitle>
+              <DialogDescription className="text-sm">
+                Choose an exercise to pair with for superset
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search exercises..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-9 text-sm"
+                />
+              </div>
+
+              <div className="max-h-[300px] overflow-y-auto space-y-2">
+                {filteredExercises.slice(0, 50).map((exercise: { id: number; name: string; muscleGroups?: string[] }) => (
+                  <Card 
+                    key={exercise.id} 
+                    className="p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleAddSupersetPair(exercise)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm truncate">{exercise.name}</div>
+                        {exercise.muscleGroups && (
+                          <div className="text-xs text-muted-foreground truncate">
+                            {exercise.muscleGroups.join(', ')}
+                          </div>
+                        )}
+                      </div>
+                      <Plus className="h-4 w-4 text-muted-foreground ml-2 flex-shrink-0" />
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowSupersetSelector(false);
+                setSupersetParentIndex(null);
+              }} size="sm">
                 Cancel
               </Button>
             </DialogFooter>
