@@ -94,7 +94,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
               Add Exercise
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
+          <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[95vh] flex flex-col">
             <DialogHeader>
               <DialogTitle>Select Exercises</DialogTitle>
               <DialogDescription>
@@ -102,7 +102,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
               </DialogDescription>
             </DialogHeader>
             
-            <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="flex flex-col flex-1 min-h-0">
               {/* Search and Filter */}
               <div className="flex-shrink-0 space-y-4 pb-4">
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -147,8 +147,8 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
               </div>
               
               {/* Exercise List */}
-              <ScrollArea className="flex-1">
-                <div className="grid grid-cols-1 gap-3 pr-2">
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="grid grid-cols-1 gap-3 pr-4">
                   {isLoading ? (
                     <div className="col-span-full text-center py-8">Loading exercises...</div>
                   ) : filteredExercises.length === 0 ? (
