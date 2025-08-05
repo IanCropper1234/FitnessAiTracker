@@ -118,12 +118,23 @@ export default function CreateTrainingTemplate() {
       autoSaveTimeoutRef.current = setTimeout(() => {
         try {
           saveToLocalStorage(newData);
+          console.log('🔄 Auto-saved template draft at:', new Date().toLocaleTimeString());
         } catch (error) {
           console.warn('Immediate auto-save failed:', error);
         }
       }, AUTO_SAVE_INTERVAL);
     } catch (error) {
       console.warn('Auto-save trigger failed:', error);
+    }
+  };
+
+  // Force save function for critical moments (like before navigation)
+  const forceSave = (data: typeof formData) => {
+    try {
+      saveToLocalStorage(data);
+      console.log('🔐 Force-saved template draft at:', new Date().toLocaleTimeString());
+    } catch (error) {
+      console.warn('Force save failed:', error);
     }
   };
   
@@ -552,6 +563,9 @@ export default function CreateTrainingTemplate() {
                 <ExerciseSelector
                   selectedExercises={currentWorkout.exercises}
                   onExercisesChange={(exercisesOrUpdater: any) => {
+                    // Force save before any exercise changes to ensure no data loss
+                    forceSave(formData);
+                    
                     let exercises: any[];
                     
                     // Handle both direct array and function updater

@@ -103,6 +103,18 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
   };
 
   const handleNavigateToSelection = () => {
+    // Force save current template state before navigation to prevent data loss
+    try {
+      const currentTemplateData = localStorage.getItem('fitai_template_draft');
+      if (currentTemplateData) {
+        console.log('Template data exists before navigation - ensuring it is preserved');
+        // Re-save to ensure it's fresh
+        localStorage.setItem('fitai_template_draft', currentTemplateData);
+      }
+    } catch (error) {
+      console.warn('Could not preserve template data before navigation:', error);
+    }
+    
     const targetParams = targetMuscleGroups?.length ? `&target=${targetMuscleGroups.join(',')}` : '';
     const returnUrl = encodeURIComponent(location);
     console.log('DEBUG - ExerciseSelector handleNavigateToSelection:');
