@@ -222,20 +222,9 @@ export default function ExerciseSelection() {
     console.log('Navigating back to:', returnPath);
     console.log('Current location before navigation:', location);
     
-    // Use setTimeout to ensure proper navigation
-    setTimeout(() => {
-      console.log('Executing navigation to:', returnPath);
-      setLocation(returnPath);
-      
-      // Fallback: use window.history if setLocation fails
-      setTimeout(() => {
-        if (window.location.pathname !== returnPath) {
-          console.log('setLocation failed, using window.history.pushState');
-          window.history.pushState({}, '', returnPath);
-          window.dispatchEvent(new PopStateEvent('popstate'));
-        }
-      }, 100);
-    }, 50);
+    // Simple navigation without dangerous window.history manipulation
+    console.log('Executing navigation to:', returnPath);
+    setLocation(returnPath);
   };
 
   const handleCancel = () => {
@@ -243,20 +232,9 @@ export default function ExerciseSelection() {
     sessionStorage.removeItem('selectedExercises');
     console.log('Canceling and navigating back to:', returnPath);
     
-    // Use setTimeout to ensure proper navigation
-    setTimeout(() => {
-      console.log('Executing cancel navigation to:', returnPath);
-      setLocation(returnPath);
-      
-      // Fallback: use window.history if setLocation fails
-      setTimeout(() => {
-        if (window.location.pathname !== returnPath) {
-          console.log('Cancel setLocation failed, using window.history.pushState');
-          window.history.pushState({}, '', returnPath);
-          window.dispatchEvent(new PopStateEvent('popstate'));
-        }
-      }, 100);
-    }, 50);
+    // Simple navigation without dangerous window.history manipulation
+    console.log('Executing cancel navigation to:', returnPath);
+    setLocation(returnPath);
   };
 
   return (

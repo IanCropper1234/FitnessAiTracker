@@ -44,7 +44,7 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: getQueryFn({ on401: "returnNull" }), // Changed to prevent authentication errors from throwing
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: 10 * 60 * 1000, // 10 minutes - longer cache to prevent PWA reload issues
