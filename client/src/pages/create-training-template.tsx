@@ -86,6 +86,20 @@ export default function CreateTrainingTemplate() {
     focus: []
   };
 
+  // Auto-set step based on content when component mounts
+  useEffect(() => {
+    const hasBasicInfo = formData.name.trim() !== '';
+    const hasExercises = formData.templateData.workouts.some(w => w.exercises.length > 0);
+    
+    console.log('Step calculation:', { hasBasicInfo, hasExercises, currentStep: step });
+    
+    // If we have exercises but are in step 1, auto-advance to step 2
+    if (hasExercises && step === 1) {
+      console.log('Auto-setting step to 2 based on existing exercises');
+      setStep(2);
+    }
+  }, [formData.name, formData.templateData.workouts, step]);
+
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       try {
@@ -428,7 +442,7 @@ export default function CreateTrainingTemplate() {
                         // Auto-advance to step 2 if we're in step 1 and exercises are added
                         if (step === 1 && templateExercises.length > 0) {
                           console.log('Auto-advancing to step 2 after adding exercises');
-                          setStep(2);
+                          setTimeout(() => setStep(2), 100); // Slight delay to ensure state updates
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
