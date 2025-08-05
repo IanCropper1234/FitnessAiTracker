@@ -68,15 +68,33 @@ export default function ExerciseSelection() {
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
 
-  // Fetch exercises
+  // Fetch exercises with error-safe handling to prevent page reload
   const { data: exercises = [], isLoading } = useQuery({
     queryKey: ['/api/training/exercises'],
     queryFn: async () => {
-      const response = await fetch('/api/training/exercises', {
-        credentials: 'include'
-      });
-      return response.json();
-    }
+      try {
+        const response = await fetch('/api/training/exercises', {
+          credentials: 'include'
+        });
+        
+        // If not authenticated, return empty array instead of throwing
+        if (response.status === 401 || response.status === 403) {
+          console.log('Exercise fetch: Authentication required, returning empty array');
+          return [];
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch exercises: ${response.status}`);
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.warn('Exercise fetch error (gracefully handled):', error);
+        return []; // Return empty array on any error to prevent page reload
+      }
+    },
+    retry: false, // Disable retry to prevent infinite auth loops
+    refetchOnWindowFocus: false // Prevent refetch that could trigger auth issues
   });
 
   // Filter exercises based on search and category

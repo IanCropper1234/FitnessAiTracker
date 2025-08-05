@@ -69,10 +69,33 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   // }, []);
 
   // Redirect to auth if no user (but not if we're already checking auth)
+  // IMPORTANT: Be more lenient with exercise-selection and template creation pages
   useEffect(() => {
+    const protectedPages = [
+      '/exercise-selection',
+      '/create-training-template', 
+      '/edit-template',
+      '/template'
+    ];
+    const isProtectedPage = protectedPages.some(page => location.startsWith(page));
+    
     if (!user && location !== "/auth") {
-      console.log('Redirecting to auth - no user found');
-      setLocation("/auth");
+      // Delay redirect for protected pages to allow auth recovery
+      if (isProtectedPage) {
+        console.log('Protected page detected, delaying auth redirect to allow recovery');
+        const timeoutId = setTimeout(() => {
+          // Double-check user state before redirecting
+          if (!user) {
+            console.log('Auth recovery failed, redirecting to auth from protected page');
+            setLocation("/auth");
+          }
+        }, 2000); // 2 second delay for auth recovery
+        
+        return () => clearTimeout(timeoutId);
+      } else {
+        console.log('Redirecting to auth - no user found');
+        setLocation("/auth");
+      }
     } else if (user && location === "/auth") {
       console.log('User authenticated, redirecting to dashboard');
       // Use a timeout to ensure React has time to process the user state change
@@ -168,12 +191,26 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/exercise-selection/:source?">
           <AnimatedPage>
-            {user ? <ExerciseSelection /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <ExerciseSelection /> : (
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center space-y-2">
+                  <div className="animate-pulse text-gray-600 dark:text-gray-400">Loading exercises...</div>
+                  <div className="text-sm text-gray-500">Checking authentication...</div>
+                </div>
+              </div>
+            )}
           </AnimatedPage>
         </Route>
         <Route path="/create-training-template">
           <AnimatedPage>
-            {user ? <CreateTrainingTemplate /> : <div className="animate-pulse">Loading...</div>}
+            {user ? <CreateTrainingTemplate /> : (
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center space-y-2">
+                  <div className="animate-pulse text-gray-600 dark:text-gray-400">Loading template creator...</div>
+                  <div className="text-sm text-gray-500">Checking authentication...</div>
+                </div>
+              </div>
+            )}
           </AnimatedPage>
         </Route>
         <Route path="/create-mesocycle">
