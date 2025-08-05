@@ -208,10 +208,7 @@ export default function ExerciseSelection() {
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Select Exercises</h1>
-              <p className="text-muted-foreground">Choose exercises from the library to add to your workout plan</p>
-            </div>
+            
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="secondary">
