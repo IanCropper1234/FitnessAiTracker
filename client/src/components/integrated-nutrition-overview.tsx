@@ -149,28 +149,31 @@ export function IntegratedNutritionOverview({
 
   // Effect to handle copy operations when external date pickers close with a date
   useEffect(() => {
-    // Only proceed if we have a copyOperation AND a valid external date
-    if (copyOperation && (externalCopyFromDate || externalCopyToDate)) {
-      console.log('Copy operation triggered:', copyOperation, 'externalCopyFromDate:', externalCopyFromDate, 'externalCopyToDate:', externalCopyToDate);
+    // Only proceed if we have a copyOperation AND a NEWLY CHANGED external date
+    if (copyOperation) {
+      console.log('Copy operation effect triggered:', {
+        copyOperation,
+        externalCopyFromDate,
+        externalCopyToDate,
+        selectedDate
+      });
       
       if (copyOperation.type === 'section') {
-        if (externalCopyFromDate && copyOperation.sourceSection) {
-          // Handle "copy from" date operation - need to fetch logs from externalCopyFromDate and copy to current date
-          // This requires a different approach - we need to copy FROM a different date
+        if (externalCopyFromDate && copyOperation.sourceSection && externalCopyFromDate !== selectedDate) {
+          console.log('Executing section copy FROM date:', externalCopyFromDate, 'TO current date:', selectedDate);
           handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
           setCopyOperation(null);
-        } else if (externalCopyToDate && !copyOperation.sourceSection) {
-          // Handle "copy to" date operation - copy FROM current date TO the selected date
+        } else if (externalCopyToDate && !copyOperation.sourceSection && externalCopyToDate !== selectedDate) {
+          console.log('Executing section copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
           handleCopySection(copyOperation.data, externalCopyToDate);
           setCopyOperation(null);
         }
-      } else if (copyOperation.type === 'item' && externalCopyToDate) {
-        // Handle individual food item copy to date
+      } else if (copyOperation.type === 'item' && externalCopyToDate && externalCopyToDate !== selectedDate) {
+        console.log('Executing individual item copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
         handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
-      } else if (copyOperation.type === 'bulk' && externalCopyToDate) {
-        // Handle bulk copy to date
-        console.log('Executing bulk copy with selectedLogIds:', copyOperation.data, 'to date:', externalCopyToDate);
+      } else if (copyOperation.type === 'bulk' && externalCopyToDate && externalCopyToDate !== selectedDate) {
+        console.log('Executing bulk copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate, 'selectedLogIds:', copyOperation.data);
         handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
       }
@@ -1715,6 +1718,8 @@ export function IntegratedNutritionOverview({
                     variant="outline" 
                     className="flex-1 h-6 text-[10px]"
                     onClick={() => {
+                      console.log('Bulk copy button clicked - setting operation but NOT executing until date is selected');
+                      console.log('Selected logs:', selectedLogs);
                       setCopyOperation({
                         type: 'bulk',
                         data: selectedLogs,
