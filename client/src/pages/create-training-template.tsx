@@ -41,6 +41,8 @@ interface TemplateExercise {
   notes?: string;
   specialTrainingMethod?: string;
   specialMethodConfig?: any;
+  orderIndex?: number;
+  repsRange?: string;
 }
 
 interface TemplateWorkout {

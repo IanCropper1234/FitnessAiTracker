@@ -55,7 +55,7 @@ export default function ExerciseSelection() {
 
   // Parse URL parameters for context
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
-  const returnPath = searchParams.get('return') || '/training';
+  const returnPath = decodeURIComponent(searchParams.get('return') || '/training');
   const targetMuscles = searchParams.get('target')?.split(',') || [];
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
@@ -186,10 +186,14 @@ export default function ExerciseSelection() {
     sessionStorage.setItem('selectedExercises', JSON.stringify(selectedExercises));
     
     // Navigate back to the source page
+    console.log('Navigating back to:', returnPath);
     setLocation(returnPath);
   };
 
   const handleCancel = () => {
+    // Clear any stored exercises since we're canceling
+    sessionStorage.removeItem('selectedExercises');
+    console.log('Canceling and navigating back to:', returnPath);
     setLocation(returnPath);
   };
 

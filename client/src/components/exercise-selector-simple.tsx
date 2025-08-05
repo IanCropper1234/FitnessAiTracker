@@ -65,7 +65,10 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
 
   const handleNavigateToSelection = () => {
     const targetParams = targetMuscleGroups?.length ? `&target=${targetMuscleGroups.join(',')}` : '';
-    setLocation(`/exercise-selection/template?return=${encodeURIComponent(location)}${targetParams}`);
+    const returnUrl = encodeURIComponent(location);
+    console.log('Navigating to exercise selection from:', location);
+    console.log('Return URL will be:', returnUrl);
+    setLocation(`/exercise-selection/template?return=${returnUrl}${targetParams}`);
   };
 
   return (
