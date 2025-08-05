@@ -107,10 +107,15 @@ export default function CreateTrainingTemplate() {
   
   // Initialize form data with auto-saved data if available
   const [formData, setFormData] = useState(() => {
-    const savedData = loadFromLocalStorage();
-    if (savedData) {
-      return savedData;
+    try {
+      const savedData = loadFromLocalStorage();
+      if (savedData) {
+        return savedData;
+      }
+    } catch (error) {
+      console.warn('Failed to load saved data on initialization:', error);
     }
+    
     return {
       name: '',
       description: '',
@@ -129,33 +134,45 @@ export default function CreateTrainingTemplate() {
 
   // Auto-save effect
   useEffect(() => {
-    // Clear any existing timeout
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    // Set a new timeout for auto-save
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      saveToLocalStorage(formData);
-    }, AUTO_SAVE_INTERVAL);
-
-    // Cleanup on unmount
-    return () => {
+    try {
+      // Clear any existing timeout
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
-    };
+
+      // Set a new timeout for auto-save
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        try {
+          saveToLocalStorage(formData);
+        } catch (error) {
+          console.warn('Auto-save failed:', error);
+        }
+      }, AUTO_SAVE_INTERVAL);
+
+      // Cleanup on unmount
+      return () => {
+        if (autoSaveTimeoutRef.current) {
+          clearTimeout(autoSaveTimeoutRef.current);
+        }
+      };
+    } catch (error) {
+      console.warn('Auto-save setup failed:', error);
+    }
   }, [formData]);
 
   // Show toast when auto-saved data is loaded on mount
   useEffect(() => {
-    const savedData = loadFromLocalStorage();
-    if (savedData && (savedData.name || savedData.description)) {
-      toast({
-        title: "Draft Restored",
-        description: "Your previous template draft has been automatically restored.",
-        duration: 3000,
-      });
+    try {
+      const savedData = loadFromLocalStorage();
+      if (savedData && (savedData.name || savedData.description)) {
+        toast({
+          title: "Draft Restored",
+          description: "Your previous template draft has been automatically restored.",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.warn('Error loading auto-saved data:', error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
@@ -651,11 +668,12 @@ export default function CreateTrainingTemplate() {
                               </Select>
                             </div>
 
-                            {exercise.specialTrainingMethod && (
+                            {exercise.specialTrainingMethod && exercise.specialTrainingMethod !== 'none' && (
                               <div className="special-method-config">
                                 <SpecialMethodConfigurationPanel
+                                  key={`config-${exercise.exerciseId}-${exercise.specialTrainingMethod}`}
                                   method={exercise.specialTrainingMethod}
-                                  config={exercise.specialMethodConfig}
+                                  config={exercise.specialMethodConfig || {}}
                                   onConfigChange={(config) => updateExercise(index, { specialMethodConfig: config })}
                                   formData={formData}
                                   currentWorkoutIndex={currentWorkoutIndex}
@@ -694,7 +712,7 @@ export default function CreateTrainingTemplate() {
 // Special Method Configuration Panel Component
 function SpecialMethodConfigurationPanel({
   method,
-  config,
+  config = {},
   onConfigChange,
   formData,
   currentWorkoutIndex,
@@ -711,7 +729,12 @@ function SpecialMethodConfigurationPanel({
   currentExercise?: any;
   exerciseIndex?: number;
 }) {
-  const [exerciseSearchTerm, setExerciseSearchTerm] = useState(config?.pairedExercise || '');
+  // Defensive check to ensure we're in a proper React component context
+  if (!method) {
+    return null;
+  }
+
+  const [exerciseSearchTerm, setExerciseSearchTerm] = useState(config?.pairedExerciseName || config?.pairedExercise || '');
   const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
   const { toast } = useToast();
   
@@ -721,8 +744,11 @@ function SpecialMethodConfigurationPanel({
   });
   
   useEffect(() => {
-    setExerciseSearchTerm(config?.pairedExercise || '');
-  }, [config?.pairedExercise]);
+    const newSearchTerm = config?.pairedExerciseName || config?.pairedExercise || '';
+    if (newSearchTerm !== exerciseSearchTerm) {
+      setExerciseSearchTerm(newSearchTerm);
+    }
+  }, [config?.pairedExerciseName, config?.pairedExercise, exerciseSearchTerm]);
   const renderConfig = () => {
     switch (method) {
       case 'dropSet':
