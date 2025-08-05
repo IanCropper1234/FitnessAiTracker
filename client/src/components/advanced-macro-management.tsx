@@ -103,10 +103,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         credentials: 'include'
       });
       const data = await response.json();
-      // Temporary debug - remove after issue is resolved
-      if (data?.[0]?.adherencePercentage) {
-        console.log('📊 Adherence fix check:', data[0].adherencePercentage);
-      }
+      // Data successfully retrieved
       return data;
     },
     enabled: !!selectedWeek
