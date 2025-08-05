@@ -96,20 +96,26 @@ export default function CreateTrainingTemplate() {
       hasExercises, 
       currentStep: step,
       totalWorkouts: formData.templateData.workouts.length,
-      workoutExerciseCounts: formData.templateData.workouts.map(w => w.exercises.length)
+      workoutExerciseCounts: formData.templateData.workouts.map(w => w.exercises.length),
+      workoutDetails: formData.templateData.workouts.map((w, i) => ({ 
+        index: i, 
+        name: w.name, 
+        exerciseCount: w.exercises.length,
+        exercises: w.exercises.map(ex => ({ id: ex.exerciseId, name: ex.name }))
+      }))
     });
     
+    // If we have exercises, advance to step 2 automatically
+    if (hasExercises && step === 1) {
+      console.log('Auto-advancing to step 2 - exercises detected');
+      setStep(2);
+    }
     // If we have exercises but no basic info, reset to step 1
-    if (hasExercises && !hasBasicInfo && step === 2) {
+    else if (hasExercises && !hasBasicInfo && step === 2) {
       console.log('Resetting to step 1 - exercises exist but basic info missing');
       setStep(1);
     }
-    // If we have basic info and are in step 1, can advance to step 2
-    else if (hasBasicInfo && step === 1) {
-      console.log('Can advance to step 2 - basic info complete');
-      // Don't auto-advance, let user control navigation
-    }
-  }, [formData.name, formData.description, formData.templateData.workouts, step]);
+  }, [formData.templateData.workouts, step]);
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -478,7 +484,11 @@ export default function CreateTrainingTemplate() {
                         // Force advance to step 2 when exercises are added, regardless of current step
                         if (templateExercises.length > 0) {
                           console.log('Forcing advance to step 2 - exercises added');
-                          setStep(2);
+                          // Use setTimeout to ensure state updates are complete
+                          setTimeout(() => {
+                            console.log('Executing delayed step advancement to 2 after state update');
+                            setStep(2);
+                          }, 100);
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
