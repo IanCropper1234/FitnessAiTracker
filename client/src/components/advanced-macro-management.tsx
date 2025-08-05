@@ -102,7 +102,9 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       const response = await fetch(`/api/weekly-goals?weekStartDate=${selectedWeek}`, {
         credentials: 'include'
       });
-      return response.json();
+      const data = await response.json();
+      console.log('Weekly goals API response:', data);
+      return data;
     },
     enabled: !!selectedWeek
   });
@@ -757,10 +759,30 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Adherence (Past Days)</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {weeklyGoals[0].adherencePercentage || 0}%
+                          {(() => {
+                            const adherence = weeklyGoals[0]?.adherencePercentage;
+                            console.log('Adherence display debug:', {
+                              rawValue: adherence,
+                              type: typeof adherence,
+                              parsed: parseFloat(adherence || "0"),
+                              weeklyGoalsLength: weeklyGoals?.length,
+                              weeklyGoalsFirst: weeklyGoals?.[0]
+                            });
+                            // Handle both string and number types
+                            const numericAdherence = typeof adherence === 'string' 
+                              ? parseFloat(adherence) 
+                              : (adherence || 0);
+                            return isNaN(numericAdherence) ? 0 : numericAdherence;
+                          })()}%
                         </span>
                       </div>
-                      <Progress value={parseFloat(weeklyGoals[0].adherencePercentage || "0")} className="h-2" />
+                      <Progress value={(() => {
+                        const adherence = weeklyGoals[0]?.adherencePercentage;
+                        const numericAdherence = typeof adherence === 'string' 
+                          ? parseFloat(adherence) 
+                          : (adherence || 0);
+                        return isNaN(numericAdherence) ? 0 : numericAdherence;
+                      })()} className="h-2" />
                       <div className="text-xs text-gray-500 dark:text-gray-400">
                         Only counts completed days, not future days
                       </div>
