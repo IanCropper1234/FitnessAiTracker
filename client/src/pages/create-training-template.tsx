@@ -545,6 +545,8 @@ export default function CreateTrainingTemplate() {
                                   formData={formData}
                                   currentWorkoutIndex={currentWorkoutIndex}
                                   updateWorkout={updateWorkout}
+                                  currentExercise={exercise}
+                                  exerciseIndex={index}
                                 />
                               </div>
                             )}
@@ -581,7 +583,9 @@ function SpecialMethodConfigurationPanel({
   onConfigChange,
   formData,
   currentWorkoutIndex,
-  updateWorkout
+  updateWorkout,
+  currentExercise,
+  exerciseIndex
 }: {
   method: string;
   config: any;
@@ -589,9 +593,12 @@ function SpecialMethodConfigurationPanel({
   formData?: any;
   currentWorkoutIndex?: number;
   updateWorkout?: (index: number, workout: any) => void;
+  currentExercise?: any;
+  exerciseIndex?: number;
 }) {
   const [exerciseSearchTerm, setExerciseSearchTerm] = useState(config?.pairedExercise || '');
   const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
+  const { toast } = useToast();
   
   const { data: exercises = [] } = useQuery<Exercise[]>({
     queryKey: ['/api/training/exercises'],
@@ -607,26 +614,37 @@ function SpecialMethodConfigurationPanel({
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
             <h5 className="text-xs font-medium">Drop Set Config</h5>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label className="text-[10px] font-medium">Drops</Label>
+                <Label className="text-[10px] font-medium">Number of drops (2-5)</Label>
                 <Input
                   type="number"
                   value={config?.drops || 2}
                   onChange={(e) => onConfigChange({ ...config, drops: parseInt(e.target.value) || 2 })}
-                  min="1"
-                  max="4"
+                  min="2"
+                  max="5"
                   className="h-7 text-xs"
                 />
               </div>
               <div>
-                <Label className="text-[10px] font-medium">Reduction %</Label>
+                <Label className="text-[10px] font-medium">Weight reductions per drop (5-30%)</Label>
                 <Input
                   type="number"
                   value={config?.weightReduction || 20}
                   onChange={(e) => onConfigChange({ ...config, weightReduction: parseInt(e.target.value) || 20 })}
-                  min="10"
-                  max="50"
+                  min="5"
+                  max="30"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium">Rest between drops (5-15s)</Label>
+                <Input
+                  type="number"
+                  value={config?.restBetweenDrops || 10}
+                  onChange={(e) => onConfigChange({ ...config, restBetweenDrops: parseInt(e.target.value) || 10 })}
+                  min="5"
+                  max="15"
                   className="h-7 text-xs"
                 />
               </div>
@@ -635,32 +653,71 @@ function SpecialMethodConfigurationPanel({
         );
 
       case 'myorepMatch':
-      case 'myorepNoMatch':
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">
-              {method === 'myorepMatch' ? 'Myorep+ Config' : 'Myorep Config'}
-            </h5>
-            <div className="grid grid-cols-2 gap-2">
+            <h5 className="text-xs font-medium">Myorep Match Config</h5>
+            <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label className="text-[10px] font-medium">Activation</Label>
+                <Label className="text-[10px] font-medium">Target Reps (10-20)</Label>
                 <Input
                   type="number"
-                  value={config?.activationReps || 12}
-                  onChange={(e) => onConfigChange({ ...config, activationReps: parseInt(e.target.value) || 12 })}
-                  min="8"
+                  value={config?.targetReps || 15}
+                  onChange={(e) => onConfigChange({ ...config, targetReps: parseInt(e.target.value) || 15 })}
+                  min="10"
                   max="20"
                   className="h-7 text-xs"
                 />
               </div>
               <div>
-                <Label className="text-[10px] font-medium">Back-off</Label>
+                <Label className="text-[10px] font-medium">Mini Sets (1-5)</Label>
                 <Input
                   type="number"
-                  value={config?.backoffReps || 5}
-                  onChange={(e) => onConfigChange({ ...config, backoffReps: parseInt(e.target.value) || 5 })}
-                  min="3"
-                  max="10"
+                  value={config?.miniSets || 3}
+                  onChange={(e) => onConfigChange({ ...config, miniSets: parseInt(e.target.value) || 3 })}
+                  min="1"
+                  max="5"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium">Rest (15-30s)</Label>
+                <Input
+                  type="number"
+                  value={config?.restSeconds || 20}
+                  onChange={(e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 20 })}
+                  min="15"
+                  max="30"
+                  className="h-7 text-xs"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'myorepNoMatch':
+        return (
+          <div className="space-y-2 p-2 bg-muted/50 rounded">
+            <h5 className="text-xs font-medium">Myorep No Match Config</h5>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[10px] font-medium">Mini Sets (1-5)</Label>
+                <Input
+                  type="number"
+                  value={config?.miniSets || 3}
+                  onChange={(e) => onConfigChange({ ...config, miniSets: parseInt(e.target.value) || 3 })}
+                  min="1"
+                  max="5"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium">Rest (15-30s)</Label>
+                <Input
+                  type="number"
+                  value={config?.restSeconds || 20}
+                  onChange={(e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 20 })}
+                  min="15"
+                  max="30"
                   className="h-7 text-xs"
                 />
               </div>
@@ -672,26 +729,37 @@ function SpecialMethodConfigurationPanel({
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
             <h5 className="text-xs font-medium">Giant Set Config</h5>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label className="text-[10px] font-medium">Exercises</Label>
+                <Label className="text-[10px] font-medium">Total target reps (30-60)</Label>
                 <Input
                   type="number"
-                  value={config?.exerciseCount || 4}
-                  onChange={(e) => onConfigChange({ ...config, exerciseCount: parseInt(e.target.value) || 4 })}
-                  min="3"
-                  max="6"
+                  value={config?.totalTargetReps || 40}
+                  onChange={(e) => onConfigChange({ ...config, totalTargetReps: parseInt(e.target.value) || 40 })}
+                  min="30"
+                  max="60"
                   className="h-7 text-xs"
                 />
               </div>
               <div>
-                <Label className="text-[10px] font-medium">Rest (sec)</Label>
+                <Label className="text-[10px] font-medium">Mini set reps (5-15)</Label>
                 <Input
                   type="number"
-                  value={config?.restBetweenExercises || 15}
-                  onChange={(e) => onConfigChange({ ...config, restBetweenExercises: parseInt(e.target.value) || 15 })}
-                  min="0"
-                  max="60"
+                  value={config?.miniSetReps || 8}
+                  onChange={(e) => onConfigChange({ ...config, miniSetReps: parseInt(e.target.value) || 8 })}
+                  min="5"
+                  max="15"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium">Rest (5-15s)</Label>
+                <Input
+                  type="number"
+                  value={config?.restSeconds || 10}
+                  onChange={(e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 10 })}
+                  min="5"
+                  max="15"
                   className="h-7 text-xs"
                 />
               </div>
@@ -702,15 +770,16 @@ function SpecialMethodConfigurationPanel({
       case 'superset':
         const filteredExercises = exercises?.filter(exercise => 
           exercise.name.toLowerCase().includes(exerciseSearchTerm.toLowerCase()) &&
-          exercise.name !== config?.currentExerciseName
+          exercise.name !== currentExercise?.name
         ).slice(0, 5) || [];
 
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">Superset Config</h5>
+            <h5 className="text-xs font-medium">Superset Configuration</h5>
+            <p className="text-[10px] text-muted-foreground">Informational only - paired exercise configured separately</p>
             <div className="space-y-2">
               <div className="relative">
-                <Label className="text-[10px] font-medium">Paired Exercise</Label>
+                <Label className="text-[10px] font-medium">Search Paired Exercise</Label>
                 <Input
                   value={exerciseSearchTerm}
                   onChange={(e) => {
@@ -719,7 +788,7 @@ function SpecialMethodConfigurationPanel({
                   }}
                   onFocus={() => setShowExerciseDropdown(true)}
                   onBlur={() => setTimeout(() => setShowExerciseDropdown(false), 200)}
-                  placeholder="Search and select exercise"
+                  placeholder="Search and select paired exercise"
                   className="h-7 text-xs"
                 />
                 {showExerciseDropdown && exerciseSearchTerm.length >= 2 && filteredExercises.length > 0 && (
@@ -729,42 +798,89 @@ function SpecialMethodConfigurationPanel({
                         key={exercise.id}
                         className="px-2 py-1 text-xs hover:bg-muted cursor-pointer"
                         onClick={() => {
-                          // Add exercise to current workout
-                          const newExercise: TemplateExercise = {
-                            id: exercise.id,
-                            exerciseId: exercise.id,
-                            name: exercise.name,
-                            category: exercise.category,
-                            muscleGroups: exercise.muscleGroups || [],
-                            primaryMuscle: exercise.primaryMuscle,
-                            equipment: exercise.equipment || '',
-                            difficulty: exercise.difficulty || 'intermediate',
-                            sets: 3,
-                            targetReps: "8-12",
-                            restPeriod: 120,
-                            notes: "",
-                            specialTrainingMethod: 'superset',
-                            specialMethodConfig: { 
-                              pairedExercise: config?.currentExerciseName || '',
-                              restBetweenExercises: 10 
-                            }
-                          };
-                          
-                          // Get current workout and add the exercise
-                          if (formData && updateWorkout && currentWorkoutIndex !== undefined) {
+                          // Auto-create paired exercise for Superset - following create-workout-session implementation
+                          if (formData && updateWorkout && currentWorkoutIndex !== undefined && currentExercise && exerciseIndex !== undefined) {
                             const currentWorkout = formData.templateData.workouts[currentWorkoutIndex];
-                            const updatedWorkout = {
-                              ...currentWorkout,
-                              exercises: [...currentWorkout.exercises, newExercise]
-                            };
-                            updateWorkout(currentWorkoutIndex, updatedWorkout);
+                            
+                            // Check if paired exercise already exists in the workout
+                            const existingPairedIndex = currentWorkout.exercises.findIndex((ex: TemplateExercise) => ex.exerciseId === exercise.id);
+                            
+                            if (existingPairedIndex === -1) {
+                              // Create new paired exercise template
+                              const pairedTemplate: TemplateExercise = {
+                                id: exercise.id,
+                                exerciseId: exercise.id,
+                                name: exercise.name,
+                                category: exercise.category,
+                                muscleGroups: exercise.muscleGroups || [],
+                                primaryMuscle: exercise.primaryMuscle,
+                                equipment: exercise.equipment || '',
+                                difficulty: exercise.difficulty || 'intermediate',
+                                sets: currentExercise.sets, // Same number of sets as current exercise
+                                targetReps: currentExercise.targetReps, // Same target reps
+                                restPeriod: currentExercise.restPeriod, // Same rest period
+                                notes: `Superset pair with ${currentExercise.name}`,
+                                specialTrainingMethod: 'superset',
+                                specialMethodConfig: { 
+                                  pairedExerciseId: currentExercise.exerciseId,
+                                  restBetweenExercises: 10
+                                }
+                              };
+                              
+                              // Insert the paired exercise immediately after the current exercise
+                              const insertIndex = exerciseIndex + 1;
+                              const updatedExercises = [
+                                ...currentWorkout.exercises.slice(0, insertIndex),
+                                pairedTemplate,
+                                ...currentWorkout.exercises.slice(insertIndex)
+                              ];
+                              
+                              const updatedWorkout = {
+                                ...currentWorkout,
+                                exercises: updatedExercises
+                              };
+                              updateWorkout(currentWorkoutIndex, updatedWorkout);
+                              
+                              toast({
+                                title: "Paired Exercise Added",
+                                description: `${exercise.name} has been automatically added as your superset pair.`,
+                              });
+                            } else {
+                              // Update existing paired exercise to reference this exercise
+                              const updatedExercises = [...currentWorkout.exercises];
+                              updatedExercises[existingPairedIndex] = {
+                                ...updatedExercises[existingPairedIndex],
+                                specialTrainingMethod: 'superset',
+                                specialMethodConfig: {
+                                  ...updatedExercises[existingPairedIndex].specialMethodConfig,
+                                  pairedExerciseId: currentExercise.exerciseId,
+                                  restBetweenExercises: 10
+                                },
+                                notes: `Superset pair with ${currentExercise.name}`,
+                                sets: currentExercise.sets, // Sync sets
+                                targetReps: currentExercise.targetReps, // Sync reps
+                                restPeriod: currentExercise.restPeriod, // Sync rest
+                              };
+                              
+                              const updatedWorkout = {
+                                ...currentWorkout,
+                                exercises: updatedExercises
+                              };
+                              updateWorkout(currentWorkoutIndex, updatedWorkout);
+                              
+                              toast({
+                                title: "Exercise Updated",
+                                description: `${exercise.name} has been configured as your superset pair.`,
+                              });
+                            }
                           }
                           
-                          // Update the current exercise's config with the paired exercise name
+                          // Update the current exercise's config with the paired exercise info
                           onConfigChange({ 
                             ...config, 
-                            pairedExercise: exercise.name,
-                            pairedExerciseId: exercise.id
+                            pairedExerciseId: exercise.id,
+                            pairedExerciseName: exercise.name,
+                            restBetweenExercises: 10
                           });
                           
                           setExerciseSearchTerm(exercise.name);
@@ -780,17 +896,11 @@ function SpecialMethodConfigurationPanel({
                   </div>
                 )}
               </div>
-              <div>
-                <Label className="text-[10px] font-medium">Rest (sec)</Label>
-                <Input
-                  type="number"
-                  value={config?.restBetweenExercises || 10}
-                  onChange={(e) => onConfigChange({ ...config, restBetweenExercises: parseInt(e.target.value) || 10 })}
-                  min="0"
-                  max="30"
-                  className="h-7 text-xs"
-                />
-              </div>
+              {config?.pairedExerciseName && (
+                <div className="text-[10px] text-green-600 font-medium">
+                  ✓ Paired with: {config.pairedExerciseName}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -803,18 +913,38 @@ function SpecialMethodConfigurationPanel({
   return renderConfig();
 }
 
-// Helper function to get default config for special methods
+// Helper function to get default config for special methods - match create-workout-session.tsx
 function getDefaultSpecialMethodConfig(method: string): any {
   switch (method) {
     case 'dropSet':
-      return { drops: 2, weightReduction: 20 };
+      return { 
+        drops: 2, 
+        weightReduction: 20, 
+        restBetweenDrops: 10 
+      };
     case 'myorepMatch':
+      return { 
+        targetReps: 15, 
+        miniSets: 3, 
+        restSeconds: 20 
+      };
     case 'myorepNoMatch':
-      return { activationReps: 12, backoffReps: 5 };
+      return { 
+        miniSets: 3, 
+        restSeconds: 20 
+      };
     case 'giantSet':
-      return { exerciseCount: 4, restBetweenExercises: 15 };
+      return { 
+        totalTargetReps: 40, 
+        miniSetReps: 8, 
+        restSeconds: 10 
+      };
     case 'superset':
-      return { pairedExercise: '', restBetweenExercises: 10 };
+      return { 
+        pairedExerciseId: null, 
+        pairedExerciseName: '', 
+        restBetweenExercises: 10 
+      };
     default:
       return {};
   }
