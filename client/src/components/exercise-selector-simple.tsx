@@ -40,25 +40,38 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
     const handleStorageChange = () => {
       const storedExercises = sessionStorage.getItem('selectedExercises');
       if (storedExercises) {
-        const exercises = JSON.parse(storedExercises);
-        onExercisesChange([...selectedExercises, ...exercises]);
-        sessionStorage.removeItem('selectedExercises');
+        try {
+          const exercises = JSON.parse(storedExercises);
+          console.log('Found stored exercises:', exercises);
+          
+          // Add exercises to current selection
+          onExercisesChange(prev => [...prev, ...exercises]);
+          
+          // Clear storage after processing
+          sessionStorage.removeItem('selectedExercises');
+          console.log('Added exercises and cleared storage');
+        } catch (error) {
+          console.error('Error parsing stored exercises:', error);
+          sessionStorage.removeItem('selectedExercises');
+        }
       }
     };
 
-    // Check on mount and when returning to the page
+    // Check immediately on mount
     handleStorageChange();
     
-    const interval = setInterval(handleStorageChange, 500);
-    return () => clearInterval(interval);
-  }, [selectedExercises, onExercisesChange]);
+    // Set up a one-time check after navigation
+    const timeoutId = setTimeout(handleStorageChange, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, []); // Remove dependencies to prevent infinite loop
 
   const removeExercise = (exerciseId: number) => {
-    onExercisesChange(selectedExercises.filter(ex => ex.id !== exerciseId));
+    onExercisesChange(prev => prev.filter(ex => ex.id !== exerciseId));
   };
 
   const updateExercise = (exerciseId: number, field: string, value: any) => {
-    onExercisesChange(selectedExercises.map(ex => 
+    onExercisesChange(prev => prev.map(ex => 
       ex.id === exerciseId ? { ...ex, [field]: value } : ex
     ));
   };
