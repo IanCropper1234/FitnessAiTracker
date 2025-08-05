@@ -425,6 +425,12 @@ export default function CreateTrainingTemplate() {
                         console.log('Template - Mapped exercises:', templateExercises);
                         updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises: templateExercises });
                         
+                        // Auto-advance to step 2 if we're in step 1 and exercises are added
+                        if (step === 1 && templateExercises.length > 0) {
+                          console.log('Auto-advancing to step 2 after adding exercises');
+                          setStep(2);
+                        }
+                        
                         // Auto-scroll to Exercise Configuration when new exercise is added
                         if (exercises.length > currentWorkout.exercises.length && exerciseConfigRef.current) {
                           setTimeout(() => {
