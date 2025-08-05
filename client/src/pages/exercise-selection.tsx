@@ -57,6 +57,10 @@ export default function ExerciseSelection() {
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
   const returnPath = decodeURIComponent(searchParams.get('return') || '/training');
   const targetMuscles = searchParams.get('target')?.split(',') || [];
+  
+  console.log('Exercise Selection - Current location:', location);
+  console.log('Exercise Selection - Return path:', returnPath);
+  console.log('Exercise Selection - Search params:', searchParams.toString());
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
 
