@@ -102,7 +102,14 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       const response = await fetch(`/api/weekly-goals?weekStartDate=${selectedWeek}`, {
         credentials: 'include'
       });
-      return response.json();
+      const data = await response.json();
+      console.log('🔍 Weekly goals API response:', {
+        length: data?.length,
+        firstItem: data?.[0],
+        adherenceValue: data?.[0]?.adherencePercentage,
+        adherenceType: typeof data?.[0]?.adherencePercentage
+      });
+      return data;
     },
     enabled: !!selectedWeek
   });

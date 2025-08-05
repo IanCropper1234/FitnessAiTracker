@@ -80,7 +80,6 @@ export class AdvancedMacroManagementService {
 
   // Calculate daily totals from nutrition logs
   private static calculateDailyTotals(logs: any[]) {
-    console.log('Calculating daily totals from', logs.length, 'nutrition logs');
     const dailyTotals: Record<string, { calories: number; protein: number; carbs: number; fat: number }> = {};
     
     logs.forEach(log => {
@@ -98,28 +97,15 @@ export class AdvancedMacroManagementService {
       dailyTotals[date].protein += protein;
       dailyTotals[date].carbs += carbs;
       dailyTotals[date].fat += fat;
-      
-      // Log individual entries for debugging
-      if (calories > 0) {
-        console.log(`Log entry: ${date} - ${log.foodName} - ${calories} cals`);
-      }
     });
 
-    console.log('Final daily totals:', dailyTotals);
     return dailyTotals;
   }
 
   // Calculate adherence percentage using intelligent target detection - only for past days
   private static calculateAdherence(dailyTotals: any, targetGoals: any) {
-    console.log('=== ADHERENCE CALCULATION DEBUG ===');
-    console.log('Daily totals received:', dailyTotals);
-    console.log('Target goals received:', targetGoals);
-    
     const allDays = Object.keys(dailyTotals);
-    if (allDays.length === 0) {
-      console.log('No daily totals found, returning 0 adherence');
-      return 0;
-    }
+    if (allDays.length === 0) return 0;
 
     // Filter to include completed days (past days + today if it has food logs, exclude future days)
     const today = new Date();
@@ -131,74 +117,33 @@ export class AdvancedMacroManagementService {
       return dayDate <= today; // Include days up to and including today
     });
 
-    console.log('All days:', allDays);
-    console.log('Completed days (past + today):', completedDays);
-    console.log('Today cutoff:', today.toISOString());
-
     // If no completed days, return 0
-    if (completedDays.length === 0) {
-      console.log('No completed days found, returning 0 adherence');
-      return 0;
-    }
+    if (completedDays.length === 0) return 0;
 
     // Intelligently detect custom vs suggested target calories
     const getCurrentTargetCalories = () => {
-      if (!targetGoals) {
-        console.log('No target goals found, using default 2000 calories');
-        return 2000;
-      }
-      
-      console.log('Target goals analysis:', {
-        useCustomCalories: targetGoals.useCustomCalories,
-        customTargetCalories: targetGoals.customTargetCalories,
-        targetCalories: targetGoals.targetCalories,
-        goal: targetGoals.goal
-      });
+      if (!targetGoals) return 2000;
       
       // When custom calories toggle is enabled, use custom values
       if (targetGoals.useCustomCalories && targetGoals.customTargetCalories) {
-        const customCals = parseFloat(targetGoals.customTargetCalories);
-        console.log('Using CUSTOM target calories:', customCals);
-        return customCals;
+        return parseFloat(targetGoals.customTargetCalories);
       }
       
       // Otherwise use suggested values
-      const suggestedCals = parseFloat(targetGoals.targetCalories) || 2000;
-      console.log('Using SUGGESTED target calories:', suggestedCals);
-      return suggestedCals;
+      return parseFloat(targetGoals.targetCalories) || 2000;
     };
 
     const targetCalories = getCurrentTargetCalories();
     let adherenceSum = 0;
-    let dailyAdherenceDetails = [];
 
     completedDays.forEach(date => {
       const actualCalories = dailyTotals[date].calories;
       const deviation = Math.abs((actualCalories - targetCalories) / targetCalories * 100);
       const adherence = Math.max(0, 100 - deviation);
       adherenceSum += adherence;
-      
-      dailyAdherenceDetails.push({
-        date,
-        actualCalories: actualCalories.toFixed(1),
-        targetCalories,
-        deviation: deviation.toFixed(1) + '%',
-        adherence: adherence.toFixed(1) + '%'
-      });
     });
 
-    const finalAdherence = Math.round(adherenceSum / completedDays.length);
-    
-    console.log('Daily adherence breakdown:', dailyAdherenceDetails);
-    console.log('Final adherence calculation:', {
-      adherenceSum: adherenceSum.toFixed(1),
-      completedDaysCount: completedDays.length,
-      averageAdherence: (adherenceSum / completedDays.length).toFixed(1),
-      finalAdherence
-    });
-    console.log('=== END ADHERENCE CALCULATION ===');
-
-    return finalAdherence;
+    return Math.round(adherenceSum / completedDays.length);
   }
 
   // Calculate RP-based macro adjustment using intelligent target detection and wellness data
@@ -419,21 +364,10 @@ export class AdvancedMacroManagementService {
 
       if (dietGoalsData.length > 0) {
         currentDietGoal = dietGoalsData[0];
-        console.log('Diet goal found for adherence calculation:', {
-          userId,
-          goal: currentDietGoal.goal,
-          targetCalories: currentDietGoal.targetCalories,
-          customTargetCalories: currentDietGoal.customTargetCalories,
-          useCustomCalories: currentDietGoal.useCustomCalories
-        });
         
         // Calculate daily totals for smart adherence calculation
         const dailyTotals = this.calculateDailyTotals(logs);
-        console.log('Calculated daily totals for week:', weekStartDate, dailyTotals);
         adherencePercentage = this.calculateAdherence(dailyTotals, currentDietGoal);
-        console.log('Final adherence percentage for week:', weekStartDate, adherencePercentage);
-      } else {
-        console.log('No diet goals found for user:', userId);
       }
 
       // Get weight data for RP analysis (current week and previous week)
