@@ -451,8 +451,8 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                             Superset Configuration
                           </div>
                           <div className="text-xs text-purple-300">
-                            <p>This exercise will be paired with another exercise.</p>
-                            <p className="mt-1">Configure the paired exercise separately in your workout.</p>
+                            <p>Use the full Exercise Selection page for complete superset configuration.</p>
+                            <p className="mt-1">Paired exercises and set synchronization available there.</p>
                           </div>
                         </div>
                       )}

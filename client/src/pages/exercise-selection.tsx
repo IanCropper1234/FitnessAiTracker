@@ -10,7 +10,8 @@ import {
   Dumbbell,
   Timer,
   Zap,
-  Minus
+  Minus,
+  ChevronsUpDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +19,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 
 interface Exercise {
   id: number;
@@ -48,6 +51,7 @@ export default function ExerciseSelection() {
   const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
 
   // Parse URL parameters for context
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
@@ -101,6 +105,80 @@ export default function ExerciseSelection() {
     setSelectedExercises(selectedExercises.map(ex => 
       ex.id === exerciseId ? { ...ex, [field]: value } : ex
     ));
+  };
+
+  // Add paired exercise for superset
+  const addPairedExercise = (originalExerciseId: number, pairedExerciseId: number) => {
+    const originalExercise = selectedExercises.find(ex => ex.id === originalExerciseId);
+    const pairedExerciseData = exercises.find((ex: Exercise) => ex.id === pairedExerciseId);
+    
+    if (!originalExercise || !pairedExerciseData) return;
+    
+    // Check if paired exercise is already selected
+    if (selectedExercises.some(ex => ex.id === pairedExerciseId)) return;
+    
+    // Create paired exercise with same sets as original
+    const pairedExercise: SelectedExercise = {
+      ...pairedExerciseData,
+      sets: originalExercise.sets || 3,
+      targetReps: originalExercise.targetReps || '8-12',
+      restPeriod: originalExercise.restPeriod || 60,
+      specialMethod: 'superset',
+      specialConfig: {
+        pairedExerciseId: originalExerciseId,
+        restSeconds: originalExercise.specialConfig?.restSeconds || 60
+      }
+    };
+    
+    // Update original exercise to reference paired exercise
+    updateExercise(originalExerciseId, 'specialConfig', {
+      ...originalExercise.specialConfig,
+      pairedExerciseId: pairedExerciseId,
+      restSeconds: originalExercise.specialConfig?.restSeconds || 60
+    });
+    
+    // Add paired exercise
+    setSelectedExercises([...selectedExercises, pairedExercise]);
+  };
+
+  // Sync sets between superset pair
+  const syncSupersetSets = (exerciseId: number, newSets: number) => {
+    const exercise = selectedExercises.find(ex => ex.id === exerciseId);
+    if (!exercise || exercise.specialMethod !== 'superset') return;
+    
+    const pairedId = exercise.specialConfig?.pairedExerciseId;
+    if (pairedId) {
+      // Update both exercises
+      setSelectedExercises(selectedExercises.map(ex => {
+        if (ex.id === exerciseId || ex.id === pairedId) {
+          return { ...ex, sets: newSets };
+        }
+        return ex;
+      }));
+    } else {
+      // Just update this exercise
+      updateExercise(exerciseId, 'sets', newSets);
+    }
+  };
+
+  // Remove superset pair
+  const removeSupersetPair = (exerciseId: number) => {
+    const exercise = selectedExercises.find(ex => ex.id === exerciseId);
+    if (!exercise || exercise.specialMethod !== 'superset') {
+      removeExercise(exerciseId);
+      return;
+    }
+    
+    const pairedId = exercise.specialConfig?.pairedExerciseId;
+    if (pairedId) {
+      // Remove both exercises from superset
+      setSelectedExercises(selectedExercises.filter(ex => 
+        ex.id !== exerciseId && ex.id !== pairedId
+      ));
+    } else {
+      // Just remove this exercise
+      removeExercise(exerciseId);
+    }
   };
 
   const handleSaveSelection = () => {
@@ -289,7 +367,13 @@ export default function ExerciseSelection() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => removeExercise(exercise.id)}
+                              onClick={() => {
+                                if (exercise.specialMethod === 'superset') {
+                                  removeSupersetPair(exercise.id);
+                                } else {
+                                  removeExercise(exercise.id);
+                                }
+                              }}
                               className="text-red-600 hover:text-red-700 text-xs"
                             >
                               Remove
@@ -303,7 +387,14 @@ export default function ExerciseSelection() {
                                 <Input
                                   type="number"
                                   value={exercise.sets || 1}
-                                  onChange={(e) => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 1)}
+                                  onChange={(e) => {
+                                    const newSets = parseInt(e.target.value) || 1;
+                                    if (exercise.specialMethod === 'superset') {
+                                      syncSupersetSets(exercise.id, newSets);
+                                    } else {
+                                      updateExercise(exercise.id, 'sets', newSets);
+                                    }
+                                  }}
                                   min="1"
                                   max="10"
                                   className="h-9"
@@ -626,15 +717,120 @@ export default function ExerciseSelection() {
                             )}
 
                             {exercise.specialMethod === 'superset' && (
-                              <div className="bg-purple-500/10 border border-purple-500/20 p-3 space-y-2">
+                              <div className="bg-purple-500/10 border border-purple-500/20 p-3 space-y-3">
                                 <div className="flex items-center gap-2 text-sm text-purple-400 font-medium">
                                   <Plus className="h-3 w-3" />
                                   Superset Configuration
                                 </div>
-                                <div className="text-xs text-purple-300">
-                                  <p>This exercise will be paired with another exercise.</p>
-                                  <p className="mt-1">Configure the paired exercise separately in your workout.</p>
-                                </div>
+                                
+                                {!exercise.specialConfig?.pairedExerciseId ? (
+                                  <div className="space-y-2">
+                                    <label className="text-xs text-purple-300">Select Paired Exercise</label>
+                                    <Popover 
+                                      open={pairedExerciseSearchOpen === exercise.id} 
+                                      onOpenChange={(open) => setPairedExerciseSearchOpen(open ? exercise.id : null)}
+                                    >
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          role="combobox"
+                                          aria-expanded={pairedExerciseSearchOpen === exercise.id}
+                                          className="w-full justify-between h-8 text-xs"
+                                        >
+                                          Select paired exercise...
+                                          <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-full p-0" align="start">
+                                        <Command>
+                                          <CommandInput placeholder="Search exercises..." className="h-8 text-xs" />
+                                          <CommandEmpty>No exercise found.</CommandEmpty>
+                                          <CommandGroup className="max-h-48 overflow-auto">
+                                            {exercises?.filter((ex: Exercise) => 
+                                              ex.id !== exercise.id && 
+                                              !selectedExercises.some(selected => selected.id === ex.id)
+                                            ).map((availableExercise: Exercise) => (
+                                              <CommandItem
+                                                key={availableExercise.id}
+                                                value={availableExercise.name}
+                                                onSelect={() => {
+                                                  addPairedExercise(exercise.id, availableExercise.id);
+                                                  setPairedExerciseSearchOpen(null);
+                                                }}
+                                                className="cursor-pointer"
+                                              >
+                                                <div className="flex flex-col w-full">
+                                                  <span className="font-medium text-xs">{availableExercise.name}</span>
+                                                  <div className="flex gap-1 mt-1">
+                                                    <Badge variant="outline" className="text-xs px-1 py-0">
+                                                      {availableExercise.category}
+                                                    </Badge>
+                                                    <Badge variant="secondary" className="text-xs px-1 py-0">
+                                                      {availableExercise.primaryMuscle}
+                                                    </Badge>
+                                                  </div>
+                                                </div>
+                                              </CommandItem>
+                                            ))}
+                                          </CommandGroup>
+                                        </Command>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <label className="text-xs text-purple-300">Paired Exercise</label>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          updateExercise(exercise.id, 'specialConfig', {
+                                            ...exercise.specialConfig,
+                                            pairedExerciseId: undefined
+                                          });
+                                        }}
+                                        className="h-6 px-2 text-xs text-purple-300 hover:text-purple-400"
+                                      >
+                                        Change
+                                      </Button>
+                                    </div>
+                                    <div className="p-2 bg-purple-500/5 border border-purple-500/20 rounded">
+                                      <div className="text-xs text-purple-200 font-medium">
+                                        {exercises?.find((ex: Exercise) => ex.id === exercise.specialConfig?.pairedExerciseId)?.name}
+                                      </div>
+                                      <div className="text-xs text-purple-300 mt-1">
+                                        Sets are synchronized between paired exercises
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="space-y-1">
+                                      <label className="text-xs text-purple-300">Rest Between Sets (seconds)</label>
+                                      <Input
+                                        type="number"
+                                        min="30"
+                                        max="180"
+                                        value={exercise.specialConfig?.restSeconds || 60}
+                                        onChange={(e) => {
+                                          const newRestSeconds = parseInt(e.target.value) || 60;
+                                          updateExercise(exercise.id, 'specialConfig', {
+                                            ...exercise.specialConfig,
+                                            restSeconds: newRestSeconds
+                                          });
+                                          // Also update the paired exercise
+                                          const pairedId = exercise.specialConfig?.pairedExerciseId;
+                                          if (pairedId) {
+                                            updateExercise(pairedId, 'specialConfig', {
+                                              ...selectedExercises.find(ex => ex.id === pairedId)?.specialConfig,
+                                              restSeconds: newRestSeconds
+                                            });
+                                          }
+                                        }}
+                                        className="w-32 h-8 text-xs bg-background border border-border/50"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
