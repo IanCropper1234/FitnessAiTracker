@@ -86,12 +86,12 @@ export default function CreateTrainingTemplate() {
     focus: []
   };
 
-  // Auto-set step based on content when component mounts
+  // Auto-sync step state based on content
   useEffect(() => {
     const hasBasicInfo = formData.name.trim() !== '';
     const hasExercises = formData.templateData.workouts.some(w => w.exercises.length > 0);
     
-    console.log('Initial step calculation on mount:', { 
+    console.log('Step sync check:', { 
       hasBasicInfo, 
       hasExercises, 
       currentStep: step,
@@ -99,12 +99,17 @@ export default function CreateTrainingTemplate() {
       workoutExerciseCounts: formData.templateData.workouts.map(w => w.exercises.length)
     });
     
-    // Only auto-advance on initial mount if we have exercises
-    if (hasExercises && step === 1) {
-      console.log('Auto-setting step to 2 based on existing exercises on mount');
-      setStep(2);
+    // If we have exercises but no basic info, reset to step 1
+    if (hasExercises && !hasBasicInfo && step === 2) {
+      console.log('Resetting to step 1 - exercises exist but basic info missing');
+      setStep(1);
     }
-  }, []); // Only run on mount
+    // If we have basic info and are in step 1, can advance to step 2
+    else if (hasBasicInfo && step === 1) {
+      console.log('Can advance to step 2 - basic info complete');
+      // Don't auto-advance, let user control navigation
+    }
+  }, [formData.name, formData.description, formData.templateData.workouts, step]);
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -463,18 +468,17 @@ export default function CreateTrainingTemplate() {
                         
                         updateWorkout(currentWorkoutIndex, updatedWorkout);
                         
-                        // Immediately advance to step 2 when exercises are added from step 1
+                        // Check if we need to advance to step 2 - but user is already in step 2!
                         console.log('Step advancement check:', { 
                           currentStep: step, 
                           templateExercisesLength: templateExercises.length,
                           condition: step === 1 && templateExercises.length > 0 
                         });
                         
-                        if (step === 1 && templateExercises.length > 0) {
-                          console.log('Immediately advancing to step 2 - exercises added from step 1');
+                        // Force advance to step 2 when exercises are added, regardless of current step
+                        if (templateExercises.length > 0) {
+                          console.log('Forcing advance to step 2 - exercises added');
                           setStep(2);
-                        } else {
-                          console.log('Step advancement skipped - condition not met');
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
