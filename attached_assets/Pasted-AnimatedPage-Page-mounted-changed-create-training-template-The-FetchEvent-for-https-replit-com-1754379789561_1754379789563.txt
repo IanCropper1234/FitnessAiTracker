@@ -1,0 +1,38 @@
+AnimatedPage: Page mounted/changed: /create-training-template
+The FetchEvent for "https://replit.com/public/js/beacon.js" resulted in a network error response: the promise was rejected.
+Promise.then
+(anonymous) @ sw.js:57
+2sw.js:1 Uncaught (in promise) TypeError: Failed to convert value to 'Response'.
+Promise.then
+(anonymous) @ sw.js:57
+page-transition.tsx:48 ✅ ANIMATION COMPLETED for page: /create-training-template
+exercise-selector-simple.tsx:45 Found stored exercises: [{…}]
+create-training-template.tsx:411 Template - Processing exercises: [{…}]
+create-training-template.tsx:425 Template - Mapped exercises: [{…}]
+exercise-selector-simple.tsx:73 Added exercises and cleared storage
+create-training-template.tsx:411 Template - Processing exercises: []
+create-training-template.tsx:425 Template - Mapped exercises: []
+exercise-selector-simple.tsx:103 DEBUG - ExerciseSelector handleNavigateToSelection:
+exercise-selector-simple.tsx:104   Current location: /create-training-template
+exercise-selector-simple.tsx:105   Return URL encoded: %2Fcreate-training-template
+exercise-selector-simple.tsx:106   Full navigation URL: /exercise-selection/template?return=%2Fcreate-training-template
+exercise-selection.tsx:62 DEBUG - Exercise Selection URL parsing:
+exercise-selection.tsx:63   Full location: /exercise-selection/template
+exercise-selection.tsx:64   URL query part: NO QUERY
+exercise-selection.tsx:65   Search params toString: 
+exercise-selection.tsx:66   Raw return param: null
+exercise-selection.tsx:67   Decoded return path: /training
+page-transition.tsx:15 AnimatedPage: Page mounted/changed: /exercise-selection/template
+page-transition.tsx:48 ✅ ANIMATION COMPLETED for page: /exercise-selection/template
+exercise-selection.tsx:62 DEBUG - Exercise Selection URL parsing:
+exercise-selection.tsx:63   Full location: /exercise-selection/template
+exercise-selection.tsx:64   URL query part: NO QUERY
+exercise-selection.tsx:65   Search params toString: 
+exercise-selection.tsx:66   Raw return param: null
+exercise-selection.tsx:67   Decoded return path: /training
+exercise-selection.tsx:197 Navigating back to: /training
+exercise-selection.tsx:198 Current location before navigation: /exercise-selection/template
+exercise-selection.tsx:202 Executing navigation to: /training
+training-dashboard.tsx:569 Date change triggered: null
+page-transition.tsx:15 AnimatedPage: Page mounted/changed: /training
+page-transition.tsx:48 ✅ ANIMATION COMPLETED for page: /training

@@ -53,15 +53,15 @@ export default function ExerciseSelection() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
 
-  // Parse URL parameters for context
-  const searchParams = new URLSearchParams(location.split('?')[1] || '');
+  // Parse URL parameters for context - use window.location.search for query params
+  const searchParams = new URLSearchParams(window.location.search);
   const rawReturnParam = searchParams.get('return');
   const returnPath = rawReturnParam ? decodeURIComponent(rawReturnParam) : '/training';
   const targetMuscles = searchParams.get('target')?.split(',') || [];
   
   console.log('DEBUG - Exercise Selection URL parsing:');
-  console.log('  Full location:', location);
-  console.log('  URL query part:', location.split('?')[1] || 'NO QUERY');
+  console.log('  Wouter location:', location);
+  console.log('  window.location.search:', window.location.search);
   console.log('  Search params toString:', searchParams.toString());
   console.log('  Raw return param:', rawReturnParam);
   console.log('  Decoded return path:', returnPath);
