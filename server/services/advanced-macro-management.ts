@@ -334,6 +334,13 @@ export class AdvancedMacroManagementService {
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
 
+      console.log(`📅 Weekly calculation for: ${weekStart.toISOString().split('T')[0]} to ${weekEnd.toISOString().split('T')[0]}`);
+      
+      // Previous week for weight comparison
+      const previousWeekStart = new Date(weekStart);
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7);
+      console.log(`⚖️ Weight ranges - Current: ${weekStart.toISOString().split('T')[0]} to ${weekEnd.toISOString().split('T')[0]} | Previous: ${previousWeekStart.toISOString().split('T')[0]} to ${weekStart.toISOString().split('T')[0]}`);
+
       // Get nutrition logs for the week
       const logs = await db.select()
         .from(nutritionLogs)
@@ -371,8 +378,6 @@ export class AdvancedMacroManagementService {
       }
 
       // Get weight data for RP analysis (current week and previous week)
-      const previousWeekStart = new Date(weekStart);
-      previousWeekStart.setDate(previousWeekStart.getDate() - 7);
 
       const [currentWeekWeight, previousWeekWeight] = await Promise.all([
         // Current week weight (latest entry in the week)
@@ -409,11 +414,17 @@ export class AdvancedMacroManagementService {
       if (currentWeekWeight.length > 0 && currentWeekWeight[0].weight) {
         currentWeight = parseFloat(currentWeekWeight[0].weight);
         currentWeightUnit = currentWeekWeight[0].unit || 'metric';
+        console.log(`📊 Current weight: ${currentWeight} ${currentWeightUnit} (${currentWeekWeight[0].date.toISOString().split('T')[0]})`);
+      } else {
+        console.log(`⚠️ No current week weight data found for week ${weekStart.toISOString().split('T')[0]}`);
       }
 
       if (previousWeekWeight.length > 0 && previousWeekWeight[0].weight) {
         previousWeight = parseFloat(previousWeekWeight[0].weight);
         previousWeightUnit = previousWeekWeight[0].unit || 'metric';
+        console.log(`📊 Previous weight: ${previousWeight} ${previousWeightUnit} (${previousWeekWeight[0].date.toISOString().split('T')[0]})`);
+      } else {
+        console.log(`⚠️ No previous week weight data found for week ${previousWeekStart.toISOString().split('T')[0]}`);
       }
 
       if (currentWeight && previousWeight) {
