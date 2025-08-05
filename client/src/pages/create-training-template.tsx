@@ -146,6 +146,14 @@ export default function CreateTrainingTemplate() {
       };
       console.log('updateWorkout - Updated formData:', updated);
       console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map(w => w.exercises.length));
+      
+      // Check if we need to auto-advance to step 2 after state update
+      const hasExercises = updated.templateData.workouts.some(w => w.exercises.length > 0);
+      if (step === 1 && hasExercises) {
+        console.log('Auto-advancing to step 2 immediately after formData update');
+        setTimeout(() => setStep(2), 50);
+      }
+      
       return updated;
     });
   };
@@ -460,7 +468,10 @@ export default function CreateTrainingTemplate() {
                         // Auto-advance to step 2 if we're in step 1 and exercises are added
                         if (step === 1 && templateExercises.length > 0) {
                           console.log('Auto-advancing to step 2 after adding exercises');
-                          setTimeout(() => setStep(2), 100); // Slight delay to ensure state updates
+                          setTimeout(() => {
+                            console.log('Executing delayed step advancement to 2');
+                            setStep(2);
+                          }, 200); // Increased delay to ensure state updates complete
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
