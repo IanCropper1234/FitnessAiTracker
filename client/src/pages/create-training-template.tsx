@@ -154,16 +154,14 @@ export default function CreateTrainingTemplate() {
     };
   });
 
-  // Auto-save effect with immediate trigger
+  // Cleanup auto-save timeout on unmount
   useEffect(() => {
-    triggerAutoSave(formData);
-    // Cleanup on unmount
     return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [formData]);
+  }, []);
 
   // Show toast when auto-saved data is loaded on mount
   useEffect(() => {
@@ -235,8 +233,10 @@ export default function CreateTrainingTemplate() {
       console.log('updateWorkout - Updated formData:', updated);
       console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map((w: TemplateWorkout) => w.exercises.length));
       
-      // Immediate auto-save for workout changes
-      triggerAutoSave(updated);
+      // Delayed auto-save to prevent data loss during rapid changes
+      setTimeout(() => {
+        triggerAutoSave(updated);
+      }, 100);
       
       return updated;
     });
