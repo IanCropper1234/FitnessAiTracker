@@ -439,6 +439,8 @@ export default function CreateTrainingTemplate() {
                         }
                         
                         console.log('Template - Processing exercises:', exercises);
+                        console.log('Template - Type of exercises:', typeof exercises);
+                        console.log('Template - Is exercises a function?', typeof exercises === 'function');
                         console.log('Template - Current workout before update:', currentWorkout);
                         console.log('Template - Current formData before update:', formData);
                         
