@@ -86,19 +86,25 @@ export default function CreateTrainingTemplate() {
     focus: []
   };
 
-  // Auto-set step based on content when component mounts
+  // Auto-set step based on content when component mounts or data changes
   useEffect(() => {
     const hasBasicInfo = formData.name.trim() !== '';
     const hasExercises = formData.templateData.workouts.some(w => w.exercises.length > 0);
     
-    console.log('Step calculation:', { hasBasicInfo, hasExercises, currentStep: step });
+    console.log('Step calculation useEffect triggered:', { 
+      hasBasicInfo, 
+      hasExercises, 
+      currentStep: step,
+      totalWorkouts: formData.templateData.workouts.length,
+      workoutExerciseCounts: formData.templateData.workouts.map(w => w.exercises.length)
+    });
     
     // If we have exercises but are in step 1, auto-advance to step 2
     if (hasExercises && step === 1) {
       console.log('Auto-setting step to 2 based on existing exercises');
       setStep(2);
     }
-  }, [formData.name, formData.templateData.workouts, step]);
+  }, [formData.templateData.workouts, step]);
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -129,13 +135,19 @@ export default function CreateTrainingTemplate() {
   });
 
   const updateWorkout = (index: number, workout: TemplateWorkout) => {
-    setFormData(prev => ({
-      ...prev,
-      templateData: {
-        ...prev.templateData,
-        workouts: prev.templateData.workouts.map((w, i) => i === index ? workout : w)
-      }
-    }));
+    console.log('updateWorkout called:', { index, workout, exerciseCount: workout.exercises.length });
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        templateData: {
+          ...prev.templateData,
+          workouts: prev.templateData.workouts.map((w, i) => i === index ? workout : w)
+        }
+      };
+      console.log('updateWorkout - Updated formData:', updated);
+      console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map(w => w.exercises.length));
+      return updated;
+    });
   };
 
   const addExerciseToCurrentWorkout = (exercise: Exercise) => {
@@ -423,6 +435,8 @@ export default function CreateTrainingTemplate() {
                         }
                         
                         console.log('Template - Processing exercises:', exercises);
+                        console.log('Template - Current workout before update:', currentWorkout);
+                        console.log('Template - Current formData before update:', formData);
                         
                         // Map to TemplateExercise format
                         const templateExercises = exercises.map(exercise => ({
@@ -437,7 +451,11 @@ export default function CreateTrainingTemplate() {
                         }));
                         
                         console.log('Template - Mapped exercises:', templateExercises);
-                        updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises: templateExercises });
+                        
+                        const updatedWorkout = { ...currentWorkout, exercises: templateExercises };
+                        console.log('Template - Updated workout:', updatedWorkout);
+                        
+                        updateWorkout(currentWorkoutIndex, updatedWorkout);
                         
                         // Auto-advance to step 2 if we're in step 1 and exercises are added
                         if (step === 1 && templateExercises.length > 0) {
