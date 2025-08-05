@@ -30,22 +30,46 @@ interface ExerciseSelectorProps {
   selectedExercises: SelectedExercise[];
   onExercisesChange: (exercises: SelectedExercise[] | ((prev: SelectedExercise[]) => SelectedExercise[])) => void;
   targetMuscleGroups?: string[];
+  currentWorkoutIndex?: number; // Add current workout day index for proper exercise placement
 }
 
-export function ExerciseSelector({ selectedExercises, onExercisesChange, targetMuscleGroups }: ExerciseSelectorProps) {
+export function ExerciseSelector({ selectedExercises, onExercisesChange, targetMuscleGroups, currentWorkoutIndex = 0 }: ExerciseSelectorProps) {
   const [location, setLocation] = useLocation();
 
   // Check for newly selected exercises from the standalone page
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedExercises = sessionStorage.getItem('selectedExercises');
-      if (storedExercises) {
+      const storedData = sessionStorage.getItem('selectedExercises');
+      if (storedData) {
         try {
-          const exercises = JSON.parse(storedExercises);
-          console.log('Found stored exercises:', exercises);
+          const exerciseData = JSON.parse(storedData);
+          console.log('Found stored exercise data:', exerciseData);
+          
+          // Handle both old format (direct array) and new format (object with workoutIndex)
+          let exercises;
+          let targetWorkoutIndex;
+          
+          if (Array.isArray(exerciseData)) {
+            // Old format - direct array
+            exercises = exerciseData;
+            targetWorkoutIndex = currentWorkoutIndex; // Use current index as fallback
+          } else if (exerciseData.exercises && Array.isArray(exerciseData.exercises)) {
+            // New format - object with exercises and workoutIndex
+            exercises = exerciseData.exercises;
+            targetWorkoutIndex = exerciseData.workoutIndex !== undefined ? exerciseData.workoutIndex : currentWorkoutIndex;
+          } else {
+            console.log('Invalid exercise data format, skipping');
+            return;
+          }
+          
+          // Only process if the workout index matches (exercises are for this specific workout day)
+          if (targetWorkoutIndex !== currentWorkoutIndex) {
+            console.log(`Exercises are for workout index ${targetWorkoutIndex}, but current index is ${currentWorkoutIndex}. Skipping.`);
+            return;
+          }
           
           // Validate that exercises is an array
-          if (Array.isArray(exercises) && exercises.length > 0) {
+          if (exercises.length > 0) {
             // Convert exercises to SelectedExercise format - ENSURE COMPLETE DATA TRANSFER
             const formattedExercises: SelectedExercise[] = exercises.map((ex: any) => {
               console.log('DEBUG - Processing exercise from storage:', ex.name, 'Special Method:', ex.specialMethod, 'Special Config:', ex.specialConfig);
@@ -70,7 +94,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
             // Add exercises to current selection
             onExercisesChange((prev: SelectedExercise[]) => [...prev, ...formattedExercises]);
           } else {
-            console.log('Invalid exercises format, skipping');
+            console.log('No exercises to add, skipping');
           }
           
           // Clear storage after processing
@@ -138,12 +162,14 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
     }
     
     const targetParams = targetMuscleGroups?.length ? `&target=${targetMuscleGroups.join(',')}` : '';
+    const workoutIndexParam = currentWorkoutIndex !== undefined ? `&workoutIndex=${currentWorkoutIndex}` : '';
     const returnUrl = encodeURIComponent(location);
     console.log('DEBUG - ExerciseSelector handleNavigateToSelection:');
     console.log('  Current location:', location);
+    console.log('  Current workout index:', currentWorkoutIndex);
     console.log('  Return URL encoded:', returnUrl);
-    console.log('  Full navigation URL:', `/exercise-selection/template?return=${returnUrl}${targetParams}`);
-    setLocation(`/exercise-selection/template?return=${returnUrl}${targetParams}`);
+    console.log('  Full navigation URL:', `/exercise-selection/template?return=${returnUrl}${targetParams}${workoutIndexParam}`);
+    setLocation(`/exercise-selection/template?return=${returnUrl}${targetParams}${workoutIndexParam}`);
   };
 
   return (

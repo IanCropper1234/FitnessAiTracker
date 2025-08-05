@@ -58,6 +58,7 @@ export default function ExerciseSelection() {
   const rawReturnParam = searchParams.get('return');
   const returnPath = rawReturnParam ? decodeURIComponent(rawReturnParam) : '/training';
   const targetMuscles = searchParams.get('target')?.split(',') || [];
+  const workoutIndex = parseInt(searchParams.get('workoutIndex') || '0'); // Get current workout index
   
   console.log('DEBUG - Exercise Selection URL parsing:');
   console.log('  Wouter location:', location);
@@ -65,6 +66,7 @@ export default function ExerciseSelection() {
   console.log('  Search params toString:', searchParams.toString());
   console.log('  Raw return param:', rawReturnParam);
   console.log('  Decoded return path:', returnPath);
+  console.log('  Workout Index:', workoutIndex);
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
 
@@ -208,15 +210,22 @@ export default function ExerciseSelection() {
   };
 
   const handleSaveSelection = () => {
-    // CRITICAL: Store ALL exercise data including special training method configurations
-    console.log('SAVE DEBUG - Storing exercises with special configs:', selectedExercises.map(ex => ({
+    // CRITICAL: Store ALL exercise data including special training method configurations AND workout index
+    console.log('SAVE DEBUG - Storing exercises with special configs for workout index:', workoutIndex);
+    console.log('SAVE DEBUG - Exercises:', selectedExercises.map(ex => ({
       name: ex.name,
       specialMethod: ex.specialMethod,
       specialConfig: ex.specialConfig
     })));
     
-    // Store selected exercises in sessionStorage for the calling component
-    sessionStorage.setItem('selectedExercises', JSON.stringify(selectedExercises));
+    // Store selected exercises with workout index in sessionStorage for the calling component
+    const exerciseData = {
+      exercises: selectedExercises,
+      workoutIndex: workoutIndex,
+      timestamp: Date.now()
+    };
+    
+    sessionStorage.setItem('selectedExercises', JSON.stringify(exerciseData));
     
     // Navigate back to the source page
     console.log('Navigating back to:', returnPath);

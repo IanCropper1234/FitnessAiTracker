@@ -562,6 +562,7 @@ export default function CreateTrainingTemplate() {
               <div className="space-y-3">
                 <ExerciseSelector
                   selectedExercises={currentWorkout.exercises}
+                  currentWorkoutIndex={currentWorkoutIndex}
                   onExercisesChange={(exercisesOrUpdater: any) => {
                     // Force save before any exercise changes to ensure no data loss
                     forceSave(formData);
