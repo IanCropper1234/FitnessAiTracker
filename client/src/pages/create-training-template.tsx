@@ -58,7 +58,7 @@ interface TemplateData {
 
 // Auto-save functionality constants
 const AUTO_SAVE_KEY = 'fitai_template_draft';
-const AUTO_SAVE_INTERVAL = 2000; // 2 seconds
+const AUTO_SAVE_INTERVAL = 300; // 300ms debounce for immediate save
 
 // Helper functions for auto-save
 const saveToLocalStorage = (data: any) => {
@@ -67,6 +67,7 @@ const saveToLocalStorage = (data: any) => {
       ...data,
       lastSaved: new Date().toISOString()
     }));
+    console.log('🔄 Auto-saved template draft at:', new Date().toLocaleTimeString());
   } catch (error) {
     console.warn('Failed to save template draft to localStorage:', error);
   }
@@ -105,6 +106,27 @@ export default function CreateTrainingTemplate() {
   const exerciseConfigRef = useRef<HTMLDivElement>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
   
+  // Immediate auto-save function for field-level changes
+  const triggerAutoSave = (newData: typeof formData) => {
+    try {
+      // Clear any existing timeout
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+
+      // Set a new timeout for debounced auto-save
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        try {
+          saveToLocalStorage(newData);
+        } catch (error) {
+          console.warn('Immediate auto-save failed:', error);
+        }
+      }, AUTO_SAVE_INTERVAL);
+    } catch (error) {
+      console.warn('Auto-save trigger failed:', error);
+    }
+  };
+  
   // Initialize form data with auto-saved data if available
   const [formData, setFormData] = useState(() => {
     try {
@@ -132,43 +154,26 @@ export default function CreateTrainingTemplate() {
     };
   });
 
-  // Auto-save effect
+  // Auto-save effect with immediate trigger
   useEffect(() => {
-    try {
-      // Clear any existing timeout
+    triggerAutoSave(formData);
+    // Cleanup on unmount
+    return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
-
-      // Set a new timeout for auto-save
-      autoSaveTimeoutRef.current = setTimeout(() => {
-        try {
-          saveToLocalStorage(formData);
-        } catch (error) {
-          console.warn('Auto-save failed:', error);
-        }
-      }, AUTO_SAVE_INTERVAL);
-
-      // Cleanup on unmount
-      return () => {
-        if (autoSaveTimeoutRef.current) {
-          clearTimeout(autoSaveTimeoutRef.current);
-        }
-      };
-    } catch (error) {
-      console.warn('Auto-save setup failed:', error);
-    }
+    };
   }, [formData]);
 
   // Show toast when auto-saved data is loaded on mount
   useEffect(() => {
     try {
       const savedData = loadFromLocalStorage();
-      if (savedData && (savedData.name || savedData.description)) {
+      if (savedData && (savedData.name || savedData.description || savedData.templateData?.workouts?.some((w: TemplateWorkout) => w.exercises.length > 0))) {
         toast({
           title: "Draft Restored",
-          description: "Your previous template draft has been automatically restored.",
-          duration: 3000,
+          description: "Your previous template draft has been automatically restored with all exercise configurations.",
+          duration: 4000,
         });
       }
     } catch (error) {
@@ -229,6 +234,9 @@ export default function CreateTrainingTemplate() {
       };
       console.log('updateWorkout - Updated formData:', updated);
       console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map((w: TemplateWorkout) => w.exercises.length));
+      
+      // Immediate auto-save for workout changes
+      triggerAutoSave(updated);
       
       return updated;
     });
@@ -392,7 +400,15 @@ export default function CreateTrainingTemplate() {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData((prev: typeof formData) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => {
+                  const updated = { ...formData, name: e.target.value };
+                  setFormData(updated);
+                  triggerAutoSave(updated);
+                }}
+                onBlur={(e) => {
+                  const updated = { ...formData, name: e.target.value };
+                  triggerAutoSave(updated);
+                }}
                 placeholder="e.g., My Custom Push/Pull Training"
                 className="h-11 text-base"
               />
@@ -401,7 +417,11 @@ export default function CreateTrainingTemplate() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="category" className="text-sm font-medium">Difficulty</Label>
-                <Select value={formData.category} onValueChange={(value: 'beginner' | 'intermediate' | 'advanced') => setFormData((prev: typeof formData) => ({ ...prev, category: value }))}>
+                <Select value={formData.category} onValueChange={(value: 'beginner' | 'intermediate' | 'advanced') => {
+                  const updated = { ...formData, category: value };
+                  setFormData(updated);
+                  triggerAutoSave(updated);
+                }}>
                   <SelectTrigger className="h-11">
                     <SelectValue />
                   </SelectTrigger>
@@ -417,11 +437,11 @@ export default function CreateTrainingTemplate() {
                 <Label htmlFor="daysPerWeek" className="text-sm font-medium">Training Days</Label>
                 <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
                   const days = parseInt(value);
-                  setFormData((prev: typeof formData) => ({ 
-                    ...prev, 
+                  const updated = { 
+                    ...formData, 
                     daysPerWeek: days,
                     templateData: {
-                      ...prev.templateData,
+                      ...formData.templateData,
                       workouts: Array.from({ length: days }, (_, i) => ({
                         name: `Day ${i + 1}`,
                         exercises: [],
@@ -429,7 +449,9 @@ export default function CreateTrainingTemplate() {
                         focus: []
                       }))
                     }
-                  }));
+                  };
+                  setFormData(updated);
+                  triggerAutoSave(updated);
                   setCurrentWorkoutIndex(0);
                 }}>
                   <SelectTrigger className="h-11">
@@ -450,7 +472,15 @@ export default function CreateTrainingTemplate() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((prev: typeof formData) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => {
+                  const updated = { ...formData, description: e.target.value };
+                  setFormData(updated);
+                  triggerAutoSave(updated);
+                }}
+                onBlur={(e) => {
+                  const updated = { ...formData, description: e.target.value };
+                  triggerAutoSave(updated);
+                }}
                 placeholder="Describe your training template's features and goals..."
                 rows={3}
                 className="text-base resize-none"
@@ -496,7 +526,14 @@ export default function CreateTrainingTemplate() {
               <Input
                 id="workoutName"
                 value={currentWorkout.name}
-                onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
+                onChange={(e) => {
+                  const updatedWorkout = { ...currentWorkout, name: e.target.value };
+                  updateWorkout(currentWorkoutIndex, updatedWorkout);
+                }}
+                onBlur={(e) => {
+                  const updatedWorkout = { ...currentWorkout, name: e.target.value };
+                  updateWorkout(currentWorkoutIndex, updatedWorkout);
+                }}
                 className="h-11 text-base"
                 placeholder="e.g., Chest & Triceps"
               />
@@ -586,6 +623,7 @@ export default function CreateTrainingTemplate() {
                                   type="number"
                                   value={exercise.sets}
                                   onChange={(e) => updateExercise(index, { sets: parseInt(e.target.value) || 1 })}
+                                  onBlur={(e) => updateExercise(index, { sets: parseInt(e.target.value) || 1 })}
                                   min="1"
                                   max="10"
                                   className="h-8 text-xs"
@@ -596,6 +634,7 @@ export default function CreateTrainingTemplate() {
                                 <Input
                                   value={exercise.targetReps}
                                   onChange={(e) => updateExercise(index, { targetReps: e.target.value })}
+                                  onBlur={(e) => updateExercise(index, { targetReps: e.target.value })}
                                   placeholder="8-12"
                                   className="h-8 text-xs"
                                 />
@@ -606,6 +645,7 @@ export default function CreateTrainingTemplate() {
                                   type="number"
                                   value={exercise.restPeriod}
                                   onChange={(e) => updateExercise(index, { restPeriod: parseInt(e.target.value) || 60 })}
+                                  onBlur={(e) => updateExercise(index, { restPeriod: parseInt(e.target.value) || 60 })}
                                   min="30"
                                   max="300"
                                   className="h-8 text-xs"
@@ -689,6 +729,7 @@ export default function CreateTrainingTemplate() {
                               <Textarea
                                 value={exercise.notes || ''}
                                 onChange={(e) => updateExercise(index, { notes: e.target.value })}
+                                onBlur={(e) => updateExercise(index, { notes: e.target.value })}
                                 placeholder="Exercise notes..."
                                 rows={2}
                                 className="text-xs resize-none"
