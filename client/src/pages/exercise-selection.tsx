@@ -55,12 +55,16 @@ export default function ExerciseSelection() {
 
   // Parse URL parameters for context
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
-  const returnPath = decodeURIComponent(searchParams.get('return') || '/training');
+  const rawReturnParam = searchParams.get('return');
+  const returnPath = rawReturnParam ? decodeURIComponent(rawReturnParam) : '/training';
   const targetMuscles = searchParams.get('target')?.split(',') || [];
   
-  console.log('Exercise Selection - Current location:', location);
-  console.log('Exercise Selection - Return path:', returnPath);
-  console.log('Exercise Selection - Search params:', searchParams.toString());
+  console.log('DEBUG - Exercise Selection URL parsing:');
+  console.log('  Full location:', location);
+  console.log('  URL query part:', location.split('?')[1] || 'NO QUERY');
+  console.log('  Search params toString:', searchParams.toString());
+  console.log('  Raw return param:', rawReturnParam);
+  console.log('  Decoded return path:', returnPath);
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
 
