@@ -147,6 +147,7 @@ export default function CreateTrainingTemplate() {
 
   const updateWorkout = (index: number, workout: TemplateWorkout) => {
     console.log('updateWorkout called:', { index, workout, exerciseCount: workout.exercises.length });
+    
     setFormData(prev => {
       const updated = {
         ...prev,
@@ -158,8 +159,12 @@ export default function CreateTrainingTemplate() {
       console.log('updateWorkout - Updated formData:', updated);
       console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map(w => w.exercises.length));
       
-      // Note: Step advancement is handled in the onExercisesChange callback
-      // to avoid async state timing issues
+      // Check if we should advance to step 2 immediately after state update
+      const hasExercises = updated.templateData.workouts.some(w => w.exercises.length > 0);
+      if (hasExercises && step === 1) {
+        console.log('updateWorkout - Triggering step advancement from state update');
+        setTimeout(() => setStep(2), 50);
+      }
       
       return updated;
     });
@@ -484,11 +489,8 @@ export default function CreateTrainingTemplate() {
                         // Force advance to step 2 when exercises are added, regardless of current step
                         if (templateExercises.length > 0) {
                           console.log('Forcing advance to step 2 - exercises added');
-                          // Use setTimeout to ensure state updates are complete
-                          setTimeout(() => {
-                            console.log('Executing delayed step advancement to 2 after state update');
-                            setStep(2);
-                          }, 100);
+                          // Direct step advancement - updateWorkout will handle the timing
+                          setStep(2);
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
