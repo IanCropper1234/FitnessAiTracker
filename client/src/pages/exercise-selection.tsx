@@ -191,14 +191,43 @@ export default function ExerciseSelection() {
     
     // Navigate back to the source page
     console.log('Navigating back to:', returnPath);
-    setLocation(returnPath);
+    console.log('Current location before navigation:', location);
+    
+    // Use setTimeout to ensure proper navigation
+    setTimeout(() => {
+      console.log('Executing navigation to:', returnPath);
+      setLocation(returnPath);
+      
+      // Fallback: use window.history if setLocation fails
+      setTimeout(() => {
+        if (window.location.pathname !== returnPath) {
+          console.log('setLocation failed, using window.history.pushState');
+          window.history.pushState({}, '', returnPath);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      }, 100);
+    }, 50);
   };
 
   const handleCancel = () => {
     // Clear any stored exercises since we're canceling
     sessionStorage.removeItem('selectedExercises');
     console.log('Canceling and navigating back to:', returnPath);
-    setLocation(returnPath);
+    
+    // Use setTimeout to ensure proper navigation
+    setTimeout(() => {
+      console.log('Executing cancel navigation to:', returnPath);
+      setLocation(returnPath);
+      
+      // Fallback: use window.history if setLocation fails
+      setTimeout(() => {
+        if (window.location.pathname !== returnPath) {
+          console.log('Cancel setLocation failed, using window.history.pushState');
+          window.history.pushState({}, '', returnPath);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+      }, 100);
+    }, 50);
   };
 
   return (
