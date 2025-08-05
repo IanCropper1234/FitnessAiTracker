@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { ExerciseSelector } from '@/components/exercise-selector';
+import { ExerciseSelector } from '@/components/exercise-selector-simple';
 
 interface Exercise {
   id: number;

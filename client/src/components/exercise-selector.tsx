@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Plus, Dumbbell, Target, Timer, Zap, Minus } from "lucide-react";
+import { Plus, Dumbbell } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -34,44 +30,25 @@ interface ExerciseSelectorProps {
 }
 
 export function ExerciseSelector({ selectedExercises, onExercisesChange, targetMuscleGroups }: ExerciseSelectorProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [location, setLocation] = useLocation();
 
-  const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
-    queryKey: ['/api/training/exercises'],
-  });
-
-  const categories = ["all", "push", "pull", "legs", "cardio"];
-
-  const filteredExercises = exercises.filter(exercise => {
-    const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (exercise.muscleGroups?.some(muscle => 
-                           muscle.toLowerCase().includes(searchTerm.toLowerCase())
-                         ));
-    
-    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
-    
-    const matchesTargetMuscles = !targetMuscleGroups?.length || 
-                                targetMuscleGroups.some(target => 
-                                  exercise.muscleGroups?.includes(target) || 
-                                  exercise.primaryMuscle === target
-                                );
-    
-    return matchesSearch && matchesCategory && matchesTargetMuscles;
-  });
-
-  const addExercise = (exercise: Exercise) => {
-    const newExercise: SelectedExercise = {
-      ...exercise,
-      sets: 3,
-      targetReps: "8-12",
-      restPeriod: 120, // 2 minutes
+  // Check for newly selected exercises from the standalone page
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedExercises = sessionStorage.getItem('selectedExercises');
+      if (storedExercises) {
+        const exercises = JSON.parse(storedExercises);
+        onExercisesChange([...selectedExercises, ...exercises]);
+        sessionStorage.removeItem('selectedExercises');
+      }
     };
+
+    // Check on mount and when returning to the page
+    handleStorageChange();
     
-    onExercisesChange([...selectedExercises, newExercise]);
-    setIsDialogOpen(false);
-  };
+    const interval = setInterval(handleStorageChange, 500);
+    return () => clearInterval(interval);
+  }, [selectedExercises, onExercisesChange]);
 
   const removeExercise = (exerciseId: number) => {
     onExercisesChange(selectedExercises.filter(ex => ex.id !== exerciseId));
