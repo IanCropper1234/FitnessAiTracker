@@ -46,6 +46,7 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 
 **Special Training Configuration Consistency:**
 - Special training details configuration in exercise selection must exactly match the settings from create new workout session configuration
+- Template creation page shows special training method configurations as VIEW-ONLY for consistency - detailed editing only available in exercise selection page
 - Myorep Match: Target Reps (10-20), Mini Sets (1-5), Rest (15-30s)
 - Myorep No Match: Mini Sets (1-5), Rest (15-30s)  
 - Drop Set: Number of drops (2-5), Weight reductions per drop (5-30%), Target reps per drop (5-20), Rest between drops (5-15s)

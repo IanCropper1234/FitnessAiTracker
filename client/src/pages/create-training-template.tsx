@@ -720,6 +720,7 @@ export default function CreateTrainingTemplate() {
                                   updateWorkout={updateWorkout}
                                   currentExercise={exercise}
                                   exerciseIndex={index}
+                                  readOnly={true}
                                 />
                               </div>
                             )}
@@ -759,7 +760,8 @@ function SpecialMethodConfigurationPanel({
   currentWorkoutIndex,
   updateWorkout,
   currentExercise,
-  exerciseIndex
+  exerciseIndex,
+  readOnly = false
 }: {
   method: string;
   config: any;
@@ -769,6 +771,7 @@ function SpecialMethodConfigurationPanel({
   updateWorkout?: (index: number, workout: any) => void;
   currentExercise?: any;
   exerciseIndex?: number;
+  readOnly?: boolean;
 }) {
   // Defensive check to ensure we're in a proper React component context
   if (!method) {
@@ -795,17 +798,18 @@ function SpecialMethodConfigurationPanel({
       case 'dropSet':
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">Drop Set Config</h5>
+            <h5 className="text-xs font-medium">Drop Set Config {readOnly && <span className="text-muted-foreground">(View Only)</span>}</h5>
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <Label className="text-[10px] font-medium">Number of drops (2-5)</Label>
                 <Input
                   type="number"
                   value={config?.drops || 2}
-                  onChange={(e) => onConfigChange({ ...config, drops: parseInt(e.target.value) || 2 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, drops: parseInt(e.target.value) || 2 })}
                   min="2"
                   max="5"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -813,10 +817,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.weightReduction || 20}
-                  onChange={(e) => onConfigChange({ ...config, weightReduction: parseInt(e.target.value) || 20 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, weightReduction: parseInt(e.target.value) || 20 })}
                   min="5"
                   max="30"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -824,10 +829,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.restBetweenDrops || 10}
-                  onChange={(e) => onConfigChange({ ...config, restBetweenDrops: parseInt(e.target.value) || 10 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, restBetweenDrops: parseInt(e.target.value) || 10 })}
                   min="5"
                   max="15"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -837,17 +843,18 @@ function SpecialMethodConfigurationPanel({
       case 'myorepMatch':
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">Myorep Match Config</h5>
+            <h5 className="text-xs font-medium">Myorep Match Config {readOnly && <span className="text-muted-foreground">(View Only)</span>}</h5>
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <Label className="text-[10px] font-medium">Target Reps (10-20)</Label>
                 <Input
                   type="number"
                   value={config?.targetReps || 15}
-                  onChange={(e) => onConfigChange({ ...config, targetReps: parseInt(e.target.value) || 15 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, targetReps: parseInt(e.target.value) || 15 })}
                   min="10"
                   max="20"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -855,10 +862,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.miniSets || 3}
-                  onChange={(e) => onConfigChange({ ...config, miniSets: parseInt(e.target.value) || 3 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, miniSets: parseInt(e.target.value) || 3 })}
                   min="1"
                   max="5"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -866,10 +874,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.restSeconds || 20}
-                  onChange={(e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 20 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 20 })}
                   min="15"
                   max="30"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -879,17 +888,18 @@ function SpecialMethodConfigurationPanel({
       case 'myorepNoMatch':
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">Myorep No Match Config</h5>
+            <h5 className="text-xs font-medium">Myorep No Match Config {readOnly && <span className="text-muted-foreground">(View Only)</span>}</h5>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <Label className="text-[10px] font-medium">Mini Sets (1-5)</Label>
                 <Input
                   type="number"
                   value={config?.miniSets || 3}
-                  onChange={(e) => onConfigChange({ ...config, miniSets: parseInt(e.target.value) || 3 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, miniSets: parseInt(e.target.value) || 3 })}
                   min="1"
                   max="5"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -897,10 +907,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.restSeconds || 20}
-                  onChange={(e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 20 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 20 })}
                   min="15"
                   max="30"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -910,17 +921,18 @@ function SpecialMethodConfigurationPanel({
       case 'giantSet':
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">Giant Set Config</h5>
+            <h5 className="text-xs font-medium">Giant Set Config {readOnly && <span className="text-muted-foreground">(View Only)</span>}</h5>
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <Label className="text-[10px] font-medium">Total target reps (30-60)</Label>
                 <Input
                   type="number"
                   value={config?.totalTargetReps || 40}
-                  onChange={(e) => onConfigChange({ ...config, totalTargetReps: parseInt(e.target.value) || 40 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, totalTargetReps: parseInt(e.target.value) || 40 })}
                   min="30"
                   max="60"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -928,10 +940,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.miniSetReps || 8}
-                  onChange={(e) => onConfigChange({ ...config, miniSetReps: parseInt(e.target.value) || 8 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, miniSetReps: parseInt(e.target.value) || 8 })}
                   min="5"
                   max="15"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -939,10 +952,11 @@ function SpecialMethodConfigurationPanel({
                 <Input
                   type="number"
                   value={config?.restSeconds || 10}
-                  onChange={(e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 10 })}
+                  onChange={readOnly ? undefined : (e) => onConfigChange({ ...config, restSeconds: parseInt(e.target.value) || 10 })}
                   min="5"
                   max="15"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -957,23 +971,24 @@ function SpecialMethodConfigurationPanel({
 
         return (
           <div className="space-y-2 p-2 bg-muted/50 rounded">
-            <h5 className="text-xs font-medium">Superset Configuration</h5>
+            <h5 className="text-xs font-medium">Superset Configuration {readOnly && <span className="text-muted-foreground">(View Only)</span>}</h5>
             <p className="text-[10px] text-muted-foreground">Informational only - paired exercise configured separately</p>
             <div className="space-y-2">
               <div className="relative">
                 <Label className="text-[10px] font-medium">Search Paired Exercise</Label>
                 <Input
                   value={exerciseSearchTerm}
-                  onChange={(e) => {
+                  onChange={readOnly ? undefined : (e) => {
                     setExerciseSearchTerm(e.target.value);
                     setShowExerciseDropdown(true);
                   }}
-                  onFocus={() => setShowExerciseDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowExerciseDropdown(false), 200)}
+                  onFocus={readOnly ? undefined : () => setShowExerciseDropdown(true)}
+                  onBlur={readOnly ? undefined : () => setTimeout(() => setShowExerciseDropdown(false), 200)}
                   placeholder="Search and select paired exercise"
                   className="h-7 text-xs"
+                  disabled={readOnly}
                 />
-                {showExerciseDropdown && exerciseSearchTerm.length >= 2 && filteredExercises.length > 0 && (
+                {!readOnly && showExerciseDropdown && exerciseSearchTerm.length >= 2 && filteredExercises.length > 0 && (
                   <div className="absolute z-[100] w-full mt-1 bg-background border rounded shadow-lg max-h-32 overflow-y-auto">
                     {filteredExercises.map((exercise) => (
                       <div
