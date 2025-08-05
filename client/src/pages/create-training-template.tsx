@@ -57,7 +57,7 @@ interface TemplateData {
 }
 
 export default function CreateTrainingTemplate() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
