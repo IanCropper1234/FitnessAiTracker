@@ -102,9 +102,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       const response = await fetch(`/api/weekly-goals?weekStartDate=${selectedWeek}`, {
         credentials: 'include'
       });
-      const data = await response.json();
-      console.log('Weekly goals API response:', data);
-      return data;
+      return response.json();
     },
     enabled: !!selectedWeek
   });
@@ -761,13 +759,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <span className="text-sm font-medium text-black dark:text-white">
                           {(() => {
                             const adherence = weeklyGoals[0]?.adherencePercentage;
-                            console.log('Adherence display debug:', {
-                              rawValue: adherence,
-                              type: typeof adherence,
-                              parsed: parseFloat(adherence || "0"),
-                              weeklyGoalsLength: weeklyGoals?.length,
-                              weeklyGoalsFirst: weeklyGoals?.[0]
-                            });
                             // Handle both string and number types
                             const numericAdherence = typeof adherence === 'string' 
                               ? parseFloat(adherence) 
