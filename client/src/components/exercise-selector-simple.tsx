@@ -102,7 +102,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
     ));
   };
 
-  const handleNavigateToSelection = () => {
+  const handleNavigateToSelection = async () => {
     // Force save current template state before navigation to prevent data loss
     try {
       const currentTemplateData = localStorage.getItem('fitai_template_draft');
@@ -113,6 +113,28 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
       }
     } catch (error) {
       console.warn('Could not preserve template data before navigation:', error);
+    }
+    
+    // Verify session is still valid before navigation to prevent reload
+    try {
+      console.log('Pre-navigation session check...');
+      const sessionCheck = await fetch('/api/auth/user', {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (!sessionCheck.ok) {
+        console.warn('Session invalid before navigation, aborting to prevent reload');
+        // Instead of navigating, show an error or retry auth
+        return;
+      } else {
+        console.log('Session verified, proceeding with navigation');
+      }
+    } catch (error) {
+      console.warn('Session check failed, aborting navigation:', error);
+      return;
     }
     
     const targetParams = targetMuscleGroups?.length ? `&target=${targetMuscleGroups.join(',')}` : '';

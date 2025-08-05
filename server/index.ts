@@ -17,11 +17,12 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET || 'fitai-session-secret-key-2025',
   name: 'fitai.session', // Explicit session cookie name
-  resave: true, // Force session save for PWA compatibility
-  saveUninitialized: true, // Create sessions for unauthenticated users
+  resave: false, // Prevent unnecessary session saves that could cause race conditions
+  saveUninitialized: false, // Only create sessions when needed, prevents session ID churn
+  rolling: true, // Extend session on each request to keep user logged in
   cookie: {
     secure: false, // Allow cookies over HTTP for PWA development and Replit deployment
-    httpOnly: false, // Allow JavaScript access for PWA functionality
+    httpOnly: true, // Improve security by preventing JavaScript access to session cookie
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     sameSite: 'lax', // PWA-friendly sameSite setting
     path: '/' // Ensure cookie is available for all paths
