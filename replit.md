@@ -27,6 +27,14 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - **Key Route Paths**: `/create-training-template` (not `/training/create-template`), `/create-mesocycle` (not `/training/create-mesocycle`), `/exercise-selection/:source?` for standalone exercise selection page
 - **Scrolling Issues Fix**: Modal dialogs with scrolling problems should be converted to standalone pages per user preference for better mobile UX
 
+**Special Training Configuration Consistency:**
+- Special training details configuration in exercise selection must exactly match the settings from create new workout session configuration
+- Myorep Match: Target Reps (10-20), Mini Sets (1-5), Rest (15-30s)
+- Myorep No Match: Mini Sets (1-5), Rest (15-30s)  
+- Drop Set: Number of drops (2-5), Weight reductions per drop (5-30%), Target reps per drop (5-20), Rest between drops (5-15s)
+- Giant Set: Total target reps (30-60), Mini set reps (5-15), Rest (5-15s)
+- Superset: Informational only - paired exercise configured separately
+
 ## System Architecture
 
 ### Frontend Architecture (Mobile-First Design)
