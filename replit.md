@@ -19,6 +19,14 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Adherence percentages, weight changes, and energy levels must match across RP Analysis and Progress Metrics
 - Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
 
+**Auto-Save Implementation (2025-08-05):**
+- Training template creation now includes comprehensive auto-save functionality
+- Local storage automatically saves template name, difficulty, training days, and description every 2 seconds
+- Draft restoration occurs on page load with user notification
+- Clear Draft button allows manual clearing of saved data
+- Auto-saved drafts are automatically cleared upon successful template creation
+- Prevents data loss during exercise configuration and enhances user experience
+
 **Critical Routing Rules (Wouter):**
 - **ROUTE ORDER MATTERS**: More specific routes must be placed BEFORE more generic routes
 - Example: `/edit-template/:id` must come BEFORE `/template/:id` to prevent incorrect matching

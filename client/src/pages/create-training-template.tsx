@@ -56,6 +56,45 @@ interface TemplateData {
   workouts: TemplateWorkout[];
 }
 
+// Auto-save functionality constants
+const AUTO_SAVE_KEY = 'fitai_template_draft';
+const AUTO_SAVE_INTERVAL = 2000; // 2 seconds
+
+// Helper functions for auto-save
+const saveToLocalStorage = (data: any) => {
+  try {
+    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify({
+      ...data,
+      lastSaved: new Date().toISOString()
+    }));
+  } catch (error) {
+    console.warn('Failed to save template draft to localStorage:', error);
+  }
+};
+
+const loadFromLocalStorage = () => {
+  try {
+    const saved = localStorage.getItem(AUTO_SAVE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Remove the lastSaved field before returning
+      const { lastSaved, ...data } = parsed;
+      return data;
+    }
+  } catch (error) {
+    console.warn('Failed to load template draft from localStorage:', error);
+  }
+  return null;
+};
+
+const clearLocalStorage = () => {
+  try {
+    localStorage.removeItem(AUTO_SAVE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear template draft from localStorage:', error);
+  }
+};
+
 export default function CreateTrainingTemplate() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
@@ -64,20 +103,62 @@ export default function CreateTrainingTemplate() {
   // Removed step state - now single page interface
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const exerciseConfigRef = useRef<HTMLDivElement>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
-    daysPerWeek: 4,
-    templateData: {
-      workouts: Array.from({ length: 4 }, (_, i) => ({
-        name: `Day ${i + 1}`,
-        exercises: [],
-        estimatedDuration: 45,
-        focus: []
-      }))
-    } as TemplateData
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+  
+  // Initialize form data with auto-saved data if available
+  const [formData, setFormData] = useState(() => {
+    const savedData = loadFromLocalStorage();
+    if (savedData) {
+      return savedData;
+    }
+    return {
+      name: '',
+      description: '',
+      category: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
+      daysPerWeek: 4,
+      templateData: {
+        workouts: Array.from({ length: 4 }, (_, i) => ({
+          name: `Day ${i + 1}`,
+          exercises: [],
+          estimatedDuration: 45,
+          focus: []
+        }))
+      } as TemplateData
+    };
   });
+
+  // Auto-save effect
+  useEffect(() => {
+    // Clear any existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set a new timeout for auto-save
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveToLocalStorage(formData);
+    }, AUTO_SAVE_INTERVAL);
+
+    // Cleanup on unmount
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [formData]);
+
+  // Show toast when auto-saved data is loaded on mount
+  useEffect(() => {
+    const savedData = loadFromLocalStorage();
+    if (savedData && (savedData.name || savedData.description)) {
+      toast({
+        title: "Draft Restored",
+        description: "Your previous template draft has been automatically restored.",
+        duration: 3000,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const currentWorkout = formData.templateData.workouts[currentWorkoutIndex] || {
     name: '',
@@ -99,6 +180,8 @@ export default function CreateTrainingTemplate() {
       }
     },
     onSuccess: () => {
+      // Clear auto-saved draft on successful creation
+      clearLocalStorage();
       toast({
         title: "Success",
         description: "Training template created successfully"
@@ -119,18 +202,16 @@ export default function CreateTrainingTemplate() {
   const updateWorkout = (index: number, workout: TemplateWorkout) => {
     console.log('updateWorkout called:', { index, workout, exerciseCount: workout.exercises.length });
     
-    setFormData(prev => {
+    setFormData((prev: typeof formData) => {
       const updated = {
         ...prev,
         templateData: {
           ...prev.templateData,
-          workouts: prev.templateData.workouts.map((w, i) => i === index ? workout : w)
+          workouts: prev.templateData.workouts.map((w: TemplateWorkout, i: number) => i === index ? workout : w)
         }
       };
       console.log('updateWorkout - Updated formData:', updated);
-      console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map(w => w.exercises.length));
-      
-      // Single page interface - no step advancement needed
+      console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map((w: TemplateWorkout) => w.exercises.length));
       
       return updated;
     });
@@ -165,7 +246,7 @@ export default function CreateTrainingTemplate() {
   const removeExerciseFromCurrentWorkout = (exerciseId: number) => {
     const updatedWorkout = {
       ...currentWorkout,
-      exercises: currentWorkout.exercises.filter(ex => ex.exerciseId !== exerciseId)
+      exercises: currentWorkout.exercises.filter((ex: TemplateExercise) => ex.exerciseId !== exerciseId)
     };
 
     updateWorkout(currentWorkoutIndex, updatedWorkout);
@@ -174,7 +255,7 @@ export default function CreateTrainingTemplate() {
   const updateExercise = (exerciseIndex: number, updates: Partial<TemplateExercise>) => {
     const updatedWorkout = {
       ...currentWorkout,
-      exercises: currentWorkout.exercises.map((ex, i) => 
+      exercises: currentWorkout.exercises.map((ex: TemplateExercise, i: number) => 
         i === exerciseIndex ? { ...ex, ...updates } : ex
       )
     };
@@ -206,7 +287,7 @@ export default function CreateTrainingTemplate() {
       return;
     }
 
-    if (formData.templateData.workouts.some(w => w.exercises.length === 0)) {
+    if (formData.templateData.workouts.some((w: TemplateWorkout) => w.exercises.length === 0)) {
       toast({
         title: "Add Exercises",
         description: "Each training day needs at least one exercise",
@@ -218,7 +299,31 @@ export default function CreateTrainingTemplate() {
     createMutation.mutate(formData);
   };
 
-  const canComplete = formData.name.trim() && formData.description.trim() && formData.templateData.workouts.every(w => w.exercises.length > 0);
+  const canComplete = formData.name.trim() && formData.description.trim() && formData.templateData.workouts.every((w: TemplateWorkout) => w.exercises.length > 0);
+  
+  // Clear draft function
+  const clearDraft = () => {
+    clearLocalStorage();
+    setFormData({
+      name: '',
+      description: '',
+      category: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
+      daysPerWeek: 4,
+      templateData: {
+        workouts: Array.from({ length: 4 }, (_, i) => ({
+          name: `Day ${i + 1}`,
+          exercises: [],
+          estimatedDuration: 45,
+          focus: []
+        }))
+      } as TemplateData
+    });
+    setCurrentWorkoutIndex(0);
+    toast({
+      title: "Draft Cleared",
+      description: "Template draft has been cleared",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,7 +357,17 @@ export default function CreateTrainingTemplate() {
         {/* Basic Information - iOS Optimized */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Template Information</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Template Information</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearDraft}
+                className="text-xs h-8"
+              >
+                Clear Draft
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -260,7 +375,7 @@ export default function CreateTrainingTemplate() {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => setFormData((prev: typeof formData) => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., My Custom Push/Pull Training"
                 className="h-11 text-base"
               />
@@ -269,7 +384,7 @@ export default function CreateTrainingTemplate() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="category" className="text-sm font-medium">Difficulty</Label>
-                <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
+                <Select value={formData.category} onValueChange={(value: 'beginner' | 'intermediate' | 'advanced') => setFormData((prev: typeof formData) => ({ ...prev, category: value }))}>
                   <SelectTrigger className="h-11">
                     <SelectValue />
                   </SelectTrigger>
@@ -285,7 +400,7 @@ export default function CreateTrainingTemplate() {
                 <Label htmlFor="daysPerWeek" className="text-sm font-medium">Training Days</Label>
                 <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
                   const days = parseInt(value);
-                  setFormData(prev => ({ 
+                  setFormData((prev: typeof formData) => ({ 
                     ...prev, 
                     daysPerWeek: days,
                     templateData: {
@@ -318,7 +433,7 @@ export default function CreateTrainingTemplate() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => setFormData((prev: typeof formData) => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe your training template's features and goals..."
                 rows={3}
                 className="text-base resize-none"
@@ -428,7 +543,7 @@ export default function CreateTrainingTemplate() {
                       <p className="text-xs">Add exercises above to configure them</p>
                     </div>
                   ) : (
-                      currentWorkout.exercises.map((exercise, index) => (
+                      currentWorkout.exercises.map((exercise: TemplateExercise, index: number) => (
                         <Card key={`${exercise.exerciseId}-${index}`} className="border-l-2 border-l-primary" data-exercise-index={index}>
                           <CardHeader className="pb-2 pt-2">
                             <div className="flex items-center justify-between">
