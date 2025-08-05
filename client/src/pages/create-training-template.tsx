@@ -61,7 +61,7 @@ export default function CreateTrainingTemplate() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const [step, setStep] = useState(1);
+  // Removed step state - now single page interface
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const exerciseConfigRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
@@ -86,36 +86,7 @@ export default function CreateTrainingTemplate() {
     focus: []
   };
 
-  // Auto-sync step state based on content
-  useEffect(() => {
-    const hasBasicInfo = formData.name.trim() !== '';
-    const hasExercises = formData.templateData.workouts.some(w => w.exercises.length > 0);
-    
-    console.log('Step sync check:', { 
-      hasBasicInfo, 
-      hasExercises, 
-      currentStep: step,
-      totalWorkouts: formData.templateData.workouts.length,
-      workoutExerciseCounts: formData.templateData.workouts.map(w => w.exercises.length),
-      workoutDetails: formData.templateData.workouts.map((w, i) => ({ 
-        index: i, 
-        name: w.name, 
-        exerciseCount: w.exercises.length,
-        exercises: w.exercises.map(ex => ({ id: ex.exerciseId, name: ex.name }))
-      }))
-    });
-    
-    // If we have exercises, advance to step 2 automatically
-    if (hasExercises && step === 1) {
-      console.log('Auto-advancing to step 2 - exercises detected');
-      setStep(2);
-    }
-    // If we have exercises but no basic info, reset to step 1
-    else if (hasExercises && !hasBasicInfo && step === 2) {
-      console.log('Resetting to step 1 - exercises exist but basic info missing');
-      setStep(1);
-    }
-  }, [formData.templateData.workouts, step]);
+  // Removed step sync logic - single page interface
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -159,12 +130,7 @@ export default function CreateTrainingTemplate() {
       console.log('updateWorkout - Updated formData:', updated);
       console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map(w => w.exercises.length));
       
-      // Check if we should advance to step 2 immediately after state update
-      const hasExercises = updated.templateData.workouts.some(w => w.exercises.length > 0);
-      if (hasExercises && step === 1) {
-        console.log('updateWorkout - Triggering step advancement from state update');
-        setTimeout(() => setStep(2), 50);
-      }
+      // Single page interface - no step advancement needed
       
       return updated;
     });
@@ -252,290 +218,229 @@ export default function CreateTrainingTemplate() {
     createMutation.mutate(formData);
   };
 
-  const canProceedToStep2 = formData.name.trim() && formData.description.trim();
-  const canComplete = formData.templateData.workouts.every(w => w.exercises.length > 0);
+  const canComplete = formData.name.trim() && formData.description.trim() && formData.templateData.workouts.every(w => w.exercises.length > 0);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="sticky top-0 z-50 border-b bg-background">
-        <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLocation('/training')}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-            <div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={step === 1 ? "default" : "secondary"}>
-              Step 1: Basic Setup
-            </Badge>
-            <Badge variant={step === 2 ? "default" : "secondary"}>
-              Step 2: Configure Exercises
-            </Badge>
-          </div>
+        <div className="flex h-14 items-center justify-between px-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation('/training')}
+            className="flex items-center gap-2 h-10"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <h1 className="text-lg font-semibold">Create Template</h1>
+          <Button
+            onClick={handleSubmit}
+            disabled={!canComplete}
+            size="sm"
+            className="h-10"
+          >
+            Create
+          </Button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="container mx-auto p-6 max-w-6xl">
+      <div className="p-4 space-y-4 max-w-full">
         
-        {/* Step 1: Basic Information */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Template Basic Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Template Name *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="e.g., My Custom Push/Pull Training"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="category">Difficulty Level</Label>
-                    <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Template Description *</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe your training template's features and goals..."
-                    rows={4}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="daysPerWeek">Training Days Per Week</Label>
-                  <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
-                    const days = parseInt(value);
-                    setFormData(prev => ({ 
-                      ...prev, 
-                      daysPerWeek: days,
-                      templateData: {
-                        ...prev.templateData,
-                        workouts: Array.from({ length: days }, (_, i) => ({
-                          name: `Day ${i + 1}`,
-                          exercises: [],
-                          estimatedDuration: 45,
-                          focus: []
-                        }))
-                      }
-                    }));
-                    setCurrentWorkoutIndex(0);
-                  }}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3">3 Days</SelectItem>
-                      <SelectItem value="4">4 Days</SelectItem>
-                      <SelectItem value="5">5 Days</SelectItem>
-                      <SelectItem value="6">6 Days</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end">
-              <Button 
-                onClick={() => setStep(2)}
-                disabled={!canProceedToStep2}
-                className="flex items-center gap-2"
-              >
-                Next: Configure Exercises
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+        {/* Basic Information - iOS Optimized */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Template Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="name" className="text-sm font-medium">Template Name *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., My Custom Push/Pull Training"
+                className="h-11 text-base"
+              />
             </div>
-          </div>
-        )}
-
-        {/* Step 2: Configure Workouts */}
-        {step === 2 && (
-          <div className="space-y-6">
             
-            {/* Workout Navigation */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-headline text-[12px]">Configure Training Day</CardTitle>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentWorkoutIndex(Math.max(0, currentWorkoutIndex - 1))}
-                      disabled={currentWorkoutIndex === 0}
-                      className="h-8 px-2"
-                    >
-                      <ChevronLeft className="h-3 w-3" />
-                      <span className="hidden sm:inline">Previous</span>
-                    </Button>
-                    <span className="text-xs font-medium px-2 py-1 bg-muted rounded min-w-[40px] text-center">
-                      {currentWorkoutIndex + 1}/{formData.templateData.workouts.length}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentWorkoutIndex(Math.min(formData.templateData.workouts.length - 1, currentWorkoutIndex + 1))}
-                      disabled={currentWorkoutIndex === formData.templateData.workouts.length - 1}
-                      className="h-8 px-2"
-                    >
-                      <span className="hidden sm:inline">Next</span>
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
-                  <Label htmlFor="workoutName" className="text-xs font-medium min-w-fit">Day Name:</Label>
-                  <Input
-                    id="workoutName"
-                    value={currentWorkout.name}
-                    onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
-                    className="flex-1 h-8 text-sm"
-                    placeholder="e.g., Chest & Triceps"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Exercise Configuration */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="category" className="text-sm font-medium">Difficulty</Label>
+                <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
-              {/* Exercise Library */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="h-5 w-5" />
-                    Add Exercise
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80 lg:h-96 overflow-y-auto">
-                    <ExerciseSelector
-                      selectedExercises={currentWorkout.exercises}
-                      onExercisesChange={(exercisesOrUpdater: any) => {
-                        let exercises: any[];
-                        
-                        // Handle both direct array and function updater
-                        if (typeof exercisesOrUpdater === 'function') {
-                          exercises = exercisesOrUpdater(currentWorkout.exercises);
-                        } else {
-                          exercises = exercisesOrUpdater;
-                        }
-                        
-                        console.log('Template - Processing exercises:', exercises);
-                        console.log('Template - Type of exercises:', typeof exercises);
-                        console.log('Template - Is exercises a function?', typeof exercises === 'function');
-                        console.log('Template - Current workout before update:', currentWorkout);
-                        console.log('Template - Current formData before update:', formData);
-                        
-                        // Map to TemplateExercise format
-                        const templateExercises = exercises.map(exercise => ({
-                          ...exercise,
-                          exerciseId: exercise.id,
-                          sets: exercise.sets || 3,
-                          targetReps: exercise.targetReps || "8-12",
-                          restPeriod: exercise.restPeriod || 120,
-                          notes: exercise.notes || "",
-                          orderIndex: exercise.orderIndex,
-                          repsRange: exercise.repsRange
-                        }));
-                        
-                        console.log('Template - Mapped exercises:', templateExercises);
-                        
-                        const updatedWorkout = { ...currentWorkout, exercises: templateExercises };
-                        console.log('Template - Updated workout:', updatedWorkout);
-                        
-                        updateWorkout(currentWorkoutIndex, updatedWorkout);
-                        
-                        // Check if we need to advance to step 2 - but user is already in step 2!
-                        console.log('Step advancement check:', { 
-                          currentStep: step, 
-                          templateExercisesLength: templateExercises.length,
-                          condition: step === 1 && templateExercises.length > 0 
-                        });
-                        
-                        // Force advance to step 2 when exercises are added, regardless of current step
-                        if (templateExercises.length > 0) {
-                          console.log('Forcing advance to step 2 - exercises added');
-                          // Direct step advancement - updateWorkout will handle the timing
-                          setStep(2);
-                        }
-                        
-                        // Auto-scroll to Exercise Configuration when new exercise is added
-                        if (exercises.length > currentWorkout.exercises.length && exerciseConfigRef.current) {
-                          setTimeout(() => {
-                            exerciseConfigRef.current?.scrollIntoView({ 
-                              behavior: 'smooth', 
-                              block: 'start',
-                              inline: 'nearest'
-                            });
-                          }, 200);
-                        }
-                      }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <div>
+                <Label htmlFor="daysPerWeek" className="text-sm font-medium">Training Days</Label>
+                <Select value={formData.daysPerWeek.toString()} onValueChange={(value) => {
+                  const days = parseInt(value);
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    daysPerWeek: days,
+                    templateData: {
+                      ...prev.templateData,
+                      workouts: Array.from({ length: days }, (_, i) => ({
+                        name: `Day ${i + 1}`,
+                        exercises: [],
+                        estimatedDuration: 45,
+                        focus: []
+                      }))
+                    }
+                  }));
+                  setCurrentWorkoutIndex(0);
+                }}>
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3">3 Days</SelectItem>
+                    <SelectItem value="4">4 Days</SelectItem>
+                    <SelectItem value="5">5 Days</SelectItem>
+                    <SelectItem value="6">6 Days</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-              {/* Selected Exercises Configuration */}
-              <Card ref={exerciseConfigRef}>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    Exercise Configuration
-                    <Badge variant="secondary">{currentWorkout.exercises.length}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 max-h-[500px] lg:max-h-[600px] overflow-y-auto">
-                    {currentWorkout.exercises.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p>No exercises added yet</p>
-                        <p className="text-sm">Select exercises from the left to start configuring</p>
-                      </div>
-                    ) : (
+            <div>
+              <Label htmlFor="description" className="text-sm font-medium">Description *</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your training template's features and goals..."
+                rows={3}
+                className="text-base resize-none"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Workout Configuration - iOS Optimized */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Configure Workouts</CardTitle>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWorkoutIndex(Math.max(0, currentWorkoutIndex - 1))}
+                  disabled={currentWorkoutIndex === 0}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium px-2 py-1 bg-muted rounded min-w-[50px] text-center">
+                  {currentWorkoutIndex + 1}/{formData.templateData.workouts.length}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWorkoutIndex(Math.min(formData.templateData.workouts.length - 1, currentWorkoutIndex + 1))}
+                  disabled={currentWorkoutIndex === formData.templateData.workouts.length - 1}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Day Name */}
+            <div>
+              <Label htmlFor="workoutName" className="text-sm font-medium">Day Name</Label>
+              <Input
+                id="workoutName"
+                value={currentWorkout.name}
+                onChange={(e) => updateWorkout(currentWorkoutIndex, { ...currentWorkout, name: e.target.value })}
+                className="h-11 text-base"
+                placeholder="e.g., Chest & Triceps"
+              />
+            </div>
+
+            {/* Exercise Selection - Compact */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Exercises ({currentWorkout.exercises.length})
+                </Label>
+              </div>
+              
+              <div className="space-y-3">
+                <ExerciseSelector
+                  selectedExercises={currentWorkout.exercises}
+                  onExercisesChange={(exercisesOrUpdater: any) => {
+                    let exercises: any[];
+                    
+                    // Handle both direct array and function updater
+                    if (typeof exercisesOrUpdater === 'function') {
+                      exercises = exercisesOrUpdater(currentWorkout.exercises);
+                    } else {
+                      exercises = exercisesOrUpdater;
+                    }
+                    
+                    console.log('Template - Processing exercises:', exercises);
+                    
+                    // Map to TemplateExercise format
+                    const templateExercises = exercises.map(exercise => ({
+                      ...exercise,
+                      exerciseId: exercise.id,
+                      sets: exercise.sets || 3,
+                      targetReps: exercise.targetReps || "8-12",
+                      restPeriod: exercise.restPeriod || 120,
+                      notes: exercise.notes || "",
+                      orderIndex: exercise.orderIndex,
+                      repsRange: exercise.repsRange
+                    }));
+                    
+                    console.log('Template - Mapped exercises:', templateExercises);
+                    
+                    const updatedWorkout = { ...currentWorkout, exercises: templateExercises };
+                    console.log('Template - Updated workout:', updatedWorkout);
+                    
+                    updateWorkout(currentWorkoutIndex, updatedWorkout);
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Exercise Configuration - Compact */}
+            {currentWorkout.exercises.length > 0 && (
+              <div>
+                <Label className="text-sm font-medium mb-3 block">Exercise Configuration</Label>
+                <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                  {currentWorkout.exercises.length === 0 ? (
+                    <div className="text-center py-6 text-muted-foreground text-sm">
+                      <p>No exercises added yet</p>
+                      <p className="text-xs">Add exercises above to configure them</p>
+                    </div>
+                  ) : (
                       currentWorkout.exercises.map((exercise, index) => (
-                        <Card key={`${exercise.exerciseId}-${index}`} className="border-l-4 border-l-primary" data-exercise-index={index}>
-                          <CardHeader className="pb-2 pt-3">
+                        <Card key={`${exercise.exerciseId}-${index}`} className="border-l-2 border-l-primary" data-exercise-index={index}>
+                          <CardHeader className="pb-2 pt-2">
                             <div className="flex items-center justify-between">
-                              <h4 className="font-medium text-sm truncate pr-2">{exercise.name}</h4>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium text-sm">{exercise.name}</h4>
+                                <Badge variant="outline" className="text-xs">{exercise.category}</Badge>
+                              </div>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => removeExerciseFromCurrentWorkout(exercise.exerciseId)}
-                                className="h-6 w-6 p-0 flex-shrink-0"
+                                className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
                               >
                                 <X className="h-3 w-3" />
                               </Button>
@@ -657,38 +562,13 @@ export default function CreateTrainingTemplate() {
                           </CardContent>
                         </Card>
                       ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between">
-              <Button 
-                variant="outline" 
-                onClick={() => setStep(1)}
-                className="flex items-center gap-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Back to Basic Setup
-              </Button>
-              
-              <div className="flex items-center gap-3">
-                <Button variant="outline" onClick={() => setLocation('/training')}>
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleSubmit}
-                  disabled={createMutation.isPending || !canComplete}
-                  className="flex items-center gap-2"
-                >
-                  {createMutation.isPending ? 'Creating...' : 'Create Template'}
-                </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            )}
+          </CardContent>
+        </Card>
+
       </div>
     </div>
   );
