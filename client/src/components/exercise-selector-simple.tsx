@@ -241,7 +241,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                       </div>
 
                       {/* Special Method Configuration - Matching create-workout-session exactly */}
-                      {exercise.specialMethod === 'myorep_match' && (
+                      {exercise.specialMethod === 'myorepMatch' && (
                         <div className="bg-green-500/10 border border-green-500/20 p-3 space-y-2">
                           <div className="flex items-center gap-2 text-sm text-green-400 font-medium">
                             <Target className="h-3 w-3" />
@@ -294,7 +294,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                         </div>
                       )}
 
-                      {exercise.specialMethod === 'myorep_no_match' && (
+                      {exercise.specialMethod === 'myorepNoMatch' && (
                         <div className="bg-blue-500/10 border border-blue-500/20 p-3 space-y-2">
                           <div className="flex items-center gap-2 text-sm text-blue-400 font-medium">
                             <Zap className="h-3 w-3" />
@@ -333,7 +333,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                         </div>
                       )}
 
-                      {exercise.specialMethod === 'drop_set' && (
+                      {exercise.specialMethod === 'dropSet' && (
                         <div className="bg-red-500/10 border border-red-500/20 p-3 space-y-3">
                           <div className="flex items-center gap-2 text-sm text-red-400 font-medium">
                             <Minus className="h-3 w-3" />
@@ -435,7 +435,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                         </div>
                       )}
 
-                      {exercise.specialMethod === 'giant_set' && (
+                      {exercise.specialMethod === 'giantSet' && (
                         <div className="bg-orange-500/10 border border-orange-500/20 p-3 space-y-2">
                           <div className="flex items-center gap-2 text-sm text-orange-400 font-medium">
                             <Timer className="h-3 w-3" />

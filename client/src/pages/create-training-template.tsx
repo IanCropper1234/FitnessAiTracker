@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Settings } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Plus, X, Settings, Timer, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { ExerciseSelector } from '@/components/exercise-selector-simple';
@@ -596,160 +596,82 @@ export default function CreateTrainingTemplate() {
               </div>
             </div>
 
-            {/* Exercise Configuration - Compact */}
+            {/* Exercise Overview - Single Section */}
             {currentWorkout.exercises.length > 0 && (
               <div>
-                <Label className="text-sm font-medium mb-3 block">Exercise Configuration</Label>
-                <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                  {currentWorkout.exercises.length === 0 ? (
-                    <div className="text-center py-6 text-muted-foreground text-sm">
-                      <p>No exercises added yet</p>
-                      <p className="text-xs">Add exercises above to configure them</p>
-                    </div>
-                  ) : (
-                      currentWorkout.exercises.map((exercise: TemplateExercise, index: number) => (
-                        <Card key={`${exercise.exerciseId}-${index}`} className="border-l-2 border-l-primary" data-exercise-index={index}>
-                          <CardHeader className="pb-2 pt-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-medium text-sm">{exercise.name}</h4>
-                                <Badge variant="outline" className="text-xs">{exercise.category}</Badge>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeExerciseFromCurrentWorkout(exercise.exerciseId)}
-                                className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-2 pt-0">
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>
-                                <Label className="text-[10px] font-medium">Sets</Label>
-                                <Input
-                                  type="number"
-                                  value={exercise.sets}
-                                  onChange={(e) => updateExercise(index, { sets: parseInt(e.target.value) || 1 })}
-                                  onBlur={(e) => updateExercise(index, { sets: parseInt(e.target.value) || 1 })}
-                                  min="1"
-                                  max="10"
-                                  className="h-8 text-xs"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-[10px] font-medium">Reps</Label>
-                                <Input
-                                  value={exercise.targetReps}
-                                  onChange={(e) => updateExercise(index, { targetReps: e.target.value })}
-                                  onBlur={(e) => updateExercise(index, { targetReps: e.target.value })}
-                                  placeholder="8-12"
-                                  className="h-8 text-xs"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-[10px] font-medium">Rest</Label>
-                                <Input
-                                  type="number"
-                                  value={exercise.restPeriod}
-                                  onChange={(e) => updateExercise(index, { restPeriod: parseInt(e.target.value) || 60 })}
-                                  onBlur={(e) => updateExercise(index, { restPeriod: parseInt(e.target.value) || 60 })}
-                                  min="30"
-                                  max="300"
-                                  className="h-8 text-xs"
-                                />
-                              </div>
-                            </div>
-
-                            <div>
-                              <Label className="text-[10px] font-medium">Method</Label>
-                              <Select 
-                                value={exercise.specialTrainingMethod || "none"} 
-                                onValueChange={(value) => {
-                                  if (value === "none") {
-                                    updateExercise(index, { 
-                                      specialTrainingMethod: undefined,
-                                      specialMethodConfig: undefined 
-                                    });
-                                  } else {
-                                    updateExercise(index, { 
-                                      specialTrainingMethod: value,
-                                      specialMethodConfig: getDefaultSpecialMethodConfig(value)
-                                    });
-                                    
-                                    // Auto-scroll to show the special method configuration
-                                    setTimeout(() => {
-                                      const exerciseCard = document.querySelector(`[data-exercise-index="${index}"]`);
-                                      if (exerciseCard) {
-                                        exerciseCard.scrollIntoView({ 
-                                          behavior: 'smooth', 
-                                          block: 'center',
-                                          inline: 'nearest'
-                                        });
-                                        
-                                        // Then scroll specifically to the config panel if it exists
-                                        setTimeout(() => {
-                                          const configPanel = exerciseCard.querySelector('.special-method-config');
-                                          if (configPanel) {
-                                            configPanel.scrollIntoView({ 
-                                              behavior: 'smooth', 
-                                              block: 'nearest'
-                                            });
-                                          }
-                                        }, 100);
-                                      }
-                                    }, 200);
-                                  }
-                                }}
-                              >
-                                <SelectTrigger className="h-8 text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">Standard</SelectItem>
-                                  <SelectItem value="dropSet">Drop Set</SelectItem>
-                                  <SelectItem value="myorepMatch">Myorep +</SelectItem>
-                                  <SelectItem value="myorepNoMatch">Myorep</SelectItem>
-                                  <SelectItem value="giantSet">Giant Set</SelectItem>
-                                  <SelectItem value="superset">Superset</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {exercise.specialTrainingMethod && exercise.specialTrainingMethod !== 'none' && (
-                              <div className="special-method-config">
-                                <SpecialMethodConfigurationPanel
-                                  key={`config-${exercise.exerciseId}-${exercise.specialTrainingMethod}`}
-                                  method={exercise.specialTrainingMethod}
-                                  config={exercise.specialMethodConfig || {}}
-                                  onConfigChange={(config) => updateExercise(index, { specialMethodConfig: config })}
-                                  formData={formData}
-                                  currentWorkoutIndex={currentWorkoutIndex}
-                                  updateWorkout={updateWorkout}
-                                  currentExercise={exercise}
-                                  exerciseIndex={index}
-                                  readOnly={true}
-                                />
-                              </div>
+                <Label className="text-sm font-medium mb-3 block">Exercise Overview</Label>
+                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  {currentWorkout.exercises.map((exercise: TemplateExercise, index: number) => (
+                    <Card key={`${exercise.exerciseId}-${index}`} className="border-l-2 border-l-primary">
+                      <CardContent className="p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-medium text-sm">{exercise.name}</h4>
+                            <Badge variant="outline" className="text-xs">{exercise.category}</Badge>
+                            <Badge variant="secondary" className="text-xs">{exercise.primaryMuscle}</Badge>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeExerciseFromCurrentWorkout(exercise.exerciseId)}
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        
+                        {/* Single Overview Line with all training details */}
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <strong>{exercise.sets}</strong> sets
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <strong>{exercise.targetReps}</strong> reps
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Timer className="h-3 w-3" />
+                            <strong>{exercise.restPeriod}s</strong> rest
+                          </span>
+                          {exercise.specialTrainingMethod && exercise.specialTrainingMethod !== 'none' && (
+                            <span className="flex items-center gap-1 text-primary">
+                              <Zap className="h-3 w-3" />
+                              <strong>
+                                {exercise.specialTrainingMethod === 'myorepMatch' && 'Myorep +'}
+                                {exercise.specialTrainingMethod === 'myorepNoMatch' && 'Myorep'}
+                                {exercise.specialTrainingMethod === 'dropSet' && 'Drop Set'}
+                                {exercise.specialTrainingMethod === 'giantSet' && 'Giant Set'}
+                                {exercise.specialTrainingMethod === 'superset' && 'Superset'}
+                              </strong>
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Show special training method details if configured */}
+                        {exercise.specialTrainingMethod && exercise.specialMethodConfig && (
+                          <div className="mt-2 text-xs text-muted-foreground bg-muted/50 p-2">
+                            {exercise.specialTrainingMethod === 'myorepMatch' && (
+                              <span>Target: {exercise.specialMethodConfig.targetReps || 15} reps, Mini Sets: {exercise.specialMethodConfig.miniSets || 3}, Rest: {exercise.specialMethodConfig.restBetweenMiniSets || 15}s</span>
                             )}
-
-                            <div>
-                              <Label className="text-[10px] font-medium">Notes</Label>
-                              <Textarea
-                                value={exercise.notes || ''}
-                                onChange={(e) => updateExercise(index, { notes: e.target.value })}
-                                onBlur={(e) => updateExercise(index, { notes: e.target.value })}
-                                placeholder="Exercise notes..."
-                                rows={2}
-                                className="text-xs resize-none"
-                              />
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                  )}
+                            {exercise.specialTrainingMethod === 'myorepNoMatch' && (
+                              <span>Mini Sets: {exercise.specialMethodConfig.miniSets || 3}, Rest: {exercise.specialMethodConfig.restBetweenMiniSets || 15}s</span>
+                            )}
+                            {exercise.specialTrainingMethod === 'dropSet' && (
+                              <span>Drops: {exercise.specialMethodConfig.numberOfDrops || 2}, Weight Reduction: {exercise.specialMethodConfig.weightReductionPercentage || 20}%, Target Reps: {exercise.specialMethodConfig.targetRepsPerDrop || 8}</span>
+                            )}
+                            {exercise.specialTrainingMethod === 'giantSet' && (
+                              <span>Total Reps: {exercise.specialMethodConfig.totalTargetReps || 40}, Mini Sets: {exercise.specialMethodConfig.miniSetReps || 10}, Rest: {exercise.specialMethodConfig.restBetweenMiniSets || 10}s</span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {exercise.notes && (
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            <span className="font-medium">Notes:</span> {exercise.notes}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </div>
             )}
