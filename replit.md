@@ -26,6 +26,7 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Always place catch-all routes (`<Route>` without path) at the very end
 - **Key Route Paths**: `/create-training-template` (not `/training/create-template`), `/create-mesocycle` (not `/training/create-mesocycle`), `/exercise-selection/:source?` for standalone exercise selection page
 - **Scrolling Issues Fix**: Modal dialogs with scrolling problems should be converted to standalone pages per user preference for better mobile UX
+- **Exercise Selection Navigation Fixed (2025-08-05)**: Resolved complex routing issue where exercise selection page would return to wrong path. Solution involved fixing sessionStorage data handling, URL encoding/decoding, and supporting function updaters in exercise change callbacks.
 
 **Special Training Configuration Consistency:**
 - Special training details configuration in exercise selection must exactly match the settings from create new workout session configuration
