@@ -103,12 +103,10 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         credentials: 'include'
       });
       const data = await response.json();
-      console.log('🔍 Weekly goals API response:', {
-        length: data?.length,
-        firstItem: data?.[0],
-        adherenceValue: data?.[0]?.adherencePercentage,
-        adherenceType: typeof data?.[0]?.adherencePercentage
-      });
+      // Temporary debug - remove after issue is resolved
+      if (data?.[0]?.adherencePercentage) {
+        console.log('📊 Adherence fix check:', data[0].adherencePercentage);
+      }
       return data;
     },
     enabled: !!selectedWeek

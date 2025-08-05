@@ -579,16 +579,22 @@ export class AdvancedMacroManagementService {
               updatedGoal.hungerLevels = Math.round(parseFloat(wellnessAverages.avgHungerLevel));
             }
             
-            // Only update weight data if it doesn't exist, preserve all stored calculations
-            if (!updatedGoal.currentWeight || !updatedGoal.previousWeight) {
-              const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
-              if (calculatedData && (calculatedData.currentWeight !== null || calculatedData.previousWeight !== null)) {
-                // Only update missing weight data, preserve all other stored values
-                if (!updatedGoal.currentWeight) updatedGoal.currentWeight = calculatedData.currentWeight;
-                if (!updatedGoal.previousWeight) updatedGoal.previousWeight = calculatedData.previousWeight;
-                if (!updatedGoal.weightChange) updatedGoal.weightChange = calculatedData.weightChange;
-                if (!updatedGoal.weightTrend) updatedGoal.weightTrend = calculatedData.weightTrend;
-                // Never override stored adjustmentRecommendation
+            // ALWAYS recalculate adherence percentage from fresh food logs
+            const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
+            if (calculatedData) {
+              // Update adherence with fresh calculation
+              updatedGoal.adherencePercentage = calculatedData.adherencePercentage;
+              
+              // Only update weight data if it doesn't exist
+              if (!updatedGoal.currentWeight || !updatedGoal.previousWeight) {
+                if (calculatedData.currentWeight !== null || calculatedData.previousWeight !== null) {
+                  // Only update missing weight data, preserve all other stored values
+                  if (!updatedGoal.currentWeight) updatedGoal.currentWeight = calculatedData.currentWeight;
+                  if (!updatedGoal.previousWeight) updatedGoal.previousWeight = calculatedData.previousWeight;
+                  if (!updatedGoal.weightChange) updatedGoal.weightChange = calculatedData.weightChange;
+                  if (!updatedGoal.weightTrend) updatedGoal.weightTrend = calculatedData.weightTrend;
+                  // Never override stored adjustmentRecommendation
+                }
               }
             }
             
