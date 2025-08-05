@@ -464,9 +464,17 @@ export default function CreateTrainingTemplate() {
                         updateWorkout(currentWorkoutIndex, updatedWorkout);
                         
                         // Immediately advance to step 2 when exercises are added from step 1
+                        console.log('Step advancement check:', { 
+                          currentStep: step, 
+                          templateExercisesLength: templateExercises.length,
+                          condition: step === 1 && templateExercises.length > 0 
+                        });
+                        
                         if (step === 1 && templateExercises.length > 0) {
                           console.log('Immediately advancing to step 2 - exercises added from step 1');
                           setStep(2);
+                        } else {
+                          console.log('Step advancement skipped - condition not met');
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
