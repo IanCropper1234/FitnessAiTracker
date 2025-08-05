@@ -563,17 +563,27 @@ export default function CreateTrainingTemplate() {
                     
                     console.log('Template - Processing exercises:', exercises);
                     
-                    // Map to TemplateExercise format
-                    const templateExercises = exercises.map(exercise => ({
-                      ...exercise,
-                      exerciseId: exercise.id,
-                      sets: exercise.sets || 3,
-                      targetReps: exercise.targetReps || "8-12",
-                      restPeriod: exercise.restPeriod || 120,
-                      notes: exercise.notes || "",
-                      orderIndex: exercise.orderIndex,
-                      repsRange: exercise.repsRange
-                    }));
+                    // Map to TemplateExercise format - PRESERVE SPECIAL TRAINING DATA 100%
+                    const templateExercises = exercises.map(exercise => {
+                      console.log('Template - Mapping exercise with special config:', exercise.name, {
+                        specialMethod: exercise.specialMethod,
+                        specialConfig: exercise.specialConfig
+                      });
+                      
+                      return {
+                        ...exercise,
+                        exerciseId: exercise.id,
+                        sets: exercise.sets || 3,
+                        targetReps: exercise.targetReps || "8-12",
+                        restPeriod: exercise.restPeriod || 120,
+                        notes: exercise.notes || "",
+                        // CRITICAL: Map special training method fields correctly
+                        specialTrainingMethod: exercise.specialMethod || null,
+                        specialMethodConfig: exercise.specialConfig ? { ...exercise.specialConfig } : null,
+                        orderIndex: exercise.orderIndex,
+                        repsRange: exercise.repsRange
+                      };
+                    });
                     
                     console.log('Template - Mapped exercises:', templateExercises);
                     

@@ -46,21 +46,26 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
           
           // Validate that exercises is an array
           if (Array.isArray(exercises) && exercises.length > 0) {
-            // Convert exercises to SelectedExercise format
-            const formattedExercises: SelectedExercise[] = exercises.map((ex: any) => ({
-              id: ex.id,
-              name: ex.name,
-              category: ex.category,
-              muscleGroups: ex.muscleGroups,
-              primaryMuscle: ex.primaryMuscle,
-              equipment: ex.equipment,
-              difficulty: ex.difficulty,
-              sets: ex.sets || 3,
-              targetReps: ex.targetReps || '8-12',
-              restPeriod: ex.restPeriod || 60,
-              specialMethod: ex.specialMethod || null,
-              specialConfig: ex.specialConfig || null
-            }));
+            // Convert exercises to SelectedExercise format - ENSURE COMPLETE DATA TRANSFER
+            const formattedExercises: SelectedExercise[] = exercises.map((ex: any) => {
+              console.log('DEBUG - Processing exercise from storage:', ex.name, 'Special Method:', ex.specialMethod, 'Special Config:', ex.specialConfig);
+              
+              return {
+                id: ex.id,
+                name: ex.name,
+                category: ex.category,
+                muscleGroups: ex.muscleGroups,
+                primaryMuscle: ex.primaryMuscle,
+                equipment: ex.equipment,
+                difficulty: ex.difficulty,
+                sets: ex.sets || 3,
+                targetReps: ex.targetReps || '8-12',
+                restPeriod: ex.restPeriod || 60,
+                // CRITICAL: Preserve special training method data 100%
+                specialMethod: ex.specialMethod || null,
+                specialConfig: ex.specialConfig ? { ...ex.specialConfig } : null
+              };
+            });
             
             // Add exercises to current selection
             onExercisesChange((prev: SelectedExercise[]) => [...prev, ...formattedExercises]);
@@ -201,25 +206,25 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="standard">Standard Set</SelectItem>
-                            <SelectItem value="myorep_match">
+                            <SelectItem value="myorepMatch">
                               <div className="flex items-center gap-2">
                                 <Target className="h-3 w-3" />
                                 Myorep Match
                               </div>
                             </SelectItem>
-                            <SelectItem value="myorep_no_match">
+                            <SelectItem value="myorepNoMatch">
                               <div className="flex items-center gap-2">
                                 <Zap className="h-3 w-3" />
                                 Myorep No Match
                               </div>
                             </SelectItem>
-                            <SelectItem value="drop_set">
+                            <SelectItem value="dropSet">
                               <div className="flex items-center gap-2">
                                 <Minus className="h-3 w-3" />
                                 Drop Set
                               </div>
                             </SelectItem>
-                            <SelectItem value="giant_set">
+                            <SelectItem value="giantSet">
                               <div className="flex items-center gap-2">
                                 <Timer className="h-3 w-3" />
                                 Giant Set (40+ reps)

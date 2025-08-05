@@ -190,6 +190,13 @@ export default function ExerciseSelection() {
   };
 
   const handleSaveSelection = () => {
+    // CRITICAL: Store ALL exercise data including special training method configurations
+    console.log('SAVE DEBUG - Storing exercises with special configs:', selectedExercises.map(ex => ({
+      name: ex.name,
+      specialMethod: ex.specialMethod,
+      specialConfig: ex.specialConfig
+    })));
+    
     // Store selected exercises in sessionStorage for the calling component
     sessionStorage.setItem('selectedExercises', JSON.stringify(selectedExercises));
     
@@ -472,25 +479,25 @@ export default function ExerciseSelection() {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="standard">Standard Set</SelectItem>
-                                  <SelectItem value="myorep_match">
+                                  <SelectItem value="myorepMatch">
                                     <div className="flex items-center gap-2">
                                       <Target className="h-3 w-3" />
                                       Myorep Match
                                     </div>
                                   </SelectItem>
-                                  <SelectItem value="myorep_no_match">
+                                  <SelectItem value="myorepNoMatch">
                                     <div className="flex items-center gap-2">
                                       <Zap className="h-3 w-3" />
                                       Myorep No Match
                                     </div>
                                   </SelectItem>
-                                  <SelectItem value="drop_set">
+                                  <SelectItem value="dropSet">
                                     <div className="flex items-center gap-2">
                                       <Minus className="h-3 w-3" />
                                       Drop Set
                                     </div>
                                   </SelectItem>
-                                  <SelectItem value="giant_set">
+                                  <SelectItem value="giantSet">
                                     <div className="flex items-center gap-2">
                                       <Timer className="h-3 w-3" />
                                       Giant Set (40+ reps)
@@ -507,7 +514,7 @@ export default function ExerciseSelection() {
                             </div>
 
                             {/* Special Method Configuration - Matching create-workout-session exactly */}
-                            {exercise.specialMethod === 'myorep_match' && (
+                            {exercise.specialMethod === 'myorepMatch' && (
                               <div className="bg-green-500/10 border border-green-500/20 p-3 space-y-2">
                                 <div className="flex items-center gap-2 text-sm text-green-400 font-medium">
                                   <Target className="h-3 w-3" />
@@ -560,7 +567,7 @@ export default function ExerciseSelection() {
                               </div>
                             )}
 
-                            {exercise.specialMethod === 'myorep_no_match' && (
+                            {exercise.specialMethod === 'myorepNoMatch' && (
                               <div className="bg-blue-500/10 border border-blue-500/20 p-3 space-y-2">
                                 <div className="flex items-center gap-2 text-sm text-blue-400 font-medium">
                                   <Zap className="h-3 w-3" />
@@ -599,7 +606,7 @@ export default function ExerciseSelection() {
                               </div>
                             )}
 
-                            {exercise.specialMethod === 'drop_set' && (
+                            {exercise.specialMethod === 'dropSet' && (
                               <div className="bg-red-500/10 border border-red-500/20 p-3 space-y-3">
                                 <div className="flex items-center gap-2 text-sm text-red-400 font-medium">
                                   <Minus className="h-3 w-3" />
@@ -701,7 +708,7 @@ export default function ExerciseSelection() {
                               </div>
                             )}
 
-                            {exercise.specialMethod === 'giant_set' && (
+                            {exercise.specialMethod === 'giantSet' && (
                               <div className="bg-orange-500/10 border border-orange-500/20 p-3 space-y-2">
                                 <div className="flex items-center gap-2 text-sm text-orange-400 font-medium">
                                   <Timer className="h-3 w-3" />
