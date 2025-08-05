@@ -86,12 +86,12 @@ export default function CreateTrainingTemplate() {
     focus: []
   };
 
-  // Auto-set step based on content when component mounts or data changes
+  // Auto-set step based on content when component mounts
   useEffect(() => {
     const hasBasicInfo = formData.name.trim() !== '';
     const hasExercises = formData.templateData.workouts.some(w => w.exercises.length > 0);
     
-    console.log('Step calculation useEffect triggered:', { 
+    console.log('Initial step calculation on mount:', { 
       hasBasicInfo, 
       hasExercises, 
       currentStep: step,
@@ -99,12 +99,12 @@ export default function CreateTrainingTemplate() {
       workoutExerciseCounts: formData.templateData.workouts.map(w => w.exercises.length)
     });
     
-    // If we have exercises but are in step 1, auto-advance to step 2
+    // Only auto-advance on initial mount if we have exercises
     if (hasExercises && step === 1) {
-      console.log('Auto-setting step to 2 based on existing exercises');
+      console.log('Auto-setting step to 2 based on existing exercises on mount');
       setStep(2);
     }
-  }, [formData.templateData.workouts, step]);
+  }, []); // Only run on mount
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -147,12 +147,8 @@ export default function CreateTrainingTemplate() {
       console.log('updateWorkout - Updated formData:', updated);
       console.log('updateWorkout - New exercise counts:', updated.templateData.workouts.map(w => w.exercises.length));
       
-      // Check if we need to auto-advance to step 2 after state update
-      const hasExercises = updated.templateData.workouts.some(w => w.exercises.length > 0);
-      if (step === 1 && hasExercises) {
-        console.log('Auto-advancing to step 2 immediately after formData update');
-        setTimeout(() => setStep(2), 50);
-      }
+      // Note: Step advancement is handled in the onExercisesChange callback
+      // to avoid async state timing issues
       
       return updated;
     });
@@ -465,13 +461,10 @@ export default function CreateTrainingTemplate() {
                         
                         updateWorkout(currentWorkoutIndex, updatedWorkout);
                         
-                        // Auto-advance to step 2 if we're in step 1 and exercises are added
+                        // Immediately advance to step 2 when exercises are added from step 1
                         if (step === 1 && templateExercises.length > 0) {
-                          console.log('Auto-advancing to step 2 after adding exercises');
-                          setTimeout(() => {
-                            console.log('Executing delayed step advancement to 2');
-                            setStep(2);
-                          }, 200); // Increased delay to ensure state updates complete
+                          console.log('Immediately advancing to step 2 - exercises added from step 1');
+                          setStep(2);
                         }
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added
