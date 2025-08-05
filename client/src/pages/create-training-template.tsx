@@ -398,7 +398,18 @@ export default function CreateTrainingTemplate() {
                   <div className="h-80 lg:h-96 overflow-y-auto">
                     <ExerciseSelector
                       selectedExercises={currentWorkout.exercises}
-                      onExercisesChange={(exercises: any[]) => {
+                      onExercisesChange={(exercisesOrUpdater: any) => {
+                        let exercises: any[];
+                        
+                        // Handle both direct array and function updater
+                        if (typeof exercisesOrUpdater === 'function') {
+                          exercises = exercisesOrUpdater(currentWorkout.exercises);
+                        } else {
+                          exercises = exercisesOrUpdater;
+                        }
+                        
+                        console.log('Template - Processing exercises:', exercises);
+                        
                         // Map to TemplateExercise format
                         const templateExercises = exercises.map(exercise => ({
                           ...exercise,
@@ -406,8 +417,12 @@ export default function CreateTrainingTemplate() {
                           sets: exercise.sets || 3,
                           targetReps: exercise.targetReps || "8-12",
                           restPeriod: exercise.restPeriod || 120,
-                          notes: exercise.notes || ""
+                          notes: exercise.notes || "",
+                          orderIndex: exercise.orderIndex,
+                          repsRange: exercise.repsRange
                         }));
+                        
+                        console.log('Template - Mapped exercises:', templateExercises);
                         updateWorkout(currentWorkoutIndex, { ...currentWorkout, exercises: templateExercises });
                         
                         // Auto-scroll to Exercise Configuration when new exercise is added

@@ -28,7 +28,7 @@ interface SelectedExercise extends Exercise {
 
 interface ExerciseSelectorProps {
   selectedExercises: SelectedExercise[];
-  onExercisesChange: (exercises: SelectedExercise[]) => void;
+  onExercisesChange: (exercises: SelectedExercise[] | ((prev: SelectedExercise[]) => SelectedExercise[])) => void;
   targetMuscleGroups?: string[];
 }
 
@@ -44,8 +44,29 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
           const exercises = JSON.parse(storedExercises);
           console.log('Found stored exercises:', exercises);
           
-          // Add exercises to current selection
-          onExercisesChange(prev => [...prev, ...exercises]);
+          // Validate that exercises is an array
+          if (Array.isArray(exercises) && exercises.length > 0) {
+            // Convert exercises to SelectedExercise format
+            const formattedExercises: SelectedExercise[] = exercises.map((ex: any) => ({
+              id: ex.id,
+              name: ex.name,
+              category: ex.category,
+              muscleGroups: ex.muscleGroups,
+              primaryMuscle: ex.primaryMuscle,
+              equipment: ex.equipment,
+              difficulty: ex.difficulty,
+              sets: ex.sets || 3,
+              targetReps: ex.targetReps || '8-12',
+              restPeriod: ex.restPeriod || 60,
+              specialMethod: ex.specialMethod || null,
+              specialConfig: ex.specialConfig || null
+            }));
+            
+            // Add exercises to current selection
+            onExercisesChange((prev: SelectedExercise[]) => [...prev, ...formattedExercises]);
+          } else {
+            console.log('Invalid exercises format, skipping');
+          }
           
           // Clear storage after processing
           sessionStorage.removeItem('selectedExercises');
@@ -67,11 +88,11 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
   }, []); // Remove dependencies to prevent infinite loop
 
   const removeExercise = (exerciseId: number) => {
-    onExercisesChange(prev => prev.filter(ex => ex.id !== exerciseId));
+    onExercisesChange((prev: SelectedExercise[]) => prev.filter(ex => ex.id !== exerciseId));
   };
 
   const updateExercise = (exerciseId: number, field: string, value: any) => {
-    onExercisesChange(prev => prev.map(ex => 
+    onExercisesChange((prev: SelectedExercise[]) => prev.map(ex => 
       ex.id === exerciseId ? { ...ex, [field]: value } : ex
     ));
   };
