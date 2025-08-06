@@ -19,6 +19,15 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Adherence percentages, weight changes, and energy levels must match across RP Analysis and Progress Metrics
 - Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
 
+**iOS Notification System Implementation (2025-08-06):**
+- Implemented comprehensive iOS-style notification system replacing legacy toast notifications
+- Migrated critical components: WorkoutExecutionV2, TrainingDashboard, and IntegratedNutritionOverview
+- iOS notifications feature drag-to-dismiss, auto-hide timers, action buttons, and native animations
+- Established enforcement mechanisms: docs/NOTIFICATION_STANDARDS.md, .eslintrc-notifications.json, scripts/check-notifications.js
+- Created notification demo page at /demo/notifications for testing and development reference
+- Automated detection script identifies 312 remaining toast usages across 42 files for future migration
+- Development standards prevent new toast usage and enforce iOS notification consistency
+
 **Enhanced Auto-Save Implementation (2025-08-05):**
 - Training template creation now includes comprehensive field-level auto-save functionality
 - Local storage automatically saves template name, difficulty, training days, description, and all exercise configurations with 300ms debounce

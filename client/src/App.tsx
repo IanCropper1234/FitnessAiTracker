@@ -257,7 +257,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/demo/notifications">
           <AnimatedPage>
-            <IOSNotificationDemo />
+            <NotificationDemo />
           </AnimatedPage>
         </Route>
         <Route>

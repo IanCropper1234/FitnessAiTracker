@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@/hooks/use-toast",
+            "message": "Use '@/components/ui/ios-notification-manager' instead of deprecated toast system. See docs/NOTIFICATION_STANDARDS.md for migration guide."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["**/use-toast*"],
+            "message": "Toast notifications are deprecated. Use iOS notification system instead."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.name='toast']",
+        "message": "Direct toast() calls are deprecated. Use showSuccess(), showError(), showWarning(), or showInfo() from useIOSNotifications instead."
+      }
+    ]
+  }
+}
