@@ -126,13 +126,6 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Back to Training Button - Outside Container */}
-      <div className="flex items-center justify-start">
-        <Button variant="ghost" onClick={onBack} className="gap-2">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-      </div>
-
       {/* Header */}
       <Card>
         <CardHeader>
