@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Dumbbell, Search, Target } from "lucide-react";
+import { Plus, Dumbbell } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -35,90 +31,24 @@ interface ExerciseSelectorProps {
 
 export function ExerciseSelector({ selectedExercises, onExercisesChange, targetMuscleGroups }: ExerciseSelectorProps) {
   const [location, setLocation] = useLocation();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Fetch exercises from API
-  const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
-    queryKey: ["/api/training/exercises"],
-  });
-
-  // Categories from exercises
-  const categories = ["all", ...Array.from(new Set(exercises.map(ex => ex.category)))];
-
-  // Filter exercises
-  const filteredExercises = exercises.filter(exercise => {
-    const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exercise.primaryMuscle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exercise.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
-
-  const addExercise = (exercise: Exercise) => {
-    const newExercise: SelectedExercise = {
-      ...exercise,
-      sets: 3,
-      targetReps: "8-12",
-      restPeriod: 90,
-    };
-    onExercisesChange([...selectedExercises, newExercise]);
-  };
-
-  // Check for newly selected exercises from the standalone page - iOS PWA optimized
+  // Check for newly selected exercises from the standalone page
   useEffect(() => {
-    let isMounted = true;
-    
     const handleStorageChange = () => {
-      if (!isMounted) return;
-      
-      try {
-        const storedExercises = sessionStorage.getItem('selectedExercises');
-        if (storedExercises) {
-          const exercises = JSON.parse(storedExercises);
-          // Use functional update to prevent stale closure issues
-          onExercisesChange(prev => [...prev, ...exercises]);
-          sessionStorage.removeItem('selectedExercises');
-        }
-      } catch (error) {
-        console.warn('Failed to parse stored exercises:', error);
-        try {
-          sessionStorage.removeItem('selectedExercises');
-        } catch (e) {
-          // Ignore storage cleanup errors
-        }
+      const storedExercises = sessionStorage.getItem('selectedExercises');
+      if (storedExercises) {
+        const exercises = JSON.parse(storedExercises);
+        onExercisesChange([...selectedExercises, ...exercises]);
+        sessionStorage.removeItem('selectedExercises');
       }
     };
 
-    // Check on mount only to prevent iOS PWA reload issues
+    // Check on mount and when returning to the page
     handleStorageChange();
     
-    // Use passive event listeners for better iOS performance
-    const handleVisibilityChange = () => {
-      if (!document.hidden && isMounted) {
-        // Debounce to prevent multiple rapid calls
-        setTimeout(handleStorageChange, 100);
-      }
-    };
-
-    const handleFocus = () => {
-      if (isMounted) {
-        setTimeout(handleStorageChange, 100);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange, { passive: true });
-    window.addEventListener('focus', handleFocus, { passive: true });
-    
-    return () => {
-      isMounted = false;
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [onExercisesChange]); // Remove selectedExercises dependency to prevent re-initialization
+    const interval = setInterval(handleStorageChange, 500);
+    return () => clearInterval(interval);
+  }, [selectedExercises, onExercisesChange]);
 
   const removeExercise = (exerciseId: number) => {
     onExercisesChange(selectedExercises.filter(ex => ex.id !== exerciseId));
@@ -193,7 +123,7 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                 )}
               </div>
               
-              {/* Exercise List - iOS PWA Optimized */}
+              {/* Exercise List */}
               <ScrollArea className="flex-1 min-h-0">
                 <div className="grid grid-cols-1 gap-3 pr-4">
                   {isLoading ? (
@@ -203,87 +133,53 @@ export function ExerciseSelector({ selectedExercises, onExercisesChange, targetM
                       No exercises found
                     </div>
                   ) : (
-                    <>
-                      {/* Show total count for large lists */}
-                      {filteredExercises.length > 50 && (
-                        <div className="col-span-full text-xs text-muted-foreground text-center py-2 bg-muted/50">
-                          Showing {Math.min(filteredExercises.length, 100)} of {filteredExercises.length} exercises
-                        </div>
-                      )}
-                      {/* Limit rendering to first 100 exercises for iOS PWA performance */}
-                      {filteredExercises.slice(0, 100).map((exercise, index) => {
-                        const isSelected = selectedExercises.some(ex => ex.id === exercise.id);
-                        return (
-                          <Card 
-                            key={`${exercise.id}-${index}`} 
-                            className="cursor-pointer hover:bg-accent transition-colors duration-150"
-                            style={{ 
-                              // Use transform3d to enable hardware acceleration on iOS
-                              transform: 'translate3d(0, 0, 0)',
-                              backfaceVisibility: 'hidden'
-                            }}
-                          >
-                            <CardHeader className="pb-2">
-                              <div className="flex items-center justify-between">
-                                <CardTitle className="text-sm font-medium truncate pr-2">
-                                  {exercise.name}
-                                </CardTitle>
-                                <Button
-                                  size="sm"
-                                  onClick={() => addExercise(exercise)}
-                                  disabled={isSelected}
-                                  className="flex-shrink-0"
-                                >
-                                  {isSelected ? "Added" : "Add"}
-                                </Button>
-                              </div>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="outline" className="text-xs">
-                                    {exercise.category}
+                    filteredExercises.map(exercise => (
+                      <Card key={exercise.id} className="cursor-pointer hover:bg-accent">
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm">{exercise.name}</CardTitle>
+                            <Button
+                              size="sm"
+                              onClick={() => addExercise(exercise)}
+                              disabled={selectedExercises.some(ex => ex.id === exercise.id)}
+                            >
+                              {selectedExercises.some(ex => ex.id === exercise.id) ? "Added" : "Add"}
+                            </Button>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {exercise.category}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">
+                                {exercise.primaryMuscle}
+                              </Badge>
+                            </div>
+                            {exercise.equipment && (
+                              <p className="text-xs text-muted-foreground">
+                                Equipment: {exercise.equipment}
+                              </p>
+                            )}
+                            {exercise.muscleGroups?.length && (
+                              <div className="flex flex-wrap gap-1">
+                                {exercise.muscleGroups.slice(0, 3).map(muscle => (
+                                  <Badge key={muscle} variant="secondary" className="text-xs">
+                                    {muscle}
                                   </Badge>
+                                ))}
+                                {exercise.muscleGroups.length > 3 && (
                                   <Badge variant="secondary" className="text-xs">
-                                    {exercise.primaryMuscle}
+                                    +{exercise.muscleGroups.length - 3} more
                                   </Badge>
-                                </div>
-                                {exercise.equipment && (
-                                  <p className="text-xs text-muted-foreground truncate">
-                                    Equipment: {exercise.equipment}
-                                  </p>
-                                )}
-                                {exercise.muscleGroups?.length && (
-                                  <div className="flex flex-wrap gap-1">
-                                    {exercise.muscleGroups.slice(0, 3).map(muscle => (
-                                      <Badge key={muscle} variant="secondary" className="text-xs">
-                                        {muscle}
-                                      </Badge>
-                                    ))}
-                                    {exercise.muscleGroups.length > 3 && (
-                                      <Badge variant="secondary" className="text-xs">
-                                        +{exercise.muscleGroups.length - 3} more
-                                      </Badge>
-                                    )}
-                                  </div>
                                 )}
                               </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                      {/* Show load more button if there are more exercises */}
-                      {filteredExercises.length > 100 && (
-                        <div className="col-span-full text-center py-4">
-                          <p className="text-xs text-muted-foreground mb-2">
-                            Use search or filters to narrow down results
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {filteredExercises.length - 100} more exercises available
-                          </p>
-                        </div>
-                      )}
-                    </>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
                   )}
                 </div>
               </ScrollArea>
