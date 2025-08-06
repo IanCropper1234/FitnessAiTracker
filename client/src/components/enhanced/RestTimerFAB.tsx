@@ -68,6 +68,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     if (!draggable) return;
     
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
     setHasDragged(false);
     
@@ -81,6 +82,9 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     let dragDistance = 0;
     
     const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
       dragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -109,10 +113,18 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     };
     
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove, { passive: false });
     document.addEventListener('mouseup', handleMouseUp);
+    
+    // Prevent scrolling during drag
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   };
 
   // Touch support for mobile devices
@@ -120,6 +132,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     if (!draggable) return;
     
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
     setHasDragged(false);
     
@@ -133,6 +146,9 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     let dragDistance = 0;
     
     const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
       const touch = e.touches[0];
       const deltaX = touch.clientX - startX;
       const deltaY = touch.clientY - startY;
@@ -162,10 +178,18 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
+      
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
     };
     
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
     document.addEventListener('touchend', handleTouchEnd);
+    
+    // Prevent scrolling during drag
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
   };
 
   // Smart edge snapping for better device positioning
