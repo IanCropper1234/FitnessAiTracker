@@ -47,6 +47,7 @@ import LoadProgressionTracker from "./load-progression-tracker";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { FeatureShowcase } from "./enhanced/FeatureShowcase";
 import { LoadingState, WorkoutSessionSkeleton, DashboardCardSkeleton } from "@/components/ui/loading";
+import { SavedWorkoutTemplatesTab } from "./SavedWorkoutTemplatesTab";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -479,7 +480,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');
   const [showFeatureManager, setShowFeatureManager] = useState(false);
   const [showFeatureShowcase, setShowFeatureShowcase] = useState(false);
-  const [sessionFilter, setSessionFilter] = useState<'active' | 'completed' | 'all'>('active');
+  const [sessionFilter, setSessionFilter] = useState<'active' | 'completed' | 'all' | 'templates'>('active');
   const queryClient = useQueryClient();
 
   // Fetch user data to check developer settings
@@ -919,12 +920,27 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
                   >
                     All ({Array.isArray(recentSessions) ? recentSessions.length : 0})
                   </button>
+                  <button
+                    onClick={() => setSessionFilter('templates')}
+                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
+                      sessionFilter === 'templates'
+                        ? 'bg-purple-500 dark:bg-purple-600 text-white shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
+                    }`}
+                  >
+                    Templates
+                  </button>
                 </div>
               </div>
 
               {/* Sessions with Edit/Delete Functionality */}
               <div className="px-1">
                 {(() => {
+                  // Handle templates view separately
+                  if (sessionFilter === 'templates') {
+                    return <SavedWorkoutTemplatesTab />;
+                  }
+
                   const filteredSessions = Array.isArray(recentSessions) ? recentSessions.filter(session => {
                     if (sessionFilter === 'active') return !session.isCompleted;
                     if (sessionFilter === 'completed') return session.isCompleted;
