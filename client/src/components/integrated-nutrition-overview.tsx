@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
 import { 
@@ -79,7 +79,7 @@ export function IntegratedNutritionOverview({
   setShowCopyToDatePicker,
   onCopyDateSelected
 }: IntegratedNutritionOverviewProps) {
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [internalSelectedDate, setInternalSelectedDate] = useState(TimezoneUtils.getCurrentDate());
@@ -303,17 +303,10 @@ export function IntegratedNutritionOverview({
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      toast({
-        title: "Success",
-        description: "Food log deleted successfully"
-      });
+      showSuccess("Success", "Food log deleted successfully");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete food log",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to delete food log");
     }
   });
 
@@ -330,11 +323,7 @@ export function IntegratedNutritionOverview({
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to move food item",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to move food item");
     }
   });
 
@@ -349,17 +338,10 @@ export function IntegratedNutritionOverview({
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      toast({
-        title: "Success",
-        description: "Food copied successfully"
-      });
+      showSuccess("Success", "Food copied successfully");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to copy food",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to copy food");
     }
   });
 
@@ -377,17 +359,10 @@ export function IntegratedNutritionOverview({
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
       setBulkMode(false);
       setSelectedLogs([]);
-      toast({
-        title: "Success",
-        description: `${selectedLogs.length} food logs deleted successfully`
-      });
+      showSuccess("Success", `${selectedLogs.length} food logs deleted successfully`);
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete food logs",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to delete food logs");
     }
   });
 
@@ -430,17 +405,10 @@ export function IntegratedNutritionOverview({
       
       const formattedDate = TimezoneUtils.formatForDisplay(variables.targetDate);
       
-      toast({
-        title: "Success",
-        description: `${selectedLogs.length} food logs copied to ${formattedDate}`
-      });
+      showSuccess("Success", `${selectedLogs.length} food logs copied to ${formattedDate}`);
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to copy food logs",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to copy food logs");
     }
   });
 
@@ -457,17 +425,10 @@ export function IntegratedNutritionOverview({
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
       setShowEditDialog(false);
       setEditingItem(null);
-      toast({
-        title: "Success",
-        description: "Food quantity and unit updated successfully"
-      });
+      showSuccess("Success", "Food quantity and unit updated successfully");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update food item",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to update food item");
     }
   });
 
@@ -486,17 +447,10 @@ export function IntegratedNutritionOverview({
       setSaveMealName('');
       setSaveMealDescription('');
       setSaveMealSection('');
-      toast({
-        title: "Success",
-        description: "Meal saved successfully"
-      });
+      showSuccess("Success", "Meal saved successfully");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save meal",
-        variant: "destructive"
-      });
+      showError("Error", error.message || "Failed to save meal");
     }
   });
 

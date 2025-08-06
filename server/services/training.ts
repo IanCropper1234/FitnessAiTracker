@@ -114,8 +114,6 @@ async function getWeeklyProgress(userId: number, dateFilter?: string) {
     console.error('Error getting weekly progress:', error);
     return [];
   }
-  
-  return weeks;
 }
 
 export async function createWorkoutSession(

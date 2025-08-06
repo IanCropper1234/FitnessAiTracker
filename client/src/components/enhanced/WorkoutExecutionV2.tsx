@@ -297,10 +297,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         setRestTimeRemaining((prev) => {
           if (prev <= 1) {
             setIsRestTimerActive(false);
-            toast({
-              title: "Rest Complete!",
-              description: "Time to start your next set.",
-              duration: 3000,
+            showSuccess("Rest Complete!", "Time to start your next set.", {
+              autoHideDelay: 3000,
+              action: {
+                label: "Start",
+                onClick: () => console.log("Starting next set")
+              }
             });
             return 0;
           }
@@ -317,10 +319,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       if (gestureNavEnabled && currentExerciseIndex < (session?.exercises.length || 0) - 1) {
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCurrentSetIndex(0);
-        toast({
-          title: "Next Exercise",
-          description: `Swiped to ${session?.exercises[currentExerciseIndex + 1]?.exercise.name}`,
-          duration: 2000,
+        showInfo("Next Exercise", `Swiped to ${session?.exercises[currentExerciseIndex + 1]?.exercise.name}`, {
+          autoHideDelay: 2000
         });
       }
     },
@@ -328,10 +328,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       if (gestureNavEnabled && currentExerciseIndex > 0) {
         setCurrentExerciseIndex(currentExerciseIndex - 1);
         setCurrentSetIndex(0);
-        toast({
-          title: "Previous Exercise", 
-          description: `Swiped to ${session?.exercises[currentExerciseIndex - 1]?.exercise.name}`,
-          duration: 2000,
+        showInfo("Previous Exercise", `Swiped to ${session?.exercises[currentExerciseIndex - 1]?.exercise.name}`, {
+          autoHideDelay: 2000
         });
       }
     },
@@ -469,11 +467,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const completeSet = () => {
     try {
       if (!currentSet?.weight || !currentSet?.actualReps) {
-        toast({
-          title: "Incomplete Set",
-          description: "Please enter weight and reps before completing the set.",
-          variant: "destructive",
-        });
+        showError("Incomplete Set", "Please enter weight and reps before completing the set.");
         return;
       }
 
@@ -526,10 +520,20 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           const restTime = customRestTime || currentExercise.restPeriod || 120;
           setRestTimeRemaining(restTime);
           setIsRestTimerActive(true);
-          toast({
+          addNotification({
+            variant: 'success',
             title: "Set Complete!",
             description: `Rest ${Math.floor(restTime / 60)}:${(restTime % 60).toString().padStart(2, '0')} before next set`,
-            duration: 3000,
+            icon: <CheckCircle className="h-5 w-5 text-emerald-400" />,
+            persist: true,
+            autoHideDelay: 3000,
+            action: {
+              label: "Skip Rest",
+              onClick: () => {
+                setIsRestTimerActive(false);
+                setRestTimeRemaining(0);
+              }
+            }
           });
         }
         setCurrentSetIndex(currentSetIndex + 1);
@@ -539,10 +543,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         if (nextExercise) {
           setCurrentExerciseIndex(currentExerciseIndex + 1);
           setCurrentSetIndex(0);
-          toast({
-            title: "Exercise Complete!",
-            description: `Moving to ${nextExercise.exercise.name}`,
-            duration: 3000,
+          showSuccess("Exercise Complete!", `Moving to ${nextExercise.exercise.name}`, {
+            autoHideDelay: 3000
           });
         }
       }
@@ -579,10 +581,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     
     // Toast outside of state setter
     setTimeout(() => {
-      toast({
-        title: "Set Added",
-        description: `Added Set ${workoutData[exerciseId]?.length || 1} to ${currentExercise?.exercise.name}`,
-        duration: 2000,
+      showInfo("Set Added", `Added Set ${workoutData[exerciseId]?.length || 1} to ${currentExercise?.exercise.name}`, {
+        autoHideDelay: 2000
       });
     }, 0);
   };
@@ -591,21 +591,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     const currentSets = workoutData[exerciseId] || [];
     
     if (currentSets.length <= 1) {
-      toast({
-        title: "Cannot Remove Set",
-        description: "Each exercise must have at least one set.",
-        variant: "destructive",
-      });
+      showWarning("Cannot Remove Set", "Each exercise must have at least one set.");
       return;
     }
 
     const setToRemove = currentSets[setIndex];
     if (setToRemove?.completed) {
-      toast({
-        title: "Cannot Remove Completed Set",
-        description: "You cannot remove a completed set.",
-        variant: "destructive",
-      });
+      showWarning("Cannot Remove Completed Set", "You cannot remove a completed set.");
       return;
     }
 
@@ -628,10 +620,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     
     // Toast outside of state setter
     setTimeout(() => {
-      toast({
-        title: "Set Removed",
-        description: `Removed set from ${currentExercise?.exercise.name}`,
-        duration: 2000,
+      showInfo("Set Removed", `Removed set from ${currentExercise?.exercise.name}`, {
+        autoHideDelay: 2000
       });
     }, 0);
   };

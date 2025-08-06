@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { 
   Plus, 
   Play, 
@@ -122,7 +122,7 @@ function WorkoutSessionsWithBulkActions({
   const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
 
   // Edit session mutation
   const editSessionMutation = useMutation({
@@ -145,10 +145,7 @@ function WorkoutSessionsWithBulkActions({
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Sessions Deleted",
-        description: `${selectedSessions.length} workout sessions have been deleted`,
-      });
+      showSuccess("Sessions Deleted", `${selectedSessions.length} workout sessions have been deleted`);
       setSelectedSessions([]);
       setBulkDeleteMode(false);
       queryClient.invalidateQueries({ queryKey: ["/api/training/sessions", userId] });
@@ -173,10 +170,7 @@ function WorkoutSessionsWithBulkActions({
       return response.json();
     },
     onSuccess: (data) => {
-      toast({
-        title: "Template Saved",
-        description: `Workout session has been saved as "${data.templateName}" template`,
-      });
+      showSuccess("Template Saved", `Workout session has been saved as "${data.templateName}" template`);
       queryClient.invalidateQueries({ queryKey: ["/api/training/saved-workout-templates"] });
     },
     onError: (error: any) => {
@@ -327,7 +321,7 @@ function WorkoutSessionCard({
   onSelect
 }: WorkoutSessionCardProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess } = useIOSNotifications();
 
   const editForm = useForm<EditSessionForm>({
     resolver: zodResolver(editSessionSchema),
@@ -348,10 +342,7 @@ function WorkoutSessionCard({
   const handleEditSubmit = (data: EditSessionForm) => {
     onEdit(session.id, data);
     setEditDialogOpen(false);
-    toast({
-      title: "Session Updated",
-      description: "Session name has been updated successfully",
-    });
+    showSuccess("Session Updated", "Session name has been updated successfully");
   };
 
   return (
