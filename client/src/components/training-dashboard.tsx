@@ -355,7 +355,7 @@ function WorkoutSessionCard({
   };
 
   return (
-    <Card className="p-3">
+    <Card className="p-3 pl-[0px] pr-[0px]">
       {/* Compact Header Section */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-start gap-2 flex-1 min-w-0">
