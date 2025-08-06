@@ -47,6 +47,7 @@ import LoadProgressionTracker from "./load-progression-tracker";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { FeatureShowcase } from "./enhanced/FeatureShowcase";
 import { LoadingState, WorkoutSessionSkeleton, DashboardCardSkeleton } from "@/components/ui/loading";
+import { useIOSPWAOptimization } from "@/hooks/useIOSPWAOptimization";
 import { SavedWorkoutTemplatesTab } from "./SavedWorkoutTemplatesTab";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -174,11 +175,7 @@ function WorkoutSessionsWithBulkActions({
       queryClient.invalidateQueries({ queryKey: ["/api/training/saved-workout-templates"] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save template",
-        variant: "destructive",
-      });
+      showError("Save Failed", error.message || "Failed to save template");
     },
   });
 
@@ -275,10 +272,7 @@ function WorkoutSessionsWithBulkActions({
             onSaveAsTemplate={(sessionId) => saveAsTemplateMutation.mutate(sessionId)}
             onDuplicate={() => {
               // TODO: Implement duplicate functionality
-              toast({
-                title: "Feature Coming Soon",
-                description: "Session duplication will be available in a future update",
-              });
+              showNotification("Coming Soon", "Session duplication will be available in a future update", "info");
             }}
             showCheckbox={bulkDeleteMode}
             isSelected={selectedSessions.includes(session.id)}
