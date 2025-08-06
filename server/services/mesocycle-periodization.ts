@@ -781,26 +781,107 @@ export class MesocyclePeriodization {
     week: number,
     progressions: VolumeProgression[]
   ): Promise<void> {
-    // Get mesocycle template/program
-    const mesocycle = await db
+    // Get mesocycle info
+    const [mesocycle] = await db
       .select()
       .from(mesocycles)
       .where(eq(mesocycles.id, mesocycleId))
       .limit(1);
 
-    if (mesocycle.length === 0) return;
+    if (!mesocycle) return;
 
-    const templateId = mesocycle[0].templateId;
-    if (!templateId) return;
+    // Get previous week's sessions to use as templates for the new week
+    const previousWeekSessions = await db
+      .select()
+      .from(workoutSessions)
+      .where(and(
+        eq(workoutSessions.mesocycleId, mesocycleId),
+        eq(workoutSessions.week, week - 1)
+      ))
+      .orderBy(workoutSessions.date);
 
-    // Use TemplateEngine to generate sessions with progression
-    await TemplateEngine.createWorkoutSessionsFromTemplate(
-      mesocycle[0].userId,
-      templateId,
-      mesocycleId,
-      new Date(),
-      week
-    );
+    if (previousWeekSessions.length === 0) return;
+
+    // Create new sessions for this week based on previous week's structure
+    const sessionsToCreate = [];
+    const startDate = new Date(mesocycle.startDate);
+    startDate.setDate(startDate.getDate() + (week - 1) * 7);
+
+    for (let i = 0; i < previousWeekSessions.length; i++) {
+      const prevSession = previousWeekSessions[i];
+      
+      // Calculate new session date
+      const sessionDate = new Date(startDate);
+      const dayOffset = Math.floor(i * 7 / previousWeekSessions.length);
+      sessionDate.setDate(startDate.getDate() + dayOffset);
+
+      const sessionData = {
+        userId: mesocycle.userId,
+        mesocycleId: mesocycleId,
+        programId: null,
+        date: sessionDate,
+        name: prevSession.name.replace(`Week ${week - 1}`, `Week ${week}`),
+        isCompleted: false,
+        totalVolume: 0,
+        duration: prevSession.duration,
+        version: "2.0",
+        features: { spinnerSetInput: true, gestureNavigation: true },
+        algorithm: "RP_BASED",
+        week: week
+      };
+
+      sessionsToCreate.push(sessionData);
+    }
+
+    // Create all sessions
+    const createdSessions = await db.insert(workoutSessions).values(sessionsToCreate).returning();
+
+    // Create exercises for each session based on previous week with progressions applied
+    for (let i = 0; i < createdSessions.length; i++) {
+      const newSession = createdSessions[i];
+      const prevSession = previousWeekSessions[i];
+
+      // Get exercises from previous week's session
+      const prevExercises = await db
+        .select()
+        .from(workoutExercises)
+        .where(eq(workoutExercises.sessionId, prevSession.id))
+        .orderBy(workoutExercises.orderIndex);
+
+      // Apply progressions to create new exercises
+      const exerciseInserts = prevExercises.map((exercise: any) => {
+        // Apply volume progression adjustments here
+        const volumeChange = this.determineVolumeChange(exercise.exerciseId, progressions);
+        let newSets = exercise.sets;
+        let newTargetReps = exercise.targetReps;
+        
+        // Apply basic volume adjustments
+        if (volumeChange === 'increase' && newSets < 5) {
+          newSets += 1;
+        } else if (volumeChange === 'decrease' && newSets > 1) {
+          newSets -= 1;
+        }
+
+        return {
+          sessionId: newSession.id,
+          exerciseId: exercise.exerciseId,
+          orderIndex: exercise.orderIndex,
+          sets: newSets,
+          targetReps: newTargetReps,
+          weight: null, // Will be calculated based on progression
+          restPeriod: exercise.restPeriod,
+          specialMethod: exercise.specialMethod,
+          specialConfig: exercise.specialConfig,
+          notes: `Week ${week} progression applied`
+        };
+      });
+
+      if (exerciseInserts.length > 0) {
+        await db.insert(workoutExercises).values(exerciseInserts);
+      }
+    }
+
+    console.log(`Generated ${createdSessions.length} sessions for Week ${week} with AI-driven progressions`);
   }
 
   /**
