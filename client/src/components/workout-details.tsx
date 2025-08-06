@@ -138,7 +138,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-[12px] font-bold">
               <Dumbbell className="h-5 w-5" />
               {session.name}
             </CardTitle>
