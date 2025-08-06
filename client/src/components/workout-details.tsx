@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import { AutoRegulationFeedback } from "@/shared/schema";
 import { 
   ArrowLeft, 
   Clock, 
@@ -60,18 +61,7 @@ interface WorkoutSessionDetails {
   exercises: WorkoutExercise[];
 }
 
-interface AutoRegulationFeedback {
-  id: number;
-  sessionId: number;
-  pumpQuality: number;
-  sorenessLevel: number;
-  perceivedEffort: number;
-  energyLevel: number;
-  sleepQuality: number;
-  overallRating: number;
-  notes?: string;
-  createdAt: string;
-}
+
 
 interface WorkoutDetailsProps {
   sessionId: number;
@@ -121,8 +111,8 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
   }, 0);
 
   const averageRPE = session.exercises
-    .filter(ex => ex.isCompleted && ex.rpe > 0)
-    .reduce((sum, ex) => sum + ex.rpe, 0) / session.exercises.filter(ex => ex.isCompleted && ex.rpe > 0).length || 0;
+    .filter(ex => ex.isCompleted && ex.rpe && ex.rpe > 0)
+    .reduce((sum, ex) => sum + (ex.rpe || 0), 0) / session.exercises.filter(ex => ex.isCompleted && ex.rpe && ex.rpe > 0).length || 0;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

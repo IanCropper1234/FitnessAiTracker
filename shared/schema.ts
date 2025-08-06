@@ -692,3 +692,6 @@ export type SpecialMethodConfig =
   | { type: 'drop_set'; config: DropSetConfig }
   | { type: 'giant_set'; config: GiantSetConfig }
   | { type: 'superset'; config: SupersetConfig };
+
+// Type definitions for database entities
+export type AutoRegulationFeedbackType = typeof autoRegulationFeedback.$inferSelect;
