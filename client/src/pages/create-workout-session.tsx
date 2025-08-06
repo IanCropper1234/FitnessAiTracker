@@ -116,6 +116,29 @@ export function CreateWorkoutSession() {
     },
   });
 
+  // Save workout template mutation
+  const saveTemplateMutation = useMutation({
+    mutationFn: async (templateData: any) => {
+      return apiRequest("POST", "/api/training/saved-workout-templates", templateData);
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Template Saved!",
+        description: `${sessionName} has been saved as a reusable template.`,
+      });
+      
+      // Invalidate cache to refresh saved templates
+      queryClient.invalidateQueries({ queryKey: ["/api/training/saved-workout-templates"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to save workout template.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const addExerciseFromLibrary = (exercise: Exercise) => {
     const template: ExerciseTemplate = {
       exerciseId: exercise.id,
@@ -298,6 +321,46 @@ export function CreateWorkoutSession() {
     };
 
     createWorkoutSessionMutation.mutate(sessionData);
+  };
+
+  const handleSaveAsTemplate = async () => {
+    if (!sessionName.trim() || exerciseTemplates.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please provide a session name and add at least one exercise.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Estimate duration based on exercises and rest periods
+    const estimatedDuration = exerciseTemplates.reduce((total, template) => {
+      // Rough calculation: sets * (45s exercise + rest period)
+      return total + (template.sets * (45 + template.restPeriod)) / 60;
+    }, 0);
+
+    const templateData = {
+      name: sessionName.trim(),
+      description: `Custom workout template with ${exerciseTemplates.length} exercises`,
+      exerciseTemplates: exerciseTemplates.map((template) => ({
+        exerciseId: template.exerciseId,
+        exercise: template.exercise,
+        sets: template.sets,
+        targetReps: template.targetReps,
+        restPeriod: template.restPeriod,
+        notes: template.notes || "",
+        specialMethod: template.specialMethod || null,
+        specialConfig: template.specialConfig || null,
+      })),
+      tags: [
+        // Auto-generate tags based on exercises
+        ...new Set(exerciseTemplates.map(t => t.exercise.category))
+      ],
+      estimatedDuration: Math.round(estimatedDuration),
+      difficulty: 'intermediate'
+    };
+
+    saveTemplateMutation.mutate(templateData);
   };
 
   const handleGoBack = () => {
@@ -840,6 +903,15 @@ export function CreateWorkoutSession() {
         <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2">
           <Button type="button" variant="outline" onClick={handleGoBack}>
             Cancel
+          </Button>
+          <Button 
+            type="button"
+            variant="secondary"
+            onClick={handleSaveAsTemplate}
+            disabled={saveTemplateMutation.isPending || exerciseTemplates.length === 0 || !sessionName.trim()}
+            className="w-full sm:w-auto"
+          >
+            {saveTemplateMutation.isPending ? "Saving..." : "Save as Template"}
           </Button>
           <Button 
             onClick={handleSubmit} 

@@ -16,7 +16,7 @@ import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
 import { validateAndCleanupTemplates } from "./validate-templates";
-import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups } from "@shared/schema";
+import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
 
 // Authentication middleware
@@ -3459,6 +3459,155 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating workout from template:", error);
       res.status(500).json({ error: "Failed to generate workout" });
+    }
+  });
+
+  // Saved workout templates endpoints
+  app.get("/api/training/saved-workout-templates", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      
+      const templates = await db.select().from(savedWorkoutTemplates)
+        .where(eq(savedWorkoutTemplates.userId, userId))
+        .orderBy(desc(savedWorkoutTemplates.lastUsed), desc(savedWorkoutTemplates.createdAt));
+      
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching saved workout templates:", error);
+      res.status(500).json({ error: "Failed to fetch saved workout templates" });
+    }
+  });
+
+  app.post("/api/training/saved-workout-templates", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { name, description, exerciseTemplates, tags, estimatedDuration, difficulty } = req.body;
+      
+      if (!name || !exerciseTemplates || !Array.isArray(exerciseTemplates)) {
+        return res.status(400).json({ error: "Name and exercise templates are required" });
+      }
+      
+      const [template] = await db.insert(savedWorkoutTemplates).values({
+        userId,
+        name,
+        description,
+        exerciseTemplates,
+        tags: tags || [],
+        estimatedDuration,
+        difficulty: difficulty || 'intermediate',
+        usageCount: 0
+      }).returning();
+      
+      res.json(template);
+    } catch (error) {
+      console.error("Error creating saved workout template:", error);
+      res.status(500).json({ error: "Failed to create saved workout template" });
+    }
+  });
+
+  app.put("/api/training/saved-workout-templates/:templateId", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const templateId = parseInt(req.params.templateId);
+      const updateData = req.body;
+      
+      const [updatedTemplate] = await db.update(savedWorkoutTemplates)
+        .set({ ...updateData, updatedAt: new Date() })
+        .where(and(
+          eq(savedWorkoutTemplates.id, templateId),
+          eq(savedWorkoutTemplates.userId, userId)
+        ))
+        .returning();
+      
+      if (!updatedTemplate) {
+        return res.status(404).json({ error: "Template not found or unauthorized" });
+      }
+      
+      res.json(updatedTemplate);
+    } catch (error) {
+      console.error("Error updating saved workout template:", error);
+      res.status(500).json({ error: "Failed to update saved workout template" });
+    }
+  });
+
+  app.delete("/api/training/saved-workout-templates/:templateId", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const templateId = parseInt(req.params.templateId);
+      
+      const [deletedTemplate] = await db.delete(savedWorkoutTemplates)
+        .where(and(
+          eq(savedWorkoutTemplates.id, templateId),
+          eq(savedWorkoutTemplates.userId, userId)
+        ))
+        .returning();
+      
+      if (!deletedTemplate) {
+        return res.status(404).json({ error: "Template not found or unauthorized" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting saved workout template:", error);
+      res.status(500).json({ error: "Failed to delete saved workout template" });
+    }
+  });
+
+  app.post("/api/training/saved-workout-templates/:templateId/use", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const templateId = parseInt(req.params.templateId);
+      
+      // Update usage count and last used date
+      const [template] = await db.update(savedWorkoutTemplates)
+        .set({ 
+          usageCount: sql`${savedWorkoutTemplates.usageCount} + 1`,
+          lastUsed: new Date() 
+        })
+        .where(and(
+          eq(savedWorkoutTemplates.id, templateId),
+          eq(savedWorkoutTemplates.userId, userId)
+        ))
+        .returning();
+      
+      if (!template) {
+        return res.status(404).json({ error: "Template not found or unauthorized" });
+      }
+      
+      // Create a new workout session from the template
+      const sessionName = `${template.name} - ${new Date().toLocaleDateString()}`;
+      
+      const [session] = await db.insert(workoutSessions).values({
+        userId,
+        date: new Date(),
+        name: sessionName,
+        isCompleted: false,
+        version: "2.0"
+      }).returning();
+      
+      // Add exercises to the session
+      const exerciseInserts = template.exerciseTemplates.map((exercise: any, index: number) => ({
+        sessionId: session.id,
+        exerciseId: exercise.exerciseId,
+        orderIndex: index,
+        sets: exercise.sets,
+        targetReps: exercise.targetReps,
+        restPeriod: exercise.restPeriod,
+        specialMethod: exercise.specialMethod || null,
+        specialConfig: exercise.specialConfig || null,
+        notes: exercise.notes || null
+      }));
+      
+      await db.insert(workoutExercises).values(exerciseInserts);
+      
+      res.json({ 
+        session,
+        template,
+        message: "Workout session created from template"
+      });
+    } catch (error) {
+      console.error("Error using saved workout template:", error);
+      res.status(500).json({ error: "Failed to use saved workout template" });
     }
   });
 

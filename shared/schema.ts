@@ -492,6 +492,23 @@ export const weightGoals = pgTable("weight_goals", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Saved workout session templates
+export const savedWorkoutTemplates = pgTable("saved_workout_templates", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  exerciseTemplates: jsonb("exercise_templates").notNull(), // Array of exercise configurations
+  tags: text("tags").array(), // For categorization (e.g., "push", "pull", "legs")
+  estimatedDuration: integer("estimated_duration"), // in minutes
+  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced
+  isPublic: boolean("is_public").default(false), // Allow sharing with other users
+  usageCount: integer("usage_count").default(0), // Track how often it's used
+  lastUsed: timestamp("last_used"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true, updatedAt: true });
@@ -523,6 +540,7 @@ export const insertTrainingTemplateSchema = createInsertSchema(trainingTemplates
 export const insertMesocycleSchema = createInsertSchema(mesocycles).omit({ id: true, createdAt: true });
 export const insertLoadProgressionTrackingSchema = createInsertSchema(loadProgressionTracking).omit({ id: true, createdAt: true });
 export const insertWeightGoalSchema = createInsertSchema(weightGoals).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertSavedWorkoutTemplateSchema = createInsertSchema(savedWorkoutTemplates).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Step 2: Volume Landmarks System Schemas
 export const insertMuscleGroupSchema = createInsertSchema(muscleGroups).omit({ id: true });

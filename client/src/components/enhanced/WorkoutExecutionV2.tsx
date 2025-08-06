@@ -17,6 +17,7 @@ import { RestTimerFAB } from './RestTimerFAB';
 import { CircularProgress } from './CircularProgress';
 import { EnhancedSetInput } from './EnhancedSetInput';
 import { DraggableExerciseList } from './DraggableExerciseList';
+import { SavedWorkoutTemplatesTab } from '../SavedWorkoutTemplatesTab';
 
 // Import legacy component for fallback
 import WorkoutExecution from '../workout-execution';
@@ -1035,14 +1036,18 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       </div>
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="execution" className="flex items-center gap-2">
-            <Target className="h-4 w-4" />
-            Workout Execution
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="execution" className="flex items-center gap-1 text-xs">
+            <Target className="h-3 w-3" />
+            Execution
           </TabsTrigger>
-          <TabsTrigger value="exercises" className="flex items-center gap-2">
-            <ListOrdered className="h-4 w-4" />
-            Exercise Management
+          <TabsTrigger value="exercises" className="flex items-center gap-1 text-xs">
+            <ListOrdered className="h-3 w-3" />
+            Exercises
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="flex items-center gap-1 text-xs">
+            <Save className="h-3 w-3" />
+            Templates
           </TabsTrigger>
         </TabsList>
 
@@ -1306,6 +1311,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             onExerciseSelect={setCurrentExerciseIndex}
             onExercisesReorder={handleExercisesReorder}
           />
+        </TabsContent>
+
+        {/* Saved Workout Templates Tab */}
+        <TabsContent value="templates" className="space-y-2 mt-2">
+          <SavedWorkoutTemplatesTab />
         </TabsContent>
       </Tabs>
       {/* Ultra Compact Action Section */}
