@@ -345,80 +345,141 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                           
                           {/* Myo-Rep Match per-set details */}
                           {specialMethod === 'myorep_match' && (
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>
-                                <span className="text-muted-foreground">Target Reps:</span>
-                                <span className="font-medium ml-1">{specialConfig?.targetReps || '15'}</span>
+                            <div className="space-y-1">
+                              <div className="grid grid-cols-3 gap-2">
+                                <div>
+                                  <span className="text-muted-foreground">Target Reps:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.targetReps || '15'}</span>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Mini Sets:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.miniSets || '2'}</span>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Rest:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.restSeconds || '20'}s</span>
+                                </div>
                               </div>
-                              <div>
-                                <span className="text-muted-foreground">Mini Sets:</span>
-                                <span className="font-medium ml-1">{specialConfig?.miniSets || '2'}</span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">Rest:</span>
-                                <span className="font-medium ml-1">{specialConfig?.restSeconds || '20'}s</span>
-                              </div>
+                              {specialConfig?.miniSetRepsString && (
+                                <div>
+                                  <span className="text-muted-foreground">Mini-sets Reps:</span>
+                                  <span className="font-medium ml-1">{specialConfig.miniSetRepsString}</span>
+                                </div>
+                              )}
+                              {specialConfig?.totalCalculatedReps && (
+                                <div>
+                                  <span className="text-muted-foreground">Total Calculated:</span>
+                                  <span className="font-medium ml-1">{specialConfig.totalCalculatedReps} reps</span>
+                                </div>
+                              )}
+                              {specialConfig?.activationSet && (
+                                <div>
+                                  <span className="text-muted-foreground">Activation Set:</span>
+                                  <span className="font-medium ml-1">Yes</span>
+                                </div>
+                              )}
                             </div>
                           )}
                           
                           {/* Myo-Rep No Match per-set details */}
                           {specialMethod === 'myorep_no_match' && (
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <span className="text-muted-foreground">Mini Sets:</span>
-                                <span className="font-medium ml-1">{specialConfig?.miniSets || '2'}</span>
+                            <div className="space-y-1">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <span className="text-muted-foreground">Mini Sets:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.miniSets || '2'}</span>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Rest:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.restSeconds || '20'}s</span>
+                                </div>
                               </div>
-                              <div>
-                                <span className="text-muted-foreground">Rest:</span>
-                                <span className="font-medium ml-1">{specialConfig?.restSeconds || '20'}s</span>
+                              <div className="text-muted-foreground text-xs">
+                                Perform to failure, then mini-sets
                               </div>
                             </div>
                           )}
                           
                           {/* Drop Set per-set details */}
                           {specialMethod === 'drop_set' && (
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <span className="text-muted-foreground">Drop Sets:</span>
-                                <span className="font-medium ml-1">{specialConfig?.dropSets || '3'}</span>
+                            <div className="space-y-1">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <span className="text-muted-foreground">Drop Sets:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.dropSets || '3'}</span>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Rest:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.dropRestSeconds || '10'}s</span>
+                                </div>
                               </div>
-                              <div>
-                                <span className="text-muted-foreground">Rest:</span>
-                                <span className="font-medium ml-1">{specialConfig?.dropRestSeconds || '10'}s</span>
-                              </div>
+                              {specialConfig?.dropSetWeights && specialConfig.dropSetWeights.length > 0 && (
+                                <div>
+                                  <span className="text-muted-foreground">Weights:</span>
+                                  <span className="font-medium ml-1">
+                                    {specialConfig.dropSetWeights.map((weight: number) => `${weight}kg`).join(' → ')}
+                                  </span>
+                                </div>
+                              )}
+                              {specialConfig?.dropSetReps && specialConfig.dropSetReps.length > 0 && (
+                                <div>
+                                  <span className="text-muted-foreground">Target Reps:</span>
+                                  <span className="font-medium ml-1">
+                                    {specialConfig.dropSetReps.map((reps: number) => `${reps}`).join(' → ')}
+                                  </span>
+                                </div>
+                              )}
+                              {specialConfig?.weightReductions && specialConfig.weightReductions.length > 0 && (
+                                <div>
+                                  <span className="text-muted-foreground">Reductions:</span>
+                                  <span className="font-medium ml-1">
+                                    {specialConfig.weightReductions.map((r: number) => `${r}%`).join(', ')}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           )}
                           
                           {/* Giant Set per-set details */}
                           {specialMethod === 'giant_set' && (
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>
-                                <span className="text-muted-foreground">Target:</span>
-                                <span className="font-medium ml-1">{specialConfig?.totalTargetReps || '45'}</span>
+                            <div className="space-y-1">
+                              <div className="grid grid-cols-3 gap-2">
+                                <div>
+                                  <span className="text-muted-foreground">Target Total:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.totalTargetReps || '45'}</span>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Per Mini-Set:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.miniSetReps || '5'}</span>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">Rest:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.restSeconds || '10'}s</span>
+                                </div>
                               </div>
-                              <div>
-                                <span className="text-muted-foreground">Per Mini:</span>
-                                <span className="font-medium ml-1">{specialConfig?.miniSetReps || '5'}</span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">Rest:</span>
-                                <span className="font-medium ml-1">{specialConfig?.restSeconds || '10'}s</span>
+                              <div className="text-muted-foreground text-xs">
+                                {Math.ceil((specialConfig?.totalTargetReps || 45) / (specialConfig?.miniSetReps || 5))} mini-sets total
                               </div>
                             </div>
                           )}
                           
                           {/* Superset per-set details */}
                           {specialMethod === 'superset' && (
-                            <div className="grid grid-cols-2 gap-2">
-                              {specialConfig?.pairedExerciseId && (
+                            <div className="space-y-1">
+                              <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                  <span className="text-muted-foreground">Paired:</span>
-                                  <span className="font-medium ml-1">ID {specialConfig.pairedExerciseId}</span>
+                                  <span className="text-muted-foreground">Rest Between Sets:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.restSeconds || '60'}s</span>
                                 </div>
-                              )}
-                              <div>
-                                <span className="text-muted-foreground">Rest:</span>
-                                <span className="font-medium ml-1">{specialConfig?.restSeconds || '60'}s</span>
+                                {specialConfig?.pairedExerciseId && (
+                                  <div>
+                                    <span className="text-muted-foreground">Paired Exercise:</span>
+                                    <span className="font-medium ml-1">ID {specialConfig.pairedExerciseId}</span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-muted-foreground text-xs">
+                                Perform immediately after paired exercise
                               </div>
                             </div>
                           )}
