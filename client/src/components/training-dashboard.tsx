@@ -868,7 +868,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
               </p>
             </div>
-            <Button onClick={() => setLocation('/create-workout-session')} className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-white hover:opacity-90 shadow-sm hover:shadow-lg h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px]" style={{ backgroundColor: '#479bf5' }}>
+            <Button onClick={() => setLocation('/create-workout-session')} className="ios-touch-feedback bg-primary hover:bg-primary/90 border border-primary/20 inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-white hover:opacity-90 shadow-sm hover:shadow-lg h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] text-[14px] font-semibold" style={{ backgroundColor: '#479bf5' }}>
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
