@@ -84,9 +84,14 @@ export default function CreateMesocyclePage() {
 
 
 
-  // Fetch templates
+  // Fetch saved workout templates
   const { data: templates = [], isLoading: templatesLoading } = useQuery<any[]>({
-    queryKey: ['/api/training/templates']
+    queryKey: ['/api/training/saved-workout-templates']
+  });
+
+  // Fetch exercises for template preview
+  const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
+    queryKey: ['/api/training/exercises']
   });
 
 
@@ -129,7 +134,7 @@ export default function CreateMesocyclePage() {
     if (!selectedTemplateId) {
       toast({
         title: "Error", 
-        description: "Please select a training template",
+        description: "Please select a workout template",
         variant: "destructive",
       });
       return;
@@ -138,7 +143,7 @@ export default function CreateMesocyclePage() {
     const mesocycleData = {
       name: mesocycleName,
       totalWeeks,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId // This will be the saved workout template ID
     };
 
     createMesocycleMutation.mutate(mesocycleData);
@@ -209,16 +214,16 @@ export default function CreateMesocyclePage() {
           {/* Template Selection Info */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Training Templates</CardTitle>
+              <CardTitle className="text-base">Saved Workout Templates</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Choose from proven RP training templates. Need a custom template? 
+                Choose from your saved workout session templates. Need more templates? 
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-primary underline" 
-                  onClick={() => setLocation('/create-training-template')}
+                  onClick={() => setLocation('/training')}
                 >
-                  Create one first
-                </Button> before starting your mesocycle.
+                  Save workout sessions as templates
+                </Button> from your training dashboard.
               </p>
             </CardHeader>
           </Card>
@@ -226,53 +231,80 @@ export default function CreateMesocyclePage() {
           {/* Available Templates */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Available Templates</CardTitle>
+              <CardTitle className="text-base">Available Workout Templates</CardTitle>
             </CardHeader>
             <CardContent>
                 {templatesLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-8 w-8 animate-spin" />
                   </div>
+                ) : templates.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Dumbbell className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm mb-2">No saved workout templates found</p>
+                    <p className="text-xs">Save some workout sessions as templates from your training dashboard</p>
+                  </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {templates.map((template: any) => (
-                      <Card
-                        key={template.id}
-                        className={`cursor-pointer transition-colors ${
-                          selectedTemplateId === template.id ? "ring-2 ring-primary" : ""
-                        }`}
-                        onClick={() => setSelectedTemplateId(template.id)}
-                      >
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">{template.name}</CardTitle>
-                          <div className="flex gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {template.split}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              {template.weeklyFrequency}x/week
-                            </Badge>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <p className="text-xs text-muted-foreground mb-2">
-                            {template.description}
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {(template.targetMuscleGroups || []).slice(0, 3).map((muscle: string) => (
-                              <Badge key={muscle} variant="secondary" className="text-xs">
-                                {muscle}
+                    {templates.map((template: any) => {
+                      const exerciseCount = template.exerciseTemplates?.length || 0;
+                      const exerciseList = template.exerciseTemplates || [];
+                      
+                      return (
+                        <Card
+                          key={template.id}
+                          className={`cursor-pointer transition-colors ${
+                            selectedTemplateId === template.id ? "ring-2 ring-primary" : ""
+                          }`}
+                          onClick={() => setSelectedTemplateId(template.id)}
+                        >
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm">{template.name}</CardTitle>
+                            <div className="flex gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
                               </Badge>
-                            ))}
-                            {(template.targetMuscleGroups || []).length > 3 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{(template.targetMuscleGroups || []).length - 3} more
+                              <Badge variant="outline" className="text-xs">
+                                {template.difficulty}
                               </Badge>
+                              {template.estimatedDuration && (
+                                <Badge variant="outline" className="text-xs">
+                                  ~{template.estimatedDuration}min
+                                </Badge>
+                              )}
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <p className="text-xs text-muted-foreground mb-2">
+                              {template.description || 'Custom workout template'}
+                            </p>
+                            {exerciseList.length > 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                <span className="font-medium">Exercises:</span>{' '}
+                                {exerciseList.slice(0, 2).map((ex: any, idx: number) => 
+                                  `${ex.sets}x${ex.targetReps}`
+                                ).join(', ')}
+                                {exerciseList.length > 2 && ` +${exerciseList.length - 2} more`}
+                              </div>
                             )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                            {template.tags && template.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {template.tags.slice(0, 3).map((tag: string) => (
+                                  <Badge key={tag} variant="secondary" className="text-xs">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                                {template.tags.length > 3 && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    +{template.tags.length - 3} more
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
@@ -284,7 +316,7 @@ export default function CreateMesocyclePage() {
           {selectedTemplate && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Program Preview</CardTitle>
+                <CardTitle className="text-base">Template Preview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -292,25 +324,54 @@ export default function CreateMesocyclePage() {
                     <span className="font-medium">Template:</span> {selectedTemplate.name}
                   </div>
                   <div>
-                    <span className="font-medium">Split:</span> {selectedTemplate.split}
+                    <span className="font-medium">Exercises:</span> {selectedTemplate.exerciseTemplates?.length || 0}
                   </div>
                   <div>
-                    <span className="font-medium">Frequency:</span> {selectedTemplate.weeklyFrequency}x per week
+                    <span className="font-medium">Difficulty:</span> {selectedTemplate.difficulty}
                   </div>
                   <div>
-                    <span className="font-medium">Duration:</span> ~{selectedTemplate.estimatedDuration} min/session
+                    <span className="font-medium">Duration:</span> ~{selectedTemplate.estimatedDuration || 'N/A'} min
                   </div>
                 </div>
-                <div className="mt-3">
-                  <span className="font-medium text-sm">Target Muscles:</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {(selectedTemplate.targetMuscleGroups || []).map((muscle: string) => (
-                      <Badge key={muscle} variant="outline" className="text-xs capitalize">
-                        {muscle}
-                      </Badge>
-                    ))}
+                {selectedTemplate.exerciseTemplates && selectedTemplate.exerciseTemplates.length > 0 && (
+                  <div className="mt-4">
+                    <span className="font-medium text-sm">Exercises:</span>
+                    <div className="mt-2 space-y-1">
+                      {selectedTemplate.exerciseTemplates.slice(0, 5).map((exercise: any, index: number) => {
+                        const exerciseData = exercises.find(e => e.id === exercise.exerciseId);
+                        const exerciseName = exerciseData?.name || `Exercise ${exercise.exerciseId}`;
+                        
+                        return (
+                          <div key={index} className="text-xs bg-muted p-2 rounded">
+                            <span className="font-medium">{exerciseName}</span>
+                            <span className="text-muted-foreground ml-2">
+                              {exercise.sets} sets × {exercise.targetReps} reps
+                              {exercise.restPeriod && ` • ${exercise.restPeriod}s rest`}
+                              {exercise.specialMethod && ` • ${exercise.specialMethod}`}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      {selectedTemplate.exerciseTemplates.length > 5 && (
+                        <div className="text-xs text-muted-foreground">
+                          +{selectedTemplate.exerciseTemplates.length - 5} more exercises...
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
+                {selectedTemplate.tags && selectedTemplate.tags.length > 0 && (
+                  <div className="mt-3">
+                    <span className="font-medium text-sm">Tags:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedTemplate.tags.map((tag: string) => (
+                        <Badge key={tag} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}

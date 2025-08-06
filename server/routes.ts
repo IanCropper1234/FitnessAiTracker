@@ -3281,15 +3281,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const { name, templateId, totalWeeks, customProgram } = req.body;
       
-      const mesocycleId = await MesocyclePeriodization.createMesocycleWithProgram(
-        userId, 
-        name, 
-        templateId, 
-        totalWeeks,
-        customProgram
-      );
+      console.log('Creating mesocycle with saved workout template:', { name, templateId, totalWeeks });
       
-      res.json({ id: mesocycleId, message: "Mesocycle created successfully" });
+      // For now, create a basic mesocycle that will use the saved workout template
+      const mesocycleData = {
+        userId,
+        name,
+        totalWeeks,
+        currentWeek: 1,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + totalWeeks * 7 * 24 * 60 * 60 * 1000), // Add totalWeeks
+        programId: null,
+        templateId: templateId // Store the saved workout template ID here for now
+      };
+      
+      const [mesocycle] = await db.insert(mesocycles).values(mesocycleData).returning();
+      
+      res.json({ id: mesocycle.id, message: "Mesocycle created successfully" });
     } catch (error) {
       console.error("Error creating mesocycle:", error);
       res.status(500).json({ error: "Failed to create mesocycle" });
