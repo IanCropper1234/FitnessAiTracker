@@ -548,13 +548,8 @@ export class MesocyclePeriodization {
         currentMesocycle.totalWeeks
       );
 
-      // Apply special training method adjustments
-      const specialMethodAdjustments = await this.adjustSpecialTrainingMethods(
-        currentMesocycle.userId,
-        mesocycleId,
-        newWeek,
-        progressions
-      );
+      // Store userId for later use
+      const userId = currentMesocycle.userId;
 
       // Update mesocycle current week
       await db
@@ -567,6 +562,14 @@ export class MesocyclePeriodization {
 
       // Generate new workout sessions for the advanced week
       await this.generateWeekWorkoutSessions(mesocycleId, newWeek, progressions);
+      
+      // Apply special training method adjustments to the new week's sessions
+      const specialMethodAdjustments = await this.adjustSpecialTrainingMethods(
+        userId, 
+        mesocycleId, 
+        newWeek, 
+        progressions
+      );
 
       return {
         success: true,
@@ -861,17 +864,37 @@ export class MesocyclePeriodization {
           newSets -= 1;
         }
 
+        // Apply special training method progressions if present
+        let adjustedSpecialConfig = exercise.specialConfig;
+        let adjustedTargetReps = newTargetReps;
+        let adjustedNotes = `Week ${week} progression applied`;
+        
+        if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
+          const volumeChange = this.determineVolumeChange(exercise.exerciseId, progressions);
+          const specialAdjustment = this.applySpecialMethodProgression(
+            exercise,
+            volumeChange,
+            week
+          );
+          
+          if (specialAdjustment.changed) {
+            adjustedSpecialConfig = specialAdjustment.newConfig;
+            adjustedTargetReps = specialAdjustment.newTargetReps;
+            adjustedNotes = specialAdjustment.reasoning;
+          }
+        }
+
         return {
           sessionId: newSession.id,
           exerciseId: exercise.exerciseId,
           orderIndex: exercise.orderIndex,
           sets: newSets,
-          targetReps: newTargetReps,
+          targetReps: adjustedTargetReps,
           weight: null, // Will be calculated based on progression
           restPeriod: exercise.restPeriod,
           specialMethod: exercise.specialMethod,
-          specialConfig: exercise.specialConfig,
-          notes: `Week ${week} progression applied`
+          specialConfig: adjustedSpecialConfig,
+          notes: adjustedNotes
         };
       });
 
