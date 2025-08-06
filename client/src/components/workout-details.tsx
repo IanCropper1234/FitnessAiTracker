@@ -130,7 +130,6 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
       <div className="flex items-center justify-start">
         <Button variant="ghost" onClick={onBack} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Back to Training
         </Button>
       </div>
 
@@ -138,7 +137,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-[12px] font-bold">
+            <CardTitle className="text-headline flex items-center gap-2 text-[12px] font-bold">
               <Dumbbell className="h-5 w-5" />
               {session.name}
             </CardTitle>
