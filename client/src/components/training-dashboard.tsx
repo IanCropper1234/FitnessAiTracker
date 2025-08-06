@@ -433,7 +433,7 @@ function WorkoutSessionCard({
           <span>•</span>
           <span>{session.totalVolume || 0}kg</span>
         </div>
-        <div className="text-xs font-medium">
+        <div className="text-xs font-medium pl-[0px] pr-[0px] ml-[10px] mr-[10px]">
           {session.isCompleted ? "Completed" : "In Progress"}
         </div>
       </div>
