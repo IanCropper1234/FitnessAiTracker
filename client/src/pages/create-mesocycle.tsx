@@ -108,7 +108,9 @@ export default function CreateMesocyclePage() {
         title: "Success",
         description: "Mesocycle created successfully!",
       });
+      // Invalidate both mesocycles and sessions cache since new sessions are created
       queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
       setLocation('/training?tab=mesocycles');
     },
     onError: (error: any) => {
