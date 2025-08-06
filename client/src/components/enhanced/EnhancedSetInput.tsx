@@ -208,7 +208,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   // Get the most recent historical data
   const latestHistoricalData = historicalData?.[0];
 
-  const isSetValid = set.weight > 0 && set.actualReps > 0 && set.rpe >= 1 && set.rpe <= 10;
+  // Calculate if the set is valid - consider body weight for body weight exercises
+  const effectiveWeight = getEffectiveWeight();
+  const isSetValid = effectiveWeight > 0 && set.actualReps > 0 && set.rpe >= 1 && set.rpe <= 10;
 
   return (
     <Card className={`transition-all duration-200 bg-card border-border ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
@@ -987,7 +989,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <div className="flex items-center justify-center p-1 bg-emerald-500/10 border border-emerald-500/20 ">
             <Check className="h-3 w-3 text-emerald-400 mr-1" />
             <span className="text-xs text-emerald-300 font-medium">
-              {set.weight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
+              {effectiveWeight}{weightUnit} × {set.actualReps} @ RPE {set.rpe}
             </span>
             {specialMethod && (
               <Badge variant="outline" className="ml-2 text-xs px-1 py-0 h-4 bg-orange-500/20 text-orange-300 border-orange-500/30">
@@ -1007,8 +1009,8 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <div className="p-1 bg-muted/20  text-center">
             <div className="flex items-center justify-center gap-1">
               <span className="text-xs text-muted-foreground">
-                {set.weight > 0 || set.actualReps > 0 || set.rpe > 0
-                  ? `${set.weight || 0}${weightUnit} × ${set.actualReps || 0} @ RPE ${set.rpe || 0}`
+                {effectiveWeight > 0 || set.actualReps > 0 || set.rpe > 0
+                  ? `${effectiveWeight || 0}${weightUnit} × ${set.actualReps || 0} @ RPE ${set.rpe || 0}`
                   : "Tap to edit"
                 }
               </span>
