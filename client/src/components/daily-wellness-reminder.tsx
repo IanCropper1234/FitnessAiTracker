@@ -104,30 +104,46 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
 
   return (
     <Collapsible open={isWellnessExpanded} onOpenChange={setIsWellnessExpanded}>
-      <Card className={isCompleted ? 'border-green-200 dark:border-green-800' : 'border-orange-200 dark:border-orange-800'}>
+      <Card className={`${isCompleted 
+        ? 'border-green-300 dark:border-green-600 bg-green-50/50 dark:bg-green-900/10' 
+        : 'border-orange-300 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-900/10'
+      }`}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="pb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+          <CardHeader className="pb-3 cursor-pointer hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                Daily Wellness Check-in
+                <Calendar className={`w-5 h-5 ${isCompleted 
+                  ? 'text-green-600 dark:text-green-400' 
+                  : 'text-orange-600 dark:text-orange-400'
+                }`} />
+                <span className={`${isCompleted 
+                  ? 'text-green-900 dark:text-green-100' 
+                  : 'text-orange-900 dark:text-orange-100'
+                }`}>
+                  Daily Wellness Check-in
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Badge 
-                  variant={isCompleted ? "default" : "secondary"}
                   className={`
                     ${isCompleted 
-                      ? 'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200' 
-                      : 'bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200'
+                      ? 'bg-green-500 text-white border-green-600' 
+                      : 'bg-orange-500 text-white border-orange-600'
                     }
                   `}
                 >
                   {isCompleted ? 'Complete' : 'Pending'}
                 </Badge>
                 {isWellnessExpanded ? (
-                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                  <ChevronUp className={`h-4 w-4 ${isCompleted 
+                    ? 'text-green-600 dark:text-green-400' 
+                    : 'text-orange-600 dark:text-orange-400'
+                  }`} />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                  <ChevronDown className={`h-4 w-4 ${isCompleted 
+                    ? 'text-green-600 dark:text-green-400' 
+                    : 'text-orange-600 dark:text-orange-400'
+                  }`} />
                 )}
               </div>
             </CardTitle>
