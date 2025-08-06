@@ -488,6 +488,26 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [, setLocation] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { isIOSPWA } = useIOSPWAOptimization();
+  
+  // iOS PWA specific memory management
+  useEffect(() => {
+    if (isIOSPWA()) {
+      // Prevent context menu and double tap zoom
+      const preventInteraction = (e: Event) => {
+        e.preventDefault();
+        return false;
+      };
+      
+      document.addEventListener('contextmenu', preventInteraction);
+      document.addEventListener('selectstart', preventInteraction);
+      
+      return () => {
+        document.removeEventListener('contextmenu', preventInteraction);
+        document.removeEventListener('selectstart', preventInteraction);
+      };
+    }
+  }, [isIOSPWA]);
 
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
@@ -1013,15 +1033,30 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           )}
         </AnimatedTabsContent>
 
-        <AnimatedTabsContent value="exercise-library" className="space-y-6" >
-          {/* Search Bar */}
-          <div className="relative">
+        <AnimatedTabsContent 
+          value="exercise-library" 
+          className="space-y-6" 
+          style={{
+            // iOS PWA optimization - enable hardware acceleration
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
+            willChange: 'auto'
+          }}
+        >
+          {/* Search Bar - iOS PWA Optimized */}
+          <div className="relative" style={{ transform: 'translate3d(0, 0, 0)' }}>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search exercises by name, muscle group, equipment..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
+              style={{
+                // Prevent iOS zoom on focus
+                fontSize: '16px',
+                // Enable hardware acceleration
+                transform: 'translate3d(0, 0, 0)'
+              }}
             />
           </div>
 
@@ -1105,9 +1140,33 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-            {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
+          {/* iOS PWA Performance Warning */}
+          {isIOSPWA() && filteredExercises.length > 50 && (
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 text-sm text-amber-800 dark:text-amber-200 text-center">
+              Showing first 50 exercises for better performance. Use search or filters to find specific exercises.
+            </div>
+          )}
+          
+          <div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+            style={{
+              // Enable hardware acceleration for iOS PWA
+              transform: 'translate3d(0, 0, 0)',
+              backfaceVisibility: 'hidden',
+              willChange: 'auto'
+            }}
+          >
+            {/* Limit exercises for iOS PWA performance */}
+            {(isIOSPWA() ? filteredExercises.slice(0, 50) : filteredExercises).map((exercise, index) => (
+              <Card 
+                key={`${exercise.id}-${index}`} 
+                className="hover:shadow-md transition-shadow overflow-hidden"
+                style={{
+                  // iOS PWA optimization - hardware acceleration
+                  transform: 'translate3d(0, 0, 0)',
+                  backfaceVisibility: 'hidden'
+                }}
+              >
                 <CardHeader className="pb-1.5 px-3 pt-3">
                   <div className="flex justify-between items-start gap-2 mb-1">
                     <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">

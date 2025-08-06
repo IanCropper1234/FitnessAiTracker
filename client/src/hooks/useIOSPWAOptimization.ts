@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 /**
  * Custom hook for iOS PWA optimizations to prevent reload issues
@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
  */
 export function useIOSPWAOptimization() {
   const cleanupRef = useRef<(() => void)[]>([]);
+  const memoryCleanupTimerRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     // Detect if running as iOS PWA
@@ -18,24 +19,39 @@ export function useIOSPWAOptimization() {
 
     if (!isIOSPWA()) return;
 
-    // Memory management for iOS PWA
-    const handleMemoryPressure = () => {
+    // Enhanced memory management for iOS PWA
+    const handleMemoryPressure = useCallback(() => {
       // Clear unused cached data
       if ('caches' in window) {
         caches.keys().then(names => {
           names.forEach(name => {
-            if (name.includes('old') || name.includes('temp')) {
+            if (name.includes('old') || name.includes('temp') || name.includes('chunk')) {
               caches.delete(name);
             }
           });
         });
       }
 
+      // Clear sessionStorage of non-essential data
+      try {
+        const keysToKeep = ['selectedExercises', 'authToken', 'userPreferences'];
+        Object.keys(sessionStorage).forEach(key => {
+          if (!keysToKeep.some(keepKey => key.includes(keepKey))) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      } catch (e) {
+        // Ignore if sessionStorage is not available
+      }
+
+      // Force layout recalculation to prevent memory leaks
+      document.body.offsetHeight;
+
       // Trigger garbage collection if available
       if ('gc' in window && typeof window.gc === 'function') {
         window.gc();
       }
-    };
+    }, []);
 
     // Handle iOS PWA lifecycle events
     const handleVisibilityChange = () => {
@@ -79,8 +95,22 @@ export function useIOSPWAOptimization() {
       () => window.removeEventListener('pageshow', handlePageShow),
     ];
 
+    // Periodic memory cleanup to prevent accumulation
+    memoryCleanupTimerRef.current = setInterval(() => {
+      if (document.hidden) {
+        handleMemoryPressure();
+      }
+    }, 30000); // Every 30 seconds when app is hidden
+
     // Initial memory management
     handleMemoryPressure();
+
+    // Store cleanup for periodic timer
+    cleanupRef.current.push(() => {
+      if (memoryCleanupTimerRef.current) {
+        clearInterval(memoryCleanupTimerRef.current);
+      }
+    });
 
     return () => {
       cleanupRef.current.forEach(cleanup => cleanup());

@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Dumbbell } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Dumbbell, Search, Target } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -31,6 +35,38 @@ interface ExerciseSelectorProps {
 
 export function ExerciseSelector({ selectedExercises, onExercisesChange, targetMuscleGroups }: ExerciseSelectorProps) {
   const [location, setLocation] = useLocation();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Fetch exercises from API
+  const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
+    queryKey: ["/api/training/exercises"],
+  });
+
+  // Categories from exercises
+  const categories = ["all", ...Array.from(new Set(exercises.map(ex => ex.category)))];
+
+  // Filter exercises
+  const filteredExercises = exercises.filter(exercise => {
+    const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exercise.primaryMuscle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exercise.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  const addExercise = (exercise: Exercise) => {
+    const newExercise: SelectedExercise = {
+      ...exercise,
+      sets: 3,
+      targetReps: "8-12",
+      restPeriod: 90,
+    };
+    onExercisesChange([...selectedExercises, newExercise]);
+  };
 
   // Check for newly selected exercises from the standalone page - iOS PWA optimized
   useEffect(() => {
