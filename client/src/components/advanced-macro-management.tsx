@@ -113,8 +113,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const weeklyGoals = rawWeeklyGoals || [];
 
   // Get user's preferred weight unit
-  const getUserWeightUnit = () => {
-    return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics);
+  const getUserWeightUnit = (): 'kg' | 'lbs' => {
+    return UnitConverter.getUserWeightUnit(userProfile?.user, bodyMetrics);
   };
 
   // Get current week's wellness check-ins count
@@ -814,12 +814,17 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                             const targetWeight = parseFloat(activeGoal.targetWeight);
                             const weeklyChange = parseFloat(activeGoal.targetWeightChangePerWeek || 0);
                             
-                            // Convert units if needed using convertValue function
+                            // Convert units if needed using UnitConverter
                             let displayWeight = targetWeight;
                             let displayWeeklyChange = weeklyChange;
                             if (activeGoal.unit !== preferredUnit) {
-                              displayWeight = targetWeight * (preferredUnit === 'kg' ? 0.453592 : 2.20462);
-                              displayWeeklyChange = weeklyChange * (preferredUnit === 'kg' ? 0.453592 : 2.20462);
+                              const convertedWeight = UnitConverter.convertWeight(targetWeight, activeGoal.unit);
+                              displayWeight = preferredUnit === 'kg' ? convertedWeight.kg : convertedWeight.lbs;
+                              
+                              const convertedChange = UnitConverter.convertWeight(Math.abs(weeklyChange), activeGoal.unit);
+                              displayWeeklyChange = weeklyChange >= 0 
+                                ? (preferredUnit === 'kg' ? convertedChange.kg : convertedChange.lbs)
+                                : -(preferredUnit === 'kg' ? convertedChange.kg : convertedChange.lbs);
                             }
                             
                             const unitLabel = preferredUnit === 'kg' ? 'kg' : 'lbs';
