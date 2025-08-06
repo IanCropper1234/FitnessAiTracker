@@ -496,9 +496,10 @@ function WorkoutSessionCard({
 interface TrainingDashboardProps {
   userId: number;
   activeTab?: string;
+  onViewStateChange?: (isViewingDetails: boolean) => void;
 }
 
-export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingDashboardProps) {
+export function TrainingDashboard({ userId, activeTab = "dashboard", onViewStateChange }: TrainingDashboardProps) {
   const [, setLocation] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -506,6 +507,11 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
+
+  // Notify parent when view state changes
+  useEffect(() => {
+    onViewStateChange?.(!!viewingSessionId);
+  }, [viewingSessionId, onViewStateChange]);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'yesterday' | 'custom'>('all');

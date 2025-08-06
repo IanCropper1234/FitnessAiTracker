@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { AutoRegulationFeedback } from "@/shared/schema";
+import type { AutoRegulationFeedback } from "../shared/schema";
 import { 
   ArrowLeft, 
   Clock, 
@@ -116,6 +116,14 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Back Button */}
+      <div className="flex items-center justify-start">
+        <Button variant="ghost" onClick={onBack} className="gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Training
+        </Button>
+      </div>
+
       {/* Header */}
       <Card>
         <CardHeader>
