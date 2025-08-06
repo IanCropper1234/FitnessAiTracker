@@ -2040,7 +2040,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get all exercises from the session
       const sessionExercises = await storage.getWorkoutExercises(sessionId);
       
-      // Transform exercises to template format
+      // Transform exercises to template format with complete training method data
       const exerciseTemplates = sessionExercises.map(exercise => ({
         exerciseId: exercise.exerciseId,
         orderIndex: exercise.orderIndex,
@@ -2049,7 +2049,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         restPeriod: exercise.restPeriod || 60,
         notes: exercise.notes || '',
         specialMethod: exercise.specialMethod || null,
-        specialMethodData: exercise.specialMethodData || null
+        specialMethodData: exercise.specialMethodData || null,
+        specialConfig: exercise.specialConfig || null, // Include special configuration
+        weight: exercise.weight || null, // Include weight for reference
+        rpe: exercise.rpe || null // Include RPE for reference
       }));
 
       // Create saved workout template with exercises as JSON

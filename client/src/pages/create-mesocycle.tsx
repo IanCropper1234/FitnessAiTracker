@@ -298,9 +298,36 @@ export default function CreateMesocyclePage() {
                             {selectedTemplate.exerciseTemplates.slice(0, 3).map((exercise: any, idx: number) => {
                               const exerciseData = exercises.find(e => e.id === exercise.exerciseId);
                               const exerciseName = exerciseData?.name || `Exercise ${exercise.exerciseId}`;
+                              
+                              // Format special training method display
+                              const formatSpecialMethod = (method: string) => {
+                                switch (method) {
+                                  case 'myorep_match': return 'Myorep Match';
+                                  case 'myorep_no_match': return 'Myorep No Match';
+                                  case 'drop_set': return 'Drop Set';
+                                  case 'giant_set': return 'Giant Set';
+                                  case 'superset': return 'Superset';
+                                  default: return method;
+                                }
+                              };
+                              
                               return (
                                 <div key={idx} className="text-muted-foreground">
-                                  {exerciseName} - {exercise.sets}×{exercise.targetReps}
+                                  <div className="font-medium">{exerciseName}</div>
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span>{exercise.sets}×{exercise.targetReps}</span>
+                                    {exercise.restPeriod && <span>• {exercise.restPeriod}s rest</span>}
+                                    {exercise.specialMethod && (
+                                      <span className="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-xs">
+                                        {formatSpecialMethod(exercise.specialMethod)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {exercise.notes && (
+                                    <div className="text-xs text-muted-foreground/70 italic">
+                                      "{exercise.notes}"
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}
@@ -362,6 +389,7 @@ export default function CreateMesocyclePage() {
                       const exerciseList = template.exerciseTemplates || [];
                       const isUsed = Object.values(dayTemplates).includes(template.id);
                       const usedDays = Object.entries(dayTemplates).filter(([_, templateId]) => templateId === template.id).map(([day]) => day);
+                      const hasSpecialMethods = exerciseList.some((ex: any) => ex.specialMethod);
                       
                       return (
                         <Card key={template.id} className={`${isUsed ? "ring-1 ring-primary bg-primary/5" : ""}`}>
@@ -374,7 +402,7 @@ export default function CreateMesocyclePage() {
                                 </Badge>
                               )}
                             </CardTitle>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                               <Badge variant="outline" className="text-xs">
                                 {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
                               </Badge>
@@ -386,6 +414,11 @@ export default function CreateMesocyclePage() {
                                   ~{template.estimatedDuration}min
                                 </Badge>
                               )}
+                              {hasSpecialMethods && (
+                                <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
+                                  Special Methods
+                                </Badge>
+                              )}
                             </div>
                           </CardHeader>
                           <CardContent className="pt-0">
@@ -393,12 +426,34 @@ export default function CreateMesocyclePage() {
                               {template.description || 'Custom workout template'}
                             </p>
                             {exerciseList.length > 0 && (
-                              <div className="text-xs text-muted-foreground">
-                                <span className="font-medium">Exercises:</span>{' '}
-                                {exerciseList.slice(0, 2).map((ex: any, idx: number) => 
-                                  `${ex.sets}x${ex.targetReps}`
-                                ).join(', ')}
-                                {exerciseList.length > 2 && ` +${exerciseList.length - 2} more`}
+                              <div className="space-y-1">
+                                {exerciseList.slice(0, 3).map((ex: any, idx: number) => {
+                                  const exerciseData = exercises.find(e => e.id === ex.exerciseId);
+                                  const exerciseName = exerciseData?.name || `Exercise ${ex.exerciseId}`;
+                                  
+                                  return (
+                                    <div key={idx} className="text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-medium text-foreground truncate">
+                                          {exerciseName}
+                                        </span>
+                                        <span className="text-muted-foreground">
+                                          {ex.sets}×{ex.targetReps}
+                                        </span>
+                                        {ex.specialMethod && (
+                                          <Badge variant="secondary" className="text-xs">
+                                            {ex.specialMethod.replace('_', ' ')}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                                {exerciseList.length > 3 && (
+                                  <div className="text-xs text-muted-foreground">
+                                    +{exerciseList.length - 3} more exercises...
+                                  </div>
+                                )}
                               </div>
                             )}
                           </CardContent>
