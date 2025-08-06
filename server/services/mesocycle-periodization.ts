@@ -555,8 +555,7 @@ export class MesocyclePeriodization {
       await db
         .update(mesocycles)
         .set({
-          currentWeek: newWeek,
-          lastAdvanced: new Date()
+          currentWeek: newWeek
         })
         .where(eq(mesocycles.id, mesocycleId));
 
@@ -611,7 +610,7 @@ export class MesocyclePeriodization {
         .where(eq(workoutExercises.sessionId, session.id));
 
       for (const exercise of sessionExercises) {
-        if (!exercise.specialMethod || exercise.specialMethod === 'standard') {
+        if (!exercise.specialMethod) {
           continue;
         }
 
@@ -638,7 +637,7 @@ export class MesocyclePeriodization {
 
           adjustments.push({
             exerciseId: exercise.id,
-            exerciseName: exercise.name,
+            exerciseName: `Exercise ${exercise.exerciseId}`,
             method: exercise.specialMethod,
             change: adjustment.change,
             reasoning: adjustment.reasoning
@@ -674,51 +673,72 @@ export class MesocyclePeriodization {
     switch (exercise.specialMethod) {
       case 'myorep_match':
         if (volumeChange === 'increase') {
-          // Add Target Reps +1
-          const currentReps = this.parseRepsRange(exercise.targetReps);
-          newTargetReps = `${currentReps.min + 1}-${currentReps.max + 1}`;
-          change = '+1 target reps';
-          reasoning = `Week ${week}: Increased training volume - MyoRep Match +1 rep`;
+          // Increase special training method target reps by +1
+          const currentSpecialReps = newConfig.targetReps || 15;
+          newConfig.targetReps = currentSpecialReps + 1;
+          change = '+1 special method target reps';
+          reasoning = `Week ${week}: Increased training volume - MyoRep Match special target reps +1 (${currentSpecialReps} → ${newConfig.targetReps})`;
           changed = true;
         } else if (volumeChange === 'decrease') {
-          // Add Target Reps -1
-          const currentReps = this.parseRepsRange(exercise.targetReps);
-          newTargetReps = `${Math.max(1, currentReps.min - 1)}-${Math.max(2, currentReps.max - 1)}`;
-          change = '-1 target reps';
-          reasoning = `Week ${week}: Decreased training volume - MyoRep Match -1 rep`;
+          // Decrease special training method target reps by -1
+          const currentSpecialReps = newConfig.targetReps || 15;
+          newConfig.targetReps = Math.max(8, currentSpecialReps - 1);
+          change = '-1 special method target reps';
+          reasoning = `Week ${week}: Decreased training volume - MyoRep Match special target reps -1 (${currentSpecialReps} → ${newConfig.targetReps})`;
           changed = true;
         }
-        // MyoRep No Match: remain unchanged for all volume changes
+        break;
+
+      case 'myorep_no_match':
+        if (volumeChange === 'increase') {
+          // Increase mini sets by +1
+          const currentMiniSets = newConfig.miniSets || 3;
+          newConfig.miniSets = Math.min(5, currentMiniSets + 1);
+          change = '+1 mini sets';
+          reasoning = `Week ${week}: Increased training volume - MyoRep No Match mini sets +1 (${currentMiniSets} → ${newConfig.miniSets})`;
+          changed = true;
+        } else if (volumeChange === 'decrease') {
+          // Decrease mini sets by -1
+          const currentMiniSets = newConfig.miniSets || 3;
+          newConfig.miniSets = Math.max(1, currentMiniSets - 1);
+          change = '-1 mini sets';
+          reasoning = `Week ${week}: Decreased training volume - MyoRep No Match mini sets -1 (${currentMiniSets} → ${newConfig.miniSets})`;
+          changed = true;
+        }
         break;
 
       case 'drop_set':
         if (volumeChange === 'increase') {
-          // +1 rep on the first mini set
-          newConfig.firstMiniSetReps = (newConfig.firstMiniSetReps || 8) + 1;
-          change = '+1 rep on first mini set';
-          reasoning = `Week ${week}: Increased training volume - Drop Set first mini set +1 rep`;
+          // Increase target reps per drop by +1
+          const currentTargetReps = newConfig.targetRepsPerDrop || 8;
+          newConfig.targetRepsPerDrop = Math.min(20, currentTargetReps + 1);
+          change = '+1 target reps per drop';
+          reasoning = `Week ${week}: Increased training volume - Drop Set target reps per drop +1 (${currentTargetReps} → ${newConfig.targetRepsPerDrop})`;
           changed = true;
         } else if (volumeChange === 'decrease') {
-          // -1 rep on the first mini set
-          newConfig.firstMiniSetReps = Math.max(3, (newConfig.firstMiniSetReps || 8) - 1);
-          change = '-1 rep on first mini set';
-          reasoning = `Week ${week}: Decreased training volume - Drop Set first mini set -1 rep`;
+          // Decrease target reps per drop by -1
+          const currentTargetReps = newConfig.targetRepsPerDrop || 8;
+          newConfig.targetRepsPerDrop = Math.max(5, currentTargetReps - 1);
+          change = '-1 target reps per drop';
+          reasoning = `Week ${week}: Decreased training volume - Drop Set target reps per drop -1 (${currentTargetReps} → ${newConfig.targetRepsPerDrop})`;
           changed = true;
         }
         break;
 
       case 'giant_set':
         if (volumeChange === 'increase') {
-          // +5 reps total across the giant set
-          newConfig.totalReps = (newConfig.totalReps || 20) + 5;
-          change = '+5 reps total';
-          reasoning = `Week ${week}: Increased training volume - Giant Set +5 total reps`;
+          // Increase total target reps by +5
+          const currentTotalReps = newConfig.totalTargetReps || 30;
+          newConfig.totalTargetReps = Math.min(60, currentTotalReps + 5);
+          change = '+5 total target reps';
+          reasoning = `Week ${week}: Increased training volume - Giant Set total target reps +5 (${currentTotalReps} → ${newConfig.totalTargetReps})`;
           changed = true;
         } else if (volumeChange === 'decrease') {
-          // -5 reps total across the giant set
-          newConfig.totalReps = Math.max(10, (newConfig.totalReps || 20) - 5);
-          change = '-5 reps total';
-          reasoning = `Week ${week}: Decreased training volume - Giant Set -5 total reps`;
+          // Decrease total target reps by -5
+          const currentTotalReps = newConfig.totalTargetReps || 30;
+          newConfig.totalTargetReps = Math.max(15, currentTotalReps - 5);
+          change = '-5 total target reps';
+          reasoning = `Week ${week}: Decreased training volume - Giant Set total target reps -5 (${currentTotalReps} → ${newConfig.totalTargetReps})`;
           changed = true;
         }
         break;
@@ -869,7 +889,7 @@ export class MesocyclePeriodization {
         let adjustedTargetReps = newTargetReps;
         let adjustedNotes = `Week ${week} progression applied`;
         
-        if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
+        if (exercise.specialMethod) {
           const volumeChange = this.determineVolumeChange(exercise.exerciseId, progressions);
           const specialAdjustment = this.applySpecialMethodProgression(
             exercise,
@@ -879,7 +899,7 @@ export class MesocyclePeriodization {
           
           if (specialAdjustment.changed) {
             adjustedSpecialConfig = specialAdjustment.newConfig;
-            adjustedTargetReps = specialAdjustment.newTargetReps;
+            // Keep main target reps unchanged, only adjust special config
             adjustedNotes = specialAdjustment.reasoning;
           }
         }
@@ -1340,39 +1360,40 @@ export class MesocyclePeriodization {
 
             // RP Auto-progression logic
             if (lastWeight && lastRpe) {
+              const weightNum = parseFloat(lastWeight.toString());
               // If RPE was 8+ and RIR was 0-1 (or null), increase weight by 2.5-5%
               if (lastRpe >= 8 && (lastRir === null || lastRir <= 1)) {
-                progressedWeight = Math.round((lastWeight * 1.025) * 4) / 4; // 2.5% increase, rounded to nearest 0.25
+                progressedWeight = Math.round((weightNum * 1.025) * 4) / 4; // 2.5% increase, rounded to nearest 0.25
                 progressedRpe = Math.max(7, Math.min(8, lastRpe)); // Target similar RPE
                 progressedRir = Math.max(1, Math.min(2, (lastRir || 0) + 1)); // Slightly more RIR with heavier weight
               }
               // If RPE was 6-7 and RIR was 2-3, increase weight by 5-7.5%
               else if (lastRpe >= 6 && lastRpe <= 7 && lastRir !== null && lastRir >= 2 && lastRir <= 3) {
-                progressedWeight = Math.round((lastWeight * 1.05) * 4) / 4; // 5% increase
+                progressedWeight = Math.round((weightNum * 1.05) * 4) / 4; // 5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe + 1)); // Target slightly higher RPE
                 progressedRir = Math.max(1, Math.min(2, lastRir)); // Maintain RIR
               }
               // If RPE was <6 and RIR was 4+, increase weight by 7.5-10%
               else if (lastRpe < 6 && lastRir !== null && lastRir >= 4) {
-                progressedWeight = Math.round((lastWeight * 1.075) * 4) / 4; // 7.5% increase
+                progressedWeight = Math.round((weightNum * 1.075) * 4) / 4; // 7.5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe + 2)); // Target higher RPE
                 progressedRir = Math.max(1, Math.min(3, lastRir - 1)); // Reduce RIR
               }
               // If RPE was too high (9-10), reduce weight slightly
               else if (lastRpe >= 9) {
-                progressedWeight = Math.round((lastWeight * 0.975) * 4) / 4; // 2.5% decrease
+                progressedWeight = Math.round((weightNum * 0.975) * 4) / 4; // 2.5% decrease
                 progressedRpe = 8; // Target lower RPE
                 progressedRir = 2; // Target more RIR
               }
               // If RPE was 6-8 but RIR is null, apply conservative progression
               else if (lastRpe >= 6 && lastRpe <= 8 && lastRir === null) {
-                progressedWeight = Math.round((lastWeight * 1.025) * 4) / 4; // 2.5% increase
+                progressedWeight = Math.round((weightNum * 1.025) * 4) / 4; // 2.5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe)); // Target similar RPE
                 progressedRir = 2; // Conservative RIR target
               }
               // Otherwise keep same weight
               else {
-                progressedWeight = lastWeight;
+                progressedWeight = weightNum;
                 progressedRpe = lastRpe;
                 progressedRir = lastRir || 2; // Default RIR if null
               }
@@ -1388,10 +1409,10 @@ export class MesocyclePeriodization {
                 const suggestedReps = repsArray[0];
                 
                 // Adjust based on progression strategy
-                if (progressedWeight > lastWeight) {
+                if (progressedWeight && progressedWeight > parseFloat(lastWeight.toString())) {
                   // If weight increased, suggest slightly fewer reps
                   progressedActualReps = Math.max(suggestedReps - 1, 1).toString();
-                } else if (progressedWeight === lastWeight) {
+                } else if (progressedWeight && progressedWeight === parseFloat(lastWeight.toString())) {
                   // Same weight, aim for same or more reps
                   progressedActualReps = Math.max(suggestedReps, 1).toString();
                 } else {
@@ -1446,7 +1467,7 @@ export class MesocyclePeriodization {
             sets: adjustedSets,
             targetReps: progressedTargetReps,
             actualReps: progressedActualReps,
-            weight: progressedWeight,
+            weight: progressedWeight?.toString() || null,
             rpe: progressedRpe,
             rir: progressedRir,
             restPeriod: exercise.restPeriod,

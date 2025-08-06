@@ -39,6 +39,13 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Comprehensive template preview including exercise names, sets×reps, special methods, and difficulty ratings
 - Complete special training methods display integration across all template interfaces
 
+**Special Training Method Load Adjustment Fix (2025-08-06):**
+- Fixed critical issue where special training method load adjustments were not applied during week advancement
+- Corrected logic to adjust `targetReps` within `specialConfig` JSON instead of main exercise `target_reps` field
+- Implemented proper progression for all special training methods: MyoRep Match (+1 special target reps), MyoRep No Match (+1 mini sets), Drop Set (+1 target reps per drop), Giant Set (+5 total target reps)
+- Week advancement now correctly applies progressive special training method adjustments during session generation
+- Enhanced documentation with validation testing and troubleshooting guides for future development
+
 **Advance Week Function Database Validation (2025-08-06):**
 - Comprehensive field reference validation in mesocycle-periodization.ts to prevent SQL errors
 - Fixed all incorrect special training method field references (specialTrainingMethod → specialMethod)

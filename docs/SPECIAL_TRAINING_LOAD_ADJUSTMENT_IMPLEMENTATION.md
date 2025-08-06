@@ -66,19 +66,26 @@ if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
 ## Validation Results
 
 ### Database Verification (Week 2 Implementation)
-**Before Fix**:
+**Before Fix (Original Problem)**:
 ```sql
 special_config: NULL
 target_reps: "8-12"
 notes: NULL
+-- Special training method adjustments not applied
 ```
 
-**After Fix**:
+**After Final Fix (August 6, 2025)**:
 ```sql
-special_config: {"miniSets": 3, "targetReps": 15, "restSeconds": 20}
-target_reps: "9-13"  
-notes: "Week 2: Increased training volume - MyoRep Match +1 rep"
+special_config: {"miniSets": 3, "targetReps": 17, "restSeconds": 20}
+target_reps: "8-12" (main target reps maintained)
+notes: "Week 2: Increased training volume - MyoRep Match special target reps +1 (16 → 17)"
+-- ✅ Special training method targetReps correctly adjusted within specialConfig
+-- ✅ Main exercise target_reps remains unchanged as intended
+-- ✅ Progressive adjustment from Week 1 (16) to Week 2 (17) in special config
 ```
+
+### Critical Implementation Change
+**Key Correction**: Special training method load adjustments now correctly modify the `targetReps` **within** the `specialConfig` JSON object instead of modifying the main exercise `target_reps` field. This aligns with the UI design where special training methods have their own separate target rep configurations that are distinct from the main exercise parameters.
 
 ### Key Improvements
 1. **Automatic Progression**: Special training methods now automatically adjust during week advancement
