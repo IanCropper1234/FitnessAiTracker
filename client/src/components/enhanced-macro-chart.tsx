@@ -57,9 +57,9 @@ export function EnhancedMacroChart({
       value: fatCals, 
       grams: fat,
       goal: goalFat,
-      color: "#f59e0b",
-      bgColor: "bg-amber-500",
-      lightColor: "bg-amber-100 dark:bg-amber-900/20"
+      color: "#10b981",
+      bgColor: "bg-emerald-500",
+      lightColor: "bg-emerald-100 dark:bg-emerald-900/20"
     }
   ];
 
@@ -96,15 +96,15 @@ export function EnhancedMacroChart({
             cy="50%"
             innerRadius={60}
             outerRadius={90}
-            paddingAngle={2}
+            paddingAngle={1}
+            cornerRadius={3}
             dataKey="value"
           >
             {data.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
                 fill={entry.color}
-                stroke="white"
-                strokeWidth={2}
+                stroke="none"
               />
             ))}
           </Pie>
@@ -178,6 +178,8 @@ export function EnhancedMacroChart({
       {data.map((macro) => {
         const percentage = totalCals > 0 ? Math.round((macro.value / totalCals) * 100) : 0;
         const goalPercentage = macro.goal > 0 ? Math.round((macro.grams / macro.goal) * 100) : 0;
+        // Use goal percentage for progress bar if goal exists, otherwise use macro percentage
+        const progressBarWidth = macro.goal > 0 ? Math.min(goalPercentage, 100) : percentage;
         
         return (
           <div key={macro.name} className="space-y-2">
@@ -201,11 +203,11 @@ export function EnhancedMacroChart({
               <div className="w-full h-2 bg-gray-200 dark:bg-gray-700">
                 <div 
                   className={`h-full transition-all duration-500 ${macro.bgColor}`}
-                  style={{ width: `${percentage}%` }}
+                  style={{ width: `${progressBarWidth}%` }}
                 />
               </div>
-              {macro.goal > 0 && goalPercentage < 100 && (
-                <div className="absolute top-0 right-0 h-2 w-1 bg-red-400 opacity-60" />
+              {macro.goal > 0 && goalPercentage > 100 && (
+                <div className="absolute top-0 right-0 h-2 w-1 bg-orange-400 opacity-80" />
               )}
             </div>
             {macro.goal > 0 && (
