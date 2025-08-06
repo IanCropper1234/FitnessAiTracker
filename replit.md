@@ -62,6 +62,12 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Component interaction maps and troubleshooting guides for future development
 - Covers all current special training methods: Myorep Match/No Match, Drop Set, Giant Set, Superset
 
+**Legacy Training Templates Removal (2025-08-06):**
+- Removed obsolete Training Templates tab from main navigation menu since mesocycle building now uses saved workout session templates
+- Eliminated TrainingTemplates component import and AnimatedTabsContent value="templates" 
+- Updated FloatingTrainingMenu to remove templates navigation option
+- Note: Saved workout session templates remain accessible within Sessions tab via Templates filter for individual session management
+
 **Critical Routing Rules (Wouter):**
 - **ROUTE ORDER MATTERS**: More specific routes must be placed BEFORE more generic routes
 - Example: `/edit-template/:id` must come BEFORE `/template/:id` to prevent incorrect matching

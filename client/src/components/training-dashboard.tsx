@@ -42,7 +42,7 @@ import { WorkoutDetails } from "./workout-details";
 import { VolumeLandmarks } from "./volume-landmarks";
 import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
 import MesocycleDashboard from "./mesocycle-dashboard";
-import TrainingTemplates from "./training-templates";
+
 import LoadProgressionTracker from "./load-progression-tracker";
 import { FeatureFlagManager } from "./FeatureFlagManager";
 import { FeatureShowcase } from "./enhanced/FeatureShowcase";
@@ -1244,10 +1244,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard" }: TrainingD
               </Button>
             </CardContent>
           </Card>
-        </AnimatedTabsContent>
-
-        <AnimatedTabsContent value="templates" className="space-y-4" >
-          <TrainingTemplates userId={userId} />
         </AnimatedTabsContent>
 
         <AnimatedTabsContent value="mesocycles" className="space-y-4" >

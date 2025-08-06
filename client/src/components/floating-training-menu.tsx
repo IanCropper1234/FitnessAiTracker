@@ -20,7 +20,6 @@ export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainin
   const menuItems = [
     { id: "sessions", icon: Dumbbell, label: "Sessions" },
     { id: "exercise-library", icon: Settings, label: "Exercises" },
-    { id: "templates", icon: FileText, label: "Templates" },
     { id: "mesocycles", icon: Target, label: "Programs" },
     { id: "progression", icon: TrendingUp, label: "Progress" },
     { id: "auto-regulation", icon: Activity, label: "Feedback" },
