@@ -673,73 +673,89 @@ export class MesocyclePeriodization {
     switch (exercise.specialMethod) {
       case 'myorep_match':
         if (volumeChange === 'increase') {
-          // Increase special training method target reps by +1
-          const currentSpecialReps = newConfig.targetReps || 15;
-          newConfig.targetReps = currentSpecialReps + 1;
-          change = '+1 special method target reps';
-          reasoning = `Week ${week}: Increased training volume - MyoRep Match special target reps +1 (${currentSpecialReps} → ${newConfig.targetReps})`;
-          changed = true;
+          // Increase special training method target reps by +1 (use user-set value, no defaults)
+          const currentSpecialReps = newConfig.targetReps;
+          if (currentSpecialReps !== undefined && currentSpecialReps !== null) {
+            newConfig.targetReps = currentSpecialReps + 1;
+            change = '+1 special method target reps';
+            reasoning = `Week ${week}: Increased training volume - MyoRep Match special target reps +1 (${currentSpecialReps} → ${newConfig.targetReps})`;
+            changed = true;
+          }
         } else if (volumeChange === 'decrease') {
-          // Decrease special training method target reps by -1
-          const currentSpecialReps = newConfig.targetReps || 15;
-          newConfig.targetReps = Math.max(8, currentSpecialReps - 1);
-          change = '-1 special method target reps';
-          reasoning = `Week ${week}: Decreased training volume - MyoRep Match special target reps -1 (${currentSpecialReps} → ${newConfig.targetReps})`;
-          changed = true;
+          // Decrease special training method target reps by -1 (no lower limit)
+          const currentSpecialReps = newConfig.targetReps;
+          if (currentSpecialReps !== undefined && currentSpecialReps !== null) {
+            newConfig.targetReps = currentSpecialReps - 1;
+            change = '-1 special method target reps';
+            reasoning = `Week ${week}: Decreased training volume - MyoRep Match special target reps -1 (${currentSpecialReps} → ${newConfig.targetReps})`;
+            changed = true;
+          }
         }
         break;
 
       case 'myorep_no_match':
         if (volumeChange === 'increase') {
-          // Increase mini sets by +1
-          const currentMiniSets = newConfig.miniSets || 3;
-          newConfig.miniSets = Math.min(5, currentMiniSets + 1);
-          change = '+1 mini sets';
-          reasoning = `Week ${week}: Increased training volume - MyoRep No Match mini sets +1 (${currentMiniSets} → ${newConfig.miniSets})`;
-          changed = true;
+          // Increase target reps by +1 (use user-set value, no defaults)
+          const currentTargetReps = newConfig.targetReps;
+          if (currentTargetReps !== undefined) {
+            newConfig.targetReps = currentTargetReps + 1;
+            change = '+1 target reps';
+            reasoning = `Week ${week}: Increased training volume - MyoRep No Match target reps +1 (${currentTargetReps} → ${newConfig.targetReps})`;
+            changed = true;
+          }
         } else if (volumeChange === 'decrease') {
-          // Decrease mini sets by -1
-          const currentMiniSets = newConfig.miniSets || 3;
-          newConfig.miniSets = Math.max(1, currentMiniSets - 1);
-          change = '-1 mini sets';
-          reasoning = `Week ${week}: Decreased training volume - MyoRep No Match mini sets -1 (${currentMiniSets} → ${newConfig.miniSets})`;
-          changed = true;
+          // Decrease target reps by -1 (no lower limit)
+          const currentTargetReps = newConfig.targetReps;
+          if (currentTargetReps !== undefined) {
+            newConfig.targetReps = currentTargetReps - 1;
+            change = '-1 target reps';
+            reasoning = `Week ${week}: Decreased training volume - MyoRep No Match target reps -1 (${currentTargetReps} → ${newConfig.targetReps})`;
+            changed = true;
+          }
         }
         break;
 
       case 'drop_set':
         if (volumeChange === 'increase') {
-          // Increase target reps per drop by +1
-          const currentTargetReps = newConfig.targetRepsPerDrop || 8;
-          newConfig.targetRepsPerDrop = Math.min(20, currentTargetReps + 1);
-          change = '+1 target reps per drop';
-          reasoning = `Week ${week}: Increased training volume - Drop Set target reps per drop +1 (${currentTargetReps} → ${newConfig.targetRepsPerDrop})`;
-          changed = true;
+          // Increase target reps per drop by +1 (use user-set value, no upper limit)
+          const currentTargetReps = newConfig.targetRepsPerDrop;
+          if (currentTargetReps !== undefined) {
+            newConfig.targetRepsPerDrop = currentTargetReps + 1;
+            change = '+1 target reps per drop';
+            reasoning = `Week ${week}: Increased training volume - Drop Set target reps per drop +1 (${currentTargetReps} → ${newConfig.targetRepsPerDrop})`;
+            changed = true;
+          }
         } else if (volumeChange === 'decrease') {
-          // Decrease target reps per drop by -1
-          const currentTargetReps = newConfig.targetRepsPerDrop || 8;
-          newConfig.targetRepsPerDrop = Math.max(5, currentTargetReps - 1);
-          change = '-1 target reps per drop';
-          reasoning = `Week ${week}: Decreased training volume - Drop Set target reps per drop -1 (${currentTargetReps} → ${newConfig.targetRepsPerDrop})`;
-          changed = true;
+          // Decrease target reps per drop by -1 (no lower limit)
+          const currentTargetReps = newConfig.targetRepsPerDrop;
+          if (currentTargetReps !== undefined) {
+            newConfig.targetRepsPerDrop = currentTargetReps - 1;
+            change = '-1 target reps per drop';
+            reasoning = `Week ${week}: Decreased training volume - Drop Set target reps per drop -1 (${currentTargetReps} → ${newConfig.targetRepsPerDrop})`;
+            changed = true;
+          }
         }
         break;
 
       case 'giant_set':
         if (volumeChange === 'increase') {
-          // Increase total target reps by +5
-          const currentTotalReps = newConfig.totalTargetReps || 30;
-          newConfig.totalTargetReps = Math.min(60, currentTotalReps + 5);
-          change = '+5 total target reps';
-          reasoning = `Week ${week}: Increased training volume - Giant Set total target reps +5 (${currentTotalReps} → ${newConfig.totalTargetReps})`;
-          changed = true;
+          // Increase total target reps by +5 (use user-set value, no upper limit)
+          const currentTotalReps = newConfig.totalTargetReps;
+          if (currentTotalReps !== undefined) {
+            newConfig.totalTargetReps = currentTotalReps + 5;
+            change = '+5 total target reps';
+            reasoning = `Week ${week}: Increased training volume - Giant Set total target reps +5 (${currentTotalReps} → ${newConfig.totalTargetReps})`;
+            changed = true;
+          }
         } else if (volumeChange === 'decrease') {
-          // Decrease total target reps by -5
-          const currentTotalReps = newConfig.totalTargetReps || 30;
-          newConfig.totalTargetReps = Math.max(15, currentTotalReps - 5);
-          change = '-5 total target reps';
-          reasoning = `Week ${week}: Decreased training volume - Giant Set total target reps -5 (${currentTotalReps} → ${newConfig.totalTargetReps})`;
-          changed = true;
+          // Decrease total target reps by -5 (no lower limit)
+          const currentTotalReps = newConfig.totalTargetReps;
+          if (currentTotalReps !== undefined) {
+            newConfig.totalTargetReps = currentTotalReps - 5;
+            change = '-5 total target reps';
+            reasoning = `Week ${week}: Decreased training volume - Giant Set total target reps -5 (${currentTotalReps} → ${newConfig.totalTargetReps})`;
+            changed = true;
+          }
         }
         break;
 
@@ -889,7 +905,7 @@ export class MesocyclePeriodization {
         let adjustedTargetReps = newTargetReps;
         let adjustedNotes = `Week ${week} progression applied`;
         
-        if (exercise.specialMethod) {
+        if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
           const volumeChange = this.determineVolumeChange(exercise.exerciseId, progressions);
           const specialAdjustment = this.applySpecialMethodProgression(
             exercise,

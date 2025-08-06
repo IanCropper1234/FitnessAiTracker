@@ -43,21 +43,26 @@ if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
 }
 ```
 
-### Progression Logic Applied
+### Progression Logic Applied (Updated August 6, 2025)
 
 #### MyoRep Match (`myorep_match`)
-- **Volume Increase**: +1 rep to target range (8-12 → 9-13)
-- **Volume Decrease**: -1 rep to target range  
-- **Volume Maintain**: No change
+- **Volume Increase**: Special target reps +1 (no limits, use user-set values)
+- **Volume Maintain**: No changes  
+- **Volume Decrease**: Special target reps -1 (no limits, use user-set values)
+
+#### MyoRep No Match (`myorep_no_match`)
+- **Volume Increase**: Target reps +1 (no limits, use user-set values)
+- **Volume Maintain**: No changes
+- **Volume Decrease**: Target reps -1 (no limits, use user-set values)
 
 #### Drop Set (`drop_set`)
-- **Volume Increase**: +1 rep on first mini set
-- **Volume Decrease**: -1 rep on first mini set
+- **Volume Increase**: Target reps per drop +1 (no limits, use user-set values)
+- **Volume Decrease**: Target reps per drop -1 (no limits, use user-set values)
 - **Volume Maintain**: No change
 
 #### Giant Set (`giant_set`)
-- **Volume Increase**: +5 total reps across giant set
-- **Volume Decrease**: -5 total reps across giant set
+- **Volume Increase**: Total target reps +5 (no limits, use user-set values)
+- **Volume Decrease**: Total target reps -5 (no limits, use user-set values)
 - **Volume Maintain**: No change
 
 #### Superset (`superset`)
