@@ -20,15 +20,11 @@ interface TrainingOverviewProps {
 }
 
 export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
-  const dateQueryParam = date ? date.toISOString().split('T')[0] : '';
-  
+  // Always fetch all-time training stats, ignore date filter for overview
   const { data: trainingStats, isLoading } = useQuery<TrainingStats>({
-    queryKey: ['/api/training/stats', userId, dateQueryParam],
+    queryKey: ['/api/training/stats', userId],
     queryFn: async () => {
-      const url = dateQueryParam 
-        ? `/api/training/stats?date=${dateQueryParam}`
-        : `/api/training/stats`;
-      const response = await fetch(url, {
+      const response = await fetch('/api/training/stats', {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch training stats');

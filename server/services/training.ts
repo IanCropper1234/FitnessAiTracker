@@ -23,8 +23,8 @@ export interface TrainingStats {
 
 export async function getTrainingStats(userId: number, dateFilter?: string): Promise<TrainingStats> {
   try {
-    // Get all workout sessions for the user
-    const sessions = await storage.getWorkoutSessions(userId, dateFilter);
+    // For overall stats, ignore date filter to get all-time data
+    const sessions = await storage.getWorkoutSessions(userId);
     const completedSessions = sessions.filter(session => session.isCompleted);
     
     // Calculate total volume
@@ -36,7 +36,7 @@ export async function getTrainingStats(userId: number, dateFilter?: string): Pro
       : 0;
 
     // Get weekly progress for the last 8 weeks
-    const weeklyProgress = await getWeeklyProgress(userId, dateFilter);
+    const weeklyProgress = await getWeeklyProgress(userId);
 
     return {
       totalSessions: completedSessions.length,
@@ -59,8 +59,8 @@ export async function getTrainingStats(userId: number, dateFilter?: string): Pro
 
 async function getWeeklyProgress(userId: number, dateFilter?: string) {
   try {
-    // Get all completed workout sessions for the user
-    const sessions = await storage.getWorkoutSessions(userId, dateFilter);
+    // Get all completed workout sessions for the user (ignore date filter for comprehensive weekly view)
+    const sessions = await storage.getWorkoutSessions(userId);
     const completedSessions = sessions.filter(session => session.isCompleted);
     
     if (completedSessions.length === 0) {
@@ -103,7 +103,7 @@ async function getWeeklyProgress(userId: number, dateFilter?: string) {
       .sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime()) // Oldest first for chart display
       .slice(-8); // Take last 8 weeks
     
-    console.log('Weekly progress calculated:', weeklyData.length, 'weeks with data');
+
     
     return weeklyData.map(week => ({
       week: week.week,
