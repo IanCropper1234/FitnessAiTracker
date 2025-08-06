@@ -597,7 +597,7 @@ export class MesocyclePeriodization {
       .from(workoutSessions)
       .where(and(
         eq(workoutSessions.mesocycleId, mesocycleId),
-        eq(workoutSessions.week, week),
+        sql`${workoutSessions.name} LIKE ${'%Week ' + week + '%'}`,
         eq(workoutSessions.isCompleted, false)
       ));
 
@@ -608,7 +608,7 @@ export class MesocyclePeriodization {
         .where(eq(workoutExercises.sessionId, session.id));
 
       for (const exercise of sessionExercises) {
-        if (!exercise.specialTrainingMethod || exercise.specialTrainingMethod === 'standard') {
+        if (!exercise.specialMethod || exercise.specialMethod === 'standard') {
           continue;
         }
 
@@ -636,7 +636,7 @@ export class MesocyclePeriodization {
           adjustments.push({
             exerciseId: exercise.id,
             exerciseName: exercise.name,
-            method: exercise.specialTrainingMethod,
+            method: exercise.specialMethod,
             change: adjustment.change,
             reasoning: adjustment.reasoning
           });
@@ -668,7 +668,7 @@ export class MesocyclePeriodization {
     let change = '';
     let reasoning = '';
 
-    switch (exercise.specialTrainingMethod) {
+    switch (exercise.specialMethod) {
       case 'myorep_match':
         if (volumeChange === 'increase') {
           // Add Target Reps +1
@@ -796,7 +796,7 @@ export class MesocyclePeriodization {
       .from(workoutSessions)
       .where(and(
         eq(workoutSessions.mesocycleId, mesocycleId),
-        eq(workoutSessions.week, week - 1)
+        sql`${workoutSessions.name} LIKE ${'%Week ' + (week - 1) + '%'}`
       ))
       .orderBy(workoutSessions.date);
 
@@ -826,8 +826,7 @@ export class MesocyclePeriodization {
         duration: prevSession.duration,
         version: "2.0",
         features: { spinnerSetInput: true, gestureNavigation: true },
-        algorithm: "RP_BASED",
-        week: week
+        algorithm: "RP_BASED"
       };
 
       sessionsToCreate.push(sessionData);
