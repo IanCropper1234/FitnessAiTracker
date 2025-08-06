@@ -1169,7 +1169,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                     <div className="flex flex-col gap-1 pt-1">
                       <Button 
                         size="sm" 
-                        className="w-full h-7 text-xs font-medium"
+                        className="w-full h-7 text-xs font-medium text-[#ffffff]"
                         onClick={() => setLocation('/create-workout-session')}
                       >
                         <Plus className="h-3 w-3 mr-1" />
