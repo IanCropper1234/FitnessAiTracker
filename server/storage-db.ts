@@ -1029,6 +1029,12 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(savedWorkoutTemplates.createdAt));
   }
 
+  async getSavedWorkoutTemplate(templateId: number): Promise<SavedWorkoutTemplate | undefined> {
+    const [template] = await db.select().from(savedWorkoutTemplates)
+      .where(eq(savedWorkoutTemplates.id, templateId));
+    return template || undefined;
+  }
+
   async createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate> {
     const [created] = await db.insert(savedWorkoutTemplates).values(template).returning();
     return created;

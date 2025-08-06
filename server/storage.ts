@@ -178,6 +178,7 @@ export interface IStorage {
 
   // Saved Workout Templates
   getSavedWorkoutTemplates(userId: number): Promise<SavedWorkoutTemplate[]>;
+  getSavedWorkoutTemplate(templateId: number): Promise<SavedWorkoutTemplate | undefined>;
   createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate>;
   updateSavedWorkoutTemplate(id: number, template: Partial<InsertSavedWorkoutTemplate>): Promise<SavedWorkoutTemplate | undefined>;
   deleteSavedWorkoutTemplate(id: number): Promise<boolean>;
@@ -796,6 +797,10 @@ export class MemStorage implements IStorage {
   // Saved Workout Templates (stub implementation for memory storage)
   async getSavedWorkoutTemplates(userId: number): Promise<SavedWorkoutTemplate[]> {
     return [];
+  }
+
+  async getSavedWorkoutTemplate(templateId: number): Promise<SavedWorkoutTemplate | undefined> {
+    return undefined;
   }
 
   async createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate> {
