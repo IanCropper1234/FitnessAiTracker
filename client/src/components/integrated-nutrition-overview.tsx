@@ -79,7 +79,7 @@ export function IntegratedNutritionOverview({
   setShowCopyToDatePicker,
   onCopyDateSelected
 }: IntegratedNutritionOverviewProps) {
-  const { showSuccess, showError } = useIOSNotifications();
+  const { showNotification } = useIOSNotifications();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [internalSelectedDate, setInternalSelectedDate] = useState(TimezoneUtils.getCurrentDate());
@@ -521,11 +521,7 @@ export function IntegratedNutritionOverview({
     
     const quantity = parseFloat(editQuantity);
     if (isNaN(quantity) || quantity <= 0) {
-      toast({
-        title: "Invalid Quantity",
-        description: "Please enter a valid quantity greater than 0",
-        variant: "destructive"
-      });
+      showNotification("Invalid Quantity", "Please enter a valid quantity greater than 0", "error");
       return;
     }
 
@@ -540,11 +536,7 @@ export function IntegratedNutritionOverview({
     const sectionLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === mealSection) : [];
     
     if (sectionLogs.length === 0) {
-      toast({
-        title: "No Foods Found",
-        description: "This meal section is empty. Add some foods first.",
-        variant: "destructive"
-      });
+      showNotification("No Foods Found", "This meal section is empty. Add some foods first.", "error");
       return;
     }
 
@@ -556,22 +548,14 @@ export function IntegratedNutritionOverview({
 
   const handleConfirmSaveMeal = () => {
     if (!saveMealName.trim()) {
-      toast({
-        title: "Meal Name Required",
-        description: "Please enter a name for this meal",
-        variant: "destructive"
-      });
+      showNotification("Meal Name Required", "Please enter a name for this meal", "error");
       return;
     }
 
     const sectionLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === saveMealSection) : [];
     
     if (sectionLogs.length === 0) {
-      toast({
-        title: "No Foods Found",
-        description: "This meal section is empty",
-        variant: "destructive"
-      });
+      showNotification("No Foods Found", "This meal section is empty", "error");
       return;
     }
 
@@ -740,11 +724,7 @@ export function IntegratedNutritionOverview({
     // Prevent dropping on same meal type
     if (draggedItem.mealType === targetMealType) {
       console.log('Same meal type drop prevented');
-      toast({
-        title: "No Change Needed",
-        description: `${draggedItem.foodName} is already in ${formatMealType(targetMealType)}`,
-        variant: "default"
-      });
+      showNotification("No Change Needed", `${draggedItem.foodName} is already in ${formatMealType(targetMealType)}`, "info");
       setDraggedItem(null);
       return;
     }
@@ -758,11 +738,7 @@ export function IntegratedNutritionOverview({
         throw new Error('Invalid drag data');
       }
     } catch (error) {
-      toast({
-        title: "Drag Error",
-        description: "Failed to move food item. Please try again.",
-        variant: "destructive"
-      });
+      showNotification("Drag Error", "Failed to move food item. Please try again.", "error");
       setDraggedItem(null);
       return;
     }
@@ -775,18 +751,11 @@ export function IntegratedNutritionOverview({
     }, {
       onSuccess: () => {
         console.log('Move successful');
-        toast({
-          title: "Food Moved",
-          description: `${draggedItem.foodName} moved to ${formatMealType(targetMealType)}`,
-        });
+        showNotification("Food Moved", `${draggedItem.foodName} moved to ${formatMealType(targetMealType)}`, "success");
       },
       onError: (error: any) => {
         console.error('Move failed:', error);
-        toast({
-          title: "Move Failed",
-          description: error.message || `Failed to move ${draggedItem.foodName}`,
-          variant: "destructive"
-        });
+        showNotification("Move Failed", error.message || `Failed to move ${draggedItem.foodName}`, "error");
       }
     });
     
@@ -911,17 +880,10 @@ export function IntegratedNutritionOverview({
           newMealType: dragOverTarget
         }, {
           onSuccess: () => {
-            toast({
-              title: "Food Moved",
-              description: `${draggedItem.foodName} moved to ${formatMealType(dragOverTarget)}`,
-            });
+            showNotification("Food Moved", `${draggedItem.foodName} moved to ${formatMealType(dragOverTarget)}`, "success");
           },
           onError: (error: any) => {
-            toast({
-              title: "Move Failed",
-              description: error.message || `Failed to move ${draggedItem.foodName}`,
-              variant: "destructive"
-            });
+            showNotification("Move Failed", error.message || `Failed to move ${draggedItem.foodName}`, "error");
           }
         });
       }
@@ -959,10 +921,7 @@ export function IntegratedNutritionOverview({
     };
     copyFoodMutation.mutate(newFoodData);
     
-    toast({
-      title: "Food Copied",
-      description: `${log.foodName} copied to ${new Date(targetDate).toLocaleDateString()}`,
-    });
+    showNotification("Food Copied", `${log.foodName} copied to ${new Date(targetDate).toLocaleDateString()}`, "success");
   };
 
   const handleBulkCopyToDate = (selectedLogIds: number[], targetDate: string) => {
@@ -979,10 +938,7 @@ export function IntegratedNutritionOverview({
       copyFoodMutation.mutate(newFoodData);
     });
     
-    toast({
-      title: "Foods Copied",
-      description: `${logsToCreate.length} food items copied to ${new Date(targetDate).toLocaleDateString()}`,
-    });
+    showNotification("Foods Copied", `${logsToCreate.length} food items copied to ${new Date(targetDate).toLocaleDateString()}`, "success");
     
     // Clear bulk selection after copy
     setSelectedLogs([]);
@@ -1025,17 +981,10 @@ export function IntegratedNutritionOverview({
         copyFoodMutation.mutate(newFoodData);
       });
       
-      toast({
-        title: "Meal Copied",
-        description: `${formatMealType(mealType)} copied from ${new Date(sourceDate).toLocaleDateString()}`,
-      });
+      showNotification("Meal Copied", `${formatMealType(mealType)} copied from ${new Date(sourceDate).toLocaleDateString()}`, "success");
     } catch (error) {
       console.error('Copy from date failed:', error);
-      toast({
-        title: "Copy Failed",
-        description: "Failed to copy meal from selected date",
-        variant: "destructive"
-      });
+      showNotification("Copy Failed", "Failed to copy meal from selected date", "error");
     }
   };
 
