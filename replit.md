@@ -30,6 +30,22 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Workout day names and all special training method configurations are preserved
 - Prevents data loss during complex exercise configuration and enhances user experience with immediate feedback
 
+**Advanced Mesocycle Builder with Multi-Template Support (2025-08-06):**
+- Mesocycle creation system now supports flexible training day allocation (2-7 days per week)
+- Multi-select workout template assignment allowing different templates for each training day
+- Template reusability feature - same workout session template can be used across multiple training days
+- Enhanced template library with special training methods visibility and usage indicators
+- Real-time mesocycle summary showing weekly schedule and total session calculations
+- Comprehensive template preview including exercise names, sets×reps, special methods, and difficulty ratings
+- Complete special training methods display integration across all template interfaces
+
+**Training Methods Documentation System (2025-08-06):**
+- Created comprehensive training methods implementation guide (`docs/TRAINING_METHODS_GUIDE.md`)
+- Complete documentation of data structures, API routes, and component interactions
+- Detailed instructions for adding, modifying, or deleting training methods
+- Component interaction maps and troubleshooting guides for future development
+- Covers all current special training methods: Myorep Match/No Match, Drop Set, Giant Set, Superset
+
 **Critical Routing Rules (Wouter):**
 - **ROUTE ORDER MATTERS**: More specific routes must be placed BEFORE more generic routes
 - Example: `/edit-template/:id` must come BEFORE `/template/:id` to prevent incorrect matching
