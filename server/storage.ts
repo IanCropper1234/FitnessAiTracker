@@ -3,7 +3,7 @@ import {
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
   muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans, savedMeals,
-  weightGoals,
+  savedWorkoutTemplates, weightGoals,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -15,7 +15,8 @@ import {
   type BodyMetric, type InsertBodyMetric, type MuscleGroup, type InsertMuscleGroup,
   type VolumeLandmark, type InsertVolumeLandmark, type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking,
   type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan,
-  type SavedMeal, type InsertSavedMeal, type WeightGoal, type InsertWeightGoal
+  type SavedMeal, type InsertSavedMeal, type SavedWorkoutTemplate, type InsertSavedWorkoutTemplate,
+  type WeightGoal, type InsertWeightGoal
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
@@ -174,6 +175,12 @@ export interface IStorage {
   getSavedMeals(userId: number): Promise<SavedMeal[]>;
   createSavedMeal(meal: InsertSavedMeal): Promise<SavedMeal>;
   deleteSavedMeal(id: number): Promise<boolean>;
+
+  // Saved Workout Templates
+  getSavedWorkoutTemplates(userId: number): Promise<SavedWorkoutTemplate[]>;
+  createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate>;
+  updateSavedWorkoutTemplate(id: number, template: Partial<InsertSavedWorkoutTemplate>): Promise<SavedWorkoutTemplate | undefined>;
+  deleteSavedWorkoutTemplate(id: number): Promise<boolean>;
 
   // Mesocycles
   getMesocycle(id: number): Promise<any | undefined>;
@@ -783,6 +790,23 @@ export class MemStorage implements IStorage {
   }
 
   async deleteWeightGoal(id: number): Promise<boolean> {
+    return false;
+  }
+
+  // Saved Workout Templates (stub implementation for memory storage)
+  async getSavedWorkoutTemplates(userId: number): Promise<SavedWorkoutTemplate[]> {
+    return [];
+  }
+
+  async createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate> {
+    throw new Error("Not implemented in memory storage");
+  }
+
+  async updateSavedWorkoutTemplate(id: number, template: Partial<InsertSavedWorkoutTemplate>): Promise<SavedWorkoutTemplate | undefined> {
+    return undefined;
+  }
+
+  async deleteSavedWorkoutTemplate(id: number): Promise<boolean> {
     return false;
   }
 

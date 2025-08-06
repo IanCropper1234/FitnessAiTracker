@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, savedMeals, dietGoals, weightGoals,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates, savedWorkoutTemplates,
   type User, type InsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -15,7 +15,7 @@ import {
   type WeightGoal, type InsertWeightGoal,
   type MuscleGroup, type InsertMuscleGroup, type VolumeLandmark, type InsertVolumeLandmark,
   type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping,
-  type TrainingTemplate, type InsertTrainingTemplate
+  type TrainingTemplate, type InsertTrainingTemplate, type SavedWorkoutTemplate, type InsertSavedWorkoutTemplate
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
@@ -1021,4 +1021,31 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(savedMeals).where(eq(savedMeals.id, id));
     return result.rowCount > 0;
   }
+
+  // Saved Workout Templates
+  async getSavedWorkoutTemplates(userId: number): Promise<SavedWorkoutTemplate[]> {
+    return db.select().from(savedWorkoutTemplates)
+      .where(eq(savedWorkoutTemplates.userId, userId))
+      .orderBy(desc(savedWorkoutTemplates.createdAt));
+  }
+
+  async createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate> {
+    const [created] = await db.insert(savedWorkoutTemplates).values(template).returning();
+    return created;
+  }
+
+  async updateSavedWorkoutTemplate(id: number, template: Partial<InsertSavedWorkoutTemplate>): Promise<SavedWorkoutTemplate | undefined> {
+    const [updated] = await db.update(savedWorkoutTemplates)
+      .set(template)
+      .where(eq(savedWorkoutTemplates.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteSavedWorkoutTemplate(id: number): Promise<boolean> {
+    const result = await db.delete(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, id));
+    return result.rowCount > 0;
+  }
+
+
 }

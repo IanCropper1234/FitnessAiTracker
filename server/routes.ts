@@ -2037,37 +2037,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create template name
       const templateName = `${originalSession.name} Template`;
 
-      // Create saved workout template
+      // Get all exercises from the session
+      const sessionExercises = await storage.getWorkoutExercises(sessionId);
+      
+      // Transform exercises to template format
+      const exerciseTemplates = sessionExercises.map(exercise => ({
+        exerciseId: exercise.exerciseId,
+        orderIndex: exercise.orderIndex,
+        sets: exercise.sets,
+        targetReps: exercise.targetReps,
+        restPeriod: exercise.restPeriod || 60,
+        notes: exercise.notes || '',
+        specialMethod: exercise.specialMethod || null,
+        specialMethodData: exercise.specialMethodData || null
+      }));
+
+      // Create saved workout template with exercises as JSON
       const templateData = {
         userId: userId,
         name: templateName,
         description: `Template created from workout session: ${originalSession.name}`,
-        difficulty: 'intermediate', // default difficulty
-        trainingDays: [],
-        exercises: []
+        exerciseTemplates: exerciseTemplates,
+        difficulty: 'intermediate' as const,
+        estimatedDuration: originalSession.duration || null,
+        tags: [],
+        isPublic: false,
+        usageCount: 0
       };
 
       const savedTemplate = await storage.createSavedWorkoutTemplate(templateData);
-
-      // Get all exercises from the session
-      const sessionExercises = await storage.getWorkoutExercises(sessionId);
-      
-      // Create template exercises
-      for (const exercise of sessionExercises) {
-        const templateExerciseData = {
-          templateId: savedTemplate.id,
-          exerciseId: exercise.exerciseId,
-          orderIndex: exercise.orderIndex,
-          sets: exercise.sets,
-          targetReps: exercise.targetReps,
-          restPeriod: exercise.restPeriod || 60,
-          notes: exercise.notes || '',
-          specialMethod: exercise.specialMethod || null,
-          specialMethodData: exercise.specialMethodData || null
-        };
-        
-        await storage.createSavedWorkoutTemplateExercise(templateExerciseData);
-      }
       
       res.json({ 
         success: true, 
