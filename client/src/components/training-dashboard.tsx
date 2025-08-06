@@ -370,7 +370,7 @@ function WorkoutSessionCard({
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-sm font-medium text-foreground truncate">{session.name}</h3>
               {mesocycleName && (
-                <span className="px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                <span className="px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap pl-[0px] pr-[0px] ml-[8px] mr-[8px]">
                   {mesocycleName}
                 </span>
               )}
