@@ -32,11 +32,13 @@ export function EnhancedMacroChart({
   const carbsCals = carbs * 4;
   const fatCals = fat * 9;
   const totalCals = proteinCals + carbsCals + fatCals;
+  const totalGrams = protein + carbs + fat;
 
   const data = [
     {
       name: "Protein",
-      value: proteinCals,
+      value: protein, // Use grams for chart display
+      calories: proteinCals,
       grams: protein,
       goal: goalProtein,
       color: "#ef4444",
@@ -45,7 +47,8 @@ export function EnhancedMacroChart({
     },
     {
       name: "Carbs", 
-      value: carbsCals,
+      value: carbs, // Use grams for chart display
+      calories: carbsCals,
       grams: carbs,
       goal: goalCarbs,
       color: "#3b82f6",
@@ -54,7 +57,8 @@ export function EnhancedMacroChart({
     },
     {
       name: "Fat",
-      value: fatCals, 
+      value: fat, // Use grams for chart display
+      calories: fatCals,
       grams: fat,
       goal: goalFat,
       color: "#10b981",
@@ -66,13 +70,17 @@ export function EnhancedMacroChart({
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const percentage = totalCals > 0 ? Math.round((data.value / totalCals) * 100) : 0;
+      const gramPercentage = totalGrams > 0 ? Math.round((data.grams / totalGrams) * 100) : 0;
+      const calPercentage = totalCals > 0 ? Math.round((data.calories / totalCals) * 100) : 0;
       
       return (
         <div className="bg-white dark:bg-gray-800 p-3 shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="font-medium text-black dark:text-white">{data.name}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {Math.round(data.grams)}g • {Math.round(data.value)} cal ({percentage}%)
+            {Math.round(data.grams)}g ({gramPercentage}% by weight)
+          </p>
+          <p className="text-xs text-gray-500">
+            {Math.round(data.calories)} cal ({calPercentage}% by calories)
           </p>
           {data.goal > 0 && (
             <p className="text-xs text-gray-500">
@@ -132,7 +140,7 @@ export function EnhancedMacroChart({
   const CardsLayout = () => (
     <div className="grid grid-cols-3 gap-3">
       {data.map((macro) => {
-        const percentage = totalCals > 0 ? Math.round((macro.value / totalCals) * 100) : 0;
+        const percentage = totalGrams > 0 ? Math.round((macro.grams / totalGrams) * 100) : 0;
         const goalPercentage = macro.goal > 0 ? Math.round((macro.grams / macro.goal) * 100) : 0;
         
         return (
@@ -149,7 +157,7 @@ export function EnhancedMacroChart({
                 {Math.round(macro.grams)}g
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
-                {Math.round(macro.value)} cal
+                {Math.round(macro.calories)} cal
               </div>
               {macro.goal > 0 && (
                 <div className="text-xs font-medium text-blue-600 dark:text-blue-400">
@@ -176,7 +184,7 @@ export function EnhancedMacroChart({
   const BarsLayout = () => (
     <div className="space-y-4">
       {data.map((macro) => {
-        const percentage = totalCals > 0 ? Math.round((macro.value / totalCals) * 100) : 0;
+        const percentage = totalGrams > 0 ? Math.round((macro.grams / totalGrams) * 100) : 0;
         const goalPercentage = macro.goal > 0 ? Math.round((macro.grams / macro.goal) * 100) : 0;
         // Use goal percentage for progress bar if goal exists, otherwise use macro percentage
         const progressBarWidth = macro.goal > 0 ? Math.min(goalPercentage, 100) : percentage;
