@@ -3279,25 +3279,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/training/mesocycles", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const { name, templateId, totalWeeks, customProgram } = req.body;
+      const { name, totalWeeks, trainingDaysPerWeek, dayTemplates } = req.body;
       
-      console.log('Creating mesocycle with saved workout template:', { name, templateId, totalWeeks });
+      console.log('Creating mesocycle with day templates:', { name, totalWeeks, trainingDaysPerWeek, dayTemplates });
       
-      // For now, create a basic mesocycle that will use the saved workout template
+      // Create mesocycle with training schedule
       const mesocycleData = {
         userId,
         name,
         totalWeeks,
         currentWeek: 1,
         startDate: new Date(),
-        endDate: new Date(Date.now() + totalWeeks * 7 * 24 * 60 * 60 * 1000), // Add totalWeeks
+        endDate: new Date(Date.now() + totalWeeks * 7 * 24 * 60 * 60 * 1000),
         programId: null,
-        templateId: templateId // Store the saved workout template ID here for now
+        templateId: null // Will store day templates in a separate structure if needed
       };
       
       const [mesocycle] = await db.insert(mesocycles).values(mesocycleData).returning();
       
-      res.json({ id: mesocycle.id, message: "Mesocycle created successfully" });
+      // TODO: Store the day template assignments in a separate table for future use
+      // This would allow us to generate workout sessions based on the assigned templates
+      
+      res.json({ 
+        id: mesocycle.id, 
+        message: "Mesocycle created successfully",
+        trainingDaysPerWeek,
+        dayTemplates 
+      });
     } catch (error) {
       console.error("Error creating mesocycle:", error);
       res.status(500).json({ error: "Failed to create mesocycle" });

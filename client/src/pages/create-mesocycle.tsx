@@ -79,8 +79,9 @@ export default function CreateMesocyclePage() {
   // Form state
   const [mesocycleName, setMesocycleName] = useState("");
   const [totalWeeks, setTotalWeeks] = useState(6);
+  const [trainingDaysPerWeek, setTrainingDaysPerWeek] = useState(3);
   const [buildMode] = useState<"template">("template");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [dayTemplates, setDayTemplates] = useState<Record<number, number | null>>({});
 
 
 
@@ -131,10 +132,12 @@ export default function CreateMesocyclePage() {
       return;
     }
 
-    if (!selectedTemplateId) {
+    // Check if at least one day has a template assigned
+    const assignedDays = Object.values(dayTemplates).filter(id => id !== null).length;
+    if (assignedDays === 0) {
       toast({
         title: "Error", 
-        description: "Please select a workout template",
+        description: "Please assign at least one workout template to a training day",
         variant: "destructive",
       });
       return;
@@ -143,13 +146,14 @@ export default function CreateMesocyclePage() {
     const mesocycleData = {
       name: mesocycleName,
       totalWeeks,
-      templateId: selectedTemplateId // This will be the saved workout template ID
+      trainingDaysPerWeek,
+      dayTemplates: dayTemplates
     };
 
     createMesocycleMutation.mutate(mesocycleData);
   };
 
-  const selectedTemplate = templates.find((t: any) => t.id === selectedTemplateId);
+  // Remove selectedTemplate as it's no longer needed
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -208,15 +212,119 @@ export default function CreateMesocyclePage() {
                   </Select>
                 </div>
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="trainingDays">Training Days per Week</Label>
+                  <Select value={trainingDaysPerWeek.toString()} onValueChange={(value) => setTrainingDaysPerWeek(parseInt(value))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2">2 days</SelectItem>
+                      <SelectItem value="3">3 days</SelectItem>
+                      <SelectItem value="4">4 days</SelectItem>
+                      <SelectItem value="5">5 days</SelectItem>
+                      <SelectItem value="6">6 days</SelectItem>
+                      <SelectItem value="7">7 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground">Total Sessions</Label>
+                  <div className="h-10 px-3 py-2 border rounded-md bg-muted text-muted-foreground text-sm flex items-center">
+                    {totalWeeks * trainingDaysPerWeek} sessions
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Training Day Assignment */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Training Day Assignment</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Assign workout templates to each training day. Templates can be reused across multiple days.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.from({ length: trainingDaysPerWeek }, (_, index) => {
+                const dayNumber = index + 1;
+                const selectedTemplateId = dayTemplates[dayNumber];
+                const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
+                
+                return (
+                  <div key={dayNumber} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium">Day {dayNumber}</h4>
+                      {selectedTemplate && (
+                        <Badge variant="outline" className="text-xs">
+                          {selectedTemplate.exerciseTemplates?.length || 0} exercises
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <Select 
+                      value={selectedTemplateId?.toString() || ""} 
+                      onValueChange={(value) => {
+                        if (value === "none") {
+                          setDayTemplates(prev => ({ ...prev, [dayNumber]: null }));
+                        } else {
+                          setDayTemplates(prev => ({ ...prev, [dayNumber]: parseInt(value) }));
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select workout template..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No template</SelectItem>
+                        {templates.map((template: any) => (
+                          <SelectItem key={template.id} value={template.id.toString()}>
+                            {template.name} ({template.exerciseTemplates?.length || 0} exercises)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {selectedTemplate && (
+                      <div className="mt-3 p-3 bg-muted rounded-md">
+                        <div className="text-xs text-muted-foreground mb-2">
+                          <strong>{selectedTemplate.name}</strong> • {selectedTemplate.difficulty} • 
+                          {selectedTemplate.estimatedDuration ? ` ~${selectedTemplate.estimatedDuration}min` : ''}
+                        </div>
+                        {selectedTemplate.exerciseTemplates && selectedTemplate.exerciseTemplates.length > 0 && (
+                          <div className="text-xs space-y-1">
+                            {selectedTemplate.exerciseTemplates.slice(0, 3).map((exercise: any, idx: number) => {
+                              const exerciseData = exercises.find(e => e.id === exercise.exerciseId);
+                              const exerciseName = exerciseData?.name || `Exercise ${exercise.exerciseId}`;
+                              return (
+                                <div key={idx} className="text-muted-foreground">
+                                  {exerciseName} - {exercise.sets}×{exercise.targetReps}
+                                </div>
+                              );
+                            })}
+                            {selectedTemplate.exerciseTemplates.length > 3 && (
+                              <div className="text-muted-foreground">
+                                +{selectedTemplate.exerciseTemplates.length - 3} more exercises...
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
 
           {/* Template Selection Info */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Saved Workout Templates</CardTitle>
+              <CardTitle className="text-base">Available Workout Templates</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Choose from your saved workout session templates. Need more templates? 
+                Your saved workout session templates. Need more templates? 
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-primary underline" 
@@ -228,10 +336,13 @@ export default function CreateMesocyclePage() {
             </CardHeader>
           </Card>
 
-          {/* Available Templates */}
+          {/* Template Library */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Available Workout Templates</CardTitle>
+              <CardTitle className="text-base">Template Library</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Browse and preview your available workout templates.
+              </p>
             </CardHeader>
             <CardContent>
                 {templatesLoading ? (
@@ -245,21 +356,24 @@ export default function CreateMesocyclePage() {
                     <p className="text-xs">Save some workout sessions as templates from your training dashboard</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {templates.map((template: any) => {
                       const exerciseCount = template.exerciseTemplates?.length || 0;
                       const exerciseList = template.exerciseTemplates || [];
+                      const isUsed = Object.values(dayTemplates).includes(template.id);
+                      const usedDays = Object.entries(dayTemplates).filter(([_, templateId]) => templateId === template.id).map(([day]) => day);
                       
                       return (
-                        <Card
-                          key={template.id}
-                          className={`cursor-pointer transition-colors ${
-                            selectedTemplateId === template.id ? "ring-2 ring-primary" : ""
-                          }`}
-                          onClick={() => setSelectedTemplateId(template.id)}
-                        >
+                        <Card key={template.id} className={`${isUsed ? "ring-1 ring-primary bg-primary/5" : ""}`}>
                           <CardHeader className="pb-2">
-                            <CardTitle className="text-sm">{template.name}</CardTitle>
+                            <CardTitle className="text-sm flex items-center justify-between">
+                              {template.name}
+                              {isUsed && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Day {usedDays.join(', ')}
+                                </Badge>
+                              )}
+                            </CardTitle>
                             <div className="flex gap-2">
                               <Badge variant="outline" className="text-xs">
                                 {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
@@ -287,20 +401,6 @@ export default function CreateMesocyclePage() {
                                 {exerciseList.length > 2 && ` +${exerciseList.length - 2} more`}
                               </div>
                             )}
-                            {template.tags && template.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {template.tags.slice(0, 3).map((tag: string) => (
-                                  <Badge key={tag} variant="secondary" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {template.tags.length > 3 && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    +{template.tags.length - 3} more
-                                  </Badge>
-                                )}
-                              </div>
-                            )}
                           </CardContent>
                         </Card>
                       );
@@ -312,66 +412,47 @@ export default function CreateMesocyclePage() {
 
 
 
-          {/* Preview Selected Template */}
-          {selectedTemplate && (
+          {/* Mesocycle Summary */}
+          {Object.values(dayTemplates).some(id => id !== null) && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Template Preview</CardTitle>
+                <CardTitle className="text-base">Mesocycle Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                   <div>
-                    <span className="font-medium">Template:</span> {selectedTemplate.name}
+                    <span className="font-medium">Training Days:</span> {trainingDaysPerWeek} per week
                   </div>
                   <div>
-                    <span className="font-medium">Exercises:</span> {selectedTemplate.exerciseTemplates?.length || 0}
+                    <span className="font-medium">Total Duration:</span> {totalWeeks} weeks
                   </div>
                   <div>
-                    <span className="font-medium">Difficulty:</span> {selectedTemplate.difficulty}
+                    <span className="font-medium">Total Sessions:</span> {totalWeeks * trainingDaysPerWeek}
                   </div>
                   <div>
-                    <span className="font-medium">Duration:</span> ~{selectedTemplate.estimatedDuration || 'N/A'} min
+                    <span className="font-medium">Assigned Days:</span> {Object.values(dayTemplates).filter(id => id !== null).length}/{trainingDaysPerWeek}
                   </div>
                 </div>
-                {selectedTemplate.exerciseTemplates && selectedTemplate.exerciseTemplates.length > 0 && (
-                  <div className="mt-4">
-                    <span className="font-medium text-sm">Exercises:</span>
-                    <div className="mt-2 space-y-1">
-                      {selectedTemplate.exerciseTemplates.slice(0, 5).map((exercise: any, index: number) => {
-                        const exerciseData = exercises.find(e => e.id === exercise.exerciseId);
-                        const exerciseName = exerciseData?.name || `Exercise ${exercise.exerciseId}`;
-                        
-                        return (
-                          <div key={index} className="text-xs bg-muted p-2 rounded">
-                            <span className="font-medium">{exerciseName}</span>
-                            <span className="text-muted-foreground ml-2">
-                              {exercise.sets} sets × {exercise.targetReps} reps
-                              {exercise.restPeriod && ` • ${exercise.restPeriod}s rest`}
-                              {exercise.specialMethod && ` • ${exercise.specialMethod}`}
-                            </span>
-                          </div>
-                        );
-                      })}
-                      {selectedTemplate.exerciseTemplates.length > 5 && (
-                        <div className="text-xs text-muted-foreground">
-                          +{selectedTemplate.exerciseTemplates.length - 5} more exercises...
+                
+                <div className="space-y-2">
+                  <span className="font-medium text-sm">Weekly Schedule:</span>
+                  <div className="grid grid-cols-1 gap-2">
+                    {Array.from({ length: trainingDaysPerWeek }, (_, index) => {
+                      const dayNumber = index + 1;
+                      const templateId = dayTemplates[dayNumber];
+                      const template = templates.find(t => t.id === templateId);
+                      
+                      return (
+                        <div key={dayNumber} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
+                          <span className="font-medium">Day {dayNumber}:</span>
+                          <span className="text-muted-foreground">
+                            {template ? `${template.name} (${template.exerciseTemplates?.length || 0} exercises)` : 'No template assigned'}
+                          </span>
                         </div>
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
-                )}
-                {selectedTemplate.tags && selectedTemplate.tags.length > 0 && (
-                  <div className="mt-3">
-                    <span className="font-medium text-sm">Tags:</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedTemplate.tags.map((tag: string) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                </div>
               </CardContent>
             </Card>
           )}
