@@ -368,7 +368,7 @@ function WorkoutSessionCard({
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-sm font-medium text-foreground truncate">{session.name}</h3>
+              <h3 className="text-foreground truncate text-[12px] font-bold pl-[5px] pr-[5px] ml-[2px] mr-[2px]">{session.name}</h3>
               {mesocycleName && (
                 <span className="px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap pl-[0px] pr-[0px] ml-[8px] mr-[8px]">
                   {mesocycleName}
