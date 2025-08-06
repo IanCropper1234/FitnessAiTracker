@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, AlertTriangle, Calendar } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { CheckCircle, Clock, AlertTriangle, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
@@ -13,6 +15,7 @@ interface DailyWellnessReminderProps {
 
 export function DailyWellnessReminder({ userId, compact = false }: DailyWellnessReminderProps) {
   const [, setLocation] = useLocation();
+  const [isWellnessExpanded, setIsWellnessExpanded] = useState(false);
   
   // Get today's wellness check-in status with user timezone support
   const { data: todayWellnessCheckin, isLoading } = useQuery({
@@ -100,81 +103,94 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
   }
 
   return (
-    <Card className={isCompleted ? 'border-green-200 dark:border-green-800' : 'border-orange-200 dark:border-orange-800'}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            Daily Wellness Check-in
-          </div>
-          <Badge 
-            variant={isCompleted ? "default" : "secondary"}
-            className={`
-              ${isCompleted 
-                ? 'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200' 
-                : 'bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200'
-              }
-            `}
-          >
-            {isCompleted ? 'Complete' : 'Pending'}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isCompleted ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-              <div>
-                <p className="font-medium text-green-900 dark:text-green-100 text-sm">
-                  Today's Check-in Complete
-                </p>
-                <p className="text-xs text-green-700 dark:text-green-300">
-                  Your wellness data has been recorded and will contribute to personalized RP recommendations
-                </p>
+    <Collapsible open={isWellnessExpanded} onOpenChange={setIsWellnessExpanded}>
+      <Card className={isCompleted ? 'border-green-200 dark:border-green-800' : 'border-orange-200 dark:border-orange-800'}>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="pb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                Daily Wellness Check-in
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setLocation('/rp-coach')}
-                className="text-green-700 dark:text-green-300 border-green-300 dark:border-green-600"
-              >
-                View Check-in
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setLocation('/rp-coach')}
-                className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600"
-              >
-                RP Analysis
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
-              <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-              <div>
-                <p className="font-medium text-orange-900 dark:text-orange-100 text-sm">
-                  Complete Today's Check-in
-                </p>
-                <p className="text-xs text-orange-700 dark:text-orange-300">
-                  Track your energy, hunger, sleep, and adherence for personalized RP guidance
-                </p>
+              <div className="flex items-center gap-2">
+                <Badge 
+                  variant={isCompleted ? "default" : "secondary"}
+                  className={`
+                    ${isCompleted 
+                      ? 'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200' 
+                      : 'bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200'
+                    }
+                  `}
+                >
+                  {isCompleted ? 'Complete' : 'Pending'}
+                </Badge>
+                {isWellnessExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                )}
               </div>
-            </div>
-            <Button 
-              onClick={() => setLocation('/rp-coach')}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-            >
-              Complete Check-in
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+            </CardTitle>
+          </CardHeader>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent>
+            {isCompleted ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <div>
+                    <p className="font-medium text-green-900 dark:text-green-100 text-sm">
+                      Today's Check-in Complete
+                    </p>
+                    <p className="text-xs text-green-700 dark:text-green-300">
+                      Your wellness data has been recorded and will contribute to personalized RP recommendations
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setLocation('/rp-coach')}
+                    className="text-green-700 dark:text-green-300 border-green-300 dark:border-green-600"
+                  >
+                    View Check-in
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setLocation('/rp-coach')}
+                    className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600"
+                  >
+                    RP Analysis
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  <div>
+                    <p className="font-medium text-orange-900 dark:text-orange-100 text-sm">
+                      Complete Today's Check-in
+                    </p>
+                    <p className="text-xs text-orange-700 dark:text-orange-300">
+                      Track your energy, hunger, sleep, and adherence for personalized RP guidance
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => setLocation('/rp-coach')}
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  Complete Check-in
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 }
