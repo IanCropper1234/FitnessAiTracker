@@ -375,7 +375,7 @@ function WorkoutSessionCard({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-[10px] mr-[10px]">
               <p className="text-xs text-muted-foreground">
                 {new Date(session.date).toLocaleDateString()}
               </p>
