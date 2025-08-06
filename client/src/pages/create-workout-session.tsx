@@ -354,7 +354,7 @@ export function CreateWorkoutSession() {
       })),
       tags: [
         // Auto-generate tags based on exercises
-        ...new Set(exerciseTemplates.map(t => t.exercise.category))
+        ...Array.from(new Set(exerciseTemplates.map(t => t.exercise.category)))
       ],
       estimatedDuration: Math.round(estimatedDuration),
       difficulty: 'intermediate'
