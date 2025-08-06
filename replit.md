@@ -28,6 +28,14 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 - Automated detection script identifies 312 remaining toast usages across 42 files for future migration
 - Development standards prevent new toast usage and enforce iOS notification consistency
 
+**Mesocycle Data Synchronization Fix (2025-08-06):**
+- Fixed critical data synchronization issue where mesocycle volume progression displayed historical data when no active mesocycle exists
+- Backend API now correctly returns empty volume data array when no active mesocycle is present
+- Frontend properly displays empty state with appropriate messaging when no active mesocycle exists
+- Eliminated misleading historical data display and ensured data integrity across mesocycle dashboard
+- Added collapsible Mesocycle History section with count badge for better mobile UX and space management
+- Improved user guidance with clear messaging to create new mesocycles when none are active
+
 **Enhanced Auto-Save Implementation (2025-08-05):**
 - Training template creation now includes comprehensive field-level auto-save functionality
 - Local storage automatically saves template name, difficulty, training days, description, and all exercise configurations with 300ms debounce

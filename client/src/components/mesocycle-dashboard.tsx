@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Calendar, 
   TrendingUp, 
@@ -20,7 +21,9 @@ import {
   Edit3,
   Settings,
   Pause,
-  RotateCcw
+  RotateCcw,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 // import MesocycleProgramBuilder from "./mesocycle-program-builder"; // Replaced with standalone page
@@ -222,6 +225,71 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     if (level < 3) return 'text-green-600';
     if (level < 6) return 'text-yellow-600';
     return 'text-red-600';
+  };
+
+  // Collapsible History Card Component
+  const CollapsibleHistoryCard = ({ mesocycles, getPhaseColor }: { mesocycles: Mesocycle[], getPhaseColor: (phase: string) => string }) => {
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+    
+    return (
+      <Card>
+        <Collapsible open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    Mesocycle History
+                    <Badge variant="secondary" className="text-xs">
+                      {mesocycles.length}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>Previous and current training blocks</CardDescription>
+                </div>
+                {isHistoryOpen ? (
+                  <ChevronUp className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-gray-500" />
+                )}
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              <div className="space-y-2">
+                {mesocycles.map((mesocycle: Mesocycle) => (
+                  <div 
+                    key={mesocycle.id}
+                    className={`flex items-center justify-between p-3 border ${
+                      mesocycle.isActive 
+                        ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20' 
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  >
+                    <div>
+                      <p className="font-medium">{mesocycle.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {new Date(mesocycle.startDate).toLocaleDateString()} - {new Date(mesocycle.endDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getPhaseColor(mesocycle.phase)}>
+                        {mesocycle.phase}
+                      </Badge>
+                      {mesocycle.isActive && (
+                        <Badge variant="outline" className="text-blue-600 border-blue-600">
+                          Active
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
+    );
   };
 
   if (mesocyclesLoading || recommendationsLoading) {
@@ -525,45 +593,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
           </TabsContent>
         </Tabs>
       )}
-      {/* Mesocycle History */}
+      {/* Mesocycle History - Collapsible */}
       {Array.isArray(mesocycles) && mesocycles.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Mesocycle History</CardTitle>
-            <CardDescription>Previous and current training blocks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {mesocycles.map((mesocycle: Mesocycle) => (
-                <div 
-                  key={mesocycle.id}
-                  className={`flex items-center justify-between p-3  border ${
-                    mesocycle.isActive 
-                      ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20' 
-                      : 'border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  <div>
-                    <p className="font-medium">{mesocycle.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      {new Date(mesocycle.startDate).toLocaleDateString()} - {new Date(mesocycle.endDate).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge className={getPhaseColor(mesocycle.phase)}>
-                      {mesocycle.phase}
-                    </Badge>
-                    {mesocycle.isActive && (
-                      <Badge variant="outline" className="text-blue-600 border-blue-600">
-                        Active
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <CollapsibleHistoryCard mesocycles={mesocycles} getPhaseColor={getPhaseColor} />
       )}
       {/* Global Action Bar */}
       <Card>
