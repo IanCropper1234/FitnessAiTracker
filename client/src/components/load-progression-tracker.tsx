@@ -241,7 +241,7 @@ export default function LoadProgressionTracker({ userId, exerciseIds }: LoadProg
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium">Recommended:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        {parseFloat(progression.recommendedWeight).toFixed(2)}kg × {progression.recommendedReps}
+                        {parseFloat(progression.recommendedWeight).toFixed(2)}kg × {Math.round(progression.recommendedReps)}
                       </span>
                     </div>
                     <Progress 
