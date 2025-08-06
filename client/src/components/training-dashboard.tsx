@@ -387,7 +387,7 @@ function WorkoutSessionCard({
         </div>
         
         {/* Compact Actions */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0 pl-[0px] pr-[0px] ml-[-15px] mr-[-15px]">
           {session.isCompleted && (
             <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
           )}
