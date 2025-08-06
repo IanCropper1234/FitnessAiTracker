@@ -428,42 +428,6 @@ body:has([data-radix-select-content][data-state="open"]) {
   100% { transform: translateX(100%); }
 }
 
-/* Enhanced dashboard nutrition progress bars */
-.dashboard-nutrition-progress {
-  background-color: rgba(55, 65, 81, 1);
-  overflow: hidden;
-  position: relative;
-  border-radius: 0;
-}
-
-.dashboard-nutrition-fill {
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform-origin: left center;
-  border-radius: 0;
-  position: relative;
-}
-
-.dashboard-nutrition-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: dashboard-shimmer 2s infinite;
-  animation-delay: 0.5s;
-}
-
-@keyframes dashboard-shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
 .button-press-animation {
   transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform: translateZ(0);
