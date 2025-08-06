@@ -627,7 +627,7 @@ export class MesocyclePeriodization {
           await db
             .update(workoutExercises)
             .set({
-              specialMethodConfig: adjustment.newConfig,
+              specialConfig: adjustment.newConfig,
               targetReps: adjustment.newTargetReps,
               notes: adjustment.reasoning
             })
@@ -661,7 +661,7 @@ export class MesocyclePeriodization {
     change: string;
     reasoning: string;
   } {
-    const currentConfig = exercise.specialMethodConfig || {};
+    const currentConfig = exercise.specialConfig || {};
     let newConfig = { ...currentConfig };
     let newTargetReps = exercise.targetReps;
     let changed = false;
