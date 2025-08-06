@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { MacroChart } from "@/components/macro-chart";
+import { EnhancedMacroChart } from "@/components/enhanced-macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
 
 import { RecentActivity } from "@/components/recent-activity";
@@ -422,7 +422,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   <LoadingState type="dots" />
                 </div>
               ) : nutritionSummary ? (
-                <MacroChart
+                <EnhancedMacroChart
                   protein={nutritionSummary.totalProtein}
                   carbs={nutritionSummary.totalCarbs}
                   fat={nutritionSummary.totalFat}
