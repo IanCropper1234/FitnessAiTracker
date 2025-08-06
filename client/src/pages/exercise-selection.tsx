@@ -99,23 +99,40 @@ export default function ExerciseSelection() {
     refetchOnWindowFocus: false // Prevent refetch that could trigger auth issues
   });
 
-  // Filter exercises based on search and category
+  // Filter exercises based on search and category - Add null safety
   const filteredExercises = exercises.filter((exercise: Exercise) => {
+    // Add null safety checks for all string properties
+    if (!exercise || !exercise.name || !exercise.primaryMuscle || !exercise.category) {
+      return false;
+    }
+    
     const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          exercise.primaryMuscle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || exercise.category === selectedCategory;
     const matchesTarget = targetMuscles.length === 0 || 
                          targetMuscles.some(muscle => 
-                           exercise.muscleGroups?.some(mg => mg.toLowerCase().includes(muscle.toLowerCase()))
+                           exercise.muscleGroups?.some(mg => mg && mg.toLowerCase().includes(muscle.toLowerCase()))
                          );
     
     return matchesSearch && matchesCategory && matchesTarget;
   });
 
   const addExercise = (exercise: Exercise) => {
+    // Add null safety check
+    if (!exercise || !exercise.id || !exercise.name) {
+      console.warn('Invalid exercise data, skipping add:', exercise);
+      return;
+    }
+    
     if (!selectedExercises.some(ex => ex.id === exercise.id)) {
       const newExercise: SelectedExercise = {
         ...exercise,
+        // Ensure required fields have defaults if null
+        name: exercise.name || 'Unknown Exercise',
+        category: exercise.category || 'general',
+        primaryMuscle: exercise.primaryMuscle || 'unknown',
+        muscleGroups: exercise.muscleGroups || [],
+        equipment: exercise.equipment || '',
         sets: 3,
         targetReps: '8-12',
         restPeriod: 60,
@@ -363,9 +380,9 @@ export default function ExerciseSelection() {
                             )}
                             {exercise.muscleGroups?.length && (
                               <div className="flex flex-wrap gap-1">
-                                {exercise.muscleGroups.slice(0, 3).map(muscle => (
-                                  <Badge key={muscle} variant="secondary" className="text-xs">
-                                    {muscle}
+                                {exercise.muscleGroups.slice(0, 3).map((muscle, index) => (
+                                  <Badge key={muscle || index} variant="secondary" className="text-xs">
+                                    {muscle || 'Unknown'}
                                   </Badge>
                                 ))}
                                 {exercise.muscleGroups.length > 3 && (
