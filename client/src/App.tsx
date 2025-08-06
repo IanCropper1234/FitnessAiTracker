@@ -3,6 +3,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { IOSNotificationManager } from "@/components/ui/ios-notification-manager";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { LanguageProvider, useLanguage } from "@/components/language-provider";
@@ -28,6 +29,7 @@ import WellnessTestPage from "./pages/WellnessTestPage";
 import RPCoachPage from "./pages/RPCoachPage";
 import NutritionFactsPage from "./pages/nutrition-facts";
 import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
+import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
 import { AnimatedPage } from "./components/page-transition";
 import { Settings, Sun, Moon, Globe } from "lucide-react";
@@ -253,6 +255,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             {user ? <TemplateDetails /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
+        <Route path="/demo/notifications">
+          <AnimatedPage>
+            <IOSNotificationDemo />
+          </AnimatedPage>
+        </Route>
         <Route>
           <AnimatedPage>
             <NotFound />
@@ -407,6 +414,11 @@ export default function App() {
             <div className="text-foreground bg-background theme-transition">
               <AppRouter user={user} setUser={setUser} />
               <Toaster />
+              <IOSNotificationManager 
+                position="top" 
+                maxNotifications={3}
+                defaultAutoHideDelay={5000}
+              />
             </div>
           </TooltipProvider>
         </LanguageProvider>

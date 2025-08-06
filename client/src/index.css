@@ -131,6 +131,61 @@
   -webkit-transform: translateZ(0);
 }
 
+/* iOS Notification Bar Animations */
+@keyframes ios-notification-slide-in-top {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ios-notification-slide-out-top {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes ios-notification-bounce {
+  0% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.ios-notification-enter-top {
+  animation: ios-notification-slide-in-top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+             ios-notification-bounce 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+}
+
+.ios-notification-exit-top {
+  animation: ios-notification-slide-out-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Enhanced backdrop blur for iOS notifications */
+.ios-notification-backdrop {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.dark .ios-notification-backdrop {
+  background: rgba(0, 0, 0, 0.75);
+}
+
 /* Dialog overlay improvements for mobile - backdrop-filter removed to fix selector issues */
 .dialog-overlay-mobile {
   /* backdrop-filter removed to prevent selector issues on mobile devices */

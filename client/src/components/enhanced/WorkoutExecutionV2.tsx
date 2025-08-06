@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { useIOSNotifications } from '@/components/ui/ios-notification-manager';
 import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useFeature } from '@/hooks/useFeature';
@@ -135,6 +136,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [specialConfigs, setSpecialConfigs] = useState<Record<number, any>>({});
 
   const { toast } = useToast();
+  const { showSuccess, showError, showInfo, addNotification } = useIOSNotifications();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 

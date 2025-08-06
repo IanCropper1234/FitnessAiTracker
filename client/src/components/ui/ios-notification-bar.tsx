@@ -1,0 +1,253 @@
+import * as React from "react"
+import { useState, useEffect } from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Check, X, AlertTriangle, Info, Zap, ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+const notificationVariants = cva(
+  "relative w-full border-l-4 transition-all duration-300 touch-manipulation",
+  {
+    variants: {
+      variant: {
+        default: "bg-card/95 border-l-blue-500 text-foreground",
+        success: "bg-emerald-500/10 border-l-emerald-500 text-emerald-100",
+        warning: "bg-amber-500/10 border-l-amber-500 text-amber-100", 
+        error: "bg-red-500/10 border-l-red-500 text-red-100",
+        info: "bg-blue-500/10 border-l-blue-500 text-blue-100",
+      },
+      size: {
+        compact: "p-3",
+        normal: "p-4",
+        expanded: "p-5",
+      },
+      position: {
+        top: "top-0",
+        bottom: "bottom-0",
+      }
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "normal",
+      position: "top",
+    },
+  }
+)
+
+interface IOSNotificationBarProps extends VariantProps<typeof notificationVariants> {
+  title?: string
+  description?: string
+  icon?: React.ReactNode
+  action?: {
+    label: string
+    onClick: () => void
+  }
+  onDismiss?: () => void
+  autoHideDelay?: number
+  isDismissible?: boolean
+  isVisible?: boolean
+  className?: string
+  children?: React.ReactNode
+  style?: React.CSSProperties
+}
+
+const IOSNotificationBar = React.forwardRef<
+  HTMLDivElement,
+  IOSNotificationBarProps
+>(({ 
+  variant, 
+  size, 
+  position,
+  title, 
+  description, 
+  icon, 
+  action, 
+  onDismiss, 
+  autoHideDelay,
+  isDismissible = true,
+  isVisible = true,
+  className,
+  children,
+  ...props 
+}, ref) => {
+  const [isShowing, setIsShowing] = useState(isVisible)
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // Auto-hide functionality
+  useEffect(() => {
+    if (autoHideDelay && autoHideDelay > 0 && isShowing) {
+      const timer = setTimeout(() => {
+        handleDismiss()
+      }, autoHideDelay)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [autoHideDelay, isShowing])
+
+  // Update visibility when prop changes
+  useEffect(() => {
+    setIsShowing(isVisible)
+  }, [isVisible])
+
+  const handleDismiss = () => {
+    setIsShowing(false)
+    setTimeout(() => {
+      onDismiss?.()
+    }, 300) // Wait for animation to complete
+  }
+
+  const getDefaultIcon = () => {
+    switch (variant) {
+      case 'success':
+        return <Check className="h-5 w-5 text-emerald-400" />
+      case 'warning':
+        return <AlertTriangle className="h-5 w-5 text-amber-400" />
+      case 'error':
+        return <X className="h-5 w-5 text-red-400" />
+      case 'info':
+        return <Info className="h-5 w-5 text-blue-400" />
+      default:
+        return <Zap className="h-5 w-5 text-blue-400" />
+    }
+  }
+
+  // Touch handlers for swipe-to-dismiss
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isDismissible) return
+    
+    const touch = e.touches[0]
+    setTouchStart({ x: touch.clientX, y: touch.clientY })
+    setIsDragging(false)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart || !isDismissible) return
+    
+    const touch = e.touches[0]
+    const deltaX = touch.clientX - touchStart.x
+    const deltaY = touch.clientY - touchStart.y
+    
+    // Only allow horizontal swipes
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return
+    
+    // Only allow swipe to right (dismiss)
+    if (deltaX > 0) {
+      setIsDragging(true)
+      setDragOffset(deltaX)
+      e.preventDefault() // Prevent scrolling
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (!isDismissible) return
+    
+    const dismissThreshold = 100 // pixels
+    
+    if (dragOffset > dismissThreshold) {
+      handleDismiss()
+    } else {
+      // Snap back
+      setDragOffset(0)
+    }
+    
+    setTouchStart(null)
+    setIsDragging(false)
+  }
+
+  if (!isShowing) {
+    return null
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        notificationVariants({ variant, size, position }),
+        // Animation classes
+        "transform transition-all duration-300 ease-out",
+        isShowing 
+          ? "translate-y-0 opacity-100" 
+          : position === "top" 
+            ? "-translate-y-full opacity-0" 
+            : "translate-y-full opacity-0",
+        // Dragging styles
+        isDragging && "transition-none",
+        className
+      )}
+      style={{
+        transform: `translateX(${dragOffset}px) ${
+          isShowing 
+            ? "translateY(0)" 
+            : position === "top" 
+              ? "translateY(-100%)" 
+              : "translateY(100%)"
+        }`,
+        opacity: Math.max(0.3, 1 - dragOffset / 200), // Fade out while dragging
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      {...props}
+    >
+      {/* Background blur effect */}
+      <div className="absolute inset-0 backdrop-blur-sm bg-black/5" />
+      
+      {/* Content */}
+      <div className="relative flex items-start gap-3 min-h-[44px]">
+        {/* Icon */}
+        <div className="flex-shrink-0 mt-0.5">
+          {icon || getDefaultIcon()}
+        </div>
+        
+        {/* Text Content */}
+        <div className="flex-1 min-w-0">
+          {title && (
+            <h4 className="text-sm font-semibold leading-tight mb-1">
+              {title}
+            </h4>
+          )}
+          {description && (
+            <p className="text-sm opacity-90 leading-relaxed">
+              {description}
+            </p>
+          )}
+          {children}
+        </div>
+        
+        {/* Action Button */}
+        {action && (
+          <button
+            onClick={action.onClick}
+            className="flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-white/10 hover:bg-white/20 transition-colors duration-200 ios-touch-feedback min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            {action.label}
+          </button>
+        )}
+        
+        {/* Dismiss Button */}
+        {isDismissible && (
+          <button
+            onClick={handleDismiss}
+            className="flex-shrink-0 p-1.5 hover:bg-white/10 transition-colors duration-200 ios-touch-feedback min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Dismiss notification"
+          >
+            <X className="h-4 w-4 opacity-70" />
+          </button>
+        )}
+      </div>
+      
+      {/* Swipe indicator */}
+      {isDismissible && (
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30">
+          <ChevronDown className="h-3 w-3 rotate-90" />
+        </div>
+      )}
+    </div>
+  )
+})
+
+IOSNotificationBar.displayName = "IOSNotificationBar"
+
+export { IOSNotificationBar, notificationVariants }
+export type { IOSNotificationBarProps }
