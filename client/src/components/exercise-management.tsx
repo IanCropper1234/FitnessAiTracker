@@ -432,7 +432,10 @@ export function CreateExerciseButton({ onSuccess }: CreateExerciseButtonProps) {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>
+      <Button 
+        onClick={() => setIsOpen(true)}
+        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback bg-primary hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] text-[#fafafa]"
+      >
         <Plus className="h-4 w-4 mr-2" />
         Create Exercise
       </Button>
