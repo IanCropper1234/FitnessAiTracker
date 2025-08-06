@@ -428,7 +428,7 @@ function WorkoutSessionCard({
       </div>
       {/* Compact Stats Row */}
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 pb-2 border-b border-border/50">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-[10px] mr-[10px]">
           <span>{session.duration || 0}min</span>
           <span>•</span>
           <span>{session.totalVolume || 0}kg</span>
