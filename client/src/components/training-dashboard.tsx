@@ -174,11 +174,7 @@ function WorkoutSessionsWithBulkActions({
       queryClient.invalidateQueries({ queryKey: ["/api/training/saved-workout-templates"] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save template",
-        variant: "destructive",
-      });
+      showError("Failed to save template", error.message || "Failed to save template");
     },
   });
 
@@ -275,10 +271,7 @@ function WorkoutSessionsWithBulkActions({
             onSaveAsTemplate={(sessionId) => saveAsTemplateMutation.mutate(sessionId)}
             onDuplicate={() => {
               // TODO: Implement duplicate functionality
-              toast({
-                title: "Feature Coming Soon",
-                description: "Session duplication will be available in a future update",
-              });
+              showSuccess("Feature Coming Soon", "Session duplication will be available in a future update");
             }}
             showCheckbox={bulkDeleteMode}
             isSelected={selectedSessions.includes(session.id)}
