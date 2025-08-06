@@ -403,22 +403,30 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {recommendations.nextWeekVolume.map((volume: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
-                      <div>
-                        <p className="font-medium">{volume.muscleGroupName || `Muscle Group ${volume.muscleGroupId}`}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Week {volume.week} • {volume.phase}
-                        </p>
+                {recommendations.nextWeekVolume && recommendations.nextWeekVolume.length > 0 ? (
+                  <div className="space-y-3">
+                    {recommendations.nextWeekVolume.map((volume: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 ">
+                        <div>
+                          <p className="font-medium">{volume.muscleGroupName || `Muscle Group ${volume.muscleGroupId}`}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            Week {volume.week} • {volume.phase}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold">{volume.targetSets}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">sets</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold">{volume.targetSets}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">sets</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p className="font-medium">No Active Mesocycle</p>
+                    <p className="text-sm">Create a mesocycle to view volume progression targets</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

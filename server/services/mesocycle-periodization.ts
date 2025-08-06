@@ -209,13 +209,34 @@ export class MesocyclePeriodization {
       .limit(1);
 
     const mesocycle = currentMesocycle[0];
-    const currentWeek = mesocycle?.currentWeek || 1;
-    const totalWeeks = mesocycle?.totalWeeks || 6;
+    
+    // If no active mesocycle, return minimal recommendations with empty volume data
+    if (!mesocycle) {
+      const fatigueAnalysis = await this.analyzeFatigueAccumulation(userId);
+      
+      return {
+        shouldDeload: fatigueAnalysis.shouldDeload,
+        nextWeekVolume: [], // Empty array when no active mesocycle
+        phaseTransition: undefined,
+        fatigueFeedback: {
+          overallFatigue: fatigueAnalysis.fatigueScore,
+          recoveryLevel: 10 - fatigueAnalysis.fatigueScore,
+          recommendations: [
+            "No active mesocycle - consider creating a new training program",
+            "Focus on establishing consistent training routine",
+            "Set appropriate volume landmarks for muscle groups"
+          ]
+        }
+      };
+    }
+
+    const currentWeek = mesocycle.currentWeek || 1;
+    const totalWeeks = mesocycle.totalWeeks || 6;
 
     // Analyze fatigue
     const fatigueAnalysis = await this.analyzeFatigueAccumulation(userId);
     
-    // Calculate volume progression
+    // Calculate volume progression only if there's an active mesocycle
     const nextWeekVolume = await this.calculateVolumeProgression(userId, currentWeek, totalWeeks);
 
     // Determine phase transitions
