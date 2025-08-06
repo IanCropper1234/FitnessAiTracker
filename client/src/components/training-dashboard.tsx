@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +25,8 @@ import {
   Copy,
   X,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CalendarIcon,
   Settings,
   BookOpen,
@@ -487,6 +489,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [, setLocation] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const exercisesPerPage = 24;
 
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
@@ -512,6 +517,21 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
       return response.json();
     }
   });
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1); // Reset to first page when search changes
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   // Handle URL parameters for auto-starting workout sessions
   useEffect(() => {
@@ -651,40 +671,54 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   // Get current mesocycle for status display - only show if there's an active mesocycle
   const currentMesocycle = mesocycles.find(m => m.isActive) || null;
 
-  // Group exercises by category
-  const exercisesByCategory = exercises.reduce((acc, exercise) => {
-    if (!acc[exercise.category]) {
-      acc[exercise.category] = [];
-    }
-    acc[exercise.category].push(exercise);
-    return acc;
-  }, {} as Record<string, Exercise[]>);
+  // Memoized: Group exercises by category
+  const exercisesByCategory = useMemo(() => {
+    return exercises.reduce((acc, exercise) => {
+      if (!acc[exercise.category]) {
+        acc[exercise.category] = [];
+      }
+      acc[exercise.category].push(exercise);
+      return acc;
+    }, {} as Record<string, Exercise[]>);
+  }, [exercises]);
 
-  // Filter exercises based on selected category and search query
-  const filteredExercises = exercises.filter(exercise => {
-    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
-    const matchesSearch = searchQuery === "" || 
-      exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exercise.primaryMuscle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exercise.muscleGroups.some(muscle => muscle.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      exercise.equipment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exercise.movementPattern?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return matchesCategory && matchesSearch;
-  });
+  // Memoized: Filter exercises based on selected category and debounced search query
+  const filteredExercises = useMemo(() => {
+    return exercises.filter(exercise => {
+      const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+      const matchesSearch = debouncedSearchQuery === "" || 
+        exercise.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        exercise.primaryMuscle.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        exercise.muscleGroups.some(muscle => muscle.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) ||
+        exercise.equipment?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        exercise.movementPattern?.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
+      
+      return matchesCategory && matchesSearch;
+    });
+  }, [exercises, selectedCategory, debouncedSearchQuery]);
 
-  // Exercise difficulty colors
-  const getDifficultyColor = (difficulty: string) => {
+  // Memoized: Paginated exercises
+  const paginatedExercises = useMemo(() => {
+    const startIndex = (currentPage - 1) * exercisesPerPage;
+    const endIndex = startIndex + exercisesPerPage;
+    return filteredExercises.slice(startIndex, endIndex);
+  }, [filteredExercises, currentPage, exercisesPerPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredExercises.length / exercisesPerPage);
+
+  // Memoized: Exercise difficulty colors
+  const getDifficultyColor = useCallback((difficulty: string) => {
     switch (difficulty) {
       case "beginner": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       case "intermediate": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
       case "advanced": return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
-  };
+  }, []);
 
-  // Movement pattern colors
-  const getPatternColor = (pattern: string) => {
+  // Memoized: Movement pattern colors
+  const getPatternColor = useCallback((pattern: string) => {
     switch (pattern) {
       case "compound": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
       case "isolation": return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
@@ -693,10 +727,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
       case "rotation": return "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
-  };
+  }, []);
 
-  // Helper function to format database strings to user-friendly text
-  const formatDisplayText = (text: string | undefined | null): string => {
+  // Memoized: Helper function to format database strings to user-friendly text
+  const formatDisplayText = useCallback((text: string | undefined | null): string => {
     if (!text) return "";
     return text
       .replace(/_/g, ' ') // Replace all underscores with spaces
@@ -705,7 +739,79 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ')
       .trim();
-  };
+  }, []);
+
+  // Memoized Exercise Card Component for performance
+  const ExerciseCard = useCallback(({ exercise }: { exercise: Exercise }) => (
+    <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
+      <CardHeader className="pb-1.5 px-3 pt-3">
+        <div className="flex justify-between items-start gap-2 mb-1">
+          <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">
+            {exercise.name}
+          </CardTitle>
+          <Badge variant="outline" className="text-xs capitalize shrink-0 h-5">
+            {exercise.category.slice(0, 4)}
+          </Badge>
+        </div>
+        <div className="flex gap-1 flex-wrap">
+          <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
+            {formatDisplayText(exercise.difficulty).slice(0, 3)}
+          </Badge>
+          <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
+            {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="px-3 pb-3 pt-0">
+        <div className="space-y-1.5">
+          {/* Ultra-compact info grid */}
+          <div className="text-xs space-y-1">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-medium">Primary:</span>
+              <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
+                {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-medium">Equipment:</span>
+              <span className="truncate ml-1 text-right flex-1 min-w-0">
+                {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
+              </span>
+            </div>
+          </div>
+          
+          {/* Muscle groups - more compact */}
+          <div className="flex flex-wrap gap-0.5 justify-center">
+            {exercise.muscleGroups.slice(0, 2).map((muscle) => (
+              <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                {formatDisplayText(muscle).slice(0, 4)}
+              </Badge>
+            ))}
+            {exercise.muscleGroups.length > 2 && (
+              <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                +{exercise.muscleGroups.length - 2}
+              </Badge>
+            )}
+          </div>
+          
+          {/* Action buttons - stacked for mobile */}
+          <div className="flex flex-col gap-1 pt-1">
+            <Button 
+              size="sm" 
+              className="w-full h-7 text-xs font-medium"
+              onClick={() => setLocation('/create-workout-session')}
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Add to Workout
+            </Button>
+            <div className="flex justify-center">
+              <ExerciseManagement exercise={exercise} />
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  ), [getDifficultyColor, getPatternColor, formatDisplayText, setLocation]);
 
   // Start workout session
   const startWorkoutSession = (sessionId: number) => {
@@ -1088,94 +1194,86 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
               </div>
             </div>
             
-            {/* Results Counter */}
+            {/* Results Counter and Pagination Info */}
             <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
               <span className="font-medium">
                 {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} 
                 {selectedCategory !== "all" && (
                   <span className="hidden sm:inline"> in {selectedCategory}</span>
                 )}
+                {totalPages > 1 && (
+                  <span className="ml-2 text-xs opacity-75">
+                    (Page {currentPage} of {totalPages})
+                  </span>
+                )}
               </span>
-              {filteredExercises.length > 12 && (
+              {totalPages > 1 && (
                 <span className="text-xs opacity-75">
-                  ~{Math.ceil(filteredExercises.length / 12)} pages
+                  Showing {Math.min((currentPage - 1) * exercisesPerPage + 1, filteredExercises.length)}-{Math.min(currentPage * exercisesPerPage, filteredExercises.length)} of {filteredExercises.length}
                 </span>
               )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-            {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
-                <CardHeader className="pb-1.5 px-3 pt-3">
-                  <div className="flex justify-between items-start gap-2 mb-1">
-                    <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">
-                      {exercise.name}
-                    </CardTitle>
-                    <Badge variant="outline" className="text-xs capitalize shrink-0 h-5">
-                      {exercise.category.slice(0, 4)}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-1 flex-wrap">
-                    <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
-                      {formatDisplayText(exercise.difficulty).slice(0, 3)}
-                    </Badge>
-                    <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
-                      {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-3 pb-3 pt-0">
-                  <div className="space-y-1.5">
-                    {/* Ultra-compact info grid */}
-                    <div className="text-xs space-y-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground font-medium">Primary:</span>
-                        <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
-                          {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground font-medium">Equipment:</span>
-                        <span className="truncate ml-1 text-right flex-1 min-w-0">
-                          {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* Muscle groups - more compact */}
-                    <div className="flex flex-wrap gap-0.5 justify-center">
-                      {exercise.muscleGroups.slice(0, 2).map((muscle) => (
-                        <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
-                          {formatDisplayText(muscle).slice(0, 4)}
-                        </Badge>
-                      ))}
-                      {exercise.muscleGroups.length > 2 && (
-                        <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
-                          +{exercise.muscleGroups.length - 2}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Action buttons - stacked for mobile */}
-                    <div className="flex flex-col gap-1 pt-1">
-                      <Button 
-                        size="sm" 
-                        className="w-full h-7 text-xs font-medium"
-                        onClick={() => setLocation('/create-workout-session')}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add to Workout
-                      </Button>
-                      <div className="flex justify-center">
-                        <ExerciseManagement exercise={exercise} />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {paginatedExercises.map((exercise) => (
+              <ExerciseCard key={exercise.id} exercise={exercise} />
             ))}
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6 mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="h-8 px-3"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className="h-8 w-8 p-0 text-xs"
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="h-8 px-3"
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </AnimatedTabsContent>
 
 
