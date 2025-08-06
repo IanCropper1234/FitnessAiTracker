@@ -166,6 +166,28 @@ function WorkoutSessionsWithBulkActions({
     },
   });
 
+  // Save as template mutation
+  const saveAsTemplateMutation = useMutation({
+    mutationFn: async (sessionId: number) => {
+      const response = await apiRequest('POST', `/api/training/sessions/${sessionId}/save-as-template`);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Template Saved",
+        description: `Workout session has been saved as "${data.templateName}" template`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/training/saved-workout-templates"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save template",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSelectAll = () => {
     if (selectedSessions.length === sessions.length) {
       setSelectedSessions([]);
@@ -256,6 +278,7 @@ function WorkoutSessionsWithBulkActions({
             onDelete={() => bulkDeleteMutation.mutate([session.id])}
             onRestart={() => restartSessionMutation.mutate(session.id)}
             onEdit={(sessionId, updates) => editSessionMutation.mutate({ sessionId, updates })}
+            onSaveAsTemplate={(sessionId) => saveAsTemplateMutation.mutate(sessionId)}
             onDuplicate={() => {
               // TODO: Implement duplicate functionality
               toast({
@@ -283,6 +306,7 @@ interface WorkoutSessionCardProps {
   onRestart: () => void;
   onDuplicate: () => void;
   onEdit: (sessionId: number, updates: { name: string }) => void;
+  onSaveAsTemplate?: (sessionId: number) => void;
   showCheckbox?: boolean;
   isSelected?: boolean;
   onSelect?: () => void;
@@ -297,6 +321,7 @@ function WorkoutSessionCard({
   onRestart, 
   onDuplicate,
   onEdit,
+  onSaveAsTemplate,
   showCheckbox = false,
   isSelected = false,
   onSelect
@@ -387,6 +412,12 @@ function WorkoutSessionCard({
                 <Copy className="h-3.5 w-3.5 mr-2" />
                 Duplicate Session
               </DropdownMenuItem>
+              {onSaveAsTemplate && (
+                <DropdownMenuItem onClick={() => onSaveAsTemplate(session.id)}>
+                  <BookOpen className="h-3.5 w-3.5 mr-2" />
+                  Save as Template
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={onDelete} className="text-destructive">
                 <Trash2 className="h-3.5 w-3.5 mr-2" />
                 Delete Session

@@ -2017,6 +2017,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save workout session as template
+  app.post("/api/training/sessions/:sessionId/save-as-template", requireAuth, async (req, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      const userId = req.userId;
+      
+      // Get original session
+      const originalSession = await storage.getWorkoutSession(sessionId);
+      if (!originalSession) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      // Verify the session belongs to the user
+      if (originalSession.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Create template name
+      const templateName = `${originalSession.name} Template`;
+
+      // Create saved workout template
+      const templateData = {
+        userId: userId,
+        name: templateName,
+        description: `Template created from workout session: ${originalSession.name}`,
+        difficulty: 'intermediate', // default difficulty
+        trainingDays: [],
+        exercises: []
+      };
+
+      const savedTemplate = await storage.createSavedWorkoutTemplate(templateData);
+
+      // Get all exercises from the session
+      const sessionExercises = await storage.getWorkoutExercises(sessionId);
+      
+      // Create template exercises
+      for (const exercise of sessionExercises) {
+        const templateExerciseData = {
+          templateId: savedTemplate.id,
+          exerciseId: exercise.exerciseId,
+          orderIndex: exercise.orderIndex,
+          sets: exercise.sets,
+          targetReps: exercise.targetReps,
+          restPeriod: exercise.restPeriod || 60,
+          notes: exercise.notes || '',
+          specialMethod: exercise.specialMethod || null,
+          specialMethodData: exercise.specialMethodData || null
+        };
+        
+        await storage.createSavedWorkoutTemplateExercise(templateExerciseData);
+      }
+      
+      res.json({ 
+        success: true, 
+        templateName: templateName,
+        templateId: savedTemplate.id 
+      });
+    } catch (error: any) {
+      console.error('Error saving session as template:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Step 2: Volume Landmarks System API Routes
 
   // Get muscle groups
