@@ -146,10 +146,15 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     let dragDistance = 0;
     
     const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+      // Only prevent default if we have touches
+      if (e.touches && e.touches.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       
       const touch = e.touches[0];
+      if (!touch) return;
+      
       const deltaX = touch.clientX - startX;
       const deltaY = touch.clientY - startY;
       dragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
