@@ -8,6 +8,7 @@ interface FeatureFlags {
   circularProgress: boolean;
   restTimerFAB: boolean;
   workoutSummary: boolean;
+  autoRegulationFeedback: boolean;
 }
 
 // Default feature flags (can be overridden by user preferences or server)
@@ -18,6 +19,7 @@ const defaultFeatures: FeatureFlags = {
   circularProgress: true,
   restTimerFAB: true,
   workoutSummary: true,
+  autoRegulationFeedback: false, // Disabled by default - user can enable in settings
 };
 
 // Global feature flag store

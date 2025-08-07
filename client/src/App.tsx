@@ -29,6 +29,7 @@ import WellnessTestPage from "./pages/WellnessTestPage";
 import RPCoachPage from "./pages/RPCoachPage";
 import NutritionFactsPage from "./pages/nutrition-facts";
 import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
+import WorkoutSettings from "./pages/WorkoutSettings";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
 import { AnimatedPage } from "./components/page-transition";
@@ -179,6 +180,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/workout-feedback/:sessionId">
           <AnimatedPage>
             {user ? <WorkoutFeedbackPage /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/workout-settings">
+          <AnimatedPage>
+            {user ? <WorkoutSettings /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
         <Route path="/training">

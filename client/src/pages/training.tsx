@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TrainingDashboard } from "@/components/training-dashboard";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Home, Dumbbell } from "lucide-react";
+import { ArrowLeft, Home, Dumbbell, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface User {
@@ -45,8 +45,15 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
                 <h1 className="text-base font-semibold transition-colors duration-200">Training</h1>
               </div>
               
-              {/* Right: Empty space for symmetry */}
-              <div className="min-h-[44px] min-w-[44px]"></div>
+              {/* Right: Settings Button */}
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setLocation('/workout-settings')}
+                className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback ios-smooth-transform button-press-animation"
+              >
+                <Settings className="w-5 h-5 transition-transform duration-150" />
+              </Button>
             </div>
           </div>
         )}

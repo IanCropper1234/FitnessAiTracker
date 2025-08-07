@@ -105,7 +105,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const gestureNavEnabled = useFeature('gestureNavigation');
   const restTimerFABEnabled = useFeature('restTimerFAB');
   const circularProgressFeature = useFeature('circularProgress');
-  const autoRegulationFeedbackEnabled = false; // Disabled by default - can be enabled via feature flag
+  const autoRegulationFeedbackEnabled = useFeature('autoRegulationFeedback');
   
   // Local state for progress display
   const [circularProgressEnabled, setCircularProgressEnabled] = useState(circularProgressFeature);

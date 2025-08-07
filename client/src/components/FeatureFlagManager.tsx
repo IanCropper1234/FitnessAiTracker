@@ -48,6 +48,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
     updateFeatureFlag('circularProgress', true);
     updateFeatureFlag('restTimerFAB', true);
     updateFeatureFlag('workoutSummary', true);
+    // Note: autoRegulationFeedback is kept separate as it's optional RP methodology
     
     toast({
       title: "V2 Features Enabled",
@@ -178,6 +179,25 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                   id="workoutSummary"
                   checked={features.workoutSummary}
                   onCheckedChange={(checked) => handleFeatureToggle('workoutSummary', checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 border  bg-blue-50/50">
+                <div>
+                  <Label htmlFor="autoRegulationFeedback" className="font-medium">
+                    Auto-Regulation Feedback
+                    <Badge variant="outline" className="ml-2 text-xs bg-blue-100 text-blue-700">
+                      RP Method
+                    </Badge>
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Collect RPE feedback during workout (last set of each exercise)
+                  </p>
+                </div>
+                <Switch
+                  id="autoRegulationFeedback"
+                  checked={features.autoRegulationFeedback}
+                  onCheckedChange={(checked) => handleFeatureToggle('autoRegulationFeedback', checked)}
                 />
               </div>
             </div>
