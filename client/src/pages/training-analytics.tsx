@@ -51,6 +51,17 @@ interface MuscleGroupVolume {
   color: string;
 }
 
+interface RPMetrics {
+  totalVolume: string;
+  weeklyAvgVolume: number;
+  adherenceToMev: number;
+  fatigueLevel: string;
+  fatigueColor: string;
+  totalSessions: string;
+  avgSessionsPerWeek: number;
+  nextRecommendation: string;
+}
+
 interface ExerciseProgress {
   exerciseName: string;
   sessions: Array<{
@@ -67,19 +78,19 @@ export default function TrainingAnalytics() {
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
 
   // Fetch analytics data with correct API endpoints
-  const { data: volumeProgression, isLoading: volumeLoading } = useQuery({
+  const { data: volumeProgression, isLoading: volumeLoading } = useQuery<VolumeData[]>({
     queryKey: [`/api/analytics/volume-progression/${timeRange}/${selectedMuscleGroup}`],
   });
 
-  const { data: muscleGroupData, isLoading: muscleLoading } = useQuery({
+  const { data: muscleGroupData, isLoading: muscleLoading } = useQuery<MuscleGroupVolume[]>({
     queryKey: [`/api/analytics/muscle-group-distribution/${timeRange}`],
   });
 
-  const { data: exerciseProgress, isLoading: exerciseLoading } = useQuery({
+  const { data: exerciseProgress, isLoading: exerciseLoading } = useQuery<ExerciseProgress[]>({
     queryKey: [`/api/analytics/exercise-progress/${timeRange}/${selectedMuscleGroup}`],
   });
 
-  const { data: rpMetrics, isLoading: rpLoading } = useQuery({
+  const { data: rpMetrics, isLoading: rpLoading } = useQuery<RPMetrics>({
     queryKey: [`/api/analytics/rp-metrics/${timeRange}/${selectedMuscleGroup}`],
   });
 
@@ -170,11 +181,17 @@ export default function TrainingAnalytics() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Muscle Groups</SelectItem>
+              <SelectItem value="biceps">Biceps</SelectItem>
+              <SelectItem value="calves">Calves</SelectItem>
               <SelectItem value="chest">Chest</SelectItem>
-              <SelectItem value="back">Back</SelectItem>
+              <SelectItem value="glutes">Glutes</SelectItem>
+              <SelectItem value="hamstrings">Hamstrings</SelectItem>
+              <SelectItem value="lats">Lats</SelectItem>
+              <SelectItem value="quads">Quads</SelectItem>
+              <SelectItem value="rear_delts">Rear Delts</SelectItem>
+              <SelectItem value="rhomboids">Rhomboids</SelectItem>
               <SelectItem value="shoulders">Shoulders</SelectItem>
-              <SelectItem value="arms">Arms</SelectItem>
-              <SelectItem value="legs">Legs</SelectItem>
+              <SelectItem value="triceps">Triceps</SelectItem>
             </SelectContent>
           </Select>
         </div>
