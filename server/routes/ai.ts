@@ -54,7 +54,7 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
     ).join('\n') || 'No training history provided'}
     
     ${timeConstraints ? `**Time Constraints**: ${timeConstraints.sessionDuration} min sessions, ${timeConstraints.sessionsPerWeek}x per week` : ''}
-    ${injuryRestrictions ? `**Injury Restrictions**: ${injuryRestrictions.join(', ')}` : ''}
+    ${injuryRestrictions ? `**Injury Restrictions**: ${Array.isArray(injuryRestrictions) ? injuryRestrictions.join(', ') : injuryRestrictions}` : ''}
 
     Please analyze this data and provide:
     1. 3-5 specific exercise recommendations that complement the current selection
