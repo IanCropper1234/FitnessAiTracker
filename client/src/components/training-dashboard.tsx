@@ -35,7 +35,9 @@ import {
   Repeat,
   ChartBar,
   MapPin,
-  Zap
+  Zap,
+  Brain,
+  Sparkles
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -973,6 +975,23 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
             </Button>
           </div>
 
+          {/* AI Session Creation */}
+          <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-800 mx-2">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-2">
+                <Brain className="h-5 w-5 text-green-600" />
+                <h4 className="font-semibold text-green-900 dark:text-green-100">Create AI Workout Session</h4>
+              </div>
+              <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                Generate intelligent workout sessions based on your training history and goals
+              </p>
+              <Button size="sm" onClick={() => setLocation('/create-ai-workout-session')} className="w-full">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Create AI Session
+              </Button>
+            </CardContent>
+          </Card>
+
           {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16">
@@ -1320,37 +1339,20 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           </div>
 
           {/* AI Features Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-800">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
-                  <h4 className="font-semibold text-blue-900 dark:text-blue-100">AI Training Analytics</h4>
-                </div>
-                <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
-                  Advanced training analysis with AI insights and RP methodology tracking
-                </p>
-                <Button size="sm" onClick={() => setLocation('/training-analytics')} className="w-full">
-                  View Analytics
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-800">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Dumbbell className="h-5 w-5 text-green-600" />
-                  <h4 className="font-semibold text-green-900 dark:text-green-100">AI Exercise Recommendations</h4>
-                </div>
-                <p className="text-sm text-green-700 dark:text-green-300 mb-3">
-                  Intelligent exercise suggestions based on your training history
-                </p>
-                <Button size="sm" onClick={() => setLocation('/ai-exercise-recommendations')} className="w-full">
-                  Get Recommendations
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-800">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-2">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                <h4 className="font-semibold text-blue-900 dark:text-blue-100">AI Training Analytics</h4>
+              </div>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                Advanced training analysis with AI insights and RP methodology tracking
+              </p>
+              <Button size="sm" onClick={() => setLocation('/training-analytics')} className="w-full">
+                View Analytics
+              </Button>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-8">

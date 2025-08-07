@@ -275,7 +275,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             {user ? <TrainingAnalytics /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>
         </Route>
-        <Route path="/ai-exercise-recommendations">
+        <Route path="/create-ai-workout-session">
           <AnimatedPage>
             {user ? <AIExerciseRecommendations /> : <div className="animate-pulse">Loading...</div>}
           </AnimatedPage>

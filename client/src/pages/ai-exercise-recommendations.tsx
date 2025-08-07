@@ -74,7 +74,7 @@ interface WorkoutSession {
   specialMethodsCount: number;
 }
 
-export default function AIExerciseRecommendations() {
+export default function CreateAIWorkoutSession() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -393,9 +393,9 @@ export default function AIExerciseRecommendations() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Brain className="h-6 w-6 text-blue-500" />
-            AI Exercise Recommendations
+            Create AI Workout Session
           </h1>
-          <p className="text-sm text-muted-foreground">Get intelligent, RP-based exercise suggestions tailored to your goals</p>
+          <p className="text-sm text-muted-foreground">Generate intelligent, RP-based workout sessions tailored to your goals</p>
         </div>
       </div>
 

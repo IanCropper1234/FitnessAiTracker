@@ -11,6 +11,8 @@ FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, 
 **Priority B Features**: ✅ COMPLETED - Advanced Training Analytics, AI Exercise Recommendations, and Enhanced Nutrition AI Analysis fully implemented
 
 **Recent Achievements** (Updated 2025-08-07):
+- ✅ AI Features Reorganization (2025-08-07) - Moved "Create AI Workout Session" from Progress to Sessions tab for better user workflow
+- ✅ AI Exercise Recommendations Renamed (2025-08-07) - Changed to "Create AI Workout Session" and updated all navigation paths
 - ✅ Authentication System Fully Restored (2025-08-07) - Fixed bcrypt password verification issue
 - ✅ AI Features Navigation Integration (2025-08-07) - All AI features accessible via bottom navigation "+" quick actions
 - ✅ Priority B Enhancements - FULLY COMPLETED (2025-08-07)
