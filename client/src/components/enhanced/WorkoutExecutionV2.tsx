@@ -105,6 +105,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const gestureNavEnabled = useFeature('gestureNavigation');
   const restTimerFABEnabled = useFeature('restTimerFAB');
   const circularProgressFeature = useFeature('circularProgress');
+  const autoRegulationFeedbackEnabled = false; // Disabled by default - can be enabled via feature flag
   
   // Local state for progress display
   const [circularProgressEnabled, setCircularProgressEnabled] = useState(circularProgressFeature);
@@ -525,9 +526,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
       updateSet(currentExercise.id, currentSetIndex, 'completed', true);
       
-      // Show auto-regulation feedback for completed set
-      setCurrentSetForFeedback({ exerciseId: currentExercise.id, setIndex: currentSetIndex });
-      setShowAutoRegulation(true);
+      // Show auto-regulation feedback only for the last set of each exercise
+      const currentSets = workoutData[currentExercise.id] || [];
+      const isLastSet = currentSetIndex === currentSets.length - 1;
+      
+      if (isLastSet && autoRegulationFeedbackEnabled) {
+        // Show auto-regulation feedback only for the final set of each exercise (if enabled)
+        setCurrentSetForFeedback({ exerciseId: currentExercise.id, setIndex: currentSetIndex });
+        setShowAutoRegulation(true);
+      }
       
       // Check for Superset auto-switching
       const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
@@ -1471,8 +1478,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 addNotification({
                   variant: 'success',
                   title: 'Feedback Recorded',
-                  message: `RPE ${feedback.rpe} recorded for ${currentExercise.exercise.name} - Set ${currentSetForFeedback.setIndex + 1}`,
-                  duration: 3000,
+                  description: `RPE ${feedback.rpe} recorded for ${currentExercise.exercise.name}`,
                 });
               }}
               className="mx-auto"
