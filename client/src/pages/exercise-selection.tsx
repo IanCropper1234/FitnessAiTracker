@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -11,7 +11,9 @@ import {
   Timer,
   Zap,
   Minus,
-  ChevronsUpDown
+  ChevronsUpDown,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,8 +52,11 @@ export default function ExerciseSelection() {
   
   const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const exercisesPerPage = 24;
 
   // Parse URL parameters for context - use window.location.search for query params
   const searchParams = new URLSearchParams(window.location.search);
@@ -67,6 +72,20 @@ export default function ExerciseSelection() {
   console.log('  Raw return param:', rawReturnParam);
   console.log('  Decoded return path:', returnPath);
   console.log('  Workout Index:', workoutIndex);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
 
@@ -99,23 +118,36 @@ export default function ExerciseSelection() {
     refetchOnWindowFocus: false // Prevent refetch that could trigger auth issues
   });
 
-  // Filter exercises based on search and category - Add null safety
-  const filteredExercises = exercises.filter((exercise: Exercise) => {
-    // Add null safety checks for all string properties
-    if (!exercise || !exercise.name || !exercise.primaryMuscle || !exercise.category) {
-      return false;
-    }
-    
-    const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exercise.primaryMuscle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || exercise.category === selectedCategory;
-    const matchesTarget = targetMuscles.length === 0 || 
-                         targetMuscles.some(muscle => 
-                           exercise.muscleGroups?.some(mg => mg && mg.toLowerCase().includes(muscle.toLowerCase()))
-                         );
-    
-    return matchesSearch && matchesCategory && matchesTarget;
-  });
+  // Memoized: Filter exercises based on search and category
+  const filteredExercises = useMemo(() => {
+    return exercises.filter((exercise: Exercise) => {
+      // Add null safety checks for all string properties
+      if (!exercise || !exercise.name || !exercise.primaryMuscle || !exercise.category) {
+        return false;
+      }
+      
+      const matchesSearch = debouncedSearchTerm === "" ||
+        exercise.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        exercise.primaryMuscle.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || exercise.category === selectedCategory;
+      const matchesTarget = targetMuscles.length === 0 || 
+                           targetMuscles.some(muscle => 
+                             exercise.muscleGroups?.some(mg => mg && mg.toLowerCase().includes(muscle.toLowerCase()))
+                           );
+      
+      return matchesSearch && matchesCategory && matchesTarget;
+    });
+  }, [exercises, debouncedSearchTerm, selectedCategory, targetMuscles]);
+
+  // Memoized: Paginated exercises
+  const paginatedExercises = useMemo(() => {
+    const startIndex = (currentPage - 1) * exercisesPerPage;
+    const endIndex = startIndex + exercisesPerPage;
+    return filteredExercises.slice(startIndex, endIndex);
+  }, [filteredExercises, currentPage, exercisesPerPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredExercises.length / exercisesPerPage);
 
   const addExercise = (exercise: Exercise) => {
     // Add null safety check
@@ -338,9 +370,28 @@ export default function ExerciseSelection() {
                   </div>
                 )}
               </div>
+
+              {/* Results Counter and Pagination Info */}
+              {filteredExercises.length > 0 && (
+                <div className="flex items-center justify-between text-sm text-muted-foreground px-1 mb-4">
+                  <span className="font-medium">
+                    {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} found
+                    {totalPages > 1 && (
+                      <span className="ml-2 text-xs opacity-75">
+                        (Page {currentPage} of {totalPages})
+                      </span>
+                    )}
+                  </span>
+                  {totalPages > 1 && (
+                    <span className="text-xs opacity-75">
+                      Showing {Math.min((currentPage - 1) * exercisesPerPage + 1, filteredExercises.length)}-{Math.min(currentPage * exercisesPerPage, filteredExercises.length)} of {filteredExercises.length}
+                    </span>
+                  )}
+                </div>
+              )}
               
               {/* Exercise List */}
-              <ScrollArea className="h-[70vh]">
+              <ScrollArea className="h-[60vh]">
                 <div className="space-y-3 pr-4">
                   {isLoading ? (
                     <div className="text-center py-8">Loading exercises...</div>
@@ -349,7 +400,7 @@ export default function ExerciseSelection() {
                       No exercises found
                     </div>
                   ) : (
-                    filteredExercises.map((exercise: Exercise) => (
+                    paginatedExercises.map((exercise: Exercise) => (
                       <Card key={exercise.id} className="cursor-pointer hover:bg-accent">
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
@@ -399,6 +450,60 @@ export default function ExerciseSelection() {
                   )}
                 </div>
               </ScrollArea>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="h-8 px-3"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className="h-8 w-8 p-0 text-xs"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-8 px-3"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Target, Trash2, Plus, Search, Filter } from "lucide-react";
+import { Calendar, Clock, Target, Trash2, Plus, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Exercise {
@@ -52,7 +52,24 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
   // Exercise library state
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const exercisesPerPage = 12;
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   // Fetch exercises for the library
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
@@ -60,19 +77,32 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
     enabled: showExerciseLibrary || isOpen,
   });
 
-  // Filter exercises based on search and category
-  const filteredExercises = exercises.filter(exercise => {
-    const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (exercise.muscleGroups?.some(muscle => 
-                           muscle.toLowerCase().includes(searchTerm.toLowerCase())
-                         ));
-    
-    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
-    
-    const alreadyAdded = exerciseTemplates.some(template => template.exerciseId === exercise.id);
-    
-    return matchesSearch && matchesCategory && !alreadyAdded;
-  });
+  // Memoized: Filter exercises based on search and category
+  const filteredExercises = useMemo(() => {
+    return exercises.filter(exercise => {
+      const matchesSearch = debouncedSearchTerm === "" ||
+        exercise.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        (exercise.muscleGroups?.some(muscle => 
+          muscle.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+        ));
+      
+      const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+      
+      const alreadyAdded = exerciseTemplates.some(template => template.exerciseId === exercise.id);
+      
+      return matchesSearch && matchesCategory && !alreadyAdded;
+    });
+  }, [exercises, debouncedSearchTerm, selectedCategory, exerciseTemplates]);
+
+  // Memoized: Paginated exercises
+  const paginatedExercises = useMemo(() => {
+    const startIndex = (currentPage - 1) * exercisesPerPage;
+    const endIndex = startIndex + exercisesPerPage;
+    return filteredExercises.slice(startIndex, endIndex);
+  }, [filteredExercises, currentPage, exercisesPerPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredExercises.length / exercisesPerPage);
 
   const categories = ["all", "push", "pull", "legs", "cardio"];
 
@@ -285,6 +315,25 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
                   </div>
                 </CardHeader>
                 <CardContent>
+                  {/* Results Counter and Pagination Info */}
+                  {filteredExercises.length > 0 && (
+                    <div className="flex items-center justify-between text-sm text-muted-foreground px-1 mb-4">
+                      <span className="font-medium">
+                        {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} available
+                        {totalPages > 1 && (
+                          <span className="ml-2 text-xs opacity-75">
+                            (Page {currentPage} of {totalPages})
+                          </span>
+                        )}
+                      </span>
+                      {totalPages > 1 && (
+                        <span className="text-xs opacity-75">
+                          Showing {Math.min((currentPage - 1) * exercisesPerPage + 1, filteredExercises.length)}-{Math.min(currentPage * exercisesPerPage, filteredExercises.length)} of {filteredExercises.length}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <ScrollArea className="h-64">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {exercisesLoading ? (
@@ -298,7 +347,7 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
                             : "All available exercises have been added"}
                         </div>
                       ) : (
-                        filteredExercises.map(exercise => (
+                        paginatedExercises.map(exercise => (
                           <Card key={exercise.id} className="cursor-pointer hover:bg-accent/50 transition-colors">
                             <CardHeader className="pb-2">
                               <div className="flex items-start justify-between gap-2">
@@ -334,6 +383,60 @@ export function WorkoutSessionCreator({ selectedExercises, isOpen, onClose, onSu
                       )}
                     </div>
                   </ScrollArea>
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="h-8 px-3"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={currentPage === pageNum ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(pageNum)}
+                              className="h-8 w-8 p-0 text-xs"
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="h-8 px-3"
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

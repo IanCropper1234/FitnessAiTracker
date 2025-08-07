@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Plus, Target, Clock, RotateCcw, Trash2 } from "lucide-react";
+import { Search, Plus, Target, Clock, RotateCcw, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Exercise {
   id: number;
@@ -42,7 +42,10 @@ export function ExerciseLibrarySelector({
   onRemoveExercise 
 }: ExerciseLibrarySelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const exercisesPerPage = 12;
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [exerciseConfig, setExerciseConfig] = useState<ExerciseConfig>({
@@ -55,23 +58,52 @@ export function ExerciseLibrarySelector({
     notes: ""
   });
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categoryFilter]);
+
   // Fetch exercises
   const { data: exercises = [], isLoading } = useQuery({
     queryKey: ['/api/training/exercises'],
   });
 
-  // Filter exercises based on search and category
-  const filteredExercises = exercises.filter((exercise: Exercise) => {
-    const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         exercise.muscleGroups?.some(mg => mg.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = categoryFilter === "all" || exercise.category === categoryFilter;
-    const notAlreadySelected = !selectedExercises.some(se => se.exerciseId === exercise.id);
-    
-    return matchesSearch && matchesCategory && notAlreadySelected;
-  });
+  // Memoized: Filter exercises based on search and category
+  const filteredExercises = useMemo(() => {
+    return exercises.filter((exercise: Exercise) => {
+      const matchesSearch = debouncedSearchQuery === "" ||
+        exercise.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        exercise.muscleGroups?.some(mg => mg.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
+      const matchesCategory = categoryFilter === "all" || exercise.category === categoryFilter;
+      const notAlreadySelected = !selectedExercises.some(se => se.exerciseId === exercise.id);
+      
+      return matchesSearch && matchesCategory && notAlreadySelected;
+    });
+  }, [exercises, debouncedSearchQuery, categoryFilter, selectedExercises]);
 
-  // Get unique categories for filter
-  const categories = [...new Set(exercises.map((ex: Exercise) => ex.category))];
+  // Memoized: Paginated exercises
+  const paginatedExercises = useMemo(() => {
+    const startIndex = (currentPage - 1) * exercisesPerPage;
+    const endIndex = startIndex + exercisesPerPage;
+    return filteredExercises.slice(startIndex, endIndex);
+  }, [filteredExercises, currentPage, exercisesPerPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredExercises.length / exercisesPerPage);
+
+  // Memoized: Get unique categories for filter
+  const categories = useMemo(() => {
+    return [...new Set(exercises.map((ex: Exercise) => ex.category))];
+  }, [exercises]);
 
   const handleExerciseSelect = (exercise: Exercise) => {
     setSelectedExercise(exercise);
@@ -183,6 +215,25 @@ export function ExerciseLibrarySelector({
         </Select>
       </div>
 
+      {/* Results Counter and Pagination Info */}
+      {filteredExercises.length > 0 && (
+        <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
+          <span className="font-medium">
+            {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} found
+            {totalPages > 1 && (
+              <span className="ml-2 text-xs opacity-75">
+                (Page {currentPage} of {totalPages})
+              </span>
+            )}
+          </span>
+          {totalPages > 1 && (
+            <span className="text-xs opacity-75">
+              Showing {Math.min((currentPage - 1) * exercisesPerPage + 1, filteredExercises.length)}-{Math.min(currentPage * exercisesPerPage, filteredExercises.length)} of {filteredExercises.length}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Exercise Library */}
       <div className="max-h-96 overflow-y-auto space-y-2">
         {filteredExercises.length === 0 ? (
@@ -193,7 +244,7 @@ export function ExerciseLibrarySelector({
             }
           </div>
         ) : (
-          filteredExercises.map((exercise: Exercise) => (
+          paginatedExercises.map((exercise: Exercise) => (
             <Card key={exercise.id} className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
@@ -231,6 +282,60 @@ export function ExerciseLibrarySelector({
           ))
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="h-8 px-3"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <Button
+                  key={pageNum}
+                  variant={currentPage === pageNum ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(pageNum)}
+                  className="h-8 w-8 p-0 text-xs"
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className="h-8 px-3"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Exercise Configuration Dialog */}
       <Dialog open={showConfigDialog} onOpenChange={setShowConfigDialog}>
