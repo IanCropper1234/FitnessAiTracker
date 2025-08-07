@@ -19,6 +19,8 @@ import { CircularProgress } from './CircularProgress';
 import { EnhancedSetInput } from './EnhancedSetInput';
 import { DraggableExerciseList } from './DraggableExerciseList';
 import { SavedWorkoutTemplatesTab } from '../SavedWorkoutTemplatesTab';
+import { AutoRegulationFeedback } from './AutoRegulationFeedback';
+import { ProgressSaveIndicator } from './ProgressSaveIndicator';
 
 // Import legacy component for fallback
 import WorkoutExecution from '../workout-execution';
@@ -56,8 +58,8 @@ interface WorkoutExercise {
   exercise: Exercise;
   setsData?: WorkoutSet[];
   // Support both field names for backward compatibility
-  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
-  specialTrainingMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
+  specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | 'rest_pause' | 'cluster_set' | null;
+  specialTrainingMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | 'rest_pause' | 'cluster_set' | null;
   specialConfig?: any;
   specialMethodConfig?: any;
 }
@@ -117,6 +119,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [sessionStartTime] = useState(Date.now());
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [headerExpanded, setHeaderExpanded] = useState(false);
+  
+  // Progress save state
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [saveMessage, setSaveMessage] = useState<string>('');
+  
+  // Auto-regulation feedback state
+  const [showAutoRegulation, setShowAutoRegulation] = useState(false);
+  const [currentSetForFeedback, setCurrentSetForFeedback] = useState<{exerciseId: number, setIndex: number} | null>(null);
   
   // Auto-collapse header after inactivity
   useEffect(() => {
@@ -190,42 +200,48 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         }
         
         // Restore special method data if available - check both field names for compatibility
-        let specialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
-        if (specialMethod) {
-          console.log(`Original special method for exercise ${exercise.id}:`, specialMethod, typeof specialMethod, `"${specialMethod}"`);
+        const rawSpecialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
+        if (rawSpecialMethod) {
+          console.log(`Original special method for exercise ${exercise.id}:`, rawSpecialMethod, typeof rawSpecialMethod, `"${rawSpecialMethod}"`);
           // Convert database format to UI format - normalize and handle different formats
-          let normalizedMethod = specialMethod.trim().toLowerCase();
+          let normalizedMethod = rawSpecialMethod.trim().toLowerCase();
           console.log(`Normalized method: "${normalizedMethod}"`);
+          
+          let finalMethod: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | 'rest_pause' | 'cluster_set' | null = null;
           
           // Handle multiple possible database formats - normalize all to underscore format
           if (normalizedMethod === 'dropset' || normalizedMethod === 'drop_set') {
-            specialMethod = 'drop_set';
+            finalMethod = 'drop_set';
           } else if (normalizedMethod === 'restpause' || normalizedMethod === 'rest_pause') {
-            specialMethod = 'rest_pause';
+            finalMethod = 'rest_pause';
           } else if (normalizedMethod === 'myorepmatch' || normalizedMethod === 'myorep_match') {
-            specialMethod = 'myorep_match';
+            finalMethod = 'myorep_match';
+          } else if (normalizedMethod === 'myorep_no_match') {
+            finalMethod = 'myorep_no_match';
           } else if (normalizedMethod === 'clusterset' || normalizedMethod === 'cluster_set') {
-            specialMethod = 'cluster_set';
+            finalMethod = 'cluster_set';
           } else if (normalizedMethod === 'giantset' || normalizedMethod === 'giant_set') {
-            specialMethod = 'giant_set';
-          } else {
-            // Keep as is for other methods like tempo, lengthened_partials
-            specialMethod = normalizedMethod;
+            finalMethod = 'giant_set';
+          } else if (normalizedMethod === 'superset') {
+            finalMethod = 'superset';
           }
-          console.log(`Normalized method from "${normalizedMethod}" to "${specialMethod}"`);
           
-          console.log(`After conversion for exercise ${exercise.id}:`, specialMethod);
-          initialSpecialMethods[exercise.id] = specialMethod;
+          console.log(`Normalized method from "${normalizedMethod}" to "${finalMethod}"`);
+          
+          if (finalMethod) {
+            console.log(`After conversion for exercise ${exercise.id}:`, finalMethod);
+            initialSpecialMethods[exercise.id] = finalMethod;
+          }
         }
         
         const specialConfig = exercise.specialConfig || exercise.specialMethodConfig;
-        if (specialConfig) {
+        if (specialConfig && finalMethod) {
           console.log(`Restoring special config for exercise ${exercise.id}:`, specialConfig);
           // Transform database format back to UI format
           let uiConfig = { ...specialConfig };
           
           // Transform stored config format to UI format based on method
-          if (specialMethod === 'myorep_match' || specialMethod === 'myorep_no_match') {
+          if (finalMethod === 'myorep_match' || finalMethod === 'myorep_no_match') {
             // For Myorep methods, use the same structure as creation phase
             uiConfig.targetReps = specialConfig.targetReps || 15;
             uiConfig.miniSets = specialConfig.miniSets || 3;
@@ -233,7 +249,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             uiConfig.activationSet = specialConfig.activationSet !== false; // Default to true
           }
           
-          if (specialMethod === 'drop_set' || specialMethod === 'dropset') {
+          if (finalMethod === 'drop_set') {
             // Handle both template database format and UI format
             if (specialConfig.drops !== undefined && specialConfig.weightReduction !== undefined) {
               // Database format from template: {"drops": 1, "weightReduction": 20}
@@ -258,7 +274,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             }
           }
           
-          if (specialMethod === 'giant_set') {
+          if (finalMethod === 'giant_set') {
             // For Giant Set, handle different config formats
             uiConfig.totalTargetReps = specialConfig.totalTargetReps || 40;
             
@@ -345,6 +361,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           throw new Error('Missing required data for saving progress');
         }
         
+        // Show saving status
+        setSaveStatus('saving');
+        setSaveMessage('Saving workout progress...');
+        
         const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
         return response;
       } catch (error) {
@@ -354,6 +374,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     },
     onSuccess: (data, variables) => {
       try {
+        // Show success status
+        setSaveStatus('success');
+        setSaveMessage(variables?.isCompleted ? 'Workout completed successfully!' : 'Progress saved successfully');
+        
         // Invalidate all relevant caches when workout is completed
         queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
         queryClient.invalidateQueries({ queryKey: ["/api/training/sessions"] });
@@ -372,26 +396,48 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             title: "Workout Completed!",
             description: "Great job! Redirecting to feedback...",
           });
-          setLocation(`/workout-feedback/${sessionId}`);
+          
+          // Delay redirect to show success animation
+          setTimeout(() => {
+            setLocation(`/workout-feedback/${sessionId}`);
+          }, 1500);
         } else {
           // Just saving progress
           toast({
             title: "Progress Saved",
             description: "Your workout progress has been saved.",
           });
+          
+          // Reset save status after delay
+          setTimeout(() => {
+            setSaveStatus('idle');
+          }, 2000);
+          
           onComplete();
         }
       } catch (error) {
         console.error('Error in onSuccess handler:', error);
+        setSaveStatus('error');
+        setSaveMessage('Error processing save response');
       }
     },
     onError: (error: any) => {
       console.error('Save progress mutation error:', error);
+      
+      // Show error status
+      setSaveStatus('error');
+      setSaveMessage(`Failed to save: ${error?.message || 'Network error'}`);
+      
       toast({
         title: "Error",
         description: `Failed to save workout progress: ${error?.message || 'Unknown error'}`,
         variant: "destructive",
       });
+      
+      // Reset error status after delay
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 5000);
     },
   });
 
@@ -477,6 +523,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       }
 
       updateSet(currentExercise.id, currentSetIndex, 'completed', true);
+      
+      // Show auto-regulation feedback for completed set
+      setCurrentSetForFeedback({ exerciseId: currentExercise.id, setIndex: currentSetIndex });
+      setShowAutoRegulation(true);
       
       // Check for Superset auto-switching
       const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
@@ -591,13 +641,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     const currentSets = workoutData[exerciseId] || [];
     
     if (currentSets.length <= 1) {
-      showWarning("Cannot Remove Set", "Each exercise must have at least one set.");
+      showError("Cannot Remove Set", "Each exercise must have at least one set.");
       return;
     }
 
     const setToRemove = currentSets[setIndex];
     if (setToRemove?.completed) {
-      showWarning("Cannot Remove Completed Set", "You cannot remove a completed set.");
+      showError("Cannot Remove Completed Set", "You cannot remove a completed set.");
       return;
     }
 
@@ -1378,6 +1428,69 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             });
           }}
         />
+      )}
+      
+      {/* Progress Save Indicator */}
+      <ProgressSaveIndicator
+        status={saveStatus}
+        message={saveMessage}
+        isVisible={saveStatus !== 'idle'}
+        position="top-center"
+        onDismiss={() => {
+          setSaveStatus('idle');
+          setSaveMessage('');
+        }}
+      />
+      
+      {/* Auto-Regulation Feedback Modal */}
+      {showAutoRegulation && currentSetForFeedback && currentExercise && (
+        <div className="fixed inset-0 bg-black/50 z-[90] flex items-center justify-center p-4">
+          <div className="w-full max-w-md animate-in zoom-in-95 fade-in-0 duration-300">
+            <AutoRegulationFeedback
+              currentRPE={currentSets[currentSetForFeedback.setIndex]?.rpe || 8}
+              onRPEChange={(rpe) => {
+                updateSet(currentSetForFeedback.exerciseId, currentSetForFeedback.setIndex, 'rpe', rpe);
+              }}
+              onFeedbackSubmit={(feedback) => {
+                // Update the set with RPE and other feedback
+                updateSet(currentSetForFeedback.exerciseId, currentSetForFeedback.setIndex, 'rpe', feedback.rpe);
+                
+                // Store additional feedback data (could be expanded to save to backend)
+                console.log('Auto-regulation feedback:', {
+                  exercise: currentExercise.exercise.name,
+                  set: currentSetForFeedback.setIndex + 1,
+                  ...feedback
+                });
+                
+                // Close the feedback modal
+                setShowAutoRegulation(false);
+                setCurrentSetForFeedback(null);
+                
+                // Show success notification
+                addNotification({
+                  variant: 'success',
+                  title: 'Feedback Recorded',
+                  message: `RPE ${feedback.rpe} recorded for ${currentExercise.exercise.name} - Set ${currentSetForFeedback.setIndex + 1}`,
+                  duration: 3000,
+                });
+              }}
+              className="mx-auto"
+            />
+            
+            {/* Close button */}
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => {
+                  setShowAutoRegulation(false);
+                  setCurrentSetForFeedback(null);
+                }}
+                className="ios-touch-feedback px-6 py-2 bg-muted hover:bg-muted/80 text-muted-foreground  font-medium transition-colors"
+              >
+                Skip Feedback
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

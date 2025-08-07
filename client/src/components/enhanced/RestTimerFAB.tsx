@@ -41,8 +41,35 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Calculate progress percentage
+  // Calculate progress percentage with smooth animation
   const progress = totalTime > 0 ? ((totalTime - timeRemaining) / totalTime) * 100 : 0;
+  
+  // Animation states
+  const [pulseAnimation, setPulseAnimation] = useState(false);
+  const [completionAnimation, setCompletionAnimation] = useState(false);
+  
+  // Trigger pulse animation when timer is active
+  React.useEffect(() => {
+    if (isActive && timeRemaining > 0) {
+      setPulseAnimation(true);
+      const pulseTimer = setInterval(() => {
+        setPulseAnimation(false);
+        setTimeout(() => setPulseAnimation(true), 100);
+      }, 2000); // Pulse every 2 seconds
+      
+      return () => clearInterval(pulseTimer);
+    } else {
+      setPulseAnimation(false);
+    }
+  }, [isActive, timeRemaining]);
+  
+  // Trigger completion animation
+  React.useEffect(() => {
+    if (progress >= 100 && isActive) {
+      setCompletionAnimation(true);
+      setTimeout(() => setCompletionAnimation(false), 1000);
+    }
+  }, [progress, isActive]);
 
   // Handle custom time setting
   const handleCustomTimeSet = () => {
@@ -430,12 +457,23 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
           overflow: 'hidden'
         }}
       >
-        {/* Outer pulsing ring when active */}
+        {/* Enhanced pulsing ring when active with animation states */}
         {timeRemaining > 0 && (
-          <div 
-            className="absolute inset-0 timer-fab-circle bg-blue-500/20 dark:bg-blue-400/20 animate-pulse" 
-            style={{ borderRadius: '50%' }}
-          />
+          <>
+            <div 
+              className={`absolute inset-0 timer-fab-circle transition-colors duration-500 animate-pulse ${
+                pulseAnimation ? 'bg-blue-500/30 dark:bg-blue-400/30' : 'bg-blue-500/20 dark:bg-blue-400/20'
+              } ${completionAnimation ? 'bg-green-500/40 dark:bg-green-400/40' : ''}`}
+              style={{ borderRadius: '50%' }}
+            />
+            {/* Additional ripple effect for urgent countdown */}
+            {timeRemaining <= 10 && (
+              <div 
+                className="absolute inset-0 timer-fab-circle bg-red-500/20 dark:bg-red-400/20 animate-ping" 
+                style={{ borderRadius: '50%' }}
+              />
+            )}
+          </>
         )}
         
         {/* Main button with glassmorphism effect - Perfect Circle */}
@@ -457,7 +495,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   fill="none"
                   className="text-gray-300/30 dark:text-gray-600/30"
                 />
-                {/* Progress circle */}
+                {/* Enhanced progress circle with color transitions */}
                 <circle
                   cx="16"
                   cy="16"
@@ -466,17 +504,34 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                   strokeWidth="2.5"
                   fill="none"
                   strokeLinecap="round"
-                  className="text-blue-500 dark:text-blue-400 transition-all duration-300"
+                  className={`transition-all duration-500 ${
+                    completionAnimation ? 'text-green-500 dark:text-green-400' :
+                    timeRemaining <= 10 ? 'text-red-500 dark:text-red-400' :
+                    timeRemaining <= 30 ? 'text-yellow-500 dark:text-yellow-400' :
+                    'text-blue-500 dark:text-blue-400'
+                  }`}
                   strokeDasharray={`${88 * progress / 100} 88`}
+                  style={{
+                    transform: completionAnimation ? 'scale(1.05)' : 'scale(1)',
+                    transformOrigin: 'center'
+                  }}
                 />
               </svg>
-              {/* Time display with better typography */}
+              {/* Enhanced time display with animations and color states */}
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-[11px] font-bold text-gray-900 dark:text-white leading-none">
+                <div className={`text-[11px] font-bold leading-none transition-all duration-300 ${
+                  completionAnimation ? 'text-green-600 dark:text-green-400 scale-110' :
+                  timeRemaining <= 10 ? 'text-red-600 dark:text-red-400 animate-pulse' :
+                  timeRemaining <= 30 ? 'text-yellow-600 dark:text-yellow-400' :
+                  'text-gray-900 dark:text-white'
+                }`}>
                   {Math.ceil(timeRemaining / 60)}
                 </div>
-                <div className="text-[7px] text-gray-600 dark:text-gray-300 leading-none">
-                  min
+                <div className={`text-[7px] leading-none transition-colors duration-300 ${
+                  timeRemaining <= 10 ? 'text-red-500 dark:text-red-400' :
+                  'text-gray-600 dark:text-gray-300'
+                }`}>
+                  {timeRemaining <= 10 ? 'sec' : 'min'}
                 </div>
               </div>
             </div>

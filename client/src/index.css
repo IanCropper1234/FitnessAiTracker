@@ -1129,6 +1129,133 @@ button, .ios-button {
       opacity: 1;
     }
   }
+  
+  /* Enhanced Workout Execution Animations */
+  @keyframes workout-progress-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes set-completion-celebration {
+    0% {
+      transform: scale(1) rotate(0deg);
+      background-color: currentColor;
+    }
+    25% {
+      transform: scale(1.1) rotate(5deg);
+      background-color: #10b981;
+    }
+    50% {
+      transform: scale(1.15) rotate(-5deg);
+      background-color: #059669;
+    }
+    75% {
+      transform: scale(1.1) rotate(2deg);
+      background-color: #10b981;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      background-color: currentColor;
+    }
+  }
+
+  @keyframes rest-timer-urgent {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+  }
+
+  @keyframes auto-regulation-feedback-appear {
+    0% {
+      transform: translateY(20px) scale(0.95);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes progress-save-bounce {
+    0%, 20%, 53%, 80%, 100% {
+      transform: translate3d(0, 0, 0);
+    }
+    40%, 43% {
+      transform: translate3d(0, -8px, 0);
+    }
+    70% {
+      transform: translate3d(0, -4px, 0);
+    }
+    90% {
+      transform: translate3d(0, -2px, 0);
+    }
+  }
+
+  /* Enhanced REST timer animations */
+  .rest-timer-urgent {
+    animation: rest-timer-urgent 1s infinite;
+  }
+
+  .set-completion-celebrate {
+    animation: set-completion-celebration 0.6s ease-out;
+  }
+
+  .auto-regulation-appear {
+    animation: auto-regulation-feedback-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .progress-save-bounce {
+    animation: progress-save-bounce 0.8s ease-out;
+  }
+
+  /* Enhanced button feedback for workout execution */
+  .workout-button-press {
+    transform: scale(0.95);
+    transition: transform 0.1s ease-out;
+  }
+
+  .workout-button-release {
+    transform: scale(1);
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* RPE selection animations */
+  @keyframes rpe-selection-highlight {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 currentColor;
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 4px rgba(currentColor, 0.3);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 currentColor;
+    }
+  }
+
+  .rpe-selection-animate {
+    animation: rpe-selection-highlight 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
   @keyframes pulse {
     0%, 100% {
