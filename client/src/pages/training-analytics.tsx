@@ -297,6 +297,35 @@ export default function TrainingAnalytics() {
                     ))}
                   </Pie>
                   <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload[0]) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-white border-2 border-gray-200 rounded-md shadow-lg p-3 min-w-[200px]">
+                            <div className="font-bold text-gray-900 mb-2 text-sm">
+                              {data.muscleGroup}
+                            </div>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Current Volume:</span>
+                                <span className="font-medium text-gray-900">{data.currentVolume} sets</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Target Volume:</span>
+                                <span className="font-medium text-gray-900">{data.targetVolume} sets</span>
+                              </div>
+                              <div className="flex justify-between pt-1 border-t border-gray-200">
+                                <span className="text-gray-600">Adherence:</span>
+                                <span className={`font-bold ${data.percentage >= 100 ? 'text-green-600' : data.percentage >= 90 ? 'text-yellow-600' : 'text-red-600'}`}>
+                                  {data.percentage}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                     contentStyle={{ 
                       backgroundColor: '#ffffff',
                       border: '2px solid #e2e8f0',
@@ -307,15 +336,14 @@ export default function TrainingAnalytics() {
                       boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                       padding: '12px',
                       lineHeight: '1.5',
-                      minWidth: '150px'
+                      minWidth: '200px'
                     }}
                     labelStyle={{ 
                       color: '#1a1a1a', 
                       fontWeight: '700',
                       fontSize: '14px',
-                      marginBottom: '6px'
+                      marginBottom: '8px'
                     }}
-                    separator=" : "
                     itemStyle={{ 
                       color: '#374151',
                       fontSize: '12px',
