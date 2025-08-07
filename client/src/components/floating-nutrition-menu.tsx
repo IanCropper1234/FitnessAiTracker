@@ -3,7 +3,8 @@ import {
   Target,
   Brain,
   User,
-  TrendingUp
+  TrendingUp,
+  BookOpen
 } from "lucide-react";
 import { useScrollHide } from "@/hooks/use-scroll-hide";
 
@@ -16,7 +17,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
   const isVisible = useScrollHide({ threshold: 15 });
   
   const menuItems = [
-    { id: "overview", icon: Utensils, label: "Food Log" },
+    { id: "overview", icon: BookOpen, label: "Food Log" },
     { id: "builder", icon: Target, label: "Diet Goal" },
     { id: "advanced", icon: Brain, label: "Adjustment" },
     { id: "body", icon: User, label: "Body" },
