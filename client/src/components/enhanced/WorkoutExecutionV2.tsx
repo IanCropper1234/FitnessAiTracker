@@ -1463,12 +1463,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 // Update the set with RPE and other feedback
                 updateSet(currentSetForFeedback.exerciseId, currentSetForFeedback.setIndex, 'rpe', feedback.rpe);
                 
-                // Store additional feedback data (could be expanded to save to backend)
-                console.log('Auto-regulation feedback:', {
-                  exercise: currentExercise.exercise.name,
+                // Store additional feedback data for later use in workout feedback
+                const exerciseFeedback = {
+                  exerciseId: currentExercise.exerciseId,
+                  exerciseName: currentExercise.exercise.name,
                   set: currentSetForFeedback.setIndex + 1,
-                  ...feedback
-                });
+                  rpe: feedback.rpe,
+                  timestamp: Date.now()
+                };
+                
+                // Store in sessionStorage for the workout feedback page
+                const existingFeedback = JSON.parse(sessionStorage.getItem(`workout-${sessionId}-rpe-data`) || '[]');
+                existingFeedback.push(exerciseFeedback);
+                sessionStorage.setItem(`workout-${sessionId}-rpe-data`, JSON.stringify(existingFeedback));
+                
+                console.log('Exercise RPE feedback stored:', exerciseFeedback);
                 
                 // Close the feedback modal
                 setShowAutoRegulation(false);

@@ -38,9 +38,36 @@ export default function WorkoutFeedbackPage() {
     notes: ''
   });
 
+  // Load exercise-level RPE data collected during workout
+  const [exerciseRpeData, setExerciseRpeData] = useState<Array<{
+    exerciseId: number;
+    exerciseName: string;
+    set: number;
+    rpe: number;
+    timestamp: number;
+  }>>([]);
+
   useEffect(() => {
     if (sessionId) {
       setFeedback(prev => ({ ...prev, sessionId }));
+      
+      // Load RPE data collected during workout
+      const rpeDataKey = `workout-${sessionId}-rpe-data`;
+      const storedRpeData = sessionStorage.getItem(rpeDataKey);
+      if (storedRpeData) {
+        try {
+          const parsedData = JSON.parse(storedRpeData);
+          setExerciseRpeData(parsedData);
+          
+          // Calculate average RPE for perceived effort initial value
+          if (parsedData.length > 0) {
+            const avgRpe = parsedData.reduce((sum: number, item: any) => sum + item.rpe, 0) / parsedData.length;
+            setFeedback(prev => ({ ...prev, perceivedEffort: Math.round(avgRpe) }));
+          }
+        } catch (error) {
+          console.error('Error parsing stored RPE data:', error);
+        }
+      }
     }
   }, [sessionId]);
 
@@ -57,7 +84,12 @@ export default function WorkoutFeedbackPage() {
 
   const handleSubmit = () => {
     if (sessionId) {
+      // Submit main feedback
       submitFeedbackMutation.mutate(feedback);
+      
+      // Clean up stored RPE data after successful submission
+      const rpeDataKey = `workout-${sessionId}-rpe-data`;
+      sessionStorage.removeItem(rpeDataKey);
     }
   };
 
@@ -113,6 +145,33 @@ export default function WorkoutFeedbackPage() {
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Exercise RPE Summary - Only show if we have data */}
+          {exerciseRpeData.length > 0 && (
+            <div className="space-y-3">
+              <Label className="text-base font-medium">Exercise RPE Summary</Label>
+              <div className="bg-muted/50 p-4 space-y-2">
+                <p className="text-sm text-muted-foreground">RPE data collected during your workout:</p>
+                <div className="grid gap-2">
+                  {exerciseRpeData.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center text-sm">
+                      <span className="font-medium">{item.exerciseName}</span>
+                      <span className="text-muted-foreground">Set {item.set}</span>
+                      <span className="px-2 py-1 bg-primary/10 text-primary font-medium">
+                        RPE {item.rpe}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-2 border-t text-sm text-muted-foreground">
+                  Average RPE: {exerciseRpeData.length > 0 ? 
+                    (exerciseRpeData.reduce((sum, item) => sum + item.rpe, 0) / exerciseRpeData.length).toFixed(1) : 
+                    'N/A'
+                  } (pre-filled in Perceived Effort below)
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Pump Quality */}
           <div className="space-y-3">
             <Label className="text-base font-medium">Pump Quality (1-10)</Label>
