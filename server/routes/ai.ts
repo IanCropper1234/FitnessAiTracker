@@ -45,8 +45,10 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
     **Muscle Group Focus**: ${muscleGroupFocus?.join(', ') || 'Full body'}
     **Available Equipment**: ${availableEquipment?.join(', ') || 'Full gym'}
     
-    **Current Exercise Selection**:
-    ${currentExercises?.map((ex: any) => `- ${ex.name} (${ex.category}, targets: ${ex.muscleGroups?.join(', ')})`).join('\n') || 'No current exercises provided'}
+    **CRITICAL CONSTRAINT: You MUST only recommend exercises from the following available exercise library. Do NOT create new exercise names - only select from this exact list:**
+    ${currentExercises?.map((ex: any) => `- "${ex.name}" (ID: ${ex.id}, Category: ${ex.category}, Targets: ${ex.muscleGroups?.join(', ') || ex.primaryMuscle})`).join('\n') || 'No exercises available'}
+    
+    **IMPORTANT**: Use the EXACT exercise names as listed above. Do not modify, abbreviate, or create variations of these names.
     
     **Training History & Performance**:
     ${trainingHistory?.map((hist: any) => 
@@ -57,17 +59,19 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
     ${injuryRestrictions ? `**Injury Restrictions**: ${Array.isArray(injuryRestrictions) ? injuryRestrictions.join(', ') : injuryRestrictions}` : ''}
 
     Please analyze this data and provide:
-    1. 3-5 specific exercise recommendations that complement the current selection
+    1. 3-5 specific exercise recommendations SELECTED ONLY from the exercise library above
     2. RP-based reasoning for each recommendation
     3. Optimal set/rep ranges based on RP guidelines
     4. Special training method suggestions where appropriate
     5. Volume progression considerations
 
+    **MANDATORY**: Only use exercise names that appear EXACTLY in the exercise library list above. Do not create new exercises or modify existing names.
+
     Format your response as JSON with the following structure:
     {
       "recommendations": [
         {
-          "exerciseName": "string",
+          "exerciseName": "string (MUST match exactly from the exercise library)",
           "category": "string",
           "primaryMuscle": "string", 
           "muscleGroups": ["string"],
