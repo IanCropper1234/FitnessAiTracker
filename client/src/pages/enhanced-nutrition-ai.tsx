@@ -14,8 +14,6 @@ import {
   Zap,
   AlertTriangle,
   CheckCircle,
-  Camera,
-  Upload,
   Sparkles,
   ArrowLeft,
   Loader2,
@@ -27,7 +25,6 @@ import {
   Heart
 } from "lucide-react";
 import { useLocation } from "wouter";
-import { AINutritionAnalysisService } from "@/services/aiNutritionAnalysis";
 import { useToast } from "@/hooks/use-toast";
 
 interface MicronutrientAnalysis {
@@ -56,8 +53,6 @@ export default function EnhancedNutritionAI() {
   const [timeRange, setTimeRange] = useState<string>("Last 7 Days");
   const [goals, setGoals] = useState<string[]>(['Muscle Gain']);
   const [healthConditions, setHealthConditions] = useState<string>('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
 
   // Available options
   const goalOptions = [
@@ -119,47 +114,7 @@ export default function EnhancedNutritionAI() {
     }
   });
 
-  // Food image analysis mutation
-  const foodAnalysisMutation = useMutation({
-    mutationFn: async (base64Image: string) => {
-      return await AINutritionAnalysisService.analyzeFood(base64Image, {
-        mealType: 'lunch',
-        estimatedPortion: 'standard'
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Food Analysis Complete",
-        description: "AI has analyzed your food image!",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Image Analysis Failed",
-        description: error.message || "Failed to analyze food image.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setImagePreview(result);
-        
-        // Convert to base64 and analyze
-        const base64 = result.split(',')[1];
-        foodAnalysisMutation.mutate(base64);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -273,61 +228,7 @@ export default function EnhancedNutritionAI() {
             </CardContent>
           </Card>
 
-          {/* Food Image Analysis */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Camera className="h-5 w-5" />
-                Food Image Analysis
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="food-image-upload"
-                />
-                <label htmlFor="food-image-upload" className="cursor-pointer">
-                  {imagePreview ? (
-                    <div className="space-y-2">
-                      <img
-                        src={imagePreview}
-                        alt="Food preview"
-                        className="max-w-full h-32 object-cover mx-auto"
-                      />
-                      <p className="text-xs text-muted-foreground">Click to change image</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                      <p className="text-sm">Upload food image for AI analysis</p>
-                      <p className="text-xs text-muted-foreground">JPG, PNG up to 10MB</p>
-                    </div>
-                  )}
-                </label>
-              </div>
-
-              {foodAnalysisMutation.data && (
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sm">AI Food Recognition:</h4>
-                  {foodAnalysisMutation.data.foodItems?.map((item: any, index: number) => (
-                    <div key={index} className="p-3 bg-muted/50">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm">{item.name}</span>
-                        <Badge variant="outline">{Math.round(item.confidence * 100)}%</Badge>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {item.estimatedWeight}g • {item.nutrition.calories} kcal
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          
         </div>
 
         {/* Results Panel */}
