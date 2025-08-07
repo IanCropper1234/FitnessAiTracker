@@ -209,9 +209,28 @@ export default function TrainingAnalytics() {
                   <YAxis />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'hsl(var(--background))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '0'
+                      backgroundColor: '#ffffff',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '6px',
+                      color: '#1a1a1a',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                      padding: '12px',
+                      lineHeight: '1.5',
+                      minWidth: '200px'
+                    }}
+                    labelStyle={{ 
+                      color: '#1a1a1a', 
+                      fontWeight: '700',
+                      fontSize: '14px',
+                      marginBottom: '6px'
+                    }}
+                    separator=" : "
+                    itemStyle={{ 
+                      color: '#374151',
+                      fontSize: '12px',
+                      fontWeight: '500'
                     }}
                   />
                   <Legend />
@@ -276,7 +295,32 @@ export default function TrainingAnalytics() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#ffffff',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '6px',
+                      color: '#1a1a1a',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                      padding: '12px',
+                      lineHeight: '1.5',
+                      minWidth: '150px'
+                    }}
+                    labelStyle={{ 
+                      color: '#1a1a1a', 
+                      fontWeight: '700',
+                      fontSize: '14px',
+                      marginBottom: '6px'
+                    }}
+                    separator=" : "
+                    itemStyle={{ 
+                      color: '#374151',
+                      fontSize: '12px',
+                      fontWeight: '500'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -337,9 +381,28 @@ export default function TrainingAnalytics() {
                         <Tooltip 
                           labelFormatter={(value) => new Date(value).toLocaleDateString()}
                           contentStyle={{ 
-                            backgroundColor: 'hsl(var(--background))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '0'
+                            backgroundColor: '#ffffff',
+                            border: '2px solid #e2e8f0',
+                            borderRadius: '6px',
+                            color: '#1a1a1a',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                            padding: '12px',
+                            lineHeight: '1.5',
+                            minWidth: '180px'
+                          }}
+                          labelStyle={{ 
+                            color: '#1a1a1a', 
+                            fontWeight: '700',
+                            fontSize: '14px',
+                            marginBottom: '6px'
+                          }}
+                          separator=" : "
+                          itemStyle={{ 
+                            color: '#374151',
+                            fontSize: '12px',
+                            fontWeight: '500'
                           }}
                         />
                         <Line 
