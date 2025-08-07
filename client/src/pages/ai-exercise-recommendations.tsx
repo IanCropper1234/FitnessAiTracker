@@ -662,29 +662,33 @@ export default function AIExerciseRecommendations() {
                       {recommendationMutation.data.recommendations?.map((rec: ExerciseRecommendation, index: number) => (
                       <Card key={index} className="border-l-4 border-l-blue-500">
                         <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <h5 className="font-medium text-sm">{rec.exerciseName}</h5>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Badge variant="outline" className="text-xs">
-                                  {rec.category}
-                                </Badge>
-                                <Badge variant="secondary" className="text-xs">
-                                  {rec.primaryMuscle}
-                                </Badge>
-                                <Badge 
-                                  variant={rec.difficulty === 'beginner' ? 'default' : rec.difficulty === 'advanced' ? 'destructive' : 'outline'}
-                                  className="text-xs"
-                                >
-                                  {rec.difficulty}
-                                </Badge>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-medium text-sm">{rec.exerciseName}</h5>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    {rec.category}
+                                  </Badge>
+                                  <Badge variant="secondary" className="text-xs">
+                                    {rec.primaryMuscle}
+                                  </Badge>
+                                  <Badge 
+                                    variant={rec.difficulty === 'beginner' ? 'default' : rec.difficulty === 'advanced' ? 'destructive' : 'outline'}
+                                    className="text-xs"
+                                  >
+                                    {rec.difficulty}
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 text-sm font-bold">
+                            
+                            {/* Sets and Reps in separate row */}
+                            <div className="flex items-center justify-between">
+                              <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 text-lg font-bold">
                                 {rec.sets} × {rec.reps}
                               </div>
-                              <div className="text-xs text-muted-foreground mt-1">{rec.restPeriod}s rest</div>
+                              <div className="text-sm text-muted-foreground">{rec.restPeriod}s rest</div>
                             </div>
                           </div>
 
