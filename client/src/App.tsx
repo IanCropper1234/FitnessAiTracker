@@ -366,6 +366,11 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
+  // Setup global error handling - must be at top level
+  useEffect(() => {
+    setupGlobalErrorHandling();
+  }, []);
+
   // Check authentication status on app initialization with retry logic for iOS PWA
   useEffect(() => {
     const checkAuth = async (retryCount = 0) => {
@@ -430,11 +435,6 @@ export default function App() {
       </QueryClientProvider>
     );
   }
-
-  // Setup global error handling
-  useEffect(() => {
-    setupGlobalErrorHandling();
-  }, []);
 
   return (
     <ErrorBoundary level="critical">
