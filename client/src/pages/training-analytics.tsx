@@ -286,10 +286,11 @@ export default function TrainingAnalytics() {
                     data={mockMuscleData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={90}
+                    innerRadius={30}
                     fill="#8884d8"
                     dataKey="currentVolume"
-                    label={(entry) => entry.muscleGroup}
+                    label={false}
                   >
                     {mockMuscleData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -326,23 +327,23 @@ export default function TrainingAnalytics() {
             </div>
 
             {/* Volume Comparison */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               {mockMuscleData.map((muscle) => (
-                <div key={muscle.muscleGroup} className="flex items-center justify-between p-3 bg-muted/50">
-                  <div className="flex items-center gap-3">
+                <div key={muscle.muscleGroup} className="flex items-center justify-between p-2.5 bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-2.5">
                     <div 
-                      className="w-3 h-3" 
+                      className="w-4 h-4 flex-shrink-0" 
                       style={{ backgroundColor: muscle.color }}
                     />
-                    <span className="font-medium text-sm">{muscle.muscleGroup}</span>
+                    <span className="font-medium text-sm truncate">{muscle.muscleGroup}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="text-xs text-muted-foreground text-right">
                       {muscle.currentVolume}/{muscle.targetVolume} sets
                     </div>
                     <Badge 
                       variant={muscle.percentage >= 100 ? "default" : "secondary"}
-                      className="text-xs"
+                      className="text-xs min-w-[45px] text-center"
                     >
                       {muscle.percentage}%
                     </Badge>
