@@ -15,6 +15,8 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
+import analyticsRoutes from "./routes/analytics.js";
+import aiRoutes from "./routes/ai.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
@@ -2794,6 +2796,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({ message: error.message });
     }
   });
+
+  // Analytics routes
+  app.use('/api/analytics', analyticsRoutes);
+  
+  // AI routes
+  app.use('/api/ai', aiRoutes);
 
   // Nutrition Progression
   app.get("/api/nutrition/progression", requireAuth, async (req, res) => {

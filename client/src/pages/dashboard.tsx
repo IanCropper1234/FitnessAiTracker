@@ -14,7 +14,7 @@ import { AnimatedDashboardCard, useStaggeredAnimation } from "@/components/ui/da
 
 import { RecentActivity } from "@/components/recent-activity";
 import { DailyWellnessReminder } from "@/components/daily-wellness-reminder";
-import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Scale, Heart } from "lucide-react";
+import { Calendar, Activity, Target, TrendingUp, Plus, Dumbbell, Utensils, ChevronLeft, ChevronRight, ChevronDown, Scale, Heart, Brain, Sparkles } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
