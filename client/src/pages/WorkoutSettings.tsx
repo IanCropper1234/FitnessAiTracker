@@ -65,13 +65,13 @@ export default function WorkoutSettings() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border bg-blue-50/30">
+          <div className="flex items-center justify-between p-4 border bg-blue-50/30 dark:bg-blue-950/30 dark:border-blue-800/50">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <Label htmlFor="autoRegulationFeedback" className="font-medium">
+                <Label htmlFor="autoRegulationFeedback" className="font-medium text-foreground">
                   Auto-Regulation Feedback
                 </Label>
-                <Badge variant="outline" className="bg-blue-100 text-blue-700 text-xs">
+                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700 text-xs">
                   RP Method
                 </Badge>
               </div>
@@ -100,9 +100,9 @@ export default function WorkoutSettings() {
           <CardTitle>Interface Enhancements</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 border">
+          <div className="flex items-center justify-between p-3 border border-border">
             <div>
-              <Label htmlFor="gestureNavigation" className="font-medium">
+              <Label htmlFor="gestureNavigation" className="font-medium text-foreground">
                 Gesture Navigation
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -116,9 +116,9 @@ export default function WorkoutSettings() {
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 border">
+          <div className="flex items-center justify-between p-3 border border-border">
             <div>
-              <Label htmlFor="circularProgress" className="font-medium">
+              <Label htmlFor="circularProgress" className="font-medium text-foreground">
                 Circular Progress Indicators
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -132,9 +132,9 @@ export default function WorkoutSettings() {
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 border">
+          <div className="flex items-center justify-between p-3 border border-border">
             <div>
-              <Label htmlFor="restTimerFAB" className="font-medium">
+              <Label htmlFor="restTimerFAB" className="font-medium text-foreground">
                 Floating Rest Timer
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -151,14 +151,14 @@ export default function WorkoutSettings() {
       </Card>
 
       {/* Information */}
-      <Card className="border-blue-200 bg-blue-50/30">
+      <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/20">
         <CardContent className="pt-6">
           <div className="space-y-2">
-            <h3 className="font-medium text-blue-900">About Auto-Regulation Feedback</h3>
-            <p className="text-sm text-blue-700">
+            <h3 className="font-medium text-blue-900 dark:text-blue-100">About Auto-Regulation Feedback</h3>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
               The Renaissance Periodization auto-regulation system uses your RPE feedback to intelligently adjust training volume and intensity. When enabled, you'll be prompted to rate your perceived exertion after completing each exercise during your workout.
             </p>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
               This data is then combined with your post-workout wellness feedback to provide comprehensive training recommendations following RP methodology.
             </p>
           </div>
