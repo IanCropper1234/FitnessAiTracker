@@ -222,38 +222,28 @@ export default function AIExerciseRecommendations() {
   // Save individual exercise to template
   const handleSaveExerciseToTemplate = async (rec: ExerciseRecommendation) => {
     try {
-      // Create a single exercise template
-      const templateData = {
-        name: `AI Generated - ${rec.exerciseName}`,
-        category: 'ai_generated',
-        daysPerWeek: 1,
-        templateData: {},
-        workouts: [{
-          name: `${rec.exerciseName} Workout`,
-          exercises: [{
-            exerciseId: null, // Will be resolved during save
-            exerciseName: rec.exerciseName,
-            sets: rec.sets,
-            repsRange: rec.reps,
-            weight: null,
-            restPeriod: rec.restPeriod,
-            orderIndex: 1,
-            notes: rec.reasoning,
-            specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
-            specialMethodData: rec.specialConfig || {}
-          }]
-        }],
-        difficulty: rec.difficulty,
-        description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`
-      };
-
-      const response = await fetch('/api/training/templates', {
+      const response = await fetch('/api/training/saved-workout-templates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(templateData),
+        body: JSON.stringify({
+          name: `AI Generated - ${rec.exerciseName}`,
+          description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`,
+          exerciseTemplates: [{
+            exerciseName: rec.exerciseName,
+            sets: rec.sets,
+            repsRange: rec.reps,
+            restPeriod: rec.restPeriod,
+            notes: rec.reasoning,
+            specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
+            specialMethodData: rec.specialConfig || {}
+          }],
+          tags: ['ai-generated'],
+          estimatedDuration: 30,
+          difficulty: rec.difficulty
+        }),
       });
 
       if (!response.ok) {
@@ -279,38 +269,29 @@ export default function AIExerciseRecommendations() {
 
     try {
       const exercises = recommendationMutation.data.recommendations.map((rec: ExerciseRecommendation, index: number) => ({
-        exerciseId: null, // Will be resolved during save
         exerciseName: rec.exerciseName,
         sets: rec.sets,
         repsRange: rec.reps,
-        weight: null,
         restPeriod: rec.restPeriod,
-        orderIndex: index + 1,
         notes: rec.reasoning,
         specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
         specialMethodData: rec.specialConfig || {}
       }));
 
-      const templateData = {
-        name: `AI Generated Session - ${new Date().toLocaleDateString()}`,
-        category: 'ai_generated',
-        daysPerWeek: 1,
-        templateData: {},
-        workouts: [{
-          name: `AI Complete Session`,
-          exercises: exercises
-        }],
-        difficulty: 'intermediate',
-        description: `AI-generated complete training session with ${exercises.length} exercises. ${recommendationMutation.data.reasoning}`
-      };
-
-      const response = await fetch('/api/training/templates', {
+      const response = await fetch('/api/training/saved-workout-templates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(templateData),
+        body: JSON.stringify({
+          name: `AI Generated Session - ${new Date().toLocaleDateString()}`,
+          description: `AI-generated complete training session with ${exercises.length} exercises. ${recommendationMutation.data.reasoning}`,
+          exerciseTemplates: exercises,
+          tags: ['ai-generated'],
+          estimatedDuration: 60,
+          difficulty: 'intermediate'
+        }),
       });
 
       if (!response.ok) {
