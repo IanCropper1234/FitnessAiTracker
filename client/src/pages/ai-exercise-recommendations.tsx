@@ -233,13 +233,16 @@ export default function AIExerciseRecommendations() {
           name: `AI Generated - ${rec.exerciseName}`,
           description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`,
           exerciseTemplates: [{
+            exerciseId: currentExercises?.find((ex: any) => 
+              ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
+            )?.id || null,
             exerciseName: rec.exerciseName,
             sets: rec.sets,
-            repsRange: rec.reps,
+            targetReps: rec.reps,
             restPeriod: rec.restPeriod,
             notes: rec.reasoning,
-            specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
-            specialMethodData: rec.specialConfig || {}
+            specialMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
+            specialConfig: rec.specialConfig || {}
           }],
           tags: ['ai-generated'],
           estimatedDuration: 30,
@@ -272,14 +275,22 @@ export default function AIExerciseRecommendations() {
     if (!recommendationMutation.data?.recommendations) return;
 
     try {
-      const exercises = recommendationMutation.data.recommendations.map((rec: ExerciseRecommendation, index: number) => ({
-        exerciseName: rec.exerciseName,
-        sets: rec.sets,
-        repsRange: rec.reps,
-        restPeriod: rec.restPeriod,
-        notes: rec.reasoning,
-        specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
-        specialMethodData: rec.specialConfig || {}
+      const exercises = await Promise.all(recommendationMutation.data.recommendations.map(async (rec: ExerciseRecommendation, index: number) => {
+        // Find the exercise ID by name
+        const exerciseMatch = currentExercises?.find((ex: any) => 
+          ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
+        );
+        
+        return {
+          exerciseId: exerciseMatch?.id || null,
+          exerciseName: rec.exerciseName,
+          sets: rec.sets,
+          targetReps: rec.reps,
+          restPeriod: rec.restPeriod,
+          notes: rec.reasoning,
+          specialMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
+          specialConfig: rec.specialConfig || {}
+        };
       }));
 
       const response = await fetch('/api/training/saved-workout-templates', {
