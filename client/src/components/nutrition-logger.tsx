@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan, Pill, Save } from "lucide-react";
 import { BarcodeScanner } from "./barcode-scanner";
@@ -32,7 +32,7 @@ interface FoodSearchResult {
 
 export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionLoggerProps) {
   const { t } = useLanguage();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
   
   const [searchMode, setSearchMode] = useState<'search' | 'ai' | 'saved'>('ai');
   const [foodQuery, setFoodQuery] = useState('');
@@ -95,18 +95,11 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       queryClient.refetchQueries({ queryKey: ['/api/nutrition/logs'] });
       queryClient.refetchQueries({ queryKey: ['/api/nutrition/summary'] });
       
-      toast({
-        title: "Success",
-        description: "Food logged successfully!"
-      });
+      showSuccess("Food logged successfully!");
       onComplete?.();
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to log food",
-        variant: "destructive"
-      });
+      showError("Failed to log food", error.message);
     }
   });
 
@@ -137,11 +130,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
 
   const handleLogFood = () => {
     if (!mealType.trim()) {
-      toast({
-        title: "Meal Type Required",
-        description: "Please select a meal type before logging food.",
-        variant: "destructive"
-      });
+      showError("Meal Type Required", "Please select a meal type before logging food.");
       return;
     }
 

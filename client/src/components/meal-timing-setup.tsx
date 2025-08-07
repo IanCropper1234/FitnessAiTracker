@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ const weekDays = [
 
 export function MealTimingSetup({ userId }: MealTimingSetupProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
   const queryClient = useQueryClient();
   
   const [formData, setFormData] = useState({
@@ -88,10 +88,10 @@ export function MealTimingSetup({ userId }: MealTimingSetupProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/meal-timing"] });
-      toast({ title: t("Meal timing preferences saved successfully") });
+      showSuccess(t("Meal timing preferences saved successfully"));
     },
     onError: () => {
-      toast({ title: t("Failed to save meal timing preferences"), variant: "destructive" });
+      showError(t("Failed to save meal timing preferences"));
     },
   });
 

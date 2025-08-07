@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +53,7 @@ interface WeeklyNutritionGoalsProps {
 
 export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
   const queryClient = useQueryClient();
 
   // Local unit conversion helper
@@ -131,18 +131,18 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/weekly-nutrition-goal"] });
-      toast({ title: t("Weekly nutrition goals updated successfully") });
+      showSuccess(t("Weekly nutrition goals updated successfully"));
       setIsEditing(false);
     },
     onError: () => {
-      toast({ title: t("Failed to update weekly nutrition goals"), variant: "destructive" });
+      showError(t("Failed to update weekly nutrition goals"));
     },
   });
 
   // Calculate BMR and TDEE
   const calculateCalories = () => {
     if (!userProfile?.weight || !userProfile?.height || !userProfile?.age) {
-      toast({ title: t("Please complete your profile first"), variant: "destructive" });
+      showError(t("Please complete your profile first"));
       return;
     }
 
@@ -191,7 +191,7 @@ export function WeeklyNutritionGoals({ userId }: WeeklyNutritionGoalsProps) {
       currentWeight: userProfile.weight,
     });
 
-    toast({ title: t("Calories calculated based on your profile and goals") });
+    showSuccess(t("Calories calculated based on your profile and goals"));
   };
 
   const handleSubmit = (e: React.FormEvent) => {

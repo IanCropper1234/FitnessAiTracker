@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,7 +75,7 @@ interface MealPlannerProps {
 
 export function MealPlanner({ userId }: MealPlannerProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
   const queryClient = useQueryClient();
   
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -138,10 +138,10 @@ export function MealPlanner({ userId }: MealPlannerProps) {
       apiRequest("POST", "/api/meal-plans", mealPlan),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/meal-plans"] });
-      toast({ title: t("Meal plan created successfully") });
+      showSuccess(t("Meal plan created successfully"));
     },
     onError: () => {
-      toast({ title: t("Failed to create meal plan"), variant: "destructive" });
+      showError(t("Failed to create meal plan"));
     },
   });
 
@@ -217,7 +217,7 @@ export function MealPlanner({ userId }: MealPlannerProps) {
   // Generate daily meal plan
   const generateDailyMealPlan = () => {
     if (!mealTiming || !weeklyGoal) {
-      toast({ title: t("Please set up meal timing preferences first"), variant: "destructive" });
+      showError(t("Please set up meal timing preferences first"));
       return;
     }
     

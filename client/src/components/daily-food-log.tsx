@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { NutritionLogger } from "@/components/nutrition-logger";
 import { Plus, Trash2, Calendar, Zap, Copy, Check, ChevronLeft, ChevronRight, ChevronDown, Sunrise, Sun, Moon, Apple, Utensils } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -216,7 +216,7 @@ export function DailyFoodLog({
   setShowCopyToDatePicker 
 }: DailyFoodLogProps) {
   const { t } = useTranslation();
-  const { toast } = useToast();
+  const { showSuccess, showError } = useIOSNotifications();
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
@@ -245,17 +245,10 @@ export function DailyFoodLog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      toast({
-        title: "Meal moved successfully",
-        description: "Food item has been moved to the new meal.",
-      });
+      showSuccess("Meal moved successfully", "Food item has been moved to the new meal.");
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to move food item: ${error.message}`,
-        variant: "destructive",
-      });
+      showError("Failed to move food item", error.message);
     },
   });
 
@@ -320,17 +313,10 @@ export function DailyFoodLog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      toast({
-        title: "Success",
-        description: "Food log deleted successfully"
-      });
+      showSuccess("Food log deleted successfully");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete food log",
-        variant: "destructive"
-      });
+      showError("Failed to delete food log", error.message);
     }
   });
 
@@ -345,17 +331,10 @@ export function DailyFoodLog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      toast({
-        title: "Success",
-        description: "Food added successfully"
-      });
+      showSuccess("Food added successfully");
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error?.message || "Failed to add food",
-        variant: "destructive"
-      });
+      showError("Failed to add food", error?.message);
     }
   });
 
@@ -372,17 +351,10 @@ export function DailyFoodLog({
       setShowCopyMeal(false);
       setCopyFromDate("");
       setSelectedMealTypes([]);
-      toast({
-        title: "Success",
-        description: `Copied ${data.copiedCount} food entries`
-      });
+      showSuccess("Meals copied successfully", `Copied ${data.copiedCount} food entries`);
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error?.message || "Failed to copy meals",
-        variant: "destructive"
-      });
+      showError("Failed to copy meals", error?.message);
     }
   });
 
@@ -399,17 +371,10 @@ export function DailyFoodLog({
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs'] });
       setSelectedLogs([]);
       setBulkMode(false);
-      toast({
-        title: "Success",
-        description: `Deleted ${selectedLogs.length} food entries`
-      });
+      showSuccess("Entries deleted", `Deleted ${selectedLogs.length} food entries`);
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: "Failed to delete selected entries",
-        variant: "destructive"
-      });
+      showError("Failed to delete selected entries");
     }
   });
 
@@ -427,17 +392,10 @@ export function DailyFoodLog({
       setSelectedLogs([]);
       setBulkMode(false);
       setCopyToDate("");
-      toast({
-        title: "Success",
-        description: `Copied ${data.copiedCount} entries to ${copyToDate}`
-      });
+      showSuccess("Entries copied", `Copied ${data.copiedCount} entries to ${copyToDate}`);
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: "Failed to copy selected entries",
-        variant: "destructive"
-      });
+      showError("Failed to copy selected entries");
     }
   });
 
