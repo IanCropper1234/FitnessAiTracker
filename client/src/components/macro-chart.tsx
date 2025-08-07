@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { useScaleInAnimation } from "./ui/dashboard-animations";
 
 interface MacroChartProps {
   protein: number;
@@ -19,6 +20,7 @@ export function MacroChart({
   goalFat = 0,
   goalCalories = 0 
 }: MacroChartProps) {
+  const chartRef = useScaleInAnimation('.macro-chart-container', { delay: 300 });
   // Calculate calories from macros (4 cal/g protein, 4 cal/g carbs, 9 cal/g fat)
   const proteinCals = protein * 4;
   const carbsCals = carbs * 4;
@@ -105,7 +107,7 @@ export function MacroChart({
   }
 
   return (
-    <div className="space-y-4">
+    <div ref={chartRef} className="macro-chart-container space-y-4">
       <ResponsiveContainer width="100%" height={250}>
         <PieChart>
           <Pie

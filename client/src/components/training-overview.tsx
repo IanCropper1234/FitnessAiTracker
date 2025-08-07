@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { LoadingState } from "@/components/ui/loading";
+import { useRef, useEffect } from "react";
 
 interface TrainingStats {
   totalSessions: number;
@@ -20,6 +21,31 @@ interface TrainingOverviewProps {
 }
 
 export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Entrance animation for training overview
+  useEffect(() => {
+    if (containerRef.current) {
+      const cards = containerRef.current.querySelectorAll('.training-card');
+      cards.forEach((card, index) => {
+        (card as HTMLElement).style.opacity = '0';
+        (card as HTMLElement).style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.animate([
+            { opacity: 0, transform: 'translateY(20px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+          ], {
+            duration: 500,
+            easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+            delay: index * 100,
+            fill: 'forwards'
+          });
+        }, 100);
+      });
+    }
+  }, []);
+
   // Always fetch all-time training stats, ignore date filter for overview
   const { data: trainingStats, isLoading } = useQuery<TrainingStats>({
     queryKey: ['/api/training/stats', userId],
@@ -60,7 +86,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Training Summary Charts */}
       <div className="grid grid-cols-1 gap-6">
         {/* Training Progress Metrics */}
@@ -68,7 +94,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           <h3 className="text-lg font-semibold text-black dark:text-white text-center mb-4">Training Progress</h3>
           
           {/* Training Frequency Card */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4  border border-blue-200 dark:border-blue-800">
+          <div className="training-card bg-blue-50 dark:bg-blue-900/20 p-4  border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Weekly Frequency</h4>
@@ -84,7 +110,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           </div>
 
           {/* Volume Card */}
-          <div className="bg-green-50 dark:bg-green-900/20 p-4  border border-green-200 dark:border-green-800">
+          <div className="training-card bg-green-50 dark:bg-green-900/20 p-4  border border-green-200 dark:border-green-800">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-green-900 dark:text-green-100 text-sm">Total Volume</h4>
@@ -100,7 +126,7 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
           </div>
 
           {/* Session Duration Card */}
-          <div className="bg-purple-50 dark:bg-purple-900/20 p-4  border border-purple-200 dark:border-purple-800">
+          <div className="training-card bg-purple-50 dark:bg-purple-900/20 p-4  border border-purple-200 dark:border-purple-800">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-purple-900 dark:text-purple-100 text-sm">Avg Duration</h4>

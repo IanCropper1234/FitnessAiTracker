@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/components/language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
 import { TrainingOverview } from "@/components/training-overview";
+import { AnimatedPage } from "@/components/page-transition";
+import { AnimatedDashboardCard, useStaggeredAnimation } from "@/components/ui/dashboard-animations";
 
 import { RecentActivity } from "@/components/recent-activity";
 import { DailyWellnessReminder } from "@/components/daily-wellness-reminder";
@@ -38,6 +40,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const [, setLocation] = useLocation();
 
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
+  
+  // Animation refs for dashboard cards
+  const cardsRef = useStaggeredAnimation('.dashboard-card', { delay: 100, stagger: 150 });
 
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
@@ -319,10 +324,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[5px] pr-[5px] ml-[-3px] mr-[-3px]">
-      <div className="content-container section-spacing !px-0">
-        {/* Enhanced Date Selector */}
-        <div className="flex items-center justify-center py-1 mt-[-8px] mb-[-8px]">
+    <AnimatedPage>
+      <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[5px] pr-[5px] ml-[-3px] mr-[-3px]">
+        <div className="content-container section-spacing !px-0">
+          {/* Enhanced Date Selector */}
+          <div className="flex items-center justify-center py-1 mt-[-8px] mb-[-8px]">
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
@@ -364,8 +370,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           </div>
         </div>
 
-        {/* Overview Section with Toggle */}
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[10px] mb-[10px]">
+          <div ref={cardsRef}>
+            {/* Overview Section with Toggle */}
+            <Card className="dashboard-card bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[10px] mb-[10px]">
           <CardHeader>
             <div className="space-y-3">
               {/* First Row - Title with Icon */}
@@ -534,14 +541,12 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
             </>
           )}
-        </div>
+            </div>
 
-
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Quick Actions */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[0px] mb-[0px]">
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Quick Actions */}
+            <Card className="dashboard-card bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[0px] mb-[0px]">
             <CardHeader>
               <CardTitle className="text-black dark:text-white">Quick Actions</CardTitle>
               <CardDescription className="text-gray-600 dark:text-gray-400">
@@ -576,16 +581,12 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
-          <RecentActivity userId={user.id} />
+            {/* Recent Activity */}
+            <RecentActivity userId={user.id} />
+          </div>
+          </div>
         </div>
-
-
-
-
-
-
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

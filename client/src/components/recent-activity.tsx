@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Utensils, Dumbbell, TrendingUp, Clock, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 
 interface ActivityItem {
@@ -23,6 +23,7 @@ interface RecentActivityProps {
 export function RecentActivity({ userId }: RecentActivityProps) {
   const [, setLocation] = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Fetch recent activities from unified endpoint
   const { data: activities = [] } = useQuery({
@@ -43,6 +44,29 @@ export function RecentActivity({ userId }: RecentActivityProps) {
   const displayedActivities = isExpanded 
     ? formattedActivities.slice(0, 5) 
     : formattedActivities.slice(0, 3);
+
+  // Animate activity items on mount and expansion
+  useEffect(() => {
+    if (containerRef.current) {
+      const activityItems = containerRef.current.querySelectorAll('.activity-item');
+      activityItems.forEach((item, index) => {
+        (item as HTMLElement).style.opacity = '0';
+        (item as HTMLElement).style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          item.animate([
+            { opacity: 0, transform: 'translateX(-20px)' },
+            { opacity: 1, transform: 'translateX(0)' }
+          ], {
+            duration: 400,
+            easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+            delay: index * 80,
+            fill: 'forwards'
+          });
+        }, 200);
+      });
+    }
+  }, [displayedActivities.length]); // Re-run when number of displayed activities changes
 
   const handleActivityClick = (activity: ActivityItem) => {
     if (activity.type === 'nutrition') {
@@ -108,12 +132,12 @@ export function RecentActivity({ userId }: RecentActivityProps) {
           Your latest updates
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent ref={containerRef}>
         <div className="space-y-3">
           {displayedActivities.map((activity) => (
             <div 
               key={activity.id}
-              className="flex items-start space-x-3 p-3  bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer hover:shadow-sm px-4 py-3 ml-[-10px] mr-[-10px] mt-[10px] mb-[10px] pl-[30px] pr-[30px]"
+              className="activity-item flex items-start space-x-3 p-3  bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer hover:shadow-sm px-4 py-3 ml-[-10px] mr-[-10px] mt-[10px] mb-[10px] pl-[30px] pr-[30px] hover:scale-[1.02] active:scale-[0.98]"
               onClick={() => handleActivityClick(activity)}
               title={`Click to go to ${activity.type === 'nutrition' ? 'nutrition' : 'training'} page`}
             >
