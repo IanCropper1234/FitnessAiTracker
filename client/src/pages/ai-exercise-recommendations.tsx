@@ -133,18 +133,23 @@ export default function AIExerciseRecommendations() {
       }
 
       const formData = {
-        goals,
+        userGoals: goals,
         muscleGroupFocus,
         experienceLevel,
-        equipment,
-        sessionDuration,
-        sessionsPerWeek,
-        specialMethodPercentage,
+        availableEquipment: equipment,
+        timeConstraints: {
+          sessionDuration,
+          sessionsPerWeek
+        },
         injuryRestrictions,
-        customRequirements
+        customRequirements,
+        currentExercises: currentExercises || [],
+        trainingHistory: trainingHistory || []
       };
 
       console.log('Sending AI recommendation request:', formData);
+      console.log('Current exercises count:', currentExercises?.length || 0);
+      
       if (viewMode === 'weekly') {
         return await AIExerciseRecommendationService.getWeeklyWorkoutPlan(formData);
       } else {
