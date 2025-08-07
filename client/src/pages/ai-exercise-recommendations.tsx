@@ -270,6 +270,60 @@ export default function AIExerciseRecommendations() {
     }
   };
 
+  // Save all exercises from single session as one template
+  const handleSaveAllExercisesToTemplate = async () => {
+    if (!recommendationMutation.data?.recommendations) return;
+
+    try {
+      const exercises = recommendationMutation.data.recommendations.map((rec: ExerciseRecommendation, index: number) => ({
+        exerciseId: null, // Will be resolved during save
+        exerciseName: rec.exerciseName,
+        sets: rec.sets,
+        repsRange: rec.reps,
+        weight: null,
+        restPeriod: rec.restPeriod,
+        orderIndex: index + 1,
+        notes: rec.reasoning,
+        specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
+        specialMethodData: rec.specialConfig || {}
+      }));
+
+      const templateData = {
+        name: `AI Generated Session - ${new Date().toLocaleDateString()}`,
+        workouts: [{
+          name: `AI Complete Session`,
+          exercises: exercises
+        }],
+        difficulty: 'intermediate',
+        description: `AI-generated complete training session with ${exercises.length} exercises. ${recommendationMutation.data.reasoning}`
+      };
+
+      const response = await fetch('/api/training/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(templateData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save session template');
+      }
+
+      toast({
+        title: "Session Saved!",
+        description: `Complete AI session with ${exercises.length} exercises has been saved to your training templates.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Save Failed",
+        description: error.message || "Failed to save session template.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
       {/* Header */}
@@ -654,10 +708,23 @@ export default function AIExerciseRecommendations() {
                 ) : (
                     // Single Session Display
                     <div className="space-y-4">
-                      <h4 className="font-medium text-sm flex items-center gap-2">
-                        <Dumbbell className="h-4 w-4" />
-                        Recommended Exercises
-                      </h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-sm flex items-center gap-2">
+                          <Dumbbell className="h-4 w-4" />
+                          Recommended Exercises ({recommendationMutation.data.recommendations?.length || 0})
+                        </h4>
+                        {/* Save All Exercises Button for Single Session */}
+                        {recommendationMutation.data.recommendations && recommendationMutation.data.recommendations.length > 0 && (
+                          <Button 
+                            onClick={() => handleSaveAllExercisesToTemplate()}
+                            className="bg-purple-600 hover:bg-purple-700 text-xs"
+                            size="sm"
+                          >
+                            <Save className="h-3 w-3 mr-2" />
+                            Save All as Template
+                          </Button>
+                        )}
+                      </div>
                       
                       {recommendationMutation.data.recommendations?.map((rec: ExerciseRecommendation, index: number) => (
                       <Card key={index} className="border-l-4 border-l-blue-500">
