@@ -199,6 +199,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           initialData[exercise.id] = defaultSets;
         }
         
+        // Initialize finalMethod at function scope
+        let finalMethod: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | 'rest_pause' | 'cluster_set' | null = null;
+        
         // Restore special method data if available - check both field names for compatibility
         const rawSpecialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
         if (rawSpecialMethod) {
@@ -206,8 +209,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           // Convert database format to UI format - normalize and handle different formats
           let normalizedMethod = rawSpecialMethod.trim().toLowerCase();
           console.log(`Normalized method: "${normalizedMethod}"`);
-          
-          let finalMethod: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | 'rest_pause' | 'cluster_set' | null = null;
           
           // Handle multiple possible database formats - normalize all to underscore format
           if (normalizedMethod === 'dropset' || normalizedMethod === 'drop_set') {
