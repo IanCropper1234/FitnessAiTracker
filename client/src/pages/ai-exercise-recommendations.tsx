@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -77,6 +77,7 @@ interface WorkoutSession {
 export default function AIExerciseRecommendations() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   // Form state
   const [goals, setGoals] = useState<string[]>([]);
@@ -254,6 +255,9 @@ export default function AIExerciseRecommendations() {
         title: "Exercise Saved!",
         description: `${rec.exerciseName} has been saved to your training templates.`,
       });
+
+      // Invalidate templates cache to refresh the templates tab
+      queryClient.invalidateQueries({ queryKey: ['/api/training/saved-workout-templates'] });
     } catch (error: any) {
       toast({
         title: "Save Failed",
@@ -302,6 +306,9 @@ export default function AIExerciseRecommendations() {
         title: "Session Saved!",
         description: `Complete AI session with ${exercises.length} exercises has been saved to your training templates.`,
       });
+
+      // Invalidate templates cache to refresh the templates tab
+      queryClient.invalidateQueries({ queryKey: ['/api/training/saved-workout-templates'] });
     } catch (error: any) {
       toast({
         title: "Save Failed",
