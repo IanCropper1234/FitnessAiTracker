@@ -31,7 +31,8 @@ import {
   CheckSquare,
   Edit,
   Save,
-  Pill
+  Pill,
+  Brain
 } from "lucide-react";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -1021,6 +1022,29 @@ export function IntegratedNutritionOverview({
 
   return (
     <div className="space-y-2">
+      {/* AI Nutrition Analysis - Compact Integration */}
+      <Card className="bg-purple-900/20 dark:bg-purple-900/30 border-purple-700 border shadow-lg mb-2">
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Brain className="h-4 w-4 text-purple-400" />
+              <span className="text-sm font-medium text-purple-300">Enhanced Nutrition AI</span>
+            </div>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => setLocation('/enhanced-nutrition-ai')}
+              className="h-7 text-xs px-3 border-purple-400 text-purple-300 hover:bg-purple-500/20"
+            >
+              Analyze Nutrition
+            </Button>
+          </div>
+          <p className="text-xs text-purple-400/80 mt-1">
+            Comprehensive micronutrient analysis & personalized RDA insights
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Macro Summary - Condensed List View */}
       <Card className="bg-gray-900 dark:bg-gray-800 border-gray-700 border shadow-lg nutrition-card-ios">
         <CardContent className="p-3">

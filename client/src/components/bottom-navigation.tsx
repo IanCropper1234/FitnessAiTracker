@@ -124,36 +124,6 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   const quickActions = [
     {
-      title: "AI Training Analytics",
-      description: "Advanced training analysis with AI insights",
-      action: () => {
-        setLocation('/training-analytics');
-        onClose();
-      },
-      icon: BarChart3,
-      color: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
-    },
-    {
-      title: "AI Exercise Recommendations", 
-      description: "Intelligent exercise suggestions",
-      action: () => {
-        setLocation('/ai-exercise-recommendations');
-        onClose();
-      },
-      icon: Dumbbell,
-      color: "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
-    },
-    {
-      title: "Enhanced Nutrition AI",
-      description: "AI-powered nutrition analysis",
-      action: () => {
-        setLocation('/enhanced-nutrition-ai');
-        onClose();
-      },
-      icon: Utensils,
-      color: "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300"
-    },
-    {
       id: "log-food",
       title: "Log Food",
       description: "Add a meal to your nutrition diary",
