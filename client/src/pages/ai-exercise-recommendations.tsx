@@ -226,6 +226,7 @@ export default function AIExerciseRecommendations() {
       const templateData = {
         name: `AI Generated - ${rec.exerciseName}`,
         category: 'ai_generated',
+        daysPerWeek: 1,
         workouts: [{
           name: `${rec.exerciseName} Workout`,
           exercises: [{
@@ -292,6 +293,7 @@ export default function AIExerciseRecommendations() {
       const templateData = {
         name: `AI Generated Session - ${new Date().toLocaleDateString()}`,
         category: 'ai_generated',
+        daysPerWeek: 1,
         workouts: [{
           name: `AI Complete Session`,
           exercises: exercises
