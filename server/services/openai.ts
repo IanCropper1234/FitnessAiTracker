@@ -318,3 +318,182 @@ Goal: Deliver the most comprehensive, accurate nutritional analysis possible, wi
     throw new Error(`Failed to analyze nutrition: ${error.message}`);
   }
 }
+
+// Enhanced Exercise Recommendation Interfaces
+export interface WeeklyWorkoutPlan {
+  sessions: WorkoutSession[];
+  weekStructure: string;
+  totalVolume: number;
+  reasoning: string;
+  rpConsiderations: string;
+  progressionPlan: string;
+  specialMethodsUsage: {
+    percentage: number;
+    distribution: string;
+  };
+}
+
+export interface WorkoutSession {
+  day: number;
+  name: string;
+  muscleGroupFocus: string[];
+  exercises: ExtendedExerciseRecommendation[];
+  sessionDuration: number;
+  totalVolume: number;
+  specialMethodsCount: number;
+}
+
+export interface ExtendedExerciseRecommendation {
+  exerciseName: string;
+  category: string;
+  primaryMuscle: string;
+  muscleGroups: string[];
+  equipment: string;
+  difficulty: string;
+  sets: number;
+  reps: string;
+  restPeriod: number;
+  reasoning: string;
+  progressionNotes: string;
+  specialMethod: string | null;
+  specialConfig: any;
+  rpIntensity: number;
+  volumeContribution: number;
+  orderInSession: number;
+}
+
+// Enhanced AI Exercise Recommendation Function
+export async function generateWeeklyWorkoutPlan(
+  goals: string[],
+  muscleGroupFocus: string[],
+  experienceLevel: string,
+  equipment: string[],
+  sessionDuration: number,
+  sessionsPerWeek: number,
+  injuryRestrictions: string,
+  customRequirements: string
+): Promise<WeeklyWorkoutPlan> {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  try {
+    const prompt = `Generate a complete ${sessionsPerWeek}-day weekly workout plan using Renaissance Periodization (RP) methodology.
+
+**Client Profile:**
+- Goals: ${goals.join(', ')}
+- Target Muscle Groups: ${muscleGroupFocus.join(', ')}
+- Experience Level: ${experienceLevel}
+- Available Equipment: ${equipment.join(', ')}
+- Session Duration: ${sessionDuration} minutes
+- Sessions per Week: ${sessionsPerWeek}
+- Injury Restrictions: ${injuryRestrictions || 'None'}
+- Additional Requirements: ${customRequirements || 'None'}
+
+**RP Methodology Requirements:**
+1. **Volume Distribution**: Apply MEV/MAV/MRV principles for each muscle group
+2. **Special Training Methods**: Use 15-25% of total exercises with methods like:
+   - MyoRep Match/No Match (isolation exercises)
+   - Drop Sets (machine/cable exercises)
+   - Giant Sets (2-3 exercises targeting same muscle)
+   - Rest-Pause (compound movements)
+   - Lengthened Partials (stretched position emphasis)
+3. **Session Structure**: Compound movements first, isolation last
+4. **Frequency**: Distribute muscle groups optimally across sessions
+5. **Progression**: Built-in load progression strategies
+6. **Recovery**: Appropriate rest periods and volume management
+
+**Output Requirements - JSON format:**
+{
+  "sessions": [
+    {
+      "day": 1,
+      "name": "Session Name (e.g., Upper Power, Lower Hypertrophy)",
+      "muscleGroupFocus": ["primary", "secondary", "muscle", "groups"],
+      "exercises": [
+        {
+          "exerciseName": "Exercise Name",
+          "category": "Compound/Isolation/Bodyweight",
+          "primaryMuscle": "Primary muscle group",
+          "muscleGroups": ["all", "muscle", "groups", "involved"],
+          "equipment": "Required equipment",
+          "difficulty": "beginner/intermediate/advanced",
+          "sets": 3,
+          "reps": "6-8 or 8-12 or 12-15",
+          "restPeriod": 120,
+          "reasoning": "Why this exercise for this goal/session",
+          "progressionNotes": "How to progress this exercise",
+          "specialMethod": "myorepMatch/dropSet/giantSet/restPause/null",
+          "specialConfig": {"drops": 1, "reduction": 20} or null,
+          "rpIntensity": 7,
+          "volumeContribution": 3,
+          "orderInSession": 1
+        }
+      ],
+      "sessionDuration": ${sessionDuration},
+      "totalVolume": 0,
+      "specialMethodsCount": 0
+    }
+  ],
+  "weekStructure": "Description of weekly split and reasoning",
+  "totalVolume": 0,
+  "reasoning": "Overall program rationale and methodology",
+  "rpConsiderations": "Specific RP principles applied",
+  "progressionPlan": "4-week progression strategy",
+  "specialMethodsUsage": {
+    "percentage": 20,
+    "distribution": "How special methods are distributed"
+  }
+}
+
+**Critical Requirements:**
+- Generate ${sessionsPerWeek} complete workout sessions
+- Include 4-8 exercises per session based on duration
+- Apply special training methods to 15-25% of total exercises
+- Ensure muscle group balance across the week
+- Respect equipment limitations
+- Consider injury restrictions
+- Target the specified muscle groups with higher frequency/volume
+- Use RP intensity zones (RPE 6-9)
+- Scientific exercise selection and ordering`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+      max_tokens: 4000,
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    
+    // Calculate totals and validate
+    let totalWeeklyVolume = 0;
+    let totalSpecialMethods = 0;
+    let totalExercises = 0;
+
+    result.sessions.forEach((session: any) => {
+      let sessionVolume = 0;
+      let sessionSpecialMethods = 0;
+      
+      session.exercises.forEach((exercise: any) => {
+        sessionVolume += exercise.volumeContribution || exercise.sets || 0;
+        totalExercises += 1;
+        if (exercise.specialMethod && exercise.specialMethod !== 'null') {
+          sessionSpecialMethods += 1;
+          totalSpecialMethods += 1;
+        }
+      });
+      
+      session.totalVolume = sessionVolume;
+      session.specialMethodsCount = sessionSpecialMethods;
+      totalWeeklyVolume += sessionVolume;
+    });
+
+    result.totalVolume = totalWeeklyVolume;
+    result.specialMethodsUsage.percentage = Math.round((totalSpecialMethods / totalExercises) * 100);
+
+    return result as WeeklyWorkoutPlan;
+  } catch (error: any) {
+    console.error("AI workout plan generation error:", error);
+    throw new Error(`Failed to generate workout plan: ${error.message}`);
+  }
+}

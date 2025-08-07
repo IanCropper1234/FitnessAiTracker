@@ -7,7 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, 
   Target, 
@@ -20,7 +21,10 @@ import {
   Sparkles,
   CheckCircle,
   AlertCircle,
-  Info
+  Info,
+  Save,
+  Calendar,
+  Plus
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { AIExerciseRecommendationService } from "@/services/aiExerciseRecommendations";
@@ -42,6 +46,31 @@ interface ExerciseRecommendation {
   specialConfig?: any;
   rpIntensity: number;
   volumeContribution: number;
+  sessionDay?: number;
+  sessionName?: string;
+}
+
+interface WeeklyWorkoutPlan {
+  sessions: WorkoutSession[];
+  weekStructure: string;
+  totalVolume: number;
+  reasoning: string;
+  rpConsiderations: string;
+  progressionPlan: string;
+  specialMethodsUsage: {
+    percentage: number;
+    distribution: string;
+  };
+}
+
+interface WorkoutSession {
+  day: number;
+  name: string;
+  muscleGroupFocus: string[];
+  exercises: ExerciseRecommendation[];
+  sessionDuration: number;
+  totalVolume: number;
+  specialMethodsCount: number;
 }
 
 export default function AIExerciseRecommendations() {
@@ -57,6 +86,10 @@ export default function AIExerciseRecommendations() {
   const [sessionsPerWeek, setSessionsPerWeek] = useState<number>(4);
   const [injuryRestrictions, setInjuryRestrictions] = useState<string>('');
   const [customRequirements, setCustomRequirements] = useState<string>('');
+  
+  // Weekly plan state
+  const [viewMode, setViewMode] = useState<'single' | 'weekly'>('weekly');
+  const [templateNamePrefix, setTemplateNamePrefix] = useState<string>('AI Generated Workout');
 
   // Available options
   const goalOptions = [
@@ -96,26 +129,35 @@ export default function AIExerciseRecommendations() {
         throw new Error('Please fill in all required fields');
       }
 
-      const request = {
-        userGoals: goals,
-        currentExercises: Array.isArray(currentExercises) ? currentExercises.slice(0, 10) : [],
-        trainingHistory: Array.isArray(trainingHistory) ? trainingHistory.slice(0, 5) : [],
+      const formData = {
+        goals,
         muscleGroupFocus,
-        experienceLevel: experienceLevel as any,
-        availableEquipment: equipment,
-        timeConstraints: {
-          sessionDuration,
-          sessionsPerWeek
-        },
-        injuryRestrictions: injuryRestrictions ? injuryRestrictions.split(',').map(s => s.trim()) : undefined
+        experienceLevel,
+        equipment,
+        sessionDuration,
+        sessionsPerWeek,
+        injuryRestrictions,
+        customRequirements
       };
 
-      return await AIExerciseRecommendationService.getExerciseRecommendations(request);
+      console.log('Sending AI recommendation request:', formData);
+      if (viewMode === 'weekly') {
+        return await AIExerciseRecommendationService.getWeeklyWorkoutPlan(formData);
+      } else {
+        return await AIExerciseRecommendationService.getRecommendations(formData);
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('AI recommendations received:', data);
+      const exerciseCount = viewMode === 'weekly' 
+        ? data.sessions?.reduce((total: number, session: WorkoutSession) => total + session.exercises.length, 0) || 0
+        : data.recommendations?.length || 0;
+      
       toast({
         title: "AI Analysis Complete",
-        description: "Your personalized exercise recommendations are ready!",
+        description: viewMode === 'weekly' 
+          ? `Generated complete ${sessionsPerWeek}-day workout program with ${exerciseCount} total exercises.`
+          : `Generated ${exerciseCount} exercise recommendations based on your goals.`,
       });
     },
     onError: (error: any) => {
@@ -125,6 +167,29 @@ export default function AIExerciseRecommendations() {
         variant: "destructive"
       });
     }
+  });
+
+  // Save weekly workout plan mutation
+  const saveWeeklyPlanMutation = useMutation({
+    mutationFn: async (data: { weeklyPlan: WeeklyWorkoutPlan; templateNamePrefix: string }) => {
+      console.log('Saving weekly workout plan:', data);
+      return await AIExerciseRecommendationService.saveWeeklyWorkoutPlan(data);
+    },
+    onSuccess: (result) => {
+      console.log('Weekly plan saved successfully:', result);
+      toast({
+        title: "Workout Plan Saved!",
+        description: `Successfully saved ${result.templates.length} workout templates. You can find them in your training templates.`,
+      });
+    },
+    onError: (error: any) => {
+      console.error('Save weekly plan error:', error);
+      toast({
+        title: "Save Failed",
+        description: error.message || "Failed to save workout plan. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleGoalToggle = (goal: string) => {
@@ -181,6 +246,28 @@ export default function AIExerciseRecommendations() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Generation Mode Selector */}
+            <div>
+              <label className="text-sm font-medium mb-3 block">Generation Mode</label>
+              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'single' | 'weekly')}>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="single" className="flex items-center gap-2">
+                    <Dumbbell className="h-4 w-4" />
+                    Single Session
+                  </TabsTrigger>
+                  <TabsTrigger value="weekly" className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Weekly Program
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <p className="text-xs text-muted-foreground mt-2">
+                {viewMode === 'weekly' 
+                  ? `Generate a complete ${sessionsPerWeek}-day weekly training program with scientific structure and RP methods`
+                  : 'Generate exercise recommendations for a single training session'
+                }
+              </p>
+            </div>
             {/* Goals */}
             <div>
               <label className="text-sm font-medium mb-2 block">Training Goals *</label>
@@ -292,6 +379,21 @@ export default function AIExerciseRecommendations() {
               />
             </div>
 
+            {/* Weekly Plan Template Name (only in weekly mode) */}
+            {viewMode === 'weekly' && (
+              <div>
+                <label className="text-sm font-medium mb-2 block">Template Name Prefix</label>
+                <Input
+                  placeholder="AI Generated Workout"
+                  value={templateNamePrefix}
+                  onChange={(e) => setTemplateNamePrefix(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Each session will be saved as: "{templateNamePrefix} - Day 1", "{templateNamePrefix} - Day 2", etc.
+                </p>
+              </div>
+            )}
+
             {/* Generate Button */}
             <Button 
               onClick={() => recommendationMutation.mutate()}
@@ -301,12 +403,12 @@ export default function AIExerciseRecommendations() {
               {recommendationMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analyzing with AI...
+                  {viewMode === 'weekly' ? 'Generating Weekly Plan...' : 'Analyzing with AI...'}
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Generate AI Recommendations
+                  {viewMode === 'weekly' ? 'Generate Weekly Workout Plan' : 'Generate AI Recommendations'}
                 </>
               )}
             </Button>
@@ -340,6 +442,51 @@ export default function AIExerciseRecommendations() {
             {recommendationMutation.data && (
               <ScrollArea className="max-h-[70vh]">
                 <div className="space-y-6">
+                  {/* Save Weekly Plan Button (only for weekly mode) */}
+                  {viewMode === 'weekly' && recommendationMutation.data.sessions && (
+                    <div className="flex flex-col gap-3">
+                      <Button 
+                        onClick={() => saveWeeklyPlanMutation.mutate({ 
+                          weeklyPlan: recommendationMutation.data, 
+                          templateNamePrefix 
+                        })}
+                        disabled={saveWeeklyPlanMutation.isPending}
+                        className="w-full bg-green-600 hover:bg-green-700"
+                      >
+                        {saveWeeklyPlanMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Saving Templates...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-4 w-4 mr-2" />
+                            Save as Training Templates
+                          </>
+                        )}
+                      </Button>
+                      <div className="text-xs text-center text-muted-foreground">
+                        This will create {recommendationMutation.data.sessions?.length || 0} individual training templates
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Weekly Plan Summary (for weekly mode) */}
+                  {viewMode === 'weekly' && recommendationMutation.data.sessions && (
+                    <div className="p-4 bg-purple-500/10 border border-purple-500/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Calendar className="h-4 w-4 text-purple-400" />
+                        <span className="text-sm font-medium text-purple-400">Weekly Plan Summary</span>
+                      </div>
+                      <div className="text-xs text-purple-300 space-y-1">
+                        <p><span className="font-medium">Sessions:</span> {recommendationMutation.data.sessions.length} days</p>
+                        <p><span className="font-medium">Total Exercises:</span> {recommendationMutation.data.sessions.reduce((total: number, session: any) => total + session.exercises.length, 0)}</p>
+                        <p><span className="font-medium">Special Methods:</span> {recommendationMutation.data.specialMethodsUsage?.percentage || 0}% distribution</p>
+                        <p><span className="font-medium">Weekly Volume:</span> {recommendationMutation.data.totalVolume || 0} sets</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Overall Analysis */}
                   <div className="p-4 bg-blue-500/10 border border-blue-500/20">
                     <div className="flex items-center gap-2 mb-2">
@@ -358,14 +505,68 @@ export default function AIExerciseRecommendations() {
                     <p className="text-xs text-green-300">{recommendationMutation.data.rpConsiderations}</p>
                   </div>
 
-                  {/* Exercise Recommendations */}
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm flex items-center gap-2">
-                      <Dumbbell className="h-4 w-4" />
-                      Recommended Exercises
-                    </h4>
-                    
-                    {recommendationMutation.data.recommendations.map((rec: ExerciseRecommendation, index: number) => (
+                  {/* Exercise Recommendations - Different display for weekly vs single mode */}
+                  {viewMode === 'weekly' && recommendationMutation.data.sessions ? (
+                    // Weekly Plan Display
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-sm flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Weekly Training Sessions ({recommendationMutation.data.sessions.length} Days)
+                      </h4>
+                      
+                      {recommendationMutation.data.sessions.map((session: WorkoutSession, sessionIndex: number) => (
+                        <Card key={sessionIndex} className="border-l-4 border-l-purple-500">
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="font-medium text-sm">{session.name}</h5>
+                                <p className="text-xs text-muted-foreground">
+                                  {session.muscleGroupFocus.join(', ')} • {session.exercises.length} exercises • {session.sessionDuration}min
+                                </p>
+                              </div>
+                              <Badge variant="outline">Day {session.day}</Badge>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <div className="space-y-3">
+                              {session.exercises.map((exercise: ExerciseRecommendation, exerciseIndex: number) => (
+                                <div key={exerciseIndex} className="p-3 bg-muted/30 border border-muted rounded">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h6 className="font-medium text-xs">{exercise.exerciseName}</h6>
+                                    <div className="text-xs font-medium">{exercise.sets} × {exercise.reps}</div>
+                                  </div>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Badge variant="outline" className="text-xs h-5">
+                                      {exercise.primaryMuscle}
+                                    </Badge>
+                                    <Badge variant="secondary" className="text-xs h-5">
+                                      {exercise.equipment}
+                                    </Badge>
+                                    {exercise.specialMethod && (
+                                      <Badge variant="destructive" className="text-xs h-5">
+                                        {exercise.specialMethod}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    RPE {exercise.rpIntensity}/10 • {exercise.restPeriod}s rest • {exercise.volumeContribution} sets
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    // Single Session Display
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-sm flex items-center gap-2">
+                        <Dumbbell className="h-4 w-4" />
+                        Recommended Exercises
+                      </h4>
+                      
+                      {recommendationMutation.data.recommendations?.map((rec: ExerciseRecommendation, index: number) => (
                       <Card key={index} className="border-l-4 border-l-blue-500">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-3">
@@ -428,8 +629,9 @@ export default function AIExerciseRecommendations() {
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Progression Plan */}
                   <div className="p-4 bg-purple-500/10 border border-purple-500/20">
@@ -441,24 +643,6 @@ export default function AIExerciseRecommendations() {
                   </div>
                 </div>
               </ScrollArea>
-            )}
-
-            {recommendationMutation.error && (
-              <div className="text-center py-8">
-                <AlertCircle className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                <p className="text-sm text-red-500">Failed to generate recommendations</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {recommendationMutation.error.message}
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="mt-3"
-                  onClick={() => recommendationMutation.reset()}
-                >
-                  Try Again
-                </Button>
-              </div>
             )}
           </CardContent>
         </Card>

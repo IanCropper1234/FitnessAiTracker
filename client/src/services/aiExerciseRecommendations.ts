@@ -52,7 +52,85 @@ interface AIRecommendationResponse {
 export class AIExerciseRecommendationService {
   
   /**
-   * Get AI-powered exercise recommendations based on user data and RP methodology
+   * Get AI-powered exercise recommendations (enhanced with weekly plans)
+   */
+  static async getRecommendations(formData: any): Promise<any> {
+    try {
+      const response = await fetch('/api/ai/exercise-recommendations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Failed to get recommendations: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error('AI Recommendations error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get AI-powered weekly workout plan
+   */
+  static async getWeeklyWorkoutPlan(formData: any): Promise<any> {
+    try {
+      const response = await fetch('/api/ai/weekly-workout-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Failed to generate weekly workout plan: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error('Weekly Workout Plan error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save AI-generated weekly workout plan as templates
+   */
+  static async saveWeeklyWorkoutPlan(data: { weeklyPlan: any; templateNamePrefix: string }): Promise<any> {
+    try {
+      const response = await fetch('/api/ai/weekly-workout-plan/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || `Failed to save weekly workout plan: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error('Save Weekly Plan error:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Get AI-powered exercise recommendations based on user data and RP methodology (legacy method)
    */
   static async getExerciseRecommendations(
     request: ExerciseRecommendationRequest
