@@ -213,10 +213,10 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 </div>
                 
                 {/* Fat-Soluble Vitamins */}
-                {selectedNutritionItem.micronutrients.vitaminA || 
-                 selectedNutritionItem.micronutrients.vitaminD || 
-                 selectedNutritionItem.micronutrients.vitaminE || 
-                 selectedNutritionItem.micronutrients.vitaminK ? (
+                {(selectedNutritionItem.micronutrients.vitaminA && parseFloat(selectedNutritionItem.micronutrients.vitaminA) > 0) || 
+                 (selectedNutritionItem.micronutrients.vitaminD && parseFloat(selectedNutritionItem.micronutrients.vitaminD) > 0) || 
+                 (selectedNutritionItem.micronutrients.vitaminE && parseFloat(selectedNutritionItem.micronutrients.vitaminE) > 0) || 
+                 (selectedNutritionItem.micronutrients.vitaminK && parseFloat(selectedNutritionItem.micronutrients.vitaminK) > 0) ? (
                   <div className="mb-3">
                     <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -249,15 +249,15 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Water-Soluble Vitamins */}
-                {selectedNutritionItem.micronutrients.vitaminC || 
-                 selectedNutritionItem.micronutrients.vitaminB1 || 
-                 selectedNutritionItem.micronutrients.vitaminB2 ||
-                 selectedNutritionItem.micronutrients.vitaminB3 ||
-                 selectedNutritionItem.micronutrients.vitaminB5 ||
-                 selectedNutritionItem.micronutrients.vitaminB6 ||
-                 selectedNutritionItem.micronutrients.vitaminB7 ||
-                 selectedNutritionItem.micronutrients.vitaminB12 ||
-                 selectedNutritionItem.micronutrients.folate ? (
+                {(selectedNutritionItem.micronutrients.vitaminC && parseFloat(selectedNutritionItem.micronutrients.vitaminC) > 0) || 
+                 (selectedNutritionItem.micronutrients.vitaminB1 && parseFloat(selectedNutritionItem.micronutrients.vitaminB1) > 0) || 
+                 (selectedNutritionItem.micronutrients.vitaminB2 && parseFloat(selectedNutritionItem.micronutrients.vitaminB2) > 0) ||
+                 (selectedNutritionItem.micronutrients.vitaminB3 && parseFloat(selectedNutritionItem.micronutrients.vitaminB3) > 0) ||
+                 (selectedNutritionItem.micronutrients.vitaminB5 && parseFloat(selectedNutritionItem.micronutrients.vitaminB5) > 0) ||
+                 (selectedNutritionItem.micronutrients.vitaminB6 && parseFloat(selectedNutritionItem.micronutrients.vitaminB6) > 0) ||
+                 (selectedNutritionItem.micronutrients.vitaminB7 && parseFloat(selectedNutritionItem.micronutrients.vitaminB7) > 0) ||
+                 (selectedNutritionItem.micronutrients.vitaminB12 && parseFloat(selectedNutritionItem.micronutrients.vitaminB12) > 0) ||
+                 (selectedNutritionItem.micronutrients.folate && parseFloat(selectedNutritionItem.micronutrients.folate) > 0) ? (
                   <div className="mb-3">
                     <h5 className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -320,12 +320,12 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Major Minerals */}
-                {selectedNutritionItem.micronutrients.calcium || 
-                 selectedNutritionItem.micronutrients.magnesium || 
-                 selectedNutritionItem.micronutrients.phosphorus ||
-                 selectedNutritionItem.micronutrients.potassium ||
-                 selectedNutritionItem.micronutrients.sodium ||
-                 selectedNutritionItem.micronutrients.chloride ? (
+                {(selectedNutritionItem.micronutrients.calcium && parseFloat(selectedNutritionItem.micronutrients.calcium) > 0) || 
+                 (selectedNutritionItem.micronutrients.magnesium && parseFloat(selectedNutritionItem.micronutrients.magnesium) > 0) || 
+                 (selectedNutritionItem.micronutrients.phosphorus && parseFloat(selectedNutritionItem.micronutrients.phosphorus) > 0) ||
+                 (selectedNutritionItem.micronutrients.potassium && parseFloat(selectedNutritionItem.micronutrients.potassium) > 0) ||
+                 (selectedNutritionItem.micronutrients.sodium && parseFloat(selectedNutritionItem.micronutrients.sodium) > 0) ||
+                 (selectedNutritionItem.micronutrients.chloride && parseFloat(selectedNutritionItem.micronutrients.chloride) > 0) ? (
                   <div className="mb-3">
                     <h5 className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -370,13 +370,13 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Trace Minerals */}
-                {selectedNutritionItem.micronutrients.iron || 
-                 selectedNutritionItem.micronutrients.zinc || 
-                 selectedNutritionItem.micronutrients.copper ||
-                 selectedNutritionItem.micronutrients.manganese ||
-                 selectedNutritionItem.micronutrients.iodine ||
-                 selectedNutritionItem.micronutrients.selenium ||
-                 selectedNutritionItem.micronutrients.fluoride ? (
+                {(selectedNutritionItem.micronutrients.iron && parseFloat(selectedNutritionItem.micronutrients.iron) > 0) || 
+                 (selectedNutritionItem.micronutrients.zinc && parseFloat(selectedNutritionItem.micronutrients.zinc) > 0) || 
+                 (selectedNutritionItem.micronutrients.copper && parseFloat(selectedNutritionItem.micronutrients.copper) > 0) ||
+                 (selectedNutritionItem.micronutrients.manganese && parseFloat(selectedNutritionItem.micronutrients.manganese) > 0) ||
+                 (selectedNutritionItem.micronutrients.iodine && parseFloat(selectedNutritionItem.micronutrients.iodine) > 0) ||
+                 (selectedNutritionItem.micronutrients.selenium && parseFloat(selectedNutritionItem.micronutrients.selenium) > 0) ||
+                 (selectedNutritionItem.micronutrients.fluoride && parseFloat(selectedNutritionItem.micronutrients.fluoride) > 0) ? (
                   <div>
                     <h5 className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -427,74 +427,74 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Macronutrient Components */}
-                {(selectedNutritionItem.micronutrients.sugar !== null && selectedNutritionItem.micronutrients.sugar !== undefined) || 
-                 (selectedNutritionItem.micronutrients.addedSugar !== null && selectedNutritionItem.micronutrients.addedSugar !== undefined) || 
-                 (selectedNutritionItem.micronutrients.fiber !== null && selectedNutritionItem.micronutrients.fiber !== undefined) || 
-                 (selectedNutritionItem.micronutrients.saturatedFat !== null && selectedNutritionItem.micronutrients.saturatedFat !== undefined) ||
-                 (selectedNutritionItem.micronutrients.transFat !== null && selectedNutritionItem.micronutrients.transFat !== undefined) ||
-                 (selectedNutritionItem.micronutrients.cholesterol !== null && selectedNutritionItem.micronutrients.cholesterol !== undefined) ||
-                 (selectedNutritionItem.micronutrients.monounsaturatedFat !== null && selectedNutritionItem.micronutrients.monounsaturatedFat !== undefined) ||
-                 (selectedNutritionItem.micronutrients.polyunsaturatedFat !== null && selectedNutritionItem.micronutrients.polyunsaturatedFat !== undefined) ||
-                 (selectedNutritionItem.micronutrients.omega3 !== null && selectedNutritionItem.micronutrients.omega3 !== undefined) ||
-                 (selectedNutritionItem.micronutrients.omega6 !== null && selectedNutritionItem.micronutrients.omega6 !== undefined) ? (
+                {(selectedNutritionItem.micronutrients.sugar !== null && selectedNutritionItem.micronutrients.sugar !== undefined && parseFloat(selectedNutritionItem.micronutrients.sugar) > 0) || 
+                 (selectedNutritionItem.micronutrients.addedSugar !== null && selectedNutritionItem.micronutrients.addedSugar !== undefined && parseFloat(selectedNutritionItem.micronutrients.addedSugar) > 0) || 
+                 (selectedNutritionItem.micronutrients.fiber !== null && selectedNutritionItem.micronutrients.fiber !== undefined && parseFloat(selectedNutritionItem.micronutrients.fiber) > 0) || 
+                 (selectedNutritionItem.micronutrients.saturatedFat !== null && selectedNutritionItem.micronutrients.saturatedFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.saturatedFat) > 0) ||
+                 (selectedNutritionItem.micronutrients.transFat !== null && selectedNutritionItem.micronutrients.transFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.transFat) > 0) ||
+                 (selectedNutritionItem.micronutrients.cholesterol !== null && selectedNutritionItem.micronutrients.cholesterol !== undefined && parseFloat(selectedNutritionItem.micronutrients.cholesterol) > 0) ||
+                 (selectedNutritionItem.micronutrients.monounsaturatedFat !== null && selectedNutritionItem.micronutrients.monounsaturatedFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.monounsaturatedFat) > 0) ||
+                 (selectedNutritionItem.micronutrients.polyunsaturatedFat !== null && selectedNutritionItem.micronutrients.polyunsaturatedFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.polyunsaturatedFat) > 0) ||
+                 (selectedNutritionItem.micronutrients.omega3 !== null && selectedNutritionItem.micronutrients.omega3 !== undefined && parseFloat(selectedNutritionItem.micronutrients.omega3) > 0) ||
+                 (selectedNutritionItem.micronutrients.omega6 !== null && selectedNutritionItem.micronutrients.omega6 !== undefined && parseFloat(selectedNutritionItem.micronutrients.omega6) > 0) ? (
                   <div className="mt-[10px] mb-[10px]">
                     <h5 className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-2">Macronutrient Components</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {selectedNutritionItem.micronutrients.sugar !== null && selectedNutritionItem.micronutrients.sugar !== undefined && (
+                      {selectedNutritionItem.micronutrients.sugar !== null && selectedNutritionItem.micronutrients.sugar !== undefined && parseFloat(selectedNutritionItem.micronutrients.sugar) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Total Sugar</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.sugar)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.fiber !== null && selectedNutritionItem.micronutrients.fiber !== undefined && (
+                      {selectedNutritionItem.micronutrients.fiber !== null && selectedNutritionItem.micronutrients.fiber !== undefined && parseFloat(selectedNutritionItem.micronutrients.fiber) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Dietary Fiber</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.fiber)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.saturatedFat !== null && selectedNutritionItem.micronutrients.saturatedFat !== undefined && (
+                      {selectedNutritionItem.micronutrients.saturatedFat !== null && selectedNutritionItem.micronutrients.saturatedFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.saturatedFat) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Saturated Fat</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.saturatedFat)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.cholesterol !== null && selectedNutritionItem.micronutrients.cholesterol !== undefined && (
+                      {selectedNutritionItem.micronutrients.cholesterol !== null && selectedNutritionItem.micronutrients.cholesterol !== undefined && parseFloat(selectedNutritionItem.micronutrients.cholesterol) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Cholesterol</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.cholesterol)}mg</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.monounsaturatedFat !== null && selectedNutritionItem.micronutrients.monounsaturatedFat !== undefined && (
+                      {selectedNutritionItem.micronutrients.monounsaturatedFat !== null && selectedNutritionItem.micronutrients.monounsaturatedFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.monounsaturatedFat) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Monounsat. Fat</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.monounsaturatedFat)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.polyunsaturatedFat !== null && selectedNutritionItem.micronutrients.polyunsaturatedFat !== undefined && (
+                      {selectedNutritionItem.micronutrients.polyunsaturatedFat !== null && selectedNutritionItem.micronutrients.polyunsaturatedFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.polyunsaturatedFat) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Polyunsat. Fat</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.polyunsaturatedFat)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.transFat !== null && selectedNutritionItem.micronutrients.transFat !== undefined && (
+                      {selectedNutritionItem.micronutrients.transFat !== null && selectedNutritionItem.micronutrients.transFat !== undefined && parseFloat(selectedNutritionItem.micronutrients.transFat) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Trans Fat</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.transFat)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.addedSugar !== null && selectedNutritionItem.micronutrients.addedSugar !== undefined && (
+                      {selectedNutritionItem.micronutrients.addedSugar !== null && selectedNutritionItem.micronutrients.addedSugar !== undefined && parseFloat(selectedNutritionItem.micronutrients.addedSugar) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Added Sugar</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.addedSugar)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.omega3 !== null && selectedNutritionItem.micronutrients.omega3 !== undefined && (
+                      {selectedNutritionItem.micronutrients.omega3 !== null && selectedNutritionItem.micronutrients.omega3 !== undefined && parseFloat(selectedNutritionItem.micronutrients.omega3) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Omega-3 FA</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.omega3)}g</span>
                         </div>
                       )}
-                      {selectedNutritionItem.micronutrients.omega6 !== null && selectedNutritionItem.micronutrients.omega6 !== undefined && (
+                      {selectedNutritionItem.micronutrients.omega6 !== null && selectedNutritionItem.micronutrients.omega6 !== undefined && parseFloat(selectedNutritionItem.micronutrients.omega6) > 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Omega-6 FA</span>
                           <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.omega6)}g</span>
