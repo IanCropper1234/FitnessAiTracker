@@ -290,7 +290,7 @@ export default function AIExerciseRecommendations() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 min-h-0">
+      <div className="grid lg:grid-cols-2 gap-6 min-h-0 max-h-[calc(100vh-120px)]">
         {/* Configuration Form */}
         <Card>
           <CardHeader>
@@ -495,14 +495,14 @@ export default function AIExerciseRecommendations() {
         </Card>
 
         {/* Results */}
-        <Card className="flex flex-col h-fit">
+        <Card className="flex flex-col max-h-[90vh]">
           <CardHeader className="flex-shrink-0">
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5" />
               AI Recommendations
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 min-h-0">
+          <CardContent className="flex-1 min-h-0 overflow-hidden">
             {!recommendationMutation.data && !recommendationMutation.isPending && (
               <div className="text-center py-12 text-muted-foreground">
                 <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -519,7 +519,7 @@ export default function AIExerciseRecommendations() {
             )}
 
             {recommendationMutation.data && (
-              <div className="space-y-6 max-h-[80vh] overflow-y-auto">
+              <div className="space-y-4 h-full overflow-y-auto pr-2">
                 {/* Save Weekly Plan Button (only for weekly mode) */}
                 {viewMode === 'weekly' && recommendationMutation.data.sessions && (
                     <div className="flex flex-col gap-3">
@@ -586,53 +586,70 @@ export default function AIExerciseRecommendations() {
                 {/* Exercise Recommendations - Different display for weekly vs single mode */}
                 {viewMode === 'weekly' && recommendationMutation.data.sessions ? (
                     // Weekly Plan Display
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-sm flex items-center gap-2">
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm flex items-center gap-2 sticky top-0 bg-background z-10 py-2">
                         <Calendar className="h-4 w-4" />
                         Weekly Training Sessions ({recommendationMutation.data.sessions.length} Days)
                       </h4>
                       
-                      {recommendationMutation.data.sessions.map((session: WorkoutSession, sessionIndex: number) => (
-                        <Card key={sessionIndex} className="border-l-4 border-l-purple-500">
-                          <CardHeader className="pb-3">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h5 className="font-medium text-sm">{session.name}</h5>
-                                <p className="text-xs text-muted-foreground">
-                                  {session.muscleGroupFocus.join(', ')} • {session.exercises.length} exercises • {session.sessionDuration}min
-                                </p>
-                              </div>
-                              <Badge variant="outline">Day {session.day}</Badge>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="space-y-3">
-                              {session.exercises.map((exercise: ExerciseRecommendation, exerciseIndex: number) => (
-                                <div key={exerciseIndex} className="p-3 bg-muted/30 border border-muted rounded">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <h6 className="font-medium text-xs">{exercise.exerciseName}</h6>
-                                    <div className="text-xs font-medium">{exercise.sets} × {exercise.reps}</div>
-                                  </div>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <Badge variant="outline" className="text-xs h-5">
-                                      {exercise.primaryMuscle}
-                                    </Badge>
-                                    <Badge variant="secondary" className="text-xs h-5">
-                                      {exercise.equipment}
-                                    </Badge>
-                                    <Badge variant={exercise.specialMethod && exercise.specialMethod !== 'null' ? "destructive" : "secondary"} className="text-xs h-5">
-                                      {exercise.specialMethod && exercise.specialMethod !== 'null' ? exercise.specialMethod : 'Standard'}
-                                    </Badge>
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    RPE {exercise.rpIntensity}/10 • {exercise.restPeriod}s rest • {exercise.volumeContribution} sets
-                                  </div>
+                      <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                        {recommendationMutation.data.sessions.map((session: WorkoutSession, sessionIndex: number) => (
+                          <Card key={sessionIndex} className="border-l-4 border-l-purple-500">
+                            <CardHeader className="pb-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h5 className="font-medium text-sm">{session.name}</h5>
+                                  <p className="text-xs text-muted-foreground">
+                                    {session.muscleGroupFocus?.join(', ') || 'Multi-muscle'} • {session.exercises.length} exercises • {session.sessionDuration || 60}min
+                                  </p>
                                 </div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                                <Badge variant="outline">Day {session.day}</Badge>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="pt-0">
+                              <div className="space-y-2">
+                                {session.exercises.map((exercise: ExerciseRecommendation, exerciseIndex: number) => (
+                                  <div key={exerciseIndex} className="p-2 bg-muted/30 border border-muted">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <h6 className="font-medium text-xs">{exercise.exerciseName}</h6>
+                                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 py-0.5 text-xs font-bold">
+                                        {exercise.sets} × {exercise.reps}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 mb-1 flex-wrap">
+                                      <Badge variant="outline" className="text-xs h-4 px-1">
+                                        {exercise.primaryMuscle}
+                                      </Badge>
+                                      <Badge variant="secondary" className="text-xs h-4 px-1">
+                                        {exercise.equipment}
+                                      </Badge>
+                                      <Badge variant={exercise.specialMethod && exercise.specialMethod !== 'null' ? "destructive" : "secondary"} className="text-xs h-4 px-1">
+                                        {exercise.specialMethod && exercise.specialMethod !== 'null' ? exercise.specialMethod : 'Standard'}
+                                      </Badge>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      RPE {exercise.rpIntensity}/10 • {exercise.restPeriod}s rest • {exercise.volumeContribution} sets
+                                    </div>
+                                    {exercise.specialConfig && exercise.specialMethod && exercise.specialMethod !== 'null' && (
+                                      <div className="mt-1 p-1 bg-orange-500/10 text-xs text-orange-400">
+                                        {exercise.specialMethod === 'myorep_match' && (
+                                          <span>Target: {exercise.specialConfig.targetReps || 15} reps, Mini-sets: {exercise.specialConfig.miniSets || 3}</span>
+                                        )}
+                                        {exercise.specialMethod === 'drop_set' && (
+                                          <span>Drops: {exercise.specialConfig.dropSets || 2}, Reductions: {exercise.specialConfig.weightReductions?.join('%, ') || '15, 15'}%</span>
+                                        )}
+                                        {exercise.specialMethod === 'giant_set' && (
+                                          <span>Target: {exercise.specialConfig.totalTargetReps || 40} reps</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
                   </div>
                 ) : (
                     // Single Session Display
