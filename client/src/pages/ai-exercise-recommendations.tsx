@@ -219,6 +219,57 @@ export default function AIExerciseRecommendations() {
     );
   };
 
+  // Save individual exercise to template
+  const handleSaveExerciseToTemplate = async (rec: ExerciseRecommendation) => {
+    try {
+      // Create a single exercise template
+      const templateData = {
+        name: `AI Generated - ${rec.exerciseName}`,
+        workouts: [{
+          name: `${rec.exerciseName} Workout`,
+          exercises: [{
+            exerciseId: null, // Will be resolved during save
+            exerciseName: rec.exerciseName,
+            sets: rec.sets,
+            repsRange: rec.reps,
+            weight: null,
+            restPeriod: rec.restPeriod,
+            orderIndex: 1,
+            notes: rec.reasoning,
+            specialTrainingMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
+            specialMethodData: rec.specialConfig || {}
+          }]
+        }],
+        difficulty: rec.difficulty,
+        description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`
+      };
+
+      const response = await fetch('/api/training/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(templateData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save exercise template');
+      }
+
+      toast({
+        title: "Exercise Saved!",
+        description: `${rec.exerciseName} has been saved to your training templates.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Save Failed",
+        description: error.message || "Failed to save exercise template.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-4 space-y-6">
       {/* Header */}
@@ -613,8 +664,10 @@ export default function AIExerciseRecommendations() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <div className="text-sm font-medium">{rec.sets} × {rec.reps}</div>
-                              <div className="text-xs text-muted-foreground">{rec.restPeriod}s rest</div>
+                              <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 text-sm font-bold">
+                                {rec.sets} × {rec.reps}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">{rec.restPeriod}s rest</div>
                             </div>
                           </div>
 
@@ -644,10 +697,37 @@ export default function AIExerciseRecommendations() {
                               <p className="text-xs text-green-400">{rec.progressionNotes}</p>
                             </div>
 
-                            <div className={`p-2 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-gray-500/10 border border-gray-500/20'}`}>
-                              <div className={`text-xs font-medium ${rec.specialMethod && rec.specialMethod !== 'null' ? 'text-orange-400' : 'text-gray-400'}`}>
+                            <div className={`p-3 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-gray-500/10 border border-gray-500/20'}`}>
+                              <div className={`text-xs font-medium mb-2 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'text-orange-400' : 'text-gray-400'}`}>
                                 Special Method: {rec.specialMethod && rec.specialMethod !== 'null' ? rec.specialMethod : 'Standard'}
                               </div>
+                              {rec.specialConfig && rec.specialMethod && rec.specialMethod !== 'null' && (
+                                <div className="text-xs text-gray-300 space-y-1">
+                                  {rec.specialMethod === 'myorep_match' && (
+                                    <div>Target: {rec.specialConfig.targetReps || 15} reps, Mini-sets: {rec.specialConfig.miniSets || 3}, Rest: {rec.specialConfig.restSeconds || 15}s</div>
+                                  )}
+                                  {rec.specialMethod === 'myorep_no_match' && (
+                                    <div>Mini-sets: {rec.specialConfig.miniSets || 3}, Rest: {rec.specialConfig.restSeconds || 15}s</div>
+                                  )}
+                                  {rec.specialMethod === 'drop_set' && (
+                                    <div>Drops: {rec.specialConfig.dropSets || 2}, Reductions: {rec.specialConfig.weightReductions?.join('%, ') || '15, 15'}%, Rest: {rec.specialConfig.dropRestSeconds || 10}s</div>
+                                  )}
+                                  {rec.specialMethod === 'giant_set' && (
+                                    <div>Target: {rec.specialConfig.totalTargetReps || 40} reps, Mini-sets: {rec.specialConfig.miniSetReps || 5} reps, Rest: {rec.specialConfig.restSeconds || 10}s</div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Save to Template Button */}
+                            <div className="flex justify-end pt-2 border-t border-muted/20">
+                              <button 
+                                onClick={() => handleSaveExerciseToTemplate(rec)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium transition-colors"
+                              >
+                                <span>💾</span>
+                                Save to Templates
+                              </button>
                             </div>
                           </div>
                         </CardContent>

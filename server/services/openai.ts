@@ -422,8 +422,17 @@ export async function generateWeeklyWorkoutPlan(
           "restPeriod": 120,
           "reasoning": "Why this exercise for this goal/session",
           "progressionNotes": "How to progress this exercise",
-          "specialMethod": "myorepMatch/dropSet/giantSet/restPause/null",
-          "specialConfig": {"drops": 1, "reduction": 20} or null,
+          "specialMethod": "myorep_match/myorep_no_match/drop_set/giant_set/null",
+          "specialConfig": {
+            "dropSets": 2, 
+            "weightReductions": [15, 15], 
+            "dropRestSeconds": 10,
+            "targetReps": 15,
+            "miniSets": 3,
+            "restSeconds": 20,
+            "totalTargetReps": 40,
+            "miniSetReps": 5
+          },
           "rpIntensity": 7,
           "volumeContribution": 3,
           "orderInSession": 1
