@@ -480,23 +480,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       }
     },
     onSuccess: () => {
-      // Show subtle success indicator for auto-save
+      // Silent auto-save - no notifications shown
       setSaveStatus('success');
       setSaveMessage('Set saved');
       
-      // Show iOS-style notification for auto-save confirmation
-      addNotification({
-        title: 'Set Saved',
-        description: 'Your progress has been automatically saved',
-        type: 'success',
-        duration: 2000, // Shorter duration for auto-save
-        actions: []
-      });
-      
-      // Reset save status quickly
+      // Reset save status quickly without notification
       setTimeout(() => {
         setSaveStatus('idle');
-      }, 800);
+      }, 500);
     },
     onError: (error: any) => {
       console.warn('Auto-save failed (non-critical):', error);
