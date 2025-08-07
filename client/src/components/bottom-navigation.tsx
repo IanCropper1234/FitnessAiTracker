@@ -183,11 +183,11 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[85vw] max-w-sm mx-auto bg-white dark:bg-gray-900/95 backdrop-blur-md border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+      <DialogContent className="w-[85vw] max-w-sm mx-auto bg-white dark:bg-black border-gray-300 dark:border-gray-800 p-4 sm:p-6 shadow-xl">
         <DialogHeader className="text-center">
-          <DialogTitle className="flex items-center justify-center gap-2 sm:gap-3 text-lg font-semibold text-gray-900 dark:text-white">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 flex items-center justify-center">
-              <Plus className="w-4 h-4 text-white" />
+          <DialogTitle className="flex items-center justify-center gap-2 sm:gap-3 text-lg font-semibold text-black dark:text-white">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-black dark:bg-white flex items-center justify-center">
+              <Plus className="w-4 h-4 text-white dark:text-black" />
             </div>
             Quick Actions
           </DialogTitle>
@@ -200,13 +200,13 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
               <button
                 key={action.id || index}
                 onClick={() => handleActionPress(action.action)}
-                className="w-full flex items-center gap-3 p-3 sm:p-4 bg-white dark:bg-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-700/60 border border-gray-200 dark:border-gray-700/30 text-gray-900 dark:text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
+                className="w-full flex items-center gap-3 p-3 sm:p-4 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white transition-all duration-200 hover:scale-[0.98] active:scale-95"
               >
                 <div className={`w-9 h-9 sm:w-10 sm:h-10 ${action.color} flex items-center justify-center flex-shrink-0`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col items-start flex-1 min-w-0">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{action.title}</span>
+                  <span className="text-sm font-medium text-black dark:text-white">{action.title}</span>
                   <span className="text-xs text-gray-600 dark:text-gray-400 leading-tight">{action.description}</span>
                 </div>
               </button>
@@ -217,7 +217,7 @@ function QuickActionsModal({ isOpen, onClose }: QuickActionsModalProps) {
         <div className="flex justify-center pt-4">
           <button 
             onClick={onClose}
-            className="px-6 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors duration-200"
+            className="px-6 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
           >
             Cancel
           </button>
