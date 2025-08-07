@@ -125,7 +125,63 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
 // AI Nutrition Analysis
 router.post('/nutrition-analysis', requireAuth, async (req, res) => {
   try {
-    const { userProfile, nutritionData, timeRange } = req.body;
+    const { userProfile, nutritionData, timeRange, healthConditions, primaryGoal } = req.body;
+    const userId = req.userId;
+
+    // If no user profile provided, fetch from database
+    let profile = userProfile;
+    if (!profile) {
+      const { db } = await import('../db');
+      const { userProfiles, users } = await import('../../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const [userProfileData] = await db
+        .select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, userId))
+        .limit(1);
+      
+      const [userData] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      
+      profile = {
+        age: userProfileData?.age || 30,
+        gender: userProfileData?.gender || 'not specified',
+        weight: userProfileData?.currentWeight || 70,
+        height: userProfileData?.height || 170,
+        activityLevel: userProfileData?.activityLevel || 'moderate',
+        goals: [primaryGoal || 'health optimization'],
+        healthConditions: healthConditions ? [healthConditions] : []
+      };
+    }
+
+    // If no nutrition data provided, fetch recent logs
+    let nutrition = nutritionData;
+    if (!nutrition) {
+      const { db } = await import('../db');
+      const { nutritionLogs } = await import('../../shared/schema');
+      const { eq, gte } = await import('drizzle-orm');
+      
+      const daysAgo = timeRange === 'Last 7 Days' ? 7 : 30;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - daysAgo);
+      
+      nutrition = await db
+        .select()
+        .from(nutritionLogs)
+        .where(eq(nutritionLogs.userId, userId) && gte(nutritionLogs.date, startDate))
+        .orderBy(nutritionLogs.date)
+        .limit(50);
+    }
+
+    if (!nutrition || nutrition.length === 0) {
+      return res.status(400).json({ 
+        message: "No nutrition data found. Please log some meals first to get personalized analysis." 
+      });
+    }
 
     const systemPrompt = `You are an expert nutrition scientist and registered dietitian specializing in comprehensive nutritional analysis. You provide detailed micronutrient analysis, RDA comparisons, and personalized nutrition recommendations based on individual health profiles and dietary intake data.
 
@@ -140,16 +196,16 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
     const userPrompt = `Analyze the following nutrition data and provide comprehensive insights:
 
     **User Profile**:
-    - Age: ${userProfile?.age || 30}
-    - Gender: ${userProfile?.gender || 'not specified'}
-    - Weight: ${userProfile?.weight || 70}kg
-    - Height: ${userProfile?.height || 170}cm
-    - Activity Level: ${userProfile?.activityLevel || 'moderate'}
-    - Goals: ${userProfile?.goals?.join(', ') || 'health optimization'}
-    ${userProfile?.healthConditions ? `- Health Conditions: ${userProfile.healthConditions.join(', ')}` : ''}
+    - Age: ${profile?.age || 30}
+    - Gender: ${profile?.gender || 'not specified'}
+    - Weight: ${profile?.weight || 70}kg
+    - Height: ${profile?.height || 170}cm
+    - Activity Level: ${profile?.activityLevel || 'moderate'}
+    - Goals: ${profile?.goals?.join(', ') || 'health optimization'}
+    ${profile?.healthConditions ? `- Health Conditions: ${profile.healthConditions.join(', ')}` : ''}
 
     **Analysis Period**: ${timeRange || '7 days'}
-    **Nutrition Data**: ${JSON.stringify(nutritionData?.slice(0, 10) || [], null, 2)}
+    **Nutrition Data**: ${JSON.stringify(nutrition?.slice(0, 10) || [], null, 2)}
 
     Provide a comprehensive analysis in JSON format:
     {

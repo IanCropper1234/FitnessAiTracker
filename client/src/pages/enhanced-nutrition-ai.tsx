@@ -53,21 +53,21 @@ export default function EnhancedNutritionAI() {
   const { toast } = useToast();
 
   // Form state
-  const [timeRange, setTimeRange] = useState<string>("7days");
-  const [goals, setGoals] = useState<string[]>(['health_optimization']);
+  const [timeRange, setTimeRange] = useState<string>("Last 7 Days");
+  const [goals, setGoals] = useState<string[]>(['Muscle Gain']);
   const [healthConditions, setHealthConditions] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
 
   // Available options
   const goalOptions = [
-    'health_optimization',
-    'weight_loss',
-    'muscle_gain',
-    'athletic_performance',
-    'metabolic_health',
-    'immunity_boost',
-    'longevity'
+    'Muscle Gain',
+    'Weight Loss', 
+    'Health Optimization',
+    'Athletic Performance',
+    'Metabolic Health',
+    'Immunity Boost',
+    'Longevity'
   ];
 
   // Get user profile and nutrition data
@@ -82,25 +82,27 @@ export default function EnhancedNutritionAI() {
   // AI analysis mutation
   const analysisMutation = useMutation({
     mutationFn: async () => {
-      if (!userProfile || !nutritionData) {
-        throw new Error('User profile and nutrition data are required');
-      }
-
       const request = {
-        userProfile: {
-          age: 30, // Mock data - will be replaced with real user data
-          gender: 'male' as const,
-          weight: 70,
-          height: 175,
-          activityLevel: 'moderate',
-          goals,
-          healthConditions: healthConditions ? healthConditions.split(',').map(s => s.trim()) : undefined
-        },
-        nutritionData: nutritionData || [],
-        timeRange
+        timeRange,
+        primaryGoal: goals[0] || 'health_optimization',
+        healthConditions: healthConditions || undefined
       };
 
-      return await AINutritionAnalysisService.analyzeNutrition(request);
+      const response = await fetch('/api/ai/nutrition-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to analyze nutrition data');
+      }
+
+      return await response.json();
     },
     onSuccess: () => {
       toast({
