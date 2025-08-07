@@ -136,7 +136,6 @@ export default function TrainingAnalytics() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Training Analytics</h1>
-            <p className="text-sm text-muted-foreground">Renaissance Periodization Volume Analysis</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
