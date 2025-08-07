@@ -5,15 +5,15 @@ import { Check, X, AlertTriangle, Info, Zap, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const notificationVariants = cva(
-  "relative w-full border-l-4 transition-all duration-300 touch-manipulation",
+  "relative w-full rounded-lg border transition-all duration-300 touch-manipulation shadow-lg backdrop-blur-sm",
   {
     variants: {
       variant: {
-        default: "bg-card/95 border-l-blue-500 text-foreground",
-        success: "bg-emerald-500/10 border-l-emerald-500 text-emerald-100",
-        warning: "bg-amber-500/10 border-l-amber-500 text-amber-100", 
-        error: "bg-red-500/10 border-l-red-500 text-red-100",
-        info: "bg-blue-500/10 border-l-blue-500 text-blue-100",
+        default: "bg-gray-900/95 dark:bg-gray-100/95 border-gray-700 dark:border-gray-300 text-white dark:text-gray-900",
+        success: "bg-emerald-600/95 dark:bg-emerald-700/95 border-emerald-500 text-white",
+        warning: "bg-amber-600/95 dark:bg-amber-700/95 border-amber-500 text-white", 
+        error: "bg-red-600/95 dark:bg-red-700/95 border-red-500 text-white",
+        info: "bg-blue-600/95 dark:bg-blue-700/95 border-blue-500 text-white",
       },
       size: {
         compact: "p-3",
