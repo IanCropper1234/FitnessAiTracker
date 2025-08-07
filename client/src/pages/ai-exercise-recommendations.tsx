@@ -261,7 +261,8 @@ export default function AIExerciseRecommendations() {
             restPeriod: rec.restPeriod,
             notes: rec.reasoning,
             specialMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
-            specialConfig: rec.specialConfig || {}
+            specialConfig: rec.specialConfig || {},
+            specialMethodData: rec.specialConfig || {}
           }],
           tags: ['ai-generated'],
           estimatedDuration: 30,
@@ -337,7 +338,8 @@ export default function AIExerciseRecommendations() {
           restPeriod: rec.restPeriod,
           notes: rec.reasoning,
           specialMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
-          specialConfig: rec.specialConfig || {}
+          specialConfig: rec.specialConfig || {},
+          specialMethodData: rec.specialConfig || {}
         };
       });
 

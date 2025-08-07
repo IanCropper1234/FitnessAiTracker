@@ -3759,7 +3759,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         targetReps: exercise.targetReps,
         restPeriod: exercise.restPeriod,
         specialMethod: exercise.specialMethod || null,
-        specialConfig: exercise.specialConfig || null,
+        specialConfig: exercise.specialConfig || exercise.specialMethodData || null,
         notes: exercise.notes || null
       }));
       
