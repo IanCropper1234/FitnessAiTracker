@@ -198,7 +198,7 @@ export default function EnhancedNutritionAI() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6 items-start">
         {/* Configuration Panel */}
         <div className="space-y-6">
           {/* Analysis Settings */}
@@ -331,14 +331,14 @@ export default function EnhancedNutritionAI() {
         </div>
 
         {/* Results Panel */}
-        <Card>
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5" />
               AI Analysis Results
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {!analysisMutation.data && !analysisMutation.isPending && (
               <div className="text-center py-12 text-muted-foreground">
                 <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -355,8 +355,8 @@ export default function EnhancedNutritionAI() {
             )}
 
             {analysisMutation.data && (
-              <ScrollArea className="max-h-[70vh]">
-                <div className="space-y-6">
+              <ScrollArea className="h-[600px] pr-4">
+                <div className="space-y-6 pb-4">
                   {/* Overall Rating */}
                   <div className="text-center p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
                     <div className="flex items-center justify-center gap-2 mb-2">
