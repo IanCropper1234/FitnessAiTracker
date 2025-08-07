@@ -117,7 +117,7 @@ export default function AIExerciseRecommendations() {
   ];
 
   // Get current user data
-  const { data: currentExercises } = useQuery({
+  const { data: currentExercises } = useQuery<any[]>({
     queryKey: ['/api/training/exercises'],
   });
 
@@ -143,12 +143,12 @@ export default function AIExerciseRecommendations() {
         },
         injuryRestrictions,
         customRequirements,
-        currentExercises: currentExercises || [],
+        currentExercises: (currentExercises as any[]) || [],
         trainingHistory: trainingHistory || []
       };
 
       console.log('Sending AI recommendation request:', formData);
-      console.log('Current exercises count:', currentExercises?.length || 0);
+      console.log('Current exercises count:', (currentExercises as any[])?.length || 0);
       
       if (viewMode === 'weekly') {
         return await AIExerciseRecommendationService.getWeeklyWorkoutPlan(formData);
@@ -240,13 +240,13 @@ export default function AIExerciseRecommendations() {
           exerciseTemplates: [{
             exerciseId: (() => {
               // Find the exercise ID by name with flexible matching
-              let exerciseMatch = currentExercises?.find((ex: any) => 
+              let exerciseMatch = (currentExercises as any[])?.find((ex: any) => 
                 ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
               );
               
               // If no exact match, try partial matching
               if (!exerciseMatch) {
-                exerciseMatch = currentExercises?.find((ex: any) => 
+                exerciseMatch = (currentExercises as any[])?.find((ex: any) => 
                   ex.name.toLowerCase().includes(rec.exerciseName.toLowerCase()) ||
                   rec.exerciseName.toLowerCase().includes(ex.name.toLowerCase())
                 );
@@ -297,13 +297,13 @@ export default function AIExerciseRecommendations() {
     try {
       const exercises = recommendationMutation.data.recommendations.map((rec: ExerciseRecommendation, index: number) => {
         // Find the exercise ID by name with flexible matching
-        let exerciseMatch = currentExercises?.find((ex: any) => 
+        let exerciseMatch = (currentExercises as any[])?.find((ex: any) => 
           ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
         );
         
         // If no exact match, try partial matching
         if (!exerciseMatch) {
-          exerciseMatch = currentExercises?.find((ex: any) => 
+          exerciseMatch = (currentExercises as any[])?.find((ex: any) => 
             ex.name.toLowerCase().includes(rec.exerciseName.toLowerCase()) ||
             rec.exerciseName.toLowerCase().includes(ex.name.toLowerCase())
           );
@@ -321,7 +321,7 @@ export default function AIExerciseRecommendations() {
           ];
           
           for (const variation of variations) {
-            exerciseMatch = currentExercises?.find((ex: any) => 
+            exerciseMatch = (currentExercises as any[])?.find((ex: any) => 
               ex.name.toLowerCase() === variation.toLowerCase()
             );
             if (exerciseMatch) break;
@@ -386,7 +386,7 @@ export default function AIExerciseRecommendations() {
         <Button
           variant="ghost" 
           size="sm"
-          onClick={() => setLocation('/dashboard')}
+          onClick={() => setLocation('/training')}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>

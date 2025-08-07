@@ -140,7 +140,7 @@ export default function EnhancedNutritionAI() {
         <Button
           variant="ghost" 
           size="sm"
-          onClick={() => setLocation('/dashboard')}
+          onClick={() => setLocation('/nutrition')}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>

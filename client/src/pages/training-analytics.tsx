@@ -141,7 +141,7 @@ export default function TrainingAnalytics() {
           <Button
             variant="ghost" 
             size="sm"
-            onClick={() => setLocation('/training-dashboard')}
+            onClick={() => setLocation('/training')}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
