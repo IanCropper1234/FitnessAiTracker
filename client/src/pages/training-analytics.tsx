@@ -66,21 +66,21 @@ export default function TrainingAnalytics() {
   const [timeRange, setTimeRange] = useState<string>("4weeks");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
 
-  // Fetch analytics data
+  // Fetch analytics data with correct API endpoints
   const { data: volumeProgression, isLoading: volumeLoading } = useQuery({
-    queryKey: ['/api/analytics/volume-progression', timeRange],
+    queryKey: [`/api/analytics/volume-progression/${timeRange}`],
   });
 
   const { data: muscleGroupData, isLoading: muscleLoading } = useQuery({
-    queryKey: ['/api/analytics/muscle-group-distribution', timeRange],
+    queryKey: [`/api/analytics/muscle-group-distribution/${timeRange}`],
   });
 
   const { data: exerciseProgress, isLoading: exerciseLoading } = useQuery({
-    queryKey: ['/api/analytics/exercise-progress', timeRange, selectedMuscleGroup],
+    queryKey: [`/api/analytics/exercise-progress/${timeRange}/${selectedMuscleGroup}`],
   });
 
   const { data: rpMetrics, isLoading: rpLoading } = useQuery({
-    queryKey: ['/api/analytics/rp-metrics', timeRange],
+    queryKey: [`/api/analytics/rp-metrics/${timeRange}`],
   });
 
   // Mock data for development - will be replaced with real API data
@@ -203,7 +203,7 @@ export default function TrainingAnalytics() {
           ) : (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockVolumeData}>
+                <LineChart data={volumeProgression || mockVolumeData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="week" />
                   <YAxis />
@@ -283,7 +283,7 @@ export default function TrainingAnalytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={mockMuscleData}
+                    data={muscleGroupData || mockMuscleData}
                     cx="50%"
                     cy="50%"
                     outerRadius={90}
@@ -292,7 +292,7 @@ export default function TrainingAnalytics() {
                     dataKey="currentVolume"
                     label={false}
                   >
-                    {mockMuscleData.map((entry, index) => (
+                    {(muscleGroupData || mockMuscleData).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -356,7 +356,7 @@ export default function TrainingAnalytics() {
 
             {/* Volume Comparison */}
             <div className="space-y-2">
-              {mockMuscleData.map((muscle) => (
+              {(muscleGroupData || mockMuscleData).map((muscle) => (
                 <div key={muscle.muscleGroup} className="flex items-center justify-between p-2.5 bg-muted/30 border border-border/30">
                   <div className="flex items-center gap-2.5">
                     <div 
@@ -394,7 +394,7 @@ export default function TrainingAnalytics() {
         <CardContent>
           <ScrollArea className="h-96">
             <div className="space-y-6">
-              {mockExerciseProgress.map((exercise) => (
+              {(exerciseProgress || mockExerciseProgress).map((exercise) => (
                 <div key={exercise.exerciseName} className="space-y-3">
                   <h4 className="font-medium text-sm">{exercise.exerciseName}</h4>
                   <div className="h-40">

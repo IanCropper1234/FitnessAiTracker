@@ -15,7 +15,7 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
-import analyticsRoutes from "./routes/analytics.js";
+import analyticsRoutes from "./routes/analytics-simple.js";
 import aiRoutes from "./routes/ai.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates } from "@shared/schema";
