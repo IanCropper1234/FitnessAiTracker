@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useOptimizedSearch } from '@/hooks/useOptimizedSearch';
 import { useLocation, useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -51,11 +52,8 @@ export default function ExerciseSelection() {
   const [match, params] = useRoute('/exercise-selection/:source?');
   
   const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const exercisesPerPage = 24;
 
   // Parse URL parameters for context - use window.location.search for query params
@@ -72,20 +70,6 @@ export default function ExerciseSelection() {
   console.log('  Raw return param:', rawReturnParam);
   console.log('  Decoded return path:', returnPath);
   console.log('  Workout Index:', workoutIndex);
-
-  // Debounce search term
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-      setCurrentPage(1);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  // Reset page when category changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory]);
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
 
@@ -118,36 +102,41 @@ export default function ExerciseSelection() {
     refetchOnWindowFocus: false // Prevent refetch that could trigger auth issues
   });
 
-  // Memoized: Filter exercises based on search and category
-  const filteredExercises = useMemo(() => {
-    return exercises.filter((exercise: Exercise) => {
-      // Add null safety checks for all string properties
-      if (!exercise || !exercise.name || !exercise.primaryMuscle || !exercise.category) {
+  // Memory-optimized search with caching
+  const [searchResult, searchControls] = useOptimizedSearch({
+    data: exercises,
+    searchFields: ['name', 'primaryMuscle'],
+    filterFn: useCallback((exercise: Exercise) => {
+      // Category filter
+      if (selectedCategory !== 'all' && exercise.category !== selectedCategory) {
         return false;
       }
       
-      const matchesSearch = debouncedSearchTerm === "" ||
-        exercise.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        exercise.primaryMuscle.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || exercise.category === selectedCategory;
-      const matchesTarget = targetMuscles.length === 0 || 
-                           targetMuscles.some(muscle => 
-                             exercise.muscleGroups?.some(mg => mg && mg.toLowerCase().includes(muscle.toLowerCase()))
-                           );
+      // Target muscle filter
+      if (targetMuscles.length > 0) {
+        const matchesTarget = targetMuscles.some(muscle => 
+          exercise.muscleGroups?.some(mg => mg && mg.toLowerCase().includes(muscle.toLowerCase()))
+        );
+        if (!matchesTarget) return false;
+      }
       
-      return matchesSearch && matchesCategory && matchesTarget;
-    });
-  }, [exercises, debouncedSearchTerm, selectedCategory, targetMuscles]);
+      return true;
+    }, [selectedCategory, targetMuscles]),
+    pageSize: exercisesPerPage,
+    debounceMs: 300,
+    maxCacheSize: 100,
+    enableCache: true
+  });
 
-  // Memoized: Paginated exercises
-  const paginatedExercises = useMemo(() => {
-    const startIndex = (currentPage - 1) * exercisesPerPage;
-    const endIndex = startIndex + exercisesPerPage;
-    return filteredExercises.slice(startIndex, endIndex);
-  }, [filteredExercises, currentPage, exercisesPerPage]);
-
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredExercises.length / exercisesPerPage);
+  // Extract results from optimized search
+  const {
+    filteredData: filteredExercises,
+    paginatedData: paginatedExercises,
+    totalItems,
+    totalPages,
+    currentPage,
+    isSearching
+  } = searchResult;
 
   const addExercise = (exercise: Exercise) => {
     // Add null safety check
@@ -335,8 +324,7 @@ export default function ExerciseSelection() {
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search exercises..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => searchControls.setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -384,7 +372,7 @@ export default function ExerciseSelection() {
                   </span>
                   {totalPages > 1 && (
                     <span className="text-xs opacity-75">
-                      Showing {Math.min((currentPage - 1) * exercisesPerPage + 1, filteredExercises.length)}-{Math.min(currentPage * exercisesPerPage, filteredExercises.length)} of {filteredExercises.length}
+                      Showing {Math.min((currentPage - 1) * exercisesPerPage + 1, totalItems)}-{Math.min(currentPage * exercisesPerPage, totalItems)} of {totalItems}
                     </span>
                   )}
                 </div>
@@ -457,7 +445,7 @@ export default function ExerciseSelection() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    onClick={() => searchControls.setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                     className="h-8 px-3"
                   >
@@ -483,7 +471,7 @@ export default function ExerciseSelection() {
                           key={pageNum}
                           variant={currentPage === pageNum ? "default" : "outline"}
                           size="sm"
-                          onClick={() => setCurrentPage(pageNum)}
+                          onClick={() => searchControls.setCurrentPage(pageNum)}
                           className="h-8 w-8 p-0 text-xs"
                         >
                           {pageNum}
@@ -495,7 +483,7 @@ export default function ExerciseSelection() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    onClick={() => searchControls.setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
                     className="h-8 px-3"
                   >

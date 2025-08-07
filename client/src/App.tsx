@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { IOSNotificationManager } from "@/components/ui/ios-notification-manager
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { LanguageProvider, useLanguage } from "@/components/language-provider";
+import { ErrorBoundary, setupGlobalErrorHandling } from "@/components/error-boundary";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { FloatingTrainingMenu } from "@/components/floating-training-menu";
@@ -412,23 +413,32 @@ export default function App() {
     );
   }
 
+  // Setup global error handling
+  React.useEffect(() => {
+    setupGlobalErrorHandling();
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <LanguageProvider>
-          <TooltipProvider>
-            <div className="text-foreground bg-background theme-transition">
-              <AppRouter user={user} setUser={setUser} />
-              <Toaster />
-              <IOSNotificationManager 
-                position="top" 
-                maxNotifications={3}
-                defaultAutoHideDelay={5000}
-              />
-            </div>
-          </TooltipProvider>
-        </LanguageProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ErrorBoundary level="critical">
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <div className="text-foreground bg-background theme-transition">
+                <ErrorBoundary level="page">
+                  <AppRouter user={user} setUser={setUser} />
+                </ErrorBoundary>
+                <Toaster />
+                <IOSNotificationManager 
+                  position="top" 
+                  maxNotifications={3}
+                  defaultAutoHideDelay={5000}
+                />
+              </div>
+            </TooltipProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

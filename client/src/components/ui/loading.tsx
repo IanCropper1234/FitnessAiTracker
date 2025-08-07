@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -136,5 +137,124 @@ export function WorkoutSessionSkeleton() {
         </div>
       </div>
     </SkeletonCard>
+  );
+}
+
+// Enhanced loading states with error fallbacks
+interface LoadingStateWithErrorProps extends LoadingStateProps {
+  error?: Error | null;
+  onRetry?: () => void;
+  retryButton?: string;
+}
+
+export function LoadingStateWithError({ 
+  error, 
+  onRetry, 
+  retryButton = "Try Again",
+  ...loadingProps 
+}: LoadingStateWithErrorProps) {
+  if (error) {
+    return (
+      <div className={cn("flex flex-col items-center justify-center py-8 space-y-4", loadingProps.className)}>
+        <div className="text-red-500 dark:text-red-400">
+          <AlertTriangle className="h-8 w-8" />
+        </div>
+        <div className="text-center space-y-2">
+          <p className="font-medium text-foreground">Something went wrong</p>
+          <p className="text-sm text-muted-foreground">{error.message}</p>
+        </div>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            {retryButton}
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return <LoadingState {...loadingProps} />;
+}
+
+// Progressive loading state for multi-step operations
+interface ProgressiveLoadingProps {
+  steps: string[];
+  currentStep: number;
+  message?: string;
+  className?: string;
+}
+
+export function ProgressiveLoading({ 
+  steps, 
+  currentStep, 
+  message = "Loading...",
+  className 
+}: ProgressiveLoadingProps) {
+  const progress = Math.round((currentStep / steps.length) * 100);
+
+  return (
+    <div className={cn("flex flex-col items-center justify-center py-8 space-y-4", className)}>
+      <LoadingSpinner size="lg" />
+      <div className="text-center space-y-3 max-w-xs">
+        <p className="font-medium text-foreground">{message}</p>
+        
+        {/* Progress bar */}
+        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+          <div 
+            className="bg-primary h-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        
+        {/* Current step */}
+        <p className="text-sm text-muted-foreground">
+          {currentStep > 0 && currentStep <= steps.length 
+            ? steps[currentStep - 1] 
+            : "Getting ready..."
+          }
+        </p>
+        
+        {/* Step counter */}
+        <p className="text-xs text-muted-foreground">
+          Step {Math.min(currentStep, steps.length)} of {steps.length}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Loading overlay for forms and interactive components
+interface LoadingOverlayProps {
+  isLoading: boolean;
+  children: React.ReactNode;
+  message?: string;
+  blur?: boolean;
+  className?: string;
+}
+
+export function LoadingOverlay({
+  isLoading,
+  children,
+  message = "Loading...",
+  blur = true,
+  className
+}: LoadingOverlayProps) {
+  return (
+    <div className={cn("relative", className)}>
+      {children}
+      {isLoading && (
+        <div className={cn(
+          "absolute inset-0 flex items-center justify-center bg-background/50 z-10",
+          blur && "backdrop-blur-sm"
+        )}>
+          <div className="bg-background border rounded-lg p-6 shadow-lg">
+            <LoadingState message={message} type="spinner" />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
