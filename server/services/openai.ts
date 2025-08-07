@@ -370,6 +370,7 @@ export async function generateWeeklyWorkoutPlan(
   equipment: string[],
   sessionDuration: number,
   sessionsPerWeek: number,
+  specialMethodPercentage: number = 20,
   injuryRestrictions: string,
   customRequirements: string
 ): Promise<WeeklyWorkoutPlan> {
@@ -390,7 +391,7 @@ export async function generateWeeklyWorkoutPlan(
 
 **RP Methodology Requirements:**
 1. **Volume Distribution**: Apply MEV/MAV/MRV principles for each muscle group
-2. **Special Training Methods**: Use 15-25% of total exercises with methods like:
+2. **Special Training Methods**: Use exactly ${specialMethodPercentage}% of total exercises with methods like:
    - MyoRep Match/No Match (isolation exercises)
    - Drop Sets (machine/cable exercises)
    - Giant Sets (2-3 exercises targeting same muscle)
@@ -447,7 +448,7 @@ export async function generateWeeklyWorkoutPlan(
 **Critical Requirements:**
 - Generate ${sessionsPerWeek} complete workout sessions
 - Include 4-8 exercises per session based on duration
-- Apply special training methods to 15-25% of total exercises
+- Apply special training methods to exactly ${specialMethodPercentage}% of total exercises
 - Ensure muscle group balance across the week
 - Respect equipment limitations
 - Consider injury restrictions

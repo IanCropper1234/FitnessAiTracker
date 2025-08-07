@@ -4693,6 +4693,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         equipment,
         sessionDuration,
         sessionsPerWeek,
+        req.body.specialMethodPercentage || 20,
         injuryRestrictions,
         customRequirements
       );
@@ -4812,6 +4813,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         equipment,
         sessionDuration,
         sessionsPerWeek || 1, // Default to 1 session if not specified
+        req.body.specialMethodPercentage || 20,
         injuryRestrictions,
         customRequirements
       );

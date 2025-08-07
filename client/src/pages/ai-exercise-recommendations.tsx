@@ -85,6 +85,7 @@ export default function AIExerciseRecommendations() {
   const [equipment, setEquipment] = useState<string[]>([]);
   const [sessionDuration, setSessionDuration] = useState<number>(60);
   const [sessionsPerWeek, setSessionsPerWeek] = useState<number>(4);
+  const [specialMethodPercentage, setSpecialMethodPercentage] = useState<number>(20);
   const [injuryRestrictions, setInjuryRestrictions] = useState<string>('');
   const [customRequirements, setCustomRequirements] = useState<string>('');
   
@@ -137,6 +138,7 @@ export default function AIExerciseRecommendations() {
         equipment,
         sessionDuration,
         sessionsPerWeek,
+        specialMethodPercentage,
         injuryRestrictions,
         customRequirements
       };
@@ -336,7 +338,7 @@ export default function AIExerciseRecommendations() {
             </div>
 
             {/* Time Constraints */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className={viewMode === 'weekly' ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4"}>
               <div>
                 <label className="text-sm font-medium mb-2 block">Session Duration (min)</label>
                 <Input
@@ -347,15 +349,40 @@ export default function AIExerciseRecommendations() {
                   max="180"
                 />
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Sessions/Week</label>
-                <Input
-                  type="number"
-                  value={sessionsPerWeek}
-                  onChange={(e) => setSessionsPerWeek(parseInt(e.target.value) || 4)}
-                  min="2"
-                  max="7"
-                />
+              {viewMode === 'weekly' && (
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Sessions/Week</label>
+                  <Input
+                    type="number"
+                    value={sessionsPerWeek}
+                    onChange={(e) => setSessionsPerWeek(parseInt(e.target.value) || 4)}
+                    min="2"
+                    max="7"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Special Training Methods Percentage */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Special Training Methods %</label>
+              <div className="space-y-2">
+                <Select value={specialMethodPercentage.toString()} onValueChange={(value) => setSpecialMethodPercentage(parseInt(value))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0% - Standard sets only</SelectItem>
+                    <SelectItem value="10">10% - Minimal special methods</SelectItem>
+                    <SelectItem value="20">20% - Moderate (Recommended)</SelectItem>
+                    <SelectItem value="30">30% - Enhanced intensity</SelectItem>
+                    <SelectItem value="40">40% - High intensity</SelectItem>
+                    <SelectItem value="50">50% - Maximum variety</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Percentage of exercises using special methods (MyoRep, Drop Sets, Giant Sets, etc.)
+                </p>
               </div>
             </div>
 
@@ -542,11 +569,9 @@ export default function AIExerciseRecommendations() {
                                     <Badge variant="secondary" className="text-xs h-5">
                                       {exercise.equipment}
                                     </Badge>
-                                    {exercise.specialMethod && (
-                                      <Badge variant="destructive" className="text-xs h-5">
-                                        {exercise.specialMethod}
-                                      </Badge>
-                                    )}
+                                    <Badge variant={exercise.specialMethod && exercise.specialMethod !== 'null' ? "destructive" : "secondary"} className="text-xs h-5">
+                                      {exercise.specialMethod && exercise.specialMethod !== 'null' ? exercise.specialMethod : 'Standard'}
+                                    </Badge>
                                   </div>
                                   <div className="text-xs text-muted-foreground">
                                     RPE {exercise.rpIntensity}/10 • {exercise.restPeriod}s rest • {exercise.volumeContribution} sets
@@ -619,13 +644,11 @@ export default function AIExerciseRecommendations() {
                               <p className="text-xs text-green-400">{rec.progressionNotes}</p>
                             </div>
 
-                            {rec.specialMethod && (
-                              <div className="p-2 bg-orange-500/10 border border-orange-500/20">
-                                <div className="text-xs text-orange-400 font-medium">
-                                  Special Method: {rec.specialMethod}
-                                </div>
+                            <div className={`p-2 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-gray-500/10 border border-gray-500/20'}`}>
+                              <div className={`text-xs font-medium ${rec.specialMethod && rec.specialMethod !== 'null' ? 'text-orange-400' : 'text-gray-400'}`}>
+                                Special Method: {rec.specialMethod && rec.specialMethod !== 'null' ? rec.specialMethod : 'Standard'}
                               </div>
-                            )}
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
