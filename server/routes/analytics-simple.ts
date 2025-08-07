@@ -15,15 +15,29 @@ function requireAuth(req: any, res: any, next: any) {
   next();
 }
 
-// Simplified volume progression with direct SQL
-router.get('/volume-progression/:timeRange', requireAuth, async (req, res) => {
+// Simplified volume progression with muscle group filtering
+router.get('/volume-progression/:timeRange/:muscleGroup?', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
+    const { muscleGroup = 'all' } = req.params;
+    
+    // Build muscle group filter
+    let muscleGroupFilter = '';
+    if (muscleGroup && muscleGroup !== 'all') {
+      muscleGroupFilter = `
+        AND EXISTS (
+          SELECT 1 FROM exercise_muscle_mapping emm 
+          JOIN muscle_groups mg ON emm.muscle_group_id = mg.id 
+          WHERE emm.exercise_id = we.exercise_id 
+          AND mg.name = '${muscleGroup}'
+        )
+      `;
+    }
     
     // Get real data using direct SQL for proven functionality
     const weeklyData = await db.execute(sql`
       SELECT 
-        'Week ' || ROW_NUMBER() OVER (ORDER BY DATE_TRUNC('week', ws.date)) as week,
+        'Week ' || ROW_NUMBER() OVER (ORDER BY week_date) as week,
         COALESCE(SUM(we.sets), 0) as actual,
         8 as mv,
         12 as mev, 
@@ -34,17 +48,18 @@ router.get('/volume-progression/:timeRange', requireAuth, async (req, res) => {
           ELSE ROUND((COALESCE(SUM(we.sets), 0)::float / 12) * 100)
         END as adherence
       FROM (
-        SELECT DISTINCT DATE_TRUNC('week', date) as date 
+        SELECT DISTINCT DATE_TRUNC('week', date) as week_date 
         FROM workout_sessions 
         WHERE user_id = ${userId} 
           AND is_completed = true 
           AND date >= CURRENT_DATE - INTERVAL '28 days'
       ) weeks
-      LEFT JOIN workout_sessions ws ON DATE_TRUNC('week', ws.date) = weeks.date 
+      LEFT JOIN workout_sessions ws ON DATE_TRUNC('week', ws.date) = weeks.week_date 
         AND ws.user_id = ${userId} AND ws.is_completed = true
       LEFT JOIN workout_exercises we ON ws.id = we.session_id
-      GROUP BY weeks.date
-      ORDER BY weeks.date
+      WHERE 1=1 ${sql.raw(muscleGroupFilter)}
+      GROUP BY weeks.week_date
+      ORDER BY weeks.week_date
     `);
     
     res.json(weeklyData.rows);
@@ -138,10 +153,24 @@ router.get('/exercise-progress/:timeRange/:muscleGroup', requireAuth, async (req
   }
 });
 
-// Simplified RP metrics
-router.get('/rp-metrics/:timeRange', requireAuth, async (req, res) => {
+// Simplified RP metrics with muscle group filtering
+router.get('/rp-metrics/:timeRange/:muscleGroup?', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
+    const { muscleGroup = 'all' } = req.params;
+    
+    // Build muscle group filter
+    let muscleGroupFilter = '';
+    if (muscleGroup && muscleGroup !== 'all') {
+      muscleGroupFilter = `
+        AND EXISTS (
+          SELECT 1 FROM exercise_muscle_mapping emm 
+          JOIN muscle_groups mg ON emm.muscle_group_id = mg.id 
+          WHERE emm.exercise_id = we.exercise_id 
+          AND mg.name = '${muscleGroup}'
+        )
+      `;
+    }
     
     const rpData = await db.execute(sql`
       SELECT 
@@ -173,6 +202,7 @@ router.get('/rp-metrics/:timeRange', requireAuth, async (req, res) => {
       WHERE ws.user_id = ${userId} 
         AND ws.is_completed = true 
         AND ws.date >= CURRENT_DATE - INTERVAL '28 days'
+        ${sql.raw(muscleGroupFilter)}
     `);
     
     res.json(rpData.rows[0] || {});

@@ -68,7 +68,7 @@ export default function TrainingAnalytics() {
 
   // Fetch analytics data with correct API endpoints
   const { data: volumeProgression, isLoading: volumeLoading } = useQuery({
-    queryKey: [`/api/analytics/volume-progression/${timeRange}`],
+    queryKey: [`/api/analytics/volume-progression/${timeRange}/${selectedMuscleGroup}`],
   });
 
   const { data: muscleGroupData, isLoading: muscleLoading } = useQuery({
@@ -80,7 +80,7 @@ export default function TrainingAnalytics() {
   });
 
   const { data: rpMetrics, isLoading: rpLoading } = useQuery({
-    queryKey: [`/api/analytics/rp-metrics/${timeRange}`],
+    queryKey: [`/api/analytics/rp-metrics/${timeRange}/${selectedMuscleGroup}`],
   });
 
   // Mock data for development - will be replaced with real API data
@@ -249,19 +249,33 @@ export default function TrainingAnalytics() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
             <div className="text-center">
               <div className="text-xs text-muted-foreground">Current Week</div>
-              <div className="text-lg font-bold text-green-400">15 Sets</div>
+              <div className="text-lg font-bold text-green-400">
+                {volumeProgression && volumeProgression.length > 0 
+                  ? `${volumeProgression[volumeProgression.length - 1]?.actual || 0} Sets`
+                  : '0 Sets'
+                }
+              </div>
             </div>
             <div className="text-center">
               <div className="text-xs text-muted-foreground">Adherence</div>
-              <div className="text-lg font-bold text-blue-400">83%</div>
+              <div className="text-lg font-bold text-blue-400">
+                {volumeProgression && volumeProgression.length > 0 
+                  ? `${volumeProgression[volumeProgression.length - 1]?.adherence || 0}%`
+                  : '0%'
+                }
+              </div>
             </div>
             <div className="text-center">
               <div className="text-xs text-muted-foreground">Zone</div>
-              <div className="text-lg font-bold text-orange-400">MEV</div>
+              <div className="text-lg font-bold text-orange-400">
+                {rpMetrics?.fatigueLevel || 'Low'}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-xs text-muted-foreground">Fatigue</div>
-              <div className="text-lg font-bold text-yellow-400">Moderate</div>
+              <div className="text-lg font-bold text-yellow-400">
+                {rpMetrics?.fatigueLevel || 'Low'}
+              </div>
             </div>
           </div>
         </CardContent>
@@ -486,24 +500,26 @@ export default function TrainingAnalytics() {
         <CardContent>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-green-500/10 border border-green-500/20">
-              <div className="text-sm text-green-400 mb-1">Recovery Status</div>
-              <div className="text-lg font-bold text-green-400">Good</div>
-              <div className="text-xs text-muted-foreground mt-1">Ready for progression</div>
+              <div className="text-sm text-green-400 mb-1">Total Volume</div>
+              <div className="text-lg font-bold text-green-400">{rpMetrics?.totalVolume || '0'} Sets</div>
+              <div className="text-xs text-muted-foreground mt-1">{rpMetrics?.totalSessions || '0'} sessions</div>
             </div>
             <div className="text-center p-4 bg-yellow-500/10 border border-yellow-500/20">
-              <div className="text-sm text-yellow-400 mb-1">Systemic Fatigue</div>
-              <div className="text-lg font-bold text-yellow-400">Moderate</div>
-              <div className="text-xs text-muted-foreground mt-1">Consider deload soon</div>
+              <div className="text-sm text-yellow-400 mb-1">Adherence to MEV</div>
+              <div className="text-lg font-bold text-yellow-400">{rpMetrics?.adherenceToMev || '0'}%</div>
+              <div className="text-xs text-muted-foreground mt-1">Weekly average: {rpMetrics?.weeklyAvgVolume || '0'}</div>
             </div>
             <div className="text-center p-4 bg-blue-500/10 border border-blue-500/20">
-              <div className="text-sm text-blue-400 mb-1">Volume Tolerance</div>
-              <div className="text-lg font-bold text-blue-400">High</div>
-              <div className="text-xs text-muted-foreground mt-1">Within MAV zone</div>
+              <div className="text-sm text-blue-400 mb-1">Fatigue Level</div>
+              <div className="text-lg font-bold text-blue-400" style={{ color: rpMetrics?.fatigueColor || '#22C55E' }}>
+                {rpMetrics?.fatigueLevel || 'Low'}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">{rpMetrics?.avgSessionsPerWeek || '0'} sessions/week</div>
             </div>
             <div className="text-center p-4 bg-purple-500/10 border border-purple-500/20">
-              <div className="text-sm text-purple-400 mb-1">Next Phase</div>
-              <div className="text-lg font-bold text-purple-400">Week 2</div>
-              <div className="text-xs text-muted-foreground mt-1">Volume increase</div>
+              <div className="text-sm text-purple-400 mb-1">Recommendation</div>
+              <div className="text-lg font-bold text-purple-400">Next Step</div>
+              <div className="text-xs text-muted-foreground mt-1">{rpMetrics?.nextRecommendation || 'Maintain volume'}</div>
             </div>
           </div>
         </CardContent>
