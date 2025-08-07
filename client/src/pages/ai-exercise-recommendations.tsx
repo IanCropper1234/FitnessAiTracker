@@ -233,9 +233,23 @@ export default function AIExerciseRecommendations() {
           name: `AI Generated - ${rec.exerciseName}`,
           description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`,
           exerciseTemplates: [{
-            exerciseId: currentExercises?.find((ex: any) => 
-              ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
-            )?.id || null,
+            exerciseId: (() => {
+              // Find the exercise ID by name with flexible matching
+              let exerciseMatch = currentExercises?.find((ex: any) => 
+                ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
+              );
+              
+              // If no exact match, try partial matching
+              if (!exerciseMatch) {
+                exerciseMatch = currentExercises?.find((ex: any) => 
+                  ex.name.toLowerCase().includes(rec.exerciseName.toLowerCase()) ||
+                  rec.exerciseName.toLowerCase().includes(ex.name.toLowerCase())
+                );
+              }
+              
+              console.log(`Single exercise mapping: "${rec.exerciseName}" -> ${exerciseMatch ? `${exerciseMatch.name} (ID: ${exerciseMatch.id})` : 'NOT FOUND'}`);
+              return exerciseMatch?.id || null;
+            })(),
             exerciseName: rec.exerciseName,
             sets: rec.sets,
             targetReps: rec.reps,
@@ -275,15 +289,44 @@ export default function AIExerciseRecommendations() {
     if (!recommendationMutation.data?.recommendations) return;
 
     try {
-      const exercises = await Promise.all(recommendationMutation.data.recommendations.map(async (rec: ExerciseRecommendation, index: number) => {
-        // Find the exercise ID by name
-        const exerciseMatch = currentExercises?.find((ex: any) => 
+      const exercises = recommendationMutation.data.recommendations.map((rec: ExerciseRecommendation, index: number) => {
+        // Find the exercise ID by name with flexible matching
+        let exerciseMatch = currentExercises?.find((ex: any) => 
           ex.name.toLowerCase() === rec.exerciseName.toLowerCase()
         );
         
+        // If no exact match, try partial matching
+        if (!exerciseMatch) {
+          exerciseMatch = currentExercises?.find((ex: any) => 
+            ex.name.toLowerCase().includes(rec.exerciseName.toLowerCase()) ||
+            rec.exerciseName.toLowerCase().includes(ex.name.toLowerCase())
+          );
+        }
+        
+        // If still no match, try with common variations
+        if (!exerciseMatch) {
+          const variations = [
+            rec.exerciseName.replace(/^barbell\s+/i, ''),
+            rec.exerciseName.replace(/^dumbbell\s+/i, ''),
+            rec.exerciseName.replace(/\s+press$/i, ''),
+            rec.exerciseName.replace(/\s+curl$/i, ''),
+            'Barbell ' + rec.exerciseName,
+            'Dumbbell ' + rec.exerciseName
+          ];
+          
+          for (const variation of variations) {
+            exerciseMatch = currentExercises?.find((ex: any) => 
+              ex.name.toLowerCase() === variation.toLowerCase()
+            );
+            if (exerciseMatch) break;
+          }
+        }
+        
+        console.log(`Exercise mapping: "${rec.exerciseName}" -> ${exerciseMatch ? `${exerciseMatch.name} (ID: ${exerciseMatch.id})` : 'NOT FOUND'}`);
+        
         return {
           exerciseId: exerciseMatch?.id || null,
-          exerciseName: rec.exerciseName,
+          exerciseName: exerciseMatch?.name || rec.exerciseName,
           sets: rec.sets,
           targetReps: rec.reps,
           restPeriod: rec.restPeriod,
@@ -291,7 +334,7 @@ export default function AIExerciseRecommendations() {
           specialMethod: rec.specialMethod === 'null' ? null : rec.specialMethod,
           specialConfig: rec.specialConfig || {}
         };
-      }));
+      });
 
       const response = await fetch('/api/training/saved-workout-templates', {
         method: 'POST',
