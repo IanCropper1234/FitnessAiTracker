@@ -15,7 +15,7 @@ export function BottomNavigation() {
   // iOS-style navigation items (4 main tabs + center action button)
   const navItems = [
     { path: "/", icon: Home, label: "Dashboard" },
-    { path: "/nutrition", icon: BookOpen, label: "Diary" },
+    { path: "/nutrition", icon: BookOpen, label: "Nutrition" },
     { path: "/training", icon: Dumbbell, label: "Training" },
     { path: "/profile", icon: User, label: "Profile" },
   ];
