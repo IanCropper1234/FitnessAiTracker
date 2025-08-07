@@ -237,7 +237,7 @@ export default function AIExerciseRecommendations() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6 min-h-0">
         {/* Configuration Form */}
         <Card>
           <CardHeader>
@@ -417,14 +417,14 @@ export default function AIExerciseRecommendations() {
         </Card>
 
         {/* Results */}
-        <Card>
-          <CardHeader>
+        <Card className="flex flex-col h-fit">
+          <CardHeader className="flex-shrink-0">
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5" />
               AI Recommendations
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 min-h-0">
             {!recommendationMutation.data && !recommendationMutation.isPending && (
               <div className="text-center py-12 text-muted-foreground">
                 <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -441,10 +441,9 @@ export default function AIExerciseRecommendations() {
             )}
 
             {recommendationMutation.data && (
-              <ScrollArea className="max-h-[70vh]">
-                <div className="space-y-6">
-                  {/* Save Weekly Plan Button (only for weekly mode) */}
-                  {viewMode === 'weekly' && recommendationMutation.data.sessions && (
+              <div className="space-y-6 max-h-[80vh] overflow-y-auto">
+                {/* Save Weekly Plan Button (only for weekly mode) */}
+                {viewMode === 'weekly' && recommendationMutation.data.sessions && (
                     <div className="flex flex-col gap-3">
                       <Button 
                         onClick={() => saveWeeklyPlanMutation.mutate({ 
@@ -470,10 +469,10 @@ export default function AIExerciseRecommendations() {
                         This will create {recommendationMutation.data.sessions?.length || 0} individual training templates
                       </div>
                     </div>
-                  )}
+                )}
 
-                  {/* Weekly Plan Summary (for weekly mode) */}
-                  {viewMode === 'weekly' && recommendationMutation.data.sessions && (
+                {/* Weekly Plan Summary (for weekly mode) */}
+                {viewMode === 'weekly' && recommendationMutation.data.sessions && (
                     <div className="p-4 bg-purple-500/10 border border-purple-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Calendar className="h-4 w-4 text-purple-400" />
@@ -486,28 +485,28 @@ export default function AIExerciseRecommendations() {
                         <p><span className="font-medium">Weekly Volume:</span> {recommendationMutation.data.totalVolume || 0} sets</p>
                       </div>
                     </div>
-                  )}
+                )}
 
-                  {/* Overall Analysis */}
-                  <div className="p-4 bg-blue-500/10 border border-blue-500/20">
+                {/* Overall Analysis */}
+                <div className="p-4 bg-blue-500/10 border border-blue-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <Info className="h-4 w-4 text-blue-400" />
                       <span className="text-sm font-medium text-blue-400">AI Analysis</span>
                     </div>
                     <p className="text-xs text-blue-300">{recommendationMutation.data.reasoning}</p>
-                  </div>
+                </div>
 
-                  {/* RP Considerations */}
-                  <div className="p-4 bg-green-500/10 border border-green-500/20">
+                {/* RP Considerations */}
+                <div className="p-4 bg-green-500/10 border border-green-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <Target className="h-4 w-4 text-green-400" />
                       <span className="text-sm font-medium text-green-400">RP Methodology Insights</span>
                     </div>
                     <p className="text-xs text-green-300">{recommendationMutation.data.rpConsiderations}</p>
-                  </div>
+                </div>
 
-                  {/* Exercise Recommendations - Different display for weekly vs single mode */}
-                  {viewMode === 'weekly' && recommendationMutation.data.sessions ? (
+                {/* Exercise Recommendations - Different display for weekly vs single mode */}
+                {viewMode === 'weekly' && recommendationMutation.data.sessions ? (
                     // Weekly Plan Display
                     <div className="space-y-4">
                       <h4 className="font-medium text-sm flex items-center gap-2">
@@ -558,8 +557,8 @@ export default function AIExerciseRecommendations() {
                           </CardContent>
                         </Card>
                       ))}
-                    </div>
-                  ) : (
+                  </div>
+                ) : (
                     // Single Session Display
                     <div className="space-y-4">
                       <h4 className="font-medium text-sm flex items-center gap-2">
@@ -631,19 +630,18 @@ export default function AIExerciseRecommendations() {
                         </CardContent>
                       </Card>
                       ))}
-                    </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Progression Plan */}
-                  <div className="p-4 bg-purple-500/10 border border-purple-500/20">
+                {/* Progression Plan */}
+                <div className="p-4 bg-purple-500/10 border border-purple-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp className="h-4 w-4 text-purple-400" />
                       <span className="text-sm font-medium text-purple-400">Progression Plan</span>
                     </div>
-                    <p className="text-xs text-purple-300">{recommendationMutation.data.progressionPlan}</p>
-                  </div>
+                  <p className="text-xs text-purple-300">{recommendationMutation.data.progressionPlan}</p>
                 </div>
-              </ScrollArea>
+              </div>
             )}
           </CardContent>
         </Card>
