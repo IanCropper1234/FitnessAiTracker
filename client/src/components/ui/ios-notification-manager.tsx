@@ -7,6 +7,7 @@ interface NotificationItem extends Omit<IOSNotificationBarProps, 'onDismiss' | '
   id: string
   timestamp: number
   persist?: boolean // If true, won't auto-hide
+  animationState?: 'entering' | 'visible' | 'exiting'
 }
 
 interface IOSNotificationManagerProps {
@@ -23,14 +24,16 @@ const IOSNotificationManager: React.FC<IOSNotificationManagerProps> = ({
   className
 }) => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
+  const [exitingIds, setExitingIds] = useState<Set<string>>(new Set())
 
-  // Add notification function
+  // Add notification function with animation
   const addNotification = useCallback((notification: Omit<NotificationItem, 'id' | 'timestamp'>) => {
     const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     const newNotification: NotificationItem = {
       ...notification,
       id,
       timestamp: Date.now(),
+      animationState: 'entering',
       autoHideDelay: notification.autoHideDelay ?? (notification.persist ? undefined : defaultAutoHideDelay),
     }
 
@@ -39,12 +42,34 @@ const IOSNotificationManager: React.FC<IOSNotificationManagerProps> = ({
       return updated
     })
 
+    // Set to visible after a brief delay to trigger entrance animation
+    setTimeout(() => {
+      setNotifications(prev => 
+        prev.map(n => n.id === id ? { ...n, animationState: 'visible' } : n)
+      )
+    }, 50)
+
     return id
   }, [maxNotifications, defaultAutoHideDelay])
 
-  // Remove notification function
+  // Remove notification function with animation
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
+    setExitingIds(prev => new Set(prev).add(id))
+    
+    // Set animation state to exiting
+    setNotifications(prev => 
+      prev.map(n => n.id === id ? { ...n, animationState: 'exiting' } : n)
+    )
+
+    // Remove from DOM after animation completes
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== id))
+      setExitingIds(prev => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+    }, 300) // Match animation duration
   }, [])
 
   // Clear all notifications
@@ -79,23 +104,41 @@ const IOSNotificationManager: React.FC<IOSNotificationManagerProps> = ({
       }}
     >
       <div className="max-w-sm mx-auto px-4 space-y-2 pointer-events-auto">
-        {notifications.map((notification, index) => (
-          <IOSNotificationBar
-            key={notification.id}
-            {...notification}
-            position={position}
-            onDismiss={() => removeNotification(notification.id)}
-            isVisible={true}
-            className={cn(
-              "transform transition-all duration-300 ease-out",
-              // Stagger animations
-              `delay-[${index * 100}ms]`
-            )}
-            style={{
-              zIndex: notifications.length - index, // Stack notifications properly
-            }}
-          />
-        ))}
+        {notifications.map((notification, index) => {
+          const isEntering = notification.animationState === 'entering'
+          const isExiting = notification.animationState === 'exiting'
+          const isVisible = notification.animationState === 'visible'
+          
+          return (
+            <IOSNotificationBar
+              key={notification.id}
+              {...notification}
+              position={position}
+              onDismiss={() => removeNotification(notification.id)}
+              isVisible={true}
+              className={cn(
+                "ios-smooth-transform",
+                // Use CSS animation classes from index.css
+                position === 'top' ? (
+                  isEntering ? "ios-notification-enter-top" :
+                  isExiting ? "ios-notification-exit-top" :
+                  "transform transition-all duration-300 ease-out"
+                ) : (
+                  // Bottom animations
+                  isEntering ? "ios-notification-enter-bottom" :
+                  isExiting ? "ios-notification-exit-bottom" :
+                  "transform transition-all duration-300 ease-out"
+                ),
+                // Stagger animations for multiple notifications
+                `delay-[${index * 50}ms]`
+              )}
+              style={{
+                zIndex: notifications.length - index, // Stack notifications properly
+                animationDelay: `${index * 50}ms`, // Stagger entrance
+              }}
+            />
+          )
+        })}
       </div>
     </div>
   )

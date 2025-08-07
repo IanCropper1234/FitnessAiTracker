@@ -154,6 +154,28 @@
   }
 }
 
+@keyframes ios-notification-slide-in-bottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ios-notification-slide-out-bottom {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
 @keyframes ios-notification-bounce {
   0% {
     transform: scale(0.95);
@@ -173,6 +195,15 @@
 
 .ios-notification-exit-top {
   animation: ios-notification-slide-out-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.ios-notification-enter-bottom {
+  animation: ios-notification-slide-in-bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+             ios-notification-bounce 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+}
+
+.ios-notification-exit-bottom {
+  animation: ios-notification-slide-out-bottom 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 /* Enhanced backdrop blur for iOS notifications */
