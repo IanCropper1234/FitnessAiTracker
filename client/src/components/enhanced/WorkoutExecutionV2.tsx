@@ -463,13 +463,80 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const completedSets = Object.values(workoutData).flat().filter(set => set.completed).length;
   const progressPercentage = totalSets > 0 ? (completedSets / totalSets) * 100 : 0;
 
+  // Auto-save mutation for individual set completion
+  const autoSaveMutation = useMutation({
+    mutationFn: async (progressData: any) => {
+      try {
+        if (!progressData || !sessionId) {
+          throw new Error('Missing required data for auto-save');
+        }
+        
+        const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
+        return response;
+      } catch (error) {
+        console.error('Auto-save mutation error:', error);
+        // Don't throw here - auto-save should be silent on errors
+        return null;
+      }
+    },
+    onSuccess: () => {
+      // Show subtle success indicator for auto-save
+      setSaveStatus('success');
+      setSaveMessage('Set saved');
+      
+      // Show iOS-style notification for auto-save confirmation
+      addNotification({
+        title: 'Set Saved',
+        description: 'Your progress has been automatically saved',
+        type: 'success',
+        duration: 2000, // Shorter duration for auto-save
+        actions: []
+      });
+      
+      // Reset save status quickly
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 800);
+    },
+    onError: (error: any) => {
+      console.warn('Auto-save failed (non-critical):', error);
+      // Don't show error toast for auto-save failures
+    },
+  });
+
   const updateSet = (exerciseId: number, setIndex: number, field: keyof WorkoutSet, value: any) => {
-    setWorkoutData(prev => ({
-      ...prev,
-      [exerciseId]: prev[exerciseId].map((set, i) => 
-        i === setIndex ? { ...set, [field]: value } : set
-      )
-    }));
+    setWorkoutData(prev => {
+      const newData = {
+        ...prev,
+        [exerciseId]: prev[exerciseId].map((set, i) => 
+          i === setIndex ? { ...set, [field]: value } : set
+        )
+      };
+      
+      // Auto-save when completing a set
+      if (field === 'completed' && value === true && session) {
+        const progressData = {
+          duration: sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 1000 / 60) : 0,
+          totalVolume: Math.round(Object.values(newData)
+            .flat()
+            .filter(set => set?.completed)
+            .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0)),
+          isCompleted: false,
+          autoSave: true, // Flag to indicate this is an auto-save
+          exercises: session.exercises.map(exercise => ({
+            exerciseId: exercise.exerciseId,
+            sets: newData[exercise.id] || [],
+            specialMethod: specialMethods[exercise.id] || null,
+            specialConfig: specialConfigs[exercise.id] || null
+          }))
+        };
+        
+        // Trigger auto-save
+        autoSaveMutation.mutate(progressData);
+      }
+      
+      return newData;
+    });
   };
 
   // Special training methods handlers
