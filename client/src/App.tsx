@@ -432,7 +432,7 @@ export default function App() {
   }
 
   // Setup global error handling
-  React.useEffect(() => {
+  useEffect(() => {
     setupGlobalErrorHandling();
   }, []);
 
