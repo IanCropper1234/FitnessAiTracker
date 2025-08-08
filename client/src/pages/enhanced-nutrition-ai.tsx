@@ -145,14 +145,13 @@ export default function EnhancedNutritionAI() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="font-bold flex items-center gap-2 text-[16px] text-left pl-[0px] pr-[0px] ml-[-5px] mr-[-5px]">
             <Brain className="h-6 w-6 text-purple-500" />
             Enhanced Nutrition AI Analysis
           </h1>
           <p className="text-sm text-muted-foreground">Comprehensive micronutrient analysis & personalized RDA insights</p>
         </div>
       </div>
-
       <div className="grid lg:grid-cols-2 gap-6 items-start">
         {/* Configuration Panel */}
         <div className="space-y-6">
