@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -43,6 +43,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { clearAllUserCache } from "./utils/cache-clear";
 import { WorkoutExecutionProvider } from "@/contexts/WorkoutExecutionContext";
 import { GlobalCompleteSetButton } from "@/components/GlobalCompleteSetButton";
+import { FirstTimeUserLoading } from "@/components/FirstTimeUserLoading";
+import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
+import { AnimatePresence } from "framer-motion";
 
 interface User {
   id: number;
@@ -370,6 +373,15 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  
+  // First-time user detection
+  const { 
+    isFirstTimeUser, 
+    isLoading: firstTimeUserLoading, 
+    completeOnboarding 
+  } = useFirstTimeUser(user?.id);
+  
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Setup global error handling - must be at top level
   useEffect(() => {
@@ -424,8 +436,21 @@ export default function App() {
 
     checkAuth();
   }, []);
+  
+  // Show onboarding for first-time users after auth is complete
+  useEffect(() => {
+    if (!authLoading && user && !firstTimeUserLoading) {
+      setShowOnboarding(isFirstTimeUser);
+    }
+  }, [authLoading, user, isFirstTimeUser, firstTimeUserLoading]);
+  
+  // Handle onboarding completion
+  const handleOnboardingComplete = useCallback(() => {
+    completeOnboarding();
+    setShowOnboarding(false);
+  }, [completeOnboarding]);
 
-  if (authLoading) {
+  if (authLoading || (user && firstTimeUserLoading)) {
     return (
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
@@ -449,15 +474,26 @@ export default function App() {
             <TooltipProvider>
               <WorkoutExecutionProvider>
                 <div className="text-foreground bg-background theme-transition">
-                  <ErrorBoundary level="page">
-                    <AppRouter user={user} setUser={setUser} />
-                  </ErrorBoundary>
-                  <Toaster />
-                  <IOSNotificationManager 
-                    position="top" 
-                    maxNotifications={3}
-                    defaultAutoHideDelay={5000}
-                  />
+                  <AnimatePresence mode="wait">
+                    {showOnboarding ? (
+                      <FirstTimeUserLoading 
+                        key="onboarding"
+                        onComplete={handleOnboardingComplete}
+                      />
+                    ) : (
+                      <div key="main-app">
+                        <ErrorBoundary level="page">
+                          <AppRouter user={user} setUser={setUser} />
+                        </ErrorBoundary>
+                        <Toaster />
+                        <IOSNotificationManager 
+                          position="top" 
+                          maxNotifications={3}
+                          defaultAutoHideDelay={5000}
+                        />
+                      </div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </WorkoutExecutionProvider>
             </TooltipProvider>

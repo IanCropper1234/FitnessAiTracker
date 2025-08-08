@@ -532,6 +532,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // First-time user check endpoint
+  app.get('/api/user/first-time-check', requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      
+      // Check if user has any nutrition logs
+      const nutritionLogs = await storage.getNutritionLogs(userId);
+      const hasNutritionData = nutritionLogs && nutritionLogs.length > 0;
+      
+      // Check if user has any workout sessions
+      const workoutSessions = await storage.getWorkoutSessions(userId);
+      const hasWorkoutData = workoutSessions && workoutSessions.length > 0;
+      
+      // Check if user profile is complete
+      const user = await storage.getUser(userId);
+      const userProfile = await storage.getUserProfile(userId);
+      const hasCompleteProfile = user && user.name && user.email && userProfile;
+      
+      // Determine if user is first-time based on data presence
+      const hasAnyData = hasNutritionData || hasWorkoutData;
+      const isFirstTime = !hasAnyData && !hasCompleteProfile;
+      
+      res.json({
+        hasAnyData,
+        hasCompletedOnboarding: false, // This will be handled by localStorage
+        isFirstTime,
+        dataBreakdown: {
+          hasNutritionData,
+          hasWorkoutData,
+          hasCompleteProfile
+        }
+      });
+    } catch (error: any) {
+      console.error('Error checking first-time user status:', error);
+      res.status(500).json({ error: 'Failed to check first-time user status' });
+    }
+  });
+
   // User profile routes
   app.get("/api/user/profile", requireAuth, async (req, res) => {
     try {
