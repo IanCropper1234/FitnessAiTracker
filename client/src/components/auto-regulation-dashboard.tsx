@@ -277,7 +277,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
       <Card>
         <Collapsible open={isExplanationOpen} onOpenChange={setIsExplanationOpen}>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <CardHeader className="cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Info className="h-5 w-5" />

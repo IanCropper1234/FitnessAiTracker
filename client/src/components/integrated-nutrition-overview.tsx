@@ -1300,7 +1300,7 @@ export function IntegratedNutritionOverview({
             <CardContent className="p-2">
               <Button
                 variant="ghost"
-                className="w-full justify-between p-2 h-auto hover:bg-accent/50 transition-colors"
+                className="w-full justify-between p-2 h-auto hover:bg-accent/50 transition-colors collapsible-trigger"
                 onClick={() => setShowMicronutrients(!showMicronutrients)}
               >
                 <div className="flex items-center gap-2">
@@ -1312,7 +1312,13 @@ export function IntegratedNutritionOverview({
                 <ChevronDown className="w-4 h-4 chevron-rotate" data-state={showMicronutrients ? 'open' : 'closed'} />
               </Button>
               
-              {showMicronutrients && (
+              <div 
+                className={`collapsible-content overflow-hidden transition-all duration-300 ease-in-out ${
+                  showMicronutrients 
+                    ? 'max-h-[2000px] opacity-100 animate-collapsible-down' 
+                    : 'max-h-0 opacity-0 animate-collapsible-up'
+                }`}
+              >
                 <div className="mt-2">
                   <div className="bg-gray-50 dark:bg-gray-800 p-2">
                     <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 text-center">
@@ -1566,7 +1572,7 @@ export function IntegratedNutritionOverview({
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         );

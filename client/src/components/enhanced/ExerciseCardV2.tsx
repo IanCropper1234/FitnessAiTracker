@@ -68,7 +68,7 @@ export const ExerciseCardV2: React.FC<ExerciseCardV2Props> = ({
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <CardHeader 
-            className="cursor-pointer hover:bg-muted/30 transition-colors pb-3"
+            className="cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors pb-3"
             onClick={onSelectExercise}
           >
             <div className="flex items-center justify-between">
@@ -109,11 +109,7 @@ export const ExerciseCardV2: React.FC<ExerciseCardV2Props> = ({
               
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4 text-muted-foreground" />
-                {isExpanded ? (
-                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                )}
+                <ChevronDown className="h-4 w-4 chevron-rotate text-muted-foreground" data-state={isExpanded ? 'open' : 'closed'} />
               </div>
             </div>
           </CardHeader>
