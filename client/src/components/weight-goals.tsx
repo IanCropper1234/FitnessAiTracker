@@ -292,7 +292,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                   {activeGoal.goalType === 'maintenance' && (
                     <Minus className="w-4 h-4 text-gray-500" />
                   )}
-                  <span className="font-medium capitalize text-[14px]">{activeGoal.goalType}</span>
+                  <span className="capitalize text-[14px] font-semibold">{activeGoal.goalType}</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Target: {Math.round(convertValue(
