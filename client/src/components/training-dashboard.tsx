@@ -510,6 +510,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [showFeatureShowcase, setShowFeatureShowcase] = useState(false);
   const [sessionFilter, setSessionFilter] = useState<'active' | 'completed' | 'all' | 'templates'>('active');
   const [isAICardExpanded, setIsAICardExpanded] = useState(false);
+  const [expandedExerciseCards, setExpandedExerciseCards] = useState<Set<number>>(new Set());
   const queryClient = useQueryClient();
 
   // Fetch user data to check developer settings
@@ -744,77 +745,106 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
       .trim();
   }, []);
 
+  // Toggle exercise card expansion
+  const toggleExerciseCard = useCallback((exerciseId: number) => {
+    setExpandedExerciseCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(exerciseId)) {
+        newSet.delete(exerciseId);
+      } else {
+        newSet.add(exerciseId);
+      }
+      return newSet;
+    });
+  }, []);
+
   // Memoized Exercise Card Component for performance
-  const ExerciseCard = useCallback(({ exercise }: { exercise: Exercise }) => (
-    <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
-      <CardHeader className="pb-1.5 px-3 pt-3">
-        <div className="flex justify-between items-start gap-2 mb-1">
-          <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">
-            {exercise.name}
-          </CardTitle>
-          <Badge variant="outline" className="text-xs capitalize shrink-0 h-5">
-            {exercise.category.slice(0, 4)}
-          </Badge>
-        </div>
-        <div className="flex gap-1 flex-wrap">
-          <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
-            {formatDisplayText(exercise.difficulty).slice(0, 3)}
-          </Badge>
-          <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
-            {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="px-3 pb-3 pt-0">
-        <div className="space-y-1.5">
-          {/* Ultra-compact info grid */}
-          <div className="text-xs space-y-1">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-medium">Primary:</span>
-              <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
-                {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-medium">Equipment:</span>
-              <span className="truncate ml-1 text-right flex-1 min-w-0">
-                {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
-              </span>
-            </div>
-          </div>
-          
-          {/* Muscle groups - more compact */}
-          <div className="flex flex-wrap gap-0.5 justify-center">
-            {exercise.muscleGroups.slice(0, 2).map((muscle) => (
-              <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
-                {formatDisplayText(muscle).slice(0, 4)}
-              </Badge>
-            ))}
-            {exercise.muscleGroups.length > 2 && (
-              <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
-                +{exercise.muscleGroups.length - 2}
-              </Badge>
-            )}
-          </div>
-          
-          {/* Action buttons - stacked for mobile */}
-          <div className="flex flex-col gap-1 pt-1">
-            <Button 
-              size="sm" 
-              className="w-full h-7 text-xs font-medium"
-              onClick={() => setLocation('/create-workout-session')}
+  const ExerciseCard = useCallback(({ exercise }: { exercise: Exercise }) => {
+    const isExpanded = expandedExerciseCards.has(exercise.id);
+    
+    return (
+      <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
+        <CardHeader 
+          className="pb-1.5 px-3 pt-3 cursor-pointer hover:bg-accent/50 transition-colors"
+          onClick={() => toggleExerciseCard(exercise.id)}
+        >
+          <div className="flex justify-between items-center gap-2">
+            <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">
+              {exercise.name}
+            </CardTitle>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0 hover:bg-primary/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLocation('/create-workout-session');
+              }}
             >
-              <Plus className="h-3 w-3 mr-1" />
-              Add to Workout
+              <Plus className="h-3 w-3" />
             </Button>
-            <div className="flex justify-center">
-              <ExerciseManagement exercise={exercise} />
-            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  ), [getDifficultyColor, getPatternColor, formatDisplayText, setLocation]);
+        </CardHeader>
+        {isExpanded && (
+          <>
+            <div className="px-3 pb-2">
+              <div className="flex justify-between items-start gap-2 mb-2">
+                <Badge variant="outline" className="text-xs capitalize shrink-0 h-5">
+                  {exercise.category.slice(0, 4)}
+                </Badge>
+              </div>
+              <div className="flex gap-1 flex-wrap">
+                <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
+                  {formatDisplayText(exercise.difficulty).slice(0, 3)}
+                </Badge>
+                <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
+                  {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
+                </Badge>
+              </div>
+            </div>
+            <CardContent className="px-3 pb-3 pt-0">
+              <div className="space-y-1.5">
+                {/* Ultra-compact info grid */}
+                <div className="text-xs space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground font-medium">Primary:</span>
+                    <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
+                      {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground font-medium">Equipment:</span>
+                    <span className="truncate ml-1 text-right flex-1 min-w-0">
+                      {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Muscle groups - more compact */}
+                <div className="flex flex-wrap gap-0.5 justify-center">
+                  {exercise.muscleGroups.slice(0, 2).map((muscle) => (
+                    <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                      {formatDisplayText(muscle).slice(0, 4)}
+                    </Badge>
+                  ))}
+                  {exercise.muscleGroups.length > 2 && (
+                    <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                      +{exercise.muscleGroups.length - 2}
+                    </Badge>
+                  )}
+                </div>
+                
+                {/* Exercise Management */}
+                <div className="flex justify-center pt-1">
+                  <ExerciseManagement exercise={exercise} />
+                </div>
+              </div>
+            </CardContent>
+          </>
+        )}
+      </Card>
+    );
+  }, [expandedExerciseCards, toggleExerciseCard, getDifficultyColor, getPatternColor, formatDisplayText, setLocation]);
 
   // Start workout session
   const startWorkoutSession = (sessionId: number) => {
