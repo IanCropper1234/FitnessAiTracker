@@ -332,7 +332,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRestTimerActive, restTimeRemaining, toast]);
+  }, [isRestTimerActive, restTimeRemaining]); // Removed toast since showSuccess is used, not toast
 
   // Swipe gesture handlers
   const swipeHandlers = useSwipeable({
@@ -602,7 +602,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }
   }, [currentSet, currentExercise, currentSetIndex, workoutData, autoRegulationFeedbackEnabled, 
       setCurrentSetForFeedback, setShowAutoRegulation, specialMethods, session, 
-      currentExerciseIndex, showError, showInfo, toast, updateSet]);
+      currentExerciseIndex, showError, showInfo, updateSet]); // Removed toast to prevent render issues
 
   // Use ref to store completeSet function to prevent infinite loops
   const completeSetRef = useRef(completeSet);
