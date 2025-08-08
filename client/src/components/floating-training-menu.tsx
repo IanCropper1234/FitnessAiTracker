@@ -8,6 +8,7 @@ import {
   Settings
 } from "lucide-react";
 import { useScrollHide } from "@/hooks/use-scroll-hide";
+import { useWorkoutExecution } from "@/contexts/WorkoutExecutionContext";
 
 interface FloatingTrainingMenuProps {
   onTabSelect: (tab: string) => void;
@@ -15,7 +16,11 @@ interface FloatingTrainingMenuProps {
 }
 
 export function FloatingTrainingMenu({ onTabSelect, activeTab }: FloatingTrainingMenuProps) {
-  const isVisible = useScrollHide({ threshold: 15 });
+  const scrollVisible = useScrollHide({ threshold: 15 });
+  const { state } = useWorkoutExecution();
+  
+  // Hide when in active workout or when scrolled
+  const isVisible = scrollVisible && !state?.isInActiveWorkout;
   
   const menuItems = [
     { id: "sessions", icon: Dumbbell, label: "Sessions" },
