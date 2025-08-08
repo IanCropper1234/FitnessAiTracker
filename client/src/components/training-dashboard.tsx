@@ -1054,7 +1054,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           {/* AI Session Creation - Collapsible */}
           <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-800 mx-2">
             <CardHeader 
-              className="flex flex-col space-y-2 p-4 cursor-pointer hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors pt-[5px] pb-[5px]"
+              className="flex flex-col space-y-2 p-4 cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors pt-[5px] pb-[5px]"
               onClick={() => setIsAICardExpanded(!isAICardExpanded)}
             >
               <div className="flex items-center justify-between">
@@ -1065,7 +1065,13 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 <ChevronDown className="h-4 w-4 text-green-600 chevron-rotate" data-state={isAICardExpanded ? 'open' : 'closed'} />
               </div>
             </CardHeader>
-            {isAICardExpanded && (
+            <div 
+              className={`collapsible-content overflow-hidden transition-all duration-300 ease-in-out ${
+                isAICardExpanded 
+                  ? 'max-h-[200px] opacity-100 animate-collapsible-down' 
+                  : 'max-h-0 opacity-0 animate-collapsible-up'
+              }`}
+            >
               <CardContent className="p-4 pt-0">
                 <p className="text-sm text-green-700 dark:text-green-300 mb-3">
                   Generate intelligent workout sessions based on your training history and goals
@@ -1075,7 +1081,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   Create AI Session
                 </Button>
               </CardContent>
-            )}
+            </div>
           </Card>
 
           {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
