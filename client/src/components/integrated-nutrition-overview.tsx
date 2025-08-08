@@ -1039,9 +1039,7 @@ export function IntegratedNutritionOverview({
               Analyze Nutrition
             </Button>
           </div>
-          <p className="text-xs text-purple-400/80 mt-1">
-            Comprehensive micronutrient analysis & personalized RDA insights
-          </p>
+          
         </CardContent>
       </Card>
 
