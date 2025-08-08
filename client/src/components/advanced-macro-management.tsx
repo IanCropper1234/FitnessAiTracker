@@ -588,7 +588,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
         <TabsContent value="weekly-adjustment" className="space-y-4 tab-content-animated">
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-            <CardHeader>
+            <CardHeader className="flex flex-col space-y-2 p-5 pt-[5px] pb-[5px]">
               <CardTitle className="text-black dark:text-white flex items-center gap-2 text-[16px] font-bold">
                 <Calendar className="w-4 h-4" />
                 Weekly Progress Analysis
