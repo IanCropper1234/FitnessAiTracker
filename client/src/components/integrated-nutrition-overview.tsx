@@ -1163,7 +1163,7 @@ export function IntegratedNutritionOverview({
           </div>
         </CardContent>
       </Card>
-      {/* Expandable Micronutrients Section with RDA Comparison */
+      {/* Expandable Micronutrients Section with RDA Comparison */}
       {(() => {
         const todayLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => {
           const logDate = new Date(log.date).toLocaleDateString();
