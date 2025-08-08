@@ -806,7 +806,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Weight Goals Section */}
       <WeightGoals userId={userId} userWeightUnit={unit} />
       {/* Metrics History - Compact Timeline */}
-      <Card>
+      <Card className="mt-[10px] mb-[10px]"></Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
