@@ -145,7 +145,7 @@ export default function EnhancedNutritionAI() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="font-bold flex items-center gap-2 text-[16px] text-left pl-[0px] pr-[0px] ml-[-5px] mr-[-5px]">
+          <h1 className="font-bold flex items-center gap-2 text-[16px] text-left pl-[0px] pr-[0px] ml-[-15px] mr-[-15px]">
             <Brain className="h-6 w-6 text-purple-500" />
             Enhanced Nutrition AI Analysis
           </h1>
