@@ -1300,7 +1300,7 @@ export function IntegratedNutritionOverview({
             <CardContent className="p-2">
               <Button
                 variant="ghost"
-                className="w-full justify-between p-2 h-auto"
+                className="w-full justify-between p-2 h-auto hover:bg-accent/50 transition-colors"
                 onClick={() => setShowMicronutrients(!showMicronutrients)}
               >
                 <div className="flex items-center gap-2">

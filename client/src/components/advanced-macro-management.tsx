@@ -645,7 +645,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowWellnessInfo(!showWellnessInfo)}
-                        className="w-full sm:w-auto justify-center sm:justify-start text-xs sm:text-sm px-3 py-1.5"
+                        className="w-full sm:w-auto justify-center sm:justify-start text-xs sm:text-sm px-3 py-1.5 hover:bg-accent/50 transition-colors"
                       >
                         {showWellnessInfo ? 'Hide Info' : 'Show Info'}
                         {showWellnessInfo ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4 ml-1" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />}

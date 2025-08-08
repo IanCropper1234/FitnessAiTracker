@@ -567,7 +567,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                         console.error('setShowDatePicker is not available!');
                       }
                     }}
-                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform cursor-pointer text-[12px] pl-[20px] pr-[20px] pt-[6px] pb-[6px] mt-[0px] mb-[0px] ml-[-5px] mr-[-5px]"
+                    className="w-full justify-between text-left font-normal ios-touch-feedback ios-smooth-transform cursor-pointer hover:bg-accent/50 transition-colors text-[12px] pl-[20px] pr-[20px] pt-[6px] pb-[6px] mt-[0px] mb-[0px] ml-[-5px] mr-[-5px]"
                   >
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
@@ -817,7 +817,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               variant="outline"
               size="sm"
               onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
-              className="text-xs"
+              className="text-xs hover:bg-accent/50 transition-colors"
             >
               {showUnifiedUnits ? 'Show Original Units' : 'Unify Units'}
             </Button>
