@@ -33,25 +33,32 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
   const { toast } = useToast();
 
   // Fetch latest special training method data for this exercise, set, and method
-  const { data: latestSpecialMethod, isLoading } = useQuery<SpecialMethodHistoryData | null>({
+  const { data: latestSpecialMethod, isLoading, error } = useQuery<SpecialMethodHistoryData | null>({
     queryKey: ['/api/training/exercise-special-history', exerciseId, userId, setNumber, currentSpecialMethod],
     queryFn: async () => {
-      if (!exerciseId || !userId || !currentSpecialMethod || currentSpecialMethod === 'standard') return null;
-      
-      const params = new URLSearchParams({
-        userId: userId.toString(),
-        limit: '1',
-        setNumber: setNumber.toString(),
-        specialMethod: currentSpecialMethod
-      });
-      
-      const response = await fetch(`/api/training/exercise-special-history/${exerciseId}?${params}`);
-      if (!response.ok) return null;
-      
-      const data = await response.json();
-      return data.length > 0 ? data[0] : null;
+      try {
+        if (!exerciseId || exerciseId <= 0 || !userId || !currentSpecialMethod || currentSpecialMethod === 'standard') {
+          return null;
+        }
+        
+        const params = new URLSearchParams({
+          userId: userId.toString(),
+          limit: '1',
+          setNumber: setNumber.toString(),
+          specialMethod: currentSpecialMethod
+        });
+        
+        const response = await fetch(`/api/training/exercise-special-history/${exerciseId}?${params}`);
+        if (!response.ok) return null;
+        
+        const data = await response.json();
+        return data.length > 0 ? data[0] : null;
+      } catch (error) {
+        console.warn('Failed to fetch special method history:', error);
+        return null;
+      }
     },
-    enabled: !!exerciseId && !!userId && !!currentSpecialMethod && currentSpecialMethod !== 'standard'
+    enabled: !!exerciseId && exerciseId > 0 && !!userId && !!currentSpecialMethod && currentSpecialMethod !== 'standard'
   });
 
   // Debug logging
@@ -77,14 +84,20 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
     setIsApplying(true);
     
     try {
-      onApplyHistoricalData(latestSpecialMethod);
-      
-      toast({
-        title: "Applied Historical Data",
-        description: `Applied ${latestSpecialMethod.specialMethod} configuration for Set ${setNumber} from ${new Date(latestSpecialMethod.date).toLocaleDateString()}`,
-        duration: 3000,
-      });
+      // Safely call the callback with error handling
+      if (typeof onApplyHistoricalData === 'function') {
+        onApplyHistoricalData(latestSpecialMethod);
+        
+        toast({
+          title: "Applied Historical Data",
+          description: `Applied ${latestSpecialMethod.specialMethod} configuration for Set ${setNumber} from ${new Date(latestSpecialMethod.date).toLocaleDateString()}`,
+          duration: 3000,
+        });
+      } else {
+        throw new Error('Invalid callback function');
+      }
     } catch (error) {
+      console.error('Error applying historical data:', error);
       toast({
         title: "Error",
         description: "Failed to apply historical data",
@@ -95,8 +108,8 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
     }
   };
 
-  // Only show if there's historical data available
-  if (!latestSpecialMethod) return null;
+  // Only show if there's historical data available and no query errors
+  if (!latestSpecialMethod || error) return null;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { 

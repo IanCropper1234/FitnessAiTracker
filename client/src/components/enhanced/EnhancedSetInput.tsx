@@ -345,21 +345,27 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium text-foreground">Training Method</label>
-              {/* History Auto-Apply Icon */}
-              <SpecialMethodHistoryButton 
-                exerciseId={exerciseId || 0}
-                userId={userId}
-                setNumber={set.setNumber}
-                currentSpecialMethod={specialMethod || 'standard'}
-                onApplyHistoricalData={(historicalData) => {
-                  if (historicalData.specialMethod && onSpecialMethodChange) {
-                    onSpecialMethodChange(historicalData.specialMethod);
-                    if (historicalData.specialConfig && onSpecialConfigChange) {
-                      onSpecialConfigChange(historicalData.specialConfig);
+              {/* History Auto-Apply Icon - Only show if exerciseId is valid */}
+              {exerciseId && exerciseId > 0 && (
+                <SpecialMethodHistoryButton 
+                  exerciseId={exerciseId}
+                  userId={userId}
+                  setNumber={set.setNumber}
+                  currentSpecialMethod={specialMethod || 'standard'}
+                  onApplyHistoricalData={(historicalData) => {
+                    try {
+                      if (historicalData.specialMethod && onSpecialMethodChange) {
+                        onSpecialMethodChange(historicalData.specialMethod);
+                        if (historicalData.specialConfig && onSpecialConfigChange) {
+                          onSpecialConfigChange(historicalData.specialConfig);
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Error applying historical data in EnhancedSetInput:', error);
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+              )}
             </div>
             <Select
               value={specialMethod || "standard"}
