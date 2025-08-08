@@ -25,7 +25,8 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
   const { state } = useWorkoutExecution();
   
   // Hide menu bar when in active workout or viewing details
-  const hideHeader = isViewingDetails || state.hideMenuBar;
+  // Add defensive check for state
+  const hideHeader = isViewingDetails || (state?.hideMenuBar || false);
   
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[0px] pr-[0px] ml-[-3px] mr-[-3px]">

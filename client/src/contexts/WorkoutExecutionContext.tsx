@@ -37,6 +37,9 @@ const defaultState: WorkoutExecutionState = {
   hideMenuBar: false,
 };
 
+// Export for use in fallback
+export { defaultState };
+
 const WorkoutExecutionContext = createContext<WorkoutExecutionContextType | null>(null);
 
 export const WorkoutExecutionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -84,7 +87,17 @@ export const WorkoutExecutionProvider: React.FC<{ children: React.ReactNode }> =
 export const useWorkoutExecution = () => {
   const context = useContext(WorkoutExecutionContext);
   if (!context) {
-    throw new Error('useWorkoutExecution must be used within a WorkoutExecutionProvider');
+    // Return default state instead of throwing error for better error handling
+    console.warn('useWorkoutExecution called outside of WorkoutExecutionProvider, returning default state');
+    return {
+      state: defaultState,
+      setIsInActiveWorkout: () => {},
+      setCurrentTab: () => {},
+      setCompleteSetHandler: () => {},
+      setCanCompleteSet: () => {},
+      setCurrentSetInfo: () => {},
+      setHideMenuBar: () => {},
+    };
   }
   return context;
 };
