@@ -493,6 +493,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [selectedEquipment, setSelectedEquipment] = useState<string>("all");
   const [selectedPrimaryMuscle, setSelectedPrimaryMuscle] = useState<string>("all");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
+  const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -1239,10 +1240,32 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
 
           {/* Enhanced Filter System */}
-          <div className="space-y-4 p-4 bg-card border ">
-            <h3 className="text-sm font-medium">Exercise Filters</h3>
+          <div className="bg-card border ">
+            {/* Collapsible Header */}
+            <div 
+              className="flex items-center justify-between p-4 cursor-pointer hover:bg-accent/50 transition-colors"
+              onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+            >
+              <h3 className="text-sm font-medium">Exercise Filters</h3>
+              <div className="flex items-center gap-2">
+                {/* Active Filters Count */}
+                {(selectedCategory !== 'all' || selectedEquipment !== 'all' || selectedPrimaryMuscle !== 'all' || selectedMuscleGroup !== 'all') && (
+                  <Badge variant="secondary" className="text-xs h-5 px-2">
+                    {[selectedCategory, selectedEquipment, selectedPrimaryMuscle, selectedMuscleGroup].filter(f => f !== 'all').length} active
+                  </Badge>
+                )}
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+                  isFiltersExpanded ? 'rotate-180' : ''
+                }`} />
+              </div>
+            </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Collapsible Content */}
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              isFiltersExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+              <div className="p-4 pt-0 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Category Filter */}
               <div className="space-y-2">
                 <label className="text-xs font-medium text-muted-foreground">Category</label>
@@ -1319,68 +1342,83 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
-            </div>
+                </div>
 
-            {/* Clear Filters & Create Exercise */}
-            <div className="flex items-center justify-between gap-3">
-              {/* Clear Filters Button */}
-              {(selectedCategory !== 'all' || selectedEquipment !== 'all' || selectedPrimaryMuscle !== 'all' || selectedMuscleGroup !== 'all') && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedCategory('all');
-                    setSelectedEquipment('all');
-                    setSelectedPrimaryMuscle('all');
-                    setSelectedMuscleGroup('all');
-                  }}
-                  className="text-xs h-8"
-                >
-                  Clear All Filters
-                </Button>
-              )}
+                {/* Clear Filters & Create Exercise */}
+                <div className="flex items-center justify-between gap-3">
+                  {/* Clear Filters Button */}
+                  {(selectedCategory !== 'all' || selectedEquipment !== 'all' || selectedPrimaryMuscle !== 'all' || selectedMuscleGroup !== 'all') && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCategory('all');
+                        setSelectedEquipment('all');
+                        setSelectedPrimaryMuscle('all');
+                        setSelectedMuscleGroup('all');
+                      }}
+                      className="text-xs h-8"
+                    >
+                      Clear All Filters
+                    </Button>
+                  )}
 
-              {/* Active Filter Badges */}
-              <div className="flex items-center gap-2 flex-1">
-                {selectedCategory !== "all" && (
-                  <Badge 
-                    variant="secondary" 
-                    className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => setSelectedCategory("all")}
-                  >
-                    {selectedCategory} ×
-                  </Badge>
-                )}
-                {selectedEquipment !== "all" && (
-                  <Badge 
-                    variant="secondary" 
-                    className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => setSelectedEquipment("all")}
-                  >
-                    {selectedEquipment} ×
-                  </Badge>
-                )}
-                {selectedPrimaryMuscle !== "all" && (
-                  <Badge 
-                    variant="secondary" 
-                    className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => setSelectedPrimaryMuscle("all")}
-                  >
-                    {selectedPrimaryMuscle} ×
-                  </Badge>
-                )}
-                {selectedMuscleGroup !== "all" && (
-                  <Badge 
-                    variant="secondary" 
-                    className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
-                    onClick={() => setSelectedMuscleGroup("all")}
-                  >
-                    {selectedMuscleGroup} ×
-                  </Badge>
-                )}
+                  {/* Active Filter Badges */}
+                  <div className="flex items-center gap-2 flex-1">
+                    {selectedCategory !== "all" && (
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-secondary/80 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCategory("all");
+                        }}
+                      >
+                        {selectedCategory} ×
+                      </Badge>
+                    )}
+                    {selectedEquipment !== "all" && (
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedEquipment("all");
+                        }}
+                      >
+                        {selectedEquipment} ×
+                      </Badge>
+                    )}
+                    {selectedPrimaryMuscle !== "all" && (
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedPrimaryMuscle("all");
+                        }}
+                      >
+                        {selectedPrimaryMuscle} ×
+                      </Badge>
+                    )}
+                    {selectedMuscleGroup !== "all" && (
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedMuscleGroup("all");
+                        }}
+                      >
+                        {selectedMuscleGroup} ×
+                      </Badge>
+                    )}
+                  </div>
+
+                  <CreateExerciseButton />
+                </div>
               </div>
-
-              <CreateExerciseButton />
             </div>
           </div>
 
