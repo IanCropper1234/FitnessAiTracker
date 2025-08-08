@@ -342,7 +342,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Header with Quick Add */}
       <div className="flex items-center justify-between mb-6 pl-[5px] pr-[5px]">
         <div>
-          <h2 className="text-2xl font-bold text-black dark:text-white">Body Progress</h2>
+          <h2 className="font-bold text-black dark:text-white text-[16px] pl-[0px] pr-[0px] ml-[5px] mr-[5px]">Body Progress</h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm">Track your body measurements and changes</p>
         </div>
         <Button
@@ -803,10 +803,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
           </CardContent>
         </Card>
       )}
-
       {/* Weight Goals Section */}
       <WeightGoals userId={userId} userWeightUnit={unit} />
-
       {/* Metrics History - Compact Timeline */}
       <Card>
         <CardHeader className="pb-3">
