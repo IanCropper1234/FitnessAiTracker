@@ -149,7 +149,7 @@ export default function EnhancedNutritionAI() {
             <Brain className="h-6 w-6 text-purple-500" />
             Enhanced Nutrition AI Analysis
           </h1>
-          <p className="text-sm text-muted-foreground">Comprehensive micronutrient analysis & personalized RDA insights</p>
+          <p className="text-muted-foreground text-[12px] ml-[15px] mr-[15px]">Comprehensive micronutrient analysis & personalized RDA insights</p>
         </div>
       </div>
       <div className="grid lg:grid-cols-2 gap-6 items-start">
