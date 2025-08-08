@@ -72,7 +72,11 @@ export function TrainingOverview({ userId, date }: TrainingOverviewProps) {
   if (isLoading) {
     return (
       <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
-        <LoadingState type="dots" />
+        <div className="ios-loading-dots flex items-center gap-1 justify-center">
+          <div className="dot w-2 h-2 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
+          <div className="dot w-2 h-2 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
+          <div className="dot w-2 h-2 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
+        </div>
       </div>
     );
   }

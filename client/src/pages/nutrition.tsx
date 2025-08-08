@@ -196,7 +196,14 @@ export function Nutrition({
   if (summaryLoading || logsLoading) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center content-container">
-        <LoadingState message="Loading nutrition data..." type="spinner" />
+        <div className="text-center">
+          <div className="ios-loading-dots flex items-center gap-1 justify-center mb-4">
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+          </div>
+          <p className="text-muted-foreground">Loading nutrition data...</p>
+        </div>
       </div>
     );
   }

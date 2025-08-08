@@ -295,7 +295,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
         <div className="content-container section-spacing !px-0">
           <div className="space-y-6">
             <div className="text-center py-8">
-              <LoadingState type="dots" />
+              <div className="ios-loading-dots flex items-center gap-1 justify-center">
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+              </div>
               <p className="text-sm text-muted-foreground mt-4">Loading dashboard...</p>
               {hasAuthError && (
                 <div className="mt-4">
@@ -418,7 +422,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             {showTrainingOverview ? (
               trainingLoading ? (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
-                  <LoadingState type="dots" />
+                  <div className="ios-loading-dots flex items-center gap-1 justify-center">
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+              </div>
                 </div>
               ) : (
                 <TrainingOverview userId={user.id} date={currentDate} />
@@ -426,7 +434,11 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             ) : (
               nutritionLoading ? (
                 <div className="text-center py-8 text-body-sm text-gray-600 dark:text-gray-400">
-                  <LoadingState type="dots" />
+                  <div className="ios-loading-dots flex items-center gap-1 justify-center">
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+              </div>
                 </div>
               ) : nutritionSummary ? (
                 <MacroChart

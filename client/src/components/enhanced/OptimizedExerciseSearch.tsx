@@ -145,7 +145,14 @@ export function OptimizedExerciseSearch({
   if (isLoading) {
     return (
       <div className={className}>
-        <LoadingStateWithError message="Loading exercises..." />
+        <div className="text-center py-4">
+          <div className="ios-loading-dots flex items-center gap-1 justify-center mb-2">
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+          </div>
+          <p className="text-muted-foreground text-sm">Loading exercises...</p>
+        </div>
       </div>
     );
   }
@@ -153,11 +160,18 @@ export function OptimizedExerciseSearch({
   if (error) {
     return (
       <div className={className}>
-        <LoadingStateWithError 
-          error={error as Error}
-          onRetry={refetch}
-          retryButton="Reload Exercises"
-        />
+        <div className="text-center py-4">
+          <div className="text-red-500 mb-3">
+            <p className="text-sm font-medium">Failed to load exercises</p>
+            <p className="text-xs text-muted-foreground">{(error as Error)?.message || 'Unknown error occurred'}</p>
+          </div>
+          <button
+            onClick={() => refetch()}
+            className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+          >
+            Reload Exercises
+          </button>
+        </div>
       </div>
     );
   }
