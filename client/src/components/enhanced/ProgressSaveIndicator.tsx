@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   Save, 
@@ -29,6 +29,12 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
 }) => {
   const [show, setShow] = useState(isVisible);
   const [animationClass, setAnimationClass] = useState('');
+  const onDismissRef = useRef(onDismiss);
+
+  // Update the ref when onDismiss changes to avoid stale closures
+  useEffect(() => {
+    onDismissRef.current = onDismiss;
+  }, [onDismiss]);
 
   useEffect(() => {
     if (isVisible && status !== 'idle') {
@@ -40,7 +46,7 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
           setAnimationClass('animate-out slide-out-to-top-2 fade-out-0 duration-300');
           setTimeout(() => {
             setShow(false);
-            onDismiss?.();
+            onDismissRef.current?.();
           }, 300);
         }, autoHideDelay);
         
@@ -50,7 +56,8 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
       setAnimationClass('animate-out slide-out-to-top-2 fade-out-0 duration-300');
       setTimeout(() => setShow(false), 300);
     }
-  }, [isVisible, status, autoHide, autoHideDelay, onDismiss]);
+    // Removed onDismiss from dependencies to prevent infinite loops
+  }, [isVisible, status, autoHide, autoHideDelay]);
 
   const getPositionClasses = () => {
     switch (position) {
@@ -178,7 +185,7 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
               setAnimationClass('animate-out slide-out-to-top-2 fade-out-0 duration-200');
               setTimeout(() => {
                 setShow(false);
-                onDismiss();
+                onDismissRef.current?.();
               }, 200);
             }}
             className="flex-shrink-0 p-1 hover:bg-muted-foreground hover:bg-opacity-10 transition-colors duration-200 ml-1 ios-touch-feedback"
