@@ -810,7 +810,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
     return (
       <Card key={exercise.id} className="hover:shadow-md transition-shadow overflow-hidden">
         <CardHeader 
-          className="pb-1.5 px-3 pt-3 cursor-pointer hover:bg-accent/50 transition-colors"
+          className="pb-1.5 px-3 pt-3 cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors"
           onClick={() => toggleExerciseCard(exercise.id)}
         >
           <div className="flex justify-between items-center gap-2">
@@ -822,71 +822,78 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 {exercise.category}
               </Badge>
             </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 p-0 hover:bg-primary/20"
-              onClick={(e) => {
-                e.stopPropagation();
-                setLocation('/create-workout-session');
-              }}
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 hover:bg-primary/20"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation('/create-workout-session');
+                }}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+              <ChevronDown className="h-3 w-3 chevron-rotate text-muted-foreground" data-state={isExpanded ? 'open' : 'closed'} />
+            </div>
           </div>
         </CardHeader>
-        {isExpanded && (
-          <>
-            <div className="px-3 pb-2">
-              <div className="flex gap-1 flex-wrap">
-                <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
-                  {formatDisplayText(exercise.difficulty).slice(0, 3)}
-                </Badge>
-                <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
-                  {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
-                </Badge>
+        <div 
+          className={`collapsible-content overflow-hidden transition-all duration-300 ease-in-out ${
+            isExpanded 
+              ? 'max-h-[300px] opacity-100 animate-collapsible-down' 
+              : 'max-h-0 opacity-0 animate-collapsible-up'
+          }`}
+        >
+          <div className="px-3 pb-2">
+            <div className="flex gap-1 flex-wrap">
+              <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
+                {formatDisplayText(exercise.difficulty).slice(0, 3)}
+              </Badge>
+              <Badge className={`${getPatternColor(exercise.movementPattern)} text-xs h-4 px-1.5`}>
+                {formatDisplayText(exercise.movementPattern) === 'compound' ? 'comp' : 'iso'}
+              </Badge>
+            </div>
+          </div>
+          <CardContent className="px-3 pb-3 pt-0">
+            <div className="space-y-1.5">
+              {/* Ultra-compact info grid */}
+              <div className="text-xs space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Primary:</span>
+                  <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
+                    {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">Equipment:</span>
+                  <span className="truncate ml-1 text-right flex-1 min-w-0">
+                    {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Muscle groups - more compact */}
+              <div className="flex flex-wrap gap-0.5 justify-center">
+                {exercise.muscleGroups.slice(0, 2).map((muscle) => (
+                  <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                    {formatDisplayText(muscle).slice(0, 4)}
+                  </Badge>
+                ))}
+                {exercise.muscleGroups.length > 2 && (
+                  <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
+                    +{exercise.muscleGroups.length - 2}
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Exercise Management */}
+              <div className="flex justify-center pt-1">
+                <ExerciseManagement exercise={exercise} />
               </div>
             </div>
-            <CardContent className="px-3 pb-3 pt-0">
-              <div className="space-y-1.5">
-                {/* Ultra-compact info grid */}
-                <div className="text-xs space-y-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground font-medium">Primary:</span>
-                    <span className="font-medium truncate ml-1 text-right flex-1 min-w-0">
-                      {formatDisplayText(exercise.primaryMuscle).slice(0, 8)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground font-medium">Equipment:</span>
-                    <span className="truncate ml-1 text-right flex-1 min-w-0">
-                      {(formatDisplayText(exercise.equipment) || "Bodyweight").slice(0, 10)}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Muscle groups - more compact */}
-                <div className="flex flex-wrap gap-0.5 justify-center">
-                  {exercise.muscleGroups.slice(0, 2).map((muscle) => (
-                    <Badge key={muscle} variant="secondary" className="text-xs h-3.5 px-1 leading-none">
-                      {formatDisplayText(muscle).slice(0, 4)}
-                    </Badge>
-                  ))}
-                  {exercise.muscleGroups.length > 2 && (
-                    <Badge variant="secondary" className="text-xs h-3.5 px-1 leading-none">
-                      +{exercise.muscleGroups.length - 2}
-                    </Badge>
-                  )}
-                </div>
-                
-                {/* Exercise Management */}
-                <div className="flex justify-center pt-1">
-                  <ExerciseManagement exercise={exercise} />
-                </div>
-              </div>
-            </CardContent>
-          </>
-        )}
+          </CardContent>
+        </div>
       </Card>
     );
   }, [expandedExerciseCards, toggleExerciseCard, getDifficultyColor, getPatternColor, formatDisplayText, setLocation]);
