@@ -911,8 +911,14 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   if (exercisesLoading || statsLoading || sessionsLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
-        <LoadingState type="dots" />
-        <p className="text-sm text-muted-foreground">Loading training data...</p>
+        <div className="flex items-center gap-3">
+          <div className="ios-loading-dots flex items-center gap-1">
+            <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+            <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+            <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+          </div>
+          <p className="text-sm text-muted-foreground">Loading training data...</p>
+        </div>
       </div>
     );
   }
