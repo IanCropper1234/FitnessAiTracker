@@ -356,7 +356,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Current Stats - Ultra Compact Mobile Design */}
       {latestMetric && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="p-3">
+          <CardContent className="p-3 pt-[5px] pb-[5px]">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-black dark:text-white text-[14px]">Current Stats</h3>
               <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 ">
