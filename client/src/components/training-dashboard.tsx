@@ -769,9 +769,14 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           onClick={() => toggleExerciseCard(exercise.id)}
         >
           <div className="flex justify-between items-center gap-2">
-            <CardTitle className="text-sm leading-tight truncate flex-1 min-w-0">
-              {exercise.name}
-            </CardTitle>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-sm leading-tight truncate">
+                {exercise.name}
+              </CardTitle>
+              <Badge variant="outline" className="text-xs capitalize mt-1 h-4">
+                {exercise.category}
+              </Badge>
+            </div>
             <Button
               size="sm"
               variant="ghost"
