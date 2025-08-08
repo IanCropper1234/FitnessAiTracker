@@ -509,6 +509,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [showFeatureManager, setShowFeatureManager] = useState(false);
   const [showFeatureShowcase, setShowFeatureShowcase] = useState(false);
   const [sessionFilter, setSessionFilter] = useState<'active' | 'completed' | 'all' | 'templates'>('active');
+  const [isAICardExpanded, setIsAICardExpanded] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch user data to check developer settings
@@ -975,21 +976,33 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
             </Button>
           </div>
 
-          {/* AI Session Creation */}
+          {/* AI Session Creation - Collapsible */}
           <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-800 mx-2">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Brain className="h-5 w-5 text-green-600" />
-                <h4 className="font-semibold text-green-900 dark:text-green-100">Create AI Workout Session</h4>
+            <CardHeader 
+              className="p-4 pb-2 cursor-pointer hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors"
+              onClick={() => setIsAICardExpanded(!isAICardExpanded)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Brain className="h-5 w-5 text-green-600" />
+                  <h4 className="font-semibold text-green-900 dark:text-green-100">Create AI Workout Session</h4>
+                </div>
+                <ChevronDown className={`h-4 w-4 text-green-600 transition-transform duration-200 ${
+                  isAICardExpanded ? 'transform rotate-180' : ''
+                }`} />
               </div>
-              <p className="text-sm text-green-700 dark:text-green-300 mb-3">
-                Generate intelligent workout sessions based on your training history and goals
-              </p>
-              <Button size="sm" onClick={() => setLocation('/create-ai-workout-session')} className="w-full">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Create AI Session
-              </Button>
-            </CardContent>
+            </CardHeader>
+            {isAICardExpanded && (
+              <CardContent className="p-4 pt-0">
+                <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                  Generate intelligent workout sessions based on your training history and goals
+                </p>
+                <Button size="sm" onClick={() => setLocation('/create-ai-workout-session')} className="w-full">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Create AI Session
+                </Button>
+              </CardContent>
+            )}
           </Card>
 
           {!Array.isArray(recentSessions) || recentSessions.length === 0 ? (
