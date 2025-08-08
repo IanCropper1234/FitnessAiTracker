@@ -75,34 +75,6 @@ export default function ExerciseSelection() {
   console.log('  Workout Index:', workoutIndex);
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
-  
-  // Extract unique filter options from exercises data
-  const equipmentOptions = useMemo(() => {
-    const equipment = exercises
-      .map(ex => ex.equipment)
-      .filter(Boolean)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort();
-    return ['all', ...equipment];
-  }, [exercises]);
-  
-  const primaryMuscleOptions = useMemo(() => {
-    const muscles = exercises
-      .map(ex => ex.primaryMuscle)
-      .filter(Boolean)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort();
-    return ['all', ...muscles];
-  }, [exercises]);
-  
-  const muscleGroupOptions = useMemo(() => {
-    const muscleGroups = exercises
-      .flatMap(ex => ex.muscleGroups || [])
-      .filter(Boolean)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort();
-    return ['all', ...muscleGroups];
-  }, [exercises]);
 
   // Fetch exercises with error-safe handling to prevent page reload
   const { data: exercises = [], isLoading } = useQuery({
@@ -132,6 +104,34 @@ export default function ExerciseSelection() {
     retry: false, // Disable retry to prevent infinite auth loops
     refetchOnWindowFocus: false // Prevent refetch that could trigger auth issues
   });
+
+  // Extract unique filter options from exercises data
+  const equipmentOptions = useMemo(() => {
+    const equipment = exercises
+      .map((ex: Exercise) => ex.equipment)
+      .filter(Boolean)
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...equipment];
+  }, [exercises]);
+  
+  const primaryMuscleOptions = useMemo(() => {
+    const muscles = exercises
+      .map((ex: Exercise) => ex.primaryMuscle)
+      .filter(Boolean)
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...muscles];
+  }, [exercises]);
+  
+  const muscleGroupOptions = useMemo(() => {
+    const muscleGroups = exercises
+      .flatMap((ex: Exercise) => ex.muscleGroups || [])
+      .filter(Boolean)
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...muscleGroups];
+  }, [exercises]);
 
   // Memory-optimized search with caching
   const [searchResult, searchControls] = useOptimizedSearch({
