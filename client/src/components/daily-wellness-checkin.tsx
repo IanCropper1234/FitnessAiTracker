@@ -51,7 +51,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
   const { data: existingCheckin, isLoading } = useQuery({
     queryKey: ['/api/daily-wellness-checkins', dateString],
     queryFn: async () => {
-      console.log('🔍 Fetching wellness data for date:', dateString);
       const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
         credentials: 'include',
         headers: {
@@ -59,13 +58,8 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
           'Pragma': 'no-cache'
         }
       });
-      if (!response.ok) {
-        console.log('❌ Wellness fetch failed:', response.status, response.statusText);
-        return null;
-      }
-      const data = await response.json();
-      console.log('📊 Wellness data received:', data);
-      return data;
+      if (!response.ok) return null;
+      return response.json();
     },
     staleTime: 0, // Always consider data stale
     gcTime: 0 // Don't cache this data
@@ -73,15 +67,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
 
   // Update form values when existing checkin is loaded
   useEffect(() => {
-    console.log('🔄 useEffect triggered, existingCheckin:', existingCheckin);
     if (existingCheckin) {
-      console.log('📝 Loading saved values into form:', {
-        energyLevel: existingCheckin.energyLevel,
-        hungerLevel: existingCheckin.hungerLevel,
-        sleepQuality: existingCheckin.sleepQuality,
-        stressLevel: existingCheckin.stressLevel,
-        adherencePerception: existingCheckin.adherencePerception
-      });
       setEnergyLevel([existingCheckin.energyLevel]);
       setHungerLevel([existingCheckin.hungerLevel]);
       setSleepQuality([existingCheckin.sleepQuality || 7]);
@@ -89,8 +75,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       setCravingsIntensity([existingCheckin.cravingsIntensity || 5]);
       setAdherencePerception([existingCheckin.adherencePerception || 7]);
       setNotes(existingCheckin.notes || "");
-    } else {
-      console.log('⚠️ No existing checkin found, using defaults');
     }
   }, [existingCheckin]);
 
@@ -99,9 +83,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
     mutationFn: async (checkinData: any) => {
       return apiRequest('POST', '/api/daily-wellness-checkins', checkinData);
     },
-    onSuccess: (data) => {
-      console.log('✅ Wellness check-in saved successfully:', data);
-      
+    onSuccess: () => {
       toast({
         title: "Daily Check-in Saved",
         description: "Your wellness data has been recorded for macro adjustments",
@@ -109,8 +91,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       
       // Invalidate related queries with specific date
       const dateString = trackingDate.toISOString().split('T')[0];
-      console.log('🔄 Invalidating queries for date:', dateString);
-      console.log('🔄 Current query key:', ['/api/daily-wellness-checkins', dateString]);
       
       // Force immediate refetch by removing from cache and invalidating
       queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
@@ -119,8 +99,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-wellness-summary'] });
       // Also invalidate all wellness-related queries to be safe
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins'] });
-      
-      console.log('🔄 All queries invalidated');
     },
     onError: () => {
       toast({
@@ -132,14 +110,12 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
   });
 
   const handleSubmit = () => {
-    // Create date string in user's local timezone to avoid timezone conversion issues
-    const localDateString = trackingDate.getFullYear() + '-' + 
-      String(trackingDate.getMonth() + 1).padStart(2, '0') + '-' + 
-      String(trackingDate.getDate()).padStart(2, '0');
+    // Use the same date format for both query and submission
+    const dateString = trackingDate.toISOString().split('T')[0];
     
     const checkinData = {
       userId,
-      date: localDateString + 'T00:00:00.000Z', // Store as consistent midnight UTC
+      date: dateString, // Use simple date format (YYYY-MM-DD)
       energyLevel: energyLevel[0],
       hungerLevel: hungerLevel[0],
       sleepQuality: sleepQuality[0],

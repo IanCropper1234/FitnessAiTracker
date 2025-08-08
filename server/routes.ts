@@ -2587,8 +2587,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { date } = req.query;
       
       if (date) {
-        // Get specific date's checkin
-        const checkin = await DailyWellnessService.getDailyCheckin(userId, new Date(date as string));
+        // Get specific date's checkin - ensure consistent date parsing
+        const dateStr = date as string;
+        console.log('📅 GET: Received date query:', dateStr);
+        // Parse date as YYYY-MM-DD and treat as UTC to avoid timezone issues
+        const targetDate = new Date(dateStr + 'T00:00:00.000Z');
+        console.log('📅 GET: Parsed date:', targetDate.toISOString());
+        const checkin = await DailyWellnessService.getDailyCheckin(userId, targetDate);
+        console.log('📅 GET: Found checkin:', checkin ? `id:${checkin.id}` : 'null');
         res.json(checkin);
       } else {
         // Get recent checkins (last 7 days)
@@ -2610,7 +2616,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const { date, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
       
-      const checkin = await DailyWellnessService.upsertDailyCheckin(userId, new Date(date), {
+      console.log('💾 POST: Received date:', date);
+      // Parse date consistently - if it's YYYY-MM-DD format, treat as UTC
+      const targetDate = typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/) 
+        ? new Date(date + 'T00:00:00.000Z')
+        : new Date(date);
+      console.log('💾 POST: Parsed date:', targetDate.toISOString());
+      
+      const checkin = await DailyWellnessService.upsertDailyCheckin(userId, targetDate, {
         energyLevel,
         hungerLevel,
         sleepQuality,
@@ -2620,6 +2633,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         notes
       });
       
+      console.log('💾 POST: Saved checkin:', `id:${checkin.id}, date:${checkin.date}`);
       res.json(checkin);
     } catch (error: any) {
       console.error('Error saving daily wellness checkin:', error);
