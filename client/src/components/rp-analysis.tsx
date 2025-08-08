@@ -74,8 +74,13 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            Loading RP analysis...
+          <div className="flex items-center justify-center py-8">
+            <div className="ios-loading-dots flex items-center gap-1 mr-3">
+              <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+              <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+              <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+            </div>
+            <span className="text-muted-foreground">Loading RP analysis...</span>
           </div>
         </CardContent>
       </Card>
