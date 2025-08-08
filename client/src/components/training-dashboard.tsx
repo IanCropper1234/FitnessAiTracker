@@ -793,11 +793,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
         {isExpanded && (
           <>
             <div className="px-3 pb-2">
-              <div className="flex justify-between items-start gap-2 mb-2">
-                <Badge variant="outline" className="text-xs capitalize shrink-0 h-5">
-                  {exercise.category.slice(0, 4)}
-                </Badge>
-              </div>
               <div className="flex gap-1 flex-wrap">
                 <Badge className={`${getDifficultyColor(exercise.difficulty)} text-xs h-4 px-1.5`}>
                   {formatDisplayText(exercise.difficulty).slice(0, 3)}
