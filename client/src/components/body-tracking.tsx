@@ -358,7 +358,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
           <CardContent className="p-3">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold text-black dark:text-white">Current Stats</h3>
+              <h3 className="font-semibold text-black dark:text-white text-[14px]">Current Stats</h3>
               <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 ">
                 {new Date(latestMetric.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
