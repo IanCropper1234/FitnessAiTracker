@@ -1052,7 +1052,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 {Array.isArray(recentSessions) ? recentSessions.length : 0} total sessions
               </p>
             </div>
-            <Button onClick={() => setLocation('/create-workout-session')} className="inline-flex items-center justify-center gap-2 whitespace-nowrap  text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] bg-[#3c81f6]">
+            <Button onClick={() => setLocation('/create-workout-session')} className="inline-flex items-center justify-center gap-2 whitespace-nowrap  text-[15px] font-semibold ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback shadow-sm hover:shadow-lg border border-primary/20 h-11 px-5 py-2.5 min-w-[80px] mt-[0px] mb-[0px] ml-[10px] mr-[10px] pl-[10px] pr-[10px] text-black dark:text-black" style={{ backgroundColor: '#479bf5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}>
               <Plus className="h-4 w-4 mr-2" />
               New Workout
             </Button>
@@ -1083,7 +1083,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 <p className="text-sm text-green-700 dark:text-green-300 mb-3">
                   Generate intelligent workout sessions based on your training history and goals
                 </p>
-                <Button size="sm" onClick={() => setLocation('/create-ai-workout-session')} className="w-full">
+                <Button size="sm" onClick={() => setLocation('/create-ai-workout-session')} className="w-full text-black dark:text-black" style={{ backgroundColor: '#479bf5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}>
                   <Sparkles className="h-4 w-4 mr-2" />
                   Create AI Session
                 </Button>
@@ -1099,7 +1099,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 <p className="text-muted-foreground text-center mb-4">
                   Start your fitness journey by creating your first workout session.
                 </p>
-                <Button onClick={() => setLocation('/create-workout-session')}>
+                <Button onClick={() => setLocation('/create-workout-session')} className="text-black dark:text-black" style={{ backgroundColor: '#479bf5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Workout
                 </Button>
@@ -1212,7 +1212,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                         <Button 
                           onClick={() => setLocation('/create-workout-session')} 
                           size="sm" 
-                          className="mt-2 bg-[#3c81f6]"
+                          className="mt-2 text-black dark:text-black"
+                          style={{ backgroundColor: '#479bf5' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                         >
                           <Plus className="h-4 w-4 mr-1" />
                           Start Workout
@@ -1524,7 +1527,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
         <AnimatedTabsContent value="programs" className="space-y-4" >
           <div className="flex justify-between items-center">
             <h3 className="text-base font-semibold">Training Programs</h3>
-            <Button size="sm">
+            <Button size="sm" className="text-black dark:text-black" style={{ backgroundColor: '#479bf5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}>
               <Plus className="h-4 w-4 mr-1" />
               Create Program
             </Button>
@@ -1537,7 +1540,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
               <p className="text-sm text-muted-foreground text-center mb-3">
                 Create structured training programs with RP methodology.
               </p>
-              <Button size="sm">
+              <Button size="sm" className="text-black dark:text-black" style={{ backgroundColor: '#479bf5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}>
                 <Plus className="h-4 w-4 mr-1" />
                 Create Your First Program
               </Button>
