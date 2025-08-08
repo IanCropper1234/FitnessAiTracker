@@ -194,9 +194,9 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
             filteredTemplates.map((template) => (
               <Card key={template.id} className="hover:shadow-sm transition-shadow">
                 <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <CardTitle className="text-sm font-semibold text-foreground truncate">
+                  <div className="space-y-2">
+                    <div>
+                      <CardTitle className="text-sm font-semibold text-foreground">
                         {template.name}
                       </CardTitle>
                       {template.description && (
@@ -205,12 +205,14 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
                         </p>
                       )}
                     </div>
-                    <Badge 
-                      variant="outline" 
-                      className={`ml-2 text-xs ${getDifficultyColor(template.difficulty)}`}
-                    >
-                      {template.difficulty}
-                    </Badge>
+                    <div>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${getDifficultyColor(template.difficulty)}`}
+                      >
+                        {template.difficulty}
+                      </Badge>
+                    </div>
                   </div>
                 </CardHeader>
                 
