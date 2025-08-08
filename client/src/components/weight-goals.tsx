@@ -273,7 +273,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
           <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           Weight Goals
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-muted-foreground text-[14px]">
           Set and track your weight targets
         </CardDescription>
       </CardHeader>
