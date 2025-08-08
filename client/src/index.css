@@ -1798,4 +1798,94 @@ button, .ios-button {
     50% { transform: scale(0.98); }
     100% { transform: scale(1); }
   }
+
+  /* Enhanced Collapsible Animations */
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      height: 0;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Smooth collapsible content transitions */
+  .animate-collapsible-down {
+    animation: collapsible-down 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .animate-collapsible-up {
+    animation: collapsible-up 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Enhanced accordion animations for better compatibility */
+  @keyframes accordion-down {
+    from {
+      height: 0;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      height: 0;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+  }
+
+  .animate-accordion-down {
+    animation: accordion-down 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .animate-accordion-up {
+    animation: accordion-up 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Additional smooth transition utilities */
+  .collapsible-content {
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .collapsible-trigger {
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Enhanced chevron rotation */
+  .chevron-rotate {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .chevron-rotate[data-state="open"] {
+    transform: rotate(180deg);
+  }
 }

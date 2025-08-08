@@ -1062,9 +1062,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   <Brain className="h-5 w-5 text-green-600" />
                   <h4 className="font-semibold text-green-900 dark:text-green-100 text-[14px]">Create AI Workout Session</h4>
                 </div>
-                <ChevronDown className={`h-4 w-4 text-green-600 transition-transform duration-200 ${
-                  isAICardExpanded ? 'transform rotate-180' : ''
-                }`} />
+                <ChevronDown className="h-4 w-4 text-green-600 chevron-rotate" data-state={isAICardExpanded ? 'open' : 'closed'} />
               </div>
             </CardHeader>
             {isAICardExpanded && (
@@ -1254,9 +1252,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                     {[selectedCategory, selectedEquipment, selectedPrimaryMuscle, selectedMuscleGroup].filter(f => f !== 'all').length} active
                   </Badge>
                 )}
-                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
-                  isFiltersExpanded ? 'rotate-180' : ''
-                }`} />
+                <ChevronDown className="h-4 w-4 text-muted-foreground chevron-rotate" data-state={isFiltersExpanded ? 'open' : 'closed'} />
               </div>
             </div>
             

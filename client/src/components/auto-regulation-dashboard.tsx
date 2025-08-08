@@ -283,15 +283,11 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
                   <Info className="h-5 w-5" />
                   How Auto-Regulation Applies to Your Upcoming Workouts
                 </div>
-                {isExplanationOpen ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
+                <ChevronDown className="h-4 w-4 chevron-rotate" data-state={isExplanationOpen ? 'open' : 'closed'} />
               </CardTitle>
             </CardHeader>
           </CollapsibleTrigger>
-          <CollapsibleContent>
+          <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
             <CardContent>
               <AutoRegulationExplanation />
             </CardContent>

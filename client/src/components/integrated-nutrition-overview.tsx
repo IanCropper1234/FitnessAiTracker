@@ -1309,7 +1309,7 @@ export function IntegratedNutritionOverview({
                     Daily Micronutrients ({formatDate})
                   </span>
                 </div>
-                <ChevronDown className={`w-4 h-4 transition-transform ${showMicronutrients ? 'rotate-180' : ''}`} />
+                <ChevronDown className="w-4 h-4 chevron-rotate" data-state={showMicronutrients ? 'open' : 'closed'} />
               </Button>
               
               {showMicronutrients && (

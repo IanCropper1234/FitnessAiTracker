@@ -131,17 +131,16 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
                 >
                   {isCompleted ? 'Complete' : 'Pending'}
                 </Badge>
-                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${
-                  isWellnessExpanded ? 'rotate-180' : 'rotate-0'
-                } ${isCompleted 
+                <ChevronDown className={`h-4 w-4 chevron-rotate ${isCompleted 
                   ? 'text-green-600 dark:text-green-400' 
                   : 'text-orange-600 dark:text-orange-400'
-                }`} />
+                }`} 
+                data-state={isWellnessExpanded ? 'open' : 'closed'} />
               </div>
             </CardTitle>
           </CardHeader>
         </CollapsibleTrigger>
-        <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+        <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
           <CardContent>
             {isCompleted ? (
               <div className="space-y-3">

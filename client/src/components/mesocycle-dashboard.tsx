@@ -254,7 +254,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               </div>
             </CardHeader>
           </CollapsibleTrigger>
-          <CollapsibleContent>
+          <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
             <CardContent className="pt-0">
               <div className="space-y-2">
                 {mesocycles.map((mesocycle: Mesocycle) => (

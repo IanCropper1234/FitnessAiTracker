@@ -119,7 +119,7 @@ export const ExerciseCardV2: React.FC<ExerciseCardV2Props> = ({
           </CardHeader>
         </CollapsibleTrigger>
         
-        <CollapsibleContent>
+        <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
           <CardContent className="pt-0">
             {/* Exercise metadata */}
             <div className="flex flex-wrap gap-2 mb-3">
