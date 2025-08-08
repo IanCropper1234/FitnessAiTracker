@@ -985,7 +985,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Brain className="h-5 w-5 text-green-600" />
-                  <h4 className="font-semibold text-green-900 dark:text-green-100">Create AI Workout Session</h4>
+                  <h4 className="font-semibold text-green-900 dark:text-green-100 text-[14px]">Create AI Workout Session</h4>
                 </div>
                 <ChevronDown className={`h-4 w-4 text-green-600 transition-transform duration-200 ${
                   isAICardExpanded ? 'transform rotate-180' : ''
@@ -1390,7 +1390,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           <LoadProgressionTracker userId={userId} />
         </AnimatedTabsContent>
       </AnimatedTabs>
-
       {/* Workout Execution Modal */}
       {executingSessionId && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
