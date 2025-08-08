@@ -116,10 +116,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
                   ? 'text-green-600 dark:text-green-400' 
                   : 'text-orange-600 dark:text-orange-400'
                 }`} />
-                <span className={`${isCompleted 
-                  ? 'text-green-900 dark:text-green-100' 
-                  : 'text-orange-900 dark:text-orange-100'
-                }`}>
+                <span className="text-orange-900 dark:text-orange-100 text-[14px] pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
                   Daily Wellness Check-in
                 </span>
               </div>
