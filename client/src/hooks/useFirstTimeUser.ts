@@ -24,8 +24,10 @@ export function useFirstTimeUser(userId?: number): UseFirstTimeUserReturn {
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user has seen onboarding in localStorage
-  const hasSeenOnboarding = localStorage.getItem('fitai-onboarding-completed') === 'true';
+  // Check if user has seen onboarding in localStorage (safely)
+  const hasSeenOnboarding = typeof window !== 'undefined' ? 
+    localStorage.getItem('fitai-onboarding-completed') === 'true' : 
+    false;
 
   // Query to check if user has any existing data
   const { data: userData, isLoading: userDataLoading } = useQuery({
@@ -101,7 +103,9 @@ export function useFirstTimeUser(userId?: number): UseFirstTimeUserReturn {
 
   // Complete onboarding - mark as completed in localStorage
   const completeOnboarding = useCallback(() => {
-    localStorage.setItem('fitai-onboarding-completed', 'true');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fitai-onboarding-completed', 'true');
+    }
     setIsFirstTimeUser(false);
   }, []);
 
