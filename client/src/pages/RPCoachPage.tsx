@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import DailyWellnessCheckin from "@/components/daily-wellness-checkin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Brain, TrendingUp, Calendar, ArrowLeft } from "lucide-react";
+import { Brain, TrendingUp, Calendar, ArrowLeft, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { RPAnalysis } from "@/components/rp-analysis";
 import { RPRecommendations } from "@/components/rp-recommendations";
@@ -15,6 +15,18 @@ interface RPCoachPageProps {
 
 export default function RPCoachPage({ userId }: RPCoachPageProps) {
   const [, setLocation] = useLocation();
+  const [openSections, setOpenSections] = useState({
+    checkin: true,
+    analysis: false,
+    recommendations: false
+  });
+
+  const toggleSection = (section: 'checkin' | 'analysis' | 'recommendations') => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -35,34 +47,82 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
         
       </div>
 
-      <Tabs defaultValue="checkin" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="checkin" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Daily Check-in
-          </TabsTrigger>
-          <TabsTrigger value="analysis" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            RP Analysis
-          </TabsTrigger>
-          <TabsTrigger value="recommendations" className="flex items-center gap-2">
-            <Brain className="h-4 w-4" />
-            Recommendations
-          </TabsTrigger>
-        </TabsList>
+      <div className="space-y-4">
+        {/* Daily Check-in Section */}
+        <Collapsible open={openSections.checkin} onOpenChange={() => toggleSection('checkin')}>
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    Daily Check-in
+                  </CardTitle>
+                  <ChevronDown className="h-4 w-4 chevron-rotate text-muted-foreground" data-state={openSections.checkin ? 'open' : 'closed'} />
+                </div>
+                <CardDescription>
+                  Complete your daily wellness assessment for personalized RP coaching
+                </CardDescription>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+              <CardContent className="pt-0">
+                <DailyWellnessCheckin userId={userId} />
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
-        <TabsContent value="checkin" className="space-y-6">
-          <DailyWellnessCheckin userId={userId} />
-        </TabsContent>
+        {/* RP Analysis Section */}
+        <Collapsible open={openSections.analysis} onOpenChange={() => toggleSection('analysis')}>
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    RP Analysis
+                  </CardTitle>
+                  <ChevronDown className="h-4 w-4 chevron-rotate text-muted-foreground" data-state={openSections.analysis ? 'open' : 'closed'} />
+                </div>
+                <CardDescription>
+                  Renaissance Periodization analysis based on your progress data
+                </CardDescription>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+              <CardContent className="pt-0">
+                <RPAnalysis userId={userId} />
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
-        <TabsContent value="analysis" className="space-y-6">
-          <RPAnalysis userId={userId} />
-        </TabsContent>
-
-        <TabsContent value="recommendations" className="space-y-6">
-          <RPRecommendations userId={userId} />
-        </TabsContent>
-      </Tabs>
+        {/* Recommendations Section */}
+        <Collapsible open={openSections.recommendations} onOpenChange={() => toggleSection('recommendations')}>
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer collapsible-trigger hover:bg-accent/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    Recommendations
+                  </CardTitle>
+                  <ChevronDown className="h-4 w-4 chevron-rotate text-muted-foreground" data-state={openSections.recommendations ? 'open' : 'closed'} />
+                </div>
+                <CardDescription>
+                  AI-powered recommendations for optimizing your training and nutrition
+                </CardDescription>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+              <CardContent className="pt-0">
+                <RPRecommendations userId={userId} />
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+      </div>
     </div>
   );
 }
