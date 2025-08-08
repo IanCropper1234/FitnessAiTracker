@@ -555,14 +555,20 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             </CardHeader>
             <CardContent className="space-y-4">
               <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-black dark:text-black"
+                className="w-full text-black dark:text-black"
+                style={{ backgroundColor: '#479bf5' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                 onClick={() => setLocation('/nutrition')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {t("log_food")}
               </Button>
               <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-black dark:text-black"
+                className="w-full text-black dark:text-black"
+                style={{ backgroundColor: '#479bf5' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                 onClick={handleStartWorkout}
               >
                 <Dumbbell className="w-4 h-4 mr-2" />
@@ -571,7 +577,10 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   : t("start_workout")}
               </Button>
               <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-black dark:text-black"
+                className="w-full text-black dark:text-black"
+                style={{ backgroundColor: '#479bf5' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                 onClick={() => setLocation('/profile')}
               >
                 View {t("profile")}
