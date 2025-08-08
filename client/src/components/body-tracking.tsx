@@ -347,7 +347,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         </div>
         <Button
           onClick={() => setIsAddingMetric(true)}
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] bg-blue-600 hover:bg-blue-700 text-white  px-6 py-2 font-medium shadow-lg ios-touch-feedback touch-target text-[12px] pl-[20px] pr-[20px]"
+          className="ios-touch-feedback inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-lg ios-touch-feedback touch-target text-[12px] font-semibold pl-[15px] pr-[15px] pt-[0px] pb-[0px]"
         >
           <Plus className="w-4 h-4 mr-2" />
           Log Entry
