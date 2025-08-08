@@ -1812,7 +1812,7 @@ export function IntegratedNutritionOverview({
                     </DropdownMenu>
                   </div>
                   {/* Food Items */}
-                  <div className="pb-3">
+                  <div className="pt-[0px] pb-[0px]">
                     {mealLogs.map((log: any, index: number) => {
                       const rpCategory = getRPCategory(log.category);
                       const isCurrentlyDragged = draggedItem && draggedItem.id === log.id;
