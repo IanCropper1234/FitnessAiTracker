@@ -45,6 +45,12 @@ interface NutritionInsight {
   priority: 'low' | 'medium' | 'high';
 }
 
+interface DataQuality {
+  completenessScore: number;
+  reliabilityNote: string;
+  recommendedActions: string[];
+}
+
 export default function EnhancedNutritionAI() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -275,6 +281,16 @@ export default function EnhancedNutritionAI() {
                       {analysisMutation.data.overallRating}/10
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">Nutrition Quality Score</p>
+                    {analysisMutation.data.dataQuality && (
+                      <div className="mt-3 p-2 bg-orange-500/10 border border-orange-500/20">
+                        <div className="text-xs text-orange-300 mb-1">
+                          Data Quality: {Math.round(analysisMutation.data.dataQuality.completenessScore)}%
+                        </div>
+                        <p className="text-xs text-orange-400">
+                          {analysisMutation.data.dataQuality.reliabilityNote}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Macronutrient Analysis */}
@@ -406,6 +422,23 @@ export default function EnhancedNutritionAI() {
                         {analysisMutation.data.supplementationAdvice.map((advice: string, index: number) => (
                           <div key={index} className="p-3 bg-blue-500/10 border border-blue-500/20">
                             <p className="text-xs text-blue-300">{advice}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Data Quality Recommendations */}
+                  {analysisMutation.data.dataQuality?.recommendedActions?.length > 0 && (
+                    <div className="p-4 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-500/20">
+                      <h4 className="font-medium text-sm flex items-center gap-2 mb-3">
+                        <AlertTriangle className="h-4 w-4" />
+                        Data Quality Improvements
+                      </h4>
+                      <div className="space-y-1">
+                        {analysisMutation.data.dataQuality.recommendedActions.map((action: string, index: number) => (
+                          <div key={index} className="text-xs text-orange-400">
+                            • {action}
                           </div>
                         ))}
                       </div>

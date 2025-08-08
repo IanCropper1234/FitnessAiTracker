@@ -147,14 +147,18 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
         .where(eq(users.id, userId))
         .limit(1);
       
+      // Improved profile handling with better default value management
+      const hasCompleteProfile = userProfileData?.age && userProfileData?.gender && userProfileData?.weight && userProfileData?.height;
+      
       profile = {
-        age: userProfileData?.age || 30,
-        gender: userProfileData?.gender || 'not specified',
-        weight: userProfileData?.currentWeight || 70,
-        height: userProfileData?.height || 170,
+        age: userProfileData?.age || null,
+        gender: userProfileData?.gender || null,
+        weight: userProfileData?.weight || null,
+        height: userProfileData?.height || null,
         activityLevel: userProfileData?.activityLevel || 'moderate',
         goals: [primaryGoal || 'health optimization'],
-        healthConditions: healthConditions ? [healthConditions] : []
+        healthConditions: healthConditions ? [healthConditions] : [],
+        isProfileComplete: hasCompleteProfile
       };
     }
 
@@ -165,7 +169,11 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
       const { nutritionLogs } = await import('../../shared/schema');
       const { eq, gte } = await import('drizzle-orm');
       
-      const daysAgo = timeRange === 'Last 7 Days' ? 7 : 30;
+      // Fix time range mapping to match frontend values
+      const daysAgo = timeRange === '7days' || timeRange === 'Last 7 Days' ? 7 : 
+                     timeRange === '14days' ? 14 :
+                     timeRange === '30days' ? 30 :
+                     timeRange === '90days' ? 90 : 7; // default to 7 days
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysAgo);
       
@@ -174,7 +182,7 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
         .from(nutritionLogs)
         .where(eq(nutritionLogs.userId, userId) && gte(nutritionLogs.date, startDate))
         .orderBy(nutritionLogs.date)
-        .limit(50);
+        .limit(200); // Increase sample size for better analysis accuracy
     }
 
     if (!nutrition || nutrition.length === 0) {
@@ -182,6 +190,24 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
         message: "No nutrition data found. Please log some meals first to get personalized analysis." 
       });
     }
+
+    // Analyze data quality for better AI instruction
+    const dataQualityMetrics = {
+      totalRecords: nutrition.length,
+      recordsWithMicronutrients: nutrition.filter((n: any) => n.micronutrients && Object.keys(n.micronutrients).length > 0).length,
+      recordsWithCompleteMicronutrients: nutrition.filter((n: any) => {
+        const micro = n.micronutrients || {};
+        // Check for at least 10 key micronutrients
+        const keyNutrients = ['vitaminC', 'iron', 'calcium', 'vitaminD', 'vitaminB12', 'folate', 'zinc', 'magnesium', 'potassium', 'fiber'];
+        return keyNutrients.filter(key => micro[key] && micro[key] !== null).length >= 5;
+      }).length,
+      avgMicronutrientsPerRecord: nutrition.reduce((acc: number, n: any) => {
+        const micro = n.micronutrients || {};
+        return acc + Object.keys(micro).filter(key => micro[key] !== null && micro[key] !== undefined).length;
+      }, 0) / nutrition.length
+    };
+    
+    const dataCompletenessScore = (dataQualityMetrics.recordsWithCompleteMicronutrients / dataQualityMetrics.totalRecords) * 100;
 
     const systemPrompt = `You are an expert nutrition scientist and registered dietitian specializing in comprehensive nutritional analysis. You provide detailed micronutrient analysis, RDA comparisons, and personalized nutrition recommendations based on individual health profiles and dietary intake data.
 
@@ -196,20 +222,43 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
     const userPrompt = `Analyze the following nutrition data and provide comprehensive insights:
 
     **User Profile**:
-    - Age: ${profile?.age || 30}
-    - Gender: ${profile?.gender || 'not specified'}
-    - Weight: ${profile?.weight || 70}kg
-    - Height: ${profile?.height || 170}cm
+    - Age: ${profile?.age || 'Not provided (affects RDA calculations)'}
+    - Gender: ${profile?.gender || 'Not specified (affects RDA calculations)'}
+    - Weight: ${profile?.weight ? profile.weight + 'kg' : 'Not provided (affects calorie and protein needs assessment)'}
+    - Height: ${profile?.height ? profile.height + 'cm' : 'Not provided (affects BMR calculations)'}
     - Activity Level: ${profile?.activityLevel || 'moderate'}
     - Goals: ${profile?.goals?.join(', ') || 'health optimization'}
-    ${profile?.healthConditions ? `- Health Conditions: ${profile.healthConditions.join(', ')}` : ''}
+    ${profile?.healthConditions?.length ? `- Health Conditions: ${profile.healthConditions.join(', ')}` : ''}
+    - Profile Completeness: ${profile?.isProfileComplete ? 'Complete' : 'Incomplete - some RDA calculations may use general population averages'}
+    
+    **IMPORTANT**: When user profile data is incomplete (marked above), use general population averages for RDA calculations but clearly note this limitation in your analysis.
 
-    **Analysis Period**: ${timeRange || '7 days'}
-    **Nutrition Data**: ${JSON.stringify(nutrition?.slice(0, 10) || [], null, 2)}
+    **Analysis Period**: ${timeRange || '7 days'} (${nutrition?.length || 0} total records analyzed)
+    **Data Quality Notice**: Some nutrition entries may lack complete micronutrient data. Analysis confidence varies based on data completeness.
+    **Nutrition Data Sample**: ${JSON.stringify(nutrition?.slice(0, 15) || [], null, 2)}
+    
+    **DATA QUALITY ASSESSMENT**:
+    - Total nutrition records analyzed: ${dataQualityMetrics.totalRecords}
+    - Records with micronutrient data: ${dataQualityMetrics.recordsWithMicronutrients} (${Math.round((dataQualityMetrics.recordsWithMicronutrients/dataQualityMetrics.totalRecords)*100)}%)
+    - Records with comprehensive micronutrients: ${dataQualityMetrics.recordsWithCompleteMicronutrients} (${Math.round(dataCompletenessScore)}%)
+    - Average micronutrients per record: ${Math.round(dataQualityMetrics.avgMicronutrientsPerRecord)}
+    - Data completeness score: ${Math.round(dataCompletenessScore)}%
+    
+    **CRITICAL ANALYSIS INSTRUCTIONS**:
+    1. Base your confidence scores on actual data availability
+    2. If data completeness is below 70%, clearly state limitations in micronutrient analysis
+    3. Do not provide definitive deficiency diagnoses when source data is incomplete
+    4. Include data quality warnings in your insights when appropriate
+    5. Adjust your overall rating to reflect data quality (lower scores for incomplete data)
 
     Provide a comprehensive analysis in JSON format:
     {
-      "overallRating": number (1-10 scale),
+      "overallRating": number (1-10 scale, adjusted based on data quality),
+      "dataQuality": {
+        "completenessScore": number (0-100),
+        "reliabilityNote": "string - explanation of data limitations",
+        "recommendedActions": ["string - suggestions for improving data quality"]
+      },
       "macronutrientAnalysis": {
         "proteinStatus": "string",
         "carbStatus": "string", 
