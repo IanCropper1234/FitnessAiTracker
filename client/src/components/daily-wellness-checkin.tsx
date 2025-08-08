@@ -47,18 +47,41 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
   const [notes, setNotes] = useState("");
 
   // Fetch existing checkin for the selected date
+  const dateString = trackingDate.toISOString().split('T')[0];
   const { data: existingCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins', trackingDate.toISOString().split('T')[0]],
+    queryKey: ['/api/daily-wellness-checkins', dateString],
     queryFn: async () => {
-      const response = await fetch(`/api/daily-wellness-checkins?date=${trackingDate.toISOString().split('T')[0]}`);
-      if (!response.ok) return null;
-      return response.json();
-    }
+      console.log('🔍 Fetching wellness data for date:', dateString);
+      const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      if (!response.ok) {
+        console.log('❌ Wellness fetch failed:', response.status, response.statusText);
+        return null;
+      }
+      const data = await response.json();
+      console.log('📊 Wellness data received:', data);
+      return data;
+    },
+    staleTime: 0, // Always consider data stale
+    gcTime: 0 // Don't cache this data
   });
 
   // Update form values when existing checkin is loaded
   useEffect(() => {
+    console.log('🔄 useEffect triggered, existingCheckin:', existingCheckin);
     if (existingCheckin) {
+      console.log('📝 Loading saved values into form:', {
+        energyLevel: existingCheckin.energyLevel,
+        hungerLevel: existingCheckin.hungerLevel,
+        sleepQuality: existingCheckin.sleepQuality,
+        stressLevel: existingCheckin.stressLevel,
+        adherencePerception: existingCheckin.adherencePerception
+      });
       setEnergyLevel([existingCheckin.energyLevel]);
       setHungerLevel([existingCheckin.hungerLevel]);
       setSleepQuality([existingCheckin.sleepQuality || 7]);
@@ -66,6 +89,8 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       setCravingsIntensity([existingCheckin.cravingsIntensity || 5]);
       setAdherencePerception([existingCheckin.adherencePerception || 7]);
       setNotes(existingCheckin.notes || "");
+    } else {
+      console.log('⚠️ No existing checkin found, using defaults');
     }
   }, [existingCheckin]);
 
@@ -74,7 +99,9 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
     mutationFn: async (checkinData: any) => {
       return apiRequest('POST', '/api/daily-wellness-checkins', checkinData);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('✅ Wellness check-in saved successfully:', data);
+      
       toast({
         title: "Daily Check-in Saved",
         description: "Your wellness data has been recorded for macro adjustments",
@@ -82,11 +109,18 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       
       // Invalidate related queries with specific date
       const dateString = trackingDate.toISOString().split('T')[0];
+      console.log('🔄 Invalidating queries for date:', dateString);
+      console.log('🔄 Current query key:', ['/api/daily-wellness-checkins', dateString]);
+      
+      // Force immediate refetch by removing from cache and invalidating
+      queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins-reminder'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-wellness-summary'] });
       // Also invalidate all wellness-related queries to be safe
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins'] });
+      
+      console.log('🔄 All queries invalidated');
     },
     onError: () => {
       toast({
