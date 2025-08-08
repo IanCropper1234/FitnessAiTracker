@@ -604,16 +604,25 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       setCurrentSetForFeedback, setShowAutoRegulation, specialMethods, session, 
       currentExerciseIndex, showError, showInfo, toast, updateSet]);
 
-  // Update complete set handler and validation
+  // Use ref to store completeSet function to prevent infinite loops
+  const completeSetRef = useRef(completeSet);
+  
+  // Update the ref when completeSet changes
+  useEffect(() => {
+    completeSetRef.current = completeSet;
+  }, [completeSet]);
+  
+  // Update complete set handler and validation (removed completeSet from deps)
   useEffect(() => {
     if (activeTab === 'execution') {
-      workoutContext.setCompleteSetHandler(completeSet);
+      // Use a stable wrapper function that calls the latest version
+      workoutContext.setCompleteSetHandler(() => completeSetRef.current());
       workoutContext.setCanCompleteSet(!!isSetValid);
     } else {
       workoutContext.setCompleteSetHandler(null);
       workoutContext.setCanCompleteSet(false);
     }
-  }, [activeTab, isSetValid, completeSet]);
+  }, [activeTab, isSetValid]); // Removed completeSet to prevent infinite loops
 
   // Update current set info
   useEffect(() => {
