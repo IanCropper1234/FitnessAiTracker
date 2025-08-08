@@ -374,6 +374,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [minLoadingTime, setMinLoadingTime] = useState(true);
   
   // First-time user detection
   const { 
@@ -387,6 +388,16 @@ export default function App() {
   // Setup global error handling - must be at top level
   useEffect(() => {
     setupGlobalErrorHandling();
+  }, []);
+
+  // Ensure minimum loading time for better UX
+  useEffect(() => {
+    // Show loading animation for at least 2.5 seconds
+    const minLoadingTimer = setTimeout(() => {
+      setMinLoadingTime(false);
+    }, 2500);
+
+    return () => clearTimeout(minLoadingTimer);
   }, []);
 
   // Check authentication status on app initialization with retry logic for iOS PWA
@@ -451,7 +462,7 @@ export default function App() {
     setShowOnboarding(false);
   }, [completeOnboarding]);
 
-  if (authLoading || (user && firstTimeUserLoading)) {
+  if (authLoading || minLoadingTime || (user && firstTimeUserLoading)) {
     return (
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
