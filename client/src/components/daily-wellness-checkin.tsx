@@ -170,7 +170,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pl-[5px] pr-[5px]">
         {/* Core Required Metrics (for RP adjustments) */}
         <div className="space-y-4">
           <h4 className="font-medium text-black dark:text-white flex items-center gap-2">
