@@ -53,6 +53,9 @@ export default function ExerciseSelection() {
   
   const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedEquipment, setSelectedEquipment] = useState('all');
+  const [selectedPrimaryMuscle, setSelectedPrimaryMuscle] = useState('all');
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('all');
   const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
   const exercisesPerPage = 24;
 
@@ -72,6 +75,34 @@ export default function ExerciseSelection() {
   console.log('  Workout Index:', workoutIndex);
 
   const categories = ['all', 'push', 'pull', 'legs', 'cardio'];
+  
+  // Extract unique filter options from exercises data
+  const equipmentOptions = useMemo(() => {
+    const equipment = exercises
+      .map(ex => ex.equipment)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...equipment];
+  }, [exercises]);
+  
+  const primaryMuscleOptions = useMemo(() => {
+    const muscles = exercises
+      .map(ex => ex.primaryMuscle)
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...muscles];
+  }, [exercises]);
+  
+  const muscleGroupOptions = useMemo(() => {
+    const muscleGroups = exercises
+      .flatMap(ex => ex.muscleGroups || [])
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...muscleGroups];
+  }, [exercises]);
 
   // Fetch exercises with error-safe handling to prevent page reload
   const { data: exercises = [], isLoading } = useQuery({
@@ -112,6 +143,24 @@ export default function ExerciseSelection() {
         return false;
       }
       
+      // Equipment filter
+      if (selectedEquipment !== 'all' && exercise.equipment !== selectedEquipment) {
+        return false;
+      }
+      
+      // Primary muscle filter
+      if (selectedPrimaryMuscle !== 'all' && exercise.primaryMuscle !== selectedPrimaryMuscle) {
+        return false;
+      }
+      
+      // Muscle group filter
+      if (selectedMuscleGroup !== 'all') {
+        const matchesMuscleGroup = exercise.muscleGroups?.some(mg => 
+          mg && mg.toLowerCase() === selectedMuscleGroup.toLowerCase()
+        );
+        if (!matchesMuscleGroup) return false;
+      }
+      
       // Target muscle filter
       if (targetMuscles.length > 0) {
         const matchesTarget = targetMuscles.some(muscle => 
@@ -121,7 +170,7 @@ export default function ExerciseSelection() {
       }
       
       return true;
-    }, [selectedCategory, targetMuscles]),
+    }, [selectedCategory, selectedEquipment, selectedPrimaryMuscle, selectedMuscleGroup, targetMuscles]),
     pageSize: exercisesPerPage,
     debounceMs: 300,
     maxCacheSize: 100,
@@ -329,19 +378,91 @@ export default function ExerciseSelection() {
                   />
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
-                  {categories.map(category => (
-                    <Button
-                      key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedCategory(category)}
-                      className="text-xs"
-                    >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </Button>
-                  ))}
+                {/* Category Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Category</label>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(category => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCategory(category)}
+                        className="text-xs"
+                      >
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Equipment Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Equipment</label>
+                  <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select equipment" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {equipmentOptions.map(equipment => (
+                        <SelectItem key={equipment} value={equipment}>
+                          {equipment === 'all' ? 'All Equipment' : equipment}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Primary Muscle Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Primary Muscle</label>
+                  <Select value={selectedPrimaryMuscle} onValueChange={setSelectedPrimaryMuscle}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select primary muscle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {primaryMuscleOptions.map(muscle => (
+                        <SelectItem key={muscle} value={muscle}>
+                          {muscle === 'all' ? 'All Muscles' : muscle}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Muscle Group Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Muscle Group</label>
+                  <Select value={selectedMuscleGroup} onValueChange={setSelectedMuscleGroup}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select muscle group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {muscleGroupOptions.map(muscleGroup => (
+                        <SelectItem key={muscleGroup} value={muscleGroup}>
+                          {muscleGroup === 'all' ? 'All Muscle Groups' : muscleGroup}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Clear Filters Button */}
+                {(selectedCategory !== 'all' || selectedEquipment !== 'all' || selectedPrimaryMuscle !== 'all' || selectedMuscleGroup !== 'all') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedCategory('all');
+                      setSelectedEquipment('all');
+                      setSelectedPrimaryMuscle('all');
+                      setSelectedMuscleGroup('all');
+                    }}
+                    className="w-full text-xs"
+                  >
+                    Clear All Filters
+                  </Button>
+                )}
 
                 {/* Target Muscle Groups Filter */}
                 {targetMuscles.length > 0 && (
