@@ -1993,7 +1993,7 @@ export function IntegratedNutritionOverview({
                         onClick={() => {
                           setLocation(`/add-food?date=${selectedDate}&mealType=${mealType.key}`);
                         }}
-                        className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px] pt-[0px] pb-[0px]"
+                        className="w-full text-left py-3 px-0 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 pl-[10px] pr-[10px] pt-[5px] pb-[5px]"
                       >
                         {dragOverTarget === mealType.key ? (
                           <div className="flex items-center gap-3">
