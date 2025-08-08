@@ -488,6 +488,42 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     workoutContext.setCurrentTab(activeTab);
   }, [activeTab]);
 
+  // Define updateSet function before completeSet to avoid initialization errors
+  const updateSet = (exerciseId: number, setIndex: number, field: keyof WorkoutSet, value: any) => {
+    setWorkoutData(prev => {
+      const newData = {
+        ...prev,
+        [exerciseId]: prev[exerciseId].map((set, i) => 
+          i === setIndex ? { ...set, [field]: value } : set
+        )
+      };
+      
+      // Auto-save when completing a set
+      if (field === 'completed' && value === true && session) {
+        const progressData = {
+          duration: sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 1000 / 60) : 0,
+          totalVolume: Math.round(Object.values(newData)
+            .flat()
+            .filter(set => set?.completed)
+            .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0)),
+          isCompleted: false,
+          autoSave: true, // Flag to indicate this is an auto-save
+          exercises: session.exercises.map(exercise => ({
+            exerciseId: exercise.exerciseId,
+            sets: newData[exercise.id] || [],
+            specialMethod: specialMethods[exercise.id] || null,
+            specialConfig: specialConfigs[exercise.id] || null
+          }))
+        };
+        
+        // Trigger auto-save
+        autoSaveMutation.mutate(progressData);
+      }
+      
+      return newData;
+    });
+  };
+
   // Define completeSet function with useCallback for stable reference
   const completeSet = useCallback(() => {
     try {
@@ -528,7 +564,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           
           showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} for superset completion`, {
             icon: "💪",
-            duration: 2000,
+            autoHideDelay: 2000,
           });
           
           return; // Exit early - don't advance to next set
@@ -630,41 +666,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       // Don't show error toast for auto-save failures
     },
   });
-
-  const updateSet = (exerciseId: number, setIndex: number, field: keyof WorkoutSet, value: any) => {
-    setWorkoutData(prev => {
-      const newData = {
-        ...prev,
-        [exerciseId]: prev[exerciseId].map((set, i) => 
-          i === setIndex ? { ...set, [field]: value } : set
-        )
-      };
-      
-      // Auto-save when completing a set
-      if (field === 'completed' && value === true && session) {
-        const progressData = {
-          duration: sessionStartTime ? Math.round((Date.now() - sessionStartTime) / 1000 / 60) : 0,
-          totalVolume: Math.round(Object.values(newData)
-            .flat()
-            .filter(set => set?.completed)
-            .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0)),
-          isCompleted: false,
-          autoSave: true, // Flag to indicate this is an auto-save
-          exercises: session.exercises.map(exercise => ({
-            exerciseId: exercise.exerciseId,
-            sets: newData[exercise.id] || [],
-            specialMethod: specialMethods[exercise.id] || null,
-            specialConfig: specialConfigs[exercise.id] || null
-          }))
-        };
-        
-        // Trigger auto-save
-        autoSaveMutation.mutate(progressData);
-      }
-      
-      return newData;
-    });
-  };
 
   // Special training methods handlers
   const handleSpecialMethodChange = (exerciseId: number, method: string | null) => {
