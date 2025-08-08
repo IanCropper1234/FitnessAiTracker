@@ -347,7 +347,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         </div>
         <Button
           onClick={() => setIsAddingMetric(true)}
-          className="ios-touch-feedback inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-lg ios-touch-feedback touch-target text-[12px] font-semibold pl-[15px] pr-[15px] pt-[0px] pb-[0px]"
+          className="ios-touch-feedback inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] text-black dark:text-black px-6 py-2 shadow-lg ios-touch-feedback touch-target text-[12px] font-semibold pl-[15px] pr-[15px] pt-[0px] pb-[0px]"
+          style={{ backgroundColor: '#479bf5' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
         >
           <Plus className="w-4 h-4 mr-2" />
           Log Entry
@@ -512,7 +515,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               </p>
               <Button
                 onClick={() => setIsAddingMetric(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white ios-touch-feedback touch-target"
+                className="text-black dark:text-black ios-touch-feedback touch-target"
+                style={{ backgroundColor: '#479bf5' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Log Your First Entry
@@ -623,7 +629,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           type="button"
                           size="sm"
                           onClick={convertAllFormValues}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1.5 flex-1 sm:flex-none"
+                          className="text-black dark:text-black text-xs px-2 py-1.5 flex-1 sm:flex-none"
+                          style={{ backgroundColor: '#479bf5' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                         >
                           Convert All
                         </Button>
@@ -776,7 +785,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                 <Button 
                   type="submit" 
                   disabled={addMetricMutation.isPending}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5"
+                  className="flex-1 text-black dark:text-black font-medium py-2.5"
+                  style={{ backgroundColor: '#479bf5' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                 >
                   {addMetricMutation.isPending ? (
                     <div className="flex items-center gap-2">
