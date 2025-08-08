@@ -979,7 +979,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           {/* AI Session Creation - Collapsible */}
           <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-800 mx-2">
             <CardHeader 
-              className="p-4 pb-2 cursor-pointer hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors"
+              className="flex flex-col space-y-2 p-4 cursor-pointer hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors pt-[5px] pb-[5px]"
               onClick={() => setIsAICardExpanded(!isAICardExpanded)}
             >
               <div className="flex items-center justify-between">
