@@ -1700,7 +1700,7 @@ export function IntegratedNutritionOverview({
                   <div className="flex items-center justify-between py-3 px-0">
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-black dark:text-white text-lg">
+                        <h3 className="font-medium text-black dark:text-white text-[16px]">
                           {mealType.label}
                         </h3>
                         <span className="text-sm text-gray-500 dark:text-gray-400">
