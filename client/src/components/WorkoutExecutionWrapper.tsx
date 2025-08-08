@@ -63,7 +63,7 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
   // Error handling with automatic fallback
   if (error) {
     console.error('WorkoutExecutionWrapper error:', error);
-    console.log('Falling back to legacy component due to error');
+    // Falling back to legacy component due to error
     return <WorkoutExecution sessionId={parseInt(sessionId, 10)} onComplete={onComplete} />;
   }
 
@@ -87,33 +87,25 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
   const shouldUseV2 = () => {
     // Emergency fallback
     if (fallbackMode) {
-      console.log('Using V1: Emergency fallback mode enabled');
+      // Using V1: Emergency fallback mode enabled
       return false;
     }
 
     // Global feature flag disabled
     if (!isV2Enabled) {
-      console.log('Using V1: Global V2 feature flag disabled');
+      // Using V1: Global V2 feature flag disabled
       return false;
     }
 
     // If V2 is enabled globally, use V2 regardless of session version
     // This allows testing V2 features on existing sessions
-    console.log('Using V2: Global V2 feature flag enabled');
+    // Using V2: Global V2 feature flag enabled
     return true;
   };
 
   const useV2 = shouldUseV2();
 
-  // Log decision for debugging
-  console.log('WorkoutExecutionWrapper decision:', {
-    sessionId,
-    sessionVersion: session?.version,
-    isV2Enabled,
-    fallbackMode,
-    useV2,
-    sessionFeatures: session?.features,
-  });
+  // Decision logic complete - using V2 or V1 based on feature flags
 
   // Render appropriate component
   if (useV2) {
