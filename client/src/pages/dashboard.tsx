@@ -555,15 +555,14 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             </CardHeader>
             <CardContent className="space-y-4">
               <Button 
-                className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-black dark:text-black"
                 onClick={() => setLocation('/nutrition')}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 {t("log_food")}
               </Button>
               <Button 
-                variant="outline"
-                className="w-full border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-black dark:text-black"
                 onClick={handleStartWorkout}
               >
                 <Dumbbell className="w-4 h-4 mr-2" />
@@ -572,8 +571,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   : t("start_workout")}
               </Button>
               <Button 
-                variant="outline"
-                className="w-full border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-black dark:text-black"
                 onClick={() => setLocation('/profile')}
               >
                 View {t("profile")}
