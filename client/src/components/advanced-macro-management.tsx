@@ -645,16 +645,22 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowWellnessInfo(!showWellnessInfo)}
-                        className="w-full sm:w-auto justify-center sm:justify-start text-xs sm:text-sm px-3 py-1.5 hover:bg-accent/50 transition-colors"
+                        className="w-full sm:w-auto justify-center sm:justify-start text-xs sm:text-sm px-3 py-1.5 collapsible-trigger hover:bg-accent/50 transition-colors"
                       >
                         {showWellnessInfo ? 'Hide Info' : 'Show Info'}
-                        {showWellnessInfo ? <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4 ml-1" /> : <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />}
+                        <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 ml-1 chevron-rotate" data-state={showWellnessInfo ? 'open' : 'closed'} />
                       </Button>
                     </div>
                   </div>
                   
                   {/* Expandable information section */}
-                  {showWellnessInfo && (
+                  <div 
+                    className={`collapsible-content overflow-hidden transition-all duration-300 ease-in-out ${
+                      showWellnessInfo 
+                        ? 'max-h-[500px] opacity-100 animate-collapsible-down' 
+                        : 'max-h-0 opacity-0 animate-collapsible-up'
+                    }`}
+                  >
                     <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                         Daily wellness ratings are averaged weekly for macro adjustments using RP methodology.
@@ -686,7 +692,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
               
