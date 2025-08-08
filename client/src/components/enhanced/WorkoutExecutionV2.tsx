@@ -447,7 +447,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-center">
-          <div className="animate-spin  h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="ios-loading-dots flex items-center gap-1 justify-center mb-4">
+            <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+            <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+            <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+          </div>
           <p>Loading enhanced workout session...</p>
         </div>
       </div>
@@ -1466,7 +1470,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         {saveProgressMutation.isPending && (
           <div className="mt-2 text-center">
             <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <div className="w-3 h-3 border border-primary border-t-transparent  animate-spin"></div>
+              <div className="ios-loading-dots flex items-center gap-1">
+                <div className="dot w-1 h-1 bg-primary rounded-full"></div>
+                <div className="dot w-1 h-1 bg-primary rounded-full"></div>
+                <div className="dot w-1 h-1 bg-primary rounded-full"></div>
+              </div>
               Saving...
             </div>
           </div>

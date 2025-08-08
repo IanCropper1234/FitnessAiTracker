@@ -189,7 +189,11 @@ function ActivityGoalsCard() {
           >
             {updateProfileMutation.isPending ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                </div>
                 Saving...
               </>
             ) : (

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, Save, Loader2, Settings, Activity, Target, Utensils, Clock, Calendar } from "lucide-react";
+import { User, Save, Settings, Activity, Target, Utensils, Clock, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -380,7 +380,11 @@ export function UserProfile({}: UserProfileProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-8 h-8 animate-spin text-black dark:text-white" />
+        <div className="ios-loading-dots flex items-center gap-1">
+          <div className="dot w-2 h-2 bg-black dark:bg-white rounded-full"></div>
+          <div className="dot w-2 h-2 bg-black dark:bg-white rounded-full"></div>
+          <div className="dot w-2 h-2 bg-black dark:bg-white rounded-full"></div>
+        </div>
       </div>
     );
   }
@@ -629,7 +633,11 @@ export function UserProfile({}: UserProfileProps) {
             >
               {updateProfileMutation.isPending ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  </div>
                   Saving...
                 </>
               ) : (
@@ -854,7 +862,11 @@ export function UserProfile({}: UserProfileProps) {
                 >
                   {updateMealTimingMutation.isPending ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  </div>
                       Saving...
                     </>
                   ) : (

@@ -881,7 +881,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 >
                   {weeklyAdjustmentMutation.isPending ? (
                     <>
-                      <div className="w-4 h-4 mr-2 animate-spin  border-2 border-white border-t-transparent" />
+                      <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                      </div>
                       Applying Adjustment...
                     </>
                   ) : (

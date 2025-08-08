@@ -132,7 +132,11 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className="ios-loading-dots flex items-center gap-1">
+          <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+          <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+          <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+        </div>
         <span className="ml-2 text-sm text-muted-foreground">Loading templates...</span>
       </div>
     );

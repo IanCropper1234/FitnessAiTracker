@@ -792,7 +792,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                 >
                   {addMetricMutation.isPending ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent  animate-spin"></div>
+                      <div className="ios-loading-dots flex items-center gap-1">
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                      </div>
                       Saving...
                     </div>
                   ) : (

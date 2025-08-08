@@ -1917,3 +1917,17 @@ button, .ios-button {
     animation-delay: 0s;
   }
 }
+
+/* iOS-style loading animation for single icons (like in ProgressSaveIndicator) */
+.ios-loading-animation {
+  animation: ios-rotate 1s linear infinite;
+}
+
+@keyframes ios-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

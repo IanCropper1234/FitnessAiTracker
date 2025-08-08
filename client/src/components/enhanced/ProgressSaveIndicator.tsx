@@ -135,7 +135,7 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
         {/* Animated Icon */}
         <div className={cn(
           "flex-shrink-0 transition-transform duration-300",
-          status === 'saving' ? 'animate-spin' : 'hover:scale-110'
+          status === 'saving' ? 'ios-loading-animation' : 'hover:scale-110'
         )}>
           <IconComponent className={cn("h-5 w-5", config.iconColor)} />
         </div>

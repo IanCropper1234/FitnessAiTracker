@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { TimezoneUtils } from "@shared/utils/timezone";
-import { X, Search, Loader2, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan, Pill, Save } from "lucide-react";
+import { X, Search, Utensils, Brain, Sunrise, Sun, Moon, Apple, Scan, Pill, Save } from "lucide-react";
 import { BarcodeScanner } from "./barcode-scanner";
 
 interface NutritionLoggerProps {
@@ -278,7 +278,11 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                   size="sm"
                 >
                   {isLoading ? (
-                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                    <div className="ios-loading-dots flex items-center gap-1">
+                      <div className="dot w-1 h-1 bg-white rounded-full"></div>
+                      <div className="dot w-1 h-1 bg-white rounded-full"></div>
+                      <div className="dot w-1 h-1 bg-white rounded-full"></div>
+                    </div>
                   ) : searchMode === 'ai' ? (
                     <Brain className="w-3 h-3 sm:w-4 sm:h-4" />
                   ) : (
@@ -304,7 +308,11 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                 <Label className="text-black dark:text-white text-sm font-medium">Your Saved Meals</Label>
                 {savedMealsQuery.isLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                    <div className="ios-loading-dots flex items-center gap-1">
+                      <div className="dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                    </div>
                   </div>
                 ) : savedMealsQuery.data && Array.isArray(savedMealsQuery.data) && savedMealsQuery.data.length > 0 ? (
                   <div className="max-h-48 overflow-y-auto space-y-2">
@@ -568,7 +576,11 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
                 size="sm"
               >
                 {logMutation.isPending ? (
-                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
+                  <div className="ios-loading-dots flex items-center gap-1 mr-1 sm:mr-2">
+                    <div className="dot w-1 h-1 bg-white rounded-full"></div>
+                    <div className="dot w-1 h-1 bg-white rounded-full"></div>
+                    <div className="dot w-1 h-1 bg-white rounded-full"></div>
+                  </div>
                 ) : (
                   <Utensils className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 )}

@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { Search, Plus, ShoppingCart, Database, Brain, Loader2, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User, AlertTriangle } from "lucide-react";
+import { Search, Plus, ShoppingCart, Database, Brain, Target, Calculator, BookOpen, Save, Edit, Trash2, Settings, Clock, Calendar, Activity, User, AlertTriangle } from "lucide-react";
 import type { MealTimingPreference } from "@shared/schema";
 import { useTranslation } from "react-i18next";
 import { apiRequest } from "@/lib/queryClient";
@@ -1201,7 +1201,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                     {isDataLoading && (
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 ">
                   <div className="flex items-center gap-3">
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" />
+                    <div className="ios-loading-dots flex items-center gap-1">
+                      <div className="dot w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                      <div className="dot w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                      <div className="dot w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                    </div>
                     <div>
                       <h4 className="font-medium text-blue-900 dark:text-blue-100 text-sm">Loading Profile Data</h4>
                       <p className="text-xs text-blue-700 dark:text-blue-300">
@@ -1396,7 +1400,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         >
                           {saveDietGoalMutation.isPending ? (
                             <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                              </div>
                               Saving Recommended Goals...
                             </>
                           ) : (
@@ -1526,7 +1534,11 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         >
                           {saveDietGoalMutation.isPending ? (
                             <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                              </div>
                               Saving Custom Goals...
                             </>
                           ) : (

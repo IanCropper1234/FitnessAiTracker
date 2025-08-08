@@ -88,7 +88,11 @@ export function ReportsPage({ userId }: ReportsPageProps) {
     return (
       <div className="min-h-screen bg-background text-foreground pb-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-muted border-t-foreground  animate-spin mx-auto mb-4"></div>
+          <div className="ios-loading-dots flex items-center gap-1 justify-center mb-4">
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+            <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+          </div>
           <p className="text-sm text-muted-foreground">Loading analytics...</p>
         </div>
       </div>

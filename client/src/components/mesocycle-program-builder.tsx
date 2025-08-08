@@ -298,7 +298,11 @@ export default function MesocycleProgramBuilder({
               <Label>Training Templates</Label>
               {templatesLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin  h-8 w-8 border-b-2 border-primary"></div>
+                  <div className="ios-loading-dots flex items-center gap-1">
+                    <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="dot w-2 h-2 bg-primary rounded-full"></div>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

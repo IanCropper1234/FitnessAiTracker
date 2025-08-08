@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { History, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { History, ChevronDown, ChevronUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 
@@ -166,7 +166,11 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
               className="ios-touch-feedback h-6 px-2 py-0 text-xs bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 hover:text-blue-100 border border-blue-500/30 flex-shrink-0"
             >
               {isLoading || isApplying ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
+                <div className="ios-loading-dots flex items-center gap-1">
+                  <div className="dot w-1 h-1 bg-blue-200 rounded-full"></div>
+                  <div className="dot w-1 h-1 bg-blue-200 rounded-full"></div>
+                  <div className="dot w-1 h-1 bg-blue-200 rounded-full"></div>
+                </div>
               ) : (
                 "Use"
               )}

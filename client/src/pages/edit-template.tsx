@@ -729,7 +729,11 @@ export default function EditTemplatePage() {
   if (templateLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="ios-loading-dots flex items-center gap-1">
+          <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+          <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+          <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+        </div>
       </div>
     );
   }
@@ -774,7 +778,11 @@ export default function EditTemplatePage() {
           size="sm"
         >
           {updateMutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="ios-loading-dots flex items-center gap-1">
+              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           ) : (
             <Save className="h-4 w-4" />
           )}

@@ -590,7 +590,11 @@ export default function CreateAIWorkoutSession() {
             >
               {recommendationMutation.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  </div>
                   {viewMode === 'weekly' ? 'Generating Weekly Plan...' : 'Analyzing with AI...'}
                 </>
               ) : (
@@ -621,7 +625,11 @@ export default function CreateAIWorkoutSession() {
 
             {recommendationMutation.isPending && (
               <div className="text-center py-12">
-                <Loader2 className="h-8 w-8 mx-auto mb-3 animate-spin text-blue-500" />
+                <div className="ios-loading-dots flex items-center gap-1 justify-center mb-3">
+                  <div className="dot w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="dot w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="dot w-2 h-2 bg-blue-500 rounded-full"></div>
+                </div>
                 <p className="text-sm">AI is analyzing your data...</p>
                 <p className="text-xs text-muted-foreground mt-1">This may take a few moments</p>
               </div>
@@ -642,7 +650,11 @@ export default function CreateAIWorkoutSession() {
                       >
                         {saveWeeklyPlanMutation.isPending ? (
                           <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                            </div>
                             Saving Templates...
                           </>
                         ) : (

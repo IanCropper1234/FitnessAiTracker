@@ -710,7 +710,11 @@ export function AddFood({ user }: AddFoodProps) {
               className="w-full h-9 ios-button touch-target"
             >
               {isLoading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                </div>
               ) : (
                 <Brain className="w-4 h-4 mr-2" />
               )}
@@ -983,7 +987,11 @@ export function AddFood({ user }: AddFoodProps) {
                 className="flex-1 h-9 ios-button touch-target"
               >
                 {logMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  </div>
                 ) : (
                   <Utensils className="w-4 h-4 mr-2" />
                 )}

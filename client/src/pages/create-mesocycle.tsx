@@ -376,7 +376,11 @@ export default function CreateMesocyclePage() {
             <CardContent>
                 {templatesLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin" />
+                    <div className="ios-loading-dots flex items-center gap-1">
+                      <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                      <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                      <div className="dot w-2 h-2 bg-foreground rounded-full"></div>
+                    </div>
                   </div>
                 ) : templates.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
@@ -527,7 +531,11 @@ export default function CreateMesocyclePage() {
           className="flex items-center gap-2"
         >
           {createMesocycleMutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="ios-loading-dots flex items-center gap-1">
+              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+              <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           ) : (
             <Play className="h-4 w-4" />
           )}

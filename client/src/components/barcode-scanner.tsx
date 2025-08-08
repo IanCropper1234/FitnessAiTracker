@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { X, Camera, Loader2 } from "lucide-react";
+import { X, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface BarcodeScannerProps {
@@ -180,7 +180,11 @@ export function BarcodeScanner({ isOpen, onClose, onScanSuccess }: BarcodeScanne
           <div className="relative bg-black  overflow-hidden aspect-video">
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                <Loader2 className="w-8 h-8 text-white animate-spin" />
+                <div className="ios-loading-dots flex items-center gap-1">
+                  <div className="dot w-2 h-2 bg-white rounded-full"></div>
+                  <div className="dot w-2 h-2 bg-white rounded-full"></div>
+                  <div className="dot w-2 h-2 bg-white rounded-full"></div>
+                </div>
               </div>
             )}
             
@@ -231,7 +235,11 @@ export function BarcodeScanner({ isOpen, onClose, onScanSuccess }: BarcodeScanne
               className="flex-1"
             >
               {isLoading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                </div>
               ) : (
                 <Camera className="w-4 h-4 mr-2" />
               )}
