@@ -946,7 +946,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             <span className="text-xs text-muted-foreground">
               {completedSets}/{totalSets}
             </span>
-            <div className={`transform transition-transform duration-200 ${headerExpanded ? 'rotate-180' : ''}`}>
+            <div className="chevron-rotate" data-state={headerExpanded ? 'open' : 'closed'}>
               <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -956,10 +956,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
         {/* Expanded State - Detailed View with Smooth Transitions */}
         <div 
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          className={`collapsible-content overflow-hidden ${
             headerExpanded 
-              ? 'max-h-96 opacity-100 border-t border-border/30 bg-muted/10' 
-              : 'max-h-0 opacity-0'
+              ? 'max-h-96 opacity-100 border-t border-border/30 bg-muted/10 animate-collapsible-down' 
+              : 'max-h-0 opacity-0 animate-collapsible-up'
           }`}
         >
           {headerExpanded && (
