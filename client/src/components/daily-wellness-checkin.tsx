@@ -156,10 +156,10 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+            <div className="ios-loading-dots flex items-center gap-1">
+              <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+              <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
+              <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
             </div>
             <span className="ml-2 text-gray-600 dark:text-gray-400">Loading wellness check-in...</span>
           </div>
@@ -325,10 +325,10 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
         >
           {submitCheckinMutation.isPending ? (
             <>
-              <div className="flex items-center gap-1 mr-2">
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"></div>
+              <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
               </div>
               Saving Check-in...
             </>
