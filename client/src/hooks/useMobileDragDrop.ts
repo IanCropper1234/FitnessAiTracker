@@ -9,6 +9,7 @@ interface UseMobileDragDropOptions<T> {
 
 interface DragState {
   isDragging: boolean;
+  isPreDragging: boolean;
   draggedIndex: number | null;
   dropTargetIndex: number | null;
   dragOffset: { x: number; y: number };
@@ -23,6 +24,7 @@ export function useMobileDragDrop<T>({
 }: UseMobileDragDropOptions<T>) {
   const [dragState, setDragState] = useState<DragState>({
     isDragging: false,
+    isPreDragging: false,
     draggedIndex: null,
     dropTargetIndex: null,
     dragOffset: { x: 0, y: 0 },
@@ -36,6 +38,7 @@ export function useMobileDragDrop<T>({
   const clearDragState = useCallback(() => {
     setDragState({
       isDragging: false,
+      isPreDragging: false,
       draggedIndex: null,
       dropTargetIndex: null,
       dragOffset: { x: 0, y: 0 },
@@ -103,12 +106,20 @@ export function useMobileDragDrop<T>({
       touchStartPos: { x: touch.clientX, y: touch.clientY },
     }));
 
+    // Start pre-drag visual feedback immediately
+    setDragState(prev => ({
+      ...prev,
+      isPreDragging: true,
+      draggedIndex: index,
+    }));
+
     // Start long press timer for drag initiation
     longPressTimerRef.current = setTimeout(() => {
       const rect = element.getBoundingClientRect();
       setDragState(prev => ({
         ...prev,
         isDragging: true,
+        isPreDragging: false,
         draggedIndex: index,
         dragOffset: {
           x: touch.clientX - rect.left,
@@ -123,7 +134,7 @@ export function useMobileDragDrop<T>({
 
       // Prevent default touch behaviors during drag
       e.preventDefault();
-    }, 25); // 25ms long press for more responsive mobile interactions
+    }, 300); // 300ms long press for clear feedback before drag activation
   }, [isDisabled]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
@@ -211,25 +222,47 @@ export function useMobileDragDrop<T>({
   const getItemClassName = useCallback((index: number, baseClassName: string = '') => {
     const classes = [baseClassName];
     
-    if (dragState.draggedIndex === index) {
-      classes.push('opacity-50 scale-105 z-50');
+    // Pre-drag state - visual feedback during long press
+    if (dragState.isPreDragging && dragState.draggedIndex === index) {
+      classes.push('drag-pre-activation');
     }
     
+    // Active drag state - item being dragged
+    if (dragState.isDragging && dragState.draggedIndex === index) {
+      classes.push('drag-activated');
+    }
+    
+    // Drop zone states
     if (dragState.dropTargetIndex === index && dragState.draggedIndex !== index) {
-      classes.push('ring-2 ring-primary ring-opacity-50 bg-primary/10');
+      classes.push('drop-zone-hover');
+    } else if (dragState.isDragging && dragState.draggedIndex !== index) {
+      classes.push('drop-zone-active');
     }
     
-    if (dragState.isDragging) {
-      classes.push('transition-all duration-200');
+    // Add smooth transitions
+    if (dragState.isDragging || dragState.isPreDragging) {
+      classes.push('will-change-transform');
     }
     
     return classes.filter(Boolean).join(' ');
+  }, [dragState]);
+
+  // Get drag handle className for enhanced visual feedback
+  const getDragHandleClassName = useCallback((index: number) => {
+    const baseClasses = 'cursor-grab active:cursor-grabbing text-muted-foreground flex-shrink-0 transition-all duration-200';
+    
+    if ((dragState.isDragging || dragState.isPreDragging) && dragState.draggedIndex === index) {
+      return `${baseClasses} drag-handle-active`;
+    }
+    
+    return baseClasses;
   }, [dragState]);
 
   return {
     dragState,
     getDragHandleProps,
     getItemClassName,
+    getDragHandleClassName,
     clearDragState,
   };
 }

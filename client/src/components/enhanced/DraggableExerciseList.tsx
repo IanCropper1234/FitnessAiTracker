@@ -137,7 +137,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
   });
 
   // Mobile-friendly drag and drop
-  const { getDragHandleProps, getItemClassName } = useMobileDragDrop({
+  const { getDragHandleProps, getItemClassName, getDragHandleClassName } = useMobileDragDrop({
     items: exercises,
     onReorder: (newExercises) => {
       // Update order indices
@@ -271,7 +271,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
             key={exercise.id}
             className={getItemClassName(
               index,
-              `transition-all duration-200 cursor-pointer ${
+              `transition-all duration-200 cursor-pointer select-none ${
                 index === currentExerciseIndex
                   ? 'ring-2 ring-primary bg-primary/5'
                   : 'hover:bg-accent/50'
@@ -283,7 +283,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
             <CardContent className="p-3">
               <div className="flex items-center gap-2.5">
                 {/* Drag Handle */}
-                <div className="cursor-grab active:cursor-grabbing text-muted-foreground flex-shrink-0">
+                <div className={getDragHandleClassName(index)}>
                   <GripVertical className="h-4 w-4" />
                 </div>
 
