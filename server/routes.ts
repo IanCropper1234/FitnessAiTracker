@@ -1518,15 +1518,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/training/session/:sessionId", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
-      console.log(`API: Getting session ${sessionId}`);
+      // Getting session data...
       const session = await storage.getWorkoutSession(sessionId);
       
       if (!session) {
-        console.log(`API: Session ${sessionId} not found`);
+        // Session not found
         return res.status(404).json({ message: "Session not found" });
       }
 
-      console.log(`API: Found session ${sessionId}, getting exercises...`);
+      // Found session, loading exercises...
       // Get exercises for this session
       const workoutExercises = await storage.getWorkoutExercises(sessionId);
       
@@ -1534,7 +1534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const exercisesWithDetails = await Promise.all(
         workoutExercises.map(async (we) => {
           const exercise = await storage.getExercise(we.exerciseId);
-          console.log(`API: Workout exercise ${we.id} setsData:`, we.setsData);
+          // Loading exercise sets data...
           return {
             id: we.id,
             exerciseId: we.exerciseId,
@@ -1573,7 +1573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sessionId = parseInt(req.params.sessionId);
       const progressData = req.body;
 
-      console.log(`API: Saving progress for session ${sessionId}:`, JSON.stringify(progressData, null, 2));
+      // Saving progress data for session...
 
       // Update session with progress data - mark as completed if requested
       const sessionUpdates: any = {
@@ -1587,7 +1587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const updatedSession = await storage.updateWorkoutSession(sessionId, sessionUpdates);
 
-      console.log(`API: Session ${sessionId} updated with progress:`, updatedSession);
+      // Session progress updated successfully
 
       // Update workout exercises with actual performance data
       for (const exerciseData of progressData.exercises) {
@@ -1706,8 +1706,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             updateData.isCompleted = false;
           }
 
-          console.log(`API: Updating exercise ${exerciseData.exerciseId} with sets data:`, updateData.setsData);
-          console.log(`API: Special method data:`, updateData.specialMethod, updateData.specialConfig);
+          // Updating exercise with sets data and special methods...
           await storage.updateWorkoutExercise(workoutExercise.id, updateData);
         }
       }

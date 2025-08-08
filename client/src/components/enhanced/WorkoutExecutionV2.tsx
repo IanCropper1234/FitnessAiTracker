@@ -175,7 +175,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   // Initialize workout data from session
   useEffect(() => {
     if (session?.exercises) {
-      console.log('Initializing V2 workout data from session:', session);
+      // Removed excessive logging for better performance
       
       const initialData: Record<number, WorkoutSet[]> = {};
       const initialSpecialMethods: Record<number, string | null> = {};
@@ -184,7 +184,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       session.exercises.forEach(exercise => {
         if (exercise.setsData && exercise.setsData.length > 0) {
           // Restore from saved sets data
-          console.log(`Restoring saved sets data for exercise ${exercise.exerciseId}:`, exercise.setsData);
+          // Restoring saved sets data
           initialData[exercise.id] = exercise.setsData;
         } else {
           // Create default sets
@@ -211,10 +211,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         // Restore special method data if available - check both field names for compatibility
         const rawSpecialMethod = exercise.specialMethod || exercise.specialTrainingMethod;
         if (rawSpecialMethod) {
-          console.log(`Original special method for exercise ${exercise.id}:`, rawSpecialMethod, typeof rawSpecialMethod, `"${rawSpecialMethod}"`);
+          // Processing special method data
           // Convert database format to UI format - normalize and handle different formats
           let normalizedMethod = rawSpecialMethod.trim().toLowerCase();
-          console.log(`Normalized method: "${normalizedMethod}"`);
+          // Normalizing method format
           
           // Handle multiple possible database formats - normalize all to underscore format
           if (normalizedMethod === 'dropset' || normalizedMethod === 'drop_set') {
@@ -233,17 +233,17 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             finalMethod = 'superset';
           }
           
-          console.log(`Normalized method from "${normalizedMethod}" to "${finalMethod}"`);
+          // Method conversion complete
           
           if (finalMethod) {
-            console.log(`After conversion for exercise ${exercise.id}:`, finalMethod);
+            // Special method converted successfully
             initialSpecialMethods[exercise.id] = finalMethod;
           }
         }
         
         const specialConfig = exercise.specialConfig || exercise.specialMethodConfig;
         if (specialConfig && finalMethod) {
-          console.log(`Restoring special config for exercise ${exercise.id}:`, specialConfig);
+          // Restoring special method configuration
           // Transform database format back to UI format
           let uiConfig = { ...specialConfig };
           
@@ -260,7 +260,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             // Handle both template database format and UI format
             if (specialConfig.drops !== undefined && specialConfig.weightReduction !== undefined) {
               // Database format from template: {"drops": 1, "weightReduction": 20}
-              console.log('Converting database format to UI format:', specialConfig);
+              // Converting config format for UI compatibility
               uiConfig.dropSets = specialConfig.drops;
               uiConfig.weightReductions = Array(specialConfig.drops).fill(specialConfig.weightReduction);
               uiConfig.dropRestSeconds = specialConfig.restSeconds || 10;
@@ -297,14 +297,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                                  specialConfig.giantRestSeconds || 10;
           }
           
-          console.log(`Final UI config for exercise ${exercise.id}:`, uiConfig);
+          // UI configuration finalized
           initialSpecialConfigs[exercise.id] = uiConfig;
         }
       });
       
-      console.log('Initialized workout data:', initialData);
-      console.log('Restored special methods:', initialSpecialMethods);
-      console.log('Restored special configs:', initialSpecialConfigs);
+      // Workout data initialization complete
       
       setWorkoutData(initialData);
       setSpecialMethods(initialSpecialMethods);
@@ -646,7 +644,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}/progress`, progressData);
         return response;
       } catch (error) {
-        console.error('Auto-save mutation error:', error);
+        // Auto-save failed silently
         // Don't throw here - auto-save should be silent on errors
         return null;
       }
@@ -662,7 +660,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       }, 500);
     },
     onError: (error: any) => {
-      console.warn('Auto-save failed (non-critical):', error);
+      // Auto-save error handled silently
       // Don't show error toast for auto-save failures
     },
   });
@@ -1573,7 +1571,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                 existingFeedback.push(exerciseFeedback);
                 sessionStorage.setItem(`workout-${sessionId}-rpe-data`, JSON.stringify(existingFeedback));
                 
-                console.log('Exercise RPE feedback stored:', exerciseFeedback);
+                // RPE feedback stored
                 
                 // Close the feedback modal
                 setShowAutoRegulation(false);
