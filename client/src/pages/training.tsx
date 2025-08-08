@@ -3,6 +3,7 @@ import { TrainingDashboard } from "@/components/training-dashboard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home, Dumbbell, Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { useWorkoutExecution } from "@/contexts/WorkoutExecutionContext";
 
 interface User {
   id: number;
@@ -21,12 +22,16 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
   const [isViewingDetails, setIsViewingDetails] = useState(false);
   const activeTab = externalActiveTab || "sessions";
   const setActiveTab = onTabChange || (() => {});
+  const { state } = useWorkoutExecution();
+  
+  // Hide menu bar when in active workout or viewing details
+  const hideHeader = isViewingDetails || state.hideMenuBar;
   
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[0px] pr-[0px] ml-[-3px] mr-[-3px]">
       <div className="w-full px-2 space-y-4 pl-[0px] pr-[0px] ml-[0px] mr-[0px] pt-[0px] pb-[0px]">
-        {/* Ultra-Compact iOS Header - Hide when viewing workout details */}
-        {!isViewingDetails && (
+        {/* Ultra-Compact iOS Header - Hide when viewing workout details or in active workout */}
+        {!hideHeader && (
           <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-6">
             <div className="flex items-center justify-between h-[44px]">
               {/* Left: Back Arrow Only */}

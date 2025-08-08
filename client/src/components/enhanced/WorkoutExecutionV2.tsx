@@ -21,6 +21,8 @@ import { DraggableExerciseList } from './DraggableExerciseList';
 import { SavedWorkoutTemplatesTab } from '../SavedWorkoutTemplatesTab';
 import { AutoRegulationFeedback } from './AutoRegulationFeedback';
 import { ProgressSaveIndicator } from './ProgressSaveIndicator';
+import { SpecialMethodHistoryButton } from '../SpecialMethodHistoryButton';
+import { useWorkoutExecution } from '@/contexts/WorkoutExecutionContext';
 
 // Import legacy component for fallback
 import WorkoutExecution from '../workout-execution';
@@ -106,6 +108,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const restTimerFABEnabled = useFeature('restTimerFAB');
   const circularProgressFeature = useFeature('circularProgress');
   const autoRegulationFeedbackEnabled = useFeature('autoRegulationFeedback');
+  
+  // Workout execution context
+  const workoutContext = useWorkoutExecution();
   
   // Local state for progress display
   const [circularProgressEnabled, setCircularProgressEnabled] = useState(circularProgressFeature);
@@ -461,6 +466,51 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const currentExercise = session.exercises[currentExerciseIndex];
   const currentSets = workoutData[currentExercise?.id] || [];
   const currentSet = currentSets[currentSetIndex];
+  
+  // Calculate set validation for global context
+  const isSetValid = currentSet && currentSet.weight > 0 && currentSet.actualReps > 0 && currentSet.rpe >= 1 && currentSet.rpe <= 10;
+
+  // Update workout execution context
+  useEffect(() => {
+    workoutContext.setIsInActiveWorkout(true);
+    workoutContext.setHideMenuBar(true);
+    
+    return () => {
+      workoutContext.setIsInActiveWorkout(false);
+      workoutContext.setHideMenuBar(false);
+      workoutContext.setCompleteSetHandler(null);
+      workoutContext.setCurrentSetInfo(null);
+    };
+  }, []);
+
+  // Update active tab
+  useEffect(() => {
+    workoutContext.setCurrentTab(activeTab);
+  }, [activeTab]);
+
+  // Update complete set handler and validation
+  useEffect(() => {
+    if (activeTab === 'execution') {
+      workoutContext.setCompleteSetHandler(() => completeSet);
+      workoutContext.setCanCompleteSet(!!isSetValid);
+    } else {
+      workoutContext.setCompleteSetHandler(null);
+      workoutContext.setCanCompleteSet(false);
+    }
+  }, [activeTab, isSetValid]);
+
+  // Update current set info
+  useEffect(() => {
+    if (currentExercise && activeTab === 'execution') {
+      workoutContext.setCurrentSetInfo({
+        exerciseName: currentExercise.exercise.name,
+        setNumber: currentSetIndex + 1,
+        totalSets: currentSets.length,
+      });
+    } else {
+      workoutContext.setCurrentSetInfo(null);
+    }
+  }, [currentExercise, currentSetIndex, currentSets.length, activeTab]);
   
   // Calculate progress
   const totalSets = Object.values(workoutData).reduce((sum, sets) => sum + sets.length, 0);

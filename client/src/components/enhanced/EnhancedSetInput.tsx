@@ -971,24 +971,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
           </div>
         ) : null}
 
-        {/* Complete Set Button - Only shown for active sets */}
-        {!set.completed && isActive && (
-          <Button
-            onClick={onCompleteSet}
-            disabled={!isSetValid}
-            className="ios-button touch-target w-full text-sm"
-            variant={isSetValid ? "default" : "secondary"}
-          >
-            {isSetValid ? (
-              <>
-                <Check className="h-3 w-3 mr-1.5" />
-                Complete Set
-              </>
-            ) : (
-              "Enter all values"
-            )}
-          </Button>
-        )}
+        {/* Complete Set Button removed - now handled by GlobalCompleteSetButton */}
 
         {/* Completed Set Display - Minimal and clean */}
         {set.completed && (

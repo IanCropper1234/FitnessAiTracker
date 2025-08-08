@@ -41,6 +41,8 @@ import { Settings, Sun, Moon, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { clearAllUserCache } from "./utils/cache-clear";
+import { WorkoutExecutionProvider } from "@/contexts/WorkoutExecutionContext";
+import { GlobalCompleteSetButton } from "@/components/GlobalCompleteSetButton";
 
 interface User {
   id: number;
@@ -296,6 +298,9 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
       {showTrainingMenu && <FloatingTrainingMenu onTabSelect={setActiveTrainingTab} activeTab={activeTrainingTab} />}
       
+      {/* Global Complete Set Button */}
+      <GlobalCompleteSetButton />
+      
       {/* Global iOS Date Picker Modal */}
       {user && (
         <IOSDatePicker 
@@ -442,17 +447,19 @@ export default function App() {
         <ThemeProvider>
           <LanguageProvider>
             <TooltipProvider>
-              <div className="text-foreground bg-background theme-transition">
-                <ErrorBoundary level="page">
-                  <AppRouter user={user} setUser={setUser} />
-                </ErrorBoundary>
-                <Toaster />
-                <IOSNotificationManager 
-                  position="top" 
-                  maxNotifications={3}
-                  defaultAutoHideDelay={5000}
-                />
-              </div>
+              <WorkoutExecutionProvider>
+                <div className="text-foreground bg-background theme-transition">
+                  <ErrorBoundary level="page">
+                    <AppRouter user={user} setUser={setUser} />
+                  </ErrorBoundary>
+                  <Toaster />
+                  <IOSNotificationManager 
+                    position="top" 
+                    maxNotifications={3}
+                    defaultAutoHideDelay={5000}
+                  />
+                </div>
+              </WorkoutExecutionProvider>
             </TooltipProvider>
           </LanguageProvider>
         </ThemeProvider>
