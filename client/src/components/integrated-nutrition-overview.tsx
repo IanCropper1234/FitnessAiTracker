@@ -2017,7 +2017,7 @@ export function IntegratedNutritionOverview({
                           </div>
                         ) : (
                           <div>
-                            <div className="text-blue-500 text-lg font-medium">ADD FOOD</div>
+                            <div className="text-blue-500 font-medium text-[16px]">ADD FOOD</div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
                               {mealLogs.length === 0 ? 'Swipe right to add meal' : 'Add more foods'}
                             </div>
