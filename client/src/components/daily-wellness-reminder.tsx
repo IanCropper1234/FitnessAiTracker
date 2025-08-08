@@ -109,7 +109,11 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
         : 'border-orange-300 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-900/10'
       }`}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="flex flex-col space-y-2 p-5 cursor-pointer hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors pt-[8px] pb-[8px] pl-[20px] pr-[20px]">
+          <CardHeader className={`flex flex-col space-y-2 p-5 cursor-pointer collapsible-trigger transition-colors pt-[8px] pb-[8px] pl-[20px] pr-[20px] ${
+            isCompleted 
+              ? 'hover:bg-green-100/50 dark:hover:bg-green-900/20' 
+              : 'hover:bg-orange-100/50 dark:hover:bg-orange-900/20'
+          }`}>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Calendar className={`w-5 h-5 ${isCompleted 
