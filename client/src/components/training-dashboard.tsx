@@ -490,6 +490,9 @@ interface TrainingDashboardProps {
 export function TrainingDashboard({ userId, activeTab = "dashboard", onViewStateChange }: TrainingDashboardProps) {
   const [, setLocation] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedEquipment, setSelectedEquipment] = useState<string>("all");
+  const [selectedPrimaryMuscle, setSelectedPrimaryMuscle] = useState<string>("all");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -532,10 +535,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Reset page when category changes
+  // Reset page when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedEquipment, selectedPrimaryMuscle, selectedMuscleGroup]);
 
   // Handle URL parameters for auto-starting workout sessions
   useEffect(() => {
@@ -686,10 +689,51 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
     }, {} as Record<string, Exercise[]>);
   }, [exercises]);
 
-  // Memoized: Filter exercises based on selected category and debounced search query
+  // Extract unique filter options from exercises data
+  const equipmentOptions = useMemo(() => {
+    const equipment = exercises
+      .map((ex: Exercise) => ex.equipment)
+      .filter(Boolean)
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...equipment];
+  }, [exercises]);
+  
+  const primaryMuscleOptions = useMemo(() => {
+    const muscles = exercises
+      .map((ex: Exercise) => ex.primaryMuscle)
+      .filter(Boolean)
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...muscles];
+  }, [exercises]);
+  
+  const muscleGroupOptions = useMemo(() => {
+    const muscleGroups = exercises
+      .flatMap((ex: Exercise) => ex.muscleGroups || [])
+      .filter(Boolean)
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index)
+      .sort();
+    return ['all', ...muscleGroups];
+  }, [exercises]);
+
+  // Enhanced filter function with all filter criteria
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
+      // Category filter
       const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+      
+      // Equipment filter
+      const matchesEquipment = selectedEquipment === "all" || exercise.equipment === selectedEquipment;
+      
+      // Primary muscle filter
+      const matchesPrimaryMuscle = selectedPrimaryMuscle === "all" || exercise.primaryMuscle === selectedPrimaryMuscle;
+      
+      // Muscle group filter
+      const matchesMuscleGroup = selectedMuscleGroup === "all" || 
+        exercise.muscleGroups?.some(mg => mg && mg.toLowerCase() === selectedMuscleGroup.toLowerCase());
+      
+      // Search filter
       const matchesSearch = debouncedSearchQuery === "" || 
         exercise.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
         exercise.primaryMuscle.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
@@ -697,9 +741,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
         exercise.equipment?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
         exercise.movementPattern?.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
       
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesEquipment && matchesPrimaryMuscle && matchesMuscleGroup && matchesSearch;
     });
-  }, [exercises, selectedCategory, debouncedSearchQuery]);
+  }, [exercises, selectedCategory, selectedEquipment, selectedPrimaryMuscle, selectedMuscleGroup, debouncedSearchQuery]);
 
   // Memoized: Paginated exercises
   const paginatedExercises = useMemo(() => {
@@ -1194,75 +1238,157 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
 
 
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-3">
-              {/* Mobile-First Filter System */}
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="relative flex-shrink-0">
+          {/* Enhanced Filter System */}
+          <div className="space-y-4 p-4 bg-card border ">
+            <h3 className="text-sm font-medium">Exercise Filters</h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Category Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Category</label>
+                <div className="relative">
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="bg-background border border-input  px-4 py-2.5 text-sm font-medium pr-10 min-w-32 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer shadow-sm hover:bg-accent/50 transition-colors"
-                    style={{ 
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none',
-                      backgroundImage: 'none'
-                    }}
+                    className="appearance-none bg-background border border-border  px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent w-full"
                   >
-                    <option value="all">All ({exercises.length})</option>
+                    <option value="all">All Categories</option>
                     {Object.entries(exercisesByCategory).map(([category, categoryExercises]) => (
                       <option key={category} value={category} className="capitalize">
                         {category} ({categoryExercises.length})
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                </div>
-                
-                {/* Quick Filter Chips - Hidden on smallest screens */}
-                <div className="hidden md:flex items-center gap-2 flex-wrap">
-                  {selectedCategory !== "all" && (
-                    <Badge 
-                      variant="secondary" 
-                      className="text-xs h-7 px-3 capitalize cursor-pointer hover:bg-secondary/80 transition-colors"
-                      onClick={() => setSelectedCategory("all")}
-                    >
-                      {selectedCategory} ×
-                    </Badge>
-                  )}
-                  
-                  {/* Show popular categories as quick access */}
-                  {["strength", "compound", "push", "pull"].map((quickCategory) => {
-                    if (exercisesByCategory[quickCategory] && selectedCategory !== quickCategory) {
-                      return (
-                        <Badge 
-                          key={quickCategory}
-                          variant="outline" 
-                          className="text-xs h-7 px-3 capitalize cursor-pointer hover:bg-accent transition-colors"
-                          onClick={() => setSelectedCategory(quickCategory)}
-                        >
-                          {quickCategory}
-                        </Badge>
-                      );
-                    }
-                    return null;
-                  })}
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
                 </div>
               </div>
-              
-              <div className="flex-shrink-0">
-                <CreateExerciseButton />
+
+              {/* Equipment Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Equipment</label>
+                <div className="relative">
+                  <select
+                    value={selectedEquipment}
+                    onChange={(e) => setSelectedEquipment(e.target.value)}
+                    className="appearance-none bg-background border border-border  px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent w-full"
+                  >
+                    {equipmentOptions.map(equipment => (
+                      <option key={equipment} value={equipment}>
+                        {equipment === 'all' ? 'All Equipment' : equipment}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Primary Muscle Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Primary Muscle</label>
+                <div className="relative">
+                  <select
+                    value={selectedPrimaryMuscle}
+                    onChange={(e) => setSelectedPrimaryMuscle(e.target.value)}
+                    className="appearance-none bg-background border border-border  px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent w-full"
+                  >
+                    {primaryMuscleOptions.map(muscle => (
+                      <option key={muscle} value={muscle}>
+                        {muscle === 'all' ? 'All Muscles' : muscle}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Muscle Group Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Muscle Group</label>
+                <div className="relative">
+                  <select
+                    value={selectedMuscleGroup}
+                    onChange={(e) => setSelectedMuscleGroup(e.target.value)}
+                    className="appearance-none bg-background border border-border  px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent w-full"
+                  >
+                    {muscleGroupOptions.map(muscleGroup => (
+                      <option key={muscleGroup} value={muscleGroup}>
+                        {muscleGroup === 'all' ? 'All Muscle Groups' : muscleGroup}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                </div>
               </div>
             </div>
-            
+
+            {/* Clear Filters & Create Exercise */}
+            <div className="flex items-center justify-between gap-3">
+              {/* Clear Filters Button */}
+              {(selectedCategory !== 'all' || selectedEquipment !== 'all' || selectedPrimaryMuscle !== 'all' || selectedMuscleGroup !== 'all') && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedCategory('all');
+                    setSelectedEquipment('all');
+                    setSelectedPrimaryMuscle('all');
+                    setSelectedMuscleGroup('all');
+                  }}
+                  className="text-xs h-8"
+                >
+                  Clear All Filters
+                </Button>
+              )}
+
+              {/* Active Filter Badges */}
+              <div className="flex items-center gap-2 flex-1">
+                {selectedCategory !== "all" && (
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs h-6 px-2 capitalize cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => setSelectedCategory("all")}
+                  >
+                    {selectedCategory} ×
+                  </Badge>
+                )}
+                {selectedEquipment !== "all" && (
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => setSelectedEquipment("all")}
+                  >
+                    {selectedEquipment} ×
+                  </Badge>
+                )}
+                {selectedPrimaryMuscle !== "all" && (
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => setSelectedPrimaryMuscle("all")}
+                  >
+                    {selectedPrimaryMuscle} ×
+                  </Badge>
+                )}
+                {selectedMuscleGroup !== "all" && (
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs h-6 px-2 cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => setSelectedMuscleGroup("all")}
+                  >
+                    {selectedMuscleGroup} ×
+                  </Badge>
+                )}
+              </div>
+
+              <CreateExerciseButton />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
             {/* Results Counter and Pagination Info */}
             <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
               <span className="font-medium">
-                {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} 
-                {selectedCategory !== "all" && (
-                  <span className="hidden sm:inline"> in {selectedCategory}</span>
-                )}
+                {filteredExercises.length} exercise{filteredExercises.length !== 1 ? 's' : ''} found
                 {totalPages > 1 && (
                   <span className="ml-2 text-xs opacity-75">
                     (Page {currentPage} of {totalPages})
