@@ -4,7 +4,6 @@ import {
   Save, 
   CheckCircle, 
   AlertCircle, 
-  Loader2,
   Cloud,
   CloudOff,
   Wifi,
@@ -77,33 +76,33 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
     switch (status) {
       case 'saving':
         return {
-          icon: Loader2,
-          color: 'bg-blue-50 border-blue-200 text-blue-800',
-          iconColor: 'text-blue-600',
+          icon: null, // Use dots animation instead
+          color: 'bg-card border-border text-foreground',
+          iconColor: 'text-primary',
           title: 'Saving...',
           defaultMessage: 'Saving workout progress'
         };
       case 'success':
         return {
           icon: CheckCircle,
-          color: 'bg-green-50 border-green-200 text-green-800',
-          iconColor: 'text-green-600',
+          color: 'bg-card border-border text-foreground',
+          iconColor: 'text-green-600 dark:text-green-400',
           title: 'Saved',
           defaultMessage: 'Workout progress saved successfully'
         };
       case 'error':
         return {
           icon: AlertCircle,
-          color: 'bg-red-50 border-red-200 text-red-800',
-          iconColor: 'text-red-600',
+          color: 'bg-card border-border text-foreground',
+          iconColor: 'text-red-600 dark:text-red-400',
           title: 'Save Failed',
           defaultMessage: 'Failed to save workout progress'
         };
       default:
         return {
           icon: Save,
-          color: 'bg-gray-50 border-gray-200 text-gray-800',
-          iconColor: 'text-gray-600',
+          color: 'bg-card border-border text-foreground',
+          iconColor: 'text-muted-foreground',
           title: 'Ready',
           defaultMessage: 'Ready to save'
         };
@@ -125,19 +124,27 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
     >
       <div 
         className={cn(
-          "flex items-center gap-3 px-4 py-3 border-2 shadow-lg backdrop-blur-sm transition-all duration-300",
+          "flex items-center gap-3 px-4 py-3 border shadow-lg backdrop-blur-sm transition-all duration-300 ios-notification-backdrop",
           config.color
         )}
         style={{
-          backdropFilter: 'blur(8px)',
+          backdropFilter: 'blur(20px) saturate(180%)',
         }}
       >
         {/* Animated Icon */}
         <div className={cn(
           "flex-shrink-0 transition-transform duration-300",
-          status === 'saving' ? 'ios-loading-animation' : 'hover:scale-110'
+          status === 'saving' ? '' : 'hover:scale-110'
         )}>
-          <IconComponent className={cn("h-5 w-5", config.iconColor)} />
+          {status === 'saving' ? (
+            <div className="ios-loading-dots flex items-center gap-1">
+              <div className="dot w-1.5 h-1.5 bg-primary rounded-full"></div>
+              <div className="dot w-1.5 h-1.5 bg-primary rounded-full"></div>
+              <div className="dot w-1.5 h-1.5 bg-primary rounded-full"></div>
+            </div>
+          ) : (
+            IconComponent && <IconComponent className={cn("h-5 w-5", config.iconColor)} />
+          )}
         </div>
         
         {/* Content */}
