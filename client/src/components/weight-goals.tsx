@@ -269,7 +269,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
   return (
     <Card className="mt-[10px] mb-[10px]">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-[14px]">
           <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           Weight Goals
         </CardTitle>
@@ -292,7 +292,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                   {activeGoal.goalType === 'maintenance' && (
                     <Minus className="w-4 h-4 text-gray-500" />
                   )}
-                  <span className="font-medium capitalize">{activeGoal.goalType}</span>
+                  <span className="font-medium capitalize text-[14px]">{activeGoal.goalType}</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Target: {Math.round(convertValue(
