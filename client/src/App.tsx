@@ -44,6 +44,7 @@ import { clearAllUserCache } from "./utils/cache-clear";
 import { WorkoutExecutionProvider } from "@/contexts/WorkoutExecutionContext";
 import { GlobalCompleteSetButton } from "@/components/GlobalCompleteSetButton";
 import { FirstTimeUserLoading } from "@/components/FirstTimeUserLoading";
+import { AppInitialLoading } from "@/components/AppInitialLoading";
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
 import { AnimatePresence } from "framer-motion";
 
@@ -456,9 +457,7 @@ export default function App() {
         <ThemeProvider>
           <LanguageProvider>
             <TooltipProvider>
-              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-                <div className="animate-pulse">Loading...</div>
-              </div>
+              <AppInitialLoading />
             </TooltipProvider>
           </LanguageProvider>
         </ThemeProvider>
