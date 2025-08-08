@@ -371,12 +371,13 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   );
 }
 
-export default function App() {
+// Create a separate component for the main app logic
+function AppContent() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [minLoadingTime, setMinLoadingTime] = useState(true);
   
-  // First-time user detection
+  // First-time user detection (now inside QueryClientProvider)
   const { 
     isFirstTimeUser, 
     isLoading: firstTimeUserLoading, 
@@ -477,34 +478,41 @@ export default function App() {
   }
 
   return (
+    <div className="text-foreground bg-background theme-transition">
+      <AnimatePresence mode="wait">
+        {showOnboarding ? (
+          <FirstTimeUserLoading 
+            key="onboarding"
+            onComplete={handleOnboardingComplete}
+          />
+        ) : (
+          <div key="main-app">
+            <ErrorBoundary level="page">
+              <AppRouter user={user} setUser={setUser} />
+            </ErrorBoundary>
+            <Toaster />
+            <IOSNotificationManager 
+              position="top" 
+              maxNotifications={3}
+              defaultAutoHideDelay={5000}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Main App component that provides all contexts
+export default function App() {
+  return (
     <ErrorBoundary level="critical">
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <LanguageProvider>
             <TooltipProvider>
               <WorkoutExecutionProvider>
-                <div className="text-foreground bg-background theme-transition">
-                  <AnimatePresence mode="wait">
-                    {showOnboarding ? (
-                      <FirstTimeUserLoading 
-                        key="onboarding"
-                        onComplete={handleOnboardingComplete}
-                      />
-                    ) : (
-                      <div key="main-app">
-                        <ErrorBoundary level="page">
-                          <AppRouter user={user} setUser={setUser} />
-                        </ErrorBoundary>
-                        <Toaster />
-                        <IOSNotificationManager 
-                          position="top" 
-                          maxNotifications={3}
-                          defaultAutoHideDelay={5000}
-                        />
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <AppContent />
               </WorkoutExecutionProvider>
             </TooltipProvider>
           </LanguageProvider>
