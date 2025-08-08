@@ -488,16 +488,98 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     workoutContext.setCurrentTab(activeTab);
   }, [activeTab]);
 
+  // Define completeSet function with useCallback for stable reference
+  const completeSet = useCallback(() => {
+    try {
+      if (!currentSet?.weight || !currentSet?.actualReps) {
+        showError("Incomplete Set", "Please enter weight and reps before completing the set.");
+        return;
+      }
+
+      if (!currentExercise?.id) {
+        console.error('No current exercise found');
+        return;
+      }
+
+      updateSet(currentExercise.id, currentSetIndex, 'completed', true);
+      
+      // Show auto-regulation feedback only for the last set of each exercise
+      const currentSets = workoutData[currentExercise.id] || [];
+      const isLastSet = currentSetIndex === currentSets.length - 1;
+      
+      if (isLastSet && autoRegulationFeedbackEnabled) {
+        // Show auto-regulation feedback only for the final set of each exercise (if enabled)
+        setCurrentSetForFeedback({ exerciseId: currentExercise.id, setIndex: currentSetIndex });
+        setShowAutoRegulation(true);
+      }
+      
+      // Check for Superset auto-switching
+      const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
+      const pairedExercise = findSupersetPair(currentExercise.id);
+      
+      if (isCurrentSuperset && pairedExercise) {
+        // Find the index of the paired exercise in the session
+        const pairedExerciseIndex = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
+        
+        if (pairedExerciseIndex !== -1) {
+          // Navigate to the paired exercise for superset continuation
+          setCurrentExerciseIndex(pairedExerciseIndex);
+          setCurrentSetIndex(0); // Start from first set of paired exercise
+          
+          showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} for superset completion`, {
+            icon: "💪",
+            duration: 2000,
+          });
+          
+          return; // Exit early - don't advance to next set
+        }
+      }
+      
+      // Regular set completion logic
+      const setsForCurrentExercise = workoutData[currentExercise.id] || [];
+      const nextUncompletedSetIndex = setsForCurrentExercise.findIndex(set => !set.completed);
+      
+      if (nextUncompletedSetIndex !== -1) {
+        // Move to next uncompleted set in current exercise
+        setCurrentSetIndex(nextUncompletedSetIndex);
+      } else {
+        // All sets completed for current exercise, move to next exercise
+        if (currentExerciseIndex < session.exercises.length - 1) {
+          setCurrentExerciseIndex(currentExerciseIndex + 1);
+          setCurrentSetIndex(0);
+        } else {
+          // Last exercise completed
+          toast({
+            title: "Workout Complete!",
+            description: "All exercises finished. Great work!",
+            duration: 3000,
+          });
+        }
+      }
+      
+      // Start rest timer
+      const restPeriod = currentExercise?.restPeriod || 120;
+      setRestTimeRemaining(restPeriod);
+      setIsRestTimerActive(true);
+      
+    } catch (error) {
+      console.error('Error completing set:', error);
+      showError("Error", "Failed to complete set. Please try again.");
+    }
+  }, [currentSet, currentExercise, currentSetIndex, workoutData, autoRegulationFeedbackEnabled, 
+      setCurrentSetForFeedback, setShowAutoRegulation, specialMethods, session, 
+      currentExerciseIndex, showError, showInfo, toast, updateSet]);
+
   // Update complete set handler and validation
   useEffect(() => {
     if (activeTab === 'execution') {
-      workoutContext.setCompleteSetHandler(() => completeSet);
+      workoutContext.setCompleteSetHandler(completeSet);
       workoutContext.setCanCompleteSet(!!isSetValid);
     } else {
       workoutContext.setCompleteSetHandler(null);
       workoutContext.setCanCompleteSet(false);
     }
-  }, [activeTab, isSetValid]);
+  }, [activeTab, isSetValid, completeSet]);
 
   // Update current set info
   useEffect(() => {
@@ -624,109 +706,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return session.exercises.find(ex => ex.exerciseId === pairedExerciseId) || null;
   };
 
-  const completeSet = () => {
-    try {
-      if (!currentSet?.weight || !currentSet?.actualReps) {
-        showError("Incomplete Set", "Please enter weight and reps before completing the set.");
-        return;
-      }
-
-      if (!currentExercise?.id) {
-        console.error('No current exercise found');
-        return;
-      }
-
-      updateSet(currentExercise.id, currentSetIndex, 'completed', true);
-      
-      // Show auto-regulation feedback only for the last set of each exercise
-      const currentSets = workoutData[currentExercise.id] || [];
-      const isLastSet = currentSetIndex === currentSets.length - 1;
-      
-      if (isLastSet && autoRegulationFeedbackEnabled) {
-        // Show auto-regulation feedback only for the final set of each exercise (if enabled)
-        setCurrentSetForFeedback({ exerciseId: currentExercise.id, setIndex: currentSetIndex });
-        setShowAutoRegulation(true);
-      }
-      
-      // Check for Superset auto-switching
-      const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
-      const pairedExercise = findSupersetPair(currentExercise.id);
-      
-      if (isCurrentSuperset && pairedExercise) {
-        // Find the index of the paired exercise in the session
-        const pairedExerciseIndex = session!.exercises.findIndex(ex => ex.id === pairedExercise.id);
-        
-        if (pairedExerciseIndex !== -1) {
-          // Check if the same set number exists in the paired exercise
-          const pairedSets = workoutData[pairedExercise.id] || [];
-          const correspondingSetIndex = currentSetIndex; // Same set number
-          
-          if (correspondingSetIndex < pairedSets.length && !pairedSets[correspondingSetIndex]?.completed) {
-            // Switch to the paired exercise at the same set number
-            setCurrentExerciseIndex(pairedExerciseIndex);
-            setCurrentSetIndex(correspondingSetIndex);
-            
-            // Shorter rest for superset transition
-            if (restTimerFABEnabled) {
-              const supersetRestTime = Math.min(specialConfigs[currentExercise.id]?.restSeconds || 30, 30);
-              setRestTimeRemaining(supersetRestTime);
-              setIsRestTimerActive(true);
-            }
-            
-            toast({
-              title: "Superset Switch!",
-              description: `Switching to ${pairedExercise.exercise.name} - Set ${correspondingSetIndex + 1}`,
-              duration: 3000,
-            });
-            return; // Early return to prevent normal progression
-          }
-        }
-      }
-      
-      // Normal progression logic (when not superset or no paired exercise available)
-      if (currentSetIndex < currentSets.length - 1) {
-        // Next set in same exercise
-        if (restTimerFABEnabled) {
-          const restTime = customRestTime || currentExercise.restPeriod || 120;
-          setRestTimeRemaining(restTime);
-          setIsRestTimerActive(true);
-          addNotification({
-            variant: 'success',
-            title: "Set Complete!",
-            description: `Rest ${Math.floor(restTime / 60)}:${(restTime % 60).toString().padStart(2, '0')} before next set`,
-            icon: <CheckCircle className="h-5 w-5 text-emerald-400" />,
-            persist: true,
-            autoHideDelay: 3000,
-            action: {
-              label: "Skip Rest",
-              onClick: () => {
-                setIsRestTimerActive(false);
-                setRestTimeRemaining(0);
-              }
-            }
-          });
-        }
-        setCurrentSetIndex(currentSetIndex + 1);
-      } else if (currentExerciseIndex < (session?.exercises?.length || 0) - 1) {
-        // Move to next exercise
-        const nextExercise = session?.exercises?.[currentExerciseIndex + 1];
-        if (nextExercise) {
-          setCurrentExerciseIndex(currentExerciseIndex + 1);
-          setCurrentSetIndex(0);
-          showSuccess("Exercise Complete!", `Moving to ${nextExercise.exercise.name}`, {
-            autoHideDelay: 3000
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error completing set:', error);
-      toast({
-        title: "Error",
-        description: "Failed to complete set. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const addSet = (exerciseId: number) => {
     setWorkoutData(prev => {
