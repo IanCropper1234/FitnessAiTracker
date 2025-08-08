@@ -4,10 +4,7 @@ import {
   Save, 
   CheckCircle, 
   AlertCircle, 
-  Cloud,
-  CloudOff,
-  Wifi,
-  WifiOff
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -153,14 +150,6 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
             <span className="text-sm font-semibold">
               {config.title}
             </span>
-            {/* Connection Status Indicator */}
-            <div className="flex items-center gap-1 ml-2">
-              {navigator.onLine ? (
-                <Cloud className="h-3 w-3 text-current opacity-60" />
-              ) : (
-                <CloudOff className="h-3 w-3 text-current opacity-60" />
-              )}
-            </div>
           </div>
           
           {(message || config.defaultMessage) && (
@@ -192,9 +181,10 @@ const ProgressSaveIndicator: React.FC<ProgressSaveIndicatorProps> = ({
                 onDismiss();
               }, 200);
             }}
-            className="flex-shrink-0 p-1 hover:bg-current hover:bg-opacity-10 transition-colors duration-200 ml-1"
+            className="flex-shrink-0 p-1 hover:bg-muted-foreground hover:bg-opacity-10 transition-colors duration-200 ml-1 ios-touch-feedback"
+            title="Close"
           >
-            <AlertCircle className="h-4 w-4 opacity-60" />
+            <X className="h-4 w-4 opacity-60" />
           </button>
         )}
       </div>
