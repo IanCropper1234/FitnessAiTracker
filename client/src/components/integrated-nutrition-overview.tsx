@@ -1024,7 +1024,7 @@ export function IntegratedNutritionOverview({
     <div className="space-y-2">
       {/* AI Nutrition Analysis - Compact Integration */}
       <Card className="bg-purple-900/20 dark:bg-purple-900/30 border-purple-700 border shadow-lg mb-2">
-        <CardContent className="p-3">
+        <CardContent className="p-3 pt-[8px] pb-[8px] text-[17px] pl-[10px] pr-[10px] mt-[0px] mb-[0px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-purple-400" />
@@ -1042,7 +1042,6 @@ export function IntegratedNutritionOverview({
           
         </CardContent>
       </Card>
-
       {/* Macro Summary - Condensed List View */}
       <Card className="bg-gray-900 dark:bg-gray-800 border-gray-700 border shadow-lg nutrition-card-ios">
         <CardContent className="p-3">
