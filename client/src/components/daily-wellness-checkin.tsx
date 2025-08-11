@@ -95,7 +95,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
       // Force immediate refetch by removing from cache and invalidating
       queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
-      queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins-reminder'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-wellness-summary'] });
       // Also invalidate all wellness-related queries to be safe
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins'] });
