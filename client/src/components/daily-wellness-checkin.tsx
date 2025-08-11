@@ -48,6 +48,11 @@ export default function DailyWellnessCheckin({ userId, selectedDate = new Date()
 
   // Fetch existing checkin for the selected date
   const dateString = trackingDate.toISOString().split('T')[0];
+  console.log('DailyWellnessCheckin - selectedDate prop:', selectedDate);
+  console.log('DailyWellnessCheckin - trackingDate:', trackingDate);
+  console.log('DailyWellnessCheckin - dateString:', dateString);
+  console.log('DailyWellnessCheckin - new Date():', new Date());
+  
   const { data: existingCheckin, isLoading } = useQuery({
     queryKey: ['/api/daily-wellness-checkins', dateString],
     queryFn: async () => {
