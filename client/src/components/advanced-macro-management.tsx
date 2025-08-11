@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp, RotateCcw, Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 import { TimezoneUtils } from "@shared/utils/timezone";
@@ -31,6 +32,73 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const [location, setLocation] = useLocation();
   const [selectedWeek, setSelectedWeek] = useState<string>("");
   const [showWellnessInfo, setShowWellnessInfo] = useState(false);
+  const [autoAdjustmentEnabled, setAutoAdjustmentEnabled] = useState(false);
+  const [autoAdjustmentFrequency, setAutoAdjustmentFrequency] = useState<'weekly' | 'biweekly'>('weekly');
+
+  // Get auto-adjustment settings
+  const { data: autoAdjustmentSettings, refetch: refetchAutoSettings } = useQuery({
+    queryKey: ['/api/auto-adjustment-settings'],
+    queryFn: async () => {
+      const response = await fetch(`/api/auto-adjustment-settings`, {
+        credentials: 'include'
+      });
+      if (!response.ok) return { autoAdjustmentEnabled: false, autoAdjustmentFrequency: 'weekly', lastAutoAdjustment: null };
+      return response.json();
+    }
+  });
+
+  // Update auto-adjustment settings mutation
+  const autoSettingsMutation = useMutation({
+    mutationFn: async (settings: { autoAdjustmentEnabled: boolean; autoAdjustmentFrequency: 'weekly' | 'biweekly' }) => {
+      const response = await apiRequest('/api/auto-adjustment-settings', {
+        method: 'PUT',
+        body: JSON.stringify(settings)
+      });
+      return response;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Settings Updated",
+        description: autoAdjustmentEnabled 
+          ? `Auto-adjustments enabled - will run ${autoAdjustmentFrequency === 'weekly' ? 'every week' : 'every 2 weeks'}`
+          : "Auto-adjustments disabled",
+      });
+      refetchAutoSettings();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Settings Error", 
+        description: error.message || "Failed to update auto-adjustment settings",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Sync local state with fetched settings
+  useEffect(() => {
+    if (autoAdjustmentSettings) {
+      setAutoAdjustmentEnabled(autoAdjustmentSettings.autoAdjustmentEnabled || false);
+      setAutoAdjustmentFrequency(autoAdjustmentSettings.autoAdjustmentFrequency || 'weekly');
+    }
+  }, [autoAdjustmentSettings]);
+
+  // Handle auto-adjustment toggle
+  const handleAutoAdjustmentToggle = (enabled: boolean) => {
+    setAutoAdjustmentEnabled(enabled);
+    autoSettingsMutation.mutate({
+      autoAdjustmentEnabled: enabled,
+      autoAdjustmentFrequency
+    });
+  };
+
+  // Handle frequency change
+  const handleFrequencyChange = (frequency: 'weekly' | 'biweekly') => {
+    setAutoAdjustmentFrequency(frequency);
+    autoSettingsMutation.mutate({
+      autoAdjustmentEnabled,
+      autoAdjustmentFrequency: frequency
+    });
+  };
 
   // Get current diet goals
   const { data: dietGoals } = useQuery({
@@ -850,7 +918,42 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <h4 className="font-medium text-black dark:text-white">Weekly Changes</h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-black dark:text-white">Weekly Changes</h4>
+                      <div className="flex items-center gap-2">
+                        <RotateCcw className="w-3 h-3 text-gray-500" />
+                        <span className="text-xs text-gray-500">Auto</span>
+                        <Switch
+                          checked={autoAdjustmentEnabled}
+                          onCheckedChange={handleAutoAdjustmentToggle}
+                          className="scale-75"
+                          disabled={autoSettingsMutation.isPending}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Auto-adjustment frequency selector */}
+                    {autoAdjustmentEnabled && (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2 space-y-2">
+                        <div className="flex items-center gap-2 text-xs">
+                          <Clock className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                          <span className="text-blue-700 dark:text-blue-300 font-medium">Auto-Adjustment Settings</span>
+                        </div>
+                        <Select value={autoAdjustmentFrequency} onValueChange={handleFrequencyChange}>
+                          <SelectTrigger className="h-7 text-xs" disabled={autoSettingsMutation.isPending}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="weekly">Every Week</SelectItem>
+                            <SelectItem value="biweekly">Every 2 Weeks</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-blue-600 dark:text-blue-400">
+                          Adjustments will be applied automatically based on your progress data and RP methodology.
+                        </p>
+                      </div>
+                    )}
+                    
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
@@ -860,20 +963,25 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Calorie Adjustment</span>
-                        <span className="text-sm font-medium text-black dark:text-white">
-                          {(weeklyGoals && weeklyGoals[0] && weeklyGoals[0].adjustmentPercentage) 
-                            ? `${weeklyGoals[0].adjustmentPercentage}%`
-                            : '0.0%'
-                          }
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-black dark:text-white">
+                            {(weeklyGoals && weeklyGoals[0] && weeklyGoals[0].adjustmentPercentage) 
+                              ? `${weeklyGoals[0].adjustmentPercentage}%`
+                              : '0.0%'
+                            }
+                          </span>
+                          {autoAdjustmentEnabled && (
+                            <Badge variant="secondary" className="text-xs px-1 py-0">Auto</Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Only show adjustment button when there's valid data */}
-              {selectedWeek && weeklyGoals && weeklyGoals.length > 0 && (
+              {/* Only show adjustment button when there's valid data and auto-adjustment is disabled */}
+              {selectedWeek && weeklyGoals && weeklyGoals.length > 0 && !autoAdjustmentEnabled && (
                 <Button
                   onClick={handleWeeklyAdjustment}
                   disabled={weeklyAdjustmentMutation.isPending || !dietGoals}
@@ -895,6 +1003,22 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     </>
                   )}
                 </Button>
+              )}
+
+              {/* Show auto-adjustment status when enabled */}
+              {autoAdjustmentEnabled && selectedWeek && weeklyGoals && weeklyGoals.length > 0 && (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <RotateCcw className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <h4 className="font-medium text-green-800 dark:text-green-200">Auto-Adjustment Active</h4>
+                  </div>
+                  <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                    Your macro adjustments will be applied automatically {autoAdjustmentFrequency === 'weekly' ? 'every week' : 'every 2 weeks'} based on your progress data.
+                  </p>
+                  <div className="text-xs text-green-600 dark:text-green-400">
+                    Next adjustment: {autoAdjustmentFrequency === 'weekly' ? 'Next Monday' : 'In 2 weeks'}
+                  </div>
+                </div>
               )}
 
               {/* Show message when no adjustment data is available */}

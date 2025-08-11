@@ -26,6 +26,10 @@ export const userProfiles = pgTable("user_profiles", {
   activityLevel: text("activity_level"), // sedentary, lightly_active, moderately_active, very_active
   fitnessGoal: text("fitness_goal"), // fat_loss, muscle_gain, maintenance
   dietaryRestrictions: text("dietary_restrictions").array(),
+  // Auto-adjustment settings for RP methodology
+  autoAdjustmentEnabled: boolean("auto_adjustment_enabled").default(false),
+  autoAdjustmentFrequency: text("auto_adjustment_frequency").default("weekly"), // weekly, biweekly
+  lastAutoAdjustment: timestamp("last_auto_adjustment"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

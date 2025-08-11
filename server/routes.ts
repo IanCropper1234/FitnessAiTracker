@@ -638,6 +638,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Auto-adjustment settings endpoints
+  app.get("/api/auto-adjustment-settings", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      
+      const profile = await storage.getUserProfile(userId);
+      
+      if (!profile) {
+        return res.json({
+          autoAdjustmentEnabled: false,
+          autoAdjustmentFrequency: 'weekly',
+          lastAutoAdjustment: null
+        });
+      }
+
+      res.json({
+        autoAdjustmentEnabled: profile.autoAdjustmentEnabled || false,
+        autoAdjustmentFrequency: profile.autoAdjustmentFrequency || 'weekly',
+        lastAutoAdjustment: profile.lastAutoAdjustment
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/auto-adjustment-settings", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { autoAdjustmentEnabled, autoAdjustmentFrequency } = req.body;
+      
+      console.log('Updating auto-adjustment settings:', {
+        userId,
+        autoAdjustmentEnabled,
+        autoAdjustmentFrequency
+      });
+      
+      const profile = await storage.updateUserProfile(userId, {
+        autoAdjustmentEnabled,
+        autoAdjustmentFrequency
+      });
+      
+      if (!profile) {
+        return res.status(404).json({ message: "User profile not found" });
+      }
+
+      res.json({
+        autoAdjustmentEnabled: profile.autoAdjustmentEnabled,
+        autoAdjustmentFrequency: profile.autoAdjustmentFrequency,
+        lastAutoAdjustment: profile.lastAutoAdjustment
+      });
+    } catch (error: any) {
+      console.error('Error updating auto-adjustment settings:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Recent activities route
   app.get("/api/activities", requireAuth, async (req, res) => {
     try {
