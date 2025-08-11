@@ -94,19 +94,12 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
         description: "Your wellness data has been recorded for macro adjustments",
       });
       
-      // Invalidate related queries with specific date
-      const dateString = trackingDate.toISOString().split('T')[0];
+      // Invalidate related queries with current date
       const currentDateString = TimezoneUtils.getCurrentDate();
       
-      // Force immediate refetch by removing from cache and invalidating
-      queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
-      queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
-      
-      // Also invalidate the current date query for dashboard sync
-      if (dateString === currentDateString) {
-        queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
-        queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
-      }
+      // Force immediate refetch by removing from cache and invalidating current date
+      queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
+      queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
       
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-wellness-summary'] });
       // Also invalidate all wellness-related queries to be safe
@@ -122,12 +115,16 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   });
 
   const handleSubmit = () => {
-    // Use the same date format for both query and submission
-    const dateString = trackingDate.toISOString().split('T')[0];
+    // Force use current date from TimezoneUtils for submission
+    const currentDateString = TimezoneUtils.getCurrentDate();
+    
+    console.log('🚀 SUBMIT: TimezoneUtils.getCurrentDate():', currentDateString);
+    console.log('🚀 SUBMIT: trackingDate.toISOString():', trackingDate.toISOString());
+    console.log('🚀 SUBMIT: trackingDate date obj:', trackingDate);
     
     const checkinData = {
       userId,
-      date: dateString, // Use simple date format (YYYY-MM-DD)
+      date: currentDateString, // Always use current date from TimezoneUtils
       energyLevel: energyLevel[0],
       hungerLevel: hungerLevel[0],
       sleepQuality: sleepQuality[0],
