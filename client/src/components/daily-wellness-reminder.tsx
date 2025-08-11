@@ -23,9 +23,6 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
     queryFn: async () => {
       // Use user's local date from TimezoneUtils
       const today = TimezoneUtils.getCurrentDate();
-      console.log('Daily Wellness Reminder - Checking wellness for user local date:', today);
-      console.log('Daily Wellness Reminder - JS Date.now():', new Date().toISOString());
-      console.log('Daily Wellness Reminder - JS Date local:', new Date().toLocaleDateString());
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
         credentials: 'include',
         headers: {
@@ -35,7 +32,6 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
       });
       if (!response.ok) return null;
       const result = await response.json();
-      console.log('Daily Wellness Reminder - Wellness result for local date:', result);
       return result;
     },
     staleTime: 0, // Always refetch to get the latest status

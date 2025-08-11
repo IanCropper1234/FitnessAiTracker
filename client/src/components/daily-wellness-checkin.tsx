@@ -35,13 +35,13 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Use the same logic as the reminder component - TimezoneUtils.getCurrentDate()
-  // If no selectedDate provided, use current date from TimezoneUtils
-  const trackingDate = selectedDate ? new Date(selectedDate) : (() => {
-    const currentDateString = TimezoneUtils.getCurrentDate();
-    return TimezoneUtils.parseUserDate(currentDateString);
-  })();
+  // Always use current date to ensure synchronization with dashboard
+  const currentDateString = TimezoneUtils.getCurrentDate();
+  const trackingDate = TimezoneUtils.parseUserDate(currentDateString);
   trackingDate.setHours(0, 0, 0, 0);
+  
+  console.log('DailyWellnessCheckin - Force using current date:', currentDateString);
+  console.log('DailyWellnessCheckin - trackingDate:', trackingDate);
   
   const [energyLevel, setEnergyLevel] = useState([5]);
   const [hungerLevel, setHungerLevel] = useState([5]);
@@ -53,10 +53,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
 
   // Fetch existing checkin for the selected date
   const dateString = trackingDate.toISOString().split('T')[0];
-  console.log('DailyWellnessCheckin - selectedDate prop:', selectedDate);
-  console.log('DailyWellnessCheckin - trackingDate:', trackingDate);
-  console.log('DailyWellnessCheckin - dateString:', dateString);
-  console.log('DailyWellnessCheckin - new Date():', new Date());
   
   const { data: existingCheckin, isLoading } = useQuery({
     queryKey: ['/api/daily-wellness-checkins', dateString],
@@ -101,10 +97,18 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       
       // Invalidate related queries with specific date
       const dateString = trackingDate.toISOString().split('T')[0];
+      const currentDateString = TimezoneUtils.getCurrentDate();
       
       // Force immediate refetch by removing from cache and invalidating
       queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', dateString] });
+      
+      // Also invalidate the current date query for dashboard sync
+      if (dateString === currentDateString) {
+        queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
+        queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-wellness-summary'] });
       // Also invalidate all wellness-related queries to be safe
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins'] });
