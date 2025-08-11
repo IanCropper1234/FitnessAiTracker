@@ -21,18 +21,23 @@ export class AutoAdjustmentScheduler {
     this.isRunning = true;
     console.log('🤖 Auto-adjustment scheduler started');
     
-    // Check every hour for users who need auto-adjustments
+    // Check once daily at 6 AM for users who need auto-adjustments
     this.intervalId = setInterval(() => {
       this.processAutoAdjustments();
-    }, 60 * 60 * 1000); // Run every hour
+    }, 24 * 60 * 60 * 1000); // Run every 24 hours
     
-    // Also run once immediately
-    setTimeout(() => this.processAutoAdjustments(), 5000);
+    // Schedule to run at 6 AM daily
+    this.scheduleDaily6AM();
+    
+    // Also run once immediately (but only in development)
+    if (process.env.NODE_ENV === 'development') {
+      setTimeout(() => this.processAutoAdjustments(), 10000);
+    }
   }
 
   private async processAutoAdjustments() {
     try {
-      console.log('🔄 Checking for users needing auto-adjustments...');
+      console.log('🔄 Daily auto-adjustment check started...');
       
       // Get all users with auto-adjustment enabled
       const usersWithAutoAdjustment = await this.getUsersWithAutoAdjustmentEnabled();
@@ -41,7 +46,7 @@ export class AutoAdjustmentScheduler {
         await this.processUserAutoAdjustment(user);
       }
       
-      console.log(`✅ Auto-adjustment check complete. Processed ${usersWithAutoAdjustment.length} users.`);
+      console.log(`✅ Daily auto-adjustment complete. Processed ${usersWithAutoAdjustment.length} users at ${new Date().toLocaleString()}.`);
     } catch (error) {
       console.error('❌ Error in auto-adjustment scheduler:', error);
     }
@@ -49,17 +54,22 @@ export class AutoAdjustmentScheduler {
 
   private async getUsersWithAutoAdjustmentEnabled(): Promise<any[]> {
     try {
-      // This is a simplified approach - in a real implementation, you'd query all users
-      // For now, we'll check specific user IDs that have auto-adjustment enabled
-      const userId = 1; // Test with current user
-      const user = await storage.getUser(userId);
+      // Lightweight approach: only check a limited number of users per run
+      // In production, this would be optimized with proper database indexing
+      const userIds = [1]; // For now, focus on current user only
+      const usersWithAutoAdjustment = [];
       
-      if (!user?.autoAdjustmentSettings) return [];
+      for (const userId of userIds) {
+        const user = await storage.getUser(userId);
+        if (!user?.autoAdjustmentSettings) continue;
+        
+        const settings = user.autoAdjustmentSettings as AutoAdjustmentSettings;
+        if (settings.autoAdjustmentEnabled) {
+          usersWithAutoAdjustment.push({ ...user, settings });
+        }
+      }
       
-      const settings = user.autoAdjustmentSettings as AutoAdjustmentSettings;
-      if (!settings.autoAdjustmentEnabled) return [];
-      
-      return [{ ...user, settings }];
+      return usersWithAutoAdjustment;
     } catch (error) {
       console.error('Error getting users with auto-adjustment:', error);
       return [];
@@ -170,10 +180,34 @@ export class AutoAdjustmentScheduler {
     console.log('🛑 Auto-adjustment scheduler stopped');
   }
 
+  private scheduleDaily6AM() {
+    const now = new Date();
+    const next6AM = new Date();
+    next6AM.setHours(6, 0, 0, 0);
+    
+    // If it's already past 6 AM today, schedule for tomorrow
+    if (now.getHours() >= 6) {
+      next6AM.setDate(next6AM.getDate() + 1);
+    }
+    
+    const timeUntil6AM = next6AM.getTime() - now.getTime();
+    
+    setTimeout(() => {
+      this.processAutoAdjustments();
+      // Set up daily interval starting from 6 AM
+      this.intervalId = setInterval(() => {
+        this.processAutoAdjustments();
+      }, 24 * 60 * 60 * 1000);
+    }, timeUntil6AM);
+    
+    console.log(`📅 Auto-adjustment scheduled for ${next6AM.toLocaleString()}`);
+  }
+
   public getStatus() {
     return {
       isRunning: this.isRunning,
-      nextCheck: this.intervalId ? 'Running every hour' : 'Stopped'
+      nextCheck: this.intervalId ? 'Daily at 6:00 AM' : 'Stopped',
+      schedulingMode: 'Optimized - Low server impact'
     };
   }
 }

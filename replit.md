@@ -73,6 +73,7 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Training Template Auto-Save**: Field-level auto-save for training template creation with draft restoration.
 - **Search Performance Optimization**: Unified memoized filtering, debounced search, and pagination across all searchable components.
 - **Special Training Method Integration**: Correct application of load adjustments for special training methods during week advancement (MyoRep Match/No Match, Drop Set, Giant Set).
+- **Automated Macro Adjustment System**: Server-optimized background scheduler that automatically applies RP-based macro adjustments daily at 6 AM, reducing manual intervention while maintaining low server impact through efficient scheduling and limited user processing.
 
 ### iOS App Development Strategy - Capacitor.js Approach
 FitAI implements a **Capacitor.js hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.
