@@ -175,8 +175,21 @@ export class AdvancedMacroManagementService {
     const stressLevel = wellnessData?.stressLevel || 5; // 1-10 scale
     const adherencePerception = wellnessData?.adherencePerception || 8; // 1-10 scale
 
+    // Debug logging for adjustment calculation
+    console.log('🔧 RP Adjustment Debug:', {
+      adherencePercentage,
+      goal: currentGoals.goal,
+      energyLevel,
+      hungerLevel,
+      sleepQuality,
+      stressLevel,
+      adherencePerception,
+      targetCalories
+    });
+
     // Only adjust if adherence is good (>80%)
     if (adherencePercentage < 80) {
+      console.log('🔧 No adjustment - low adherence:', adherencePercentage);
       return {
         adjustmentPercentage: 0,
         adjustmentReason: 'low_adherence',
@@ -203,7 +216,13 @@ export class AdvancedMacroManagementService {
     } else if (currentGoals.goal === 'bulk') {
       baseAdjustment = 3; // Base 3% increase for bulking  
       adjustmentReason = 'growth_optimization';
+    } else if (currentGoals.goal === 'maintain') {
+      // For maintenance, still allow small adjustments based on wellness
+      baseAdjustment = 0;
+      adjustmentReason = 'maintenance_optimization';
     }
+    
+    console.log('🔧 Base adjustment for goal', currentGoals.goal, ':', baseAdjustment);
 
     // Adjust based on wellness factors (RP Diet Coach methodology)
     let wellnessAdjustment = 0;
@@ -245,12 +264,22 @@ export class AdvancedMacroManagementService {
     // Calculate final adjustment percentage
     adjustmentPercentage = baseAdjustment + wellnessAdjustment;
     
+    console.log('🔧 Pre-cap adjustment:', {
+      baseAdjustment,
+      wellnessAdjustment,
+      total: adjustmentPercentage
+    });
+    
     // Cap adjustments to reasonable ranges
     if (currentGoals.goal === 'cut') {
       adjustmentPercentage = Math.max(-8, Math.min(0, adjustmentPercentage)); // -8% to 0%
     } else if (currentGoals.goal === 'bulk') {
       adjustmentPercentage = Math.max(0, Math.min(8, adjustmentPercentage)); // 0% to 8%
+    } else if (currentGoals.goal === 'maintain') {
+      adjustmentPercentage = Math.max(-3, Math.min(3, adjustmentPercentage)); // -3% to 3% for maintenance
     }
+    
+    console.log('🔧 Final adjustment percentage:', adjustmentPercentage);
 
     // Determine recommendation based on final adjustment percentage
     let recommendationType = 'maintain';
