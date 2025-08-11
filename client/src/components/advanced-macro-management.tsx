@@ -50,11 +50,18 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   // Update auto-adjustment settings mutation
   const autoSettingsMutation = useMutation({
     mutationFn: async (settings: { autoAdjustmentEnabled: boolean; autoAdjustmentFrequency: 'weekly' | 'biweekly' }) => {
-      const response = await apiRequest('/api/auto-adjustment-settings', {
+      const response = await fetch('/api/auto-adjustment-settings', {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
         body: JSON.stringify(settings)
       });
-      return response;
+      if (!response.ok) {
+        throw new Error('Failed to update settings');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -74,8 +81,19 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
-  // Sync local state with fetched settings
+  // Sync local state with fetched settings and localStorage
   useEffect(() => {
+    // Load from localStorage first
+    const savedEnabled = localStorage.getItem('autoAdjustmentEnabled');
+    const savedFrequency = localStorage.getItem('autoAdjustmentFrequency');
+    
+    if (savedEnabled !== null) {
+      setAutoAdjustmentEnabled(savedEnabled === 'true');
+    }
+    if (savedFrequency) {
+      setAutoAdjustmentFrequency(savedFrequency as 'weekly' | 'biweekly');
+    }
+    
     if (autoAdjustmentSettings) {
       setAutoAdjustmentEnabled(autoAdjustmentSettings.autoAdjustmentEnabled || false);
       setAutoAdjustmentFrequency(autoAdjustmentSettings.autoAdjustmentFrequency || 'weekly');
@@ -85,6 +103,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   // Handle auto-adjustment toggle
   const handleAutoAdjustmentToggle = (enabled: boolean) => {
     setAutoAdjustmentEnabled(enabled);
+    localStorage.setItem('autoAdjustmentEnabled', enabled.toString());
     autoSettingsMutation.mutate({
       autoAdjustmentEnabled: enabled,
       autoAdjustmentFrequency
@@ -94,6 +113,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   // Handle frequency change
   const handleFrequencyChange = (frequency: 'weekly' | 'biweekly') => {
     setAutoAdjustmentFrequency(frequency);
+    localStorage.setItem('autoAdjustmentFrequency', frequency);
     autoSettingsMutation.mutate({
       autoAdjustmentEnabled,
       autoAdjustmentFrequency: frequency

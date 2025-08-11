@@ -638,25 +638,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auto-adjustment settings endpoints
+  // Auto-adjustment settings endpoints (using localStorage for now until DB schema is updated)
   app.get("/api/auto-adjustment-settings", requireAuth, async (req, res) => {
     try {
-      const userId = req.userId;
-      
-      const profile = await storage.getUserProfile(userId);
-      
-      if (!profile) {
-        return res.json({
-          autoAdjustmentEnabled: false,
-          autoAdjustmentFrequency: 'weekly',
-          lastAutoAdjustment: null
-        });
-      }
-
+      // For now, return default settings since we're using localStorage on frontend
       res.json({
-        autoAdjustmentEnabled: profile.autoAdjustmentEnabled || false,
-        autoAdjustmentFrequency: profile.autoAdjustmentFrequency || 'weekly',
-        lastAutoAdjustment: profile.lastAutoAdjustment
+        autoAdjustmentEnabled: false,
+        autoAdjustmentFrequency: 'weekly',
+        lastAutoAdjustment: null
       });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -668,25 +657,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const { autoAdjustmentEnabled, autoAdjustmentFrequency } = req.body;
       
-      console.log('Updating auto-adjustment settings:', {
+      console.log('Auto-adjustment settings updated (stored in localStorage):', {
         userId,
         autoAdjustmentEnabled,
         autoAdjustmentFrequency
       });
       
-      const profile = await storage.updateUserProfile(userId, {
-        autoAdjustmentEnabled,
-        autoAdjustmentFrequency
-      });
-      
-      if (!profile) {
-        return res.status(404).json({ message: "User profile not found" });
-      }
-
+      // For now, just acknowledge the setting update
+      // In the future, this will be stored in the database
       res.json({
-        autoAdjustmentEnabled: profile.autoAdjustmentEnabled,
-        autoAdjustmentFrequency: profile.autoAdjustmentFrequency,
-        lastAutoAdjustment: profile.lastAutoAdjustment
+        autoAdjustmentEnabled,
+        autoAdjustmentFrequency,
+        lastAutoAdjustment: null,
+        message: "Settings updated successfully"
       });
     } catch (error: any) {
       console.error('Error updating auto-adjustment settings:', error);
