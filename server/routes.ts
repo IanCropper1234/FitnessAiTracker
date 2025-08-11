@@ -701,6 +701,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Auto-adjustment scheduler status endpoint
+  app.get("/api/auto-adjustment-status", requireAuth, async (req, res) => {
+    try {
+      // Import scheduler to check status
+      const { autoAdjustmentScheduler } = await import("./services/auto-adjustment-scheduler");
+      const status = autoAdjustmentScheduler.getStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ message: "Auto-adjustment scheduler not available" });
+    }
+  });
+
   // Recent activities route
   app.get("/api/activities", requireAuth, async (req, res) => {
     try {
