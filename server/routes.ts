@@ -638,14 +638,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auto-adjustment settings endpoints (using localStorage for now until DB schema is updated)
+  // Auto-adjustment settings endpoints
   app.get("/api/auto-adjustment-settings", requireAuth, async (req, res) => {
     try {
-      // For now, return default settings since we're using localStorage on frontend
+      const userId = req.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user || !user.autoAdjustmentSettings) {
+        return res.json({
+          autoAdjustmentEnabled: false,
+          autoAdjustmentFrequency: 'weekly',
+          lastAutoAdjustment: null
+        });
+      }
+
+      const settings = user.autoAdjustmentSettings as any;
       res.json({
-        autoAdjustmentEnabled: false,
-        autoAdjustmentFrequency: 'weekly',
-        lastAutoAdjustment: null
+        autoAdjustmentEnabled: settings.autoAdjustmentEnabled || false,
+        autoAdjustmentFrequency: settings.autoAdjustmentFrequency || 'weekly',
+        lastAutoAdjustment: settings.lastAutoAdjustment || null
       });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -657,19 +668,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const { autoAdjustmentEnabled, autoAdjustmentFrequency } = req.body;
       
-      console.log('Auto-adjustment settings updated (stored in localStorage):', {
+      console.log('Updating auto-adjustment settings in database:', {
         userId,
         autoAdjustmentEnabled,
         autoAdjustmentFrequency
       });
       
-      // For now, just acknowledge the setting update
-      // In the future, this will be stored in the database
+      const settings = {
+        autoAdjustmentEnabled,
+        autoAdjustmentFrequency,
+        lastAutoAdjustment: null,
+        updatedAt: new Date().toISOString()
+      };
+      
+      const user = await storage.updateUser(userId, {
+        autoAdjustmentSettings: settings
+      });
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       res.json({
         autoAdjustmentEnabled,
         autoAdjustmentFrequency,
         lastAutoAdjustment: null,
-        message: "Settings updated successfully"
+        message: "Settings saved successfully"
       });
     } catch (error: any) {
       console.error('Error updating auto-adjustment settings:', error);

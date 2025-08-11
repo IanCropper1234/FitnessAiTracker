@@ -11,6 +11,8 @@ export const users = pgTable("users", {
   preferredLanguage: text("preferred_language").notNull().default("en"),
   theme: text("theme").notNull().default("dark"),
   showDeveloperFeatures: boolean("show_developer_features").default(false),
+  // Store auto-adjustment settings in JSON format
+  autoAdjustmentSettings: jsonb("auto_adjustment_settings"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

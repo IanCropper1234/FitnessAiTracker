@@ -81,19 +81,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   });
 
-  // Sync local state with fetched settings and localStorage
+  // Sync local state with fetched settings from database
   useEffect(() => {
-    // Load from localStorage first
-    const savedEnabled = localStorage.getItem('autoAdjustmentEnabled');
-    const savedFrequency = localStorage.getItem('autoAdjustmentFrequency');
-    
-    if (savedEnabled !== null) {
-      setAutoAdjustmentEnabled(savedEnabled === 'true');
-    }
-    if (savedFrequency) {
-      setAutoAdjustmentFrequency(savedFrequency as 'weekly' | 'biweekly');
-    }
-    
     if (autoAdjustmentSettings) {
       setAutoAdjustmentEnabled(autoAdjustmentSettings.autoAdjustmentEnabled || false);
       setAutoAdjustmentFrequency(autoAdjustmentSettings.autoAdjustmentFrequency || 'weekly');
@@ -103,7 +92,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   // Handle auto-adjustment toggle
   const handleAutoAdjustmentToggle = (enabled: boolean) => {
     setAutoAdjustmentEnabled(enabled);
-    localStorage.setItem('autoAdjustmentEnabled', enabled.toString());
     autoSettingsMutation.mutate({
       autoAdjustmentEnabled: enabled,
       autoAdjustmentFrequency
@@ -113,7 +101,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   // Handle frequency change
   const handleFrequencyChange = (frequency: 'weekly' | 'biweekly') => {
     setAutoAdjustmentFrequency(frequency);
-    localStorage.setItem('autoAdjustmentFrequency', frequency);
     autoSettingsMutation.mutate({
       autoAdjustmentEnabled,
       autoAdjustmentFrequency: frequency
