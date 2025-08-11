@@ -40,8 +40,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const trackingDate = TimezoneUtils.parseUserDate(currentDateString);
   trackingDate.setHours(0, 0, 0, 0);
   
-  console.log('DailyWellnessCheckin - Force using current date:', currentDateString);
-  console.log('DailyWellnessCheckin - trackingDate:', trackingDate);
+
   
   const [energyLevel, setEnergyLevel] = useState([5]);
   const [hungerLevel, setHungerLevel] = useState([5]);
