@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Heart, Battery, Moon, Zap, AlertTriangle } from "lucide-react";
+import { TimezoneUtils } from "@shared/utils/timezone";
 
 interface DailyWellnessCheckin {
   id: number;
@@ -30,12 +31,16 @@ interface DailyWellnessCheckinProps {
   selectedDate?: Date; // Allow specifying which date to track
 }
 
-export default function DailyWellnessCheckin({ userId, selectedDate = new Date() }: DailyWellnessCheckinProps) {
+export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWellnessCheckinProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Set date to beginning of day for consistency
-  const trackingDate = new Date(selectedDate);
+  // Use the same logic as the reminder component - TimezoneUtils.getCurrentDate()
+  // If no selectedDate provided, use current date from TimezoneUtils
+  const trackingDate = selectedDate ? new Date(selectedDate) : (() => {
+    const currentDateString = TimezoneUtils.getCurrentDate();
+    return TimezoneUtils.parseUserDate(currentDateString);
+  })();
   trackingDate.setHours(0, 0, 0, 0);
   
   const [energyLevel, setEnergyLevel] = useState([5]);
