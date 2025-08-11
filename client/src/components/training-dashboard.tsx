@@ -1246,18 +1246,25 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
         </AnimatedTabsContent>
 
         <AnimatedTabsContent value="exercise-library" className="space-y-6" >
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search exercises by name, muscle group, equipment..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+          {/* Header with Search and Create Button */}
+          <div className="space-y-4">
+            {/* Search Bar and Create Button Row */}
+            <div className="flex gap-3 items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search exercises by name, muscle group, equipment..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <CreateExerciseButton onSuccess={() => {
+                // Refresh exercises after creating a new one
+                queryClient.invalidateQueries({ queryKey: ["/api/training/exercises"] });
+              }} />
+            </div>
           </div>
-
-
 
           {/* Enhanced Filter System */}
           <div className="bg-card border ">
@@ -1433,8 +1440,6 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                       </Badge>
                     )}
                   </div>
-
-                  <CreateExerciseButton />
                 </div>
               </div>
             </div>
