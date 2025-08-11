@@ -1,4 +1,4 @@
-import { storage } from "./storage";
+import { storage } from "../storage-db";
 import { AdvancedMacroManagementService } from "./advanced-macro-management";
 
 interface AutoAdjustmentSettings {

@@ -7,7 +7,7 @@ import { DailyWellnessService } from './daily-wellness-service';
 export class AdvancedMacroManagementService {
   
   // Calculate weekly progress and recommend adjustments
-  static async calculateWeeklyAdjustment(userId: number, weekStartDate: string) {
+  async calculateWeeklyAdjustment(userId: number, weekStartDate: string) {
     try {
       // Get current diet goals
       const currentGoals = await db.select()
@@ -36,8 +36,8 @@ export class AdvancedMacroManagementService {
         ));
 
       // Calculate adherence percentage
-      const dailyTotals = this.calculateDailyTotals(weeklyLogs);
-      const adherencePercentage = this.calculateAdherence(dailyTotals, currentGoal);
+      const dailyTotals = AdvancedMacroManagementService.calculateDailyTotals(weeklyLogs);
+      const adherencePercentage = AdvancedMacroManagementService.calculateAdherence(dailyTotals, currentGoal);
 
       // Get wellness data using the new daily wellness service
       const { DailyWellnessService } = await import('./daily-wellness-service');
@@ -57,7 +57,7 @@ export class AdvancedMacroManagementService {
         .limit(1);
 
       // Determine adjustment based on RP methodology
-      const adjustment = this.calculateRPAdjustment({
+      const adjustment = AdvancedMacroManagementService.calculateRPAdjustment({
         currentGoals: currentGoal,
         adherencePercentage,
         weeklyLogs,
@@ -67,13 +67,61 @@ export class AdvancedMacroManagementService {
 
       return {
         adherencePercentage,
-        adjustment,
+        adjustmentPercentage: adjustment,
         currentGoals: currentGoal,
         weeklyLogs: weeklyLogs.length
       };
 
     } catch (error) {
       console.error('Error calculating weekly adjustment:', error);
+      throw error;
+    }
+  }
+
+  // Apply weekly adjustment to diet goals
+  async applyWeeklyAdjustment(userId: number, weekStartDate: string, adjustmentPercentage: number) {
+    try {
+      // Get current diet goals
+      const currentGoals = await db.select()
+        .from(dietGoals)
+        .where(eq(dietGoals.userId, userId))
+        .orderBy(desc(dietGoals.createdAt))
+        .limit(1);
+
+      if (currentGoals.length === 0) {
+        throw new Error('No diet goals found');
+      }
+
+      const currentGoal = currentGoals[0];
+      const targetCalories = parseFloat(currentGoal.targetCalories);
+
+      // Calculate new macros with adjustment
+      const newCalories = Math.round(targetCalories * (1 + adjustmentPercentage / 100));
+      const newProtein = parseFloat(currentGoal.targetProtein);
+      const newCarbs = Math.round(parseFloat(currentGoal.targetCarbs) * (1 + adjustmentPercentage / 100));
+      const newFat = Math.round(parseFloat(currentGoal.targetFat) * (1 + adjustmentPercentage / 100));
+
+      // Update diet goals
+      await db.update(dietGoals)
+        .set({
+          targetCalories: newCalories.toString(),
+          targetCarbs: newCarbs.toString(),
+          targetFat: newFat.toString(),
+          updatedAt: new Date()
+        })
+        .where(eq(dietGoals.userId, userId));
+
+      console.log(`✅ Applied ${adjustmentPercentage}% adjustment - New calories: ${newCalories}`);
+      
+      return {
+        newCalories,
+        newProtein,
+        newCarbs,
+        newFat,
+        adjustmentPercentage
+      };
+    } catch (error) {
+      console.error('Error applying weekly adjustment:', error);
       throw error;
     }
   }
@@ -399,8 +447,8 @@ export class AdvancedMacroManagementService {
         currentDietGoal = dietGoalsData[0];
         
         // Calculate daily totals for smart adherence calculation
-        const dailyTotals = this.calculateDailyTotals(logs);
-        adherencePercentage = this.calculateAdherence(dailyTotals, currentDietGoal);
+        const dailyTotals = AdvancedMacroManagementService.calculateDailyTotals(logs);
+        adherencePercentage = AdvancedMacroManagementService.calculateAdherence(dailyTotals, currentDietGoal);
       }
 
       // Get weight data for RP analysis (current week and previous week)
