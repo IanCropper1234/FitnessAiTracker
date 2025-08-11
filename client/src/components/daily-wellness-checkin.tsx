@@ -118,9 +118,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
     // Force use current date from TimezoneUtils for submission
     const currentDateString = TimezoneUtils.getCurrentDate();
     
-    console.log('🚀 SUBMIT: TimezoneUtils.getCurrentDate():', currentDateString);
-    console.log('🚀 SUBMIT: trackingDate.toISOString():', trackingDate.toISOString());
-    console.log('🚀 SUBMIT: trackingDate date obj:', trackingDate);
+
     
     const checkinData = {
       userId,
