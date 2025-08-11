@@ -715,34 +715,7 @@ export class MemStorage implements IStorage {
     return this.bodyMetrics.delete(id);
   }
 
-  // Placeholder methods for compatibility
-  async getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]> {
-    return [];
-  }
 
-  async getSavedMealPlans(userId: number): Promise<SavedMealPlan[]> {
-    return [];
-  }
-
-  async getSavedMealPlan(userId: number, planId: number): Promise<SavedMealPlan | undefined> {
-    return undefined;
-  }
-
-  async getSavedMealPlansByType(userId: number, mealType: string): Promise<SavedMealPlan[]> {
-    return [];
-  }
-
-  async createSavedMealPlan(mealPlan: InsertSavedMealPlan): Promise<SavedMealPlan> {
-    throw new Error("Not implemented in memory storage");
-  }
-
-  async updateSavedMealPlan(id: number, mealPlan: Partial<InsertSavedMealPlan>): Promise<SavedMealPlan | undefined> {
-    return undefined;
-  }
-
-  async deleteSavedMealPlan(id: number): Promise<boolean> {
-    return false;
-  }
 
   // Saved Meals
   async getSavedMeals(userId: number): Promise<SavedMeal[]> {
@@ -816,15 +789,7 @@ export class MemStorage implements IStorage {
   }
 
   // Mesocycles
-  async getMesocycle(id: number): Promise<any | undefined> {
-    // Not implemented in memory storage
-    return undefined;
-  }
 
-  async getUserMesocycles(userId: number): Promise<any[]> {
-    // Not implemented in memory storage
-    return [];
-  }
 }
 
 import { DatabaseStorage } from "./storage-db";

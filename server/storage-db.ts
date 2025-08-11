@@ -1049,6 +1049,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, id));
     return result.rowCount > 0;
   }
-
-
 }
+
+// Export singleton instance for use in other modules
+export const storage = new DatabaseStorage();
