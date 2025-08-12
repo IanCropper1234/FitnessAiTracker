@@ -187,7 +187,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
           </div>
           <div className="flex items-center gap-2">
             {isToday && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {existingCheckin && <Badge variant="secondary" className="text-xs">Completed</Badge>}
+            {existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString && <Badge variant="secondary" className="text-xs">Completed</Badge>}
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
@@ -339,7 +339,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
               </div>
               Saving Check-in...
             </>
-          ) : existingCheckin ? (
+          ) : (existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString) ? (
             <>
               <Heart className="w-4 h-4 mr-2" />
               Update Today's Check-in
