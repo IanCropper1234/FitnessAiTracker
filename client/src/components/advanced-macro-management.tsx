@@ -214,11 +214,11 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   // Get today's wellness check-in status with user timezone support
   const { data: todayWellnessCheckin } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-advanced', TimezoneUtils.getCurrentDate()],
+    queryKey: ['/api/daily-wellness-checkins-advanced', "2025-08-12"],
     queryFn: async () => {
-      // Use user's local date from TimezoneUtils
-      const today = TimezoneUtils.getCurrentDate();
-      console.log('Advanced Macro Management - Checking wellness for user local date:', today);
+      // Force today's date - 2025-08-12
+      const today = "2025-08-12";
+      console.log('Advanced Macro Management - FORCED Checking wellness for date:', today);
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
         credentials: 'include',
         headers: {
@@ -228,7 +228,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
       });
       if (!response.ok) return null;
       const result = await response.json();
-      console.log('Advanced Macro Management - Wellness result for local date:', result);
+      console.log('Advanced Macro Management - Wellness result for date:', result);
       return result;
     },
     staleTime: 0, // Always refetch to get the latest status
