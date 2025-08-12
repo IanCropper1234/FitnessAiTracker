@@ -685,14 +685,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   });
 
   // Special training methods handlers
-  const handleSpecialMethodChange = (exerciseId: number, method: string | null) => {
+  const handleSpecialMethodChange = (exerciseId: number, method: string | null, preserveConfig = false) => {
     setSpecialMethods(prev => ({
       ...prev,
       [exerciseId]: method
     }));
     
-    // Reset config when method changes
-    if (method !== specialMethods[exerciseId]) {
+    // Reset config when method changes, unless we're preserving it (e.g., from historical data)
+    if (method !== specialMethods[exerciseId] && !preserveConfig) {
       setSpecialConfigs(prev => ({
         ...prev,
         [exerciseId]: method === 'giant_set' ? {
@@ -1230,7 +1230,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   exerciseId={currentExercise.exerciseId}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
                   specialMethod={specialMethods[currentExercise.id] as any}
-                  onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
+                  onSpecialMethodChange={(method, preserveConfig) => handleSpecialMethodChange(currentExercise.id, method, preserveConfig)}
                   specialConfig={specialConfigs[currentExercise.id]}
                   onSpecialConfigChange={(config) => handleSpecialConfigChange(currentExercise.id, config)}
                   sessionExercises={session?.exercises}

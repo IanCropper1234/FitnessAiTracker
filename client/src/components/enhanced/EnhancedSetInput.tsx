@@ -62,7 +62,7 @@ interface EnhancedSetInputProps {
   exerciseId?: number; // For fetching historical data
   // Special Training Methods
   specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
-  onSpecialMethodChange?: (method: string | null) => void;
+  onSpecialMethodChange?: (method: string | null, preserveConfig?: boolean) => void;
   specialConfig?: any;
   onSpecialConfigChange?: (config: any) => void;
   // Session exercises for lookup
@@ -354,8 +354,11 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   currentSpecialMethod={specialMethod || 'standard'}
                   onApplyHistoricalData={(historicalData) => {
                     try {
+                      console.log('Applying historical data:', historicalData);
                       if (historicalData.specialMethod && onSpecialMethodChange) {
-                        onSpecialMethodChange(historicalData.specialMethod);
+                        // Apply both method and config at the same time to avoid overwrites
+                        onSpecialMethodChange(historicalData.specialMethod, true); // preserveConfig = true
+                        
                         if (historicalData.specialConfig && onSpecialConfigChange) {
                           onSpecialConfigChange(historicalData.specialConfig);
                         }
