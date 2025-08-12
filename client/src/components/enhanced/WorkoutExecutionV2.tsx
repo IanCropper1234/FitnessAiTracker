@@ -345,9 +345,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       if (!gestureNavEnabled) return;
       
       // Only trigger on horizontal swipes with significant movement
-      if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY) && Math.abs(eventData.deltaX) > 50) {
+      if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY) && Math.abs(eventData.deltaX) > 30) {
         const direction = eventData.deltaX > 0 ? 'right' : 'left';
-        const progress = Math.min(Math.abs(eventData.deltaX) / 120, 1); // Max at 120px
+        // Calculate progress based on screen width percentage, cap at 150px for 100%
+        const maxSwipeDistance = 150;
+        const progress = Math.min(Math.abs(eventData.deltaX) / maxSwipeDistance, 1);
         
         // Only show feedback if we can actually navigate in that direction
         const canSwipeLeft = currentExerciseIndex < (session?.exercises.length || 0) - 1;
@@ -355,7 +357,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         
         if ((direction === 'left' && canSwipeLeft) || (direction === 'right' && canSwipeRight)) {
           setSwipeProgress({ direction, progress });
+        } else {
+          // Reset if can't swipe in this direction
+          setSwipeProgress({ direction: null, progress: 0 });
         }
+      } else {
+        // Reset if not horizontal enough or too small movement
+        setSwipeProgress({ direction: null, progress: 0 });
       }
     },
     onSwipedLeft: () => {
@@ -1020,6 +1028,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   <div className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors duration-200 ${
                     swipeProgress.progress > 0.8 
                       ? 'bg-green-500/20 text-green-600 dark:text-green-400' 
+                      : swipeProgress.progress > 0.5 
+                      ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
                       : 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
                   }`}>
                     {Math.round(swipeProgress.progress * 100)}%
@@ -1078,11 +1088,15 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             </div>
 
             {/* Release Hint */}
-            {swipeProgress.progress > 0.8 && (
+            {swipeProgress.progress > 0.8 ? (
               <div className="text-xs text-green-600 dark:text-green-400 font-medium animate-pulse">
                 Release to switch
               </div>
-            )}
+            ) : swipeProgress.progress > 0.3 ? (
+              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                Keep swiping
+              </div>
+            ) : null}
           </div>
         </div>
       )}
