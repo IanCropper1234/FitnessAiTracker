@@ -2771,6 +2771,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Active Training Sessions (for workout safety)
+  app.get('/api/training/active-sessions', requireAuth, async (req: any, res) => {
+    try {
+      // Return empty array - we use sessionStorage for tracking active workouts
+      res.json([]);
+    } catch (error) {
+      console.error('Error fetching active sessions:', error);
+      res.status(500).json({ error: 'Failed to fetch active sessions' });
+    }
+  });
+
   // Weekly Nutrition Goals
   app.get("/api/weekly-nutrition-goal", requireAuth, async (req, res) => {
     try {
