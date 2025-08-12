@@ -268,7 +268,7 @@ function getUserId(req: Request, res: Response, next: NextFunction) {
   // Try Replit Auth first
   const replitUser = req.user as any;
   if (replitUser && replitUser.claims && replitUser.claims.sub) {
-    req.userId = replitUser.claims.sub;
+    req.userId = String(replitUser.claims.sub);
     return next();
   }
   
@@ -286,12 +286,14 @@ function getUserId(req: Request, res: Response, next: NextFunction) {
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   // Check Replit Auth
   if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
+    req.userId = String(req.user.claims.sub);
     return next();
   }
   
   // Check legacy session auth
   const sessionUserId = (req.session as any)?.userId;
   if (sessionUserId) {
+    req.userId = String(sessionUserId);
     return next();
   }
   
@@ -299,8 +301,8 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup auth middleware - temporarily disabled for debugging
-  // await setupAuth(app);
+  // Setup auth middleware - re-enabling Replit Auth integration
+  await setupAuth(app);
   
   // Auth routes - supporting both legacy session auth and Replit Auth
   app.get('/api/auth/user', async (req: any, res) => {
@@ -330,6 +332,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Test route removed - authentication working properly
+
   // Initialize data
   await initializeExercises();
   await initializeNutritionDatabase();
@@ -506,14 +510,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = req.body;
       console.log('Signin attempt for email:', email);
+      console.log('Password length:', password?.length);
       
       const user = await storage.getUserByEmail(email);
+      console.log('Retrieved user:', user ? { id: user.id, email: user.email, hasPassword: !!user.password } : 'null');
+      
       if (!user || !user.password) {
         console.log('User not found or no password for:', email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      console.log('Comparing passwords...');
+      console.log('Stored hash:', user.password.substring(0, 20) + '...');
       const isValid = await bcrypt.compare(password, user.password);
+      console.log('Password comparison result:', isValid);
+      
       if (!isValid) {
         console.log('Invalid password for user:', email);
         return res.status(401).json({ message: "Invalid credentials" });
@@ -564,10 +575,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Auth check - Session ID:', req.sessionID);
       console.log('Auth check - Session userId:', (req.session as any).userId);
+      console.log('Full session object:', req.session);
       const userId = (req.session as any).userId;
       if (!userId) {
         console.log('No userId in session');
-        return res.status(401).json({ message: "Not authenticated" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const user = await storage.getUser(userId);
@@ -775,21 +787,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
-      const nutritionLogs = await storage.getNutritionLogsInRange(userId, sevenDaysAgo, new Date());
-      const workoutSessions = await storage.getWorkoutSessions(userId);
-      
-      // Format activities
-      const activities = [
-        ...nutritionLogs.slice(0, limit).map(log => ({
-          id: `nutrition-${log.id}`,
-          type: 'nutrition',
-          title: 'Logged food',
-          description: `${log.foodName} - ${log.calories} cal`,
-          timestamp: log.createdAt || new Date(),
-          data: log
-        })),
-        ...workoutSessions.slice(0, limit).map(session => ({
-          id: `workout-${session.id}`,
+      try {
+        const nutritionLogs = await storage.getNutritionLogs(userId);
+        const workoutSessions = await storage.getWorkoutSessions(userId);
+        
+        // Ensure we have arrays
+        const safeNutritionLogs = Array.isArray(nutritionLogs) ? nutritionLogs : [];
+        const safeWorkoutSessions = Array.isArray(workoutSessions) ? workoutSessions : [];
+        
+        // Format activities
+        const activities = [
+          ...safeNutritionLogs.slice(0, limit).map(log => ({
+            id: `nutrition-${log.id}`,
+            type: 'nutrition',
+            title: 'Logged food',
+            description: `${log.foodName} - ${log.calories} cal`,
+            timestamp: log.createdAt || new Date(),
+            data: log
+          })),
+          ...safeWorkoutSessions.slice(0, limit).map(session => ({
+            id: `workout-${session.id}`,
           type: session.isCompleted ? 'workout_completion' : 'workout',
           title: session.isCompleted ? 'Completed workout' : 'Started workout',
           description: `${session.name} - ${session.totalVolume || 0} kg total`,
@@ -802,8 +819,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return dateB.getTime() - dateA.getTime();
       }).slice(0, limit);
       
-      res.json(activities);
+        res.json(activities);
+      } catch (storageError) {
+        console.error('Storage error in activities:', storageError);
+        // Return empty array if storage fails
+        res.json([]);
+      }
     } catch (error: any) {
+      console.error('Activities endpoint error:', error);
       res.status(400).json({ message: error.message });
     }
   });

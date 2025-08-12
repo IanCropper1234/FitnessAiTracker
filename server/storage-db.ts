@@ -125,7 +125,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Nutrition Logs
-  async getNutritionLogs(userId: string | number | string, date?: Date): Promise<NutritionLog[]> {
+  async getNutritionLogs(userId: string | number, date?: Date): Promise<NutritionLog[]> {
     // Ensure userId is a number
     const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
     if (isNaN(userIdNum)) {
