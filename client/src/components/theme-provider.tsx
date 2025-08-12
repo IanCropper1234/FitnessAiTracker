@@ -11,16 +11,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    // Check system preference first
+  const [theme, setThemeState] = useState<Theme>("dark");
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("fitai-theme") as Theme;
-      if (stored) return stored;
+      if (stored) {
+        setThemeState(stored);
+        return;
+      }
       
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      setThemeState(systemTheme);
     }
-    return "dark";
-  });
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
