@@ -74,7 +74,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
 
   // Update form values when existing checkin is loaded
   useEffect(() => {
-    if (existingCheckin) {
+    if (existingCheckin && existingCheckin.id) {
       setEnergyLevel([existingCheckin.energyLevel]);
       setHungerLevel([existingCheckin.hungerLevel]);
       setSleepQuality([existingCheckin.sleepQuality || 7]);
@@ -120,7 +120,11 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
     // Force use current date from TimezoneUtils for submission
     const currentDateString = TimezoneUtils.getCurrentDate();
     
-
+    console.log('🚀 Submitting check-in:', {
+      date: currentDateString,
+      existingCheckin: existingCheckin ? `id:${existingCheckin.id}` : 'none',
+      isUpdate: !!existingCheckin?.id
+    });
     
     const checkinData = {
       userId,
@@ -188,8 +192,8 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
             </CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            {isToday && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {existingCheckin && existingCheckin.id && <Badge variant="secondary" className="text-xs">Completed</Badge>}
+            {isToday && !existingCheckin?.id && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
+            {existingCheckin?.id && <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 text-xs">Completed</Badge>}
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
@@ -341,7 +345,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
               </div>
               Saving Check-in...
             </>
-          ) : existingCheckin ? (
+          ) : existingCheckin && existingCheckin.id ? (
             <>
               <Heart className="w-4 h-4 mr-2" />
               Update Today's Check-in
