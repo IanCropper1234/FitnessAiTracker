@@ -6,9 +6,11 @@ export function useAuth() {
     retry: false,
   });
 
+  const user = response?.user;
+
   return {
-    user: response?.user,
+    user,
     isLoading,
-    isAuthenticated: !!response?.user,
+    isAuthenticated: !!user,
   };
 }

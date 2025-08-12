@@ -24,8 +24,8 @@ export interface IStorage {
   // Database access
   getDb(): any;
   
-  // Users (Replit Auth compatible)
-  getUser(id: string): Promise<User | undefined>;
+  // Users (Hybrid auth compatible)
+  getUser(id: string | number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
