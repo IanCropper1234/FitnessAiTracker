@@ -138,6 +138,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
   const handleWeightChange = (value: number) => {
     if (!useBodyWeight) {
+      console.log(`[handleWeightChange] Setting weight to: ${value}`);
       onUpdateSet('weight', value);
     }
   };
@@ -162,10 +163,12 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleRepsChange = (value: number) => {
+    console.log(`[handleRepsChange] Setting reps to: ${value}`);
     onUpdateSet('actualReps', value);
   };
 
   const handleRpeChange = (value: number) => {
+    console.log(`[handleRpeChange] Setting RPE to: ${value}`);
     onUpdateSet('rpe', value);
   };
 
