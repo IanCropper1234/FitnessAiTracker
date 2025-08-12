@@ -32,20 +32,20 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
   const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
 
-  // Fetch latest special training method data for this exercise, set, and method
+  // Fetch latest special training method data for this exercise and set (any method)
   const { data: latestSpecialMethod, isLoading, error } = useQuery<SpecialMethodHistoryData | null>({
-    queryKey: ['/api/training/exercise-special-history', exerciseId, userId, setNumber, currentSpecialMethod],
+    queryKey: ['/api/training/exercise-special-history', exerciseId, userId, setNumber],
     queryFn: async () => {
       try {
-        if (!exerciseId || exerciseId <= 0 || !userId || !currentSpecialMethod || currentSpecialMethod === 'standard') {
+        if (!exerciseId || exerciseId <= 0 || !userId) {
           return null;
         }
         
         const params = new URLSearchParams({
           userId: userId.toString(),
           limit: '1',
-          setNumber: setNumber.toString(),
-          specialMethod: currentSpecialMethod
+          setNumber: setNumber.toString()
+          // Don't filter by specialMethod - get any special method history
         });
         
         const response = await fetch(`/api/training/exercise-special-history/${exerciseId}?${params}`);
@@ -58,7 +58,7 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
         return null;
       }
     },
-    enabled: !!exerciseId && exerciseId > 0 && !!userId && !!currentSpecialMethod && currentSpecialMethod !== 'standard'
+    enabled: !!exerciseId && exerciseId > 0 && !!userId
   });
 
   // Debug logging
@@ -68,7 +68,8 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
     currentSpecialMethod,
     hasLatestData: !!latestSpecialMethod,
     isLoading,
-    queryEnabled: !!exerciseId && !!userId && !!currentSpecialMethod && currentSpecialMethod !== 'standard'
+    queryEnabled: !!exerciseId && exerciseId > 0 && !!userId,
+    latestMethod: latestSpecialMethod?.specialMethod
   });
 
   const handleApplyHistoricalData = async () => {
@@ -109,7 +110,7 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
   };
 
   // Only show if there's historical data available and no query errors
-  if (!latestSpecialMethod || error) return null;
+  if (!latestSpecialMethod || error || isLoading) return null;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { 
