@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -35,10 +35,27 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Always use current date to ensure synchronization with dashboard
-  const currentDateString = TimezoneUtils.getCurrentDate();
-  const trackingDate = TimezoneUtils.parseUserDate(currentDateString);
-  trackingDate.setHours(0, 0, 0, 0);
+  // Force refresh of current date - bypass any potential caching
+  const currentDateString = (() => {
+    // Direct call to bypass any potential caching issues
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    console.log('🗓️ FRESH Current date string:', dateStr);
+    console.log('🗓️ Raw Date object:', now.toString());
+    return dateStr;
+  })();
+  
+  const trackingDate = useMemo(() => {
+    const date = TimezoneUtils.parseUserDate(currentDateString);
+    date.setHours(0, 0, 0, 0);
+    console.log('🗓️ Tracking date:', date.toISOString());
+    console.log('🗓️ Tracking date local:', date.toDateString());
+    console.log('🗓️ Today for comparison:', new Date().toDateString());
+    return date;
+  }, [currentDateString]);
   
 
   
@@ -53,9 +70,17 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   // Fetch existing checkin for the selected date
   const dateString = trackingDate.toISOString().split('T')[0];
   
+  // Force cache invalidation on component mount
+  useEffect(() => {
+    console.log('🧹 Clearing wellness check-in cache for date:', dateString);
+    queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins'] });
+  }, [dateString, queryClient]);
+
   const { data: existingCheckin, isLoading } = useQuery({
     queryKey: ['/api/daily-wellness-checkins', dateString],
     queryFn: async () => {
+      console.log('🔍 Fetching check-in for date:', dateString);
       const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
         credentials: 'include',
         headers: {
@@ -63,18 +88,39 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
           'Pragma': 'no-cache'
         }
       });
-      if (!response.ok) return null;
+      if (!response.ok) {
+        console.log('❌ API request failed:', response.status, response.statusText);
+        return null;
+      }
       const data = await response.json();
-      // Ensure we return null if the API returns null/undefined
-      return data && data.id ? data : null;
+      console.log('📊 API response:', data);
+      console.log('📊 API response type:', typeof data);
+      console.log('📊 API response keys:', data ? Object.keys(data) : 'null');
+      
+      // Handle the case where API returns null (no check-in found)
+      if (data === null || data === undefined) {
+        console.log('📊 API returned null/undefined - no check-in exists');
+        return null;
+      }
+      
+      // Check if it has an ID (valid check-in)
+      const result = data && data.id ? data : null;
+      console.log('📊 Final result:', result);
+      return result;
     },
     staleTime: 0, // Always consider data stale
-    gcTime: 0 // Don't cache this data
+    gcTime: 0, // Don't cache this data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // Update form values when existing checkin is loaded
   useEffect(() => {
+    console.log('🔄 existingCheckin changed:', existingCheckin);
+    console.log('🔄 existingCheckin?.id:', existingCheckin?.id);
+    console.log('🔄 typeof existingCheckin:', typeof existingCheckin);
     if (existingCheckin && existingCheckin.id) {
+      console.log('✅ Loading existing check-in data');
       setEnergyLevel([existingCheckin.energyLevel]);
       setHungerLevel([existingCheckin.hungerLevel]);
       setSleepQuality([existingCheckin.sleepQuality || 7]);
@@ -82,6 +128,8 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       setCravingsIntensity([existingCheckin.cravingsIntensity || 5]);
       setAdherencePerception([existingCheckin.adherencePerception || 7]);
       setNotes(existingCheckin.notes || "");
+    } else {
+      console.log('❌ No existing check-in data found');
     }
   }, [existingCheckin]);
 
@@ -192,8 +240,20 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
             </CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            {isToday && !existingCheckin?.id && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {existingCheckin?.id && <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 text-xs">Completed</Badge>}
+            {isToday && !existingCheckin?.id && (
+              <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                Today
+              </Badge>
+            )}
+            {existingCheckin?.id && (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 text-xs">
+                Completed
+              </Badge>
+            )}
+            {/* Debug info */}
+            <div className="text-xs text-gray-400">
+              Debug: {existingCheckin ? `id:${existingCheckin.id}` : 'null'} | Today: {isToday.toString()} | Date: {dateString} | TrackingDate: {trackingDate.toDateString()}
+            </div>
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
