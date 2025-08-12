@@ -785,6 +785,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Workout settings endpoints
+  app.get("/api/workout-settings", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Parse workout settings from autoAdjustmentSettings JSON field
+      const allSettings = user.autoAdjustmentSettings as any || {};
+      const workoutSettings = allSettings.workoutSettings || {};
+      
+      // Default workout feature flags
+      const defaultSettings = {
+        autoRegulationFeedback: false,
+        gestureNavigation: true,
+        circularProgress: true,
+        restTimerFAB: true,
+        workoutExecutionV2: true,
+        spinnerSetInput: true,
+        workoutSummary: true
+      };
+
+      res.json({ ...defaultSettings, ...workoutSettings });
+    } catch (error: any) {
+      console.error('Error getting workout settings:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/workout-settings", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const workoutSettings = req.body;
+      
+      console.log('Updating workout settings in database:', {
+        userId,
+        workoutSettings
+      });
+      
+      // Get current user settings
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Merge workout settings into existing autoAdjustmentSettings
+      const currentSettings = user.autoAdjustmentSettings as any || {};
+      const updatedSettings = {
+        ...currentSettings,
+        workoutSettings: {
+          ...workoutSettings,
+          updatedAt: new Date().toISOString()
+        }
+      };
+      
+      const updatedUser = await storage.updateUser(userId, {
+        autoAdjustmentSettings: updatedSettings
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        ...workoutSettings,
+        message: "Workout settings saved successfully"
+      });
+    } catch (error: any) {
+      console.error('Error updating workout settings:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Recent activities route
   app.get("/api/activities", requireAuth, async (req, res) => {
     try {

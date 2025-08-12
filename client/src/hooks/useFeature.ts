@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiRequest } from '@/lib/queryClient';
 
 // Feature flag configuration
 interface FeatureFlags {
@@ -24,6 +25,8 @@ const defaultFeatures: FeatureFlags = {
 
 // Global feature flag store
 let globalFeatures: FeatureFlags = { ...defaultFeatures };
+let isServerSyncEnabled = false;
+let isInitialized = false;
 
 export const useFeature = (featureName: keyof FeatureFlags): boolean => {
   const [isEnabled, setIsEnabled] = useState(globalFeatures[featureName]);
@@ -71,16 +74,49 @@ export const useFeatures = (): FeatureFlags => {
   return features;
 };
 
-export const updateFeatureFlag = (featureName: keyof FeatureFlags, enabled: boolean) => {
+export const updateFeatureFlag = async (featureName: keyof FeatureFlags, enabled: boolean) => {
   globalFeatures[featureName] = enabled;
+  
+  // Sync to server if enabled
+  if (isServerSyncEnabled) {
+    try {
+      await apiRequest('/api/workout-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(globalFeatures),
+      });
+    } catch (error) {
+      console.warn('Failed to sync feature flag to server:', error);
+      // Continue with local update even if server sync fails
+    }
+  }
+  
   // Trigger re-render in components using this feature
   window.dispatchEvent(new CustomEvent('featureFlagUpdated', { 
     detail: { featureName, enabled } 
   }));
 };
 
-export const updateFeatureFlags = (newFeatures: Partial<FeatureFlags>) => {
+export const updateFeatureFlags = async (newFeatures: Partial<FeatureFlags>) => {
   globalFeatures = { ...globalFeatures, ...newFeatures };
+  
+  // Sync to server if enabled
+  if (isServerSyncEnabled) {
+    try {
+      await apiRequest('/api/workout-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(globalFeatures),
+      });
+    } catch (error) {
+      console.warn('Failed to sync feature flags to server:', error);
+    }
+  }
+  
   window.dispatchEvent(new CustomEvent('featureFlagsUpdated', { 
     detail: newFeatures 
   }));
@@ -89,9 +125,43 @@ export const updateFeatureFlags = (newFeatures: Partial<FeatureFlags>) => {
 // Get current feature flags (for server sync)
 export const getFeatureFlags = (): FeatureFlags => ({ ...globalFeatures });
 
-// Initialize features from server or user preferences
-export const initializeFeatures = (serverFeatures?: Partial<FeatureFlags>) => {
-  if (serverFeatures) {
-    globalFeatures = { ...defaultFeatures, ...serverFeatures };
+// Initialize features from server
+export const initializeFeatures = async (enableServerSync = true) => {
+  if (isInitialized) return;
+  
+  isServerSyncEnabled = enableServerSync;
+  
+  if (enableServerSync) {
+    try {
+      const serverFeatures = await apiRequest('/api/workout-settings') as FeatureFlags;
+      globalFeatures = { ...defaultFeatures, ...serverFeatures };
+      console.log('Features initialized from server:', globalFeatures);
+    } catch (error) {
+      console.warn('Failed to load features from server, using defaults:', error);
+      globalFeatures = { ...defaultFeatures };
+    }
+  } else {
+    globalFeatures = { ...defaultFeatures };
   }
+  
+  isInitialized = true;
+  
+  // Trigger update for all components
+  window.dispatchEvent(new CustomEvent('featureFlagsUpdated', { 
+    detail: globalFeatures 
+  }));
+};
+
+// Hook to initialize features when user is authenticated
+export const useFeatureInitialization = (isAuthenticated: boolean) => {
+  useEffect(() => {
+    if (isAuthenticated && !isInitialized) {
+      initializeFeatures(true);
+    } else if (!isAuthenticated && isInitialized) {
+      // Reset to defaults when logged out
+      globalFeatures = { ...defaultFeatures };
+      isInitialized = false;
+      isServerSyncEnabled = false;
+    }
+  }, [isAuthenticated]);
 };

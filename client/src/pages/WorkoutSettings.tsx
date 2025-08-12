@@ -19,20 +19,28 @@ export default function WorkoutSettings() {
   const circularProgress = useFeature('circularProgress');
   const restTimerFAB = useFeature('restTimerFAB');
 
-  const handleFeatureToggle = (featureName: string, enabled: boolean) => {
-    updateFeatureFlag(featureName as any, enabled);
-    
-    const featureDisplayNames: Record<string, string> = {
-      autoRegulationFeedback: 'Auto-Regulation Feedback',
-      gestureNavigation: 'Gesture Navigation', 
-      circularProgress: 'Circular Progress',
-      restTimerFAB: 'Rest Timer FAB'
-    };
-    
-    toast({
-      title: enabled ? "Feature Enabled" : "Feature Disabled",
-      description: `${featureDisplayNames[featureName]} has been ${enabled ? 'enabled' : 'disabled'}`,
-    });
+  const handleFeatureToggle = async (featureName: string, enabled: boolean) => {
+    try {
+      await updateFeatureFlag(featureName as any, enabled);
+      
+      const featureDisplayNames: Record<string, string> = {
+        autoRegulationFeedback: 'Auto-Regulation Feedback',
+        gestureNavigation: 'Gesture Navigation', 
+        circularProgress: 'Circular Progress',
+        restTimerFAB: 'Rest Timer FAB'
+      };
+      
+      toast({
+        title: enabled ? "Feature Enabled" : "Feature Disabled",
+        description: `${featureDisplayNames[featureName]} has been ${enabled ? 'enabled' : 'disabled'}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save setting. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
