@@ -101,6 +101,13 @@ async function getAutoProgressedValues(exerciseId: number, userId: number, previ
 
 // Auto-sync diet goals with fitness goal changes
 async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string, profileData: any) {
+  // Check if user has custom calories enabled - if so, skip auto-sync
+  const existingDietGoal = await storage.getDietGoal(userId);
+  if (existingDietGoal && existingDietGoal.useCustomCalories) {
+    console.log(`User ${userId} has custom calories enabled, skipping auto-sync`);
+    return;
+  }
+  
   // Map fitness goals to diet goals and calculate appropriate macros
   let dietGoal = "maintain";
   let calorieAdjustment = 0;

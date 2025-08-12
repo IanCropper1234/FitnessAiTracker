@@ -357,11 +357,13 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         ...currentDietGoal,
         tdee: Number(currentDietGoal.tdee),
         targetCalories: Number(currentDietGoal.targetCalories),
-        customTargetCalories: Number(currentDietGoal.customTargetCalories),
+        customTargetCalories: currentDietGoal.customTargetCalories ? Number(currentDietGoal.customTargetCalories) : undefined,
         targetProtein: Number(currentDietGoal.targetProtein),
         targetCarbs: Number(currentDietGoal.targetCarbs),
         targetFat: Number(currentDietGoal.targetFat),
-        weeklyWeightTarget: Number(currentDietGoal.weeklyWeightTarget)
+        weeklyWeightTarget: Number(currentDietGoal.weeklyWeightTarget),
+        // Ensure useCustomCalories is properly synced from database
+        useCustomCalories: currentDietGoal.useCustomCalories || false
       };
       setDietGoal(normalizedGoal);
     }
@@ -394,8 +396,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             break;
         }
         
-        // If current diet goal doesn't match expected, immediately sync the display to show the correct goal
-        if (currentDietGoal && currentDietGoal.goal !== expectedDietGoal) {
+        // Skip auto-sync if user has custom calories enabled
+        if (currentDietGoal && currentDietGoal.goal !== expectedDietGoal && !currentDietGoal.useCustomCalories) {
           // Update the local state to show the expected goal that matches user's fitness goal
           setDietGoal(prev => ({ 
             ...prev, 
@@ -405,8 +407,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         }
       }
       
-      // Enable auto-regulation for complete profiles
-      if (hasCompleteData && !dietGoal.autoRegulation) {
+      // Enable auto-regulation for complete profiles (but only if not using custom calories)
+      if (hasCompleteData && !dietGoal.autoRegulation && !currentDietGoal?.useCustomCalories) {
         setDietGoal(prev => ({ ...prev, autoRegulation: true }));
       }
     }
@@ -686,7 +688,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Auto-calculate TDEE when user profile changes
   useEffect(() => {
-    if (userProfile && dietGoal.autoRegulation) {
+    // Skip auto-calculation if user has custom calories enabled
+    if (userProfile && dietGoal.autoRegulation && !dietGoal.useCustomCalories) {
       const latestWeight = bodyMetrics && bodyMetrics.length > 0 ? bodyMetrics[0]?.weight : userProfile.weight;
       
       if (userProfile.age && latestWeight && userProfile.height && userProfile.activityLevel) {
@@ -720,7 +723,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         }));
       }
     }
-  }, [userProfile, bodyMetrics, dietGoal.autoRegulation, dietGoal.goal, dietGoal.weeklyWeightTarget]);
+  }, [userProfile, bodyMetrics, dietGoal.autoRegulation, dietGoal.goal, dietGoal.weeklyWeightTarget, dietGoal.useCustomCalories]);
 
   // Calculate target calories based on goal
   const calculateTargetCaloriesWithParams = (tdee: number, goal: string, weeklyTarget?: number) => {
@@ -953,11 +956,19 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   };
 
   const handleSaveDietGoal = () => {
+    // Determine if this is a custom goal based on current mode
+    const isCustomMode = goalSelectionMode === 'custom' && goalSubTab === 'custom';
+    
     // Create a properly typed object that matches the backend expectations
     const goalToSave = {
       ...dietGoal,
       // Ensure weeklyWeightTarget is 0 for maintain goals
-      weeklyWeightTarget: dietGoal.goal === 'maintain' ? 0 : (dietGoal.weeklyWeightTarget || 0)
+      weeklyWeightTarget: dietGoal.goal === 'maintain' ? 0 : (dietGoal.weeklyWeightTarget || 0),
+      // Set custom calorie fields based on mode
+      useCustomCalories: isCustomMode,
+      customTargetCalories: isCustomMode ? dietGoal.targetCalories : undefined,
+      // Disable auto-regulation for custom goals
+      autoRegulation: !isCustomMode
     };
     
     console.log('Saving diet goal:', goalToSave); // Debug log to see what's being sent
