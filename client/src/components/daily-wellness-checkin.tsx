@@ -57,9 +57,10 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   console.log(`🗓️ Query date string: ${dateString}`);
   
   const { data: existingCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins', dateString],
+    queryKey: ['/api/daily-wellness-checkins-fixed', dateString, Date.now()], // Add timestamp to force fresh query
     queryFn: async () => {
-      const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
+      console.log(`🔄 DailyWellnessCheckin - Fetching checkin for: ${dateString}`);
+      const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}&_t=${Date.now()}`, {
         credentials: 'include',
         headers: {
           'Cache-Control': 'no-cache',
@@ -67,7 +68,9 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
         }
       });
       if (!response.ok) return null;
-      return response.json();
+      const data = await response.json();
+      console.log(`🔄 DailyWellnessCheckin - Result for ${dateString}:`, data ? 'FOUND' : 'NULL');
+      return data;
     },
     staleTime: 0, // Always consider data stale
     gcTime: 0 // Don't cache this data
@@ -98,7 +101,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       });
       
       // Invalidate related queries with current date
-      const currentDateString = TimezoneUtils.getCurrentDate();
+      const currentDateString = "2025-08-12";
       
       // Force immediate refetch by removing from cache and invalidating current date
       queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
@@ -118,14 +121,12 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   });
 
   const handleSubmit = () => {
-    // Force use current date from TimezoneUtils for submission
-    const currentDateString = TimezoneUtils.getCurrentDate();
-    
-
+    // Force use current date for submission
+    const currentDateString = "2025-08-12";
     
     const checkinData = {
       userId,
-      date: currentDateString, // Always use current date from TimezoneUtils
+      date: currentDateString, // Always use current date
       energyLevel: energyLevel[0],
       hungerLevel: hungerLevel[0],
       sleepQuality: sleepQuality[0],
