@@ -19,24 +19,19 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
   
   // Get today's wellness check-in status with user timezone support
   const { data: todayWellnessCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins', "2025-08-12"],
+    queryKey: ['/api/daily-wellness-checkins', TimezoneUtils.getCurrentDate()],
     queryFn: async () => {
-      // Force today's date - 2025-08-12
-      const today = "2025-08-12";
-      console.log('Daily Wellness Reminder - FORCED Checking wellness for date:', today);
+      const today = TimezoneUtils.getCurrentDate();
+      console.log('Daily Wellness Reminder - Checking wellness for date:', today);
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
-        credentials: 'include',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+        credentials: 'include'
       });
       if (!response.ok) return null;
       const result = await response.json();
       return result;
     },
-    staleTime: 0, // Always refetch to get the latest status
-    gcTime: 0 // Don't cache this data
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
   const isCompleted = !!todayWellnessCheckin;

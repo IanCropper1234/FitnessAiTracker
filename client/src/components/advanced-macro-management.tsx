@@ -214,25 +214,20 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   // Get today's wellness check-in status with user timezone support
   const { data: todayWellnessCheckin } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-advanced', "2025-08-12"],
+    queryKey: ['/api/daily-wellness-checkins-advanced', TimezoneUtils.getCurrentDate()],
     queryFn: async () => {
-      // Force today's date - 2025-08-12
-      const today = "2025-08-12";
-      console.log('Advanced Macro Management - FORCED Checking wellness for date:', today);
+      const today = TimezoneUtils.getCurrentDate();
+      console.log('Advanced Macro Management - Checking wellness for date:', today);
       const response = await fetch(`/api/daily-wellness-checkins?date=${today}`, {
-        credentials: 'include',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+        credentials: 'include'
       });
       if (!response.ok) return null;
       const result = await response.json();
       console.log('Advanced Macro Management - Wellness result for date:', result);
       return result;
     },
-    staleTime: 0, // Always refetch to get the latest status
-    gcTime: 0 // Don't cache this data
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
   // Convert weight change to user's preferred unit
