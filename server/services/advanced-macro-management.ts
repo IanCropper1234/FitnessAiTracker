@@ -67,7 +67,7 @@ export class AdvancedMacroManagementService {
 
       return {
         adherencePercentage,
-        adjustmentPercentage: adjustment,
+        adjustment: adjustment,
         currentGoals: currentGoal,
         weeklyLogs: weeklyLogs.length
       };
