@@ -7,7 +7,7 @@ import { DailyWellnessService } from './daily-wellness-service';
 export class AdvancedMacroManagementService {
   
   // Calculate weekly progress and recommend adjustments
-  async calculateWeeklyAdjustment(userId: number, weekStartDate: string) {
+  static async calculateWeeklyAdjustment(userId: number, weekStartDate: string) {
     try {
       // Get current diet goals
       const currentGoals = await db.select()
@@ -79,7 +79,7 @@ export class AdvancedMacroManagementService {
   }
 
   // Apply weekly adjustment to diet goals
-  async applyWeeklyAdjustment(userId: number, weekStartDate: string, adjustmentPercentage: number) {
+  static async applyWeeklyAdjustment(userId: number, weekStartDate: string, adjustmentPercentage: number) {
     try {
       // Get current diet goals
       const currentGoals = await db.select()
@@ -630,7 +630,7 @@ export class AdvancedMacroManagementService {
 
         // If no existing goals, try to calculate from food logs
         if (existingGoals.length === 0) {
-          const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, weekStartDate);
+          const calculatedData = await AdvancedMacroManagementService.calculateWeeklyNutritionFromLogs(userId, weekStartDate);
           if (calculatedData) {
             // Enhance with real daily wellness data
             const wellnessAverages = await DailyWellnessService.calculateWeeklyAverages(userId, weekStart);
@@ -659,7 +659,7 @@ export class AdvancedMacroManagementService {
             }
             
             // ALWAYS recalculate adherence percentage from fresh food logs
-            const calculatedData = await this.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
+            const calculatedData = await AdvancedMacroManagementService.calculateWeeklyNutritionFromLogs(userId, goal.weekStartDate.toISOString().split('T')[0]);
             if (calculatedData) {
               // Update adherence with fresh calculation
               updatedGoal.adherencePercentage = calculatedData.adherencePercentage;
@@ -670,8 +670,6 @@ export class AdvancedMacroManagementService {
                   // Only update missing weight data, preserve all other stored values
                   if (!updatedGoal.currentWeight) updatedGoal.currentWeight = calculatedData.currentWeight;
                   if (!updatedGoal.previousWeight) updatedGoal.previousWeight = calculatedData.previousWeight;
-                  if (!updatedGoal.weightChange) updatedGoal.weightChange = calculatedData.weightChange;
-                  if (!updatedGoal.weightTrend) updatedGoal.weightTrend = calculatedData.weightTrend;
                   // Never override stored adjustmentRecommendation
                 }
               }
