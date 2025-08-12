@@ -56,6 +56,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const { data: existingCheckin, isLoading } = useQuery({
     queryKey: ['/api/daily-wellness-checkins', dateString],
     queryFn: async () => {
+      console.log(`🔍 Fetching checkin for date: ${dateString}`);
       const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
         credentials: 'include',
         headers: {
@@ -64,7 +65,13 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
         }
       });
       if (!response.ok) return null;
-      return response.json();
+      const data = await response.json();
+      console.log(`📅 Checkin data:`, data);
+      if (data) {
+        console.log(`📅 Existing checkin date: ${data.date}, Query date: ${dateString}`);
+        console.log(`📅 Date match: ${new Date(data.date).toISOString().split('T')[0] === dateString}`);
+      }
+      return data;
     },
     staleTime: 0, // Always consider data stale
     gcTime: 0 // Don't cache this data
@@ -187,7 +194,18 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
           </div>
           <div className="flex items-center gap-2">
             {isToday && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString && <Badge variant="secondary" className="text-xs">Completed</Badge>}
+            {(() => {
+              if (!existingCheckin || !existingCheckin.date) return null;
+              const checkinDateStr = new Date(existingCheckin.date).toISOString().split('T')[0];
+              const isToday = checkinDateStr === dateString;
+              console.log(`📅 Badge check - Checkin: ${checkinDateStr}, Query: ${dateString}, Match: ${isToday}`);
+              
+              return isToday ? (
+                <Badge variant="secondary" className="text-xs">
+                  Completed
+                </Badge>
+              ) : null;
+            })()}
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
@@ -339,7 +357,13 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
               </div>
               Saving Check-in...
             </>
-          ) : (existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString) ? (
+          ) : (() => {
+              if (!existingCheckin || !existingCheckin.date) return false;
+              const checkinDateStr = new Date(existingCheckin.date).toISOString().split('T')[0];
+              const isToday = checkinDateStr === dateString;
+              console.log(`🔄 Button check - Checkin: ${checkinDateStr}, Query: ${dateString}, Match: ${isToday}`);
+              return isToday;
+            })() ? (
             <>
               <Heart className="w-4 h-4 mr-2" />
               Update Today's Check-in
