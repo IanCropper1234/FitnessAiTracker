@@ -44,11 +44,31 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   // Animation refs for dashboard cards
   const cardsRef = useStaggeredAnimation('.dashboard-card', { delay: 100, stagger: 150 });
 
+  // Clear React Query cache when user changes to prevent data leakage between users
+  useEffect(() => {
+    if (user?.id) {
+      // Clear cache for all queries that don't include the current user ID
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          // If queryKey is an array and includes an API path, check if user ID is included
+          if (Array.isArray(queryKey) && queryKey.length > 0) {
+            const hasApiPath = queryKey.some(key => typeof key === 'string' && key.startsWith('/api/'));
+            const hasUserId = queryKey.includes(user.id);
+            // Invalidate if it's an API query but doesn't include current user ID
+            return hasApiPath && !hasUserId;
+          }
+          return false;
+        }
+      });
+    }
+  }, [user?.id, queryClient]);
+
   const currentDate = TimezoneUtils.parseUserDate(selectedDate);
   const dateQueryParam = selectedDate;
 
   const { data: nutritionSummary, isLoading: nutritionLoading, error: nutritionError, refetch: refetchNutrition } = useQuery({
-    queryKey: ['/api/nutrition/summary', dateQueryParam],
+    queryKey: ['/api/nutrition/summary', user.id, dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/nutrition/summary?date=${dateQueryParam}`, {
         credentials: 'include'
@@ -100,7 +120,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   });
 
   const { data: trainingStats, isLoading: trainingLoading, error: trainingError, refetch: refetchTraining } = useQuery({
-    queryKey: ['/api/training/stats', dateQueryParam],
+    queryKey: ['/api/training/stats', user.id, dateQueryParam],
     queryFn: async () => {
       const response = await fetch(`/api/training/stats?date=${dateQueryParam}`, {
         credentials: 'include'
@@ -125,7 +145,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   // Get active workout sessions for smart Start Workout behavior
   const { data: workoutSessions } = useQuery({
-    queryKey: ['/api/training/sessions', user?.id],
+    queryKey: ['/api/training/sessions', user.id],
     queryFn: async () => {
       const response = await fetch(`/api/training/sessions`, {
         credentials: 'include'
@@ -133,12 +153,12 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       if (!response.ok) throw new Error('Failed to fetch workout sessions');
       return response.json();
     },
-    enabled: !!user?.id  // Only fetch when user is available
+    enabled: !!user?.id
   });
 
   // Get body metrics for weight and body composition data
   const { data: bodyMetrics, isLoading: bodyMetricsLoading, error: bodyMetricsError, refetch: refetchBodyMetrics } = useQuery({
-    queryKey: ['/api/body-metrics', user?.id],
+    queryKey: ['/api/body-metrics', user.id],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`, {
         credentials: 'include'
@@ -163,7 +183,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   // Get user profile for additional metrics
   const { data: userProfile } = useQuery({
-    queryKey: ['/api/user/profile', user?.id],
+    queryKey: ['/api/user/profile', user.id],
     queryFn: async () => {
       const response = await fetch(`/api/user/profile`, {
         credentials: 'include'
@@ -171,7 +191,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
       if (!response.ok) throw new Error('Failed to fetch user profile');
       return response.json();
     },
-    enabled: !!user?.id  // Only fetch when user is available
+    enabled: !!user?.id
   });
 
   // Calculate current weight with unit conversion

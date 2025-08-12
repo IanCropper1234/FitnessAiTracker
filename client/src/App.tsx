@@ -313,8 +313,15 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setSelectedDate(newDate);
             setShowDatePicker(false);
             // Invalidate queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
-            queryClient.invalidateQueries({ queryKey: ['/api/training/stats'] });
+            queryClient.invalidateQueries({ 
+              predicate: (query) => {
+                const key = query.queryKey;
+                return Array.isArray(key) && (
+                  (key.includes('/api/nutrition/summary') && key.includes(user?.id)) ||
+                  (key.includes('/api/training/stats') && key.includes(user?.id))
+                );
+              }
+            });
           }}
           size="lg"
           showDatePicker={showDatePicker}
@@ -330,7 +337,12 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setBodyTrackingDate(newDate);
             setShowBodyDatePicker(false);
             // Invalidate body metrics queries to refresh data for the new date
-            queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
+            queryClient.invalidateQueries({ 
+              predicate: (query) => {
+                const key = query.queryKey;
+                return Array.isArray(key) && key.includes('/api/body-metrics') && key.includes(user?.id);
+              }
+            });
           }}
           size="lg"
           showDatePicker={showBodyDatePicker}
@@ -346,7 +358,12 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setCopyFromDate(newDate);
             setShowCopyFromDatePicker(false);
             // Invalidate copy source logs query to refresh data
-            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', newDate] });
+            queryClient.invalidateQueries({ 
+              predicate: (query) => {
+                const key = query.queryKey;
+                return Array.isArray(key) && key.includes('/api/nutrition/logs') && key.includes(user?.id);
+              }
+            });
           }}
           size="lg"
           showDatePicker={showCopyFromDatePicker}
@@ -376,6 +393,7 @@ function AppContent() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [minLoadingTime, setMinLoadingTime] = useState(true);
+  const [previousUserId, setPreviousUserId] = useState<number | null>(null);
   
   // First-time user detection (now inside QueryClientProvider)
   const { 
@@ -390,6 +408,36 @@ function AppContent() {
   useEffect(() => {
     setupGlobalErrorHandling();
   }, []);
+
+  // Clear cache when user changes to prevent data leakage
+  useEffect(() => {
+    if (user && previousUserId && user.id !== previousUserId) {
+      console.log(`User changed from ${previousUserId} to ${user.id}, clearing old user cache`);
+      // Clear cache for the previous user to prevent data leakage
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          if (Array.isArray(queryKey) && queryKey.length > 0) {
+            const hasApiPath = queryKey.some(key => typeof key === 'string' && key.startsWith('/api/'));
+            const hasPreviousUserId = queryKey.includes(previousUserId);
+            // Invalidate queries that include the previous user ID
+            return hasApiPath && hasPreviousUserId;
+          }
+          return false;
+        }
+      });
+    }
+    
+    // Update the previous user ID
+    if (user?.id) {
+      setPreviousUserId(user.id);
+    } else if (!user) {
+      // User signed out, clear all cache to prevent any leakage
+      console.log('User signed out, clearing all cache');
+      queryClient.clear();
+      setPreviousUserId(null);
+    }
+  }, [user?.id]);
 
   // Ensure minimum loading time for better UX
   useEffect(() => {
