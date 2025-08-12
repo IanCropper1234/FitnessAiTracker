@@ -90,8 +90,8 @@ export default function CreateAIWorkoutSession() {
   const [injuryRestrictions, setInjuryRestrictions] = useState<string>('');
   const [customRequirements, setCustomRequirements] = useState<string>('');
   
-  // Weekly plan state
-  const [viewMode, setViewMode] = useState<'single' | 'weekly'>('weekly');
+  // Weekly plan state - default to single program as requested
+  const [viewMode, setViewMode] = useState<'single' | 'weekly'>('single');
   const [templateNamePrefix, setTemplateNamePrefix] = useState<string>('AI Generated Workout');
 
   // Available options
@@ -412,23 +412,32 @@ export default function CreateAIWorkoutSession() {
             {/* Generation Mode Selector */}
             <div>
               <label className="text-sm font-medium mb-3 block">Generation Mode</label>
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'single' | 'weekly')}>
+              <Tabs value={viewMode} onValueChange={(value) => {
+                // Only allow single mode selection
+                if (value === 'single') {
+                  setViewMode(value as 'single' | 'weekly');
+                }
+              }}>
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="single" className="flex items-center gap-2">
                     <Dumbbell className="h-4 w-4" />
-                    Single Session
+                    Single Program
                   </TabsTrigger>
-                  <TabsTrigger value="weekly" className="flex items-center gap-2">
+                  <TabsTrigger 
+                    value="weekly" 
+                    className="flex items-center gap-2 opacity-50 cursor-not-allowed"
+                    disabled
+                  >
                     <Calendar className="h-4 w-4" />
                     Weekly Program
+                    <span className="text-xs bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded ml-1">
+                      Coming Soon
+                    </span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
               <p className="text-xs text-muted-foreground mt-2">
-                {viewMode === 'weekly' 
-                  ? `Generate a complete ${sessionsPerWeek}-day weekly training program with scientific structure and RP methods`
-                  : 'Generate exercise recommendations for a single training session'
-                }
+                Generate exercise recommendations for a single training session with AI-powered RP methodology
               </p>
             </div>
             {/* Goals */}
