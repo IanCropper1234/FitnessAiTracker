@@ -1466,6 +1466,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             currentExerciseIndex={currentExerciseIndex}
             onExerciseSelect={setCurrentExerciseIndex}
             onExercisesReorder={handleExercisesReorder}
+            workoutData={workoutData}
           />
         </TabsContent>
 

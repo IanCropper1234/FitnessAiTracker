@@ -42,6 +42,7 @@ interface DraggableExerciseListProps {
   onExercisesReorder?: (newOrder: WorkoutExercise[]) => void;
   onExerciseAdd?: (exerciseId: number) => void;
   onExerciseDelete?: (exerciseId: number) => void;
+  workoutData?: Record<number, any[]>; // Dynamic workout data with current sets
 }
 
 export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
@@ -52,6 +53,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
   onExercisesReorder,
   onExerciseAdd,
   onExerciseDelete,
+  workoutData,
 }) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [exerciseFilter, setExerciseFilter] = useState('');
@@ -293,7 +295,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                     <span className="font-medium text-sm truncate">{exercise.exercise.name}</span>
                     <div className="flex gap-1 flex-shrink-0">
                       <Badge variant="outline" className="text-xs px-1.5 py-0">
-                        {exercise.sets}s
+                        {workoutData?.[exercise.id]?.length || exercise.sets}s
                       </Badge>
                       <Badge variant="outline" className="text-xs px-1.5 py-0">
                         {exercise.targetReps}r
