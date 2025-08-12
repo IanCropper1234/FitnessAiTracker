@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { ExternalLink, Mail, Lock } from "lucide-react";
 
 interface User {
   id: number;
@@ -152,6 +154,11 @@ export default function Auth({ onSuccess }: AuthProps) {
     signInMutation.mutate(data);
   };
 
+  const handleReplitAuth = () => {
+    // Redirect to Replit Auth login endpoint
+    window.location.href = "/api/login";
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
@@ -179,9 +186,36 @@ export default function Auth({ onSuccess }: AuthProps) {
             </TabsList>
             
             <TabsContent value="signin" className="space-y-4">
+              {/* Replit Auth Section */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleReplitAuth}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
+                  type="button"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Continue with Replit
+                </Button>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full bg-gray-300 dark:bg-gray-600" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
+                      Or continue with email
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Traditional Email/Password Login */}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
-                  <Label htmlFor="signin-email" className="text-black dark:text-white">{t("email") || "Email"}</Label>
+                  <Label htmlFor="signin-email" className="text-black dark:text-white flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    {t("email") || "Email"}
+                  </Label>
                   <Input
                     id="signin-email"
                     name="email"
@@ -192,7 +226,10 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signin-password" className="text-black dark:text-white">{t("password") || "Password"}</Label>
+                  <Label htmlFor="signin-password" className="text-black dark:text-white flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    {t("password") || "Password"}
+                  </Label>
                   <Input
                     id="signin-password"
                     name="password"
@@ -212,6 +249,30 @@ export default function Auth({ onSuccess }: AuthProps) {
             </TabsContent>
             
             <TabsContent value="signup" className="space-y-4">
+              {/* Replit Auth Section for Sign Up */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleReplitAuth}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
+                  type="button"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Sign up with Replit
+                </Button>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full bg-gray-300 dark:bg-gray-600" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
+                      Or create account with email
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Traditional Email/Password Sign Up */}
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
                   <Label htmlFor="signup-name" className="text-black dark:text-white">{t("name") || "Name"}</Label>
@@ -224,7 +285,10 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signup-email" className="text-black dark:text-white">{t("email") || "Email"}</Label>
+                  <Label htmlFor="signup-email" className="text-black dark:text-white flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    {t("email") || "Email"}
+                  </Label>
                   <Input
                     id="signup-email"
                     name="email"
@@ -235,7 +299,10 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signup-password" className="text-black dark:text-white">{t("password") || "Password"}</Label>
+                  <Label htmlFor="signup-password" className="text-black dark:text-white flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    {t("password") || "Password"}
+                  </Label>
                   <Input
                     id="signup-password"
                     name="password"

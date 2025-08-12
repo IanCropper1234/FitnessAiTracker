@@ -307,11 +307,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes - supporting both legacy session auth and Replit Auth
   app.get('/api/auth/user', async (req: any, res) => {
     try {
+      console.log('Auth check - Session ID:', req.sessionID);
+      console.log('Auth check - Replit Auth authenticated:', req.isAuthenticated && req.isAuthenticated());
+      console.log('Auth check - Session userId:', (req.session as any)?.userId);
+      
       // First try Replit Auth
       if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
         const userId = req.user.claims.sub;
+        console.log('Replit Auth user ID:', userId);
         const user = await storage.getUser(userId);
         if (user) {
+          console.log('Replit Auth user found:', user.email);
           return res.json({ user });
         }
       }
@@ -321,10 +327,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (sessionUserId) {
         const user = await storage.getUser(sessionUserId);
         if (user) {
+          console.log('Session auth user found:', user.email);
           return res.json({ user });
         }
       }
       
+      console.log('No authenticated user found');
       return res.status(401).json({ message: "Unauthorized" });
     } catch (error) {
       console.error("Error fetching user:", error);
