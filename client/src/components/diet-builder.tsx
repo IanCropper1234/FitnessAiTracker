@@ -168,7 +168,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [userSetPercentages, setUserSetPercentages] = useState(false); // Track if user manually set percentages
   const [showMacroDistribution, setShowMacroDistribution] = useState(false); // Track if macro section should be expanded
   const [lastSavedGoal, setLastSavedGoal] = useState<DietGoal | null>(null); // Track last successfully saved goal
-  const [showSuccessIndicator, setShowSuccessIndicator] = useState(false); // Show success state
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
@@ -495,13 +494,14 @@ export function DietBuilder({ userId }: DietBuilderProps) {
           setCarbsPercentage(Math.round((normalizedGoal.targetCarbs * 4 / currentCalories) * 100));
           setFatPercentage(Math.round((normalizedGoal.targetFat * 9 / currentCalories) * 100));
         }
+        
+        // Redirect to integrated nutrition overview to show updated data
+        setTimeout(() => {
+          window.location.href = '/nutrition';
+        }, 500);
       }
       
-      // Show success indicator
-      setShowSuccessIndicator(true);
-      setTimeout(() => setShowSuccessIndicator(false), 3000);
-      
-      // Invalidate caches but don't force immediate refetch to avoid resetting UI
+      // Invalidate caches to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
@@ -1460,27 +1460,25 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   (<div className="space-y-6">
                     {/* Manual Calorie Input */}
                     <div className="bg-background border border-border p-4 space-y-4">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-foreground text-sm">Daily Calorie Target</h4>
-                        {showSuccessIndicator && (
-                          <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                            <div className="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
-                              <div className="w-1.5 h-0.5 bg-white transform rotate-45 origin-left"></div>
-                              <div className="w-0.5 h-1.5 bg-white transform -rotate-45 -ml-0.5"></div>
-                            </div>
-                            <span>Saved: {dietGoal.targetCalories} cal</span>
-                          </div>
-                        )}
-                      </div>
+                      <h4 className="font-medium text-foreground text-sm">Daily Calorie Target</h4>
                       <Input
                         type="number"
                         value={dietGoal.targetCalories}
                         onChange={(e) => setDietGoal(prev => ({ ...prev, targetCalories: Number(e.target.value) }))}
-                        className={`border-gray-300 dark:border-gray-600 ${showSuccessIndicator ? 'border-green-300 bg-green-50 dark:bg-green-900/20' : ''}`}
+                        className="border-gray-300 dark:border-gray-600"
                         placeholder="Enter calories..."
                       />
                       <p className="text-xs text-muted-foreground">
                         Enter your desired daily calorie target manually
+                      </p>
+                    </div>
+                    
+                    {/* Important Note */}
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                        <strong>Note:</strong> The default values shown here are calculated from your TDEE and current goals. 
+                        These will NOT overwrite your custom settings when you save. After saving, you'll be redirected 
+                        to the nutrition overview to see your updated custom targets.
                       </p>
                     </div>
                     {/* MyFitnessPal-Style Macro Percentage Controls */}
@@ -1575,23 +1573,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         </div>
                       )}
 
-                      {/* Success Indicator */}
-                      {showSuccessIndicator && (
-                        <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                              <div className="w-2 h-1 bg-white transform rotate-45 origin-left"></div>
-                              <div className="w-1 h-2 bg-white transform -rotate-45 -ml-1"></div>
-                            </div>
-                            <p className="text-xs text-green-700 dark:text-green-300 font-medium">
-                              Custom goals saved successfully! 
-                              <br />
-                              Calories: {dietGoal.targetCalories} | P:{Math.round(proteinPercentage)}% C:{Math.round(carbsPercentage)}% F:{Math.round(fatPercentage)}%
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Save Button */}
                       <div className="pt-4">
                         <Button
@@ -1612,7 +1593,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                             saveDietGoalMutation.mutate(updatedGoal);
                           }}
                           disabled={saveDietGoalMutation.isPending || getTotalPercentage() !== 100}
-                          className={`w-full ${showSuccessIndicator ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white"
                         >
                           {saveDietGoalMutation.isPending ? (
                             <>
@@ -1623,8 +1604,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                               </div>
                               Saving Custom Goals...
                             </>
-                          ) : showSuccessIndicator ? (
-                            '✓ Goals Saved Successfully'
                           ) : (
                             'Save Custom Goals'
                           )}
