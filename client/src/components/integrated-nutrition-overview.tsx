@@ -7,8 +7,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useIOSNotifications } from "@/components/ui/ios-notification-manager";
 import { TimezoneUtils } from "@shared/utils/timezone";
-import { useWorkoutSessionSafety } from "@/hooks/useWorkoutSessionSafety";
-import { WorkoutSafetyWarning } from "@/components/WorkoutSafetyWarning";
 
 import { 
   Plus, 
@@ -82,8 +80,6 @@ export function IntegratedNutritionOverview({
   setShowCopyToDatePicker,
   onCopyDateSelected
 }: IntegratedNutritionOverviewProps) {
-  // Workout session safety
-  const { workoutState, getSafeQueryOptions, isMutationSafe } = useWorkoutSessionSafety();
   const { showSuccess, showError, showWarning, showInfo } = useIOSNotifications();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -281,7 +277,7 @@ export function IntegratedNutritionOverview({
     return dietGoals.targetFat || nutritionSummary?.goalFat || 60;
   };
 
-  // Fetch nutrition logs for the selected date with workout safety
+  // Fetch nutrition logs for the selected date
   const { data: nutritionLogs, isLoading: logsLoading, error: logsError } = useQuery({
     queryKey: ['/api/nutrition/logs', userId, selectedDate],
     queryFn: async () => {
@@ -294,16 +290,11 @@ export function IntegratedNutritionOverview({
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },
-    retry: 3,
-    ...getSafeQueryOptions(['/api/nutrition/logs', userId, selectedDate])
+    retry: 3
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (logId: number) => {
-      // Check if mutation is safe during active workout
-      if (!isMutationSafe('nutrition')) {
-        throw new Error('Cannot delete food logs during active workout');
-      }
       return await apiRequest("DELETE", `/api/nutrition/log/${logId}`);
     },
     onSuccess: () => {
@@ -1031,9 +1022,6 @@ export function IntegratedNutritionOverview({
 
   return (
     <div className="space-y-2">
-      {/* Workout Safety Warning */}
-      <WorkoutSafetyWarning showInNutrition={true} />
-      
       {/* Macro Summary - Condensed List View */}
       <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border shadow-lg nutrition-card-ios">
         <CardContent className="p-3">

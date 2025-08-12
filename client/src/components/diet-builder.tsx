@@ -957,10 +957,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
     const goalToSave = {
       ...dietGoal,
       // Ensure weeklyWeightTarget is 0 for maintain goals
-      weeklyWeightTarget: dietGoal.goal === 'maintain' ? 0 : (dietGoal.weeklyWeightTarget || 0),
-      // Ensure custom goals are properly marked in database
-      customTargetCalories: dietGoal.useCustomCalories ? dietGoal.targetCalories : dietGoal.customTargetCalories,
-      useCustomCalories: dietGoal.useCustomCalories || false
+      weeklyWeightTarget: dietGoal.goal === 'maintain' ? 0 : (dietGoal.weeklyWeightTarget || 0)
     };
     
     console.log('Saving diet goal:', goalToSave); // Debug log to see what's being sent
@@ -1428,17 +1425,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       <Input
                         type="number"
                         value={dietGoal.targetCalories}
-                        onChange={(e) => {
-                          const newCalories = Number(e.target.value);
-                          setDietGoal(prev => ({ 
-                            ...prev, 
-                            targetCalories: newCalories,
-                            customTargetCalories: newCalories,
-                            useCustomCalories: true
-                          }));
-                          // Update macro grams when calories change but keep percentages
-                          updateMacrosFromPercentages(proteinPercentage, carbsPercentage, fatPercentage);
-                        }}
+                        onChange={(e) => setDietGoal(prev => ({ ...prev, targetCalories: Number(e.target.value) }))}
                         className="border-gray-300 dark:border-gray-600"
                         placeholder="Enter calories..."
                       />
@@ -1541,18 +1528,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       {/* Save Button */}
                       <div className="pt-4">
                         <Button
-                          onClick={() => {
-                            // Mark as using custom calories and macros when saving custom goals
-                            const customGoal = {
-                              ...dietGoal,
-                              customTargetCalories: dietGoal.targetCalories,
-                              useCustomCalories: true,
-                              autoRegulation: false // Disable auto-regulation for custom goals
-                            };
-                            setDietGoal(customGoal);
-                            // Use setTimeout to ensure state update happens before save
-                            setTimeout(() => handleSaveDietGoal(), 0);
-                          }}
+                          onClick={handleSaveDietGoal}
                           disabled={saveDietGoalMutation.isPending || getTotalPercentage() !== 100}
                           className="w-full bg-green-600 hover:bg-green-700 text-white"
                         >

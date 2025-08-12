@@ -12,7 +12,6 @@ import { useIOSNotifications } from '@/components/ui/ios-notification-manager';
 import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useFeature } from '@/hooks/useFeature';
-import { useWorkoutSessionSafety } from '@/hooks/useWorkoutSessionSafety';
 
 // Enhanced components
 import { RestTimerFAB } from './RestTimerFAB';
@@ -154,7 +153,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   const { toast } = useToast();
   const { showSuccess, showError, showInfo, addNotification } = useIOSNotifications();
-  const { markWorkoutStart, markWorkoutEnd } = useWorkoutSessionSafety();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
@@ -309,13 +307,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       setWorkoutData(initialData);
       setSpecialMethods(initialSpecialMethods);
       setSpecialConfigs(initialSpecialConfigs);
-      
-      // Mark workout as started for safety tracking
-      if (session.id) {
-        markWorkoutStart(session.id);
-      }
     }
-  }, [session, markWorkoutStart]);
+  }, [session]);
 
   // Rest timer countdown
   useEffect(() => {
@@ -403,9 +396,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         });
         
         if (variables?.isCompleted) {
-          // Mark workout as completed for safety tracking
-          markWorkoutEnd();
-          
           // Workout completed - navigate to feedback page
           toast({
             title: "Workout Completed!",
@@ -685,14 +675,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   });
 
   // Special training methods handlers
-  const handleSpecialMethodChange = (exerciseId: number, method: string | null, preserveConfig = false) => {
+  const handleSpecialMethodChange = (exerciseId: number, method: string | null) => {
     setSpecialMethods(prev => ({
       ...prev,
       [exerciseId]: method
     }));
     
-    // Reset config when method changes, unless we're preserving it (e.g., from historical data)
-    if (method !== specialMethods[exerciseId] && !preserveConfig) {
+    // Reset config when method changes
+    if (method !== specialMethods[exerciseId]) {
       setSpecialConfigs(prev => ({
         ...prev,
         [exerciseId]: method === 'giant_set' ? {
@@ -1230,7 +1220,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   exerciseId={currentExercise.exerciseId}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
                   specialMethod={specialMethods[currentExercise.id] as any}
-                  onSpecialMethodChange={(method, preserveConfig) => handleSpecialMethodChange(currentExercise.id, method, preserveConfig)}
+                  onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
                   specialConfig={specialConfigs[currentExercise.id]}
                   onSpecialConfigChange={(config) => handleSpecialConfigChange(currentExercise.id, config)}
                   sessionExercises={session?.exercises}

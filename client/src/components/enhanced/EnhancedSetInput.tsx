@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ interface EnhancedSetInputProps {
   exerciseId?: number; // For fetching historical data
   // Special Training Methods
   specialMethod?: 'myorep_match' | 'myorep_no_match' | 'drop_set' | 'superset' | 'giant_set' | null;
-  onSpecialMethodChange?: (method: string | null, preserveConfig?: boolean) => void;
+  onSpecialMethodChange?: (method: string | null) => void;
   specialConfig?: any;
   onSpecialConfigChange?: (config: any) => void;
   // Session exercises for lookup
@@ -102,9 +102,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
       if (!response.ok) return [];
       return response.json();
     },
-    enabled: !!exerciseId && !!userId && !!set.setNumber,
-    staleTime: 5 * 60 * 1000, // 5 minutes - prevent excessive refetching
-    refetchOnWindowFocus: false // Prevent refetch on focus changes
+    enabled: !!exerciseId && !!userId && !!set.setNumber
   });
   const [useBodyWeight, setUseBodyWeight] = useState(false);
 
@@ -138,7 +136,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
 
   const handleWeightChange = (value: number) => {
     if (!useBodyWeight) {
-      console.log(`[handleWeightChange] Setting weight to: ${value}`);
       onUpdateSet('weight', value);
     }
   };
@@ -163,12 +160,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleRepsChange = (value: number) => {
-    console.log(`[handleRepsChange] Setting reps to: ${value}`);
     onUpdateSet('actualReps', value);
   };
 
   const handleRpeChange = (value: number) => {
-    console.log(`[handleRpeChange] Setting RPE to: ${value}`);
     onUpdateSet('rpe', value);
   };
 
@@ -190,59 +185,28 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleUseHistoricalData = (historicalSet: HistoricalSetData) => {
-    console.log('=== STANDARD HISTORICAL DATA AUTO-APPLY ===');
-    console.log('Current set data before update:', {
-      weight: set.weight,
-      actualReps: set.actualReps,
-      rpe: set.rpe,
-      useBodyWeight,
-      weightUnit
-    });
-    console.log('Historical data to apply:', historicalSet);
+    console.log('Applying historical data:', historicalSet);
     
-    try {
-      // Parse historical data first
+    if (!useBodyWeight) {
       const weight = typeof historicalSet.weight === 'string' ? parseFloat(historicalSet.weight) : historicalSet.weight;
-      const reps = typeof historicalSet.reps === 'string' ? parseInt(historicalSet.reps) : historicalSet.reps;
-      const rpe = typeof historicalSet.rpe === 'string' ? parseFloat(historicalSet.rpe) : historicalSet.rpe;
-      
-      // Apply all updates in batch to ensure consistency
-      if (!useBodyWeight) {
-        const convertedWeight = convertWeight(weight, 'kg', weightUnit);
-        console.log('Setting weight from', weight, 'kg to', convertedWeight, weightUnit);
-        onUpdateSet('weight', convertedWeight);
-      } else {
-        console.log('Skipping weight update - using body weight');
-      }
-      
-      console.log('Setting actualReps from', set.actualReps, 'to', reps);
-      onUpdateSet('actualReps', reps);
-      
-      console.log('Setting rpe from', set.rpe, 'to', rpe);
-      onUpdateSet('rpe', rpe);
-      
-      // Close history panel and log success
-      setShowHistory(false);
-      console.log('Historical data applied successfully');
-      
-      // Log final state for debugging
-      setTimeout(() => {
-        console.log('Current set data after update should be:', {
-          weight: !useBodyWeight ? convertWeight(weight, 'kg', weightUnit) : set.weight,
-          actualReps: reps,
-          rpe: rpe
-        });
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error applying historical data:', error);
+      const convertedWeight = convertWeight(weight, 'kg', weightUnit);
+      console.log('Setting weight:', convertedWeight);
+      onUpdateSet('weight', convertedWeight);
     }
+    
+    const reps = typeof historicalSet.reps === 'string' ? parseInt(historicalSet.reps) : historicalSet.reps;
+    const rpe = typeof historicalSet.rpe === 'string' ? parseFloat(historicalSet.rpe) : historicalSet.rpe;
+    
+    console.log('Setting reps:', reps);
+    console.log('Setting rpe:', rpe);
+    
+    onUpdateSet('actualReps', reps);
+    onUpdateSet('rpe', rpe);
+    setShowHistory(false);
   };
 
-  // Get the most recent historical data using useMemo to prevent re-renders
-  const latestHistoricalData = useMemo(() => {
-    return historicalData?.[0] || null;
-  }, [historicalData]);
+  // Get the most recent historical data
+  const latestHistoricalData = historicalData?.[0];
 
   // Calculate if the set is valid - consider body weight for body weight exercises
   const effectiveWeight = getEffectiveWeight();
@@ -390,11 +354,8 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   currentSpecialMethod={specialMethod || 'standard'}
                   onApplyHistoricalData={(historicalData) => {
                     try {
-                      console.log('Applying historical data:', historicalData);
                       if (historicalData.specialMethod && onSpecialMethodChange) {
-                        // Apply both method and config at the same time to avoid overwrites
-                        onSpecialMethodChange(historicalData.specialMethod, true); // preserveConfig = true
-                        
+                        onSpecialMethodChange(historicalData.specialMethod);
                         if (historicalData.specialConfig && onSpecialConfigChange) {
                           onSpecialConfigChange(historicalData.specialConfig);
                         }
@@ -924,7 +885,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   {/* Weight Input - Full width without unit selector */}
                   <div className="col-span-2">
                     <Input
-                      key={`weight-${set.weight}-${useBodyWeight}`}
                       type="number"
                       value={getEffectiveWeight() || ''}
                       onChange={(e) => handleWeightChange(parseFloat(e.target.value) || 0)}
@@ -962,7 +922,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-foreground">Reps</label>
                   <Input
-                    key={`reps-${set.actualReps}`}
                     type="number"
                     value={set.actualReps || ''}
                     onChange={(e) => handleRepsChange(parseInt(e.target.value) || 0)}
@@ -978,7 +937,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-foreground">RPE</label>
                   <Select
-                    key={`rpe-${set.rpe}`}
                     value={set.rpe ? set.rpe.toString() : "8"}
                     onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
