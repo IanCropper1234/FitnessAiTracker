@@ -335,7 +335,29 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   }, [isRestTimerActive, restTimeRemaining]); // Removed toast since showSuccess is used, not toast
 
   // Swipe gesture handlers
+  const [swipeProgress, setSwipeProgress] = useState<{ direction: 'left' | 'right' | null; progress: number }>({
+    direction: null,
+    progress: 0
+  });
+
   const swipeHandlers = useSwipeable({
+    onSwiping: (eventData) => {
+      if (!gestureNavEnabled) return;
+      
+      // Only trigger on horizontal swipes with significant movement
+      if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY) && Math.abs(eventData.deltaX) > 50) {
+        const direction = eventData.deltaX > 0 ? 'right' : 'left';
+        const progress = Math.min(Math.abs(eventData.deltaX) / 120, 1); // Max at 120px
+        
+        // Only show feedback if we can actually navigate in that direction
+        const canSwipeLeft = currentExerciseIndex < (session?.exercises.length || 0) - 1;
+        const canSwipeRight = currentExerciseIndex > 0;
+        
+        if ((direction === 'left' && canSwipeLeft) || (direction === 'right' && canSwipeRight)) {
+          setSwipeProgress({ direction, progress });
+        }
+      }
+    },
     onSwipedLeft: () => {
       if (gestureNavEnabled && currentExerciseIndex < (session?.exercises.length || 0) - 1) {
         setCurrentExerciseIndex(currentExerciseIndex + 1);
@@ -344,6 +366,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           autoHideDelay: 2000
         });
       }
+      setSwipeProgress({ direction: null, progress: 0 });
     },
     onSwipedRight: () => {
       if (gestureNavEnabled && currentExerciseIndex > 0) {
@@ -353,9 +376,17 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           autoHideDelay: 2000
         });
       }
+      setSwipeProgress({ direction: null, progress: 0 });
+    },
+    onTouchEndOrOnMouseUp: () => {
+      // Reset swipe progress when touch/mouse ends
+      setSwipeProgress({ direction: null, progress: 0 });
     },
     preventScrollOnSwipe: true,
-    trackMouse: true,
+    trackMouse: false, // Disable mouse tracking to reduce accidental triggers
+    delta: 80, // Increase threshold for triggering swipe (default is 10)
+    swipeDuration: 500, // Maximum time for a swipe gesture
+    touchEventOptions: { passive: false },
   });
 
   // Save progress mutation with comprehensive error handling
@@ -948,7 +979,37 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   return (
-    <div className="space-y-2 max-w-4xl mx-auto ios-list-scroll animated-element" {...swipeHandlers}>
+    <div className="space-y-2 max-w-4xl mx-auto ios-list-scroll animated-element relative" {...swipeHandlers}>
+      {/* Swipe Progress Indicator */}
+      {swipeProgress.direction && swipeProgress.progress > 0.1 && (
+        <div className="fixed inset-0 pointer-events-none z-30 flex items-center justify-center">
+          <div className="bg-black/70 text-white px-4 py-2 rounded-lg flex items-center gap-2 backdrop-blur-sm">
+            {swipeProgress.direction === 'left' ? (
+              <>
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-sm font-medium">Next Exercise</span>
+                <div className="w-16 h-1 bg-white/30 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-white rounded-full transition-all duration-100"
+                    style={{ width: `${swipeProgress.progress * 100}%` }}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <ArrowRight className="h-4 w-4" />
+                <span className="text-sm font-medium">Previous Exercise</span>
+                <div className="w-16 h-1 bg-white/30 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-white rounded-full transition-all duration-100"
+                    style={{ width: `${swipeProgress.progress * 100}%` }}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
       {/* iOS-Style Expandable Compact Header */}
       <div className="ios-card overflow-hidden animated-element">
         {/* Collapsed State - Ultra Compact Single Row */}
