@@ -419,21 +419,21 @@ export default function CreateAIWorkoutSession() {
                 }
               }}>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="single" className="flex items-center gap-2">
+                  <TabsTrigger value="single" className="flex items-center justify-center gap-2 h-auto min-h-[44px]">
                     <Dumbbell className="h-4 w-4" />
-                    Single Program
+                    <span className="font-medium">Single Program</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="weekly" 
-                    className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed p-2"
+                    className="flex flex-col items-center justify-center gap-0.5 opacity-50 cursor-not-allowed p-1.5 h-auto min-h-[44px]"
                     disabled
                   >
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      <span className="text-xs">Weekly Program</span>
+                      <span className="text-[10px] font-medium">Weekly</span>
                     </div>
-                    <span className="text-xs bg-orange-500/20 text-orange-400 px-1 py-0.5 rounded leading-none">
-                      Coming Soon
+                    <span className="text-[9px] bg-orange-500/20 text-orange-400 px-1 py-0.5 rounded leading-none">
+                      Soon
                     </span>
                   </TabsTrigger>
                 </TabsList>
