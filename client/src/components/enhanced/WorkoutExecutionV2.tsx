@@ -1314,7 +1314,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                             <div className="text-xs text-muted-foreground leading-tight">
                               {set.completed ? (
                                 `${set.weight}${weightUnit} × ${set.actualReps} reps @ RPE ${set.rpe}`
+                              ) : index === currentSetIndex ? (
+                                // For active set, show current live values being entered
+                                <>
+                                  {set.weight > 0 ? `${set.weight}${weightUnit}` : 'Weight'} × {set.actualReps > 0 ? `${set.actualReps}` : `${set.targetReps}`} reps
+                                  {set.rpe > 0 && ` @ RPE ${set.rpe}`}
+                                </>
                               ) : (
+                                // For pending sets, show target/recommended values
                                 <>
                                   Target: {getSetRecommendation(currentExercise.exerciseId, set.setNumber)?.recommendedReps || set.targetReps} reps
                                   {getSetRecommendation(currentExercise.exerciseId, set.setNumber) && (
