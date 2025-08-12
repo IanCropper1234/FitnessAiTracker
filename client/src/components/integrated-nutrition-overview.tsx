@@ -1023,20 +1023,20 @@ export function IntegratedNutritionOverview({
   return (
     <div className="space-y-2">
       {/* Macro Summary - Condensed List View */}
-      <Card className="bg-gray-900 dark:bg-gray-800 border-gray-700 border shadow-lg nutrition-card-ios">
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 border shadow-lg nutrition-card-ios">
         <CardContent className="p-3">
           <div className="space-y-3">
             {/* Calories Row */}
             <div className="flex items-center gap-3">
-              <div className="w-16 text-xs font-medium text-blue-400">
+              <div className="w-16 text-xs font-medium text-blue-600 dark:text-blue-400">
                 Calories
               </div>
               <div className="flex-1 flex items-center gap-2">
-                <div className="text-sm font-bold text-white min-w-[3rem]">
+                <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
                   {Math.round(nutritionSummary?.totalCalories || 0)}
                 </div>
-                <div className="text-xs text-gray-400">/</div>
-                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+                <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
                   {Math.round(getCurrentTargetCalories())}
                 </div>
                 <div className="flex-1 relative">
@@ -1049,7 +1049,7 @@ export function IntegratedNutritionOverview({
                     />
                   </div>
                 </div>
-                <div className="text-xs font-medium text-blue-300 min-w-[2.5rem] text-right">
+                <div className="text-xs font-medium text-blue-700 dark:text-blue-300 min-w-[2.5rem] text-right">
                   {Math.round(((nutritionSummary?.totalCalories || 0) / getCurrentTargetCalories() * 100))}%
                 </div>
               </div>
@@ -1057,15 +1057,15 @@ export function IntegratedNutritionOverview({
 
             {/* Protein Row */}
             <div className="flex items-center gap-3">
-              <div className="w-16 text-xs font-medium text-green-400">
+              <div className="w-16 text-xs font-medium text-green-600 dark:text-green-400">
                 Protein
               </div>
               <div className="flex-1 flex items-center gap-2">
-                <div className="text-sm font-bold text-white min-w-[3rem]">
+                <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
                   {Math.round(nutritionSummary?.totalProtein || 0)}g
                 </div>
-                <div className="text-xs text-gray-400">/</div>
-                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+                <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
                   {Math.round(getCurrentTargetProtein())}g
                 </div>
                 <div className="flex-1 relative">
@@ -1078,7 +1078,7 @@ export function IntegratedNutritionOverview({
                     />
                   </div>
                 </div>
-                <div className="text-xs font-medium text-green-300 min-w-[2.5rem] text-right">
+                <div className="text-xs font-medium text-green-700 dark:text-green-300 min-w-[2.5rem] text-right">
                   {Math.round(((nutritionSummary?.totalProtein || 0) / getCurrentTargetProtein() * 100))}%
                 </div>
               </div>
@@ -1086,15 +1086,15 @@ export function IntegratedNutritionOverview({
 
             {/* Carbs Row */}
             <div className="flex items-center gap-3">
-              <div className="w-16 text-xs font-medium text-orange-400">
+              <div className="w-16 text-xs font-medium text-orange-600 dark:text-orange-400">
                 Carbs
               </div>
               <div className="flex-1 flex items-center gap-2">
-                <div className="text-sm font-bold text-white min-w-[3rem]">
+                <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
                   {Math.round(nutritionSummary?.totalCarbs || 0)}g
                 </div>
-                <div className="text-xs text-gray-400">/</div>
-                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+                <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
                   {Math.round(getCurrentTargetCarbs())}g
                 </div>
                 <div className="flex-1 relative">
@@ -1107,7 +1107,7 @@ export function IntegratedNutritionOverview({
                     />
                   </div>
                 </div>
-                <div className="text-xs font-medium text-orange-300 min-w-[2.5rem] text-right">
+                <div className="text-xs font-medium text-orange-700 dark:text-orange-300 min-w-[2.5rem] text-right">
                   {Math.round(((nutritionSummary?.totalCarbs || 0) / getCurrentTargetCarbs() * 100))}%
                 </div>
               </div>
@@ -1115,15 +1115,15 @@ export function IntegratedNutritionOverview({
 
             {/* Fat Row */}
             <div className="flex items-center gap-3">
-              <div className="w-16 text-xs font-medium text-purple-400">
+              <div className="w-16 text-xs font-medium text-purple-600 dark:text-purple-400">
                 Fat
               </div>
               <div className="flex-1 flex items-center gap-2">
-                <div className="text-sm font-bold text-white min-w-[3rem]">
+                <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
                   {Math.round(nutritionSummary?.totalFat || 0)}g
                 </div>
-                <div className="text-xs text-gray-400">/</div>
-                <div className="text-xs text-gray-300 min-w-[2.5rem]">
+                <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+                <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
                   {Math.round(getCurrentTargetFat())}g
                 </div>
                 <div className="flex-1 relative">
@@ -1136,7 +1136,7 @@ export function IntegratedNutritionOverview({
                     />
                   </div>
                 </div>
-                <div className="text-xs font-medium text-purple-300 min-w-[2.5rem] text-right">
+                <div className="text-xs font-medium text-purple-700 dark:text-purple-300 min-w-[2.5rem] text-right">
                   {Math.round(((nutritionSummary?.totalFat || 0) / getCurrentTargetFat() * 100))}%
                 </div>
               </div>
