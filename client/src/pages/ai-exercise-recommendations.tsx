@@ -417,14 +417,14 @@ export default function CreateAIWorkoutSession() {
                   setViewMode(value as 'single' | 'weekly');
                 }
               }}>
-                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 pt-[0px] pb-[0px] mt-[15px] mb-[15px] pl-[0px] pr-[0px]">
-                  <TabsTrigger value="single" className="flex items-center justify-center gap-2 h-auto min-h-[44px] ml-[-5px] mr-[-5px]">
+                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 pt-[0px] pb-[0px] mt-[15px] mb-[15px]">
+                  <TabsTrigger value="single" className="whitespace-nowrap px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2 h-auto min-h-[44px] ml-[-5px] mr-[-5px]">
                     <Dumbbell className="h-4 w-4" />
-                    <span className="font-medium">Single Program</span>
+                    <span className="font-medium text-[10px]">Weekly</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="weekly" 
-                    className="flex flex-col items-center justify-center gap-0.5 opacity-50 cursor-not-allowed p-1.5 h-auto min-h-[44px]"
+                    className="whitespace-nowrap px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2 h-auto min-h-[44px] ml-[-5px] mr-[-5px] pt-[0px] pb-[0px] mt-[15px] mb-[15px]"
                     disabled
                   >
                     <div className="flex items-center gap-1">

@@ -15,7 +15,7 @@ import {
   type WeightGoal, type InsertWeightGoal,
   type MuscleGroup, type InsertMuscleGroup, type VolumeLandmark, type InsertVolumeLandmark,
   type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking, type ExerciseMuscleMapping, type InsertExerciseMuscleMapping,
-  type TrainingTemplate, type InsertTrainingTemplate, type SavedWorkoutTemplate, type InsertSavedWorkoutTemplate
+  type TrainingTemplate, type InsertTrainingTemplate
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
@@ -177,7 +177,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNutritionLog(id: number): Promise<boolean> {
     const result = await db.delete(nutritionLogs).where(eq(nutritionLogs.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getNutritionLogsInRange(userId: string | number, startDate: Date, endDate: Date): Promise<NutritionLog[]> {
@@ -282,7 +282,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteExercise(id: number): Promise<boolean> {
     const result = await db.delete(exercises).where(eq(exercises.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Workout Sessions
@@ -363,14 +363,14 @@ export class DatabaseStorage implements IStorage {
       console.log('Deleting workout session...');
       const result = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
       console.log(`Delete result: ${result.rowCount} rows affected`);
-      return result.rowCount > 0;
+      return (result.rowCount ?? 0) > 0;
     } catch (error) {
       console.error('Error deleting workout session:', error);
       return false;
     }
   }
 
-  async resetWorkoutSessionProgress(sessionId: number): Promise<void> {
+  async resetWorkoutSessionProgress(sessionId: number): Promise<WorkoutSession | undefined> {
     await db
       .update(workoutExercises)
       .set({
@@ -382,6 +382,8 @@ export class DatabaseStorage implements IStorage {
         isCompleted: false
       })
       .where(eq(workoutExercises.sessionId, sessionId));
+    
+    return this.getWorkoutSession(sessionId);
   }
 
   // Auto-Regulation Feedback
@@ -594,7 +596,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteMealPlan(id: number): Promise<boolean> {
     const result = await db.delete(mealPlans).where(eq(mealPlans.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Weekly Nutrition Goals
@@ -724,7 +726,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteBodyMetric(id: number): Promise<boolean> {
     const result = await db.delete(bodyMetrics).where(eq(bodyMetrics.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Weight Goals
@@ -848,7 +850,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSavedMealPlan(id: number): Promise<boolean> {
     const result = await db.delete(savedMealPlans).where(eq(savedMealPlans.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Diet Goals
@@ -895,69 +897,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Workout Sessions
-  async createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession> {
-    const [created] = await db.insert(workoutSessions).values(session).returning();
-    return created;
-  }
-
-  async getWorkoutSession(id: number): Promise<WorkoutSession | undefined> {
-    const [session] = await db.select().from(workoutSessions).where(eq(workoutSessions.id, id));
-    return session || undefined;
-  }
-
   async getUserWorkoutSessions(userId: string | number): Promise<WorkoutSession[]> {
     return db.select().from(workoutSessions)
       .where(eq(workoutSessions.userId, Number(userId)))
       .orderBy(desc(workoutSessions.date));
-  }
-
-  async updateWorkoutSession(id: number, updates: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined> {
-    const [updated] = await db.update(workoutSessions)
-      .set(updates)
-      .where(eq(workoutSessions.id, id))
-      .returning();
-    return updated || undefined;
-  }
-
-  async deleteWorkoutSession(id: number): Promise<boolean> {
-    try {
-      console.log('Deleting workout session with ID:', id, 'Type:', typeof id);
-      
-      if (isNaN(id) || id <= 0) {
-        console.error('Invalid session ID:', id);
-        return false;
-      }
-      
-      // First delete related workout exercises
-      const exercisesResult = await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
-      console.log('Deleted exercises:', exercisesResult.rowCount);
-      
-      // Delete any auto-regulation feedback related to this session
-      const feedbackResult = await db.delete(autoRegulationFeedback).where(eq(autoRegulationFeedback.sessionId, id));
-      console.log('Deleted feedback:', feedbackResult.rowCount);
-      
-      // Finally delete the workout session
-      const sessionResult = await db.delete(workoutSessions).where(eq(workoutSessions.id, id));
-      console.log('Deleted session:', sessionResult.rowCount);
-      
-      return sessionResult.rowCount > 0;
-    } catch (error) {
-      console.error('Error deleting workout session:', error);
-      return false;
-    }
-  }
-
-  // Workout Exercises
-  async createWorkoutExercise(workoutExercise: InsertWorkoutExercise): Promise<WorkoutExercise> {
-    const [created] = await db.insert(workoutExercises).values(workoutExercise).returning();
-    return created;
-  }
-
-  async getWorkoutExercises(sessionId: number): Promise<WorkoutExercise[]> {
-    return db.select().from(workoutExercises)
-      .where(eq(workoutExercises.sessionId, sessionId))
-      .orderBy(workoutExercises.orderIndex);
   }
 
   async updateWorkoutExercise(id: number, updates: Partial<InsertWorkoutExercise>): Promise<WorkoutExercise | undefined> {
@@ -972,7 +915,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteWorkoutExercise(id: number): Promise<boolean> {
     const result = await db.delete(workoutExercises).where(eq(workoutExercises.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Mesocycle Management
@@ -995,7 +938,7 @@ export class DatabaseStorage implements IStorage {
 
   async getUserTrainingTemplates(userId: string | number): Promise<TrainingTemplate[]> {
     return db.select().from(trainingTemplates)
-      .where(eq(trainingTemplates.createdBy, userId))
+      .where(eq(trainingTemplates.createdBy, Number(userId)))
       .orderBy(desc(trainingTemplates.createdAt));
   }
 
@@ -1014,7 +957,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTrainingTemplate(templateId: number): Promise<boolean> {
     const result = await db.delete(trainingTemplates).where(eq(trainingTemplates.id, templateId));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Saved Meals
@@ -1031,28 +974,28 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSavedMeal(id: number): Promise<boolean> {
     const result = await db.delete(savedMeals).where(eq(savedMeals.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Saved Workout Templates
-  async getSavedWorkoutTemplates(userId: string | number): Promise<SavedWorkoutTemplate[]> {
+  async getanys(userId: string | number): Promise<any[]> {
     return db.select().from(savedWorkoutTemplates)
       .where(eq(savedWorkoutTemplates.userId, Number(userId)))
       .orderBy(desc(savedWorkoutTemplates.createdAt));
   }
 
-  async getSavedWorkoutTemplate(templateId: number): Promise<SavedWorkoutTemplate | undefined> {
+  async getany(templateId: number): Promise<any | undefined> {
     const [template] = await db.select().from(savedWorkoutTemplates)
       .where(eq(savedWorkoutTemplates.id, templateId));
     return template || undefined;
   }
 
-  async createSavedWorkoutTemplate(template: InsertSavedWorkoutTemplate): Promise<SavedWorkoutTemplate> {
+  async createany(template: Insertany): Promise<any> {
     const [created] = await db.insert(savedWorkoutTemplates).values(template).returning();
     return created;
   }
 
-  async updateSavedWorkoutTemplate(id: number, template: Partial<InsertSavedWorkoutTemplate>): Promise<SavedWorkoutTemplate | undefined> {
+  async updateany(id: number, template: Partial<Insertany>): Promise<any | undefined> {
     const [updated] = await db.update(savedWorkoutTemplates)
       .set(template)
       .where(eq(savedWorkoutTemplates.id, id))
@@ -1060,9 +1003,9 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
-  async deleteSavedWorkoutTemplate(id: number): Promise<boolean> {
+  async deleteany(id: number): Promise<boolean> {
     const result = await db.delete(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 }
 

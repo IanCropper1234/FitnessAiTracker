@@ -58,7 +58,33 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  let server;
+  
+  try {
+    console.log('🚀 Initializing server with timeout and error handling...');
+    
+    server = await Promise.race([
+      registerRoutes(app),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Server initialization timeout after 30s')), 30000)
+      )
+    ]);
+
+    console.log('✅ Routes registered successfully');
+  } catch (error) {
+    console.error('❌ Server initialization error:', error);
+    
+    // Try basic server setup in case of registration failure
+    if (error.message.includes('duplicate') || error.message.includes('timeout')) {
+      console.log('🔧 Attempting basic server recovery...');
+      server = require('http').createServer(app);
+    } else {
+      // Fallback to basic routes registration
+      server = await registerRoutes(app);
+    }
+  }
+  
+
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

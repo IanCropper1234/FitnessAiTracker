@@ -545,7 +545,7 @@ export class TemplateEngine {
       const result = await db.execute(sql`DELETE FROM training_templates WHERE id = ${templateId}`);
       
       console.log('Delete result:', result);
-      return result.rowCount ? result.rowCount > 0 : false;
+      return result.rowCount ? (result.rowCount ?? 0) > 0 : false;
     } catch (error) {
       console.error('Delete template error:', error);
       throw error;

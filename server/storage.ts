@@ -15,7 +15,7 @@ import {
   type BodyMetric, type InsertBodyMetric, type MuscleGroup, type InsertMuscleGroup,
   type VolumeLandmark, type InsertVolumeLandmark, type WeeklyVolumeTracking, type InsertWeeklyVolumeTracking,
   type ExerciseMuscleMapping, type InsertExerciseMuscleMapping, type SavedMealPlan, type InsertSavedMealPlan,
-  type SavedMeal, type InsertSavedMeal, type SavedWorkoutTemplate, type InsertSavedWorkoutTemplate,
+  type SavedMeal, type InsertSavedMeal, 
   type WeightGoal, type InsertWeightGoal
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
@@ -710,10 +710,6 @@ export class MemStorage implements IStorage {
 
   async updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined> {
     return undefined; // Stub for memory storage
-  }
-
-  async deleteBodyMetric(id: number): Promise<boolean> {
-    return this.bodyMetrics.delete(id);
   }
 
 
