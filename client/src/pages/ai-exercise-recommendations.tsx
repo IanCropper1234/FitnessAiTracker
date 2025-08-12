@@ -418,7 +418,7 @@ export default function CreateAIWorkoutSession() {
                   setViewMode(value as 'single' | 'weekly');
                 }
               }}>
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 pt-[0px] pb-[0px] mt-[15px] mb-[15px]">
                   <TabsTrigger value="single" className="flex items-center justify-center gap-2 h-auto min-h-[44px]">
                     <Dumbbell className="h-4 w-4" />
                     <span className="font-medium">Single Program</span>
