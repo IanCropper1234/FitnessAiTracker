@@ -2815,7 +2815,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create or update weight goal
   app.post("/api/weight-goals", requireAuth, async (req, res) => {
     try {
-      const weightGoal = await storage.createWeightGoal(req.body);
+      const goalData = { ...req.body };
+      
+      // Parse targetDate if it exists and convert to proper Date object
+      if (goalData.targetDate) {
+        // Handle different date formats: DD/MM/YYYY, YYYY-MM-DD, or ISO string
+        let parsedDate;
+        if (typeof goalData.targetDate === 'string') {
+          // Check if it's in DD/MM/YYYY format
+          if (goalData.targetDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            const [day, month, year] = goalData.targetDate.split('/');
+            parsedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          } else {
+            // Try to parse as is (ISO string or YYYY-MM-DD)
+            parsedDate = new Date(goalData.targetDate);
+          }
+          
+          // Validate the parsed date
+          if (isNaN(parsedDate.getTime())) {
+            return res.status(400).json({ message: "Invalid target date format" });
+          }
+          
+          goalData.targetDate = parsedDate;
+        }
+      }
+      
+      const weightGoal = await storage.createWeightGoal(goalData);
       
       // Bidirectional sync: Update diet goal's weekly weight target if it exists
       if (weightGoal && weightGoal.targetWeightChangePerWeek !== undefined) {
@@ -2843,7 +2868,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/weight-goals/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const weightGoal = await storage.updateWeightGoal(id, req.body);
+      const goalData = { ...req.body };
+      
+      // Parse targetDate if it exists and convert to proper Date object
+      if (goalData.targetDate) {
+        // Handle different date formats: DD/MM/YYYY, YYYY-MM-DD, or ISO string
+        let parsedDate;
+        if (typeof goalData.targetDate === 'string') {
+          // Check if it's in DD/MM/YYYY format
+          if (goalData.targetDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            const [day, month, year] = goalData.targetDate.split('/');
+            parsedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          } else {
+            // Try to parse as is (ISO string or YYYY-MM-DD)
+            parsedDate = new Date(goalData.targetDate);
+          }
+          
+          // Validate the parsed date
+          if (isNaN(parsedDate.getTime())) {
+            return res.status(400).json({ message: "Invalid target date format" });
+          }
+          
+          goalData.targetDate = parsedDate;
+        }
+      }
+      
+      const weightGoal = await storage.updateWeightGoal(id, goalData);
       if (!weightGoal) {
         return res.status(404).json({ message: "Weight goal not found" });
       }
