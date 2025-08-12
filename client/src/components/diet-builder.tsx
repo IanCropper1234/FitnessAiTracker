@@ -167,7 +167,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   const [fatPercentage, setFatPercentage] = useState(30);
   const [userSetPercentages, setUserSetPercentages] = useState(false); // Track if user manually set percentages
   const [showMacroDistribution, setShowMacroDistribution] = useState(false); // Track if macro section should be expanded
-  const [lastSavedGoal, setLastSavedGoal] = useState<DietGoal | null>(null); // Track last successfully saved goal
 
   // Function to update macros from percentages
   const updateMacrosFromPercentages = (protein: number, carbs: number, fat: number) => {
@@ -183,8 +182,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Initialize percentages when diet goal loads or changes (only if user hasn't manually set them)
   useEffect(() => {
-    // Don't override user's manual percentage changes or custom goals
-    if (userSetPercentages || dietGoal.useCustomCalories) return;
+    // Don't override user's manual percentage changes
+    if (userSetPercentages) return;
     
     const currentCalories = dietGoal.targetCalories;
       
@@ -209,7 +208,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
       }
     }
-  }, [dietGoal.targetCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages, dietGoal.useCustomCalories]);
+  }, [dietGoal.targetCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
@@ -353,11 +352,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
   // Update local state when diet goal data is fetched
   useEffect(() => {
     if (currentDietGoal) {
-      // Don't override if we have a recently saved custom goal
-      if (lastSavedGoal && lastSavedGoal.useCustomCalories) {
-        return;
-      }
-      
+      // Convert string values to numbers for frontend state
       const normalizedGoal = {
         ...currentDietGoal,
         tdee: Number(currentDietGoal.tdee),
@@ -368,27 +363,9 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         targetFat: Number(currentDietGoal.targetFat),
         weeklyWeightTarget: Number(currentDietGoal.weeklyWeightTarget)
       };
-      
-      // Only update if significantly different from current goal
-      const isSignificantlyDifferent = !dietGoal.targetCalories || 
-        Math.abs(normalizedGoal.targetCalories - dietGoal.targetCalories) > 10;
-      
-      if (isSignificantlyDifferent || !dietGoal.useCustomCalories) {
-        setDietGoal(normalizedGoal);
-        
-        // If this is a custom goal, preserve the user's percentage settings
-        if (normalizedGoal.useCustomCalories) {
-          setUserSetPercentages(true);
-          const currentCalories = normalizedGoal.targetCalories;
-          if (currentCalories > 0) {
-            setProteinPercentage(Math.round((normalizedGoal.targetProtein * 4 / currentCalories) * 100));
-            setCarbsPercentage(Math.round((normalizedGoal.targetCarbs * 4 / currentCalories) * 100));
-            setFatPercentage(Math.round((normalizedGoal.targetFat * 9 / currentCalories) * 100));
-          }
-        }
-      }
+      setDietGoal(normalizedGoal);
     }
-  }, [currentDietGoal, lastSavedGoal]);
+  }, [currentDietGoal]);
 
   // Auto-sync with profile fitness goal changes and enable auto-regulation
   useEffect(() => {
@@ -479,32 +456,16 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         weeklyWeightTarget: Number(savedGoal.weeklyWeightTarget)
       };
       
-      // Store the saved goal to prevent overrides
-      setLastSavedGoal(normalizedGoal);
+      // Update local state with normalized data
       setDietGoal(normalizedGoal);
       
-      // Mark that percentages are user-set to prevent override
-      if (normalizedGoal.useCustomCalories) {
-        setUserSetPercentages(true);
-        
-        // Recalculate and preserve the percentage values from the saved goal
-        const currentCalories = normalizedGoal.targetCalories;
-        if (currentCalories > 0) {
-          setProteinPercentage(Math.round((normalizedGoal.targetProtein * 4 / currentCalories) * 100));
-          setCarbsPercentage(Math.round((normalizedGoal.targetCarbs * 4 / currentCalories) * 100));
-          setFatPercentage(Math.round((normalizedGoal.targetFat * 9 / currentCalories) * 100));
-        }
-        
-        // Redirect to integrated nutrition overview to show updated data
-        setTimeout(() => {
-          window.location.href = '/nutrition';
-        }, 500);
-      }
-      
-      // Invalidate caches to ensure fresh data
+      // Invalidate all related caches to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
+      
+      // Force refetch to ensure UI updates
+      queryClient.refetchQueries({ queryKey: ['/api/diet-goals', userId] });
     },
     onError: (error: any) => {
       toast({
@@ -1470,15 +1431,6 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       />
                       <p className="text-xs text-muted-foreground">
                         Enter your desired daily calorie target manually
-                      </p>
-                    </div>
-                    
-                    {/* Important Note */}
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                      <p className="text-xs text-blue-700 dark:text-blue-300">
-                        <strong>Note:</strong> The default values shown here are calculated from your TDEE and current goals. 
-                        These will NOT overwrite your custom settings when you save. After saving, you'll be redirected 
-                        to the nutrition overview to see your updated custom targets.
                       </p>
                     </div>
                     {/* MyFitnessPal-Style Macro Percentage Controls */}
