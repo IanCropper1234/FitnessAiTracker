@@ -4,7 +4,7 @@ import {
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
   muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans, savedMeals,
   savedWorkoutTemplates, weightGoals,
-  type User, type InsertUser, type UserProfile, type InsertUserProfile,
+  type User, type InsertUser, type UpsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
   type WorkoutSession, type InsertWorkoutSession, type WorkoutExercise, type InsertWorkoutExercise,
@@ -24,39 +24,40 @@ export interface IStorage {
   // Database access
   getDb(): any;
   
-  // Users
-  getUser(id: number): Promise<User | undefined>;
+  // Users (Replit Auth compatible)
+  getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
-  updateUserDeveloperSettings(id: number, showDeveloperFeatures: boolean): Promise<User | undefined>;
+  updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
+  updateUserDeveloperSettings(id: string, showDeveloperFeatures: boolean): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
   
   // User Profiles
-  getUserProfile(userId: number): Promise<UserProfile | undefined>;
+  getUserProfile(userId: string): Promise<UserProfile | undefined>;
   createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
-  updateUserProfile(userId: number, profile: Partial<InsertUserProfile>): Promise<UserProfile | undefined>;
+  updateUserProfile(userId: string, profile: Partial<InsertUserProfile>): Promise<UserProfile | undefined>;
   
   // Nutrition Goals
-  getNutritionGoal(userId: number): Promise<NutritionGoal | undefined>;
+  getNutritionGoal(userId: string): Promise<NutritionGoal | undefined>;
   createNutritionGoal(goal: InsertNutritionGoal): Promise<NutritionGoal>;
-  updateNutritionGoal(userId: number, goal: Partial<InsertNutritionGoal>): Promise<NutritionGoal | undefined>;
+  updateNutritionGoal(userId: string, goal: Partial<InsertNutritionGoal>): Promise<NutritionGoal | undefined>;
   
   // Diet Goals
-  getDietGoal(userId: number): Promise<any | undefined>;
+  getDietGoal(userId: string): Promise<any | undefined>;
   createDietGoal(goal: any): Promise<any>;
-  updateDietGoal(userId: number, goal: any): Promise<any | undefined>;
+  updateDietGoal(userId: string, goal: any): Promise<any | undefined>;
   
   // Nutrition Logs
-  getNutritionLogs(userId: number, date?: Date): Promise<NutritionLog[]>;
-  getNutritionLogsInRange(userId: number, startDate: Date, endDate: Date): Promise<NutritionLog[]>;
+  getNutritionLogs(userId: string, date?: Date): Promise<NutritionLog[]>;
+  getNutritionLogsInRange(userId: string, startDate: Date, endDate: Date): Promise<NutritionLog[]>;
   getNutritionLogById(id: number): Promise<NutritionLog | undefined>;
   createNutritionLog(log: InsertNutritionLog): Promise<NutritionLog>;
   updateNutritionLog(id: number, log: Partial<InsertNutritionLog>): Promise<NutritionLog | undefined>;
   deleteNutritionLog(id: number): Promise<boolean>;
   
   // Training Programs
-  getTrainingPrograms(userId: number): Promise<TrainingProgram[]>;
-  getActiveTrainingProgram(userId: number): Promise<TrainingProgram | undefined>;
+  getTrainingPrograms(userId: string): Promise<TrainingProgram[]>;
+  getActiveTrainingProgram(userId: string): Promise<TrainingProgram | undefined>;
   createTrainingProgram(program: InsertTrainingProgram): Promise<TrainingProgram>;
   updateTrainingProgram(id: number, program: Partial<InsertTrainingProgram>): Promise<TrainingProgram | undefined>;
   
@@ -70,7 +71,7 @@ export interface IStorage {
   deleteExercise(id: number): Promise<boolean>;
   
   // Workout Sessions
-  getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]>;
+  getWorkoutSessions(userId: string, date?: Date): Promise<WorkoutSession[]>;
   getWorkoutSession(id: number): Promise<WorkoutSession | undefined>;
   createWorkoutSession(session: InsertWorkoutSession): Promise<WorkoutSession>;
   updateWorkoutSession(id: number, session: Partial<InsertWorkoutSession>): Promise<WorkoutSession | undefined>;
