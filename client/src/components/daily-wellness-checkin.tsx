@@ -56,8 +56,18 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   
   console.log(`🗓️ Query date string: ${dateString}`);
   
+  // Clear any old cached queries on mount
+  useEffect(() => {
+    queryClient.removeQueries({ 
+      predicate: (query) => {
+        const key = query.queryKey?.[0];
+        return typeof key === 'string' && key.includes('daily-wellness-checkins');
+      }
+    });
+  }, [queryClient]);
+
   const { data: existingCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-fixed', dateString],
+    queryKey: ['/api/daily-wellness-checkins-clean', dateString, Date.now()],
     queryFn: async () => {
       console.log(`🔄 DailyWellnessCheckin - Fetching checkin for: ${dateString}`);
       const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
@@ -68,8 +78,8 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       console.log(`🔄 DailyWellnessCheckin - Result for ${dateString}:`, data ? 'FOUND' : 'NULL');
       return data;
     },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
+    staleTime: 0,
+    gcTime: 0
   });
 
   // Update form values when existing checkin is loaded
@@ -187,30 +197,11 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
           </div>
           <div className="flex items-center gap-2">
             {isToday && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {(() => {
-              console.log(`🔍 Badge Logic Check:`);
-              console.log(`  - existingCheckin:`, existingCheckin);
-              console.log(`  - dateString:`, dateString);
-              
-              if (!existingCheckin || !existingCheckin.date) {
-                console.log(`  - Result: NO BADGE (no checkin or date)`);
-                return null;
-              }
-              
-              const checkinDateStr = new Date(existingCheckin.date).toISOString().split('T')[0];
-              const isMatchingDate = checkinDateStr === dateString;
-              
-              console.log(`  - Checkin date: ${checkinDateStr}`);
-              console.log(`  - Query date: ${dateString}`);
-              console.log(`  - Match: ${isMatchingDate}`);
-              console.log(`  - Result: ${isMatchingDate ? 'SHOW BADGE' : 'NO BADGE'}`);
-              
-              return isMatchingDate ? (
-                <Badge variant="secondary" className="text-xs">
-                  Completed
-                </Badge>
-              ) : null;
-            })()}
+            {existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString && (
+              <Badge variant="secondary" className="text-xs">
+                Completed
+              </Badge>
+            )}
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
