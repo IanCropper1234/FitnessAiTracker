@@ -1145,18 +1145,18 @@ export function IntegratedNutritionOverview({
         </CardContent>
       </Card>
       {/* AI Nutrition Analysis - Compact Integration */}
-      <Card className="bg-purple-900/20 dark:bg-purple-900/30 border-purple-700 border shadow-lg mb-2">
+      <Card className="bg-purple-50 dark:bg-purple-900/30 border-purple-300 dark:border-purple-700 border shadow-lg mb-2">
         <CardContent className="p-3 pt-[8px] pb-[8px] text-[17px] pl-[10px] pr-[10px] mt-[0px] mb-[0px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-purple-400" />
-              <span className="text-sm font-medium text-purple-300">Enhanced Nutrition AI</span>
+              <Brain className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Enhanced Nutrition AI</span>
             </div>
             <Button 
               size="sm" 
               variant="outline"
               onClick={() => setLocation('/enhanced-nutrition-ai')}
-              className="h-7 text-xs px-3 border-purple-400 text-purple-300 hover:bg-purple-500/20"
+              className="h-7 text-xs px-3 border-purple-400 dark:border-purple-400 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-500/20"
             >
               Analyze Nutrition
             </Button>
