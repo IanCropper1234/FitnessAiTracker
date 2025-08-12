@@ -28,7 +28,7 @@ export class DatabaseStorage implements IStorage {
   }
   // Users - Hybrid system supporting both integer and string IDs
   async getUser(id: string | number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, String(id)));
+    const [user] = await db.select().from(users).where(eq(users.id, Number(id)));
     return user || undefined;
   }
   
@@ -60,27 +60,27 @@ export class DatabaseStorage implements IStorage {
     return newUser;
   }
 
-  async updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined> {
+  async updateUser(id: string | number, user: Partial<InsertUser>): Promise<User | undefined> {
     const [updatedUser] = await db
       .update(users)
       .set(user)
-      .where(eq(users.id, id))
+      .where(eq(users.id, Number(id)))
       .returning();
     return updatedUser || undefined;
   }
 
-  async updateUserDeveloperSettings(id: number, showDeveloperFeatures: boolean): Promise<User | undefined> {
+  async updateUserDeveloperSettings(id: string | number, showDeveloperFeatures: boolean): Promise<User | undefined> {
     const [updatedUser] = await db
       .update(users)
       .set({ showDeveloperFeatures })
-      .where(eq(users.id, id))
+      .where(eq(users.id, Number(id)))
       .returning();
     return updatedUser || undefined;
   }
 
   // User Profiles
-  async getUserProfile(userId: number): Promise<UserProfile | undefined> {
-    const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+  async getUserProfile(userId: string | number): Promise<UserProfile | undefined> {
+    const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, Number(userId)));
     return profile || undefined;
   }
 
@@ -92,18 +92,18 @@ export class DatabaseStorage implements IStorage {
     return newProfile;
   }
 
-  async updateUserProfile(userId: number, profile: Partial<InsertUserProfile>): Promise<UserProfile | undefined> {
+  async updateUserProfile(userId: string | number, profile: Partial<InsertUserProfile>): Promise<UserProfile | undefined> {
     const [updatedProfile] = await db
       .update(userProfiles)
       .set({ ...profile, updatedAt: new Date() })
-      .where(eq(userProfiles.userId, userId))
+      .where(eq(userProfiles.userId, Number(userId)))
       .returning();
     return updatedProfile || undefined;
   }
 
   // Nutrition Goals
-  async getNutritionGoal(userId: number): Promise<NutritionGoal | undefined> {
-    const [goal] = await db.select().from(nutritionGoals).where(eq(nutritionGoals.userId, userId));
+  async getNutritionGoal(userId: string | number): Promise<NutritionGoal | undefined> {
+    const [goal] = await db.select().from(nutritionGoals).where(eq(nutritionGoals.userId, Number(userId)));
     return goal || undefined;
   }
 
@@ -115,17 +115,17 @@ export class DatabaseStorage implements IStorage {
     return newGoal;
   }
 
-  async updateNutritionGoal(userId: number, goal: Partial<InsertNutritionGoal>): Promise<NutritionGoal | undefined> {
+  async updateNutritionGoal(userId: string | number, goal: Partial<InsertNutritionGoal>): Promise<NutritionGoal | undefined> {
     const [updatedGoal] = await db
       .update(nutritionGoals)
       .set(goal)
-      .where(eq(nutritionGoals.userId, userId))
+      .where(eq(nutritionGoals.userId, Number(userId)))
       .returning();
     return updatedGoal || undefined;
   }
 
   // Nutrition Logs
-  async getNutritionLogs(userId: number | string, date?: Date): Promise<NutritionLog[]> {
+  async getNutritionLogs(userId: string | number | string, date?: Date): Promise<NutritionLog[]> {
     // Ensure userId is a number
     const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
     if (isNaN(userIdNum)) {
@@ -180,10 +180,10 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
-  async getNutritionLogsInRange(userId: number, startDate: Date, endDate: Date): Promise<NutritionLog[]> {
+  async getNutritionLogsInRange(userId: string | number, startDate: Date, endDate: Date): Promise<NutritionLog[]> {
     return await db.select().from(nutritionLogs)
       .where(and(
-        eq(nutritionLogs.userId, userId),
+        eq(nutritionLogs.userId, Number(userId)),
         gte(nutritionLogs.date, startDate),
         lte(nutritionLogs.date, endDate)
       ))
@@ -191,13 +191,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Training Programs
-  async getTrainingPrograms(userId: number): Promise<TrainingProgram[]> {
-    return await db.select().from(trainingPrograms).where(eq(trainingPrograms.userId, userId));
+  async getTrainingPrograms(userId: string | number): Promise<TrainingProgram[]> {
+    return await db.select().from(trainingPrograms).where(eq(trainingPrograms.userId, Number(userId)));
   }
 
-  async getActiveTrainingProgram(userId: number): Promise<TrainingProgram | undefined> {
+  async getActiveTrainingProgram(userId: string | number): Promise<TrainingProgram | undefined> {
     const [program] = await db.select().from(trainingPrograms)
-      .where(and(eq(trainingPrograms.userId, userId), eq(trainingPrograms.isActive, true)));
+      .where(and(eq(trainingPrograms.userId, Number(userId)), eq(trainingPrograms.isActive, true)));
     return program || undefined;
   }
 
@@ -286,7 +286,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Workout Sessions
-  async getWorkoutSessions(userId: number, date?: Date): Promise<WorkoutSession[]> {
+  async getWorkoutSessions(userId: string | number, date?: Date): Promise<WorkoutSession[]> {
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
@@ -296,7 +296,7 @@ export class DatabaseStorage implements IStorage {
       return await db.select().from(workoutSessions)
         .where(
           and(
-            eq(workoutSessions.userId, userId),
+            eq(workoutSessions.userId, Number(userId)),
             gte(workoutSessions.date, startOfDay),
             lte(workoutSessions.date, endOfDay)
           )
@@ -305,7 +305,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     return await db.select().from(workoutSessions)
-      .where(eq(workoutSessions.userId, userId))
+      .where(eq(workoutSessions.userId, Number(userId)))
       .orderBy(desc(workoutSessions.date));
   }
 
@@ -420,7 +420,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Volume Landmarks
-  async getVolumeLandmarks(userId: number): Promise<VolumeLandmark[]> {
+  async getVolumeLandmarks(userId: string | number): Promise<VolumeLandmark[]> {
     return await db.select({
       id: volumeLandmarks.id,
       userId: volumeLandmarks.userId,
@@ -446,12 +446,12 @@ export class DatabaseStorage implements IStorage {
     })
     .from(volumeLandmarks)
     .leftJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
-    .where(eq(volumeLandmarks.userId, userId));
+    .where(eq(volumeLandmarks.userId, Number(userId)));
   }
 
-  async getVolumeLandmark(userId: number, muscleGroupId: number): Promise<VolumeLandmark | undefined> {
+  async getVolumeLandmark(userId: string | number, muscleGroupId: number): Promise<VolumeLandmark | undefined> {
     const [landmark] = await db.select().from(volumeLandmarks)
-      .where(and(eq(volumeLandmarks.userId, userId), eq(volumeLandmarks.muscleGroupId, muscleGroupId)));
+      .where(and(eq(volumeLandmarks.userId, Number(userId)), eq(volumeLandmarks.muscleGroupId, muscleGroupId)));
     return landmark || undefined;
   }
 
@@ -463,19 +463,19 @@ export class DatabaseStorage implements IStorage {
     return newLandmark;
   }
 
-  async updateVolumeLandmark(userId: number, muscleGroupId: number, landmark: Partial<InsertVolumeLandmark>): Promise<VolumeLandmark | undefined> {
+  async updateVolumeLandmark(userId: string | number, muscleGroupId: number, landmark: Partial<InsertVolumeLandmark>): Promise<VolumeLandmark | undefined> {
     const [updatedLandmark] = await db
       .update(volumeLandmarks)
       .set({ ...landmark, lastUpdated: new Date() })
-      .where(and(eq(volumeLandmarks.userId, userId), eq(volumeLandmarks.muscleGroupId, muscleGroupId)))
+      .where(and(eq(volumeLandmarks.userId, Number(userId)), eq(volumeLandmarks.muscleGroupId, muscleGroupId)))
       .returning();
     return updatedLandmark || undefined;
   }
 
   // Weekly Volume Tracking
-  async getWeeklyVolumeTracking(userId: number): Promise<WeeklyVolumeTracking[]> {
+  async getWeeklyVolumeTracking(userId: string | number): Promise<WeeklyVolumeTracking[]> {
     return await db.select().from(weeklyVolumeTracking)
-      .where(eq(weeklyVolumeTracking.userId, userId))
+      .where(eq(weeklyVolumeTracking.userId, Number(userId)))
       .orderBy(desc(weeklyVolumeTracking.startDate));
   }
 
@@ -511,8 +511,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Weight Logs
-  async getWeightLogs(userId: number): Promise<WeightLog[]> {
-    return await db.select().from(weightLogs).where(eq(weightLogs.userId, userId));
+  async getWeightLogs(userId: string | number): Promise<WeightLog[]> {
+    return await db.select().from(weightLogs).where(eq(weightLogs.userId, Number(userId)));
   }
 
   async createWeightLog(log: InsertWeightLog): Promise<WeightLog> {
@@ -568,10 +568,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Meal Planning
-  async getMealPlans(userId: number, date: Date): Promise<MealPlan[]> {
+  async getMealPlans(userId: string | number, date: Date): Promise<MealPlan[]> {
     // For now, just return all meal plans for the user to test basic functionality
     return await db.select().from(mealPlans)
-      .where(eq(mealPlans.userId, userId))
+      .where(eq(mealPlans.userId, Number(userId)))
       .orderBy(mealPlans.mealNumber);
   }
 
@@ -598,16 +598,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Weekly Nutrition Goals
-  async getWeeklyNutritionGoal(userId: number, weekStartDate: Date): Promise<WeeklyNutritionGoal | undefined> {
+  async getWeeklyNutritionGoal(userId: string | number, weekStartDate: Date): Promise<WeeklyNutritionGoal | undefined> {
     const [goal] = await db.select().from(weeklyNutritionGoals)
       .where(and(
-        eq(weeklyNutritionGoals.userId, userId),
+        eq(weeklyNutritionGoals.userId, Number(userId)),
         eq(weeklyNutritionGoals.weekStartDate, weekStartDate)
       ));
     return goal || undefined;
   }
 
-  async getCurrentWeeklyNutritionGoal(userId: number): Promise<WeeklyNutritionGoal | undefined> {
+  async getCurrentWeeklyNutritionGoal(userId: string | number): Promise<WeeklyNutritionGoal | undefined> {
     const now = new Date();
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
@@ -634,18 +634,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Diet Phases
-  async getActiveDietPhase(userId: number): Promise<DietPhase | undefined> {
+  async getActiveDietPhase(userId: string | number): Promise<DietPhase | undefined> {
     const [phase] = await db.select().from(dietPhases)
       .where(and(
-        eq(dietPhases.userId, userId),
+        eq(dietPhases.userId, Number(userId)),
         eq(dietPhases.isActive, true)
       ));
     return phase || undefined;
   }
 
-  async getDietPhases(userId: number): Promise<DietPhase[]> {
+  async getDietPhases(userId: string | number): Promise<DietPhase[]> {
     return await db.select().from(dietPhases)
-      .where(eq(dietPhases.userId, userId))
+      .where(eq(dietPhases.userId, Number(userId)))
       .orderBy(desc(dietPhases.createdAt));
   }
 
@@ -667,9 +667,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Meal Timing Preferences
-  async getMealTimingPreferences(userId: number): Promise<MealTimingPreference | undefined> {
+  async getMealTimingPreferences(userId: string | number): Promise<MealTimingPreference | undefined> {
     const [preferences] = await db.select().from(mealTimingPreferences)
-      .where(eq(mealTimingPreferences.userId, userId));
+      .where(eq(mealTimingPreferences.userId, Number(userId)));
     return preferences || undefined;
   }
 
@@ -681,17 +681,17 @@ export class DatabaseStorage implements IStorage {
     return newPreferences;
   }
 
-  async updateMealTimingPreferences(userId: number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined> {
+  async updateMealTimingPreferences(userId: string | number, preferences: Partial<InsertMealTimingPreference>): Promise<MealTimingPreference | undefined> {
     const [updatedPreferences] = await db
       .update(mealTimingPreferences)
       .set(preferences)
-      .where(eq(mealTimingPreferences.userId, userId))
+      .where(eq(mealTimingPreferences.userId, Number(userId)))
       .returning();
     return updatedPreferences || undefined;
   }
 
   // Body Metrics
-  async getBodyMetrics(userId: number, date?: Date): Promise<BodyMetric[]> {
+  async getBodyMetrics(userId: string | number, date?: Date): Promise<BodyMetric[]> {
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
@@ -701,7 +701,7 @@ export class DatabaseStorage implements IStorage {
       return await db.select().from(bodyMetrics)
         .where(
           and(
-            eq(bodyMetrics.userId, userId),
+            eq(bodyMetrics.userId, Number(userId)),
             gte(bodyMetrics.date, startOfDay),
             lte(bodyMetrics.date, endOfDay)
           )
@@ -710,7 +710,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     return await db.select().from(bodyMetrics)
-      .where(eq(bodyMetrics.userId, userId))
+      .where(eq(bodyMetrics.userId, Number(userId)))
       .orderBy(desc(bodyMetrics.date));
   }
 
@@ -728,15 +728,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Weight Goals
-  async getWeightGoals(userId: number): Promise<WeightGoal[]> {
+  async getWeightGoals(userId: string | number): Promise<WeightGoal[]> {
     return await db.select().from(weightGoals)
-      .where(eq(weightGoals.userId, userId))
+      .where(eq(weightGoals.userId, Number(userId)))
       .orderBy(desc(weightGoals.createdAt));
   }
 
-  async getActiveWeightGoal(userId: number): Promise<WeightGoal | undefined> {
+  async getActiveWeightGoal(userId: string | number): Promise<WeightGoal | undefined> {
     const [goal] = await db.select().from(weightGoals)
-      .where(and(eq(weightGoals.userId, userId), eq(weightGoals.isActive, true)))
+      .where(and(eq(weightGoals.userId, Number(userId)), eq(weightGoals.isActive, true)))
       .orderBy(desc(weightGoals.createdAt));
     return goal || undefined;
   }
@@ -773,10 +773,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Nutrition Progression
-  async getNutritionProgression(userId: number, startDate: Date, endDate: Date): Promise<any[]> {
+  async getNutritionProgression(userId: string | number, startDate: Date, endDate: Date): Promise<any[]> {
     const logs = await db.select().from(nutritionLogs)
       .where(and(
-        eq(nutritionLogs.userId, userId),
+        eq(nutritionLogs.userId, Number(userId)),
         gte(nutritionLogs.date, startDate),
         lte(nutritionLogs.date, endDate)
       ))
@@ -805,25 +805,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Saved Meal Plans
-  async getSavedMealPlans(userId: number): Promise<SavedMealPlan[]> {
+  async getSavedMealPlans(userId: string | number): Promise<SavedMealPlan[]> {
     return await db.select().from(savedMealPlans)
-      .where(eq(savedMealPlans.userId, userId))
+      .where(eq(savedMealPlans.userId, Number(userId)))
       .orderBy(desc(savedMealPlans.createdAt));
   }
 
-  async getSavedMealPlan(userId: number, planId: number): Promise<SavedMealPlan | undefined> {
+  async getSavedMealPlan(userId: string | number, planId: number): Promise<SavedMealPlan | undefined> {
     const [mealPlan] = await db.select().from(savedMealPlans)
       .where(and(
-        eq(savedMealPlans.userId, userId),
+        eq(savedMealPlans.userId, Number(userId)),
         eq(savedMealPlans.id, planId)
       ));
     return mealPlan || undefined;
   }
 
-  async getSavedMealPlansByType(userId: number, mealType: string): Promise<SavedMealPlan[]> {
+  async getSavedMealPlansByType(userId: string | number, mealType: string): Promise<SavedMealPlan[]> {
     return await db.select().from(savedMealPlans)
       .where(and(
-        eq(savedMealPlans.userId, userId),
+        eq(savedMealPlans.userId, Number(userId)),
         eq(savedMealPlans.mealType, mealType)
       ))
       .orderBy(desc(savedMealPlans.createdAt));
@@ -852,9 +852,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Diet Goals
-  async getDietGoal(userId: number): Promise<DietGoal | undefined> {
+  async getDietGoal(userId: string | number): Promise<DietGoal | undefined> {
     const [goal] = await db.select().from(dietGoals)
-      .where(eq(dietGoals.userId, userId))
+      .where(eq(dietGoals.userId, Number(userId)))
       .orderBy(desc(dietGoals.createdAt));
     return goal || undefined;
   }
@@ -867,7 +867,7 @@ export class DatabaseStorage implements IStorage {
     return newGoal;
   }
 
-  async updateDietGoal(userId: number, goal: Partial<InsertDietGoal>): Promise<DietGoal | undefined> {
+  async updateDietGoal(userId: string | number, goal: Partial<InsertDietGoal>): Promise<DietGoal | undefined> {
     console.log('Updating diet goal for user:', userId, 'with data:', goal);
     // First check if a diet goal exists for this user
     const existingGoal = await this.getDietGoal(userId);
@@ -906,9 +906,9 @@ export class DatabaseStorage implements IStorage {
     return session || undefined;
   }
 
-  async getUserWorkoutSessions(userId: number): Promise<WorkoutSession[]> {
+  async getUserWorkoutSessions(userId: string | number): Promise<WorkoutSession[]> {
     return db.select().from(workoutSessions)
-      .where(eq(workoutSessions.userId, userId))
+      .where(eq(workoutSessions.userId, Number(userId)))
       .orderBy(desc(workoutSessions.date));
   }
 
@@ -981,9 +981,9 @@ export class DatabaseStorage implements IStorage {
     return mesocycle || undefined;
   }
 
-  async getUserMesocycles(userId: number): Promise<any[]> {
+  async getUserMesocycles(userId: string | number): Promise<any[]> {
     return db.select().from(mesocycles)
-      .where(eq(mesocycles.userId, userId))
+      .where(eq(mesocycles.userId, Number(userId)))
       .orderBy(desc(mesocycles.isActive), desc(mesocycles.createdAt));
   }
 
@@ -993,7 +993,7 @@ export class DatabaseStorage implements IStorage {
     return template || undefined;
   }
 
-  async getUserTrainingTemplates(userId: number): Promise<TrainingTemplate[]> {
+  async getUserTrainingTemplates(userId: string | number): Promise<TrainingTemplate[]> {
     return db.select().from(trainingTemplates)
       .where(eq(trainingTemplates.createdBy, userId))
       .orderBy(desc(trainingTemplates.createdAt));
@@ -1018,9 +1018,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Saved Meals
-  async getSavedMeals(userId: number): Promise<SavedMeal[]> {
+  async getSavedMeals(userId: string | number): Promise<SavedMeal[]> {
     return db.select().from(savedMeals)
-      .where(eq(savedMeals.userId, userId))
+      .where(eq(savedMeals.userId, Number(userId)))
       .orderBy(desc(savedMeals.createdAt));
   }
 
@@ -1035,9 +1035,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Saved Workout Templates
-  async getSavedWorkoutTemplates(userId: number): Promise<SavedWorkoutTemplate[]> {
+  async getSavedWorkoutTemplates(userId: string | number): Promise<SavedWorkoutTemplate[]> {
     return db.select().from(savedWorkoutTemplates)
-      .where(eq(savedWorkoutTemplates.userId, userId))
+      .where(eq(savedWorkoutTemplates.userId, Number(userId)))
       .orderBy(desc(savedWorkoutTemplates.createdAt));
   }
 

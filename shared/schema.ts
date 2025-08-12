@@ -13,29 +13,28 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table updated for Replit Auth
+// User storage table (current structure - will be migrated later)
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey(),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  // Legacy fields maintained for compatibility
+  id: serial("id").primaryKey(), // Keep as integer for now
+  email: text("email").notNull().unique(),
   password: text("password"),
-  name: text("name"),
+  name: text("name").notNull(),
   appleId: text("apple_id"),
   preferredLanguage: text("preferred_language").notNull().default("en"),
   theme: text("theme").notNull().default("dark"),
   showDeveloperFeatures: boolean("show_developer_features").default(false),
-  // Store auto-adjustment settings in JSON format
   autoAdjustmentSettings: jsonb("auto_adjustment_settings"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // Replit Auth fields (nullable for existing users)
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
 });
 
 export const userProfiles = pgTable("user_profiles", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   age: integer("age"),
   gender: text("gender"), // male, female, other
   weight: decimal("weight", { precision: 5, scale: 2 }),
@@ -50,7 +49,7 @@ export const userProfiles = pgTable("user_profiles", {
 
 export const nutritionGoals = pgTable("nutrition_goals", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   dailyCalories: integer("daily_calories").notNull(),
   protein: decimal("protein", { precision: 6, scale: 2 }).notNull(),
   carbs: decimal("carbs", { precision: 6, scale: 2 }).notNull(),
@@ -60,7 +59,7 @@ export const nutritionGoals = pgTable("nutrition_goals", {
 
 export const nutritionLogs = pgTable("nutrition_logs", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").notNull(),
   foodName: text("food_name").notNull(),
   quantity: decimal("quantity", { precision: 8, scale: 2 }).notNull(),
@@ -107,7 +106,7 @@ export const foodItems = pgTable("food_items", {
 
 export const mealPlans = pgTable("meal_plans", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").notNull(),
   mealNumber: integer("meal_number").notNull(), // 1-6
   scheduledTime: timestamp("scheduled_time").notNull(),
@@ -123,7 +122,7 @@ export const mealPlans = pgTable("meal_plans", {
 // Daily Wellness Check-ins (RP Diet Coach style - authentic methodology)
 export const dailyWellnessCheckins = pgTable("daily_wellness_checkins", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").notNull(), // Daily date for wellness tracking
   energyLevel: integer("energy_level").notNull(), // 1-10 scale
   hungerLevel: integer("hunger_level").notNull(), // 1-10 scale
@@ -139,7 +138,7 @@ export const dailyWellnessCheckins = pgTable("daily_wellness_checkins", {
 // Weekly Wellness Summaries (calculated from daily checkins for macro adjustments)
 export const weeklyWellnessSummaries = pgTable("weekly_wellness_summaries", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   weekStartDate: timestamp("week_start_date").notNull(),
   // Weekly averages calculated from daily checkins
   avgEnergyLevel: decimal("avg_energy_level", { precision: 3, scale: 1 }), // Calculated average
@@ -156,7 +155,7 @@ export const weeklyWellnessSummaries = pgTable("weekly_wellness_summaries", {
 
 export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   weekStartDate: timestamp("week_start_date").notNull(),
   dailyCalories: integer("daily_calories").notNull(),
   protein: decimal("protein", { precision: 6, scale: 2 }).notNull(),
@@ -176,7 +175,7 @@ export const weeklyNutritionGoals = pgTable("weekly_nutrition_goals", {
 // Macro distribution per meal for advanced meal planning
 export const mealMacroDistribution = pgTable("meal_macro_distribution", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   mealType: text("meal_type").notNull(), // "breakfast", "lunch", "dinner", "snack", "supplementation", etc.
   mealTiming: text("meal_timing"), // "pre-workout", "post-workout", "regular"
   proteinPercentage: decimal("protein_percentage", { precision: 5, scale: 2 }),
@@ -190,7 +189,7 @@ export const mealMacroDistribution = pgTable("meal_macro_distribution", {
 // Macro flexibility rules for social eating
 export const macroFlexibilityRules = pgTable("macro_flexibility_rules", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   ruleName: text("rule_name").notNull(), // "Weekend Social", "Business Lunch", etc.
   triggerDays: text("trigger_days").array(), // ["saturday", "sunday"]
   flexProtein: decimal("flex_protein", { precision: 5, scale: 2 }), // % allowable variance
@@ -203,7 +202,7 @@ export const macroFlexibilityRules = pgTable("macro_flexibility_rules", {
 
 export const dietPhases = pgTable("diet_phases", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   phase: text("phase").notNull(), // cutting, bulking, maintenance
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date"),
@@ -215,7 +214,7 @@ export const dietPhases = pgTable("diet_phases", {
 
 export const mealTimingPreferences = pgTable("meal_timing_preferences", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   wakeTime: text("wake_time").notNull(), // HH:MM format
   sleepTime: text("sleep_time").notNull(), // HH:MM format
   workoutTime: text("workout_time"), // HH:MM format
@@ -228,7 +227,7 @@ export const mealTimingPreferences = pgTable("meal_timing_preferences", {
 
 export const savedMeals = pgTable("saved_meals", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   foodItems: jsonb("food_items").notNull(), // Array of food items with nutrition info including micronutrients
@@ -243,7 +242,7 @@ export const savedMeals = pgTable("saved_meals", {
 
 export const trainingPrograms = pgTable("training_programs", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   daysPerWeek: integer("days_per_week").notNull(),
@@ -255,7 +254,7 @@ export const trainingPrograms = pgTable("training_programs", {
 
 export const exercises = pgTable("exercises", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id), // null for shared/system exercises, user_id for user-created exercises
+  userId: integer("user_id").references(() => users.id), // null for shared/system exercises, user_id for user-created exercises
   name: text("name").notNull(),
   category: text("category").notNull(), // push, pull, legs, cardio
   muscleGroups: text("muscle_groups").array(),
@@ -272,7 +271,7 @@ export const exercises = pgTable("exercises", {
 
 export const workoutSessions = pgTable("workout_sessions", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   programId: integer("program_id").references(() => trainingPrograms.id), // Made nullable
   mesocycleId: integer("mesocycle_id").references(() => mesocycles.id), // Link to mesocycles
   date: timestamp("date").notNull(),
@@ -321,7 +320,7 @@ export const workoutExercises = pgTable("workout_exercises", {
 export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {
   id: serial("id").primaryKey(),
   sessionId: integer("session_id").references(() => workoutSessions.id).notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   pumpQuality: integer("pump_quality").notNull(), // 1-10 scale
   muscleSoreness: integer("muscle_soreness").notNull(), // 1-10 scale
   perceivedEffort: integer("perceived_effort").notNull(), // 1-10 scale
@@ -332,7 +331,7 @@ export const autoRegulationFeedback = pgTable("auto_regulation_feedback", {
 
 export const weightLogs = pgTable("weight_logs", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   weight: decimal("weight", { precision: 5, scale: 2 }).notNull(),
   date: timestamp("date").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -341,7 +340,7 @@ export const weightLogs = pgTable("weight_logs", {
 // Body Metrics table
 export const bodyMetrics = pgTable("body_metrics", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").notNull(),
   weight: decimal("weight", { precision: 5, scale: 2 }),
   bodyFatPercentage: decimal("body_fat_percentage", { precision: 4, scale: 2 }),
@@ -358,7 +357,7 @@ export const bodyMetrics = pgTable("body_metrics", {
 // Saved meal plans for Diet Builder
 export const savedMealPlans = pgTable("saved_meal_plans", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack, supplementation
@@ -386,7 +385,7 @@ export const muscleGroups = pgTable("muscle_groups", {
 // Volume Landmarks per muscle group per user (RP Methodology)
 export const volumeLandmarks = pgTable("volume_landmarks", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
   // Renaissance Periodization Volume Landmarks
   mv: integer("mv").notNull().default(0), // Maintenance Volume (sets/week)
@@ -406,7 +405,7 @@ export const volumeLandmarks = pgTable("volume_landmarks", {
 // Weekly volume tracking for progression
 export const weeklyVolumeTracking = pgTable("weekly_volume_tracking", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
   weekNumber: integer("week_number").notNull(), // week of current mesocycle
   targetSets: integer("target_sets").notNull(),
@@ -433,7 +432,7 @@ export const exerciseMuscleMapping = pgTable("exercise_muscle_mapping", {
 // Diet goals with TDEE calculation and auto-regulation
 export const dietGoals = pgTable("diet_goals", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   tdee: decimal("tdee", { precision: 6, scale: 2 }).notNull(),
   goal: text("goal").notNull(), // cut, bulk, maintain
   targetCalories: decimal("target_calories", { precision: 6, scale: 2 }).notNull(),
@@ -466,7 +465,7 @@ export const trainingTemplates = pgTable("training_templates", {
 // Mesocycle management for periodization
 export const mesocycles = pgTable("mesocycles", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   programId: integer("program_id").references(() => trainingPrograms.id),
   templateId: integer("template_id").references(() => trainingTemplates.id),
   name: text("name").notNull(),
@@ -482,7 +481,7 @@ export const mesocycles = pgTable("mesocycles", {
 // Load progression tracking
 export const loadProgressionTracking = pgTable("load_progression_tracking", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   exerciseId: integer("exercise_id").references(() => exercises.id).notNull(),
   sessionId: integer("session_id").references(() => workoutSessions.id).notNull(),
   previousWeight: decimal("previous_weight", { precision: 6, scale: 2 }),
@@ -498,7 +497,7 @@ export const loadProgressionTracking = pgTable("load_progression_tracking", {
 // Weight goals table for user weight targets
 export const weightGoals = pgTable("weight_goals", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   currentWeight: decimal("current_weight", { precision: 5, scale: 2 }),
   targetWeight: decimal("target_weight", { precision: 5, scale: 2 }).notNull(),
   targetWeightChangePerWeek: decimal("target_weight_change_per_week", { precision: 4, scale: 2 }),
@@ -514,7 +513,7 @@ export const weightGoals = pgTable("weight_goals", {
 // Saved workout session templates
 export const savedWorkoutTemplates = pgTable("saved_workout_templates", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   exerciseTemplates: jsonb("exercise_templates").notNull(), // Array of exercise configurations

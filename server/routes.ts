@@ -299,8 +299,8 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup auth middleware
-  await setupAuth(app);
+  // Setup auth middleware - temporarily disabled for debugging
+  // await setupAuth(app);
   
   // Auth routes - supporting both legacy session auth and Replit Auth
   app.get('/api/auth/user', async (req: any, res) => {
