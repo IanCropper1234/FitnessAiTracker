@@ -398,7 +398,6 @@ export default function CreateAIWorkoutSession() {
           <p className="text-sm text-muted-foreground">Generate intelligent, RP-based workout sessions tailored to your goals</p>
         </div>
       </div>
-
       <div className="grid lg:grid-cols-2 gap-6 min-h-0 max-h-[calc(100vh-120px)]">
         {/* Configuration Form */}
         <Card>
@@ -418,7 +417,7 @@ export default function CreateAIWorkoutSession() {
                   setViewMode(value as 'single' | 'weekly');
                 }
               }}>
-                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 pt-[0px] pb-[0px] mt-[15px] mb-[15px]">
+                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 pt-[0px] pb-[0px] mt-[15px] mb-[15px] pl-[0px] pr-[0px]">
                   <TabsTrigger value="single" className="flex items-center justify-center gap-2 h-auto min-h-[44px]">
                     <Dumbbell className="h-4 w-4" />
                     <span className="font-medium">Single Program</span>
@@ -718,12 +717,11 @@ export default function CreateAIWorkoutSession() {
                 {/* Exercise Recommendations - Different display for weekly vs single mode */}
                 {viewMode === 'weekly' && recommendationMutation.data.sessions ? (
                     // Weekly Plan Display
-                    <div className="space-y-3">
+                    (<div className="space-y-3">
                       <h4 className="font-medium text-sm flex items-center gap-2 sticky top-0 bg-background z-10 py-2">
                         <Calendar className="h-4 w-4" />
                         Weekly Training Sessions ({recommendationMutation.data.sessions.length} Days)
                       </h4>
-                      
                       <div className="space-y-3 max-h-[60vh] overflow-y-auto">
                         {recommendationMutation.data.sessions.map((session: WorkoutSession, sessionIndex: number) => (
                           <Card key={sessionIndex} className="border-l-4 border-l-purple-500">
@@ -782,10 +780,10 @@ export default function CreateAIWorkoutSession() {
                           </Card>
                         ))}
                       </div>
-                  </div>
+                    </div>)
                 ) : (
                     // Single Session Display
-                    <div className="space-y-4">
+                    (<div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium text-sm flex items-center gap-2">
                           <Dumbbell className="h-4 w-4" />
@@ -803,7 +801,6 @@ export default function CreateAIWorkoutSession() {
                           </Button>
                         )}
                       </div>
-                      
                       {recommendationMutation.data.recommendations?.map((rec: ExerciseRecommendation, index: number) => (
                       <Card key={index} className="border-l-4 border-l-blue-500">
                         <CardContent className="p-4">
@@ -899,7 +896,7 @@ export default function CreateAIWorkoutSession() {
                         </CardContent>
                       </Card>
                       ))}
-                  </div>
+                    </div>)
                 )}
 
                 {/* Progression Plan */}
