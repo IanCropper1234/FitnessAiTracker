@@ -34,12 +34,16 @@ export function getSession() {
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
+    name: 'fitai.session', // Explicit session cookie name
     resave: false,
     saveUninitialized: false,
+    rolling: true, // Extend session on each request to keep user logged in
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: false, // Allow cookies over HTTP for PWA development and Replit deployment
       maxAge: sessionTtl,
+      sameSite: 'lax', // PWA-friendly sameSite setting
+      path: '/' // Ensure cookie is available for all paths
     },
   });
 }
@@ -60,6 +64,7 @@ async function upsertUser(
   await storage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
+    name: `${claims["first_name"] || ''} ${claims["last_name"] || ''}`.trim() || claims["email"] || 'User',
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],

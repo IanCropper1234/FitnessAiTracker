@@ -1,6 +1,4 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
-import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { db } from "./db";
@@ -8,26 +6,8 @@ import { sql } from "drizzle-orm";
 
 const app = express();
 
-// Session configuration with memory store (production-ready for single server deployment)
-const MemoryStoreSession = MemoryStore(session);
-
-app.use(session({
-  store: new MemoryStoreSession({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  }),
-  secret: process.env.SESSION_SECRET || 'fitai-session-secret-key-2025',
-  name: 'fitai.session', // Explicit session cookie name
-  resave: false, // Prevent unnecessary session saves that could cause race conditions
-  saveUninitialized: false, // Only create sessions when needed, prevents session ID churn
-  rolling: true, // Extend session on each request to keep user logged in
-  cookie: {
-    secure: false, // Allow cookies over HTTP for PWA development and Replit deployment
-    httpOnly: true, // Improve security by preventing JavaScript access to session cookie
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    sameSite: 'lax', // PWA-friendly sameSite setting
-    path: '/' // Ensure cookie is available for all paths
-  }
-}));
+// Session configuration will be handled by setupAuth in routes.ts for unified auth
+// This avoids conflicts between memory store and PostgreSQL store
 
 // CORS configuration for PWA compatibility
 app.use((req, res, next) => {
