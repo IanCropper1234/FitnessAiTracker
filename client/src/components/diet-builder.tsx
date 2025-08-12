@@ -182,8 +182,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Initialize percentages when diet goal loads or changes (only if user hasn't manually set them)
   useEffect(() => {
-    // Don't override user's manual percentage changes
-    if (userSetPercentages) return;
+    // Don't override user's manual percentage changes or custom goals
+    if (userSetPercentages || dietGoal.useCustomCalories) return;
     
     const currentCalories = dietGoal.targetCalories;
       
@@ -208,7 +208,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         updateMacrosFromPercentages(optimalDistribution.protein, optimalDistribution.carbs, optimalDistribution.fat);
       }
     }
-  }, [dietGoal.targetCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages]);
+  }, [dietGoal.targetCalories, dietGoal.targetProtein, dietGoal.targetCarbs, dietGoal.targetFat, userSetPercentages, dietGoal.useCustomCalories]);
 
   // Helper function to get total percentage
   const getTotalPercentage = () => {
@@ -351,8 +351,8 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
   // Update local state when diet goal data is fetched
   useEffect(() => {
-    if (currentDietGoal) {
-      // Convert string values to numbers for frontend state
+    if (currentDietGoal && !dietGoal.useCustomCalories) {
+      // Only update if not using custom calories to avoid overriding user's custom settings
       const normalizedGoal = {
         ...currentDietGoal,
         tdee: Number(currentDietGoal.tdee),
@@ -364,8 +364,19 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         weeklyWeightTarget: Number(currentDietGoal.weeklyWeightTarget)
       };
       setDietGoal(normalizedGoal);
+      
+      // If this is a custom goal, preserve the user's percentage settings
+      if (normalizedGoal.useCustomCalories) {
+        setUserSetPercentages(true);
+        const currentCalories = normalizedGoal.targetCalories;
+        if (currentCalories > 0) {
+          setProteinPercentage(Math.round((normalizedGoal.targetProtein * 4 / currentCalories) * 100));
+          setCarbsPercentage(Math.round((normalizedGoal.targetCarbs * 4 / currentCalories) * 100));
+          setFatPercentage(Math.round((normalizedGoal.targetFat * 9 / currentCalories) * 100));
+        }
+      }
     }
-  }, [currentDietGoal]);
+  }, [currentDietGoal, dietGoal.useCustomCalories]);
 
   // Auto-sync with profile fitness goal changes and enable auto-regulation
   useEffect(() => {
@@ -456,16 +467,28 @@ export function DietBuilder({ userId }: DietBuilderProps) {
         weeklyWeightTarget: Number(savedGoal.weeklyWeightTarget)
       };
       
-      // Update local state with normalized data
+      // Update local state with normalized data - preserve user's custom settings
       setDietGoal(normalizedGoal);
       
-      // Invalidate all related caches to ensure fresh data
+      // Mark that percentages are user-set to prevent override
+      if (normalizedGoal.useCustomCalories) {
+        setUserSetPercentages(true);
+        
+        // Recalculate and preserve the percentage values from the saved goal
+        const currentCalories = normalizedGoal.targetCalories;
+        if (currentCalories > 0) {
+          setProteinPercentage(Math.round((normalizedGoal.targetProtein * 4 / currentCalories) * 100));
+          setCarbsPercentage(Math.round((normalizedGoal.targetCarbs * 4 / currentCalories) * 100));
+          setFatPercentage(Math.round((normalizedGoal.targetFat * 9 / currentCalories) * 100));
+        }
+      }
+      
+      // Invalidate caches but don't force immediate refetch to avoid resetting UI
       queryClient.invalidateQueries({ queryKey: ['/api/diet-goals'] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
       queryClient.invalidateQueries({ queryKey: ['/api/weight-goals'] });
       
-      // Force refetch to ensure UI updates
-      queryClient.refetchQueries({ queryKey: ['/api/diet-goals', userId] });
+      // Don't force refetch immediately - let the user see their saved values
     },
     onError: (error: any) => {
       toast({
