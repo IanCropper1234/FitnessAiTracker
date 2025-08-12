@@ -980,32 +980,108 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   return (
     <div className="space-y-2 max-w-4xl mx-auto ios-list-scroll animated-element relative" {...swipeHandlers}>
-      {/* Swipe Progress Indicator */}
-      {swipeProgress.direction && swipeProgress.progress > 0.1 && (
-        <div className="fixed inset-0 pointer-events-none z-30 flex items-center justify-center">
-          <div className="bg-black/70 text-white px-4 py-2 rounded-lg flex items-center gap-2 backdrop-blur-sm">
-            {swipeProgress.direction === 'left' ? (
-              <>
-                <ArrowLeft className="h-4 w-4" />
-                <span className="text-sm font-medium">Next Exercise</span>
-                <div className="w-16 h-1 bg-white/30 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-white rounded-full transition-all duration-100"
-                    style={{ width: `${swipeProgress.progress * 100}%` }}
+      {/* Professional Swipe Progress Indicator with Smooth Animations */}
+      {swipeProgress.direction && swipeProgress.progress > 0.05 && (
+        <div className="fixed inset-0 pointer-events-none z-40 flex items-center justify-center">
+          <div 
+            className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 px-6 py-4 rounded-2xl flex items-center gap-3 transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-2"
+            style={{
+              transform: `scale(${Math.min(1, 0.8 + swipeProgress.progress * 0.2)})`,
+              opacity: Math.min(1, swipeProgress.progress * 2)
+            }}
+          >
+            {/* Exercise Navigation Info */}
+            <div className="flex items-center gap-3">
+              {/* Icon with Rotation Animation */}
+              <div className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${
+                swipeProgress.direction === 'left' 
+                  ? 'bg-primary/20 text-primary' 
+                  : 'bg-blue-500/20 text-blue-500'
+              }`}>
+                {swipeProgress.direction === 'left' ? (
+                  <ArrowRight 
+                    className="h-4 w-4 transition-transform duration-300" 
+                    style={{ transform: `translateX(${swipeProgress.progress * 2}px)` }}
                   />
-                </div>
-              </>
-            ) : (
-              <>
-                <ArrowRight className="h-4 w-4" />
-                <span className="text-sm font-medium">Previous Exercise</span>
-                <div className="w-16 h-1 bg-white/30 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-white rounded-full transition-all duration-100"
-                    style={{ width: `${swipeProgress.progress * 100}%` }}
+                ) : (
+                  <ArrowLeft 
+                    className="h-4 w-4 transition-transform duration-300"
+                    style={{ transform: `translateX(${-swipeProgress.progress * 2}px)` }}
                   />
+                )}
+              </div>
+
+              {/* Exercise Information */}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {swipeProgress.direction === 'left' ? 'Next Exercise' : 'Previous Exercise'}
+                  </span>
+                  <div className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors duration-200 ${
+                    swipeProgress.progress > 0.8 
+                      ? 'bg-green-500/20 text-green-600 dark:text-green-400' 
+                      : 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
+                  }`}>
+                    {Math.round(swipeProgress.progress * 100)}%
+                  </div>
                 </div>
-              </>
+                
+                {/* Preview Exercise Name */}
+                {session?.exercises && (
+                  <span className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-48">
+                    {swipeProgress.direction === 'left' && currentExerciseIndex < session.exercises.length - 1
+                      ? session.exercises[currentExerciseIndex + 1]?.exercise.name
+                      : swipeProgress.direction === 'right' && currentExerciseIndex > 0
+                      ? session.exercises[currentExerciseIndex - 1]?.exercise.name
+                      : 'Exercise'
+                    }
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Advanced Progress Bar with Glow Effect */}
+            <div className="relative w-20 h-2 bg-gray-200/60 dark:bg-gray-700/60 rounded-full overflow-hidden">
+              {/* Background Glow */}
+              <div 
+                className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                  swipeProgress.direction === 'left' 
+                    ? 'bg-primary/10' 
+                    : 'bg-blue-500/10'
+                }`}
+                style={{ 
+                  boxShadow: `inset 0 0 10px ${swipeProgress.direction === 'left' ? 'hsl(var(--primary))' : '#3b82f6'}20`
+                }}
+              />
+              
+              {/* Progress Fill with Smooth Animation */}
+              <div 
+                className={`h-full rounded-full transition-all duration-200 ease-out relative overflow-hidden ${
+                  swipeProgress.direction === 'left' 
+                    ? 'bg-primary' 
+                    : 'bg-blue-500'
+                }`}
+                style={{ 
+                  width: `${swipeProgress.progress * 100}%`,
+                  boxShadow: `0 0 8px ${swipeProgress.direction === 'left' ? 'hsl(var(--primary))' : '#3b82f6'}60`
+                }}
+              >
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+              </div>
+
+              {/* Completion Threshold Indicator */}
+              <div 
+                className="absolute top-0 bottom-0 w-0.5 bg-white/80 dark:bg-gray-300/80 rounded-full"
+                style={{ left: '80%' }}
+              />
+            </div>
+
+            {/* Release Hint */}
+            {swipeProgress.progress > 0.8 && (
+              <div className="text-xs text-green-600 dark:text-green-400 font-medium animate-pulse">
+                Release to switch
+              </div>
             )}
           </div>
         </div>

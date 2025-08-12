@@ -75,6 +75,16 @@
   display: none;  /* Safari and Chrome */
 }
 
+/* Shimmer animation for swipe progress indicator */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
 /* iOS-style safe area support */
 .safe-area-pb {
   padding-bottom: env(safe-area-inset-bottom);
