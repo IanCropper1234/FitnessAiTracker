@@ -35,11 +35,10 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Force today's date - 2025-08-12
-  const currentDateString = "2025-08-12";
-  const trackingDate = new Date(2025, 7, 12, 0, 0, 0, 0); // Month is 0-indexed
-  
-  console.log(`🗓️ Daily Wellness - FORCED Current date: ${currentDateString}, Tracking date: ${trackingDate.toISOString()}`);
+  // Always use current date to ensure synchronization with dashboard
+  const currentDateString = TimezoneUtils.getCurrentDate();
+  const trackingDate = TimezoneUtils.parseUserDate(currentDateString);
+  trackingDate.setHours(0, 0, 0, 0);
   
 
   
@@ -54,32 +53,21 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   // Fetch existing checkin for the selected date
   const dateString = trackingDate.toISOString().split('T')[0];
   
-  console.log(`🗓️ Query date string: ${dateString}`);
-  
-  // Clear any old cached queries on mount
-  useEffect(() => {
-    queryClient.removeQueries({ 
-      predicate: (query) => {
-        const key = query.queryKey?.[0];
-        return typeof key === 'string' && key.includes('daily-wellness-checkins');
-      }
-    });
-  }, [queryClient]);
-
   const { data: existingCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-clean', dateString, Date.now()],
+    queryKey: ['/api/daily-wellness-checkins', dateString],
     queryFn: async () => {
-      console.log(`🔄 DailyWellnessCheckin - Fetching checkin for: ${dateString}`);
       const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
       });
       if (!response.ok) return null;
-      const data = await response.json();
-      console.log(`🔄 DailyWellnessCheckin - Result for ${dateString}:`, data ? 'FOUND' : 'NULL');
-      return data;
+      return response.json();
     },
-    staleTime: 0,
-    gcTime: 0
+    staleTime: 0, // Always consider data stale
+    gcTime: 0 // Don't cache this data
   });
 
   // Update form values when existing checkin is loaded
@@ -107,7 +95,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       });
       
       // Invalidate related queries with current date
-      const currentDateString = "2025-08-12";
+      const currentDateString = TimezoneUtils.getCurrentDate();
       
       // Force immediate refetch by removing from cache and invalidating current date
       queryClient.removeQueries({ queryKey: ['/api/daily-wellness-checkins', currentDateString] });
@@ -127,12 +115,14 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   });
 
   const handleSubmit = () => {
-    // Force use current date for submission
-    const currentDateString = "2025-08-12";
+    // Force use current date from TimezoneUtils for submission
+    const currentDateString = TimezoneUtils.getCurrentDate();
+    
+
     
     const checkinData = {
       userId,
-      date: currentDateString, // Always use current date
+      date: currentDateString, // Always use current date from TimezoneUtils
       energyLevel: energyLevel[0],
       hungerLevel: hungerLevel[0],
       sleepQuality: sleepQuality[0],
@@ -197,11 +187,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
           </div>
           <div className="flex items-center gap-2">
             {isToday && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString && (
-              <Badge variant="secondary" className="text-xs">
-                Completed
-              </Badge>
-            )}
+            {existingCheckin && <Badge variant="secondary" className="text-xs">Completed</Badge>}
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
@@ -353,7 +339,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
               </div>
               Saving Check-in...
             </>
-          ) : (existingCheckin && existingCheckin.date && new Date(existingCheckin.date).toISOString().split('T')[0] === dateString) ? (
+          ) : existingCheckin ? (
             <>
               <Heart className="w-4 h-4 mr-2" />
               Update Today's Check-in

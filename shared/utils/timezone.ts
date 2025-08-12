@@ -8,8 +8,8 @@ export class TimezoneUtils {
    * Get current date in user's timezone as YYYY-MM-DD string
    */
   static getCurrentDate(): string {
-    // TEMPORARY FIX: Force return 2025-08-12 until timezone issue is resolved
-    return "2025-08-12";
+    const now = new Date();
+    return this.formatDateForStorage(now);
   }
 
   /**
