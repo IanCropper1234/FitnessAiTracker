@@ -571,19 +571,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       
       // Regular set completion logic
       const setsForCurrentExercise = workoutData[currentExercise.id] || [];
-      console.log('Current sets:', setsForCurrentExercise.map(s => ({ completed: s.completed, setNumber: s.setNumber })));
-      console.log('Current set index was:', currentSetIndex);
       
       // Find next uncompleted set (skip the one we just completed)
       const nextUncompletedSetIndex = setsForCurrentExercise.findIndex((set, index) => 
         index > currentSetIndex && !set.completed
       );
       
-      console.log('Next uncompleted set index:', nextUncompletedSetIndex);
-      
       if (nextUncompletedSetIndex !== -1) {
         // Move to next uncompleted set in current exercise
-        console.log('Moving to set index:', nextUncompletedSetIndex);
         setCurrentSetIndex(nextUncompletedSetIndex);
         
         // Auto-switch to execution tab if not already there for better UX
@@ -593,7 +588,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       } else {
         // All sets completed for current exercise, move to next exercise
         if (currentExerciseIndex < session.exercises.length - 1) {
-          console.log('Moving to next exercise');
           setCurrentExerciseIndex(currentExerciseIndex + 1);
           setCurrentSetIndex(0);
           
