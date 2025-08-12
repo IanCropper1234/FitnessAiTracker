@@ -425,12 +425,14 @@ export default function CreateAIWorkoutSession() {
                   </TabsTrigger>
                   <TabsTrigger 
                     value="weekly" 
-                    className="flex items-center gap-2 opacity-50 cursor-not-allowed"
+                    className="flex flex-col items-center gap-1 opacity-50 cursor-not-allowed p-2"
                     disabled
                   >
-                    <Calendar className="h-4 w-4" />
-                    Weekly Program
-                    <span className="text-xs bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded ml-1">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      <span className="text-xs">Weekly Program</span>
+                    </div>
+                    <span className="text-xs bg-orange-500/20 text-orange-400 px-1 py-0.5 rounded leading-none">
                       Coming Soon
                     </span>
                   </TabsTrigger>
