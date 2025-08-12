@@ -64,7 +64,9 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
         }
       });
       if (!response.ok) return null;
-      return response.json();
+      const data = await response.json();
+      // Ensure we return null if the API returns null/undefined
+      return data && data.id ? data : null;
     },
     staleTime: 0, // Always consider data stale
     gcTime: 0 // Don't cache this data
@@ -187,7 +189,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
           </div>
           <div className="flex items-center gap-2">
             {isToday && <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Today</Badge>}
-            {existingCheckin && <Badge variant="secondary" className="text-xs">Completed</Badge>}
+            {existingCheckin && existingCheckin.id && <Badge variant="secondary" className="text-xs">Completed</Badge>}
           </div>
         </div>
         <CardDescription className="text-gray-600 dark:text-gray-400">
