@@ -57,23 +57,19 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   console.log(`🗓️ Query date string: ${dateString}`);
   
   const { data: existingCheckin, isLoading } = useQuery({
-    queryKey: ['/api/daily-wellness-checkins-fixed', dateString, Date.now()], // Add timestamp to force fresh query
+    queryKey: ['/api/daily-wellness-checkins-fixed', dateString],
     queryFn: async () => {
       console.log(`🔄 DailyWellnessCheckin - Fetching checkin for: ${dateString}`);
-      const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}&_t=${Date.now()}`, {
-        credentials: 'include',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+      const response = await fetch(`/api/daily-wellness-checkins?date=${dateString}`, {
+        credentials: 'include'
       });
       if (!response.ok) return null;
       const data = await response.json();
       console.log(`🔄 DailyWellnessCheckin - Result for ${dateString}:`, data ? 'FOUND' : 'NULL');
       return data;
     },
-    staleTime: 0, // Always consider data stale
-    gcTime: 0 // Don't cache this data
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
   // Update form values when existing checkin is loaded
