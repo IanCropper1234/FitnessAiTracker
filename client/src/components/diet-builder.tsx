@@ -1528,7 +1528,22 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                       {/* Save Button */}
                       <div className="pt-4">
                         <Button
-                          onClick={handleSaveDietGoal}
+                          onClick={() => {
+                            // For custom goals, ensure proper database saving with custom flags
+                            const updatedGoal = {
+                              ...dietGoal,
+                              targetCalories: Number(dietGoal.targetCalories),
+                              customTargetCalories: Number(dietGoal.targetCalories), // Store custom calories
+                              useCustomCalories: true, // Flag that this is a custom goal
+                              targetProtein: Math.round(dietGoal.targetCalories * proteinPercentage / 100 / 4),
+                              targetCarbs: Math.round(dietGoal.targetCalories * carbsPercentage / 100 / 4),
+                              targetFat: Math.round(dietGoal.targetCalories * fatPercentage / 100 / 9),
+                              autoRegulation: false // Custom goals should not use auto-regulation
+                            };
+                            setDietGoal(updatedGoal);
+                            // Immediately save with the updated values
+                            saveDietGoalMutation.mutate(updatedGoal);
+                          }}
                           disabled={saveDietGoalMutation.isPending || getTotalPercentage() !== 100}
                           className="w-full bg-green-600 hover:bg-green-700 text-white"
                         >
