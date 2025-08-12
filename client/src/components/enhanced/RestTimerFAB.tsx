@@ -258,11 +258,11 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
 
   // Get safe positioning with overflow prevention
   const getSafePosition = () => {
-    // Default position when not dragged - aligned with floating training menu
+    // Default position when not dragged - positioned above complete set button
     if (!fabPosition) {
       return {
-        bottom: '5rem', // Match floating training menu (bottom-20 = 5rem)
-        left: '1rem',
+        bottom: '12rem', // Position higher to avoid overlap with complete set button
+        right: '1rem',   // Move to right side for better accessibility
         position: 'fixed' as const,
       };
     }
@@ -448,7 +448,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
             setIsExpanded(true);
           }
         }}
-        className={`fixed z-40 transition-all duration-300 ${
+        className={`fixed z-50 transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
         style={{
