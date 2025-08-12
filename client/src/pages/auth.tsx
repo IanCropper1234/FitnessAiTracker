@@ -215,7 +215,7 @@ export default function Auth({ onSuccess }: AuthProps) {
               {/* Legacy Email/Password Login for existing users */}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
-                  <Label htmlFor="signin-email" className="text-black dark:text-white flex items-center gap-2">
+                  <Label htmlFor="signin-email" className="text-black dark:text-white flex items-center gap-2 pt-[10px] pb-[10px]">
                     <Mail className="h-4 w-4" />
                     {t("email") || "Email"}
                   </Label>
@@ -229,7 +229,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="signin-password" className="text-black dark:text-white flex items-center gap-2">
+                  <Label htmlFor="signin-password" className="text-black dark:text-white flex items-center gap-2 pt-[10px] pb-[10px]">
                     <Lock className="h-4 w-4" />
                     {t("password") || "Password"}
                   </Label>
