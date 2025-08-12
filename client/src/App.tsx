@@ -33,6 +33,7 @@ import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
 import WorkoutSettings from "./pages/WorkoutSettings";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
+
 import TrainingAnalytics from "./pages/training-analytics";
 import AIExerciseRecommendations from "./pages/ai-exercise-recommendations";
 import EnhancedNutritionAI from "./pages/enhanced-nutrition-ai";

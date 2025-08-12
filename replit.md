@@ -45,8 +45,8 @@ FitAI is an enterprise-grade AI-powered fitness platform that provides intellige
 - **Runtime**: Node.js with Express.js
 - **API Design**: RESTful API with modular service layer architecture
 - **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Complete session-based authentication with bcrypt, Express session, and automatic user ID extraction. All API routes are protected.
-- **Security**: Robust security hardening for sensitive operations.
+- **Authentication**: Hybrid authentication system supporting both legacy session-based auth (for existing users) and Replit Auth (for new users). All API routes are protected with automatic user ID extraction for both integer and string ID formats.
+- **Security**: Robust security hardening for sensitive operations with dual auth support.
 - **Data Processing**: Service layer with specialized algorithms for RP methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression.
 
 ### Core Database Schema
@@ -74,6 +74,7 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Search Performance Optimization**: Unified memoized filtering, debounced search, and pagination across all searchable components.
 - **Special Training Method Integration**: Correct application of load adjustments for special training methods during week advancement (MyoRep Match/No Match, Drop Set, Giant Set).
 - **Automated Macro Adjustment System**: Server-optimized background scheduler that automatically applies RP-based macro adjustments daily at 6 AM, reducing manual intervention while maintaining low server impact through efficient scheduling and limited user processing.
+- **Hybrid Authentication Integration**: Successfully implemented Replit Auth alongside existing session authentication, preserving all 11 existing users' data while enabling seamless login for new users. Migration completed August 12, 2025 with zero data loss.
 
 ### iOS App Development Strategy - Capacitor.js Approach
 FitAI implements a **Capacitor.js hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.
