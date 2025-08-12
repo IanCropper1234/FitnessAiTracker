@@ -576,11 +576,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       if (nextUncompletedSetIndex !== -1) {
         // Move to next uncompleted set in current exercise
         setCurrentSetIndex(nextUncompletedSetIndex);
+        
+        // Auto-switch to execution tab if not already there for better UX
+        if (activeTab !== 'execution') {
+          setActiveTab('execution');
+        }
       } else {
         // All sets completed for current exercise, move to next exercise
         if (currentExerciseIndex < session.exercises.length - 1) {
           setCurrentExerciseIndex(currentExerciseIndex + 1);
           setCurrentSetIndex(0);
+          
+          // Auto-switch to execution tab for the next exercise
+          if (activeTab !== 'execution') {
+            setActiveTab('execution');
+          }
         } else {
           // Last exercise completed
           toast({
