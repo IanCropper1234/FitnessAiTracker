@@ -61,15 +61,7 @@ export const SpecialMethodHistoryButton: React.FC<SpecialMethodHistoryButtonProp
     enabled: !!exerciseId && exerciseId > 0 && !!userId
   });
 
-  // Debug logging (reduced frequency)
-  if (latestSpecialMethod && !isLoading) {
-    console.log('SpecialMethodHistoryButton found data:', {
-      exerciseId,
-      setNumber,
-      latestMethod: latestSpecialMethod?.specialMethod,
-      date: latestSpecialMethod?.date
-    });
-  }
+  // Debug logging removed to prevent excessive re-renders
 
   const handleApplyHistoricalData = async () => {
     if (!latestSpecialMethod) {

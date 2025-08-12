@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -102,7 +102,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
       if (!response.ok) return [];
       return response.json();
     },
-    enabled: !!exerciseId && !!userId && !!set.setNumber
+    enabled: !!exerciseId && !!userId && !!set.setNumber,
+    staleTime: 5 * 60 * 1000, // 5 minutes - prevent excessive refetching
+    refetchOnWindowFocus: false // Prevent refetch on focus changes
   });
   const [useBodyWeight, setUseBodyWeight] = useState(false);
 
@@ -224,20 +226,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     }
   };
 
-  // Get the most recent historical data
-  const latestHistoricalData = historicalData?.[0];
-  
-  // Debug: Log historical data availability
-  if (exerciseId === 379 && set.setNumber === 1) {
-    console.log('Standard historical data debug for exercise 379, set 1:', {
-      exerciseId,
-      setNumber: set.setNumber,
-      historicalDataLength: historicalData?.length || 0,
-      latestHistoricalData,
-      showHistory,
-      hasHistoryButton: !!latestHistoricalData
-    });
-  }
+  // Get the most recent historical data using useMemo to prevent re-renders
+  const latestHistoricalData = useMemo(() => {
+    return historicalData?.[0] || null;
+  }, [historicalData]);
 
   // Calculate if the set is valid - consider body weight for body weight exercises
   const effectiveWeight = getEffectiveWeight();
