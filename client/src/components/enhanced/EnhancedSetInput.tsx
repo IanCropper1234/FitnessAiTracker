@@ -185,24 +185,43 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleUseHistoricalData = (historicalSet: HistoricalSetData) => {
-    console.log('Applying historical data:', historicalSet);
+    console.log('=== STANDARD HISTORICAL DATA AUTO-APPLY ===');
+    console.log('Current set data before update:', {
+      weight: set.weight,
+      actualReps: set.actualReps,
+      rpe: set.rpe,
+      useBodyWeight,
+      weightUnit
+    });
+    console.log('Historical data to apply:', historicalSet);
     
-    if (!useBodyWeight) {
-      const weight = typeof historicalSet.weight === 'string' ? parseFloat(historicalSet.weight) : historicalSet.weight;
-      const convertedWeight = convertWeight(weight, 'kg', weightUnit);
-      console.log('Setting weight:', convertedWeight);
-      onUpdateSet('weight', convertedWeight);
+    try {
+      // Apply weight if not using body weight
+      if (!useBodyWeight) {
+        const weight = typeof historicalSet.weight === 'string' ? parseFloat(historicalSet.weight) : historicalSet.weight;
+        const convertedWeight = convertWeight(weight, 'kg', weightUnit);
+        console.log('Setting weight from', weight, 'kg to', convertedWeight, weightUnit);
+        onUpdateSet('weight', convertedWeight);
+      } else {
+        console.log('Skipping weight update - using body weight');
+      }
+      
+      // Apply reps
+      const reps = typeof historicalSet.reps === 'string' ? parseInt(historicalSet.reps) : historicalSet.reps;
+      console.log('Setting actualReps from', set.actualReps, 'to', reps);
+      onUpdateSet('actualReps', reps);
+      
+      // Apply RPE
+      const rpe = typeof historicalSet.rpe === 'string' ? parseFloat(historicalSet.rpe) : historicalSet.rpe;
+      console.log('Setting rpe from', set.rpe, 'to', rpe);
+      onUpdateSet('rpe', rpe);
+      
+      // Close history panel
+      setShowHistory(false);
+      console.log('Historical data applied successfully');
+    } catch (error) {
+      console.error('Error applying historical data:', error);
     }
-    
-    const reps = typeof historicalSet.reps === 'string' ? parseInt(historicalSet.reps) : historicalSet.reps;
-    const rpe = typeof historicalSet.rpe === 'string' ? parseFloat(historicalSet.rpe) : historicalSet.rpe;
-    
-    console.log('Setting reps:', reps);
-    console.log('Setting rpe:', rpe);
-    
-    onUpdateSet('actualReps', reps);
-    onUpdateSet('rpe', rpe);
-    setShowHistory(false);
   };
 
   // Get the most recent historical data
