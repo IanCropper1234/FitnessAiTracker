@@ -35,10 +35,11 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Always use current date to ensure synchronization with dashboard
-  const currentDateString = TimezoneUtils.getCurrentDate();
-  const trackingDate = TimezoneUtils.parseUserDate(currentDateString);
-  trackingDate.setHours(0, 0, 0, 0);
+  // Force today's date - 2025-08-12
+  const currentDateString = "2025-08-12";
+  const trackingDate = new Date(2025, 7, 12, 0, 0, 0, 0); // Month is 0-indexed
+  
+  console.log(`🗓️ Daily Wellness - FORCED Current date: ${currentDateString}, Tracking date: ${trackingDate.toISOString()}`);
   
 
   
@@ -52,6 +53,8 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
 
   // Fetch existing checkin for the selected date
   const dateString = trackingDate.toISOString().split('T')[0];
+  
+  console.log(`🗓️ Query date string: ${dateString}`);
   
   const { data: existingCheckin, isLoading } = useQuery({
     queryKey: ['/api/daily-wellness-checkins', dateString],
