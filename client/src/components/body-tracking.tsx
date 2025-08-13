@@ -822,7 +822,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Weight Goals Section */}
       <WeightGoals userId={userId} userWeightUnit={unit} />
       {/* Metrics History - Compact Timeline */}
-      <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm mt-[10px] mb-[10px]">
+      <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm mt-[10px] mb-[10px] ml-[-10px] mr-[-10px]">
         <CardHeader className="pb-3">
           <CardTitle className="text-headline flex items-center gap-2 font-semibold text-[14px]">
             <TrendingUp className="w-4 h-4 text-blue-600" />
