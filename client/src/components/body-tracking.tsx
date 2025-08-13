@@ -834,7 +834,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               variant="ghost"
               size="sm"
               onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
-              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 text-gray-500 hover:text-gray-700"
+              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 hover:text-gray-700 text-[#479bf5]"
             >
               {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
             </Button>
