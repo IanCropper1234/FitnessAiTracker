@@ -432,7 +432,7 @@ export default function CreateAIWorkoutSession() {
             {/* Goals */}
             <div>
               <label className="text-sm font-medium mb-2 block">Training Goals *</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 ml-[-10px] mr-[-10px]">
                 {goalOptions.map(goal => (
                   <div key={goal} className="flex items-center space-x-2">
                     <Checkbox 
