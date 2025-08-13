@@ -46,7 +46,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddingMetric, setIsAddingMetric] = useState(false);
-  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
+  const [unit, setUnit] = useState<'metric' | 'imperial'>('imperial');
   const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
   const [showConversionHelper, setShowConversionHelper] = useState(false);
   const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
@@ -236,9 +236,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const displayValue = (value: number | undefined, type: 'weight' | 'measurement', originalUnit: 'metric' | 'imperial'): string => {
     if (!value) return '';
     
+    console.log('displayValue called:', { value, type, originalUnit, showUnifiedUnits, unit });
+    
     if (showUnifiedUnits) {
       // Convert to current preferred unit
       const converted = convertValue(value, type, originalUnit, unit);
+      console.log('Converted value:', converted);
       return converted.toString();
     } else {
       // Show original value
@@ -834,12 +837,12 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               variant="ghost"
               size="sm"
               onClick={() => {
-                console.log('Unit conversion button clicked!', { current: showUnifiedUnits, will_be: !showUnifiedUnits });
+                console.log('Unit button clicked, current showUnifiedUnits:', showUnifiedUnits);
                 setShowUnifiedUnits(!showUnifiedUnits);
               }}
-              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 hover:text-gray-700 text-[#479bf5] flex-shrink-0 whitespace-nowrap"
+              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 text-gray-500 hover:text-gray-700"
             >
-              {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
+              {showUnifiedUnits ? formatUnit('weight') : 'Mixed'}
             </Button>
           </div>
         </CardHeader>
