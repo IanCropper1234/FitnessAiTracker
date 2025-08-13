@@ -1923,7 +1923,7 @@ export function IntegratedNutritionOverview({
                                     <Button 
                                       variant="ghost" 
                                       size="sm" 
-                                      className="h-6 w-6 p-0"
+                                      className="h-6 w-6 p-0 hover:bg-transparent"
                                       onClick={(e) => {
                                         // Prevent menu opening if scroll was detected
                                         const scrollDetected = e.currentTarget.parentElement?.dataset.scrollDetected === 'true';
