@@ -120,7 +120,13 @@ export async function analyzeNutritionMultiImage(
 **CRITICAL - Serving Details for Nutrition Labels:**
 - Extract the EXACT serving size text from the nutrition facts label (e.g., "1 container (150g)", "2 slices (45g)", "1 cup (30g)")
 - If multiple products, specify which product the serving refers to
-- Include both the descriptive portion AND weight/volume when available`
+- Include both the descriptive portion AND weight/volume when available
+
+**SUPPLEMENTS AND VITAMINS:**
+- For supplements, vitamins, and pills with zero or minimal calories/macros, focus on micronutrients
+- Extract all vitamin and mineral content even if calories/protein/carbs/fat are zero
+- Use serving size from supplement facts panel (e.g., "1 capsule", "2 tablets", "1 softgel")
+- Set calories/protein/carbs/fat to 0 for pure supplements and focus on micronutrient extraction`
         : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s).
 
 **Analysis Approach:**
@@ -209,6 +215,7 @@ Return only valid JSON with all required fields.`
 2. **Standard Nutrition:** Use established nutritional databases and references
 3. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s)`}
 4. **Comprehensive Data:** Include both macronutrients and micronutrients
+5. **Supplements Handling:** For supplements, vitamins, pills, or powders with minimal calories, focus on micronutrient content even if macros are zero
 
 **Output Requirements - JSON format with these exact fields:**
 - calories: total calories (number)
@@ -297,8 +304,13 @@ Return only valid JSON with all required fields.`
     };
     
     // Validate that we have meaningful nutritional data
-    if (validatedResult.calories === 0 && validatedResult.protein === 0 && 
-        validatedResult.carbs === 0 && validatedResult.fat === 0) {
+    // Allow supplements with zero macros but micronutrients
+    const hasMacros = validatedResult.calories > 0 || validatedResult.protein > 0 || 
+                     validatedResult.carbs > 0 || validatedResult.fat > 0;
+    const hasMicronutrients = validatedResult.micronutrients && 
+                             Object.keys(validatedResult.micronutrients).length > 0;
+    
+    if (!hasMacros && !hasMicronutrients) {
       throw new Error("OpenAI could not determine nutritional content - please try with clearer images or more detailed description");
     }
 
