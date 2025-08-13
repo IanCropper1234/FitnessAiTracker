@@ -277,7 +277,7 @@ export function AddFood({ user }: AddFoodProps) {
       images: hasImage ? capturedImages : undefined,
       portionWeight: hasPortion ? portionWeight : undefined,
       portionUnit: hasPortion ? portionUnit : undefined,
-      analysisType: hasImage ? analysisType : 'actual_food' // Default to actual_food for text-only
+      analysisType: hasImage ? imageAnalysisType : 'actual_food' // Default to actual_food for text-only
     });
   };
 
