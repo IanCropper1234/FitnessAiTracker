@@ -449,7 +449,7 @@ export default function CreateAIWorkoutSession() {
             {/* Muscle Group Focus */}
             <div>
               <label className="text-sm font-medium mb-2 block">Muscle Group Focus *</label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2 pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
                 {muscleGroupOptions.map(muscle => (
                   <div key={muscle} className="flex items-center space-x-2">
                     <Checkbox 
