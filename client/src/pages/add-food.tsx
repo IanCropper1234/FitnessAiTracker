@@ -715,6 +715,18 @@ export function AddFood({ user }: AddFoodProps) {
                     handleAIAnalysis();
                   }
                 }}
+                onPaste={(e) => {
+                  // Allow default paste behavior
+                  e.stopPropagation();
+                }}
+                onCopy={(e) => {
+                  // Allow default copy behavior
+                  e.stopPropagation();
+                }}
+                onCut={(e) => {
+                  // Allow default cut behavior
+                  e.stopPropagation();
+                }}
               />
             </div>
 
@@ -733,6 +745,18 @@ export function AddFood({ user }: AddFoodProps) {
                     if (e.key === 'Enter') {
                       handleAIAnalysis();
                     }
+                  }}
+                  onPaste={(e) => {
+                    // Allow default paste behavior
+                    e.stopPropagation();
+                  }}
+                  onCopy={(e) => {
+                    // Allow default copy behavior
+                    e.stopPropagation();
+                  }}
+                  onCut={(e) => {
+                    // Allow default cut behavior
+                    e.stopPropagation();
                   }}
                 />
                 <Button
@@ -943,6 +967,18 @@ export function AddFood({ user }: AddFoodProps) {
                           min="0"
                           placeholder="100"
                           className="h-8 text-sm ios-touch-feedback"
+                          onPaste={(e) => {
+                            // Allow default paste behavior
+                            e.stopPropagation();
+                          }}
+                          onCopy={(e) => {
+                            // Allow default copy behavior
+                            e.stopPropagation();
+                          }}
+                          onCut={(e) => {
+                            // Allow default cut behavior
+                            e.stopPropagation();
+                          }}
                         />
                       </div>
                       <div className="space-y-1">
@@ -953,6 +989,18 @@ export function AddFood({ user }: AddFoodProps) {
                           type="text"
                           placeholder="g, ml, oz, cups, etc."
                           className="h-8 text-sm ios-touch-feedback"
+                          onPaste={(e) => {
+                            // Allow default paste behavior
+                            e.stopPropagation();
+                          }}
+                          onCopy={(e) => {
+                            // Allow default copy behavior
+                            e.stopPropagation();
+                          }}
+                          onCut={(e) => {
+                            // Allow default cut behavior
+                            e.stopPropagation();
+                          }}
                         />
                       </div>
                     </div>
@@ -998,6 +1046,18 @@ export function AddFood({ user }: AddFoodProps) {
                       onChange={(e) => setHistorySearchQuery(e.target.value)}
                       placeholder="Search your food history..."
                       className="h-8 pl-7 text-xs ios-touch-feedback"
+                      onPaste={(e) => {
+                        // Allow default paste behavior
+                        e.stopPropagation();
+                      }}
+                      onCopy={(e) => {
+                        // Allow default copy behavior
+                        e.stopPropagation();
+                      }}
+                      onCut={(e) => {
+                        // Allow default cut behavior
+                        e.stopPropagation();
+                      }}
                     />
                   </div>
 
@@ -1107,6 +1167,18 @@ export function AddFood({ user }: AddFoodProps) {
                       onChange={(e) => setSavedMealsSearchQuery(e.target.value)}
                       placeholder="Search your saved meals..."
                       className="h-8 pl-7 text-xs ios-touch-feedback"
+                      onPaste={(e) => {
+                        // Allow default paste behavior
+                        e.stopPropagation();
+                      }}
+                      onCopy={(e) => {
+                        // Allow default copy behavior
+                        e.stopPropagation();
+                      }}
+                      onCut={(e) => {
+                        // Allow default cut behavior
+                        e.stopPropagation();
+                      }}
                     />
                   </div>
 
@@ -1208,6 +1280,18 @@ export function AddFood({ user }: AddFoodProps) {
                       step="0.1"
                       min="0.1"
                       className="h-8 text-sm ios-touch-feedback"
+                      onPaste={(e) => {
+                        // Allow default paste behavior
+                        e.stopPropagation();
+                      }}
+                      onCopy={(e) => {
+                        // Allow default copy behavior
+                        e.stopPropagation();
+                      }}
+                      onCut={(e) => {
+                        // Allow default cut behavior
+                        e.stopPropagation();
+                      }}
                     />
                   </div>
                   <div className="space-y-2">
@@ -1217,6 +1301,18 @@ export function AddFood({ user }: AddFoodProps) {
                       onChange={(e) => setUnit(e.target.value)}
                       placeholder="g, ml, oz, cups, pieces, etc."
                       className="h-8 text-sm ios-touch-feedback"
+                      onPaste={(e) => {
+                        // Allow default paste behavior
+                        e.stopPropagation();
+                      }}
+                      onCopy={(e) => {
+                        // Allow default copy behavior
+                        e.stopPropagation();
+                      }}
+                      onCut={(e) => {
+                        // Allow default cut behavior
+                        e.stopPropagation();
+                      }}
                     />
                   </div>
                 </div>
