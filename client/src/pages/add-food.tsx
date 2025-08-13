@@ -318,47 +318,66 @@ export function AddFood({ user }: AddFoodProps) {
   const recalculateMacrosFromVolume = React.useCallback(() => {
     if (!baseAIResult) return;
 
-    const currentQuantity = parseFloat(quantity);
-    // AI returns values for 1 serving, so we multiply directly by quantity
-    const multiplier = isNaN(currentQuantity) ? 1 : currentQuantity;
+    // Check if AI provided standardized portion information
+    const hasStandardizedPortion = baseAIResult.portionWeight && baseAIResult.portionUnit;
+    
+    if (hasStandardizedPortion) {
+      // AI already calculated nutrition for the standardized portion
+      // Use AI values directly without multiplication
+      console.log(`Using AI standardized portion: ${baseAIResult.portionWeight}${baseAIResult.portionUnit}`);
+      setDynamicMacros({
+        ...baseAIResult,
+        servingDetails: `${baseAIResult.portionWeight}${baseAIResult.portionUnit} (AI standardized portion)`,
+        assumptions: baseAIResult.assumptions || 'AI-analyzed standardized portion'
+      });
+    } else {
+      // Legacy behavior for non-standardized portions - apply quantity multiplier
+      const currentQuantity = parseFloat(quantity);
+      const multiplier = isNaN(currentQuantity) ? 1 : currentQuantity;
 
-    console.log(`Recalculating macros: quantity=${quantity}, multiplier=${multiplier}`);
-    console.log(`Base AI calories:`, baseAIResult.calories);
+      console.log(`Recalculating macros: quantity=${quantity}, multiplier=${multiplier}`);
+      console.log(`Base AI calories:`, baseAIResult.calories);
 
-    const recalculatedMacros = {
-      ...baseAIResult,
-      calories: Math.round((baseAIResult.calories * multiplier) * 100) / 100,
-      protein: Math.round((baseAIResult.protein * multiplier) * 100) / 100,
-      carbs: Math.round((baseAIResult.carbs * multiplier) * 100) / 100,
-      fat: Math.round((baseAIResult.fat * multiplier) * 100) / 100,
-      servingDetails: baseAIResult.servingDetails ? 
-        `${quantity} ${unit} (adjusted from AI estimate: ${baseAIResult.servingDetails})` :
-        `${quantity} ${unit}`,
-      assumptions: baseAIResult.assumptions ? 
-        `${baseAIResult.assumptions} • Volume adjusted to ${quantity} ${unit}` :
-        `Volume adjusted to ${quantity} ${unit}`,
-      // Scale micronutrients proportionally if they exist
-      ...(baseAIResult.micronutrients && {
-        micronutrients: Object.fromEntries(
-          Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
-            key, 
-            typeof value === 'number' ? Math.round((value * multiplier) * 100) / 100 : value
-          ])
-        )
-      })
-    };
+      const recalculatedMacros = {
+        ...baseAIResult,
+        calories: Math.round((baseAIResult.calories * multiplier) * 100) / 100,
+        protein: Math.round((baseAIResult.protein * multiplier) * 100) / 100,
+        carbs: Math.round((baseAIResult.carbs * multiplier) * 100) / 100,
+        fat: Math.round((baseAIResult.fat * multiplier) * 100) / 100,
+        servingDetails: baseAIResult.servingDetails ? 
+          `${quantity} ${unit} (adjusted from AI estimate: ${baseAIResult.servingDetails})` :
+          `${quantity} ${unit}`,
+        assumptions: baseAIResult.assumptions ? 
+          `${baseAIResult.assumptions} • Volume adjusted to ${quantity} ${unit}` :
+          `Volume adjusted to ${quantity} ${unit}`,
+        // Scale micronutrients proportionally if they exist
+        ...(baseAIResult.micronutrients && {
+          micronutrients: Object.fromEntries(
+            Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
+              key, 
+              typeof value === 'number' ? Math.round((value * multiplier) * 100) / 100 : value
+            ])
+          )
+        })
+      };
 
-    console.log(`Recalculated calories:`, recalculatedMacros.calories);
-    setDynamicMacros(recalculatedMacros);
+      console.log(`Recalculated calories:`, recalculatedMacros.calories);
+      setDynamicMacros(recalculatedMacros);
+    }
   }, [baseAIResult, quantity, unit]);
 
   // Auto-sync portion values to quantity/unit after AI analysis
   React.useEffect(() => {
-    if (aiAnalyzeMutation.data && !portionWeight && !portionUnit) {
+    if (aiAnalyzeMutation.data) {
       // AI provides nutrition for the analyzed quantity, set form to match AI result
-      console.log("AI analysis complete, setting quantity/unit to match AI serving");
-      // Don't override user-provided portion values, only set defaults
-      if (quantity === '1' && unit === 'serving') {
+      console.log("AI analysis complete, using AI standardized portion");
+      
+      // Use AI-provided standardized portion if available
+      if (aiAnalyzeMutation.data.portionWeight && aiAnalyzeMutation.data.portionUnit) {
+        setQuantity(aiAnalyzeMutation.data.portionWeight.toString());
+        setUnit(aiAnalyzeMutation.data.portionUnit);
+      } else {
+        // Fallback to AI serving details or default
         setQuantity('1');
         setUnit('serving');
       }
