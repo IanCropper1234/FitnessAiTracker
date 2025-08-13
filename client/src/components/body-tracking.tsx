@@ -49,7 +49,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
   const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
   const [showConversionHelper, setShowConversionHelper] = useState(false);
-  const [showUnifiedUnits, setShowUnifiedUnits] = useState(false);
+  const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
   const formRef = useRef<HTMLDivElement>(null);
   // Use external date if provided, otherwise use internal state
   const selectedDate = externalSelectedDate || new Date().toISOString().split('T')[0];
@@ -239,24 +239,25 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
     if (showUnifiedUnits) {
       // Convert to current preferred unit
       const converted = convertValue(value, type, originalUnit, unit);
-      const unitLabel = type === 'weight' ? 
-        (unit === 'metric' ? 'kg' : 'lbs') : 
-        (unit === 'metric' ? 'cm' : 'inches');
-      return `${converted}${unitLabel}`;
+      return converted.toString();
     } else {
-      // Show original value with original unit
-      const unitLabel = type === 'weight' ? 
-        (originalUnit === 'metric' ? 'kg' : 'lbs') : 
-        (originalUnit === 'metric' ? 'cm' : 'inches');
-      return `${value}${unitLabel}`;
+      // Show original value
+      return value.toString();
     }
   };
 
-  const getUnitIndicator = (metricUnit: 'metric' | 'imperial'): string => {
-    if (showUnifiedUnits && metricUnit !== unit) {
-      return ' (converted)';
+  const getUnitIndicator = (originalUnit: 'metric' | 'imperial', type: 'weight' | 'measurement' = 'weight'): string => {
+    if (showUnifiedUnits) {
+      // Always show current preferred unit
+      return type === 'weight' ? 
+        (unit === 'metric' ? 'kg' : 'lbs') : 
+        (unit === 'metric' ? 'cm' : 'in');
+    } else {
+      // Show original unit
+      return type === 'weight' ? 
+        (originalUnit === 'metric' ? 'kg' : 'lbs') : 
+        (originalUnit === 'metric' ? 'cm' : 'in');
     }
-    return '';
   };
 
   const getLatestMetric = () => {
@@ -861,7 +862,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                           <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
                             {displayValue(metric.weight, 'weight', metric.unit)}
-                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
+                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit, 'weight')}</span>
                           </span>
                         </div>
                       )}
@@ -881,7 +882,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                           <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
                           <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
                             {displayValue(metric.waist, 'measurement', metric.unit)}
-                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
+                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit, 'measurement')}</span>
                           </span>
                         </div>
                       )}
