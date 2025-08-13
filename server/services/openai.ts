@@ -71,6 +71,8 @@ export interface NutritionAnalysis {
   mealSuitability?: string[]; // pre-workout, post-workout, regular, snack
   assumptions?: string; // key assumptions made during analysis
   servingDetails?: string; // clarification of portion analyzed
+  portionWeight?: number; // standardized portion weight (e.g., 100, 150, 200)
+  portionUnit?: string; // standardized portion unit (e.g., "g", "ml", "pieces")
   micronutrients?: MicronutrientData; // comprehensive vitamin and mineral data
 }
 
@@ -153,6 +155,8 @@ ${foodDescription ? `
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions made during analysis (string)
 - servingDetails: description of portion analyzed${imageCount > 1 ? ' across all images' : ''} (string)
+- portionWeight: standardized portion weight as number (e.g., 100, 150, 200)
+- portionUnit: standardized portion unit as string (e.g., "g", "ml", "pieces")
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
@@ -216,6 +220,8 @@ Return only valid JSON with all required fields.`
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions about preparation or variety (string)
 - servingDetails: realistic serving size description (string: e.g., "1 medium ${primaryInput} (150g)", "2 pieces (60g)", "1 cup (200g)")
+- portionWeight: standardized portion weight as number (e.g., 100, 150, 200)
+- portionUnit: standardized portion unit as string (e.g., "g", "ml", "pieces")
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
@@ -229,7 +235,7 @@ Return only valid JSON with all required fields.`
     }
 
     console.log(`Making OpenAI API call with ${messageContent.length} content items...`);
-    console.log('Content types:', messageContent.map(item => ({ type: item.type, hasUrl: !!item.image_url })));
+    console.log('Content types:', messageContent.map((item: any) => ({ type: item.type, hasUrl: !!item.image_url })));
     
     // Validate image URLs before API call
     if (hasImages) {
@@ -285,6 +291,8 @@ Return only valid JSON with all required fields.`
       mealSuitability: Array.isArray(parsed.mealSuitability) ? parsed.mealSuitability : ['regular'],
       assumptions: parsed.assumptions || 'Basic nutritional estimation',
       servingDetails: parsed.servingDetails || `${quantity} ${unit}`,
+      portionWeight: typeof parsed.portionWeight === 'number' ? parsed.portionWeight : null,
+      portionUnit: typeof parsed.portionUnit === 'string' ? parsed.portionUnit : null,
       micronutrients: parsed.micronutrients || {}
     };
     

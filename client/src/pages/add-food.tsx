@@ -173,10 +173,18 @@ export function AddFood({ user }: AddFoodProps) {
       setBaseAIResult(data);
       setDynamicMacros(data);
       
-      // Reset quantity and unit to default so the AI result represents 1 serving
-      // This ensures dynamic calculations work correctly from the AI baseline
-      setQuantity('1');
-      setUnit('serving');
+      // Use AI's standardized portion information instead of hardcoded values
+      if (data.portionWeight && data.portionUnit) {
+        console.log("Using AI standardized portion:", data.portionWeight, data.portionUnit);
+        setPortionWeight(data.portionWeight.toString());
+        setPortionUnit(data.portionUnit);
+        setQuantity(data.portionWeight.toString());
+        setUnit(data.portionUnit);
+      } else {
+        // If AI didn't provide specific portion info, keep 1 serving as baseline
+        setQuantity('1');
+        setUnit('serving');
+      }
       
       toast({
         title: "Success",
@@ -277,8 +285,7 @@ export function AddFood({ user }: AddFoodProps) {
       description: hasDescription ? foodQuery : undefined,
       images: hasImage ? capturedImages : undefined,
       portionWeight: hasPortion ? portionWeight : undefined,
-      portionUnit: hasPortion ? portionUnit : undefined,
-      analysisType: hasImage ? (imageAnalysisType || 'actual_food') : 'actual_food' // Default to actual_food for text-only
+      portionUnit: hasPortion ? portionUnit : undefined
     });
   };
 
@@ -736,7 +743,7 @@ export function AddFood({ user }: AddFoodProps) {
                 <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
                   Photo Analysis Type *
                 </Label>
-                <Select value={imageAnalysisType} onValueChange={setImageAnalysisType}>
+                <Select value={imageAnalysisType} onValueChange={(value: 'nutrition_label' | 'actual_food' | '') => setImageAnalysisType(value)}>
                   <SelectTrigger className="h-8 text-xs ios-touch-feedback">
                     <SelectValue placeholder="Please select type of image" />
                   </SelectTrigger>
