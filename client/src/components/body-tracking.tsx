@@ -52,6 +52,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
   // Pagination state for memory optimization
   const [currentPage, setCurrentPage] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const recordsPerPage = 20;
   const formRef = useRef<HTMLDivElement>(null);
   // Use external date if provided, otherwise use internal state
@@ -97,7 +98,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
       setIsAddingMetric(false);
-      setCurrentPage(1); // Reset to first page after adding new metric
+      // Reset to first page after adding new metric with smooth transition
+      if (currentPage !== 1) {
+        handlePageChange(1);
+      }
       // Reset form data - the useEffect will automatically set the date to the latest metric date
       setFormData({
         date: new Date().toISOString().split('T')[0], // This will be updated by useEffect
@@ -277,6 +281,21 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const startIndex = (currentPage - 1) * recordsPerPage;
   const endIndex = startIndex + recordsPerPage;
   const paginatedMetrics = metrics?.slice(startIndex, endIndex) || [];
+
+  // Handle page change with smooth transition
+  const handlePageChange = (newPage: number) => {
+    if (newPage === currentPage || isTransitioning) return;
+    
+    setIsTransitioning(true);
+    
+    // Smooth transition effect
+    setTimeout(() => {
+      setCurrentPage(newPage);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 150);
+    }, 150);
+  };
 
   // Update form date when selectedDate changes or when metrics are available
   useEffect(() => {
@@ -857,11 +876,21 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         <CardContent className="p-2">
           {metrics && metrics.length > 0 ? (
             <>
-              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              <div className={`space-y-2 max-h-[400px] overflow-y-auto transition-all duration-300 ${isTransitioning ? 'opacity-50 scale-[0.98]' : 'opacity-100 scale-100'}`}>
                 {paginatedMetrics.map((metric, paginatedIndex) => {
                   const globalIndex = startIndex + paginatedIndex;
                   return (
-                    <div key={metric.id}>
+                    <div 
+                      key={metric.id}
+                      className={`transition-all duration-300 ease-out ${
+                        isTransitioning 
+                          ? 'opacity-0 translate-y-2' 
+                          : 'opacity-100 translate-y-0'
+                      }`}
+                      style={{
+                        transitionDelay: isTransitioning ? '0ms' : `${paginatedIndex * 30}ms`
+                      }}
+                    >
                       {/* iOS-style Card Layout - Full Width */}
                       <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] cursor-pointer group w-full">
                         {/* Left Section - Icon & Date - Compact */}
@@ -943,23 +972,23 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="h-8 px-3 text-sm"
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1 || isTransitioning}
+                    className="h-8 px-3 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 disabled:opacity-50"
                   >
                     &lt;
                   </Button>
                   
-                  <span className="text-sm text-gray-600 dark:text-gray-400 px-2">
+                  <span className={`text-sm text-gray-600 dark:text-gray-400 px-2 transition-all duration-200 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                     {currentPage}
                   </span>
                   
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="h-8 px-3 text-sm"
+                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages || isTransitioning}
+                    className="h-8 px-3 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 disabled:opacity-50"
                   >
                     &gt;
                   </Button>
