@@ -158,10 +158,18 @@ Return only valid JSON with all required fields.`
 
       // Add all images to the message content
       images.forEach((image, index) => {
+        // Ensure proper data URL format
+        let imageUrl = image;
+        if (!image.startsWith('data:image/')) {
+          console.warn(`Image ${index + 1} missing data URL prefix, adding default`);
+          imageUrl = `data:image/jpeg;base64,${image}`;
+        }
+        
         messageContent.push({
           type: "image_url",
           image_url: {
-            url: image
+            url: imageUrl,
+            detail: "high" // Use high detail for better nutrition label reading
           }
         });
       });
@@ -211,40 +219,80 @@ Return only valid JSON with all required fields.`
     }
 
     console.log(`Making OpenAI API call with ${messageContent.length} content items...`);
+    console.log('Content types:', messageContent.map(item => ({ type: item.type, hasUrl: !!item.image_url })));
+    
+    // Validate image URLs before API call
+    if (hasImages) {
+      images.forEach((image, index) => {
+        if (!image || !image.startsWith('data:image/')) {
+          console.warn(`Image ${index + 1} may have invalid format:`, image?.substring(0, 50) + '...');
+        }
+      });
+    }
 
     // Make the API call with enhanced vision model  
     const response = await openai.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
+          role: "system",
+          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis. Always respond with valid JSON containing complete nutritional data. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
+        },
+        {
           role: "user",
           content: messageContent
         }
       ],
-      max_tokens: 1000,
-      temperature: 0.3,
+      max_tokens: 1500, // Increased for detailed micronutrient response
+      temperature: 0.1, // Very low temperature for consistent JSON output
       response_format: { type: "json_object" }
     });
 
     const result = response.choices[0].message.content;
-    console.log("OpenAI response received:", result);
-
-    if (!result) {
-      throw new Error("Empty response from OpenAI");
-    }
-
-    const parsed = JSON.parse(result);
+    console.log("OpenAI response received (length):", result?.length || 0);
     
-    // Validate required fields
-    if (typeof parsed.calories !== 'number' || 
-        typeof parsed.protein !== 'number' || 
-        typeof parsed.carbs !== 'number' || 
-        typeof parsed.fat !== 'number' ||
-        typeof parsed.confidence !== 'number') {
-      throw new Error("Invalid nutrition analysis response - missing required numeric fields");
+    if (!result || result.trim() === '') {
+      console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
+      throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
     }
 
-    return parsed;
+    let parsed;
+    try {
+      parsed = JSON.parse(result);
+    } catch (jsonError) {
+      console.error("Failed to parse OpenAI response as JSON:", result);
+      throw new Error("OpenAI returned invalid JSON - please try again or contact support");
+    }
+    
+    // Validate required fields with defaults
+    const validatedResult = {
+      calories: typeof parsed.calories === 'number' ? parsed.calories : 0,
+      protein: typeof parsed.protein === 'number' ? parsed.protein : 0,
+      carbs: typeof parsed.carbs === 'number' ? parsed.carbs : 0,
+      fat: typeof parsed.fat === 'number' ? parsed.fat : 0,
+      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
+      category: parsed.category || 'mixed',
+      mealSuitability: Array.isArray(parsed.mealSuitability) ? parsed.mealSuitability : ['regular'],
+      assumptions: parsed.assumptions || 'Basic nutritional estimation',
+      servingDetails: parsed.servingDetails || `${quantity} ${unit}`,
+      micronutrients: parsed.micronutrients || {}
+    };
+    
+    // Validate that we have meaningful nutritional data
+    if (validatedResult.calories === 0 && validatedResult.protein === 0 && 
+        validatedResult.carbs === 0 && validatedResult.fat === 0) {
+      throw new Error("OpenAI could not determine nutritional content - please try with clearer images or more detailed description");
+    }
+
+    console.log("Validated nutrition analysis:", {
+      calories: validatedResult.calories,
+      protein: validatedResult.protein,
+      confidence: validatedResult.confidence,
+      hasImages: hasImages,
+      imageCount: hasImages ? images.length : 0
+    });
+
+    return validatedResult;
 
   } catch (error) {
     console.error("Error in multi-image nutrition analysis:", error);
