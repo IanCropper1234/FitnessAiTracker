@@ -167,15 +167,16 @@ export function AddFood({ user }: AddFoodProps) {
     },
     onSuccess: (data: any) => {
       console.log("AI Analysis successful:", data);
+      console.log("AI serving details:", data.servingDetails);
       
       // Store the base AI result for volume calculations
       setBaseAIResult(data);
       setDynamicMacros(data);
       
-      // Auto-fill unit from portion information if available
-      if (portionUnit && portionUnit.trim()) {
-        setUnit(portionUnit);
-      }
+      // Reset quantity and unit to default so the AI result represents 1 serving
+      // This ensures dynamic calculations work correctly from the AI baseline
+      setQuantity('1');
+      setUnit('serving');
       
       toast({
         title: "Success",
@@ -346,16 +347,16 @@ export function AddFood({ user }: AddFoodProps) {
 
   // Auto-sync portion values to quantity/unit after AI analysis
   React.useEffect(() => {
-    if (aiAnalyzeMutation.data && portionWeight && portionUnit) {
-      setQuantity(portionWeight);
-      setUnit(portionUnit === 'g' ? 'gram' : 
-            portionUnit === 'ml' ? 'milliliter' :
-            portionUnit === 'oz' ? 'ounce' :
-            portionUnit === 'cup' || portionUnit === 'cups' ? 'cup' :
-            portionUnit === 'piece' || portionUnit === 'pieces' ? 'piece' :
-            portionUnit); // Use custom unit as-is for non-standard units
+    if (aiAnalyzeMutation.data && !portionWeight && !portionUnit) {
+      // AI provides nutrition for the analyzed quantity, set form to match AI result
+      console.log("AI analysis complete, setting quantity/unit to match AI serving");
+      // Don't override user-provided portion values, only set defaults
+      if (quantity === '1' && unit === 'serving') {
+        setQuantity('1');
+        setUnit('serving');
+      }
     }
-  }, [aiAnalyzeMutation.data, portionWeight, portionUnit]);
+  }, [aiAnalyzeMutation.data]);
 
   // Recalculate macros when quantity or unit changes
   React.useEffect(() => {
