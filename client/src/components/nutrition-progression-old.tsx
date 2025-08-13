@@ -124,43 +124,43 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     }
   }, [timeRange, chartType]);
 
-  // Generic pagination helper function
-  const getPaginatedData = (data: any[], page: number, perPage: number) => {
-    const total = data.length;
-    const totalPages = Math.ceil(total / perPage);
-    const start = (page - 1) * perPage;
-    const paginated = data.slice(start, start + perPage);
-    return { total, totalPages, start, paginated };
-  };
-
-  // Generic pagination controls component
-  const PaginationControls = ({ totalPages }: { totalPages: number }) => (
-    totalPages > 1 ? (
-      <div className="flex items-center justify-center gap-3 pt-2">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1 || isTransitioning}
-          className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
-        >
-          &lt;
-        </button>
-        
-        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[60px] text-center">
-          {currentPage}
-        </span>
-        
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages || isTransitioning}
-          className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
-        >
-          &gt;
-        </button>
-      </div>
-    ) : null
-  );
-
   const renderDataTable = () => {
+    // Generic pagination helper function
+    const getPaginatedData = (data: any[], currentPage: number, recordsPerPage: number) => {
+      const totalRecords = data.length;
+      const totalPages = Math.ceil(totalRecords / recordsPerPage);
+      const startIndex = (currentPage - 1) * recordsPerPage;
+      const paginatedData = data.slice(startIndex, startIndex + recordsPerPage);
+      return { totalRecords, totalPages, startIndex, paginatedData };
+    };
+
+    // Generic pagination controls component
+    const PaginationControls = ({ totalPages }: { totalPages: number }) => (
+      totalPages > 1 ? (
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1 || isTransitioning}
+            className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+          >
+            &lt;
+          </button>
+          
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[60px] text-center">
+            {currentPage}
+          </span>
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages || isTransitioning}
+            className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+          >
+            &gt;
+          </button>
+        </div>
+      ) : null
+    );
+
     switch (chartType) {
       case 'weight':
         if (!bodyMetrics || bodyMetrics.length === 0) {
@@ -206,9 +206,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {weightPagination.paginated.map((entry: any, index: number) => (
+                  {weightPagination.paginatedData.map((entry: any, index: number) => (
                     <tr 
-                      key={weightPagination.start + index} 
+                      key={weightPagination.startIndex + index} 
                       className={`border-b border-gray-100 dark:border-gray-800 last:border-0 transition-all duration-300 ease-out ${
                         isTransitioning 
                           ? 'opacity-0 translate-y-2' 
@@ -262,9 +262,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {bodyFatPagination.paginated.map((entry: any, index: number) => (
+                  {paginatedData.map((entry: any, index: number) => (
                     <tr 
-                      key={bodyFatPagination.start + index} 
+                      key={startIndex + index} 
                       className={`border-b border-gray-100 dark:border-gray-800 last:border-0 transition-all duration-300 ease-out ${
                         isTransitioning 
                           ? 'opacity-0 translate-y-2' 
@@ -282,7 +282,30 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </table>
             </div>
             
-            <PaginationControls totalPages={bodyFatPagination.totalPages} />
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || isTransitioning}
+                  className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+                >
+                  &lt;
+                </button>
+                
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[60px] text-center">
+                  {currentPage}
+                </span>
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages || isTransitioning}
+                  className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
           </div>
         );
 
@@ -295,7 +318,11 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           );
         }
 
-        const caloriesPagination = getPaginatedData(progressionData, currentPage, recordsPerPage);
+        // Pagination logic for calories data
+        const totalRecords = progressionData.length;
+        const totalPages = Math.ceil(totalRecords / recordsPerPage);
+        const startIndex = (currentPage - 1) * recordsPerPage;
+        const paginatedData = progressionData.slice(startIndex, startIndex + recordsPerPage);
         
         return (
           <div className="space-y-3">
@@ -309,9 +336,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {caloriesPagination.paginated.map((entry: any, index: number) => (
+                  {paginatedData.map((entry: any, index: number) => (
                     <tr 
-                      key={caloriesPagination.start + index} 
+                      key={startIndex + index} 
                       className={`border-b border-gray-100 dark:border-gray-800 last:border-0 transition-all duration-300 ease-out ${
                         isTransitioning 
                           ? 'opacity-0 translate-y-2' 
@@ -336,7 +363,30 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </table>
             </div>
             
-            <PaginationControls totalPages={caloriesPagination.totalPages} />
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || isTransitioning}
+                  className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+                >
+                  &lt;
+                </button>
+                
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[60px] text-center">
+                  {currentPage}
+                </span>
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages || isTransitioning}
+                  className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
           </div>
         );
 
@@ -349,7 +399,11 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           );
         }
 
-        const macrosPagination = getPaginatedData(progressionData, currentPage, recordsPerPage);
+        // Pagination logic for macros data
+        const totalRecords = progressionData.length;
+        const totalPages = Math.ceil(totalRecords / recordsPerPage);
+        const startIndex = (currentPage - 1) * recordsPerPage;
+        const paginatedData = progressionData.slice(startIndex, startIndex + recordsPerPage);
         
         return (
           <div className="space-y-3">
@@ -364,9 +418,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {macrosPagination.paginated.map((entry: any, index: number) => (
+                  {paginatedData.map((entry: any, index: number) => (
                     <tr 
-                      key={macrosPagination.start + index} 
+                      key={startIndex + index} 
                       className={`border-b border-gray-100 dark:border-gray-800 last:border-0 transition-all duration-300 ease-out ${
                         isTransitioning 
                           ? 'opacity-0 translate-y-2' 
@@ -392,7 +446,30 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               </table>
             </div>
             
-            <PaginationControls totalPages={macrosPagination.totalPages} />
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || isTransitioning}
+                  className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+                >
+                  &lt;
+                </button>
+                
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[60px] text-center">
+                  {currentPage}
+                </span>
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages || isTransitioning}
+                  className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white disabled:bg-gray-300 disabled:text-gray-500 hover:bg-blue-700 disabled:hover:bg-gray-300 transition-all duration-200"
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
           </div>
         );
 
@@ -446,46 +523,49 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         const yAxisMax = maxWeight + padding;
 
         return (
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={weightData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
+                axisLine={false}
               />
-              <YAxis
-                domain={[yAxisMin, yAxisMax]}
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
-                label={{ 
-                  value: `Weight (${preferredUnit})`, 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fontSize: '11px' }
-                }}
+                axisLine={false}
+                domain={[yAxisMin, yAxisMax]}
+                tickFormatter={(value) => `${value.toFixed(1)}`}
               />
               <Tooltip 
-                labelClassName="text-xs"
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '6px',
-                  fontSize: '12px'
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #2563EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  fontSize: '12px',
+                  color: '#2563EB'
                 }}
-                formatter={(value: any) => [`${Number(value).toFixed(1)} ${preferredUnit}`, 'Weight']}
+                labelStyle={{
+                  color: '#2563EB',
+                  fontWeight: '500'
+                }}
+                formatter={(value: any) => [
+                  `${value.toFixed(1)} ${getUserPreferredWeightUnit()}`, 
+                  'Weight'
+                ]}
               />
               <Line 
                 type="monotone" 
                 dataKey="weight" 
-                stroke="#2563eb" 
-                strokeWidth={2}
-                dot={{ fill: '#2563eb', r: 3 }}
-                activeDot={{ r: 5, fill: '#2563eb' }}
+                stroke="#2563EB" 
+                strokeWidth={3}
+                dot={{ fill: '#2563EB', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: '#2563EB' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -494,49 +574,43 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       case 'bodyFat':
         const bodyFatData = bodyMetrics?.filter((metric: any) => metric.bodyFatPercentage).map((metric: any) => ({
           date: new Date(metric.date).toLocaleDateString(),
-          bodyFat: parseFloat(metric.bodyFatPercentage)
+          bodyFat: metric.bodyFatPercentage,
         })) || [];
 
         return (
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <LineChart data={bodyFatData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
+                axisLine={false}
               />
-              <YAxis
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
-                label={{ 
-                  value: 'Body Fat %', 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fontSize: '11px' }
-                }}
+                axisLine={false}
               />
               <Tooltip 
-                labelClassName="text-xs"
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '6px',
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                   fontSize: '12px'
                 }}
-                formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Body Fat']}
+                formatter={(value: any) => [`${value}%`, 'Body Fat']}
               />
               <Line 
                 type="monotone" 
                 dataKey="bodyFat" 
-                stroke="#ea580c" 
-                strokeWidth={2}
-                dot={{ fill: '#ea580c', r: 3 }}
-                activeDot={{ r: 5, fill: '#ea580c' }}
+                stroke="#059669" 
+                strokeWidth={3}
+                dot={{ fill: '#059669', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: '#059669' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -544,105 +618,75 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'calories':
         return (
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={progressionData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={progressionData}>
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
-                tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { 
-                  day: '2-digit', 
-                  month: '2-digit' 
-                })}
+                axisLine={false}
               />
-              <YAxis
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
-                label={{ 
-                  value: 'Calories', 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fontSize: '11px' }
-                }}
+                axisLine={false}
               />
               <Tooltip 
-                labelClassName="text-xs"
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '6px',
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                   fontSize: '12px'
                 }}
-                labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB')}
-                formatter={(value: any) => [`${Math.round(value)}`, 'Calories']}
+                formatter={(value: any) => [`${value} cal`, 'Calories']}
               />
-              <Bar 
+              <Line 
+                type="monotone" 
                 dataKey="calories" 
-                fill="#2563eb"
-                radius={[2, 2, 0, 0]}
+                stroke="#EA580C" 
+                strokeWidth={3}
+                dot={{ fill: '#EA580C', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 5, fill: '#EA580C' }}
               />
-            </BarChart>
+            </LineChart>
           </ResponsiveContainer>
         );
 
       case 'macros':
         return (
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={progressionData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={progressionData} barCategoryGap="10%">
+              <CartesianGrid strokeDasharray="2 2" stroke="#E5E7EB" opacity={0.5} />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
-                tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { 
-                  day: '2-digit', 
-                  month: '2-digit' 
-                })}
+                axisLine={false}
               />
-              <YAxis
-                tick={{ fontSize: 11 }}
-                axisLine={false}
+              <YAxis 
+                stroke="#9CA3AF" 
+                fontSize={11}
                 tickLine={false}
-                className="text-xs fill-gray-500"
-                label={{ 
-                  value: 'Grams', 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fontSize: '11px' }
-                }}
+                axisLine={false}
               />
               <Tooltip 
-                labelClassName="text-xs"
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '6px',
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                   fontSize: '12px'
                 }}
-                labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB')}
+                formatter={(value: any, name: any) => [`${value}g`, name]}
               />
-              <Bar 
-                dataKey="protein" 
-                fill="#2563eb"
-                radius={[1, 1, 0, 0]}
-              />
-              <Bar 
-                dataKey="carbs" 
-                fill="#16a34a"
-                radius={[1, 1, 0, 0]}
-              />
-              <Bar 
-                dataKey="fat" 
-                fill="#ca8a04"
-                radius={[1, 1, 0, 0]}
-              />
+              <Bar dataKey="protein" fill="#059669" name="Protein" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="carbs" fill="#EA580C" name="Carbs" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="fat" fill="#7C3AED" name="Fat" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -652,78 +696,90 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     }
   };
 
-  // Get data for the current chart type to calculate progress summary
-  const getCombinedData = () => {
-    if (chartType === 'weight' || chartType === 'bodyFat') {
-      return bodyMetrics || [];
-    }
-    return progressionData || [];
-  };
-
   const getProgressSummary = () => {
-    const data = getCombinedData();
-    if (!data || data.length === 0) return null;
+    if (!progressionData || progressionData.length < 7) return null;
 
-    // Sort data by date for proper chronological analysis
-    const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    
-    const firstEntry = sortedData[0];
-    const lastEntry = sortedData[sortedData.length - 1];
-    
-    if (chartType === 'weight') {
+    // Sort body metrics by date and get latest entry per date to avoid duplicates
+    const sortedBodyMetrics = bodyMetrics ? [...bodyMetrics]
+      .sort((a, b) => {
+        const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+        // If same date, sort by createdAt to get latest entry
+        return dateComparison === 0 ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() : dateComparison;
+      })
+      .filter((metric, index, array) => {
+        // Keep only the latest entry for each date
+        const nextIndex = array.findIndex((m, i) => i > index && 
+          new Date(m.date).toDateString() === new Date(metric.date).toDateString()
+        );
+        return nextIndex === -1; // Keep if no later entry exists for same date
+      }) : [];
+
+    // Calculate weight change with unit conversion
+    let weightChange = 0;
+    if (sortedBodyMetrics && sortedBodyMetrics.length >= 2) {
       const preferredUnit = getUserPreferredWeightUnit();
+      const latestMetric = sortedBodyMetrics[sortedBodyMetrics.length - 1];
+      const earliestMetric = sortedBodyMetrics[0];
       
-      let firstWeight = parseFloat(firstEntry.weight);
-      let lastWeight = parseFloat(lastEntry.weight);
+      let latestWeight = parseFloat(latestMetric.weight);
+      let earliestWeight = parseFloat(earliestMetric.weight);
       
-      // Convert weights to preferred unit if necessary
-      const firstUnit = firstEntry.unit === 'imperial' ? 'lbs' : 'kg';
-      const lastUnit = lastEntry.unit === 'imperial' ? 'lbs' : 'kg';
+      // Convert to preferred unit if needed
+      const latestMetricUnit = latestMetric.unit === 'imperial' ? 'lbs' : 'kg';
+      const earliestMetricUnit = earliestMetric.unit === 'imperial' ? 'lbs' : 'kg';
+      const targetUnit = preferredUnit;
       
-      if (firstUnit !== preferredUnit) {
-        firstWeight = convertWeight(firstWeight, firstUnit, preferredUnit);
+      if (latestMetricUnit !== targetUnit) {
+        latestWeight = convertWeight(latestWeight, latestMetricUnit, targetUnit);
       }
-      if (lastUnit !== preferredUnit) {
-        lastWeight = convertWeight(lastWeight, lastUnit, preferredUnit);
+      if (earliestMetricUnit !== targetUnit) {
+        earliestWeight = convertWeight(earliestWeight, earliestMetricUnit, targetUnit);
       }
       
-      const weightChange = lastWeight - firstWeight;
-      
+      weightChange = latestWeight - earliestWeight;
+    }
+
+    // Calculate rolling 7-day averages for trend analysis
+    const sortedData = [...progressionData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    // Filter out incomplete current day (calories < 500 suggests incomplete logging)
+    const today = new Date().toISOString().split('T')[0];
+    const filteredData = sortedData.filter(day => {
+      if (day.date === today && day.calories < 500) {
+        return false; // Exclude likely incomplete current day
+      }
+      return true;
+    });
+
+    if (filteredData.length < 7) {
+      // Fallback to simple comparison if not enough complete data
+      const latest = filteredData[filteredData.length - 1];
+      const previous = filteredData[0];
       return {
         weightChange,
-        avgCalories: 0,
-        avgProtein: 0,
-        calorieChange: 0
-      };
-    } else {
-      // For nutrition data
-      const avgCalories = sortedData.reduce((sum, entry) => sum + entry.calories, 0) / sortedData.length;
-      const avgProtein = sortedData.reduce((sum, entry) => sum + entry.protein, 0) / sortedData.length;
-      
-      // Calculate recent trend (last 7 days vs previous 7 days)
-      const recentData = sortedData.slice(-7);
-      const previousData = sortedData.slice(-14, -7);
-      
-      if (previousData.length > 0 && recentData.length > 0) {
-        const recentAvgCalories = recentData.reduce((sum, entry) => sum + entry.calories, 0) / recentData.length;
-        const previousAvgCalories = previousData.reduce((sum, entry) => sum + entry.calories, 0) / previousData.length;
-        const calorieChange = recentAvgCalories - previousAvgCalories;
-        
-        return {
-          weightChange: 0,
-          avgCalories,
-          avgProtein,
-          calorieChange
-        };
-      }
-      
-      return {
-        weightChange: 0,
-        avgCalories,
-        avgProtein,
-        calorieChange: 0
+        calorieChange: latest.calories - previous.calories,
+        avgCalories: filteredData.reduce((sum, day) => sum + day.calories, 0) / filteredData.length,
+        avgProtein: filteredData.reduce((sum, day) => sum + day.protein, 0) / filteredData.length,
       };
     }
+
+    // Calculate recent 7-day average vs previous 7-day average
+    const recentWeek = filteredData.slice(-7);
+    const previousWeek = filteredData.slice(-14, -7);
+    
+    const recentAvgCalories = recentWeek.reduce((sum, day) => sum + day.calories, 0) / recentWeek.length;
+    const previousAvgCalories = previousWeek.length > 0 
+      ? previousWeek.reduce((sum, day) => sum + day.calories, 0) / previousWeek.length
+      : recentAvgCalories;
+
+    const calorieChange = recentAvgCalories - previousAvgCalories;
+
+    return {
+      weightChange,
+      calorieChange,
+      avgCalories: filteredData.reduce((sum, day) => sum + day.calories, 0) / filteredData.length,
+      avgProtein: filteredData.reduce((sum, day) => sum + day.protein, 0) / filteredData.length,
+    };
   };
 
   const summary = getProgressSummary();
@@ -845,20 +901,20 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-3">
         <div className="mb-3">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-            {chartType === 'weight' && `Weight Progress • ${timeRange}`}
-            {chartType === 'bodyFat' && `Body Fat Trend • ${timeRange}`}
-            {chartType === 'calories' && `Daily Calories • ${timeRange}`}
-            {chartType === 'macros' && `Macro Breakdown • ${timeRange}`}
+            {chartType === 'weight' && 'Weight Trend'}
+            {chartType === 'bodyFat' && 'Body Fat %'}
+            {chartType === 'calories' && 'Daily Calories'}
+            {chartType === 'macros' && 'Macronutrients'}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {chartType === 'weight' && `Track weight changes over time`}
-            {chartType === 'bodyFat' && `Monitor body composition progress`}
-            {chartType === 'calories' && `Daily caloric intake patterns`}
-            {chartType === 'macros' && `Protein, carbs, and fat distribution`}
+            {chartType === 'weight' && `Track changes over ${timeRange}`}
+            {chartType === 'bodyFat' && `Body composition ${timeRange}`}
+            {chartType === 'calories' && `Daily intake ${timeRange}`}
+            {chartType === 'macros' && `Protein, carbs, fat ${timeRange}`}
           </p>
         </div>
         
-        <div className="mb-2">
+        <div className="w-full h-[180px]">
           {renderChart()}
         </div>
       </div>
