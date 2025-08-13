@@ -801,14 +801,13 @@ export function AddFood({ user }: AddFoodProps) {
                         alt={`${imageAnalysisType === 'nutrition_label' ? 'Captured nutrition label' : 'Captured food photo'} ${index + 1}`}
                         className="w-full h-24 object-cover border border-gray-200 dark:border-gray-700"
                       />
-                      <Button
+                      <button
                         onClick={() => removeCapturedImage(index)}
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1 h-4 w-4 p-0"
+                        className="absolute top-0.5 right-0.5 h-5 w-5 bg-black/70 hover:bg-black/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 touch-target group"
+                        aria-label="Remove image"
                       >
-                        <X className="w-2.5 h-2.5" />
-                      </Button>
+                        <X className="w-3 h-3 text-white group-hover:scale-110 transition-transform duration-200" />
+                      </button>
                     </div>
                   ))}
                 </div>
