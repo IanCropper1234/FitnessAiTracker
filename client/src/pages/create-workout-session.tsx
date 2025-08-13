@@ -543,55 +543,28 @@ export function CreateWorkoutSession() {
                   
                   {/* Pagination Controls */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>
-                          Showing {((currentPage - 1) * EXERCISES_PER_PAGE) + 1}-{Math.min(currentPage * EXERCISES_PER_PAGE, filteredExercises.length)} of {filteredExercises.length} exercises
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center px-4 py-3 border-t">
+                      <div className="flex items-center gap-2 text-sm">
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                           disabled={currentPage === 1}
                           className="h-8 px-2"
                         >
-                          Previous
+                          &lt;
                         </Button>
-                        <div className="flex gap-1">
-                          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                              pageNum = totalPages - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
-                            }
-                            return (
-                              <Button
-                                key={pageNum}
-                                variant={pageNum === currentPage ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setCurrentPage(pageNum)}
-                                className="h-8 w-8 p-0"
-                              >
-                                {pageNum}
-                              </Button>
-                            );
-                          })}
-                        </div>
+                        <span className="px-2 py-1 text-sm font-medium">
+                          {currentPage}
+                        </span>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
                           onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                           disabled={currentPage === totalPages}
                           className="h-8 px-2"
                         >
-                          Next
+                          &gt;
                         </Button>
                       </div>
                     </div>
