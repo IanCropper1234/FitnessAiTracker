@@ -123,10 +123,12 @@ export async function analyzeNutritionMultiImage(
 - Include both the descriptive portion AND weight/volume when available
 
 **SUPPLEMENTS AND VITAMINS:**
-- For supplements, vitamins, and pills with zero or minimal calories/macros, focus on micronutrients
+- For supplements, vitamins, and pills with zero or minimal calories/macros, focus on micronutrients and supplement compounds
 - Extract all vitamin and mineral content even if calories/protein/carbs/fat are zero
+- Extract supplement compounds like CoQ10, glucosamine, probiotics, omega-3, etc. from ingredient lists
 - Use serving size from supplement facts panel (e.g., "1 capsule", "2 tablets", "1 softgel")
-- Set calories/protein/carbs/fat to 0 for pure supplements and focus on micronutrient extraction`
+- Set calories/protein/carbs/fat to 0 for pure supplements and focus on supplement compound extraction
+- Look for active ingredients beyond standard vitamins/minerals (CoQ10, curcumin, probiotics, etc.)`
         : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s).
 
 **Analysis Approach:**
@@ -169,8 +171,9 @@ ${foodDescription ? `
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
   * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+  * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
   
-  **CRITICAL:** ${analysisType === 'nutrition_label' ? 'Extract ALL visible vitamins and minerals from nutrition labels. Convert % Daily Values to actual amounts using standard references.' : 'Estimate micronutrients based on identified food components and typical nutritional profiles.'}
+  **CRITICAL:** ${analysisType === 'nutrition_label' ? 'Extract ALL visible vitamins, minerals, and supplement compounds from nutrition labels. Convert % Daily Values to actual amounts using standard references.' : 'Estimate micronutrients based on identified food components and typical nutritional profiles.'}
 
 Return only valid JSON with all required fields.`
         }
@@ -235,6 +238,7 @@ Return only valid JSON with all required fields.`
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
   * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+  * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
 
 Return only valid JSON with all required fields.`
         }
@@ -403,8 +407,9 @@ export async function analyzeNutritionOriginal(
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
   * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+  * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
   
-  **CRITICAL:** Extract ALL visible vitamins and minerals from the nutrition label. If % Daily Value is shown, convert to actual amounts using standard DV references (e.g., 100% calcium DV = 1000mg, 100% iron DV = 18mg, 100% vitamin C DV = 90mg). Always include fiber, sugar, saturated fat, trans fat, and cholesterol if visible. For fortified products, extract all added vitamins/minerals. Use ingredient lists to estimate micronutrients from key ingredients.
+  **CRITICAL:** Extract ALL visible vitamins, minerals, and supplement compounds from the nutrition label. If % Daily Value is shown, convert to actual amounts using standard DV references (e.g., 100% calcium DV = 1000mg, 100% iron DV = 18mg, 100% vitamin C DV = 90mg). Always include fiber, sugar, saturated fat, trans fat, and cholesterol if visible. For fortified products, extract all added vitamins/minerals. Use ingredient lists to estimate micronutrients from key ingredients.
 
 Return only valid JSON with all required fields.`
           },
@@ -448,6 +453,7 @@ Return only valid JSON with all required fields.`
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
   * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+  * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
   
   **CRITICAL:** Analyze visible foods and estimate their natural micronutrient content. Include significant vitamins/minerals each food is known for (e.g., leafy greens = folate+iron+vitamin K, citrus = vitamin C, meat = B12+iron+zinc, dairy = calcium+B12, fish = omega3+vitamin D+selenium). Always estimate fiber, sugar content, fat breakdown, and key micronutrients the food is naturally rich in.
 
@@ -493,6 +499,7 @@ Return only valid JSON with all required fields.`
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
   * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+  * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
   
   **MANDATORY:** Provide comprehensive micronutrient estimates based on food composition knowledge. For example:
   - Leafy greens: folate (40-200mcg), vitamin K (100-500mcg), iron (2-7mg), vitamin A (500-1000mcg)
