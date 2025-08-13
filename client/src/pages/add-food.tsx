@@ -103,7 +103,7 @@ export function AddFood({ user }: AddFoodProps) {
   
   // Image recognition states - Enhanced for multiple images
   const [capturedImages, setCapturedImages] = useState<string[]>([]); // Multiple images
-  const [imageAnalysisType, setImageAnalysisType] = useState<'nutrition_label' | 'actual_food'>('nutrition_label');
+  const [imageAnalysisType, setImageAnalysisType] = useState<'nutrition_label' | 'actual_food' | ''>('');
   const [showImageCapture, setShowImageCapture] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -278,7 +278,7 @@ export function AddFood({ user }: AddFoodProps) {
       images: hasImage ? capturedImages : undefined,
       portionWeight: hasPortion ? portionWeight : undefined,
       portionUnit: hasPortion ? portionUnit : undefined,
-      analysisType: hasImage ? imageAnalysisType : 'actual_food' // Default to actual_food for text-only
+      analysisType: hasImage ? (imageAnalysisType || 'actual_food') : 'actual_food' // Default to actual_food for text-only
     });
   };
 
@@ -734,32 +734,33 @@ export function AddFood({ user }: AddFoodProps) {
             {capturedImages.length > 0 && (
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                  Photo Analysis Type
+                  Photo Analysis Type *
                 </Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    onClick={() => setImageAnalysisType('nutrition_label')}
-                    variant={imageAnalysisType === 'nutrition_label' ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-8 text-xs ios-button touch-target"
-                  >
-                    <FileText className="w-3 h-3 mr-1" />
-                    Nutrition Label
-                  </Button>
-                  <Button
-                    onClick={() => setImageAnalysisType('actual_food')}
-                    variant={imageAnalysisType === 'actual_food' ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-8 text-xs ios-button touch-target"
-                  >
-                    <UtensilsCrossed className="w-3 h-3 mr-1" />
-                    Actual Food
-                  </Button>
-                </div>
+                <Select value={imageAnalysisType} onValueChange={setImageAnalysisType}>
+                  <SelectTrigger className="h-8 text-xs ios-touch-feedback">
+                    <SelectValue placeholder="Please select type of image" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nutrition_label">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-3 h-3" />
+                        Nutrition Label
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="actual_food">
+                      <div className="flex items-center gap-2">
+                        <UtensilsCrossed className="w-3 h-3" />
+                        Actual Food
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
                   {imageAnalysisType === 'nutrition_label' 
                     ? 'Analyze nutrition facts from product labels for precise macro data'
-                    : 'Analyze actual food portions to estimate nutrition content'
+                    : imageAnalysisType === 'actual_food'
+                    ? 'Analyze actual food portions to estimate nutrition content'
+                    : 'Select how to analyze your uploaded images'
                   }
                 </p>
               </div>
@@ -822,7 +823,7 @@ export function AddFood({ user }: AddFoodProps) {
                 {/* Action Button */}
                 <Button
                   onClick={handleAIAnalysis}
-                  disabled={!foodName.trim() || isLoading}
+                  disabled={!foodName.trim() || isLoading || (capturedImages.length > 0 && !imageAnalysisType)}
                   className="w-full h-9 ios-button touch-target"
                 >
                   {isLoading ? (
