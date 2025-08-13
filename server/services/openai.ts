@@ -110,19 +110,29 @@ export async function analyzeNutritionMultiImage(
 **Analysis Approach:**
 1. **Label Reading:** Read all nutrition facts labels visible across the images
 2. **Information Aggregation:** If multiple labels are shown, combine or average the information as appropriate
-3. **Serving Size Recognition:** Identify serving sizes from all labels
+3. **Serving Size Recognition:** Identify exact serving sizes from all labels (e.g., "1 cup (240ml)", "2 pieces (30g)", etc.)
 4. **Food Name Integration:** Use "${foodName}" to validate label information and resolve ambiguities
-5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use standard serving sizes from labels`}
-6. **Accuracy Priority:** Base all values on what's clearly visible in the nutrition labels`
+5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use the exact serving size stated on the nutrition labels`}
+6. **Accuracy Priority:** Base all values on what's clearly visible in the nutrition labels
+
+**CRITICAL - Serving Details for Nutrition Labels:**
+- Extract the EXACT serving size text from the nutrition facts label (e.g., "1 container (150g)", "2 slices (45g)", "1 cup (30g)")
+- If multiple products, specify which product the serving refers to
+- Include both the descriptive portion AND weight/volume when available`
         : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s).
 
 **Analysis Approach:**
 1. **Food Identification:** Identify all food items across the images using "${foodName}" as guidance
 2. **Multi-Image Analysis:** Examine all images to get a complete view of the food/meal
-3. **Portion Estimation:** Estimate total serving size based on visual cues across all images
-4. **Preparation Assessment:** Consider cooking methods, ingredients, and preparation visible in any image
+3. **Portion Estimation:** Carefully estimate the actual portion size visible in the images (weight, volume, or pieces)
+4. **Size Comparison:** Use visual reference objects (plates, utensils, hands, etc.) to estimate portion size
 5. **Food Name Validation:** Use "${foodName}" to confirm food identification and resolve discrepancies
-6. **Nutrition Estimation:** Provide comprehensive nutritional estimates for the complete food portion`;
+6. **Nutrition Estimation:** Provide comprehensive nutritional estimates for the complete food portion shown
+
+**CRITICAL - Serving Details for Actual Food:**
+- Estimate the actual portion size shown in the images with confidence level
+- Describe reasoning for portion estimation (e.g., "approximately 150g based on plate size", "2 medium-sized pieces estimated at 80g each")
+- Include your confidence in the portion estimate and any assumptions made`;
 
       messageContent = [
         {
@@ -205,7 +215,7 @@ Return only valid JSON with all required fields.`
 - category: primary macro category (string: "protein", "carb", "fat", or "mixed")
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions about preparation or variety (string)
-- servingDetails: clarification of portion analyzed (string)
+- servingDetails: realistic serving size description (string: e.g., "1 medium ${primaryInput} (150g)", "2 pieces (60g)", "1 cup (200g)")
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)

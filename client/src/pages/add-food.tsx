@@ -276,7 +276,8 @@ export function AddFood({ user }: AddFoodProps) {
       description: hasDescription ? foodQuery : undefined,
       images: hasImage ? capturedImages : undefined,
       portionWeight: hasPortion ? portionWeight : undefined,
-      portionUnit: hasPortion ? portionUnit : undefined
+      portionUnit: hasPortion ? portionUnit : undefined,
+      analysisType: hasImage ? analysisType : 'actual_food' // Default to actual_food for text-only
     });
   };
 
@@ -322,10 +323,12 @@ export function AddFood({ user }: AddFoodProps) {
       protein: baseAIResult.protein * multiplier,
       carbs: baseAIResult.carbs * multiplier,
       fat: baseAIResult.fat * multiplier,
-      servingDetails: `${quantity} ${unit} (adjusted from original analysis)`,
+      servingDetails: baseAIResult.servingDetails ? 
+        `${quantity} ${unit} (adjusted from AI estimate: ${baseAIResult.servingDetails})` :
+        `${quantity} ${unit}`,
       assumptions: baseAIResult.assumptions ? 
-        `${baseAIResult.assumptions} • Volume adjusted from ${portionWeight || '1'} to ${quantity} ${unit}` :
-        `Volume adjusted from original analysis to ${quantity} ${unit}`,
+        `${baseAIResult.assumptions} • Volume adjusted to ${quantity} ${unit}` :
+        `Volume adjusted to ${quantity} ${unit}`,
       // Scale micronutrients proportionally if they exist
       ...(baseAIResult.micronutrients && {
         micronutrients: Object.fromEntries(
