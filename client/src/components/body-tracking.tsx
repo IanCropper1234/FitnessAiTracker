@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown } from "lucide-react";
+import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { WeightGoals } from "./weight-goals";
 
@@ -849,122 +849,82 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                     <div className="absolute left-3 top-8 w-0.5 h-6 bg-gradient-to-b from-blue-300 to-gray-200 dark:from-blue-600 dark:to-gray-600"></div>
                   )}
                   
-                  {/* Timeline Entry */}
-                  <div className="flex gap-2 group">
-                    {/* Timeline Dot - Smaller */}
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600  flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-150">
-                      <Calendar className="w-2.5 h-2.5 text-white" />
-                    </div>
-                    
-                    {/* Content Card - More Compact */}
-                    <div className="flex-1 bg-white dark:bg-gray-800  border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-150 group-hover:border-blue-200 dark:group-hover:border-blue-700">
-                      <div className="p-2">
-                        {/* Header - Compact */}
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h4 className="font-medium text-gray-900 dark:text-gray-100 text-xs">
-                              {new Date(metric.date).toLocaleDateString('en-US', { 
-                                month: 'short',
-                                day: 'numeric'
-                              })}
-                            </h4>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">
-                              {index === 0 ? 'Latest' : `${index + 1} ago`}
-                            </p>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteMetricMutation.mutate(metric.id)}
-                            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-opacity duration-150 h-5 w-5 p-0"
-                            disabled={deleteMetricMutation.isPending}
-                          >
-                            <Trash2 className="w-2.5 h-2.5" />
-                          </Button>
-                        </div>
-
-                        {/* Metrics Grid - Ultra Compact */}
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {metric.weight && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20  p-1.5 border border-blue-100 dark:border-blue-800">
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <Scale className="w-2.5 h-2.5 text-blue-600" />
-                                <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Weight</span>
-                              </div>
-                              <p className="text-xs font-bold text-blue-800 dark:text-blue-200">
-                                {displayValue(metric.weight, 'weight', metric.unit)}
-                                <span className="text-xs font-normal text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
-                              </p>
-                            </div>
-                          )}
-
-                          {metric.bodyFatPercentage && (
-                            <div className="bg-orange-50 dark:bg-orange-900/20  p-1.5 border border-orange-100 dark:border-orange-800">
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <TrendingUp className="w-2.5 h-2.5 text-orange-600" />
-                                <span className="text-xs font-medium text-orange-700 dark:text-orange-300">Body Fat</span>
-                              </div>
-                              <p className="text-xs font-bold text-orange-800 dark:text-orange-200">
-                                {metric.bodyFatPercentage}%
-                              </p>
-                            </div>
-                          )}
-
-                          {metric.waist && (
-                            <div className="bg-green-50 dark:bg-green-900/20  p-1.5 border border-green-100 dark:border-green-800">
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <Target className="w-2.5 h-2.5 text-green-600" />
-                                <span className="text-xs font-medium text-green-700 dark:text-green-300">Waist</span>
-                              </div>
-                              <p className="text-xs font-bold text-green-800 dark:text-green-200">
-                                {displayValue(metric.waist, 'measurement', metric.unit)}
-                                <span className="text-xs font-normal text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
-                              </p>
-                            </div>
-                          )}
-
-                          {metric.chest && (
-                            <div className="bg-purple-50 dark:bg-purple-900/20  p-1.5 border border-purple-100 dark:border-purple-800">
-                              <div className="flex items-center gap-1 mb-0.5">
-                                <User className="w-2.5 h-2.5 text-purple-600" />
-                                <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Chest</span>
-                              </div>
-                              <p className="text-xs font-bold text-purple-800 dark:text-purple-200">
-                                {displayValue(metric.chest, 'measurement', metric.unit)}
-                                <span className="text-xs font-normal text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Additional Measurements - More Compact */}
-                        {(metric.neck || metric.hips || metric.thigh || metric.bicep) && (
-                          <div className="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700">
-                            <div className="flex flex-wrap gap-1 text-xs">
-                              {metric.neck && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
-                                  Neck: {displayValue(metric.neck, 'measurement', metric.unit)}
-                                </span>
-                              )}
-                              {metric.hips && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
-                                  Hips: {displayValue(metric.hips, 'measurement', metric.unit)}
-                                </span>
-                              )}
-                              {metric.thigh && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
-                                  Thigh: {displayValue(metric.thigh, 'measurement', metric.unit)}
-                                </span>
-                              )}
-                              {metric.bicep && (
-                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5  text-gray-700 dark:text-gray-300">
-                                  Bicep: {displayValue(metric.bicep, 'measurement', metric.unit)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        )}
+                  {/* iOS-style Card Layout */}
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] cursor-pointer group">
+                    {/* Left Section - Icon & Date */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 flex items-center justify-center">
+                        <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       </div>
+                      <div>
+                        <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                          {new Date(metric.date).toLocaleDateString('en-US', { 
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {index === 0 ? 'Latest entry' : `${index + 1} entry ago`}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Center Section - Primary Metrics */}
+                    <div className="flex items-center gap-3 text-sm">
+                      {metric.weight && (
+                        <div className="flex items-center gap-1">
+                          <Scale className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {displayValue(metric.weight, 'weight', metric.unit)}
+                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
+                          </span>
+                        </div>
+                      )}
+                      
+                      {metric.bodyFatPercentage && (
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {metric.bodyFatPercentage}%
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Show additional metrics if no weight/body fat */}
+                      {!metric.weight && !metric.bodyFatPercentage && metric.waist && (
+                        <div className="flex items-center gap-1">
+                          <Target className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {displayValue(metric.waist, 'measurement', metric.unit)}
+                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit)}</span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right Section - Action & Indicator */}
+                    <div className="flex items-center gap-2">
+                      {/* Additional measurements indicator */}
+                      {(metric.waist || metric.chest || metric.neck || metric.hips || metric.thigh || metric.bicep) && (
+                        <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 opacity-50"></div>
+                      )}
+                      
+                      {/* Delete button - always visible on touch devices */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteMetricMutation.mutate(metric.id);
+                        }}
+                        className="opacity-70 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-150 w-7 h-7 p-0"
+                        disabled={deleteMetricMutation.isPending}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+
+                      {/* Chevron for expand indication */}
+                      <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors" />
                     </div>
                   </div>
                 </div>
