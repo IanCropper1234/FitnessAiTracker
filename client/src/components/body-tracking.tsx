@@ -236,12 +236,16 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const displayValue = (value: number | undefined, type: 'weight' | 'measurement', originalUnit: 'metric' | 'imperial'): string => {
     if (!value) return '';
     
+    console.log('displayValue called:', { value, type, originalUnit, showUnifiedUnits, unit });
+    
     if (showUnifiedUnits) {
       // Convert to current preferred unit
       const converted = convertValue(value, type, originalUnit, unit);
+      console.log('Converted from', value, 'to', converted);
       return converted.toString();
     } else {
       // Show original value
+      console.log('Showing original value:', value);
       return value.toString();
     }
   };
@@ -833,7 +837,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
+              onClick={() => {
+                console.log('Button clicked! Current state:', { showUnifiedUnits, unit });
+                setShowUnifiedUnits(!showUnifiedUnits);
+                console.log('After click, should be:', !showUnifiedUnits);
+              }}
               className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 text-gray-500 hover:text-gray-700"
             >
               {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
