@@ -460,10 +460,27 @@ export async function generateWeeklyWorkoutPlan(
   }
 }
 
+**Muscle Group Terminology Guide:**
+- **Chest**: Pectorals (upper, middle, lower portions)
+- **Back**: Latissimus dorsi, rhomboids, middle traps, lower traps
+- **Quads**: Quadriceps (vastus lateralis, medialis, intermedius, rectus femoris)
+- **Hamstrings**: Biceps femoris, semitendinosus, semimembranosus
+- **Glutes**: Gluteus maximus, medius, minimus
+- **Front/Anterior Delts**: Front portion of deltoids (shoulder flexion)
+- **Side/Medial Delts**: Middle portion of deltoids (shoulder abduction)
+- **Rear/Posterior Delts**: Back portion of deltoids (shoulder extension/horizontal abduction)
+- **Biceps**: Biceps brachii (long and short head)
+- **Triceps**: Triceps brachii (long, lateral, medial heads)
+- **Calves**: Gastrocnemius and soleus
+- **Abs**: Rectus abdominis, obliques, transverse abdominis
+- **Traps**: Upper trapezius (neck/shoulder elevation)
+- **Forearms**: Flexors and extensors of the wrist/fingers
+
 **Critical Requirements:**
 - Generate ${sessionsPerWeek} complete workout sessions
 - Include 4-8 exercises per session based on duration
 - Apply special training methods to exactly ${specialMethodPercentage}% of total exercises
+- Use the precise muscle group terminology provided above
 - Ensure muscle group balance across the week
 - Respect equipment limitations
 - Consider injury restrictions

@@ -106,8 +106,9 @@ export default function CreateAIWorkoutSession() {
   ];
 
   const muscleGroupOptions = [
-    'Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 
-    'Core', 'Glutes', 'Calves', 'Forearms'
+    'Chest', 'Back', 'Quads', 'Hamstrings', 'Glutes',
+    'Front/Anterior Delts', 'Side/Medial Delts', 'Rear/Posterior Delts',
+    'Biceps', 'Triceps', 'Calves', 'Abs', 'Traps', 'Forearms'
   ];
 
   const equipmentOptions = [
