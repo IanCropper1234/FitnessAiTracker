@@ -661,16 +661,21 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   };
 
   const getProgressSummary = () => {
-    const data = getCombinedData();
-    if (!data || data.length === 0) return null;
+    // Always calculate both weight and nutrition data
+    const weightData = bodyMetrics || [];
+    const nutritionData = progressionData || [];
+    
+    let weightChange = 0;
+    let avgCalories = 0;
+    let avgProtein = 0;
+    let calorieChange = 0;
 
-    // Sort data by date for proper chronological analysis
-    const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    
-    const firstEntry = sortedData[0];
-    const lastEntry = sortedData[sortedData.length - 1];
-    
-    if (chartType === 'weight') {
+    // Calculate weight change if we have weight data
+    if (weightData && weightData.length > 0) {
+      const sortedWeightData = [...weightData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const firstEntry = sortedWeightData[0];
+      const lastEntry = sortedWeightData[sortedWeightData.length - 1];
+      
       const preferredUnit = getUserPreferredWeightUnit();
       
       let firstWeight = parseFloat(firstEntry.weight);
@@ -687,43 +692,34 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         lastWeight = convertWeight(lastWeight, lastUnit, preferredUnit);
       }
       
-      const weightChange = lastWeight - firstWeight;
+      weightChange = lastWeight - firstWeight;
+    }
+
+    // Calculate nutrition data if we have nutrition data
+    if (nutritionData && nutritionData.length > 0) {
+      const sortedNutritionData = [...nutritionData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       
-      return {
-        weightChange,
-        avgCalories: 0,
-        avgProtein: 0,
-        calorieChange: 0
-      };
-    } else {
-      // For nutrition data
-      const avgCalories = sortedData.reduce((sum, entry) => sum + entry.calories, 0) / sortedData.length;
-      const avgProtein = sortedData.reduce((sum, entry) => sum + entry.protein, 0) / sortedData.length;
+      // Calculate averages
+      avgCalories = sortedNutritionData.reduce((sum, entry) => sum + entry.calories, 0) / sortedNutritionData.length;
+      avgProtein = sortedNutritionData.reduce((sum, entry) => sum + entry.protein, 0) / sortedNutritionData.length;
       
       // Calculate recent trend (last 7 days vs previous 7 days)
-      const recentData = sortedData.slice(-7);
-      const previousData = sortedData.slice(-14, -7);
+      const recentData = sortedNutritionData.slice(-7);
+      const previousData = sortedNutritionData.slice(-14, -7);
       
       if (previousData.length > 0 && recentData.length > 0) {
         const recentAvgCalories = recentData.reduce((sum, entry) => sum + entry.calories, 0) / recentData.length;
         const previousAvgCalories = previousData.reduce((sum, entry) => sum + entry.calories, 0) / previousData.length;
-        const calorieChange = recentAvgCalories - previousAvgCalories;
-        
-        return {
-          weightChange: 0,
-          avgCalories,
-          avgProtein,
-          calorieChange
-        };
+        calorieChange = recentAvgCalories - previousAvgCalories;
       }
-      
-      return {
-        weightChange: 0,
-        avgCalories,
-        avgProtein,
-        calorieChange: 0
-      };
     }
+
+    return {
+      weightChange,
+      avgCalories,
+      avgProtein,
+      calorieChange
+    };
   };
 
   const summary = getProgressSummary();
