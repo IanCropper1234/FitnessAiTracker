@@ -179,7 +179,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto pl-[5px] pr-[5px] pt-[10px] pb-[10px]">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Exercise" : "Create New Exercise"}</DialogTitle>
           <DialogDescription>

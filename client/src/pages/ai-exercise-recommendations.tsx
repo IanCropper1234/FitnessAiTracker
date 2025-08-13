@@ -482,7 +482,7 @@ export default function CreateAIWorkoutSession() {
             {/* Available Equipment */}
             <div>
               <label className="text-sm font-medium mb-2 block">Available Equipment *</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 ml-[-10px] mr-[-10px]">
                 {equipmentOptions.map(equip => (
                   <div key={equip} className="flex items-center space-x-2">
                     <Checkbox 
