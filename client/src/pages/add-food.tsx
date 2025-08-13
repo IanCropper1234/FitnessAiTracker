@@ -70,7 +70,8 @@ export function AddFood({ user }: AddFoodProps) {
   
   const [selectedDate] = useState(dateParam || TimezoneUtils.getCurrentDate());
   // Simplified to AI-only mode - database search hidden
-  const [foodQuery, setFoodQuery] = useState('');
+  const [foodName, setFoodName] = useState(''); // New: Food name input
+  const [foodQuery, setFoodQuery] = useState(''); // Description input
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
@@ -100,8 +101,8 @@ export function AddFood({ user }: AddFoodProps) {
   const [historyDisplayLimit, setHistoryDisplayLimit] = useState(10);
   const [savedMealsDisplayLimit, setSavedMealsDisplayLimit] = useState(10);
   
-  // Image recognition states
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  // Image recognition states - Enhanced for multiple images
+  const [capturedImages, setCapturedImages] = useState<string[]>([]); // Multiple images
   const [imageAnalysisType, setImageAnalysisType] = useState<'nutrition_label' | 'actual_food'>('nutrition_label');
   const [showImageCapture, setShowImageCapture] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -122,7 +123,7 @@ export function AddFood({ user }: AddFoodProps) {
   // Database search functionality removed - AI-only mode
 
   const aiAnalyzeMutation = useMutation({
-    mutationFn: async (data: { description?: string; image?: string; portionWeight?: string; portionUnit?: string }) => {
+    mutationFn: async (data: { foodName?: string; description?: string; images?: string[]; portionWeight?: string; portionUnit?: string }) => {
       console.log("AI Analysis starting with data:", data);
       
       const payload: any = {
@@ -131,12 +132,16 @@ export function AddFood({ user }: AddFoodProps) {
         analysisType: imageAnalysisType // Pass the analysis type to backend
       };
       
+      if (data.foodName) {
+        payload.foodName = data.foodName;
+      }
+
       if (data.description) {
         payload.description = data.description;
       }
       
-      if (data.image) {
-        payload.image = data.image;
+      if (data.images && data.images.length > 0) {
+        payload.images = data.images;
       }
       
       if (data.portionWeight && data.portionUnit) {
@@ -200,7 +205,7 @@ export function AddFood({ user }: AddFoodProps) {
       setQuantity('1');
       setUnit('g');
       setMealType('');
-      clearCapturedImage();
+      clearCapturedImages();
       setBaseAIResult(null);
       setDynamicMacros(null);
     },
@@ -242,7 +247,7 @@ export function AddFood({ user }: AddFoodProps) {
   const handleAIAnalysis = () => {
     console.log("AI Analysis button clicked!");
     console.log("Food query:", foodQuery);
-    console.log("Captured image:", capturedImage ? "Image present" : "No image");
+    console.log("Captured images:", capturedImages.length > 0 ? `${capturedImages.length} images present` : "No images");
     console.log("Portion weight:", portionWeight);
     console.log("Portion unit:", portionUnit);
     
@@ -250,15 +255,16 @@ export function AddFood({ user }: AddFoodProps) {
     setBaseAIResult(null);
     setDynamicMacros(null);
     
+    const hasFoodName = foodName.trim();
     const hasDescription = foodQuery.trim();
-    const hasImage = capturedImage;
+    const hasImage = capturedImages.length > 0;
     const hasPortion = portionWeight && portionUnit;
     
-    if (!hasDescription && !hasImage) {
-      console.log("No description or image provided");
+    if (!hasFoodName) {
+      console.log("No food name provided");
       toast({
-        title: "Missing Information",  
-        description: `Please provide a food description or capture ${imageAnalysisType === 'nutrition_label' ? 'a nutrition label image' : 'a food photo'}`,
+        title: "Food Name Required",  
+        description: "Please enter a food name to continue with AI analysis",
         variant: "destructive"
       });
       return;
@@ -266,8 +272,9 @@ export function AddFood({ user }: AddFoodProps) {
     
     console.log("Calling AI mutation...");
     aiAnalyzeMutation.mutate({
+      foodName: hasFoodName ? foodName : undefined,
       description: hasDescription ? foodQuery : undefined,
-      image: hasImage ? capturedImage : undefined,
+      images: hasImage ? capturedImages : undefined,
       portionWeight: hasPortion ? portionWeight : undefined,
       portionUnit: hasPortion ? portionUnit : undefined
     });
@@ -371,43 +378,68 @@ export function AddFood({ user }: AddFoodProps) {
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Check if adding these files would exceed the 5 image limit
+    if (capturedImages.length + files.length > 5) {
       toast({
-        title: "File Too Large",
-        description: "Please select an image smaller than 5MB",
+        title: "Too Many Images",
+        description: "Maximum 5 images allowed. Please remove some existing images first.",
         variant: "destructive"
       });
       return;
     }
 
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Invalid File Type",
-        description: "Please select an image file",
-        variant: "destructive"
-      });
-      return;
-    }
+    const newImages: string[] = [];
+    let processedCount = 0;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target?.result as string;
-      setCapturedImage(base64);
-      setShowImageCapture(false);
-    };
-    reader.readAsDataURL(file);
+    Array.from(files).forEach((file, index) => {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: `Image ${index + 1} is larger than 5MB`,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File Type",
+          description: `File ${index + 1} is not an image`,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        newImages.push(base64);
+        processedCount++;
+        
+        // Update state when all files are processed
+        if (processedCount === files.length) {
+          setCapturedImages(prev => [...prev, ...newImages]);
+          setShowImageCapture(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
-  const clearCapturedImage = () => {
-    setCapturedImage(null);
+  const clearCapturedImages = () => {
+    setCapturedImages([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const removeCapturedImage = (index: number) => {
+    setCapturedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleBarcodeSuccess = (foodData: any) => {
@@ -636,16 +668,34 @@ export function AddFood({ user }: AddFoodProps) {
                   </p>
                 </div>
 
-                {/* Search Input with Action Buttons */}
+                {/* Food Name Input - Required */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">
-                Describe your food (required) *
+                Food Name (required) *
+              </Label>
+              <Input
+                value={foodName}
+                onChange={(e) => setFoodName(e.target.value)}
+                placeholder="Enter food name (e.g., Chicken Breast, Apple, Greek Yogurt)"
+                className="h-9 text-sm ios-touch-feedback"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAIAnalysis();
+                  }
+                }}
+              />
+            </div>
+
+                {/* Food Description Input with Action Buttons */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">
+                Describe your food (optional)
               </Label>
               <div className="flex gap-2">
                 <Input
                   value={foodQuery}
                   onChange={(e) => setFoodQuery(e.target.value)}
-                  placeholder="Enter food name (e.g., Large chicken breast with vegetables)"
+                  placeholder="Add details (e.g., grilled, with olive oil, 200g portion)"
                   className="flex-1 h-9 text-sm ios-touch-feedback"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -674,58 +724,61 @@ export function AddFood({ user }: AddFoodProps) {
               </div>
             </div>
 
-            {/* Image Analysis Type Selection */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                Photo Analysis Type
-              </Label>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  onClick={() => setImageAnalysisType('nutrition_label')}
-                  variant={imageAnalysisType === 'nutrition_label' ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-8 text-xs ios-button touch-target"
-                >
-                  <FileText className="w-3 h-3 mr-1" />
-                  Nutrition Label
-                </Button>
-                <Button
-                  onClick={() => setImageAnalysisType('actual_food')}
-                  variant={imageAnalysisType === 'actual_food' ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-8 text-xs ios-button touch-target"
-                >
-                  <UtensilsCrossed className="w-3 h-3 mr-1" />
-                  Actual Food
-                </Button>
+            {/* Image Analysis Type Selection - Only show when images are uploaded */}
+            {capturedImages.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                  Photo Analysis Type
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => setImageAnalysisType('nutrition_label')}
+                    variant={imageAnalysisType === 'nutrition_label' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-8 text-xs ios-button touch-target"
+                  >
+                    <FileText className="w-3 h-3 mr-1" />
+                    Nutrition Label
+                  </Button>
+                  <Button
+                    onClick={() => setImageAnalysisType('actual_food')}
+                    variant={imageAnalysisType === 'actual_food' ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-8 text-xs ios-button touch-target"
+                  >
+                    <UtensilsCrossed className="w-3 h-3 mr-1" />
+                    Actual Food
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  {imageAnalysisType === 'nutrition_label' 
+                    ? 'Analyze nutrition facts from product labels for precise macro data'
+                    : 'Analyze actual food portions to estimate nutrition content'
+                  }
+                </p>
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                {imageAnalysisType === 'nutrition_label' 
-                  ? 'Analyze nutrition facts from product labels for precise macro data'
-                  : 'Analyze actual food portions to estimate nutrition content'
-                }
-              </p>
-            </div>
+            )}
 
-            {/* Hidden file input for image capture/upload */}
+            {/* Hidden file input for image capture/upload - supports multiple files */}
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
+              multiple
               onChange={handleImageUpload}
               className="hidden"
             />
 
-            {/* Captured Image Preview */}
-            {capturedImage && (
+            {/* Captured Images Preview */}
+            {capturedImages.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-medium text-green-600 dark:text-green-400">
                     <ImageIcon className="w-3 h-3 inline mr-1" />
-                    {imageAnalysisType === 'nutrition_label' ? 'Nutrition Label Captured' : 'Food Photo Captured'}
+                    {capturedImages.length} {imageAnalysisType === 'nutrition_label' ? 'Nutrition Label' : 'Food Photo'}{capturedImages.length > 1 ? 's' : ''} Captured
                   </Label>
                   <Button
-                    onClick={clearCapturedImage}
+                    onClick={clearCapturedImages}
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0 ios-button"
@@ -733,54 +786,37 @@ export function AddFood({ user }: AddFoodProps) {
                     <X className="w-3 h-3" />
                   </Button>
                 </div>
-                <div className="relative w-full max-w-xs mx-auto">
-                  <img
-                    src={capturedImage}
-                    alt={imageAnalysisType === 'nutrition_label' ? 'Captured nutrition label' : 'Captured food photo'}
-                    className="w-full h-32 object-cover  border border-gray-200 dark:border-gray-700"
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  {capturedImages.map((image, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={image}
+                        alt={`${imageAnalysisType === 'nutrition_label' ? 'Captured nutrition label' : 'Captured food photo'} ${index + 1}`}
+                        className="w-full h-24 object-cover border border-gray-200 dark:border-gray-700"
+                      />
+                      <Button
+                        onClick={() => removeCapturedImage(index)}
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-1 right-1 h-6 w-6 p-0"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  {5 - capturedImages.length} more image{5 - capturedImages.length !== 1 ? 's' : ''} can be added (max 5 total)
+                </p>
               </div>
             )}
 
-            {/* Enhanced Portion Input */}
-            <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 ">
-              <Label className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                Portion Information (Optional)
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-xs text-blue-700 dark:text-blue-300">Weight/Volume</Label>
-                  <Input
-                    value={portionWeight}
-                    onChange={(e) => setPortionWeight(e.target.value)}
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    placeholder="100"
-                    className="h-8 text-sm ios-touch-feedback"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-blue-700 dark:text-blue-300">Unit</Label>
-                  <Input
-                    value={portionUnit}
-                    onChange={(e) => setPortionUnit(e.target.value)}
-                    type="text"
-                    placeholder="g, ml, oz, cups, etc."
-                    className="h-8 text-sm ios-touch-feedback"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-blue-600 dark:text-blue-400">
-                Enter any weight/volume unit (e.g., g, kg, ml, L, oz, cups, tbsp, tsp, pieces, slices)
-              </p>
-            </div>
+
 
                 {/* Action Button */}
                 <Button
                   onClick={handleAIAnalysis}
-                  disabled={!foodQuery.trim() || isLoading}
+                  disabled={!foodName.trim() || isLoading}
                   className="w-full h-9 ios-button touch-target"
                 >
                   {isLoading ? (
@@ -855,6 +891,42 @@ export function AddFood({ user }: AddFoodProps) {
                         <p>Macros automatically updated based on your volume adjustment</p>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* Enhanced Portion Input - Show after AI analysis */}
+                {dynamicMacros && (
+                  <div className="space-y-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
+                    <Label className="text-xs font-medium text-green-800 dark:text-green-200">
+                      Portion Information - Adjust Serving Size
+                    </Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-green-700 dark:text-green-300">Weight/Volume</Label>
+                        <Input
+                          value={portionWeight}
+                          onChange={(e) => setPortionWeight(e.target.value)}
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          placeholder="100"
+                          className="h-8 text-sm ios-touch-feedback"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-green-700 dark:text-green-300">Unit</Label>
+                        <Input
+                          value={portionUnit}
+                          onChange={(e) => setPortionUnit(e.target.value)}
+                          type="text"
+                          placeholder="g, ml, oz, cups, etc."
+                          className="h-8 text-sm ios-touch-feedback"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      Adjust portion size to recalculate macros automatically. Supports all unit types (g, kg, ml, L, oz, cups, pieces, etc.)
+                    </p>
                   </div>
                 )}
               </TabsContent>

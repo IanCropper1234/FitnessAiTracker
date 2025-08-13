@@ -78,7 +78,205 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY 
 });
 
+export async function analyzeNutritionMultiImage(
+  foodName?: string,
+  foodDescription?: string, 
+  quantity: number = 1, 
+  unit: string = "serving",
+  images?: string[],
+  portionWeight?: number,
+  portionUnit?: string,
+  analysisType: 'nutrition_label' | 'actual_food' = 'nutrition_label'
+): Promise<NutritionAnalysis> {
+  try {
+    // Build prompt based on available inputs
+    let prompt = "";
+    let messageContent: any = [];
+
+    const hasImages = images && images.length > 0;
+    const imageCount = hasImages ? images.length : 0;
+
+    if (hasImages) {
+      // Multi-image analysis mode
+      const imageText = imageCount === 1 ? "image" : `${imageCount} images`;
+      const analysisTypeText = analysisType === 'nutrition_label' ? 'nutrition labels' : 'food photos';
+      
+      prompt = `Analyze the ${analysisTypeText} in ${imageText}${foodName ? ` for "${foodName}"` : ''}${portionWeight && portionUnit ? ` calculating nutrition for ${portionWeight}${portionUnit}` : ''}.`;
+      
+      // Add text description
+      const analysisInstructions = analysisType === 'nutrition_label' 
+        ? `**Task:** Extract and analyze nutritional information from nutrition facts labels across ${imageCount} image(s).
+
+**Analysis Approach:**
+1. **Label Reading:** Read all nutrition facts labels visible across the images
+2. **Information Aggregation:** If multiple labels are shown, combine or average the information as appropriate
+3. **Serving Size Recognition:** Identify serving sizes from all labels
+4. **Food Name Integration:** Use "${foodName}" to validate label information and resolve ambiguities
+5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use standard serving sizes from labels`}
+6. **Accuracy Priority:** Base all values on what's clearly visible in the nutrition labels`
+        : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s).
+
+**Analysis Approach:**
+1. **Food Identification:** Identify all food items across the images using "${foodName}" as guidance
+2. **Multi-Image Analysis:** Examine all images to get a complete view of the food/meal
+3. **Portion Estimation:** Estimate total serving size based on visual cues across all images
+4. **Preparation Assessment:** Consider cooking methods, ingredients, and preparation visible in any image
+5. **Food Name Validation:** Use "${foodName}" to confirm food identification and resolve discrepancies
+6. **Nutrition Estimation:** Provide comprehensive nutritional estimates for the complete food portion`;
+
+      messageContent = [
+        {
+          type: "text",
+          text: prompt + `
+
+${analysisInstructions}
+${foodDescription ? `
+**Additional Context:** ${foodDescription}` : ''}
+
+**Output Requirements - JSON format with these exact fields:**
+- calories: ${analysisType === 'nutrition_label' ? 'total calories from label(s)' : 'estimated total calories'} (number)
+- protein: ${analysisType === 'nutrition_label' ? 'protein from label(s)' : 'estimated protein'} in grams (number) 
+- carbs: ${analysisType === 'nutrition_label' ? 'carbohydrates from label(s)' : 'estimated carbohydrates'} in grams (number)
+- fat: ${analysisType === 'nutrition_label' ? 'fat from label(s)' : 'estimated fat'} in grams (number)
+- confidence: confidence level 0-1 (number, ${analysisType === 'nutrition_label' ? '0.9-1.0 for clear labels' : '0.6-0.8 for food estimation'})
+- category: primary macro category (string: "protein", "carb", "fat", or "mixed")
+- mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
+- assumptions: key assumptions made during analysis (string)
+- servingDetails: description of portion analyzed${imageCount > 1 ? ' across all images' : ''} (string)
+- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+  
+  **CRITICAL:** ${analysisType === 'nutrition_label' ? 'Extract ALL visible vitamins and minerals from nutrition labels. Convert % Daily Values to actual amounts using standard references.' : 'Estimate micronutrients based on identified food components and typical nutritional profiles.'}
+
+Return only valid JSON with all required fields.`
+        }
+      ];
+
+      // Add all images to the message content
+      images.forEach((image, index) => {
+        messageContent.push({
+          type: "image_url",
+          image_url: {
+            url: image
+          }
+        });
+      });
+
+    } else {
+      // Text-only analysis mode with food name
+      if (!foodName && !foodDescription) {
+        throw new Error("Either food name, description, or images must be provided");
+      }
+      
+      const primaryInput = foodName || foodDescription;
+      prompt = `Analyze nutrition for "${primaryInput}"${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
+      
+      messageContent = [
+        {
+          type: "text",
+          text: prompt + `
+
+**Task:** Provide comprehensive nutritional analysis for the specified food.
+
+**Analysis Requirements:**
+1. **Food Identification:** Analyze "${primaryInput}"${foodDescription && foodName !== foodDescription ? ` with additional context: "${foodDescription}"` : ''}
+2. **Standard Nutrition:** Use established nutritional databases and references
+3. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s)`}
+4. **Comprehensive Data:** Include both macronutrients and micronutrients
+
+**Output Requirements - JSON format with these exact fields:**
+- calories: total calories (number)
+- protein: protein in grams (number) 
+- carbs: carbohydrates in grams (number)
+- fat: fat in grams (number)
+- confidence: confidence level 0-1 (number, 0.8-0.9 for known foods)
+- category: primary macro category (string: "protein", "carb", "fat", or "mixed")
+- mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
+- assumptions: key assumptions about preparation or variety (string)
+- servingDetails: clarification of portion analyzed (string)
+- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
+
+Return only valid JSON with all required fields.`
+        }
+      ];
+    }
+
+    console.log(`Making OpenAI API call with ${messageContent.length} content items...`);
+
+    // Make the API call with enhanced vision model  
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "user",
+          content: messageContent
+        }
+      ],
+      max_tokens: 1000,
+      temperature: 0.3,
+      response_format: { type: "json_object" }
+    });
+
+    const result = response.choices[0].message.content;
+    console.log("OpenAI response received:", result);
+
+    if (!result) {
+      throw new Error("Empty response from OpenAI");
+    }
+
+    const parsed = JSON.parse(result);
+    
+    // Validate required fields
+    if (typeof parsed.calories !== 'number' || 
+        typeof parsed.protein !== 'number' || 
+        typeof parsed.carbs !== 'number' || 
+        typeof parsed.fat !== 'number' ||
+        typeof parsed.confidence !== 'number') {
+      throw new Error("Invalid nutrition analysis response - missing required numeric fields");
+    }
+
+    return parsed;
+
+  } catch (error) {
+    console.error("Error in multi-image nutrition analysis:", error);
+    throw error;
+  }
+}
+
+// Legacy function - kept for backward compatibility
 export async function analyzeNutrition(
+  foodDescription?: string, 
+  quantity: number = 1, 
+  unit: string = "serving",
+  nutritionLabelImage?: string,
+  portionWeight?: number,
+  portionUnit?: string,
+  analysisType: 'nutrition_label' | 'actual_food' = 'nutrition_label'
+): Promise<NutritionAnalysis> {
+  // Route to the new multi-image function
+  return analyzeNutritionMultiImage(
+    undefined, // foodName
+    foodDescription, 
+    quantity, 
+    unit,
+    nutritionLabelImage ? [nutritionLabelImage] : undefined, // images array
+    portionWeight,
+    portionUnit,
+    analysisType
+  );
+}
+
+// Backup old implementation in case needed
+export async function analyzeNutritionOriginal(
   foodDescription?: string, 
   quantity: number = 1, 
   unit: string = "serving",

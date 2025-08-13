@@ -1070,57 +1070,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI nutrition analysis with image support
+  // AI nutrition analysis with multi-image support
   app.post("/api/nutrition/analyze", async (req, res) => {
     try {
       const { 
+        foodName, // New: required food name
         description, 
         foodDescription, // Legacy support
         quantity, 
         unit, 
-        image,
+        image, // Legacy: single image
+        images, // New: multiple images array
         portionWeight,
         portionUnit,
-        analysisType // New parameter for nutrition_label vs actual_food
+        analysisType // nutrition_label vs actual_food
       } = req.body;
       
       console.log("AI Analysis request received:", {
+        foodName: foodName ? "provided" : "missing",
         description: description ? "provided" : "missing",
-        image: image ? "provided" : "missing",
+        imageCount: images ? images.length : (image ? 1 : 0),
         portionWeight,
         portionUnit,
         quantity,
-        unit
+        unit,
+        analysisType
       });
       
       if (!process.env.OPENAI_API_KEY) {
         return res.status(400).json({ message: "OpenAI API key not configured" });
       }
 
-      // Support both legacy and new parameter names
-      const textDescription = description || foodDescription;
-      
-      if (!textDescription && !image) {
-        return res.status(400).json({ message: "Either description or image must be provided" });
+      // Food name is now required
+      if (!foodName) {
+        return res.status(400).json({ message: "Food name is required" });
       }
 
-      // Import the analyzeNutrition function from services
-      const { analyzeNutrition } = await import("./services/openai");
+      // Support both legacy and new parameter names for description
+      const textDescription = description || foodDescription;
       
-      const analysis = await analyzeNutrition(
+      // Support both single image (legacy) and multiple images (new)
+      let imageArray: string[] | undefined;
+      if (images && Array.isArray(images)) {
+        imageArray = images;
+      } else if (image) {
+        imageArray = [image];
+      }
+
+      // Import the new multi-image function
+      const { analyzeNutritionMultiImage } = await import("./services/openai");
+      
+      const analysis = await analyzeNutritionMultiImage(
+        foodName,
         textDescription, 
         quantity || 1, 
         unit || "serving",
-        image,
+        imageArray,
         portionWeight ? parseFloat(portionWeight) : undefined,
         portionUnit,
         analysisType || 'nutrition_label' // Default to nutrition label analysis
       );
       
       console.log("AI Analysis successful:", {
+        foodName,
         calories: analysis.calories,
         protein: analysis.protein,
-        confidence: analysis.confidence
+        confidence: analysis.confidence,
+        imageCount: imageArray ? imageArray.length : 0
       });
       
       res.json(analysis);
