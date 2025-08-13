@@ -46,7 +46,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddingMetric, setIsAddingMetric] = useState(false);
-  const [unit, setUnit] = useState<'metric' | 'imperial'>('imperial');
+  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
   const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
   const [showConversionHelper, setShowConversionHelper] = useState(false);
   const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
@@ -341,19 +341,19 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   return (
     <div className="space-y-6">
       {/* Header with Quick Add */}
-      <div className="flex items-center justify-between mb-6 pl-[5px] pr-[5px]">
-        <div>
-          <h2 className="font-bold text-black dark:text-white text-[16px] pl-[0px] pr-[0px] ml-[5px] mr-[5px]">Body Progress</h2>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">Track your body measurements and changes</p>
+      <div className="flex items-center justify-between mb-6 pl-[5px] pr-[5px] gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="font-bold text-black dark:text-white text-[16px] pl-[0px] pr-[0px] ml-[5px] mr-[5px] truncate">Body Progress</h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm truncate">Track your body measurements and changes</p>
         </div>
         <Button
           onClick={() => setIsAddingMetric(true)}
-          className="ios-touch-feedback inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] ios-touch-feedback hover:shadow-lg border border-primary/20 h-11 min-w-[80px] text-black dark:text-black px-6 py-2 shadow-lg ios-touch-feedback touch-target text-[12px] font-semibold pl-[15px] pr-[15px] pt-[0px] pb-[0px]"
+          className="ios-touch-feedback inline-flex items-center justify-center gap-1 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-3.5 [&_svg]:shrink-0 active:scale-[0.98] h-8 min-w-[70px] text-black dark:text-black px-3 py-1 shadow-sm text-xs font-semibold"
           style={{ backgroundColor: '#479bf5' }}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-3.5 h-3.5" />
           Log Entry
         </Button>
       </div>
@@ -825,16 +825,16 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Metrics History - Compact Timeline */}
       <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm mt-[10px] mb-[10px] ml-[-10px] mr-[-10px]">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-headline flex items-center gap-2 font-semibold text-[14px]">
-              <TrendingUp className="w-4 h-4 text-blue-600" />
-              Progress Timeline
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="text-headline flex items-center gap-2 font-semibold text-[14px] min-w-0 flex-1">
+              <TrendingUp className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <span className="truncate">Progress Timeline</span>
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
-              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 hover:text-gray-700 text-[#479bf5]"
+              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 hover:text-gray-700 text-[#479bf5] flex-shrink-0 whitespace-nowrap"
             >
               {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
             </Button>
