@@ -64,6 +64,10 @@ export function CreateWorkoutSession() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [pairedExerciseSearchOpen, setPairedExerciseSearchOpen] = useState<number | null>(null);
+  
+  // Pagination state for exercise library
+  const [currentPage, setCurrentPage] = useState(1);
+  const EXERCISES_PER_PAGE = 12; // 3x4 grid, optimal for memory usage
 
   // Load exercises
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
@@ -76,22 +80,57 @@ export function CreateWorkoutSession() {
     return ["all", ...Array.from(unique).sort()];
   }, [exercises]);
 
-  // Filter exercises
+  // Filter exercises based on search term and category
   const filteredExercises = useMemo(() => {
-    const selectedExerciseIds = new Set(exerciseTemplates.map(template => template.exerciseId));
+    const alreadySelectedIds = new Set(exerciseTemplates.map(template => template.exerciseId));
     
     return exercises.filter((exercise) => {
-      if (selectedExerciseIds.has(exercise.id)) return false;
+      // Skip already selected exercises
+      if (alreadySelectedIds.has(exercise.id)) return false;
       
-      const matchesSearch = !searchTerm || 
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exercise.primaryMuscle.toLowerCase().includes(searchTerm.toLowerCase());
+      // Filter by category
+      if (selectedCategory !== "all" && exercise.category !== selectedCategory) return false;
       
-      const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
+      // Filter by search term
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        return (
+          exercise.name.toLowerCase().includes(term) ||
+          exercise.category.toLowerCase().includes(term) ||
+          exercise.primaryMuscle.toLowerCase().includes(term) ||
+          (exercise.equipment && exercise.equipment.toLowerCase().includes(term))
+        );
+      }
       
-      return matchesSearch && matchesCategory;
+      return true;
     });
   }, [exercises, exerciseTemplates, searchTerm, selectedCategory]);
+
+  // Paginated exercises for memory optimization
+  const paginatedExercises = useMemo(() => {
+    const startIndex = (currentPage - 1) * EXERCISES_PER_PAGE;
+    const endIndex = startIndex + EXERCISES_PER_PAGE;
+    return filteredExercises.slice(startIndex, endIndex);
+  }, [filteredExercises, currentPage, EXERCISES_PER_PAGE]);
+
+  const totalPages = Math.ceil(filteredExercises.length / EXERCISES_PER_PAGE);
+
+  // Reset to first page when filters change
+  const resetPagination = () => {
+    setCurrentPage(1);
+  };
+
+  // Handle search with pagination reset
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  // Handle category change with pagination reset
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    setCurrentPage(1);
+  };
 
   // Create workout session mutation
   const createWorkoutSessionMutation = useMutation({
@@ -418,7 +457,7 @@ export function CreateWorkoutSession() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-5 space-y-4 pl-[10px] pr-[10px] pt-[5px] pb-[5px]">
             {/* Exercise Library */}
             {showExerciseLibrary && (
               <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm border-dashed pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
@@ -432,11 +471,11 @@ export function CreateWorkoutSession() {
                       <Input
                         placeholder="Search exercises..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => handleSearchChange(e.target.value)}
                         className="h-8"
                       />
                     </div>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <Select value={selectedCategory} onValueChange={handleCategoryChange}>
                       <SelectTrigger className="w-full sm:w-[140px] h-8">
                         <Filter className="h-3 w-3 mr-1" />
                         <SelectValue />
@@ -465,7 +504,7 @@ export function CreateWorkoutSession() {
                             : "All available exercises have been added"}
                         </div>
                       ) : (
-                        filteredExercises.map((exercise) => (
+                        paginatedExercises.map((exercise) => (
                           <Card key={exercise.id} className="cursor-pointer hover:bg-accent/50 transition-colors">
                             <CardHeader className="pb-2 ml-[0px] mr-[0px] pl-[10px] pr-[10px]">
                               <div className="flex items-start justify-between gap-2">
@@ -501,6 +540,62 @@ export function CreateWorkoutSession() {
                       )}
                     </div>
                   </ScrollArea>
+                  
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between px-4 py-3 border-t">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>
+                          Showing {((currentPage - 1) * EXERCISES_PER_PAGE) + 1}-{Math.min(currentPage * EXERCISES_PER_PAGE, filteredExercises.length)} of {filteredExercises.length} exercises
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                          disabled={currentPage === 1}
+                          className="h-8 px-2"
+                        >
+                          Previous
+                        </Button>
+                        <div className="flex gap-1">
+                          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                            let pageNum;
+                            if (totalPages <= 5) {
+                              pageNum = i + 1;
+                            } else if (currentPage <= 3) {
+                              pageNum = i + 1;
+                            } else if (currentPage >= totalPages - 2) {
+                              pageNum = totalPages - 4 + i;
+                            } else {
+                              pageNum = currentPage - 2 + i;
+                            }
+                            return (
+                              <Button
+                                key={pageNum}
+                                variant={pageNum === currentPage ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setCurrentPage(pageNum)}
+                                className="h-8 w-8 p-0"
+                              >
+                                {pageNum}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                          disabled={currentPage === totalPages}
+                          className="h-8 px-2"
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
