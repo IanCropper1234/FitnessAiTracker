@@ -50,6 +50,9 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
   const [showConversionHelper, setShowConversionHelper] = useState(false);
   const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
+  // Pagination state for memory optimization
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 20;
   const formRef = useRef<HTMLDivElement>(null);
   // Use external date if provided, otherwise use internal state
   const selectedDate = externalSelectedDate || new Date().toISOString().split('T')[0];
@@ -94,6 +97,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       queryClient.invalidateQueries({ queryKey: ['/api/body-metrics'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
       setIsAddingMetric(false);
+      setCurrentPage(1); // Reset to first page after adding new metric
       // Reset form data - the useEffect will automatically set the date to the latest metric date
       setFormData({
         date: new Date().toISOString().split('T')[0], // This will be updated by useEffect
@@ -266,6 +270,13 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   };
 
   const latestMetric = getLatestMetric();
+
+  // Pagination calculations for memory optimization
+  const totalRecords = metrics?.length || 0;
+  const totalPages = Math.ceil(totalRecords / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const endIndex = startIndex + recordsPerPage;
+  const paginatedMetrics = metrics?.slice(startIndex, endIndex) || [];
 
   // Update form date when selectedDate changes or when metrics are available
   useEffect(() => {
@@ -845,82 +856,116 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
         </CardHeader>
         <CardContent className="p-2">
           {metrics && metrics.length > 0 ? (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto">
-              {metrics.map((metric, index) => (
-                <div key={metric.id}>
-                  {/* iOS-style Card Layout - Full Width */}
-                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] cursor-pointer group w-full">
-                    {/* Left Section - Icon & Date - Compact */}
-                    <div className="flex items-center gap-2 min-w-0 flex-shrink-0">
-                      <div className="w-6 h-6 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 flex items-center justify-center">
-                        <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+            <>
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {paginatedMetrics.map((metric, paginatedIndex) => {
+                  const globalIndex = startIndex + paginatedIndex;
+                  return (
+                    <div key={metric.id}>
+                      {/* iOS-style Card Layout - Full Width */}
+                      <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] cursor-pointer group w-full">
+                        {/* Left Section - Icon & Date - Compact */}
+                        <div className="flex items-center gap-2 min-w-0 flex-shrink-0">
+                          <div className="w-6 h-6 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 flex items-center justify-center">
+                            <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-xs text-gray-900 dark:text-gray-100 truncate">
+                              {new Date(metric.date).toLocaleDateString('en-US', { 
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {globalIndex === 0 ? 'Latest' : `${globalIndex + 1} ago`}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Center Section - Primary Metrics - Flexible Width */}
+                        <div className="flex items-center gap-4 text-sm flex-1 justify-center min-w-0 px-2">
+                          {metric.weight && (
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                              <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {displayValue(metric.weight, 'weight', metric.unit)}
+                                <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit, 'weight')}</span>
+                              </span>
+                            </div>
+                          )}
+                          
+                          {metric.bodyFatPercentage && (
+                            <div className="flex items-center gap-1 min-w-0">
+                              <TrendingUp className="w-3 h-3 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                              <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {metric.bodyFatPercentage}%
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Show additional metrics if no weight/body fat */}
+                          {!metric.weight && !metric.bodyFatPercentage && metric.waist && (
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
+                              <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {displayValue(metric.waist, 'measurement', metric.unit)}
+                                <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit, 'measurement')}</span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Right Section - Actions Only */}
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {/* Delete button - always visible on touch devices */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteMetricMutation.mutate(metric.id);
+                            }}
+                            className="opacity-70 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-150 w-6 h-6 p-0"
+                            disabled={deleteMetricMutation.isPending}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-xs text-gray-900 dark:text-gray-100 truncate">
-                          {new Date(metric.date).toLocaleDateString('en-US', { 
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {index === 0 ? 'Latest' : `${index + 1} ago`}
-                        </p>
-                      </div>
                     </div>
-
-                    {/* Center Section - Primary Metrics - Flexible Width */}
-                    <div className="flex items-center gap-4 text-sm flex-1 justify-center min-w-0 px-2">
-                      {metric.weight && (
-                        <div className="flex items-center gap-1 min-w-0">
-                          <Scale className="w-3 h-3 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                            {displayValue(metric.weight, 'weight', metric.unit)}
-                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit, 'weight')}</span>
-                          </span>
-                        </div>
-                      )}
-                      
-                      {metric.bodyFatPercentage && (
-                        <div className="flex items-center gap-1 min-w-0">
-                          <TrendingUp className="w-3 h-3 text-orange-600 dark:text-orange-400 flex-shrink-0" />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                            {metric.bodyFatPercentage}%
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Show additional metrics if no weight/body fat */}
-                      {!metric.weight && !metric.bodyFatPercentage && metric.waist && (
-                        <div className="flex items-center gap-1 min-w-0">
-                          <Target className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" />
-                          <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                            {displayValue(metric.waist, 'measurement', metric.unit)}
-                            <span className="text-xs text-gray-500 ml-0.5">{getUnitIndicator(metric.unit, 'measurement')}</span>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Right Section - Actions Only */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      {/* Delete button - always visible on touch devices */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteMetricMutation.mutate(metric.id);
-                        }}
-                        className="opacity-70 group-hover:opacity-100 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-150 w-6 h-6 p-0"
-                        disabled={deleteMetricMutation.isPending}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
+                  );
+                })}
+              </div>
+              
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-4 pt-2 border-t border-gray-100 dark:border-gray-700">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="h-8 px-3 text-sm"
+                  >
+                    &lt;
+                  </Button>
+                  
+                  <span className="text-sm text-gray-600 dark:text-gray-400 px-2">
+                    {currentPage}
+                  </span>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-8 px-3 text-sm"
+                  >
+                    &gt;
+                  </Button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800  flex items-center justify-center mx-auto mb-6">
