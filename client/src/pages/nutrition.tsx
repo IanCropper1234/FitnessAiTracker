@@ -74,10 +74,6 @@ interface NutritionProps {
   setCopyToDate?: (date: string) => void;
   showCopyToDatePicker?: boolean;
   setShowCopyToDatePicker?: (show: boolean) => void;
-  bodyTrackingDateFilter?: string | null;
-  setBodyTrackingDateFilter?: (date: string | null) => void;
-  showBodyDateFilterPicker?: boolean;
-  setShowBodyDateFilterPicker?: (show: boolean) => void;
 }
 
 export function Nutrition({ 
@@ -99,11 +95,7 @@ export function Nutrition({
   copyToDate,
   setCopyToDate,
   showCopyToDatePicker,
-  setShowCopyToDatePicker,
-  bodyTrackingDateFilter,
-  setBodyTrackingDateFilter,
-  showBodyDateFilterPicker,
-  setShowBodyDateFilterPicker 
+  setShowCopyToDatePicker 
 }: NutritionProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
@@ -145,10 +137,6 @@ export function Nutrition({
       setSelectedDate={setBodyTrackingDate}
       showDatePicker={showBodyDatePicker}
       setShowDatePicker={setShowBodyDatePicker}
-      dateFilter={bodyTrackingDateFilter}
-      setDateFilter={setBodyTrackingDateFilter}
-      showDateFilterPicker={showBodyDateFilterPicker}
-      setShowDateFilterPicker={setShowBodyDateFilterPicker}
     />,
     progression: <NutritionProgression userId={user.id} />,
     shopping: <ShoppingListGenerator userId={user.id} />

@@ -74,10 +74,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [showBodyDatePicker, setShowBodyDatePicker] = useState(false);
   const [bodyTrackingDate, setBodyTrackingDate] = useState(TimezoneUtils.getCurrentDate());
   
-  // Body tracking date filter state (for filtering records)
-  const [bodyTrackingDateFilter, setBodyTrackingDateFilter] = useState<string | null>(null);
-  const [showBodyDateFilterPicker, setShowBodyDateFilterPicker] = useState(false);
-  
   // Copy meal date picker states
   const [showCopyFromDatePicker, setShowCopyFromDatePicker] = useState(false);
   const [copyFromDate, setCopyFromDate] = useState("");
@@ -177,10 +173,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 setBodyTrackingDate={setBodyTrackingDate}
                 showBodyDatePicker={showBodyDatePicker}
                 setShowBodyDatePicker={setShowBodyDatePicker}
-                bodyTrackingDateFilter={bodyTrackingDateFilter}
-                setBodyTrackingDateFilter={setBodyTrackingDateFilter}
-                showBodyDateFilterPicker={showBodyDateFilterPicker}
-                setShowBodyDateFilterPicker={setShowBodyDateFilterPicker}
                 copyFromDate={copyFromDate}
                 setCopyFromDate={setCopyFromDate}
                 showCopyFromDatePicker={showCopyFromDatePicker}
@@ -360,20 +352,6 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           size="lg"
           showDatePicker={showBodyDatePicker}
           setShowDatePicker={setShowBodyDatePicker}
-        />
-      )}
-
-      {/* Body Tracking Date Filter iOS Date Picker Modal */}
-      {user && (
-        <IOSDatePicker 
-          selectedDate={bodyTrackingDateFilter || TimezoneUtils.getCurrentDate()}
-          onDateChange={(newDate) => {
-            setBodyTrackingDateFilter(newDate);
-            setShowBodyDateFilterPicker(false);
-          }}
-          size="lg"
-          showDatePicker={showBodyDateFilterPicker}
-          setShowDatePicker={setShowBodyDateFilterPicker}
         />
       )}
 

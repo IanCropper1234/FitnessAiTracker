@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown, ChevronRight, ChevronLeft, CalendarDays, Filter } from "lucide-react";
+import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { WeightGoals } from "./weight-goals";
 
@@ -34,13 +34,9 @@ interface BodyTrackingProps {
   setSelectedDate?: (date: string) => void;
   showDatePicker?: boolean;
   setShowDatePicker?: (show: boolean) => void;
-  dateFilter?: string | null;
-  setDateFilter?: (date: string | null) => void;
-  showDateFilterPicker?: boolean;
-  setShowDateFilterPicker?: (show: boolean) => void;
 }
 
-export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSelectedDate: externalSetSelectedDate, showDatePicker, setShowDatePicker, dateFilter, setDateFilter, showDateFilterPicker, setShowDateFilterPicker }: BodyTrackingProps) {
+export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSelectedDate: externalSetSelectedDate, showDatePicker, setShowDatePicker }: BodyTrackingProps) {
   console.log('BodyTracking props:', { 
     hasExternalSelectedDate: !!externalSelectedDate, 
     hasExternalSetSelectedDate: !!externalSetSelectedDate, 
@@ -55,11 +51,6 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const [showConversionHelper, setShowConversionHelper] = useState(false);
   const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
   const formRef = useRef<HTMLDivElement>(null);
-  
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 20;
-  
   // Use external date if provided, otherwise use internal state
   const selectedDate = externalSelectedDate || new Date().toISOString().split('T')[0];
   const setSelectedDate = externalSetSelectedDate || (() => {});
@@ -77,48 +68,13 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   });
 
   // Fetch body metrics
-  const { data: allMetrics, isLoading } = useQuery<BodyMetric[]>({
+  const { data: metrics, isLoading } = useQuery<BodyMetric[]>({
     queryKey: ['/api/body-metrics'],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`);
       return response.json();
     }
   });
-
-  // Filtered and paginated metrics with memory optimization
-  const { filteredMetrics, totalPages, totalRecords } = useMemo(() => {
-    if (!allMetrics) return { filteredMetrics: [], totalPages: 0, totalRecords: 0 };
-
-    // Apply date filter if provided
-    let filtered = allMetrics;
-    if (dateFilter) {
-      const filterDate = new Date(dateFilter).toISOString().split('T')[0];
-      filtered = allMetrics.filter(metric => {
-        const metricDate = new Date(metric.date).toISOString().split('T')[0];
-        return metricDate === filterDate;
-      });
-    }
-
-    // Calculate pagination
-    const total = filtered.length;
-    const pages = Math.ceil(total / ITEMS_PER_PAGE);
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    
-    // Return only the current page's data for memory optimization
-    const paginated = filtered.slice(startIndex, endIndex);
-
-    return {
-      filteredMetrics: paginated,
-      totalPages: pages,
-      totalRecords: total
-    };
-  }, [allMetrics, dateFilter, currentPage, ITEMS_PER_PAGE]);
-
-  // Reset to first page when filter changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [dateFilter]);
 
   // Add body metric mutation
   const addMetricMutation = useMutation({
@@ -305,8 +261,8 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   };
 
   const getLatestMetric = () => {
-    if (!allMetrics || allMetrics.length === 0) return null;
-    return allMetrics.sort((a: BodyMetric, b: BodyMetric) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    if (!metrics || metrics.length === 0) return null;
+    return metrics.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
   };
 
   const latestMetric = getLatestMetric();
@@ -873,53 +829,24 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             <CardTitle className="text-headline flex items-center gap-2 font-semibold text-[14px] min-w-0 flex-1">
               <TrendingUp className="w-4 h-4 text-blue-600 flex-shrink-0" />
               <span className="truncate">Progress Timeline</span>
-              {totalRecords > 0 && (
-                <span className="text-xs text-gray-500 font-normal">
-                  ({totalRecords} {totalRecords === 1 ? 'record' : 'records'})
-                </span>
-              )}
             </CardTitle>
-            <div className="flex items-center gap-2">
-              {/* Date Filter Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowDateFilterPicker && setShowDateFilterPicker(true)}
-                className="text-xs h-6 px-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <CalendarDays className="w-3 h-3 mr-1" />
-                {dateFilter ? new Date(dateFilter).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Filter'}
-              </Button>
-              {/* Clear Filter Button */}
-              {dateFilter && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDateFilter && setDateFilter(null)}
-                  className="text-xs h-6 px-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                >
-                  ×
-                </Button>
-              )}
-              {/* Unit Toggle Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
-                className="text-xs transition-colors h-6 px-2 text-black font-medium"
-                style={{ backgroundColor: '#479bf5' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
-              >
-                {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
+              className="text-xs transition-colors h-6 px-2 text-black font-medium"
+              style={{ backgroundColor: '#479bf5' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
+            >
+              {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="p-2">
-          {filteredMetrics && filteredMetrics.length > 0 ? (
+          {metrics && metrics.length > 0 ? (
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
-              {filteredMetrics.map((metric: BodyMetric, index: number) => (
+              {metrics.map((metric, index) => (
                 <div key={metric.id}>
                   {/* iOS-style Card Layout - Full Width */}
                   <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] cursor-pointer group w-full">
@@ -999,14 +926,9 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800  flex items-center justify-center mx-auto mb-6">
                 <TrendingUp className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {dateFilter ? 'No Records for Selected Date' : 'No Progress Data Yet'}
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No Progress Data Yet</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                {dateFilter 
-                  ? 'No body measurements found for the selected date. Try selecting a different date or clear the filter.'
-                  : 'Start logging your body measurements to track your fitness journey and see your progress over time.'
-                }
+                Start logging your body measurements to track your fitness journey and see your progress over time.
               </p>
               <Button
                 onClick={() => setIsAddingMetric(true)}
@@ -1015,69 +937,6 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                 <Plus className="w-4 h-4 mr-2" />
                 Log Your First Entry
               </Button>
-            </div>
-          )}
-
-          {/* Smart Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="h-8 px-3 text-sm disabled:opacity-50"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                
-                {/* Page Numbers - iOS Style */}
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum: number;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={currentPage === pageNum ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`h-8 w-8 p-0 text-sm ${
-                          currentPage === pageNum 
-                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-                </div>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="h-8 px-3 text-sm disabled:opacity-50"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              <div className="text-xs text-gray-500">
-                Page {currentPage} of {totalPages}
-              </div>
             </div>
           )}
         </CardContent>
