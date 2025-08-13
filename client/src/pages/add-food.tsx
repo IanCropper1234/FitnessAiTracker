@@ -308,21 +308,21 @@ export function AddFood({ user }: AddFoodProps) {
 
   // Dynamic volume-based macro recalculation function
   const recalculateMacrosFromVolume = React.useCallback(() => {
-    if (!baseAIResult || !quantity || parseFloat(quantity) <= 0) {
-      setDynamicMacros(baseAIResult);
-      return;
-    }
+    if (!baseAIResult) return;
 
-    const newQuantity = parseFloat(quantity);
-    const baseQuantity = parseFloat(portionWeight) || 1;
-    const multiplier = newQuantity / baseQuantity;
+    const currentQuantity = parseFloat(quantity);
+    // AI returns values for 1 serving, so we multiply directly by quantity
+    const multiplier = isNaN(currentQuantity) ? 1 : currentQuantity;
+
+    console.log(`Recalculating macros: quantity=${quantity}, multiplier=${multiplier}`);
+    console.log(`Base AI calories:`, baseAIResult.calories);
 
     const recalculatedMacros = {
       ...baseAIResult,
-      calories: baseAIResult.calories * multiplier,
-      protein: baseAIResult.protein * multiplier,
-      carbs: baseAIResult.carbs * multiplier,
-      fat: baseAIResult.fat * multiplier,
+      calories: Math.round((baseAIResult.calories * multiplier) * 100) / 100,
+      protein: Math.round((baseAIResult.protein * multiplier) * 100) / 100,
+      carbs: Math.round((baseAIResult.carbs * multiplier) * 100) / 100,
+      fat: Math.round((baseAIResult.fat * multiplier) * 100) / 100,
       servingDetails: baseAIResult.servingDetails ? 
         `${quantity} ${unit} (adjusted from AI estimate: ${baseAIResult.servingDetails})` :
         `${quantity} ${unit}`,
@@ -334,14 +334,15 @@ export function AddFood({ user }: AddFoodProps) {
         micronutrients: Object.fromEntries(
           Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
             key, 
-            typeof value === 'number' ? value * multiplier : value
+            typeof value === 'number' ? Math.round((value * multiplier) * 100) / 100 : value
           ])
         )
       })
     };
 
+    console.log(`Recalculated calories:`, recalculatedMacros.calories);
     setDynamicMacros(recalculatedMacros);
-  }, [baseAIResult, quantity, unit, portionWeight]);
+  }, [baseAIResult, quantity, unit]);
 
   // Auto-sync portion values to quantity/unit after AI analysis
   React.useEffect(() => {
@@ -359,6 +360,7 @@ export function AddFood({ user }: AddFoodProps) {
   // Recalculate macros when quantity or unit changes
   React.useEffect(() => {
     if (baseAIResult) {
+      console.log(`Triggering recalculation due to quantity/unit change: ${quantity} ${unit}`);
       recalculateMacrosFromVolume();
     }
   }, [quantity, unit, recalculateMacrosFromVolume]);
@@ -562,7 +564,7 @@ export function AddFood({ user }: AddFoodProps) {
 
     const logData = {
       date: selectedDate,
-      foodName: foodQuery || selectedFood?.name || foodQuery,
+      foodName: foodName || selectedFood?.name || "Unknown Food",
       quantity: quantity,
       unit: unit,
       calories: nutritionData.calories.toString(),
