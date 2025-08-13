@@ -805,9 +805,9 @@ export function AddFood({ user }: AddFoodProps) {
                         onClick={() => removeCapturedImage(index)}
                         variant="destructive"
                         size="sm"
-                        className="absolute top-1 right-1 h-6 w-6 p-0"
+                        className="absolute top-1 right-1 h-4 w-4 p-0"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-2.5 h-2.5" />
                       </Button>
                     </div>
                   ))}
