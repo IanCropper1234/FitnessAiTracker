@@ -470,9 +470,10 @@ export default function CreateAIWorkoutSession() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="beginner">Beginner (0-1 year)</SelectItem>
-                  <SelectItem value="intermediate">Intermediate (1-3 years)</SelectItem>
-                  <SelectItem value="advanced">Advanced (3+ years)</SelectItem>
+                  <SelectItem value="beginner">Beginner (0-6 months)</SelectItem>
+                  <SelectItem value="intermediate">Intermediate (6 months - 3 years)</SelectItem>
+                  <SelectItem value="advanced">Advanced (3-5 years)</SelectItem>
+                  <SelectItem value="elite">Elite (5+ years)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -389,8 +389,14 @@ export async function generateWeeklyWorkoutPlan(
 - Injury Restrictions: ${injuryRestrictions || 'None'}
 - Additional Requirements: ${customRequirements || 'None'}
 
+**Experience Level Guidelines:**
+- **Beginner (0-6 months)**: Focus on basic compound movements, moderate volume, learning proper form, linear progression
+- **Intermediate (6 months - 3 years)**: Increased volume, exercise variety, moderate intensity techniques, periodized progression
+- **Advanced (3-5 years)**: High volume, complex exercise selection, sophisticated periodization, specialized techniques
+- **Elite (5+ years)**: Maximum volume tolerance, highly specialized movements, complex periodization, competition-level methods
+
 **RP Methodology Requirements:**
-1. **Volume Distribution**: Apply MEV/MAV/MRV principles for each muscle group
+1. **Volume Distribution**: Apply MEV/MAV/MRV principles for each muscle group based on experience level
 2. **Special Training Methods**: Use exactly ${specialMethodPercentage}% of total exercises with methods like:
    - MyoRep Match/No Match (isolation exercises)
    - Drop Sets (machine/cable exercises)
@@ -399,7 +405,7 @@ export async function generateWeeklyWorkoutPlan(
    - Lengthened Partials (stretched position emphasis)
 3. **Session Structure**: Compound movements first, isolation last
 4. **Frequency**: Distribute muscle groups optimally across sessions
-5. **Progression**: Built-in load progression strategies
+5. **Progression**: Built-in load progression strategies appropriate for experience level
 6. **Recovery**: Appropriate rest periods and volume management
 
 **Output Requirements - JSON format:**
@@ -416,7 +422,7 @@ export async function generateWeeklyWorkoutPlan(
           "primaryMuscle": "Primary muscle group",
           "muscleGroups": ["all", "muscle", "groups", "involved"],
           "equipment": "Required equipment",
-          "difficulty": "beginner/intermediate/advanced",
+          "difficulty": "beginner/intermediate/advanced/elite",
           "sets": 3,
           "reps": "6-8 or 8-12 or 12-15",
           "restPeriod": 120,

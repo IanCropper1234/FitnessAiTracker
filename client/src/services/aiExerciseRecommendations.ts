@@ -15,7 +15,7 @@ interface ExerciseRecommendationRequest {
     fatigueLevel: number;
   }>;
   muscleGroupFocus: string[];
-  experienceLevel: 'beginner' | 'intermediate' | 'advanced';
+  experienceLevel: 'beginner' | 'intermediate' | 'advanced' | 'elite';
   availableEquipment: string[];
   timeConstraints?: {
     sessionDuration: number;
