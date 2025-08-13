@@ -417,28 +417,15 @@ export default function CreateAIWorkoutSession() {
                   setViewMode(value as 'single' | 'weekly');
                 }
               }}>
-                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 pt-[0px] pb-[0px] mt-[15px] mb-[15px]">
+                <TabsList className="h-10 items-center justify-center bg-muted p-1 text-muted-foreground grid w-full grid-cols-1 pt-[0px] pb-[0px] mt-[15px] mb-[15px]">
                   <TabsTrigger value="single" className="whitespace-nowrap px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2 h-auto min-h-[44px] ml-[-5px] mr-[-5px]">
                     <Dumbbell className="h-4 w-4" />
-                    <span className="font-medium text-[10px]">Weekly</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="weekly" 
-                    className="whitespace-nowrap px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2 h-auto min-h-[44px] ml-[-5px] mr-[-5px] pt-[0px] pb-[0px] mt-[15px] mb-[15px]"
-                    disabled
-                  >
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      <span className="text-[10px] font-medium">Weekly</span>
-                    </div>
-                    <span className="text-[9px] bg-orange-500/20 text-orange-400 px-1 py-0.5 rounded leading-none">
-                      Soon
-                    </span>
+                    <span className="font-medium text-[12px]">Single Session Generation</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
               <p className="text-xs text-muted-foreground mt-2">
-                Generate exercise recommendations for a single training session with AI-powered RP methodology
+                Generate AI-powered exercise recommendations for a single training session using Renaissance Periodization methodology
               </p>
             </div>
             {/* Goals */}
