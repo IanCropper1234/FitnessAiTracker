@@ -833,7 +833,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
+              onClick={() => {
+                console.log('Unit conversion button clicked!', { current: showUnifiedUnits, will_be: !showUnifiedUnits });
+                setShowUnifiedUnits(!showUnifiedUnits);
+              }}
               className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 hover:text-gray-700 text-[#479bf5] flex-shrink-0 whitespace-nowrap"
             >
               {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
