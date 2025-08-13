@@ -825,10 +825,20 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       {/* Metrics History - Compact Timeline */}
       <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm mt-[10px] mb-[10px] ml-[-10px] mr-[-10px]">
         <CardHeader className="pb-3">
-          <CardTitle className="text-headline flex items-center gap-2 font-semibold text-[14px]">
-            <TrendingUp className="w-4 h-4 text-blue-600" />
-            Progress Timeline
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-headline flex items-center gap-2 font-semibold text-[14px]">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+              Progress Timeline
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
+              className="text-xs hover:bg-accent/50 transition-colors h-6 px-2 text-gray-500 hover:text-gray-700"
+            >
+              {showUnifiedUnits ? formatUnit('weight') : 'Mixed'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-2">
           {metrics && metrics.length > 0 ? (
