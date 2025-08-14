@@ -5,13 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { Badge } from '@/components/ui/badge';
 import { 
   User, 
   Settings, 
-  Save, 
-  Utensils
+  Save
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -172,14 +171,7 @@ export default function UserProfile() {
     }
   }, [bodyMetricsResponse]);
 
-  const handleDietaryRestrictionChange = (restriction: string, checked: boolean) => {
-    setProfileData(prev => ({
-      ...prev,
-      dietaryRestrictions: checked 
-        ? [...(prev.dietaryRestrictions || []), restriction]
-        : (prev.dietaryRestrictions || []).filter(r => r !== restriction)
-    }));
-  };
+
 
   const handleSaveProfile = async () => {
     const requiredFields = ['age', 'height'];
@@ -389,50 +381,7 @@ export default function UserProfile() {
             </Card>
           </div>
 
-          {/* Dietary Restrictions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Utensils className="w-5 h-5" />
-                Dietary Restrictions & Preferences
-              </CardTitle>
-              <CardDescription>
-                Select any dietary restrictions or preferences for meal recommendations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {[
-                  'vegetarian',
-                  'vegan',
-                  'gluten_free',
-                  'dairy_free',
-                  'nut_free',
-                  'halal',
-                  'kosher',
-                  'keto',
-                  'paleo',
-                  'low_carb',
-                  'low_fat',
-                  'mediterranean'
-                ].map((restriction) => (
-                  <div key={restriction} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={restriction}
-                      checked={profileData.dietaryRestrictions?.includes(restriction) || false}
-                      onCheckedChange={(checked) => handleDietaryRestrictionChange(restriction, checked as boolean)}
-                    />
-                    <Label
-                      htmlFor={restriction}
-                      className="text-sm font-medium text-black dark:text-white capitalize cursor-pointer"
-                    >
-                      {restriction.replace('_', ' ')}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+
 
           {/* Save Button */}
           <Card>
