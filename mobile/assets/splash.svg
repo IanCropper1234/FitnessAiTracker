@@ -1,7 +1,22 @@
-<svg width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1284" height="2778" fill="#ffffff"/>
-  <circle cx="642" cy="1389" r="200" fill="#1a1a1a"/>
-  <text x="642" y="1450" font-family="system-ui, -apple-system" font-size="180" font-weight="700" text-anchor="middle" fill="#ffffff">F</text>
-  <text x="642" y="1700" font-family="system-ui, -apple-system" font-size="48" font-weight="600" text-anchor="middle" fill="#1a1a1a">FitAI</text>
-  <text x="642" y="1750" font-family="system-ui, -apple-system" font-size="32" font-weight="400" text-anchor="middle" fill="#666666">AI-Powered Fitness</text>
+<svg width="1284" height="2778" viewBox="0 0 1284 2778" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1284" height="2778" fill="#000000"/>
+  
+  <!-- Centered TrainPro logo -->
+  <g transform="translate(642,1389)">
+    <!-- Dumbbell bar -->
+    <rect x="-120" y="-12" width="240" height="24" fill="#ffffff" rx="0"/>
+    
+    <!-- Left weight plates -->
+    <rect x="-180" y="-60" width="60" height="120" fill="#ffffff" rx="0"/>
+    <rect x="-195" y="-52" width="15" height="104" fill="#ffffff" rx="0"/>
+    
+    <!-- Right weight plates -->
+    <rect x="120" y="-60" width="60" height="120" fill="#ffffff" rx="0"/>
+    <rect x="180" y="-52" width="15" height="104" fill="#ffffff" rx="0"/>
+    
+    <!-- "TrainPro" text -->
+    <text x="0" y="120" text-anchor="middle" fill="#ffffff" font-family="Arial, system-ui, -apple-system" font-size="42" font-weight="900">TrainPro</text>
+    <text x="0" y="160" text-anchor="middle" fill="#cccccc" font-family="Arial, system-ui, -apple-system" font-size="18" font-weight="400">AI-Powered Fitness Coach</text>
+  </g>
 </svg>
