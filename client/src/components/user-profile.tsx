@@ -114,7 +114,7 @@ export default function UserProfile() {
   });
 
   // Fetch user profile
-  const { data: userResponse, isLoading: userLoading } = useQuery<{ user: UserProfile }>({
+  const { data: userResponse, isLoading: userLoading } = useQuery<{ user: any; profile: any }>({
     queryKey: ['/api/user/profile'],
   });
 
@@ -146,10 +146,15 @@ export default function UserProfile() {
 
   // Update profile data when user data is loaded
   useEffect(() => {
-    if (userResponse?.user) {
+    if (userResponse) {
+      const { user, profile } = userResponse;
+      // Merge user and profile data
       setProfileData({
-        ...userResponse.user,
-        dietaryRestrictions: userResponse.user.dietaryRestrictions || []
+        id: user?.id,
+        email: user?.email,
+        name: user?.name,
+        ...profile,
+        dietaryRestrictions: profile?.dietaryRestrictions || []
       });
     }
   }, [userResponse]);
