@@ -93,3 +93,7 @@ FitAI implements a **Capacitor.js hybrid approach** preserving 100% of existing 
 - **Build Process**: ESBuild (server), Vite (client)
 - **Type Safety**: TypeScript
 - **Food Data**: Open Food Facts API
+
+## Recent Changes
+- **UI Simplification Extension - Dietary Restrictions Section (August 14, 2025)**: Further simplified user profile interface by hiding the dietary restrictions and preferences section per user request. Removed the entire dietary restrictions card component and cleaned up related imports and functions. Focus now entirely on essential profile data (age, height, weight, body fat percentage) for core fitness tracking functionality.
+- **Nutrition Progress Chart Enhancement - Average Value Reference Lines (August 14, 2025)**: Enhanced nutrition progression charts by adding horizontal reference lines displaying average values for all chart types. Features include weight chart with average weight (unit-converted), body fat chart with average percentage, calories chart with average daily intake, and macro chart with individual protein/carbs/fat averages. Reference lines use orange dashed styling with positioned labels for clear visual reference against actual data points.

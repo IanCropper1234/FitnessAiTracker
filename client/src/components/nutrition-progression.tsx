@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ReferenceLine } from "recharts";
 import { TrendingUp, Calendar, Activity, Target } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
@@ -444,6 +444,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         const padding = Math.max(weightRange * 0.2, 1); // 20% padding or minimum 1 unit
         const yAxisMin = Math.max(0, minWeight - padding);
         const yAxisMax = maxWeight + padding;
+        
+        // Calculate average weight for reference line
+        const avgWeight = weights.length > 0 ? weights.reduce((sum: number, weight: number) => sum + weight, 0) / weights.length : 0;
 
         return (
           <ResponsiveContainer width="100%" height={240}>
@@ -479,6 +482,13 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                 }}
                 formatter={(value: any) => [`${Number(value).toFixed(1)} ${preferredUnit}`, 'Weight']}
               />
+              <ReferenceLine 
+                y={avgWeight} 
+                stroke="#f59e0b" 
+                strokeDasharray="5 5" 
+                strokeWidth={2}
+                label={{ value: `Avg: ${avgWeight.toFixed(1)} ${preferredUnit}`, position: "right", fontSize: 11 }}
+              />
               <Line 
                 type="monotone" 
                 dataKey="weight" 
@@ -496,6 +506,11 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           date: new Date(metric.date).toLocaleDateString(),
           bodyFat: parseFloat(metric.bodyFatPercentage)
         })) || [];
+
+        // Calculate average body fat for reference line
+        const avgBodyFat = bodyFatData.length > 0 
+          ? bodyFatData.reduce((sum: number, data: any) => sum + data.bodyFat, 0) / bodyFatData.length 
+          : 0;
 
         return (
           <ResponsiveContainer width="100%" height={240}>
@@ -530,6 +545,13 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                 }}
                 formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Body Fat']}
               />
+              <ReferenceLine 
+                y={avgBodyFat} 
+                stroke="#f59e0b" 
+                strokeDasharray="5 5" 
+                strokeWidth={2}
+                label={{ value: `Avg: ${avgBodyFat.toFixed(1)}%`, position: "right", fontSize: 11 }}
+              />
               <Line 
                 type="monotone" 
                 dataKey="bodyFat" 
@@ -543,6 +565,11 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       case 'calories':
+        // Calculate average calories for reference line
+        const avgCals = progressionData && progressionData.length > 0 
+          ? progressionData.reduce((sum, data) => sum + data.calories, 0) / progressionData.length 
+          : 0;
+
         return (
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={progressionData}>
@@ -581,6 +608,13 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                 labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB')}
                 formatter={(value: any) => [`${Math.round(value)}`, 'Calories']}
               />
+              <ReferenceLine 
+                y={avgCals} 
+                stroke="#f59e0b" 
+                strokeDasharray="5 5" 
+                strokeWidth={2}
+                label={{ value: `Avg: ${Math.round(avgCals)} cal`, position: "right", fontSize: 11 }}
+              />
               <Bar 
                 dataKey="calories" 
                 fill="#2563eb"
@@ -591,6 +625,13 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       case 'macros':
+        // Calculate average macros for reference lines
+        const avgMacros = progressionData && progressionData.length > 0 ? {
+          protein: progressionData.reduce((sum, data) => sum + data.protein, 0) / progressionData.length,
+          carbs: progressionData.reduce((sum, data) => sum + data.carbs, 0) / progressionData.length,
+          fat: progressionData.reduce((sum, data) => sum + data.fat, 0) / progressionData.length
+        } : { protein: 0, carbs: 0, fat: 0 };
+
         return (
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={progressionData}>
@@ -627,6 +668,27 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                   fontSize: '12px'
                 }}
                 labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB')}
+              />
+              <ReferenceLine 
+                y={avgMacros.protein} 
+                stroke="#2563eb" 
+                strokeDasharray="3 3" 
+                strokeWidth={1.5}
+                label={{ value: `Avg P: ${Math.round(avgMacros.protein)}g`, position: "left", fontSize: 10 }}
+              />
+              <ReferenceLine 
+                y={avgMacros.carbs} 
+                stroke="#16a34a" 
+                strokeDasharray="3 3" 
+                strokeWidth={1.5}
+                label={{ value: `Avg C: ${Math.round(avgMacros.carbs)}g`, position: "center", fontSize: 10 }}
+              />
+              <ReferenceLine 
+                y={avgMacros.fat} 
+                stroke="#ca8a04" 
+                strokeDasharray="3 3" 
+                strokeWidth={1.5}
+                label={{ value: `Avg F: ${Math.round(avgMacros.fat)}g`, position: "right", fontSize: 10 }}
               />
               <Bar 
                 dataKey="protein" 
