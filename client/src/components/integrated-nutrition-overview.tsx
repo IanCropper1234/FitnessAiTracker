@@ -164,19 +164,35 @@ export function IntegratedNutritionOverview({
           console.log('Executing section copy FROM date:', externalCopyFromDate, 'TO current date:', selectedDate);
           handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
           setCopyOperation(null);
+          // Clear the external date states to prevent auto-reuse
+          if (externalSetCopyFromDate) {
+            externalSetCopyFromDate("");
+          }
         } else if (externalCopyToDate && !copyOperation.sourceSection && externalCopyToDate !== selectedDate) {
           console.log('Executing section copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
           handleCopySection(copyOperation.data, externalCopyToDate);
           setCopyOperation(null);
+          // Clear the external date states to prevent auto-reuse
+          if (externalSetCopyToDate) {
+            externalSetCopyToDate("");
+          }
         }
       } else if (copyOperation.type === 'item' && externalCopyToDate && externalCopyToDate !== selectedDate) {
         console.log('Executing individual item copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
         handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
+        // Clear the external date states to prevent auto-reuse
+        if (externalSetCopyToDate) {
+          externalSetCopyToDate("");
+        }
       } else if (copyOperation.type === 'bulk' && externalCopyToDate && externalCopyToDate !== selectedDate) {
         console.log('Executing bulk copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate, 'selectedLogIds:', copyOperation.data);
         handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
         setCopyOperation(null);
+        // Clear the external date states to prevent auto-reuse
+        if (externalSetCopyToDate) {
+          externalSetCopyToDate("");
+        }
       }
     }
   }, [externalCopyFromDate, externalCopyToDate, copyOperation, selectedDate]);
