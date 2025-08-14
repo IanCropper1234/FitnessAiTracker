@@ -497,7 +497,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
           ) : (
             <>
               {/* Steps/Activity */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[-5px] mb-[-5px]">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[5px] mb-[5px]">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Activity className="h-4 w-4 text-indigo-600 dark:text-indigo-400 mb-1.5 transition-colors duration-200" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
@@ -515,7 +515,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
 
               {/* Current Body Weight */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[-5px] mb-[-5px]">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[5px] mb-[5px]">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Scale className="h-4 w-4 text-green-600 dark:text-green-400 mb-1.5" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
@@ -536,7 +536,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
 
               {/* Training Volume */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[-5px] mb-[-5px]">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[5px] mb-[5px]">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Dumbbell className="h-4 w-4 text-orange-600 dark:text-orange-400 mb-1.5" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
@@ -554,7 +554,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
 
               {/* Body Fat Percentage */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[-5px] mb-[-5px]">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 mt-[5px] mb-[5px]">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Heart className="h-4 w-4 text-purple-600 dark:text-purple-400 mb-1.5" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
