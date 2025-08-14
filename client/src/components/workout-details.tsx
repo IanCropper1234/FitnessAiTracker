@@ -16,6 +16,8 @@ import {
   Activity,
   CheckCircle2
 } from "lucide-react";
+import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
+import { getSpecialMethodStyle } from "@/lib/specialMethodUtils";
 
 interface WorkoutSet {
   weight: number;
@@ -318,19 +320,9 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                       
                       {/* Special Training Method Details for each set */}
                       {specialMethod && (
-                        <div className={`p-2 border text-xs ${
-                          specialMethod === 'drop_set' ? 'bg-red-500/10 dark:bg-red-500/20 border-red-500/30 dark:border-red-500/50' :
-                          specialMethod.includes('myorep') ? 'bg-blue-500/10 dark:bg-blue-500/20 border-blue-500/30 dark:border-blue-500/50' :
-                          specialMethod === 'giant_set' ? 'bg-orange-500/10 dark:bg-orange-500/20 border-orange-500/30 dark:border-orange-500/50' :
-                          'bg-blue-500/10 dark:bg-blue-500/20 border-blue-500/30 dark:border-blue-500/50'
-                        }`}>
-                          <div className={`font-medium mb-1 ${
-                            specialMethod === 'drop_set' ? 'text-red-600 dark:text-red-400' :
-                            specialMethod.includes('myorep') ? 'text-blue-600 dark:text-blue-400' :
-                            specialMethod === 'giant_set' ? 'text-orange-600 dark:text-orange-400' :
-                            'text-blue-600 dark:text-blue-400'
-                          }`}>
-                            {getSpecialMethodName(specialMethod)}
+                        <div className="p-2 border text-xs bg-muted/30">
+                          <div className="flex items-center gap-2 mb-1">
+                            <SpecialMethodBadge method={specialMethod} />
                           </div>
                           
                           {/* Myo-Rep Match per-set details */}

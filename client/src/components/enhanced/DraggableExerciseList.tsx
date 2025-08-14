@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
+import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
 
 interface Exercise {
   id: number;
@@ -302,8 +303,11 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                       </Badge>
                     </div>
                   </div>
-                  <div className="text-xs text-foreground/60 truncate">
-                    {exercise.exercise.muscleGroups.join(', ')} • {exercise.specialMethod || 'Standard'}
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-foreground/60 truncate">
+                      {exercise.exercise.muscleGroups.join(', ')}
+                    </span>
+                    <SpecialMethodBadge method={exercise.specialMethod} />
                   </div>
                 </div>
 

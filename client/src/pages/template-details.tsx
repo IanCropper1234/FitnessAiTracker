@@ -14,6 +14,7 @@ import {
   Users
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
 
 interface TrainingTemplate {
   id: number;
@@ -251,12 +252,14 @@ export default function TemplateDetails() {
                     
                     {/* Training Method Details */}
                     {exercise.specialTrainingMethod && (
-                      <div className="mt-2 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 text-xs">
-                            {exercise.specialTrainingMethod}
-                          </Badge>
-                        </div>
+                      <div className="mt-2 flex items-center gap-2">
+                        <SpecialMethodBadge method={exercise.specialTrainingMethod} />
+                      </div>
+                    )}
+                    
+                    {/* Method Configuration Details */}
+                    {exercise.specialTrainingMethod && exercise.specialMethodConfig && (
+                      <div className="mt-2 p-3 bg-muted/30 border text-xs space-y-1">
                         {exercise.specialMethodConfig && (
                           <div className="text-xs text-purple-700 dark:text-purple-300 space-y-1">
                             {exercise.specialTrainingMethod === 'dropset' && exercise.specialMethodConfig.dropSetWeights && (

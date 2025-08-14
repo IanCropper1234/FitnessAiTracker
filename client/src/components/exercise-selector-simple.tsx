@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Dumbbell, Minus, Timer, Target, Zap } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
 
 interface Exercise {
   id: number;

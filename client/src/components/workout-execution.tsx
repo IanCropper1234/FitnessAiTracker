@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Play, Pause, CheckCircle2, Clock, Target, TrendingUp, RotateCcw, Plus, Minus, GripVertical } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
 
 
 interface WorkoutSet {
