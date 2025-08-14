@@ -13,7 +13,10 @@ import {
   Trash2, 
   Play, 
   Star,
-  Filter
+  Filter,
+  Edit2,
+  Check,
+  X
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +39,8 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
+  const [editingTemplate, setEditingTemplate] = useState<number | null>(null);
+  const [editingName, setEditingName] = useState("");
 
   // Fetch saved workout templates
   const { data: templates = [], isLoading } = useQuery<SavedWorkoutTemplate[]>({
@@ -66,6 +71,31 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
     },
   });
 
+  // Update template mutation
+  const updateTemplateMutation = useMutation({
+    mutationFn: async ({ templateId, updateData }: { templateId: number; updateData: Partial<SavedWorkoutTemplate> }) => {
+      return apiRequest("PUT", `/api/training/saved-workout-templates/${templateId}`, updateData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Template Updated!",
+        description: "Template name has been updated successfully.",
+      });
+      
+      // Invalidate cache to refresh templates
+      queryClient.invalidateQueries({ queryKey: ["/api/training/saved-workout-templates"] });
+      setEditingTemplate(null);
+      setEditingName("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to update template.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Delete template mutation
   const deleteTemplateMutation = useMutation({
     mutationFn: async (templateId: number) => {
@@ -88,6 +118,44 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
       });
     },
   });
+
+  // Handle starting edit mode
+  const startEditing = (template: SavedWorkoutTemplate) => {
+    setEditingTemplate(template.id);
+    setEditingName(template.name);
+  };
+
+  // Handle canceling edit mode
+  const cancelEditing = () => {
+    setEditingTemplate(null);
+    setEditingName("");
+  };
+
+  // Handle saving the updated name
+  const saveTemplateName = (templateId: number) => {
+    if (editingName.trim() === "") {
+      toast({
+        title: "Error",
+        description: "Template name cannot be empty.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    updateTemplateMutation.mutate({
+      templateId,
+      updateData: { name: editingName.trim() }
+    });
+  };
+
+  // Handle key press in edit input
+  const handleKeyPress = (e: React.KeyboardEvent, templateId: number) => {
+    if (e.key === 'Enter') {
+      saveTemplateName(templateId);
+    } else if (e.key === 'Escape') {
+      cancelEditing();
+    }
+  };
 
   // Get unique tags for filtering
   const allTags = useMemo(() => {
@@ -196,13 +264,54 @@ export const SavedWorkoutTemplatesTab: React.FC = () => {
             </Card>
           ) : (
             filteredTemplates.map((template) => (
-              <Card key={template.id} className="hover:shadow-sm transition-shadow">
+              <Card key={template.id} className="group hover:shadow-sm transition-shadow">
                 <CardHeader className="pb-2">
                   <div className="space-y-2">
                     <div>
-                      <CardTitle className="text-sm font-semibold text-foreground">
-                        {template.name}
-                      </CardTitle>
+                      <div className="flex items-center gap-2">
+                        {editingTemplate === template.id ? (
+                          <div className="flex items-center gap-1 flex-1">
+                            <Input
+                              value={editingName}
+                              onChange={(e) => setEditingName(e.target.value)}
+                              onKeyDown={(e) => handleKeyPress(e, template.id)}
+                              className="text-sm font-semibold h-7 px-2"
+                              autoFocus
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => saveTemplateName(template.id)}
+                              disabled={updateTemplateMutation.isPending}
+                              className="p-1 h-7"
+                            >
+                              <Check className="h-3 w-3 text-green-600" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={cancelEditing}
+                              className="p-1 h-7"
+                            >
+                              <X className="h-3 w-3 text-red-600" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            <CardTitle className="text-sm font-semibold text-foreground flex-1">
+                              {template.name}
+                            </CardTitle>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => startEditing(template)}
+                              className="p-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                       {template.description && (
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                           {template.description}
