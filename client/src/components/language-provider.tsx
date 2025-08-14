@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import * as React from "react";
+const { createContext, useContext, useEffect, useState } = React;
 
 type Language = "en" | "es" | "ja" | "zh-CN" | "de" | "zh-TW";
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import * as React from "react";
+const { useState, useEffect, useCallback } = React;
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
