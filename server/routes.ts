@@ -21,7 +21,6 @@ import aiRoutes from "./routes/ai.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates } from "@shared/schema";
 import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 // Extend Request type to include userId
 declare global {
@@ -5212,77 +5211,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Exercise recommendations error:", error);
       res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Object Storage Routes for Profile Images
-  
-  // Get upload URL for profile image
-  app.post("/api/objects/upload", requireAuth, async (req, res) => {
-    try {
-      const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
-    } catch (error: any) {
-      console.error("Error getting upload URL:", error);
-      res.status(500).json({ error: "Failed to get upload URL" });
-    }
-  });
-
-  // Update user's profile image
-  app.put("/api/user/profile-image", requireAuth, async (req, res) => {
-    try {
-      const userId = req.userId;
-      const { imageURL } = req.body;
-      
-      if (!imageURL) {
-        return res.status(400).json({ error: "imageURL is required" });
-      }
-
-      const objectStorageService = new ObjectStorageService();
-      
-      // Set ACL policy for the uploaded image (public visibility for profile images)
-      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        imageURL,
-        {
-          owner: userId.toString(),
-          visibility: "public", // Profile images should be public
-        }
-      );
-
-      // Update user's custom profile image URL in the database
-      const [updatedUser] = await db
-        .update(users)
-        .set({ 
-          customProfileImageUrl: objectPath,
-          updatedAt: new Date()
-        })
-        .where(eq(users.id, parseInt(userId)))
-        .returning();
-
-      res.json({
-        success: true,
-        profileImageUrl: objectPath,
-        user: updatedUser
-      });
-    } catch (error: any) {
-      console.error("Error updating profile image:", error);
-      res.status(500).json({ error: "Failed to update profile image" });
-    }
-  });
-
-  // Serve private objects (profile images)
-  app.get("/objects/:objectPath(*)", async (req, res) => {
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
-      objectStorageService.downloadObject(objectFile, res);
-    } catch (error: any) {
-      console.error("Error accessing object:", error);
-      if (error instanceof ObjectNotFoundError) {
-        return res.sendStatus(404);
-      }
-      return res.sendStatus(500);
     }
   });
 
