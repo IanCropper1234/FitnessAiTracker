@@ -344,20 +344,29 @@ export default function CreateAIWorkoutSession() {
         };
       });
 
+      console.log('=== SAVE ALL EXERCISES DEBUG ===');
+      console.log('Total exercises to save:', exercises.length);
+      console.log('Exercise mapping results:', exercises.map(ex => `${ex.exerciseName} -> ID: ${ex.exerciseId || 'NOT FOUND'}`));
+      console.log('Full exercises payload:', JSON.stringify(exercises, null, 2));
+
+      const payload = {
+        name: `AI Generated Session - ${new Date().toLocaleDateString()}`,
+        description: `AI-generated complete training session with ${exercises.length} exercises. ${recommendationMutation.data.reasoning}`,
+        exerciseTemplates: exercises,
+        tags: ['ai-generated'],
+        estimatedDuration: 60,
+        difficulty: 'intermediate'
+      };
+
+      console.log('Full template payload:', JSON.stringify(payload, null, 2));
+
       const response = await fetch('/api/training/saved-workout-templates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          name: `AI Generated Session - ${new Date().toLocaleDateString()}`,
-          description: `AI-generated complete training session with ${exercises.length} exercises. ${recommendationMutation.data.reasoning}`,
-          exerciseTemplates: exercises,
-          tags: ['ai-generated'],
-          estimatedDuration: 60,
-          difficulty: 'intermediate'
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {

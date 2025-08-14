@@ -4006,6 +4006,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const { name, description, exerciseTemplates, tags, estimatedDuration, difficulty } = req.body;
       
+      console.log('=== SERVER SAVE TEMPLATE DEBUG ===');
+      console.log('User ID:', userId);
+      console.log('Template name:', name);
+      console.log('Exercise templates count:', exerciseTemplates?.length);
+      console.log('Exercise templates:', JSON.stringify(exerciseTemplates, null, 2));
+      
       if (!name || !exerciseTemplates || !Array.isArray(exerciseTemplates)) {
         return res.status(400).json({ error: "Name and exercise templates are required" });
       }
@@ -4020,6 +4026,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         difficulty: difficulty || 'intermediate',
         usageCount: 0
       }).returning();
+      
+      console.log('Template saved successfully with ID:', template.id);
+      console.log('Saved exercise templates count:', template.exerciseTemplates?.length);
       
       res.json(template);
     } catch (error) {
