@@ -33,6 +33,7 @@ import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
 import WorkoutSettings from "./pages/WorkoutSettings";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
+import { IconPreview } from "./pages/icon-preview";
 
 import TrainingAnalytics from "./pages/training-analytics";
 import AIExerciseRecommendations from "./pages/ai-exercise-recommendations";
@@ -259,6 +260,11 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/rp-coach">
           <AnimatedPage>
             {user ? <RPCoachPage userId={user.id} /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/icon-preview">
+          <AnimatedPage>
+            <IconPreview />
           </AnimatedPage>
         </Route>
         <Route path="/nutrition-facts">

@@ -1,0 +1,32 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient effect -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#2a2a2a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  
+  <!-- Modern shield with barbell -->
+  <g transform="translate(256,256)">
+    <!-- Shield background -->
+    <path d="M-100,-120 L100,-120 L120,-100 L120,100 L100,120 L-100,120 L-120,100 L-120,-100 Z" fill="#ffffff"/>
+    
+    <!-- Inner barbell design -->
+    <g fill="#0a0a0a">
+      <!-- Barbell bar -->
+      <rect x="-60" y="-6" width="120" height="12" rx="0"/>
+      
+      <!-- Weight plates -->
+      <rect x="-80" y="-30" width="20" height="60" rx="0"/>
+      <rect x="60" y="-30" width="20" height="60" rx="0"/>
+      <rect x="-85" y="-25" width="5" height="50" rx="0"/>
+      <rect x="80" y="-25" width="5" height="50" rx="0"/>
+    </g>
+    
+    <!-- "TRAIN" text at bottom -->
+    <text x="0" y="50" text-anchor="middle" fill="#0a0a0a" font-family="system-ui, -apple-system" font-size="16" font-weight="700">TRAIN</text>
+    <text x="0" y="70" text-anchor="middle" fill="#0a0a0a" font-family="system-ui, -apple-system" font-size="16" font-weight="700">PRO</text>
+  </g>
+</svg>

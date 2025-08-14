@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0a0a0a"/>
+  
+  <!-- Main dumbbell design -->
+  <g transform="translate(256,256)">
+    <!-- Dumbbell bar -->
+    <rect x="-80" y="-8" width="160" height="16" fill="#ffffff" rx="0"/>
+    
+    <!-- Left weight plates -->
+    <rect x="-120" y="-40" width="40" height="80" fill="#ffffff" rx="0"/>
+    <rect x="-130" y="-35" width="10" height="70" fill="#ffffff" rx="0"/>
+    
+    <!-- Right weight plates -->
+    <rect x="80" y="-40" width="40" height="80" fill="#ffffff" rx="0"/>
+    <rect x="120" y="-35" width="10" height="70" fill="#ffffff" rx="0"/>
+    
+    <!-- "TP" text overlay -->
+    <text x="0" y="80" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system" font-size="48" font-weight="900">TP</text>
+  </g>
+</svg>
