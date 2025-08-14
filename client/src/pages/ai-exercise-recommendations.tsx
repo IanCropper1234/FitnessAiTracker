@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Brain, 
   Target, 
@@ -93,6 +94,11 @@ export default function CreateAIWorkoutSession() {
   // Weekly plan state - default to single program as requested
   const [viewMode, setViewMode] = useState<'single' | 'weekly'>('single');
   const [templateNamePrefix, setTemplateNamePrefix] = useState<string>('AI Generated Workout');
+  
+  // Template naming state
+  const [showNameDialog, setShowNameDialog] = useState(false);
+  const [customTemplateName, setCustomTemplateName] = useState('');
+  const [pendingSaveAction, setPendingSaveAction] = useState<(() => Promise<void>) | null>(null);
 
   // Available options
   const goalOptions = [
@@ -125,6 +131,86 @@ export default function CreateAIWorkoutSession() {
   const { data: trainingHistory } = useQuery({
     queryKey: ['/api/analytics/training-history'],
   });
+
+  // Generate AI-powered template name
+  const generateAITemplateName = async (exercises: ExerciseRecommendation[], isWeeklyPlan = false): Promise<string> => {
+    try {
+      const muscleGroups = [...new Set(exercises.flatMap(ex => ex.muscleGroups))].slice(0, 3);
+      const specialMethods = [...new Set(exercises.filter(ex => ex.specialMethod && ex.specialMethod !== 'null').map(ex => ex.specialMethod))];
+      const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
+      
+      const nameData = {
+        muscleGroups,
+        exerciseCount: exercises.length,
+        totalSets,
+        specialMethods,
+        sessionDuration,
+        experienceLevel,
+        primaryGoals: goals.slice(0, 2),
+        isWeeklyPlan
+      };
+
+      const response = await fetch('/api/ai/generate-template-name', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(nameData)
+      });
+
+      if (response.ok) {
+        const { templateName } = await response.json();
+        return templateName;
+      } else {
+        // Fallback to smart naming if AI fails
+        return generateSmartFallbackName(exercises, isWeeklyPlan);
+      }
+    } catch (error) {
+      console.error('AI naming failed:', error);
+      return generateSmartFallbackName(exercises, isWeeklyPlan);
+    }
+  };
+
+  // Smart fallback naming when AI is not available
+  const generateSmartFallbackName = (exercises: ExerciseRecommendation[], isWeeklyPlan = false): string => {
+    const muscleGroups = [...new Set(exercises.flatMap(ex => ex.muscleGroups))].slice(0, 2);
+    const specialMethods = [...new Set(exercises.filter(ex => ex.specialMethod && ex.specialMethod !== 'null').map(ex => ex.specialMethod))];
+    
+    let name = '';
+    
+    if (isWeeklyPlan) {
+      name = `${sessionsPerWeek}-Day ${muscleGroups.join(' & ')} Program`;
+    } else {
+      name = `${muscleGroups.join(' & ')} Workout`;
+    }
+    
+    if (specialMethods.length > 0) {
+      name += ` (${specialMethods[0]})`;
+    }
+    
+    if (experienceLevel !== 'intermediate') {
+      name += ` - ${experienceLevel.charAt(0).toUpperCase() + experienceLevel.slice(1)}`;
+    }
+    
+    return name;
+  };
+
+  // Show naming dialog with AI-generated suggestion
+  const showNamingDialog = async (saveAction: () => Promise<void>, exercises: ExerciseRecommendation[], isWeeklyPlan = false) => {
+    const aiName = await generateAITemplateName(exercises, isWeeklyPlan);
+    setCustomTemplateName(aiName);
+    setPendingSaveAction(() => saveAction);
+    setShowNameDialog(true);
+  };
+
+  // Execute pending save action with custom name
+  const executePendingSave = async () => {
+    if (pendingSaveAction && customTemplateName.trim()) {
+      await pendingSaveAction();
+      setShowNameDialog(false);
+      setPendingSaveAction(null);
+      setCustomTemplateName('');
+    }
+  };
 
   // AI recommendation mutation
   const recommendationMutation = useMutation({
@@ -228,16 +314,17 @@ export default function CreateAIWorkoutSession() {
 
   // Save individual exercise to template
   const handleSaveExerciseToTemplate = async (rec: ExerciseRecommendation) => {
-    try {
-      const response = await fetch('/api/training/saved-workout-templates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: `AI Generated - ${rec.exerciseName}`,
-          description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`,
+    const saveAction = async () => {
+      try {
+        const response = await fetch('/api/training/saved-workout-templates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: customTemplateName.trim(),
+            description: `AI-generated exercise focusing on ${rec.primaryMuscle}. ${rec.reasoning}`,
           exerciseTemplates: [{
             exerciseId: (() => {
               // Find the exercise ID by name with flexible matching
