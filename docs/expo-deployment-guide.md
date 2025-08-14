@@ -1,4 +1,4 @@
-# FlexSync iOS App Store 部署指南 - Expo 方案
+# TrainPro iOS App Store 部署指南 - Expo 方案
 
 ## 概述
 使用 Expo 的 WebView 混合方案，將現有的 React PWA 包裝成原生 iOS 應用程式，快速提交到 App Store。
@@ -55,7 +55,7 @@ npx eas submit --platform ios
 - 自動調整狀態列
 
 ### App Store 資訊
-- **應用程式名稱**: FlexSync
+- **應用程式名稱**: TrainPro
 - **Bundle ID**: com.flexsync.app
 - **版本**: 1.0.0
 - **類別**: Health & Fitness

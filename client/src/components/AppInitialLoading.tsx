@@ -32,7 +32,7 @@ export function AppInitialLoading({ className }: AppInitialLoadingProps) {
           className="space-y-3"
         >
           <div className="text-4xl font-bold text-foreground">
-            FlexSync
+            TrainPro
           </div>
           <div className="w-12 h-0.5 bg-primary mx-auto" />
         </motion.div>

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FlexSync",
-    "slug": "flexsync",
+    "name": "TrainPro",
+    "slug": "trainpro",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.flexsync.app",
+      "bundleIdentifier": "com.trainpro.app",
       "buildNumber": "1.0.0"
     },
     "android": {
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.fitai.app"
+      "package": "com.trainpro.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

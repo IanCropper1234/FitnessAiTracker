@@ -1,7 +1,7 @@
-# FlexSync 品牌指南
+# TrainPro 品牌指南
 
 ## 品牌概覽
-**FlexSync** 是一個先進的 AI 驅動健身平台，提供智能化、適應性的訓練和綜合性的營養與健身管理。
+**TrainPro** 是一個先進的 AI 驅動健身平台，提供智能化、適應性的訓練和綜合性的營養與健身管理。
 
 ### 品牌核心價值
 - **智能同步 (Smart Synchronization)**: AI 與個人健身目標的完美同步
@@ -12,7 +12,7 @@
 ## 視覺識別
 
 ### Logo 設計理念
-- **符號**: "FS" 字母組合，代表 FlexSync
+- **符號**: "FS" 字母組合，代表 TrainPro
 - **色彩**: 深色背景 (#1a1a1a) + 白色圓形 + 深色字母
 - **形狀**: 圓角矩形外框，體現現代感和友好性
 - **字體**: 系統字體，簡潔專業
@@ -23,8 +23,8 @@
 - **強調色**: #666666 (中灰色)
 
 ### 應用場景
-- **移動應用**: FlexSync iOS/Android App
-- **網頁平台**: FlexSync Web Application
+- **移動應用**: TrainPro iOS/Android App
+- **網頁平台**: TrainPro Web Application
 - **營銷材料**: 保持一致的視覺風格
 
 ## 語音與語調
@@ -41,9 +41,9 @@
 ## 域名與社交媒體
 - **建議域名**: flexsync.com, flexsync.app, flexsync.fit
 - **Bundle ID**: com.flexsync.app
-- **社交媒體 Handle**: @FlexSyncFit, @FlexSyncApp
+- **社交媒體 Handle**: @TrainProFit, @TrainProApp
 
 ## 品牌應用規範
-- 始終使用正確的大小寫: "FlexSync" (不是 "flexsync" 或 "FLEXSYNC")
+- 始終使用正確的大小寫: "TrainPro" (不是 "flexsync" 或 "FLEXSYNC")
 - 在描述中強調 AI 和個人化特性
 - 保持品牌一致性跨所有平台和材料
