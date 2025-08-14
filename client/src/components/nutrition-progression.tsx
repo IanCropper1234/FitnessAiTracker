@@ -454,17 +454,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: 'var(--gray-600)' }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
               />
               <YAxis
                 domain={[yAxisMin, yAxisMax]}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: 'var(--gray-600)' }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
                 label={{ 
                   value: `Weight (${preferredUnit})`, 
                   angle: -90, 
@@ -475,8 +473,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <Tooltip 
                 labelClassName="text-xs"
                 contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: 'var(--chart-tooltip-bg)',
+                  border: '1px solid var(--chart-tooltip-border)',
                   borderRadius: '6px',
                   fontSize: '12px'
                 }}
@@ -518,16 +516,14 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: 'var(--gray-600)' }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
               />
               <YAxis
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: 'var(--gray-600)' }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
                 label={{ 
                   value: 'Body Fat %', 
                   angle: -90, 
@@ -538,8 +534,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <Tooltip 
                 labelClassName="text-xs"
                 contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: 'var(--chart-tooltip-bg)',
+                  border: '1px solid var(--chart-tooltip-border)',
                   borderRadius: '6px',
                   fontSize: '12px'
                 }}
@@ -576,20 +572,20 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--gray-600)" }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
+                
                 tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { 
                   day: '2-digit', 
                   month: '2-digit' 
                 })}
               />
               <YAxis
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--gray-600)" }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
+                
                 label={{ 
                   value: 'Calories', 
                   angle: -90, 
@@ -600,8 +596,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <Tooltip 
                 labelClassName="text-xs"
                 contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: 'var(--chart-tooltip-bg)',
+                  border: '1px solid var(--chart-tooltip-border)',
                   borderRadius: '6px',
                   fontSize: '12px'
                 }}
@@ -638,20 +634,20 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
                 dataKey="date" 
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--gray-600)" }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
+                
                 tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { 
                   day: '2-digit', 
                   month: '2-digit' 
                 })}
               />
               <YAxis
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--gray-600)" }}
                 axisLine={false}
                 tickLine={false}
-                className="text-xs fill-gray-500"
+                
                 label={{ 
                   value: 'Grams', 
                   angle: -90, 
@@ -662,8 +658,8 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               <Tooltip 
                 labelClassName="text-xs"
                 contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: 'var(--chart-tooltip-bg)',
+                  border: '1px solid var(--chart-tooltip-border)',
                   borderRadius: '6px',
                   fontSize: '12px'
                 }}
