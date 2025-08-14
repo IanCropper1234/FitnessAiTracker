@@ -536,7 +536,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
 
               {/* Training Volume */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200 pt-[0px] pb-[0px] mt-[-5px] mb-[-5px]">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Dumbbell className="h-4 w-4 text-orange-600 dark:text-orange-400 mb-1.5" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
