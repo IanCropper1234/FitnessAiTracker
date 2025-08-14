@@ -303,7 +303,7 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                     </div>
                   </div>
                   <div className="text-xs text-foreground/60 truncate">
-                    {exercise.exercise.muscleGroups.join(', ')} • {Math.floor(exercise.restPeriod / 60)}min
+                    {exercise.exercise.muscleGroups.join(', ')} • {exercise.specialMethod || 'Standard'}
                   </div>
                 </div>
 
