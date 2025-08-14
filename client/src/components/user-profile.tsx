@@ -163,9 +163,7 @@ export default function UserProfile() {
   useEffect(() => {
     if (bodyMetricsResponse && Array.isArray(bodyMetricsResponse) && bodyMetricsResponse.length > 0) {
       const latestMetric = bodyMetricsResponse[0];
-      console.log('Body metrics debug:', latestMetric);
       if (latestMetric.bodyFatPercentage && parseFloat(latestMetric.bodyFatPercentage) > 0) {
-        console.log('Setting body fat percentage to:', latestMetric.bodyFatPercentage);
         setProfileData(prev => ({
           ...prev,
           bodyFatPercentage: latestMetric.bodyFatPercentage
