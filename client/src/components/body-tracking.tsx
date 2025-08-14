@@ -906,7 +906,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
                               })}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {globalIndex === 0 ? 'Latest' : `${globalIndex + 1} ago`}
+                              {globalIndex === 0 ? 'Latest' : `${globalIndex}d ago`}
                             </p>
                           </div>
                         </div>
