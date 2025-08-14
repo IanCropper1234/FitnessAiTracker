@@ -222,7 +222,7 @@ const translations: Record<Language, Record<string, string>> = {
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("fitai-language") as Language;
+      const stored = localStorage.getItem("trainpro-language") as Language;
       if (stored && translations[stored]) return stored;
       
       // Detect browser language
@@ -239,7 +239,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     if (typeof window !== "undefined") {
-      localStorage.setItem("fitai-language", lang);
+      localStorage.setItem("trainpro-language", lang);
     }
   };
 

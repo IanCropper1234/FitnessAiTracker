@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: ReactNodeProps) {
   // Initialize theme from localStorage or system preference
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("fitai-theme") as Theme;
+      const stored = localStorage.getItem("trainpro-theme") as Theme;
       if (stored) {
         setThemeState(stored);
         return;
@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: ReactNodeProps) {
       const root = window.document.documentElement;
       root.classList.remove("light", "dark");
       root.classList.add(theme);
-      localStorage.setItem("fitai-theme", theme);
+      localStorage.setItem("trainpro-theme", theme);
     }
   }, [theme]);
 
