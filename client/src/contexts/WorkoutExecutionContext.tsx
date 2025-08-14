@@ -1,5 +1,4 @@
-import * as React from 'react';
-const { createContext, useContext, useState, useCallback } = React;
+import { createContext, useContext, useState, useCallback } from 'react';
 
 interface WorkoutExecutionState {
   // Workout execution status
