@@ -504,7 +504,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                     Activity
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-2 pb-3">
+                <CardContent className="p-5 px-2 pt-[0px] pb-[0px]">
                   <div className="text-base sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 text-center">
                     {userProfile?.user?.activityLevel || 'Moderate'}
                   </div>
@@ -522,7 +522,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                     Weight
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-2 pb-3">
+                <CardContent className="p-5 px-2 pt-[0px] pb-[0px]">
                   <div className="text-base sm:text-xl font-bold text-green-600 dark:text-green-400 text-center">
                     {currentWeight ? `${currentWeight}kg` : '--'}
                   </div>
@@ -536,14 +536,14 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
 
               {/* Training Volume */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Dumbbell className="h-4 w-4 text-orange-600 dark:text-orange-400 mb-1.5" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
                     Volume
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-2 pb-3">
+                <CardContent className="p-5 px-2 pt-[0px] pb-[0px]">
                   <div className="text-base sm:text-xl font-bold text-orange-600 dark:text-orange-400 text-center">
                     {Math.round(trainingStats?.totalVolume || 0)}kg
                   </div>
@@ -554,14 +554,14 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </Card>
 
               {/* Body Fat Percentage */}
-              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+              <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 ios-smooth-transform hover:scale-102 transition-all duration-200">
                 <CardHeader className="flex flex-col items-center space-y-0 pb-2 pt-3 px-2">
                   <Heart className="h-4 w-4 text-purple-600 dark:text-purple-400 mb-1.5" />
                   <CardTitle className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center leading-tight font-medium">
                     Body Fat
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-2 pb-3">
+                <CardContent className="p-5 px-2 pt-[0px] pb-[0px]">
                   <div className="text-base sm:text-xl font-bold text-purple-600 dark:text-purple-400 text-center">
                     {bodyMetrics && bodyMetrics[0]?.bodyFatPercentage ? 
                       `${bodyMetrics[0].bodyFatPercentage}%` : '--'}
