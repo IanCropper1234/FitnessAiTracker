@@ -1,4 +1,5 @@
 import UserProfile from "@/components/user-profile";
+import { ProfileImageUploader } from "@/components/ProfileImageUploader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,6 +18,8 @@ interface User {
   id: number;
   email: string;
   name: string;
+  profileImageUrl?: string;
+  customProfileImageUrl?: string;
   showDeveloperFeatures?: boolean;
 }
 
@@ -405,9 +408,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             <div className="space-y-4">
               {/* User Info Row */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800  flex items-center justify-center flex-shrink-0">
-                  <UserIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                </div>
+                <ProfileImageUploader user={user} />
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold text-black dark:text-white truncate">{user.name}</h3>
                   <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{user.email}</p>

@@ -30,6 +30,8 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  // Custom profile image upload
+  customProfileImageUrl: varchar("custom_profile_image_url"),
 });
 
 export const userProfiles = pgTable("user_profiles", {
