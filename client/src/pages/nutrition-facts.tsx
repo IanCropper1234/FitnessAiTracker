@@ -59,6 +59,38 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
     return !isNaN(numValue) && numValue > 0;
   };
 
+  // Helper function to get nutrient value from grouped micronutrients structure
+  const getNutrientValue = (nutrientName: string): any => {
+    if (!selectedNutritionItem.micronutrients) return null;
+    
+    // Check if micronutrients is grouped by categories
+    if (selectedNutritionItem.micronutrients['Fat-Soluble Vitamins'] || 
+        selectedNutritionItem.micronutrients['Water-Soluble Vitamins'] || 
+        selectedNutritionItem.micronutrients['Major Minerals']) {
+      
+      // Grouped structure - search in all categories
+      const categories = [
+        'Fat-Soluble Vitamins',
+        'Water-Soluble Vitamins', 
+        'Major Minerals',
+        'Trace Minerals',
+        'Macronutrient Components',
+        'Supplement Compounds'
+      ];
+      
+      for (const category of categories) {
+        if (selectedNutritionItem.micronutrients[category] && 
+            selectedNutritionItem.micronutrients[category][nutrientName] !== undefined) {
+          return selectedNutritionItem.micronutrients[category][nutrientName];
+        }
+      }
+      return null;
+    } else {
+      // Flat structure - direct access
+      return selectedNutritionItem.micronutrients[nutrientName];
+    }
+  };
+
   const handleGoBack = () => {
     // Clear stored item and go back to nutrition page
     localStorage.removeItem('selectedNutritionItem');
@@ -220,35 +252,35 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 </div>
                 
                 {/* Fat-Soluble Vitamins */}
-                {hasValidValue(selectedNutritionItem.micronutrients.vitaminA) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminD) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminE) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminK) ? (
+                {hasValidValue(getNutrientValue('vitaminA')) || 
+                 hasValidValue(getNutrientValue('vitaminD')) || 
+                 hasValidValue(getNutrientValue('vitaminE')) || 
+                 hasValidValue(getNutrientValue('vitaminK')) ? (
                   <div className="mb-3">
                     <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminA) && (
+                      {hasValidValue(getNutrientValue('vitaminA')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Vitamin A</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminA)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminA'))}mcg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminD) && (
+                      {hasValidValue(getNutrientValue('vitaminD')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Vitamin D</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminD)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminD'))}mcg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminE) && (
+                      {hasValidValue(getNutrientValue('vitaminE')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Vitamin E</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminE)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminE'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminK) && (
+                      {hasValidValue(getNutrientValue('vitaminK')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Vitamin K</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminK)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminK'))}mcg</span>
                         </div>
                       )}
                     </div>
@@ -256,70 +288,70 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Water-Soluble Vitamins */}
-                {hasValidValue(selectedNutritionItem.micronutrients.vitaminC) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB1) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB2) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB3) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB5) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB6) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB7) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.vitaminB12) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.folate) ? (
+                {hasValidValue(getNutrientValue('vitaminC')) || 
+                 hasValidValue(getNutrientValue('vitaminB1')) || 
+                 hasValidValue(getNutrientValue('vitaminB2')) ||
+                 hasValidValue(getNutrientValue('vitaminB3')) ||
+                 hasValidValue(getNutrientValue('vitaminB5')) ||
+                 hasValidValue(getNutrientValue('vitaminB6')) ||
+                 hasValidValue(getNutrientValue('vitaminB7')) ||
+                 hasValidValue(getNutrientValue('vitaminB12')) ||
+                 hasValidValue(getNutrientValue('folate')) ? (
                   <div className="mb-3">
                     <h5 className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminC) && (
+                      {hasValidValue(getNutrientValue('vitaminC')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Vitamin C</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminC)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminC'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB1) && (
+                      {hasValidValue(getNutrientValue('vitaminB1')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B1 (Thiamine)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB1)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB1'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB2) && (
+                      {hasValidValue(getNutrientValue('vitaminB2')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B2 (Riboflavin)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB2)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB2'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB3) && (
+                      {hasValidValue(getNutrientValue('vitaminB3')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B3 (Niacin)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB3)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB3'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB6) && (
+                      {hasValidValue(getNutrientValue('vitaminB6')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B6 (Pyridoxine)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB6)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB6'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB12) && (
+                      {hasValidValue(getNutrientValue('vitaminB12')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B12 (Cobalamin)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB12)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB12'))}mcg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.folate) && (
+                      {hasValidValue(getNutrientValue('folate')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Folate</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.folate)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('folate'))}mcg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB5) && (
+                      {hasValidValue(getNutrientValue('vitaminB5')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B5 (Pantothenic Acid)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB5)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB5'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.vitaminB7) && (
+                      {hasValidValue(getNutrientValue('vitaminB7')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">B7 (Biotin)</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.vitaminB7)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB7'))}mcg</span>
                         </div>
                       )}
                     </div>
@@ -327,49 +359,49 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Major Minerals */}
-                {hasValidValue(selectedNutritionItem.micronutrients.calcium) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.magnesium) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.phosphorus) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.potassium) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.sodium) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.chloride) ? (
+                {hasValidValue(getNutrientValue('calcium')) || 
+                 hasValidValue(getNutrientValue('magnesium')) || 
+                 hasValidValue(getNutrientValue('phosphorus')) ||
+                 hasValidValue(getNutrientValue('potassium')) ||
+                 hasValidValue(getNutrientValue('sodium')) ||
+                 hasValidValue(getNutrientValue('chloride')) ? (
                   <div className="mb-3">
                     <h5 className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(selectedNutritionItem.micronutrients.calcium) && (
+                      {hasValidValue(getNutrientValue('calcium')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Calcium</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.calcium)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('calcium'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.magnesium) && (
+                      {hasValidValue(getNutrientValue('magnesium')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Magnesium</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.magnesium)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('magnesium'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.phosphorus) && (
+                      {hasValidValue(getNutrientValue('phosphorus')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Phosphorus</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.phosphorus)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('phosphorus'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.potassium) && (
+                      {hasValidValue(getNutrientValue('potassium')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Potassium</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.potassium)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('potassium'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.sodium) && (
+                      {hasValidValue(getNutrientValue('sodium')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Sodium</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.sodium)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('sodium'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.chloride) && (
+                      {hasValidValue(getNutrientValue('chloride')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Chloride</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.chloride)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('chloride'))}mg</span>
                         </div>
                       )}
                     </div>
@@ -377,56 +409,56 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Trace Minerals */}
-                {hasValidValue(selectedNutritionItem.micronutrients.iron) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.zinc) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.copper) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.manganese) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.iodine) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.selenium) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.fluoride) ? (
+                {hasValidValue(getNutrientValue('iron')) || 
+                 hasValidValue(getNutrientValue('zinc')) || 
+                 hasValidValue(getNutrientValue('copper')) ||
+                 hasValidValue(getNutrientValue('manganese')) ||
+                 hasValidValue(getNutrientValue('iodine')) ||
+                 hasValidValue(getNutrientValue('selenium')) ||
+                 hasValidValue(getNutrientValue('fluoride')) ? (
                   <div>
                     <h5 className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(selectedNutritionItem.micronutrients.iron) && (
+                      {hasValidValue(getNutrientValue('iron')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Iron</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.iron)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('iron'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.zinc) && (
+                      {hasValidValue(getNutrientValue('zinc')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Zinc</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.zinc)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('zinc'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.copper) && (
+                      {hasValidValue(getNutrientValue('copper')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Copper</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.copper)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('copper'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.manganese) && (
+                      {hasValidValue(getNutrientValue('manganese')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Manganese</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.manganese)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('manganese'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.iodine) && (
+                      {hasValidValue(getNutrientValue('iodine')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Iodine</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.iodine)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('iodine'))}mcg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.selenium) && (
+                      {hasValidValue(getNutrientValue('selenium')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Selenium</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.selenium)}mcg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('selenium'))}mcg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.fluoride) && (
+                      {hasValidValue(getNutrientValue('fluoride')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Fluoride</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.fluoride)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('fluoride'))}mg</span>
                         </div>
                       )}
                     </div>
@@ -434,77 +466,77 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 ) : null}
 
                 {/* Macronutrient Components */}
-                {hasValidValue(selectedNutritionItem.micronutrients.sugar) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.addedSugar) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.fiber) || 
-                 hasValidValue(selectedNutritionItem.micronutrients.saturatedFat) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.transFat) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.cholesterol) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.monounsaturatedFat) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.polyunsaturatedFat) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.omega3) ||
-                 hasValidValue(selectedNutritionItem.micronutrients.omega6) ? (
+                {hasValidValue(getNutrientValue('sugar')) || 
+                 hasValidValue(getNutrientValue('addedSugar')) || 
+                 hasValidValue(getNutrientValue('fiber')) || 
+                 hasValidValue(getNutrientValue('saturatedFat')) ||
+                 hasValidValue(getNutrientValue('transFat')) ||
+                 hasValidValue(getNutrientValue('cholesterol')) ||
+                 hasValidValue(getNutrientValue('monounsaturatedFat')) ||
+                 hasValidValue(getNutrientValue('polyunsaturatedFat')) ||
+                 hasValidValue(getNutrientValue('omega3')) ||
+                 hasValidValue(getNutrientValue('omega6')) ? (
                   <div className="mt-[10px] mb-[10px]">
                     <h5 className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-2">Macronutrient Components</h5>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(selectedNutritionItem.micronutrients.sugar) && (
+                      {hasValidValue(getNutrientValue('sugar')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Total Sugar</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.sugar)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('sugar'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.fiber) && (
+                      {hasValidValue(getNutrientValue('fiber')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Dietary Fiber</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.fiber)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('fiber'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.saturatedFat) && (
+                      {hasValidValue(getNutrientValue('saturatedFat')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Saturated Fat</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.saturatedFat)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('saturatedFat'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.cholesterol) && (
+                      {hasValidValue(getNutrientValue('cholesterol')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Cholesterol</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.cholesterol)}mg</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('cholesterol'))}mg</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.monounsaturatedFat) && (
+                      {hasValidValue(getNutrientValue('monounsaturatedFat')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Monounsat. Fat</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.monounsaturatedFat)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('monounsaturatedFat'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.polyunsaturatedFat) && (
+                      {hasValidValue(getNutrientValue('polyunsaturatedFat')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Polyunsat. Fat</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.polyunsaturatedFat)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('polyunsaturatedFat'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.transFat) && (
+                      {hasValidValue(getNutrientValue('transFat')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Trans Fat</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.transFat)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('transFat'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.addedSugar) && (
+                      {hasValidValue(getNutrientValue('addedSugar')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Added Sugar</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.addedSugar)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('addedSugar'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.omega3) && (
+                      {hasValidValue(getNutrientValue('omega3')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Omega-3 FA</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.omega3)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('omega3'))}g</span>
                         </div>
                       )}
-                      {hasValidValue(selectedNutritionItem.micronutrients.omega6) && (
+                      {hasValidValue(getNutrientValue('omega6')) && (
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Omega-6 FA</span>
-                          <span className="font-medium">{formatNutrientValue(selectedNutritionItem.micronutrients.omega6)}g</span>
+                          <span className="font-medium">{formatNutrientValue(getNutrientValue('omega6'))}g</span>
                         </div>
                       )}
                     </div>
