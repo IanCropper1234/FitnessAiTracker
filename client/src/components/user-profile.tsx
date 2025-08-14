@@ -359,7 +359,7 @@ export default function UserProfile() {
                 {/* Fitness Health Index Display */}
                 {fitnessHealthIndex && (
                   <div className="p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center pl-[5px] pr-[5px]">
                       <span className="text-sm font-medium text-black dark:text-white">Fitness Health Index</span>
                       <span className="text-lg font-bold text-black dark:text-white">{fitnessHealthIndex}</span>
                     </div>
