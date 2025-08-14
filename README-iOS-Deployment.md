@@ -1,4 +1,4 @@
-# FitAI iOS App Store 部署準備 - 完成摘要
+# FlexSync iOS App Store 部署準備 - 完成摘要
 
 ## ✅ 已完成的準備工作
 
@@ -20,7 +20,7 @@
 
 ### 4. 專案結構 ✅
 ```
-FitAI/
+FlexSync/
 ├── ios/App/App.xcworkspace     # Xcode 專案檔案
 ├── capacitor.config.ts         # Capacitor 配置
 ├── scripts/build-for-ios.sh    # iOS 建構腳本
@@ -33,8 +33,8 @@ FitAI/
 ### 步驟 1: 下載專案到 macOS 💻
 ```bash
 # 方法 1: Git clone (推薦)
-git clone <your-replit-url> FitAI-iOS
-cd FitAI-iOS
+git clone <your-replit-url> FlexSync-iOS
+cd FlexSync-iOS
 
 # 方法 2: 下載 ZIP 並解壓縮
 ```
@@ -62,7 +62,7 @@ npx cap open ios
 - [ ] **Development Team**: 選擇您的 Apple Developer Account
 - [ ] **Provisioning Profile**: 配置正確的設定檔
 - [ ] **App Icons**: 上傳 1024x1024 主圖示
-- [ ] **Display Name**: 設置為 "FitAI"
+- [ ] **Display Name**: 設置為 "FlexSync"
 
 ### 步驟 5: 首次測試 🧪
 ```bash
@@ -90,7 +90,7 @@ Product > Run (⌘+R)
 
 ### App Store Connect 設置 🏪
 1. **應用程式基本資訊**
-   - 名稱: FitAI
+   - 名稱: FlexSync
    - Bundle ID: com.fitai.app
    - 類別: Health & Fitness
 
@@ -130,7 +130,7 @@ Product > Run (⌘+R)
 
 ## 🎉 成功指標
 
-當您完成以下項目時，FitAI 即可提交 App Store 審核：
+當您完成以下項目時，FlexSync 即可提交 App Store 審核：
 
 - ✅ iOS 應用程式在實機正常運行
 - ✅ 所有核心功能測試通過
@@ -140,6 +140,6 @@ Product > Run (⌘+R)
 
 ---
 
-**恭喜！** 您的 FitAI 應用程式已準備好進入 iOS App Store。整個準備過程已完成，現在只需要在 macOS 環境中執行最終的建構和提交步驟。
+**恭喜！** 您的 FlexSync 應用程式已準備好進入 iOS App Store。整個準備過程已完成，現在只需要在 macOS 環境中執行最終的建構和提交步驟。
 
 如有任何問題，請參考詳細的部署指南或隨時詢問進一步協助。

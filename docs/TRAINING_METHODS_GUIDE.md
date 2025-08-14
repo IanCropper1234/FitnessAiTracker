@@ -1,8 +1,8 @@
-# FitAI Training Methods Implementation Guide
+# FlexSync Training Methods Implementation Guide
 
 ## Overview
 
-This document provides a comprehensive guide to the special training methods system in FitAI, including data structures, API routes, component interactions, and implementation patterns. Use this guide when adding, modifying, or deleting training methods.
+This document provides a comprehensive guide to the special training methods system in FlexSync, including data structures, API routes, component interactions, and implementation patterns. Use this guide when adding, modifying, or deleting training methods.
 
 ## Current Training Methods Supported
 
@@ -563,6 +563,6 @@ User Experience
 
 **Last Updated**: August 6, 2025  
 **Version**: 1.1  
-**Maintainer**: FitAI Development Team
+**Maintainer**: FlexSync Development Team
 
 > This document should be updated whenever training methods are added, modified, or removed from the system.

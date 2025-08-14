@@ -29,7 +29,7 @@ export default function Onboarding() {
           <div className="text-white font-bold text-2xl">Fi</div>
         </div>
         
-        <h1 className="text-4xl font-bold mb-4 text-foreground">FitAI</h1>
+        <h1 className="text-4xl font-bold mb-4 text-foreground">FlexSync</h1>
         <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
           Evidence-based training and nutrition coaching powered by Renaissance Periodization methodology
         </p>

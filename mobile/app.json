@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FitAI",
-    "slug": "fitai",
+    "name": "FlexSync",
+    "slug": "flexsync",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.fitai.app",
+      "bundleIdentifier": "com.flexsync.app",
       "buildNumber": "1.0.0"
     },
     "android": {

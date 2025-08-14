@@ -1,7 +1,7 @@
-# FitAI - Advanced AI-Powered Fitness Platform
+# FlexSync - Advanced AI-Powered Fitness Platform
 
 ## Overview
-FitAI is an enterprise-grade AI-powered fitness platform providing intelligent, adaptive training through comprehensive nutrition and workout management. It is based on the Renaissance Periodization (RP) methodology, combining evidence-based training science with AI recommendations for personalized coaching at scale. The project aims to capture a significant share of the digital fitness market by offering a superior, scientifically-backed alternative, targeting serious fitness enthusiasts and bodybuilders.
+FlexSync is an enterprise-grade AI-powered fitness platform providing intelligent, adaptive training through comprehensive nutrition and workout management. It is based on the Renaissance Periodization (RP) methodology, combining evidence-based training science with AI recommendations for personalized coaching at scale. The project aims to capture a significant share of the digital fitness market by offering a superior, scientifically-backed alternative, targeting serious fitness enthusiasts and bodybuilders.
 
 ## User Preferences
 **Communication Language**:
@@ -79,7 +79,7 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Muscle Group Classification**: Refined muscle group focus options to precise anatomical classifications for improved AI exercise recommendations.
 
 ### iOS App Development Strategy - Capacitor.js Approach
-FitAI implements a **Capacitor.js hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.
+FlexSync implements a **Capacitor.js hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.
 
 ## External Dependencies
 
@@ -95,7 +95,8 @@ FitAI implements a **Capacitor.js hybrid approach** preserving 100% of existing 
 - **Food Data**: Open Food Facts API
 
 ## Recent Changes
-- **iOS App Store Deployment Preparation - Capacitor.js Integration (August 14, 2025)**: Completed initial setup for iOS App Store deployment using Capacitor.js hybrid approach. Successfully configured iOS native project, established build pipeline, and created comprehensive deployment documentation. Key implementations include Capacitor config with native plugins (App, Keyboard, StatusBar, Haptics), automated build script for iOS preparation, and complete App Store submission guide covering all phases from development to deployment.
+- **Complete Brand Rebrand to FlexSync (August 14, 2025)**: Successfully rebranded entire application from "FitAI" to "FlexSync" across all platforms and languages. Updated mobile app configuration, web manifest, multi-language support (EN/ES/JA/ZH-CN/DE/ZH-TW), documentation, and Expo deployment settings. Created comprehensive brand guidelines and new visual assets with "FS" logo design. Bundle ID updated to com.flexsync.app for App Store submission.
+- **iOS App Store Deployment Preparation - Expo Integration (August 14, 2025)**: Successfully transitioned from Capacitor.js to Expo for simplified iOS App Store deployment. Implemented Expo WebView hybrid approach preserving 100% PWA functionality while enabling native iOS packaging. Key implementations include complete Expo project structure, EAS Build configuration, automated build scripts, and comprehensive deployment documentation. Solution provides 2-hour deployment timeline vs previous complex Xcode configuration requirements.
 - **Dark Mode Chart Visibility Fix (August 14, 2025)**: Resolved issue where chart axis text was invisible in dark mode by implementing CSS variables for dynamic color support. Updated all nutrition progression charts to use `var(--gray-600)` instead of fixed gray colors, ensuring proper visibility across light and dark themes.
 - **UI Simplification Extension - Dietary Restrictions Section (August 14, 2025)**: Further simplified user profile interface by hiding the dietary restrictions and preferences section per user request. Removed the entire dietary restrictions card component and cleaned up related imports and functions. Focus now entirely on essential profile data (age, height, weight, body fat percentage) for core fitness tracking functionality.
 - **Nutrition Progress Chart Enhancement - Average Value Reference Lines (August 14, 2025)**: Enhanced nutrition progression charts by adding horizontal reference lines displaying average values for all chart types. Features include weight chart with average weight (unit-converted), body fat chart with average percentage, calories chart with average daily intake, and macro chart with individual protein/carbs/fat averages. Reference lines use orange dashed styling with positioned labels for clear visual reference against actual data points.

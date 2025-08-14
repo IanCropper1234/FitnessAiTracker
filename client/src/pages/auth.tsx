@@ -163,7 +163,7 @@ export default function Auth({ onSuccess }: AuthProps) {
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-black dark:text-white">FitAI</CardTitle>
+          <CardTitle className="text-2xl font-bold text-black dark:text-white">FlexSync</CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-400">
             {t("welcome") || "AI-Powered Fitness Platform"}
           </CardDescription>

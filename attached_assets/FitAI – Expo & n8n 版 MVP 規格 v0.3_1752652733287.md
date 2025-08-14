@@ -1,5 +1,5 @@
 
-# FitAI – Expo & n8n 版 MVP 規格 v0.3  
+# FlexSync – Expo & n8n 版 MVP 規格 v0.3  
 > 更新：2025-07-16  作者：Product Team  
 
 ---

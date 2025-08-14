@@ -1,4 +1,4 @@
-# FitAI iOS App Store 部署指南
+# FlexSync iOS App Store 部署指南
 
 ## 📱 完整的 App Store 上架流程
 
@@ -54,7 +54,7 @@
 
 #### App 基本資訊設置
 1. **Bundle Identifier**: `com.fitai.app`
-2. **App Name**: `FitAI`
+2. **App Name**: `FlexSync`
 3. **Version**: `1.0.0`
 4. **Build Number**: `1`
 
@@ -87,16 +87,16 @@
 #### Developer Account 設置
 1. **加入 Apple Developer Program** ($99/年)
 2. **創建 App Store Connect 記錄**
-   - App 名稱：FitAI
+   - App 名稱：FlexSync
    - Bundle ID：com.fitai.app
-   - SKU：FitAI-iOS-001
+   - SKU：FlexSync-iOS-001
 
 #### App 元資料準備
 1. **App 描述** (英文)
    ```
-   FitAI: Your AI-Powered Fitness Coach
+   FlexSync: Your AI-Powered Fitness Coach
    
-   Transform your fitness journey with intelligent workout planning and nutrition analysis. FitAI combines cutting-edge AI technology with proven Renaissance Periodization methodology to deliver personalized training programs that adapt to your progress.
+   Transform your fitness journey with intelligent workout planning and nutrition analysis. FlexSync combines cutting-edge AI technology with proven Renaissance Periodization methodology to deliver personalized training programs that adapt to your progress.
    
    Key Features:
    • AI-powered nutrition analysis with micronutrient tracking
@@ -105,7 +105,7 @@
    • Intelligent auto-regulation for optimal training
    • Dark mode support for all lighting conditions
    
-   Whether you're a beginner or advanced athlete, FitAI provides the tools and insights you need to achieve your fitness goals efficiently and scientifically.
+   Whether you're a beginner or advanced athlete, FlexSync provides the tools and insights you need to achieve your fitness goals efficiently and scientifically.
    ```
 
 2. **關鍵字**

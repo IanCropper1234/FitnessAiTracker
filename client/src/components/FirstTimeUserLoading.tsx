@@ -20,7 +20,7 @@ interface LoadingStep {
 const LOADING_STEPS: LoadingStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to FitAI',
+    title: 'Welcome to FlexSync',
     subtitle: 'Your AI-powered fitness journey begins',
     icon: Sparkles,
     duration: 2000
@@ -235,7 +235,7 @@ export function FirstTimeUserLoading({ onComplete, className }: FirstTimeUserLoa
           }}
           className="text-6xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent"
         >
-          FitAI
+          FlexSync
         </motion.div>
 
         {/* Current step */}
