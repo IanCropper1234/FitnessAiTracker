@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import * as React from "react";
+const { createContext, useContext, useEffect, useState } = React;
+
+interface ReactNodeProps {
+  children: React.ReactNode;
+}
 
 type Theme = "light" | "dark";
 
@@ -10,7 +15,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({ children }: ReactNodeProps) {
   const [theme, setThemeState] = useState<Theme>("dark");
 
   // Initialize theme from localStorage or system preference
