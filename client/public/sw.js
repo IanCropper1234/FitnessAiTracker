@@ -1,95 +1,51 @@
-// Service Worker for FitAI PWA - iOS Compatible
-const CACHE_NAME = 'fitai-v1.2.0';
+const CACHE_NAME = 'trainpro-v2.0.0';
 const urlsToCache = [
   '/',
-  '/manifest.json',
-  '/icons/icon-180x180.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/trainpro-icon-option1.svg',
+  '/favicon.svg',
+  '/manifest.json?v=2.0.0'
 ];
 
-// Install event - cache essential resources
 self.addEventListener('install', (event) => {
-  console.log('FitAI Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('FitAI cache opened');
+        console.log('TrainPro SW: Opened cache');
         return cache.addAll(urlsToCache);
       })
-      .then(() => {
-        console.log('FitAI essential resources cached');
-        return self.skipWaiting(); // Activate immediately
-      })
-      .catch((error) => {
-        console.error('FitAI service worker install failed:', error);
-      })
   );
+  // Force the waiting service worker to become the active service worker
+  self.skipWaiting();
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('FitAI Service Worker activating...');
+  console.log('TrainPro SW: Service worker activated');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+            console.log('TrainPro SW: Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => {
-      console.log('FitAI Service Worker activated');
-      return self.clients.claim(); // Take control of existing clients
     })
   );
+  // Take control of all clients immediately
+  return self.clients.claim();
 });
 
-// Fetch event - serve from cache when possible
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
-  
   event.respondWith(
     caches.match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        
-        // Clone the request as it can only be used once
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone the response as it can only be used once
-          const responseToCache = response.clone();
-          
-          // Cache static assets only
-          if (event.request.url.includes('/icons/') || 
-              event.request.url.includes('/manifest.json') ||
-              event.request.url === self.location.origin + '/') {
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-          }
-          
+      .then((response) => {
+        // Cache hit - return response
+        if (response) {
           return response;
-        }).catch(() => {
-          // Fallback for offline scenarios
-          if (event.request.url === self.location.origin + '/') {
-            return caches.match('/');
-          }
-        });
-      })
+        }
+        return fetch(event.request);
+      }
+    )
   );
 });
