@@ -846,12 +846,75 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             {chartType === 'calories' && `Daily Calories • ${timeRange}`}
             {chartType === 'macros' && `Macro Breakdown • ${timeRange}`}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
             {chartType === 'weight' && `Track weight changes over time`}
             {chartType === 'bodyFat' && `Monitor body composition progress`}
             {chartType === 'calories' && `Daily caloric intake patterns`}
             {chartType === 'macros' && `Protein, carbs, and fat distribution`}
           </p>
+          {/* Average Values Display */}
+          <div className="flex items-center gap-4 text-xs">
+            {chartType === 'weight' && bodyMetrics && bodyMetrics.length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="text-gray-500 dark:text-gray-400">Avg:</span>
+                <span className="font-medium text-blue-600">
+                  {(() => {
+                    const preferredUnit = getUserPreferredWeightUnit();
+                    let avgWeight = bodyMetrics.reduce((sum: number, metric: any) => {
+                      let weight = parseFloat(metric.weight);
+                      const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
+                      if (metricUnit !== preferredUnit) {
+                        weight = convertWeight(weight, metricUnit, preferredUnit);
+                      }
+                      return sum + weight;
+                    }, 0) / bodyMetrics.length;
+                    return `${avgWeight.toFixed(1)} ${preferredUnit}`;
+                  })()}
+                </span>
+              </div>
+            )}
+            {chartType === 'bodyFat' && bodyMetrics && bodyMetrics.filter((m: any) => m.bodyFatPercentage).length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="text-gray-500 dark:text-gray-400">Avg:</span>
+                <span className="font-medium text-green-600">
+                  {(() => {
+                    const bodyFatData = bodyMetrics.filter((m: any) => m.bodyFatPercentage);
+                    const avgBodyFat = bodyFatData.reduce((sum: number, metric: any) => 
+                      sum + parseFloat(metric.bodyFatPercentage), 0) / bodyFatData.length;
+                    return `${avgBodyFat.toFixed(1)}%`;
+                  })()}
+                </span>
+              </div>
+            )}
+            {chartType === 'calories' && progressionData && progressionData.length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="text-gray-500 dark:text-gray-400">Avg:</span>
+                <span className="font-medium text-orange-600">
+                  {Math.round(summary.avgCalories)} cal/day
+                </span>
+              </div>
+            )}
+            {chartType === 'macros' && progressionData && progressionData.length > 0 && (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500 dark:text-gray-400">Avg Protein:</span>
+                  <span className="font-medium text-blue-600">{Math.round(summary.avgProtein)}g/day</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500 dark:text-gray-400">Avg Carbs:</span>
+                  <span className="font-medium text-green-600">
+                    {progressionData.length > 0 ? Math.round(progressionData.reduce((sum, entry) => sum + entry.carbs, 0) / progressionData.length) : 0}g/day
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500 dark:text-gray-400">Avg Fat:</span>
+                  <span className="font-medium text-yellow-600">
+                    {progressionData.length > 0 ? Math.round(progressionData.reduce((sum, entry) => sum + entry.fat, 0) / progressionData.length) : 0}g/day
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="mb-2">
