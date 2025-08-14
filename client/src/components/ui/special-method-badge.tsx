@@ -10,7 +10,7 @@ export function SpecialMethodBadge({ method, className = "" }: SpecialMethodBadg
   const label = getSpecialMethodLabel(method);
 
   return (
-    <span className="px-2 py-0.5 text-xs font-medium rounded-sm bg-orange-600 text-white pl-[5px] pr-[5px] pt-[0px] pb-[0px]">
+    <span className={badgeClasses}>
       {label}
     </span>
   );
