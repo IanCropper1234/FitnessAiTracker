@@ -263,6 +263,8 @@ export function AddFood({ user }: AddFoodProps) {
     // Clear previous analysis results
     setBaseAIResult(null);
     setDynamicMacros(null);
+    setPortionWeight('');
+    setPortionUnit('g');
     
     const hasFoodName = foodName.trim();
     const hasDescription = foodQuery.trim();
@@ -318,12 +320,45 @@ export function AddFood({ user }: AddFoodProps) {
   const recalculateMacrosFromVolume = React.useCallback(() => {
     if (!baseAIResult) return;
 
-    // Check if AI provided standardized portion information
+    // Check if we have user-adjusted portion information from the green section
+    const userPortionWeight = portionWeight ? parseFloat(portionWeight) : null;
+    const hasUserPortion = userPortionWeight && portionUnit;
+    
+    // Check if AI provided standardized portion information  
     const hasStandardizedPortion = baseAIResult.portionWeight && baseAIResult.portionUnit;
     
-    if (hasStandardizedPortion) {
-      // AI already calculated nutrition for the standardized portion
-      // Use AI values directly without multiplication
+    if (hasUserPortion && hasStandardizedPortion) {
+      // User has adjusted the portion size - calculate multiplier based on AI's base portion
+      const aiBaseWeight = parseFloat(baseAIResult.portionWeight);
+      const multiplier = userPortionWeight / aiBaseWeight;
+      
+      console.log(`User portion adjustment: ${userPortionWeight}${portionUnit} vs AI base: ${aiBaseWeight}${baseAIResult.portionUnit}, multiplier: ${multiplier}`);
+      
+      const recalculatedMacros = {
+        ...baseAIResult,
+        calories: Math.round((baseAIResult.calories * multiplier) * 100) / 100,
+        protein: Math.round((baseAIResult.protein * multiplier) * 100) / 100,
+        carbs: Math.round((baseAIResult.carbs * multiplier) * 100) / 100,
+        fat: Math.round((baseAIResult.fat * multiplier) * 100) / 100,
+        servingDetails: `${userPortionWeight}${portionUnit} (adjusted from AI base: ${baseAIResult.portionWeight}${baseAIResult.portionUnit})`,
+        assumptions: baseAIResult.assumptions ? 
+          `${baseAIResult.assumptions} • Portion adjusted to ${userPortionWeight}${portionUnit}` :
+          `Portion adjusted to ${userPortionWeight}${portionUnit}`,
+        // Scale micronutrients proportionally if they exist
+        ...(baseAIResult.micronutrients && {
+          micronutrients: Object.fromEntries(
+            Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
+              key, 
+              typeof value === 'number' ? Math.round((value * multiplier) * 100) / 100 : value
+            ])
+          )
+        })
+      };
+
+      console.log(`Recalculated with portion adjustment - calories:`, recalculatedMacros.calories);
+      setDynamicMacros(recalculatedMacros);
+    } else if (hasStandardizedPortion) {
+      // AI already calculated nutrition for the standardized portion, no user adjustment
       console.log(`Using AI standardized portion: ${baseAIResult.portionWeight}${baseAIResult.portionUnit}`);
       setDynamicMacros({
         ...baseAIResult,
@@ -364,7 +399,7 @@ export function AddFood({ user }: AddFoodProps) {
       console.log(`Recalculated calories:`, recalculatedMacros.calories);
       setDynamicMacros(recalculatedMacros);
     }
-  }, [baseAIResult, quantity, unit]);
+  }, [baseAIResult, quantity, unit, portionWeight, portionUnit]);
 
   // Auto-sync portion values to quantity/unit after AI analysis
   React.useEffect(() => {
@@ -372,10 +407,18 @@ export function AddFood({ user }: AddFoodProps) {
       // AI provides nutrition for the analyzed quantity, set form to match AI result
       console.log("AI analysis complete, using AI standardized portion");
       
+      // Set base AI result for calculations
+      setBaseAIResult(aiAnalyzeMutation.data);
+      setDynamicMacros(aiAnalyzeMutation.data);
+      
       // Use AI-provided standardized portion if available
       if (aiAnalyzeMutation.data.portionWeight && aiAnalyzeMutation.data.portionUnit) {
+        // Set both portion fields AND quantity/unit from AI data
+        setPortionWeight(aiAnalyzeMutation.data.portionWeight.toString());
+        setPortionUnit(aiAnalyzeMutation.data.portionUnit);
         setQuantity(aiAnalyzeMutation.data.portionWeight.toString());
         setUnit(aiAnalyzeMutation.data.portionUnit);
+        console.log(`Setting initial portion: ${aiAnalyzeMutation.data.portionWeight} ${aiAnalyzeMutation.data.portionUnit}`);
       } else {
         // Fallback to AI serving details or default
         setQuantity('1');
@@ -384,13 +427,23 @@ export function AddFood({ user }: AddFoodProps) {
     }
   }, [aiAnalyzeMutation.data]);
 
-  // Recalculate macros when quantity or unit changes
+  // Recalculate macros when quantity, unit, or portion data changes
   React.useEffect(() => {
     if (baseAIResult) {
-      console.log(`Triggering recalculation due to quantity/unit change: ${quantity} ${unit}`);
+      console.log(`Triggering recalculation due to changes: quantity=${quantity} ${unit}, portion=${portionWeight} ${portionUnit}`);
       recalculateMacrosFromVolume();
     }
-  }, [quantity, unit, recalculateMacrosFromVolume]);
+  }, [quantity, unit, portionWeight, portionUnit, recalculateMacrosFromVolume]);
+
+  // Effect to handle portion weight/unit changes for AI analysis
+  React.useEffect(() => {
+    if (dynamicMacros && portionWeight && portionUnit) {
+      // Auto-sync the portion data to quantity/unit fields for AI mode
+      setQuantity(portionWeight);
+      setUnit(portionUnit);
+      console.log(`Syncing portion data: ${portionWeight} ${portionUnit} -> quantity/unit`);
+    }
+  }, [portionWeight, portionUnit]);
 
   // Dynamic calculations managed for AI-only mode
 
@@ -1270,52 +1323,68 @@ export function AddFood({ user }: AddFoodProps) {
             {/* Quantity and Meal Selection */}
             {(selectedFood || aiAnalyzeMutation.data) && (
               <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label className="text-xs font-medium">Quantity</Label>
-                    <Input
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      type="number"
-                      step="0.1"
-                      min="0.1"
-                      className="h-8 text-sm ios-touch-feedback"
-                      onPaste={(e) => {
-                        // Allow default paste behavior
-                        e.stopPropagation();
-                      }}
-                      onCopy={(e) => {
-                        // Allow default copy behavior
-                        e.stopPropagation();
-                      }}
-                      onCut={(e) => {
-                        // Allow default cut behavior
-                        e.stopPropagation();
-                      }}
-                    />
+                {/* Only show quantity/unit inputs for non-AI mode or when AI analysis is not active */}
+                {!dynamicMacros && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium">Quantity</Label>
+                      <Input
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        className="h-8 text-sm ios-touch-feedback"
+                        onPaste={(e) => {
+                          // Allow default paste behavior
+                          e.stopPropagation();
+                        }}
+                        onCopy={(e) => {
+                          // Allow default copy behavior
+                          e.stopPropagation();
+                        }}
+                        onCut={(e) => {
+                          // Allow default cut behavior
+                          e.stopPropagation();
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium">Unit</Label>
+                      <Input
+                        value={unit}
+                        onChange={(e) => setUnit(e.target.value)}
+                        placeholder="g, ml, oz, cups, pieces, etc."
+                        className="h-8 text-sm ios-touch-feedback"
+                        onPaste={(e) => {
+                          // Allow default paste behavior
+                          e.stopPropagation();
+                        }}
+                        onCopy={(e) => {
+                          // Allow default copy behavior
+                          e.stopPropagation();
+                        }}
+                        onCut={(e) => {
+                          // Allow default cut behavior
+                          e.stopPropagation();
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-medium">Unit</Label>
-                    <Input
-                      value={unit}
-                      onChange={(e) => setUnit(e.target.value)}
-                      placeholder="g, ml, oz, cups, pieces, etc."
-                      className="h-8 text-sm ios-touch-feedback"
-                      onPaste={(e) => {
-                        // Allow default paste behavior
-                        e.stopPropagation();
-                      }}
-                      onCopy={(e) => {
-                        // Allow default copy behavior
-                        e.stopPropagation();
-                      }}
-                      onCut={(e) => {
-                        // Allow default cut behavior
-                        e.stopPropagation();
-                      }}
-                    />
+                )}
+                
+                {/* For AI mode, show read-only quantity/unit info */}
+                {dynamicMacros && (
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Current Portion</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{quantity} {unit}</p>
+                      </div>
+                      <p className="text-xs text-green-600 dark:text-green-400">Auto-synced from portion adjustment</p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="space-y-2">
                   <Label className="text-xs font-medium">Meal Type</Label>
