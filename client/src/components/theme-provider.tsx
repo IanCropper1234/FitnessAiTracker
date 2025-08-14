@@ -1,5 +1,4 @@
-import * as React from "react";
-const { createContext, useContext, useEffect, useState } = React;
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface ReactNodeProps {
   children: React.ReactNode;
