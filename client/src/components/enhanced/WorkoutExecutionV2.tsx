@@ -161,9 +161,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     return <WorkoutExecution sessionId={parseInt(sessionId, 10)} onComplete={onComplete} />;
   }
 
+  // State to track if we're currently reordering to prevent automatic refetch
+  const [isReordering, setIsReordering] = useState(false);
+
   // Fetch session data
   const { data: session, isLoading } = useQuery<WorkoutSession>({
     queryKey: ["/api/training/session", sessionId],
+    enabled: !isReordering, // Disable automatic refetch during reordering
   });
 
   // Fetch exercise recommendations from mesocycle advance week function
@@ -982,6 +986,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     console.log('Current exercises before reorder:', session?.exercises?.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
     console.log('New order received:', newOrder.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
     
+    // Set reordering flag to prevent automatic refetch
+    setIsReordering(true);
+    
     // Update the current exercise index to match the reordered list
     const currentExerciseId = currentExercise?.id;
     if (currentExerciseId) {
@@ -1001,6 +1008,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         exercises: newOrder
       };
     });
+    
+    // Clear reordering flag after a delay to allow manual refetch if needed
+    setTimeout(() => {
+      setIsReordering(false);
+      console.log('Reordering flag cleared, automatic queries re-enabled');
+    }, 5000); // 5 second delay to ensure reorder operation is stable
     
     console.log('Local exercises state and cache updated');
   };

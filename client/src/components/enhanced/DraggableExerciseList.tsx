@@ -124,13 +124,18 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      // DO NOT invalidate queries here - this causes the UI to revert to old order
+      // The parent component handles the optimistic UI update via React Query cache manipulation
+      console.log('Reorder mutation succeeded, server state updated');
       toast({
         title: "Exercises Reordered",
         description: "Exercise order has been updated.",
       });
     },
     onError: (error) => {
+      console.error('Reorder mutation failed:', error);
+      // On error, we should invalidate to refresh from server
+      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
       toast({
         title: "Error",
         description: `Failed to reorder exercises: ${error.message}`,
