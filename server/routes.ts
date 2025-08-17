@@ -4878,20 +4878,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sessionId = parseInt(req.params.sessionId);
       const { exercises } = req.body; // Array of { exerciseId, orderIndex }
       
+      console.log('Reordering exercises for session', sessionId, ':', exercises);
+      
+      // Get all current workout exercises for this session to validate
+      const currentExercises = await db
+        .select()
+        .from(workoutExercises)
+        .where(eq(workoutExercises.sessionId, sessionId))
+        .orderBy(workoutExercises.orderIndex);
+        
+      console.log('Current exercises count:', currentExercises.length);
+      
       // Update each exercise's order index in the session
       for (const exerciseUpdate of exercises) {
-        await db
+        const updateResult = await db
           .update(workoutExercises)
           .set({ orderIndex: exerciseUpdate.orderIndex })
           .where(and(
             eq(workoutExercises.sessionId, sessionId),
             eq(workoutExercises.exerciseId, exerciseUpdate.exerciseId)
-          ));
+          ))
+          .returning();
+          
+        console.log(`Updated exercise ${exerciseUpdate.exerciseId} to order ${exerciseUpdate.orderIndex}:`, updateResult.length > 0 ? 'SUCCESS' : 'FAILED');
       }
+      
+      // Verify the update by fetching the updated order
+      const updatedExercises = await db
+        .select()
+        .from(workoutExercises)
+        .where(eq(workoutExercises.sessionId, sessionId))
+        .orderBy(workoutExercises.orderIndex);
+        
+      console.log('Updated exercise order:', updatedExercises.map(ex => ({ exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
       
       res.json({ 
         success: true,
-        message: "Exercise order updated successfully"
+        message: "Exercise order updated successfully",
+        updatedCount: exercises.length
       });
     } catch (error: any) {
       console.error("Error reordering exercises:", error);

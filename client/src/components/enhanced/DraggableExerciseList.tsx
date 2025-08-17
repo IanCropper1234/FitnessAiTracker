@@ -143,21 +143,24 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
   const { getDragHandleProps, getItemClassName, getDragHandleClassName } = useMobileDragDrop({
     items: exercises,
     onReorder: (newExercises) => {
-      // Update order indices
+      console.log('DraggableExerciseList onReorder called with:', newExercises.length, 'exercises');
+      
+      // Ensure orderIndex is correctly set based on array position
       const reorderedExercises = newExercises.map((exercise, index) => ({
         ...exercise,
         orderIndex: index
       }));
 
-      // Call parent callback
+      // Call parent callback first (updates UI immediately)
       onExercisesReorder?.(reorderedExercises);
 
-      // Update server
+      // Prepare server update with exerciseId and new orderIndex
       const orderUpdate = reorderedExercises.map(exercise => ({
         exerciseId: exercise.exerciseId,
         orderIndex: exercise.orderIndex
       }));
       
+      console.log('Sending order update to server:', orderUpdate);
       reorderExercisesMutation.mutate(orderUpdate);
     },
     getItemId: (exercise) => exercise.id,

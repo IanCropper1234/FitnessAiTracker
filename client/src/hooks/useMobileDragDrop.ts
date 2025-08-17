@@ -85,10 +85,27 @@ export function useMobileDragDrop<T>({
     }
 
     const newItems = [...items];
-    const [draggedItem] = newItems.splice(dragState.draggedIndex, 1);
-    newItems.splice(dropIndex, 0, draggedItem);
+    const draggedItem = newItems[dragState.draggedIndex];
+    
+    // Remove the dragged item from its current position
+    newItems.splice(dragState.draggedIndex, 1);
+    
+    // Calculate the correct insertion index
+    let insertIndex = dropIndex;
+    if (dragState.draggedIndex < dropIndex) {
+      insertIndex--;
+    }
+    
+    // Insert at the correct position
+    newItems.splice(insertIndex, 0, draggedItem);
+    
+    // Update indices to reflect new order
+    const reorderedItems = newItems.map((item, index) => ({
+      ...item,
+      orderIndex: index
+    }));
 
-    onReorder(newItems);
+    onReorder(reorderedItems);
     clearDragState();
   }, [dragState.draggedIndex, items, onReorder, clearDragState, isDisabled]);
 
@@ -182,11 +199,37 @@ export function useMobileDragDrop<T>({
     }
 
     // Perform the drop if we have a valid target
-    if (dragState.draggedIndex !== null && dragState.dropTargetIndex !== null) {
+    if (dragState.draggedIndex !== null && dragState.dropTargetIndex !== null && dragState.draggedIndex !== dragState.dropTargetIndex) {
       const newItems = [...items];
-      const [draggedItem] = newItems.splice(dragState.draggedIndex, 1);
-      newItems.splice(dragState.dropTargetIndex, 0, draggedItem);
-      onReorder(newItems);
+      const draggedItem = newItems[dragState.draggedIndex];
+      
+      // Remove the dragged item from its current position
+      newItems.splice(dragState.draggedIndex, 1);
+      
+      // Calculate the correct insertion index
+      let insertIndex = dragState.dropTargetIndex;
+      if (dragState.draggedIndex < dragState.dropTargetIndex) {
+        insertIndex--;
+      }
+      
+      // Insert at the correct position
+      newItems.splice(insertIndex, 0, draggedItem);
+      
+      // Update indices to reflect new order
+      const reorderedItems = newItems.map((item, index) => ({
+        ...item,
+        orderIndex: index
+      }));
+      
+      console.log('Drag reorder:', {
+        from: dragState.draggedIndex,
+        to: dragState.dropTargetIndex,
+        insertIndex,
+        originalLength: items.length,
+        newLength: reorderedItems.length
+      });
+      
+      onReorder(reorderedItems);
     }
 
     clearDragState();
