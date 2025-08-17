@@ -114,6 +114,7 @@ export default function CreateMesocyclePage() {
       setLocation('/training?tab=mesocycles');
     },
     onError: (error: any) => {
+      console.error('Mesocycle creation error:', error);
       toast({
         title: "Error",
         description: error.message || "Failed to create mesocycle",

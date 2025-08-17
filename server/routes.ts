@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage-db";
-import { setupAuth, requireAuth } from "./replitAuth";
+import { setupAuth } from "./replitAuth";
 import { initializeExercises } from "./data/exercises";
 import { initializeNutritionDatabase } from "./data/nutrition-seed";
 import { initializeVolumeLandmarks } from "./init-volume-landmarks";
@@ -3654,7 +3654,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create mesocycle with training schedule
       const mesocycleData = {
-        userId,
+        userId: Number(userId),
         name,
         totalWeeks,
         currentWeek: 1,
@@ -3683,22 +3683,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (templateId) {
             // Get the saved workout template
-            const savedTemplate = await storage.getSavedWorkoutTemplate(templateId);
-            if (savedTemplate) {
+            const savedTemplate = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
+            if (savedTemplate.length > 0) {
+              const template = savedTemplate[0];
               // Calculate session date (distribute training days across the week)
               const sessionDate = new Date(weekStartDate);
               const dayOffset = Math.floor((day - 1) * 7 / trainingDaysPerWeek);
               sessionDate.setDate(weekStartDate.getDate() + dayOffset);
               
               const sessionData = {
-                userId,
+                userId: Number(userId),
                 mesocycleId: mesocycle.id,
                 programId: null,
                 date: sessionDate,
-                name: `${savedTemplate.name} - Week ${week} Day ${day}`,
+                name: `${template.name} - Week ${week} Day ${day}`,
                 isCompleted: false,
                 totalVolume: 0,
-                duration: savedTemplate.estimatedDuration,
+                duration: template.estimatedDuration,
                 version: "2.0",
                 features: { spinnerSetInput: true, gestureNavigation: true },
                 algorithm: "RP_BASED",
@@ -3712,34 +3713,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Create all sessions at once
         if (sessionsToCreate.length > 0) {
-          const createdSessions = await db.insert(workoutSessions).values(sessionsToCreate).returning();
-          console.log(`Created ${createdSessions.length} workout sessions for mesocycle`);
-          
-          // Create exercises for each Week 1 session based on the template
-          for (let i = 0; i < createdSessions.length; i++) {
-            const session = createdSessions[i];
-            const day = i + 1; // Since we only have Week 1 sessions
-            const templateId = dayTemplates[day.toString()];
+          try {
+            const createdSessions = await db.insert(workoutSessions).values(sessionsToCreate).returning();
+            console.log(`✅ Created ${createdSessions.length} workout sessions for mesocycle`);
             
-            if (templateId) {
-              const savedTemplate = await storage.getSavedWorkoutTemplate(templateId);
-              if (savedTemplate && savedTemplate.exerciseTemplates) {
-                const exerciseInserts = savedTemplate.exerciseTemplates.map((exercise: any) => ({
-                  sessionId: session.id,
-                  exerciseId: exercise.exerciseId,
-                  orderIndex: exercise.orderIndex,
-                  sets: exercise.sets,
-                  targetReps: exercise.targetReps,
-                  weight: null,
-                  restPeriod: exercise.restPeriod,
-                  specialMethod: exercise.specialMethod || null,
-                  specialConfig: exercise.specialConfig || null,
-                  notes: exercise.notes || null
-                }));
-                
-                await db.insert(workoutExercises).values(exerciseInserts);
+            // Create exercises for each Week 1 session based on the template
+            for (let i = 0; i < createdSessions.length; i++) {
+              const session = createdSessions[i];
+              const day = i + 1; // Since we only have Week 1 sessions
+              const templateId = dayTemplates[day.toString()];
+              
+              if (templateId) {
+                try {
+                  const savedTemplateResult = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
+                  const savedTemplate = savedTemplateResult.length > 0 ? savedTemplateResult[0] : null;
+                  
+                  if (savedTemplate && savedTemplate.exerciseTemplates) {
+                    const exerciseTemplates = Array.isArray(savedTemplate.exerciseTemplates) 
+                      ? savedTemplate.exerciseTemplates 
+                      : JSON.parse(savedTemplate.exerciseTemplates as string);
+                    
+                    const exerciseInserts = exerciseTemplates.map((exercise: any, index: number) => ({
+                      sessionId: session.id,
+                      exerciseId: exercise.exerciseId,
+                      orderIndex: exercise.orderIndex || index,
+                      sets: exercise.sets,
+                      targetReps: exercise.targetReps,
+                      weight: null,
+                      restPeriod: exercise.restPeriod,
+                      specialMethod: exercise.specialMethod || null,
+                      specialConfig: exercise.specialConfig || null,
+                      notes: exercise.notes || null
+                    }));
+                    
+                    if (exerciseInserts.length > 0) {
+                      await db.insert(workoutExercises).values(exerciseInserts);
+                      console.log(`✅ Created ${exerciseInserts.length} exercises for session: ${session.name}`);
+                    }
+                  }
+                } catch (exerciseError) {
+                  console.error(`Error creating exercises for session ${session.id}:`, exerciseError);
+                  // Continue with other sessions even if one fails
+                }
               }
             }
+          } catch (sessionError) {
+            console.error('Error creating workout sessions:', sessionError);
+            throw new Error(`Failed to create workout sessions: ${sessionError instanceof Error ? sessionError.message : 'Unknown error'}`);
           }
         }
       }
@@ -3754,7 +3774,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Error creating mesocycle:", error);
-      res.status(500).json({ error: "Failed to create mesocycle" });
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        requestBody: req.body
+      });
+      res.status(500).json({ 
+        error: "Failed to create mesocycle",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
