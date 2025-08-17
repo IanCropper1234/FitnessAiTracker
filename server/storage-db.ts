@@ -18,7 +18,7 @@ import {
   type TrainingTemplate, type InsertTrainingTemplate
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, gte, lte, desc, isNull, like, ilike, sql } from "drizzle-orm";
+import { eq, and, gte, lte, desc, isNull, like, ilike, sql, asc } from "drizzle-orm";
 import type { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -333,8 +333,10 @@ export class DatabaseStorage implements IStorage {
 
   // Workout Exercises
   async getWorkoutExercises(sessionId: number): Promise<WorkoutExercise[]> {
-    // Getting workout exercises for session
-    const result = await db.select().from(workoutExercises).where(eq(workoutExercises.sessionId, sessionId));
+    // Getting workout exercises for session, ordered by orderIndex
+    const result = await db.select().from(workoutExercises)
+      .where(eq(workoutExercises.sessionId, sessionId))
+      .orderBy(asc(workoutExercises.orderIndex));
     // Found workout exercises for session
     return result;
   }
