@@ -99,13 +99,15 @@ export function useMobileDragDrop<T>({
     // Insert at the correct position
     newItems.splice(insertIndex, 0, draggedItem);
     
-    // Update indices to reflect new order
-    const reorderedItems = newItems.map((item, index) => ({
-      ...item,
-      orderIndex: index
-    }));
+    console.log('Desktop drag reorder:', {
+      from: dragState.draggedIndex,
+      to: dropIndex,
+      insertIndex,
+      originalOrder: items.map((item, idx) => ({ id: getItemId(item), orderIndex: idx })),
+      newOrder: newItems.map((item, idx) => ({ id: getItemId(item), orderIndex: idx }))
+    });
 
-    onReorder(reorderedItems);
+    onReorder(newItems);
     clearDragState();
   }, [dragState.draggedIndex, items, onReorder, clearDragState, isDisabled]);
 
@@ -215,21 +217,17 @@ export function useMobileDragDrop<T>({
       // Insert at the correct position
       newItems.splice(insertIndex, 0, draggedItem);
       
-      // Update indices to reflect new order
-      const reorderedItems = newItems.map((item, index) => ({
-        ...item,
-        orderIndex: index
-      }));
-      
-      console.log('Drag reorder:', {
+      console.log('Drag reorder detail:', {
         from: dragState.draggedIndex,
         to: dragState.dropTargetIndex,
         insertIndex,
         originalLength: items.length,
-        newLength: reorderedItems.length
+        newLength: newItems.length,
+        originalOrder: items.map((item, idx) => ({ id: getItemId(item), orderIndex: idx })),
+        newOrder: newItems.map((item, idx) => ({ id: getItemId(item), orderIndex: idx }))
       });
       
-      onReorder(reorderedItems);
+      onReorder(newItems);
     }
 
     clearDragState();

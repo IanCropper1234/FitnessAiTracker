@@ -143,13 +143,17 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
   const { getDragHandleProps, getItemClassName, getDragHandleClassName } = useMobileDragDrop({
     items: exercises,
     onReorder: (newExercises) => {
-      console.log('DraggableExerciseList onReorder called with:', newExercises.length, 'exercises');
+      console.log('DraggableExerciseList onReorder called');
+      console.log('Original exercises:', exercises.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, name: ex.exercise?.name, orderIndex: ex.orderIndex })));
+      console.log('New exercises array:', newExercises.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, name: ex.exercise?.name, orderIndex: ex.orderIndex })));
       
       // Ensure orderIndex is correctly set based on array position
       const reorderedExercises = newExercises.map((exercise, index) => ({
         ...exercise,
         orderIndex: index
       }));
+
+      console.log('Final reordered exercises:', reorderedExercises.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, name: ex.exercise?.name, orderIndex: ex.orderIndex })));
 
       // Call parent callback first (updates UI immediately)
       onExercisesReorder?.(reorderedExercises);
