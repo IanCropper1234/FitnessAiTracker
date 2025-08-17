@@ -553,7 +553,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             exerciseId: exercise.exerciseId,
             sets: newData[exercise.id] || [],
             specialMethod: specialMethods[exercise.id] || null,
-            specialConfig: specialConfigs[exercise.id] || null
+            specialConfig: specialConfigs[exercise.id] || null,
+            orderIndex: exercise.orderIndex // Include order index for auto-saves too
           }))
         };
         
@@ -886,15 +887,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         .filter(set => set?.completed)
         .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0));
 
+      // Get the current session data from React Query cache (includes any reordering)
+      const currentSession = queryClient.getQueryData<WorkoutSession>(["/api/training/session", sessionId]) || session;
+      
       const progressData = {
         duration,
         totalVolume,
         isCompleted: false,
-        exercises: session.exercises.map(exercise => ({
+        exercises: currentSession.exercises.map(exercise => ({
           exerciseId: exercise.exerciseId,
           sets: workoutData[exercise.id] || [],
           specialMethod: specialMethods[exercise.id] || null,
-          specialConfig: specialConfigs[exercise.id] || null
+          specialConfig: specialConfigs[exercise.id] || null,
+          orderIndex: exercise.orderIndex // Include order index to preserve exercise order
         }))
       };
 
@@ -941,15 +946,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         .filter(set => set?.completed)
         .reduce((sum, set) => sum + ((set?.weight || 0) * (set?.actualReps || 0)), 0));
 
+      // Get the current session data from React Query cache (includes any reordering)
+      const currentSession = queryClient.getQueryData<WorkoutSession>(["/api/training/session", sessionId]) || session;
+      
       const progressData = {
         duration,
         totalVolume,
         isCompleted: true,
-        exercises: session.exercises.map(exercise => ({
+        exercises: currentSession.exercises.map(exercise => ({
           exerciseId: exercise.exerciseId,
           sets: workoutData[exercise.id] || [],
           specialMethod: specialMethods[exercise.id] || null,
-          specialConfig: specialConfigs[exercise.id] || null
+          specialConfig: specialConfigs[exercise.id] || null,
+          orderIndex: exercise.orderIndex // Include order index to preserve exercise order
         }))
       };
 

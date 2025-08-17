@@ -1899,6 +1899,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             setsData: exerciseData.sets // Store individual set completion states
           };
 
+          // Update exercise order if provided
+          if (exerciseData.orderIndex !== undefined && exerciseData.orderIndex !== null) {
+            updateData.orderIndex = exerciseData.orderIndex;
+            console.log(`Updating exercise ${exerciseData.exerciseId} order to ${exerciseData.orderIndex}`);
+          }
+
           // Include special training method data if provided
           if (exerciseData.specialMethod) {
             updateData.specialMethod = exerciseData.specialMethod;
