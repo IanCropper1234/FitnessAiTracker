@@ -978,12 +978,31 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleExercisesReorder = (newOrder: WorkoutExercise[]) => {
-    // Update current exercise index if needed
+    console.log('WorkoutExecutionV2 handleExercisesReorder called');
+    console.log('Current exercises before reorder:', session?.exercises?.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
+    console.log('New order received:', newOrder.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
+    
+    // Update the current exercise index to match the reordered list
     const currentExerciseId = currentExercise?.id;
-    const newIndex = newOrder.findIndex(ex => ex.id === currentExerciseId);
-    if (newIndex !== -1) {
-      setCurrentExerciseIndex(newIndex);
+    if (currentExerciseId) {
+      const newIndex = newOrder.findIndex(ex => ex.id === currentExerciseId);
+      if (newIndex !== -1 && newIndex !== currentExerciseIndex) {
+        console.log(`Updating current exercise index from ${currentExerciseIndex} to ${newIndex}`);
+        setCurrentExerciseIndex(newIndex);
+      }
     }
+    
+    // Manually update the React Query cache with the new order to prevent server data from overriding
+    queryClient.setQueryData(["/api/training/session", sessionId], (oldData: WorkoutSession | undefined) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        exercises: newOrder
+      };
+    });
+    
+    console.log('Local exercises state and cache updated');
   };
 
   return (
