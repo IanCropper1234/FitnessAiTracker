@@ -87,24 +87,16 @@ export function useMobileDragDrop<T>({
     const newItems = [...items];
     const draggedItem = newItems[dragState.draggedIndex];
     
-    // Remove the dragged item from its current position
+    // Simple reorder logic: remove item and insert at target position
     newItems.splice(dragState.draggedIndex, 1);
-    
-    // Calculate the correct insertion index
-    let insertIndex = dropIndex;
-    if (dragState.draggedIndex < dropIndex) {
-      insertIndex--;
-    }
-    
-    // Insert at the correct position
-    newItems.splice(insertIndex, 0, draggedItem);
+    newItems.splice(dropIndex, 0, draggedItem);
     
     console.log('Desktop drag reorder:', {
-      from: dragState.draggedIndex,
-      to: dropIndex,
-      insertIndex,
-      originalOrder: items.map((item, idx) => ({ id: getItemId(item), orderIndex: idx })),
-      newOrder: newItems.map((item, idx) => ({ id: getItemId(item), orderIndex: idx }))
+      draggedIndex: dragState.draggedIndex,
+      dropIndex,
+      draggedItem: getItemId(draggedItem),
+      originalOrder: items.map((item, idx) => `${idx}:${getItemId(item)}`),
+      newOrder: newItems.map((item, idx) => `${idx}:${getItemId(item)}`)
     });
 
     onReorder(newItems);
@@ -170,7 +162,7 @@ export function useMobileDragDrop<T>({
       const dropTarget = elementBelow.closest('[data-drop-target]');
       if (dropTarget) {
         const dropIndex = parseInt(dropTarget.getAttribute('data-drop-index') || '-1');
-        if (dropIndex >= 0 && dropIndex !== dragState.draggedIndex) {
+        if (dropIndex >= 0) {
           setDragState(prev => ({
             ...prev,
             dropTargetIndex: dropIndex,
@@ -201,30 +193,26 @@ export function useMobileDragDrop<T>({
     }
 
     // Perform the drop if we have a valid target
-    if (dragState.draggedIndex !== null && dragState.dropTargetIndex !== null && dragState.draggedIndex !== dragState.dropTargetIndex) {
+    if (dragState.draggedIndex !== null && dragState.dropTargetIndex !== null) {
+      // If dropping on the same position, do nothing
+      if (dragState.draggedIndex === dragState.dropTargetIndex) {
+        clearDragState();
+        return;
+      }
+      
       const newItems = [...items];
       const draggedItem = newItems[dragState.draggedIndex];
       
-      // Remove the dragged item from its current position
+      // Simple reorder logic: remove item and insert at target position
       newItems.splice(dragState.draggedIndex, 1);
+      newItems.splice(dragState.dropTargetIndex, 0, draggedItem);
       
-      // Calculate the correct insertion index
-      let insertIndex = dragState.dropTargetIndex;
-      if (dragState.draggedIndex < dragState.dropTargetIndex) {
-        insertIndex--;
-      }
-      
-      // Insert at the correct position
-      newItems.splice(insertIndex, 0, draggedItem);
-      
-      console.log('Drag reorder detail:', {
-        from: dragState.draggedIndex,
-        to: dragState.dropTargetIndex,
-        insertIndex,
-        originalLength: items.length,
-        newLength: newItems.length,
-        originalOrder: items.map((item, idx) => ({ id: getItemId(item), orderIndex: idx })),
-        newOrder: newItems.map((item, idx) => ({ id: getItemId(item), orderIndex: idx }))
+      console.log('Touch drag reorder:', {
+        draggedIndex: dragState.draggedIndex,
+        dropTargetIndex: dragState.dropTargetIndex,
+        draggedItem: getItemId(draggedItem),
+        originalOrder: items.map((item, idx) => `${idx}:${getItemId(item)}`),
+        newOrder: newItems.map((item, idx) => `${idx}:${getItemId(item)}`)
       });
       
       onReorder(newItems);
