@@ -164,10 +164,11 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Prepare metric data with proper unit conversion handling
     const metricData = {
       userId,
       date: formData.date,
-      unit,
+      unit, // This will be stored in user profile for display preference
       ...(formData.weight && { weight: parseFloat(formData.weight) }),
       ...(formData.bodyFatPercentage && { bodyFatPercentage: parseFloat(formData.bodyFatPercentage) }),
       ...(formData.neck && { neck: parseFloat(formData.neck) }),
@@ -178,6 +179,10 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
       ...(formData.bicep && { bicep: parseFloat(formData.bicep) }),
     };
 
+    // API will handle:
+    // 1. Converting weight to metric for database storage
+    // 2. Saving user's unit preference to profile
+    // 3. Storing all measurements consistently
     addMetricMutation.mutate(metricData);
   };
 
