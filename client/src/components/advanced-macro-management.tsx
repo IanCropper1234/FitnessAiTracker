@@ -34,6 +34,57 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const [showWellnessInfo, setShowWellnessInfo] = useState(false);
   const [autoAdjustmentEnabled, setAutoAdjustmentEnabled] = useState(false);
   const [autoAdjustmentFrequency, setAutoAdjustmentFrequency] = useState<'weekly' | 'biweekly'>('weekly');
+  
+  // Calculate next adjustment date
+  const calculateNextAdjustmentDate = (lastAdjustment: string | null, frequency: 'weekly' | 'biweekly') => {
+    const now = new Date();
+    let nextDate: Date;
+    
+    if (lastAdjustment) {
+      // If we have a last adjustment date, calculate from there
+      const lastDate = new Date(lastAdjustment);
+      if (frequency === 'weekly') {
+        nextDate = new Date(lastDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      } else {
+        nextDate = new Date(lastDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+      }
+    } else {
+      // If no last adjustment, calculate from today
+      if (frequency === 'weekly') {
+        // Next Monday
+        const daysUntilMonday = (1 + 7 - now.getDay()) % 7 || 7;
+        nextDate = new Date(now.getTime() + daysUntilMonday * 24 * 60 * 60 * 1000);
+      } else {
+        // 2 weeks from today
+        nextDate = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      }
+    }
+    
+    // If next date is in the past, add another cycle
+    while (nextDate <= now) {
+      if (frequency === 'weekly') {
+        nextDate = new Date(nextDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      } else {
+        nextDate = new Date(nextDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+      }
+    }
+    
+    return nextDate;
+  };
+  
+  // Format date for display
+  const formatNextAdjustmentDate = (date: Date) => {
+    const now = new Date();
+    const diffInDays = Math.ceil((date.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+    
+    if (diffInDays === 1) {
+      return "Tomorrow";
+    } else if (diffInDays <= 7) {
+      return `In ${diffInDays} days (${date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })})`;
+    } else {
+      return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} (${diffInDays} days)`;
+    }
+  };
 
   // Get auto-adjustment settings
   const { data: autoAdjustmentSettings, refetch: refetchAutoSettings } = useQuery({
@@ -1022,8 +1073,15 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                   <p className="text-sm text-green-700 dark:text-green-300 mb-2">
                     Your macro adjustments will be applied automatically {autoAdjustmentFrequency === 'weekly' ? 'every week' : 'every 2 weeks'} based on your progress data.
                   </p>
-                  <div className="text-xs text-green-600 dark:text-green-400">
-                    Next adjustment: {autoAdjustmentFrequency === 'weekly' ? 'Next Monday' : 'In 2 weeks'}
+                  <div className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    Next adjustment: {(() => {
+                      const nextDate = calculateNextAdjustmentDate(
+                        autoAdjustmentSettings?.lastAutoAdjustment || null,
+                        autoAdjustmentFrequency
+                      );
+                      return formatNextAdjustmentDate(nextDate);
+                    })()}
                   </div>
                 </div>
               )}
