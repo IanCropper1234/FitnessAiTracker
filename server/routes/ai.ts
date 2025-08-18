@@ -197,13 +197,31 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
       recordsWithMicronutrients: nutrition.filter((n: any) => n.micronutrients && Object.keys(n.micronutrients).length > 0).length,
       recordsWithCompleteMicronutrients: nutrition.filter((n: any) => {
         const micro = n.micronutrients || {};
-        // Check for at least 10 key micronutrients
-        const keyNutrients = ['vitaminC', 'iron', 'calcium', 'vitaminD', 'vitaminB12', 'folate', 'zinc', 'magnesium', 'potassium', 'fiber'];
-        return keyNutrients.filter(key => micro[key] && micro[key] !== null).length >= 5;
+        // Count meaningful micronutrient values (more realistic approach)
+        const meaningfulValues = Object.keys(micro).filter(key => {
+          const value = micro[key];
+          return value !== null && 
+                 value !== undefined && 
+                 value !== 0 && 
+                 value !== '' &&
+                 typeof value === 'number' &&
+                 value > 0;
+        }).length;
+        // Consider record complete if it has at least 3 meaningful micronutrients
+        // This is more realistic given that most food databases have limited micro data
+        return meaningfulValues >= 3;
       }).length,
       avgMicronutrientsPerRecord: nutrition.reduce((acc: number, n: any) => {
         const micro = n.micronutrients || {};
-        return acc + Object.keys(micro).filter(key => micro[key] !== null && micro[key] !== undefined).length;
+        return acc + Object.keys(micro).filter(key => {
+          const value = micro[key];
+          return value !== null && 
+                 value !== undefined && 
+                 value !== 0 && 
+                 value !== '' &&
+                 typeof value === 'number' &&
+                 value > 0;
+        }).length;
       }, 0) / nutrition.length
     };
     
