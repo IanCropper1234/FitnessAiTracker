@@ -76,7 +76,19 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
     }
   });
 
-  // Get weight goals to determine fitness goal
+  // Get unified goal data from dietGoals (single source of truth)
+  const { data: unifiedGoals } = useQuery({
+    queryKey: ['/api/unified-goals'],
+    queryFn: async () => {
+      const response = await fetch('/api/unified-goals', {
+        credentials: 'include'
+      });
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
+  // Get weight goals to determine fitness goal (backup for legacy compatibility)
   const { data: weightGoals } = useQuery({
     queryKey: ['/api/weight-goals'],
     queryFn: async () => {
@@ -132,36 +144,59 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
 
   const readinessScore = calculateReadinessScore();
 
-  // Determine phase based on user's fitness goal from multiple sources
+  // Determine phase based on unified goal data (single source of truth)
   const getCurrentPhase = () => {
-    // Try to get fitness goal from user profile first
+    // Use unified goals from dietGoals as primary source
+    if (unifiedGoals && unifiedGoals.goalType) {
+      const goalType = unifiedGoals.goalType;
+      const weeklyWeightTarget = unifiedGoals.weeklyWeightTarget || 0;
+      
+      console.log('RP Analysis - Using Unified Goals:', {
+        goalType,
+        weeklyWeightTarget,
+        fitnessGoal: unifiedGoals.fitnessGoal
+      });
+      
+      // Map dietGoal types to RP phases
+      switch (goalType.toLowerCase()) {
+        case 'cut':
+        case 'cutting':
+          return 'Fat Loss';
+        case 'bulk':
+        case 'bulking':
+          return 'Muscle Gain';
+        case 'maintain':
+        case 'maintenance':
+        default:
+          return 'Maintenance';
+      }
+    }
+
+    // Fallback to legacy detection (for backward compatibility)
     let fitnessGoal = userProfile?.user?.fitnessGoal;
     
-    // If not found in profile, check weight goals
     if (!fitnessGoal && weightGoals && weightGoals.length > 0) {
       const latestWeightGoal = weightGoals[0];
       fitnessGoal = latestWeightGoal.goalType;
     }
     
-    // Debug: Log the goal types for troubleshooting
-    console.log('RP Analysis Debug:', {
+    console.log('RP Analysis - Fallback to Legacy Goals:', {
       profileGoal: userProfile?.user?.fitnessGoal,
       weightGoalType: weightGoals?.[0]?.goalType,
       weightChangeTarget: weightGoals?.[0]?.targetWeightChangePerWeek,
       finalGoal: fitnessGoal
     });
     
-    // Enhanced smart detection: Check if user has positive weight change target (bulking indicator)
+    // Enhanced smart detection for legacy data
     const hasPositiveWeightTarget = weightGoals?.[0]?.targetWeightChangePerWeek && 
                                    parseFloat(weightGoals[0].targetWeightChangePerWeek) > 0;
     
-    // If user has positive weight change target, it's muscle gain regardless of other fields
     if (hasPositiveWeightTarget) {
       console.log('RP Analysis: Detected Muscle Gain based on positive weight target');
       return 'Muscle Gain';
     }
     
-    // Map fitness goals to RP phases (be more inclusive in mapping)
+    // Map fitness goals to RP phases
     switch (fitnessGoal?.toLowerCase()) {
       case 'weight_loss':
       case 'fat_loss':

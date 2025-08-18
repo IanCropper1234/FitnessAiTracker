@@ -99,6 +99,8 @@ async function getAutoProgressedValues(exerciseId: number, userId: number, previ
   }
 }
 
+import { GoalSynchronizationService } from './services/goal-synchronization-service';
+
 // Auto-sync diet goals with fitness goal changes
 async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string, profileData: any) {
   // Check if user has custom calories enabled - if so, skip auto-sync
@@ -213,6 +215,9 @@ async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string,
     }
     
     console.log(`Auto-synced diet goals for fitness goal "${fitnessGoal}": ${dietGoal} - ${targetCalories} cal, ${targetProtein}g protein`);
+    
+    // Use new synchronization service to sync all dependent goals
+    await GoalSynchronizationService.syncAllGoalsFromDietGoal(userId);
   } catch (error) {
     console.error('Failed to sync diet goals:', error);
     throw error;
@@ -3032,15 +3037,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const weightGoal = await storage.createWeightGoal(goalData);
       
-      // Bidirectional sync: Update diet goal's weekly weight target if it exists
+      // Use Goal Synchronization Service for complete sync
       if (weightGoal && weightGoal.targetWeightChangePerWeek !== undefined) {
         try {
+          // Update diet goal first
           const existingDietGoal = await storage.getDietGoal(weightGoal.userId);
           if (existingDietGoal) {
             await storage.updateDietGoal(weightGoal.userId, {
               weeklyWeightTarget: weightGoal.targetWeightChangePerWeek
             });
             console.log(`Synced diet goal weekly weight target: ${weightGoal.targetWeightChangePerWeek}kg/week`);
+            
+            // Sync all other goals from diet goal (single source of truth)
+            await GoalSynchronizationService.syncAllGoalsFromDietGoal(weightGoal.userId);
           }
         } catch (syncError) {
           console.error('Failed to sync weight goal to diet goal:', syncError);
@@ -3413,6 +3422,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error: any) {
       console.error('Weekly adjustment error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get unified goal data from dietGoals (single source of truth)
+  app.get("/api/unified-goals", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const unifiedGoals = await GoalSynchronizationService.getUnifiedGoalData(userId);
+      res.json(unifiedGoals || {});
+    } catch (error: any) {
+      console.error('Get unified goals error:', error);
       res.status(500).json({ message: error.message });
     }
   });
