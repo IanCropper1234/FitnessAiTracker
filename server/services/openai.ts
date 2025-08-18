@@ -265,11 +265,15 @@ Return only valid JSON with all required fields.`
    - Determine realistic serving sizes based on food type and common consumption patterns
    - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
 
-4. **COMPREHENSIVE MICRONUTRIENT EXTRACTION:**
-   - Include ALL significant vitamins and minerals naturally present in the food components
-   - For processed foods: Include fortified vitamins/minerals commonly added
-   - For supplements: Extract ALL active compounds and ingredients
-   - Use scientific nutritional databases for accuracy
+4. **COMPREHENSIVE MICRONUTRIENT EXTRACTION (CRITICAL REQUIREMENT):**
+   - Extract EVERY vitamin and mineral naturally present in the food, even in small amounts
+   - Use comprehensive nutritional databases (USDA FoodData Central, etc.) for complete micronutrient profiles
+   - Include ALL vitamins: A, D, E, K, B1-B12, C, folate, biotin, pantothenic acid, choline
+   - Include ALL minerals: calcium, iron, magnesium, phosphorus, potassium, sodium, zinc, copper, manganese, selenium, iodine, fluoride, chromium, molybdenum
+   - For processed foods: Include fortified vitamins/minerals commonly added (especially B vitamins, iron, calcium)
+   - For fresh foods: Include natural micronutrients based on scientific nutritional composition
+   - For supplements: Extract ALL active compounds and ingredients beyond basic vitamins/minerals
+   - NEVER leave micronutrient sections empty - every food contains multiple vitamins and minerals
 
 5. **NUTRITION VALIDATION & REASONABLENESS CHECK:**
    - Verify macronutrient ratios make sense for the food type
@@ -290,19 +294,28 @@ Return only valid JSON with all required fields.`
 - portionWeight: standardized portion weight as number (choose appropriate: 100, 150, 200, 240, 250, 300, etc.)
 - portionUnit: OPTIMAL unit for this food type (string: "g", "ml", "cups", "pieces", "servings", "tbsp", etc.)
 - ingredientBreakdown: array of food components analyzed (e.g., ["whole wheat bread: 80g", "grilled chicken: 100g", "lettuce: 20g"])
-- micronutrients: comprehensive vitamin and mineral data based on all ingredients (object with fields):
+- micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
-  * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
-  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
-  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
-  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g)
-  * Supplement Compounds (if applicable): coq10 (mg), glucosamine (mg), probiotics (CFU), collagen (g), creatine (g), bcaa (g), etc.
+  * Water-Soluble Vitamins: vitaminB1/thiamine (mg), vitaminB2/riboflavin (mg), vitaminB3/niacin (mg), vitaminB5/pantothenic acid (mg), vitaminB6/pyridoxine (mg), vitaminB7/biotin (mcg), vitaminB9/folate (mcg), vitaminB12/cobalamin (mcg), vitaminC/ascorbic acid (mg), choline (mg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg), sulfur (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg), boron (mg), cobalt (mcg), nickel (mcg), silicon (mg), vanadium (mcg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), starch (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), omega9 (g), alcohol (g)
+  * Amino Acids (for protein foods): leucine (mg), isoleucine (mg), valine (mg), lysine (mg), methionine (mg), phenylalanine (mg), threonine (mg), tryptophan (mg), histidine (mg), arginine (mg), alanine (mg), aspartic acid (mg), cysteine (mg), glutamic acid (mg), glycine (mg), proline (mg), serine (mg), tyrosine (mg)
+  * Antioxidants & Phytonutrients: betaCarotene (mcg), lycopene (mcg), lutein (mcg), zeaxanthin (mcg), anthocyanins (mg), flavonoids (mg), polyphenols (mg), carotenoids (mcg)
+  * Supplement Compounds (if applicable): coq10 (mg), glucosamine (mg), chondroitin (mg), probiotics (CFU), collagen (g), creatine (g), bcaa (g), hmb (mg), carnitine (mg), taurine (mg), etc.
 - nutritionValidation: brief assessment of result reasonableness (string: e.g., "Values consistent with typical chicken breast nutrition")
 
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
 - ALWAYS choose the most logical unit for the food type
-- ALWAYS include realistic micronutrient data based on actual food composition
+- ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
+- Use scientific nutritional databases to ensure completeness (USDA FoodData Central standards)
+- NEVER provide empty or minimal micronutrient data - include ALL naturally occurring nutrients
+- For fruits/vegetables: Include vitamin C, folate, potassium, antioxidants, phytonutrients
+- For grains: Include B vitamins, iron, magnesium, zinc, selenium
+- For dairy: Include calcium, vitamin D, B12, riboflavin, phosphorus
+- For meat/fish: Include iron, zinc, B vitamins, selenium, phosphorus
+- For nuts/seeds: Include vitamin E, magnesium, zinc, healthy fats
 - ALWAYS validate that your nutritional values make sense
 
 Return only valid JSON with all required fields.`
@@ -328,7 +341,7 @@ Return only valid JSON with all required fields.`
       messages: [
         {
           role: "system",
-          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis. Always respond with valid JSON containing complete nutritional data. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
+          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
         },
         {
           role: "user",
