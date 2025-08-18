@@ -261,7 +261,7 @@ function WorkoutSessionsWithBulkActions({
       </div>
 
       {/* Sessions Grid */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 overflow-hidden">
         {sessions.map((session) => (
           <WorkoutSessionCard
             key={session.id}
@@ -343,7 +343,7 @@ function WorkoutSessionCard({
   };
 
   return (
-    <Card className="p-3 pl-[0px] pr-[0px]">
+    <Card className="p-3 overflow-hidden">
       {/* Compact Header Section */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-start gap-2 flex-1 min-w-0">
@@ -356,18 +356,18 @@ function WorkoutSessionCard({
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-foreground truncate text-[12px] font-bold pl-[5px] pr-[5px] ml-[2px] mr-[2px]">{session.name}</h3>
+              <h3 className="text-foreground truncate text-[12px] font-bold">{session.name}</h3>
               {mesocycleName && (
-                <span className="px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap pl-[0px] pr-[0px] ml-[8px] mr-[8px]">
+                <span className="px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap shrink-0">
                   {mesocycleName}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 ml-[10px] mr-[10px]">
-              <p className="text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 min-w-0">
+              <p className="text-xs text-muted-foreground truncate">
                 {new Date(session.date).toLocaleDateString()}
               </p>
-              <div className="px-1.5 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+              <div className="px-1.5 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 shrink-0">
                 {session.isCompleted ? "Done" : "Active"}
               </div>
             </div>
@@ -375,7 +375,7 @@ function WorkoutSessionCard({
         </div>
         
         {/* Compact Actions */}
-        <div className="flex items-center gap-1.5 flex-shrink-0 pl-[0px] pr-[0px] ml-[0px] mr-[0px]">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {session.isCompleted && (
             <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
           )}
@@ -416,12 +416,12 @@ function WorkoutSessionCard({
       </div>
       {/* Compact Stats Row */}
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 pb-2 border-b border-border/50">
-        <div className="flex items-center gap-3 ml-[10px] mr-[10px]">
+        <div className="flex items-center gap-3">
           <span>{session.duration || 0}min</span>
           <span>•</span>
           <span>{session.totalVolume || 0}kg</span>
         </div>
-        <div className="text-xs font-medium pl-[0px] pr-[0px] ml-[10px] mr-[10px]">
+        <div className="text-xs font-medium">
           {session.isCompleted ? "Completed" : "In Progress"}
         </div>
       </div>
