@@ -323,6 +323,39 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
         return !isNaN(weightChange) ? weightChange : null;
       }
     }
+    
+    // Manual calculation from body metrics if weekly goals don't have weight data
+    if (bodyMetrics && bodyMetrics.length > 1 && selectedWeek) {
+      const weekStart = new Date(selectedWeek);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      
+      const previousWeekStart = new Date(weekStart);
+      previousWeekStart.setDate(previousWeekStart.getDate() - 7);
+      
+      // Get current week weight (most recent in the week)
+      const currentWeekMetrics = bodyMetrics.filter((metric: any) => {
+        const metricDate = new Date(metric.date);
+        return metricDate >= weekStart && metricDate <= weekEnd;
+      }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      // Get previous week weight (most recent from previous week)
+      const previousWeekMetrics = bodyMetrics.filter((metric: any) => {
+        const metricDate = new Date(metric.date);
+        return metricDate >= previousWeekStart && metricDate < weekStart;
+      }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      if (currentWeekMetrics.length > 0 && previousWeekMetrics.length > 0) {
+        const currentWeight = parseFloat(currentWeekMetrics[0].weight);
+        const previousWeight = parseFloat(previousWeekMetrics[0].weight);
+        
+        if (!isNaN(currentWeight) && !isNaN(previousWeight)) {
+          console.log('Manual weight calculation:', { currentWeight, previousWeight, change: currentWeight - previousWeight });
+          return currentWeight - previousWeight;
+        }
+      }
+    }
+    
     return null; // Return null when no valid weight data available
   };
 
