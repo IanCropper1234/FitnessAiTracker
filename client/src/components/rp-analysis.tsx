@@ -64,6 +64,18 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
     }
   });
 
+  // Get user profile for fitness goal
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile'],
+    queryFn: async () => {
+      const response = await fetch('/api/user/profile', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch profile');
+      return response.json();
+    }
+  });
+
   if (isLoading) {
     return (
       <Card>
@@ -108,11 +120,25 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
 
   const readinessScore = calculateReadinessScore();
 
-  // Determine phase based on analytics
+  // Determine phase based on user's fitness goal, not weight change
   const getCurrentPhase = () => {
-    if (analytics?.bodyProgress?.progress?.weightChange < -0.5) return 'Fat Loss';
-    if (analytics?.bodyProgress?.progress?.weightChange > 0.5) return 'Muscle Gain';
-    return 'Maintenance';
+    const fitnessGoal = userProfile?.user?.fitnessGoal;
+    
+    // Map fitness goals to RP phases
+    switch (fitnessGoal) {
+      case 'weight_loss':
+      case 'fat_loss':
+        return 'Fat Loss';
+      case 'muscle_gain':
+      case 'bulk':
+      case 'gain_muscle':
+        return 'Muscle Gain';
+      case 'maintain':
+      case 'maintenance':
+      case 'body_recomposition':
+      default:
+        return 'Maintenance';
+    }
   };
 
   const currentPhase = getCurrentPhase();
