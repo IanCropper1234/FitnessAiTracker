@@ -49,7 +49,7 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
   const [previousUnit, setPreviousUnit] = useState<'metric' | 'imperial'>('metric');
   const [showConversionHelper, setShowConversionHelper] = useState(false);
-  const [showUnifiedUnits, setShowUnifiedUnits] = useState(true);
+  const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>('kg');
   // Pagination state for memory optimization
   const [currentPage, setCurrentPage] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -245,31 +245,28 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
            formData.hips || formData.thigh || formData.bicep;
   };
 
-  // Enhanced display functions for timeline with unit conversion
+  // Simple display functions for timeline with kg/lbs conversion
   const displayValue = (value: number | undefined, type: 'weight' | 'measurement', originalUnit: 'metric' | 'imperial'): string => {
     if (!value) return '';
     
-    if (showUnifiedUnits) {
-      // Convert to current preferred unit
-      const converted = convertValue(value, type, originalUnit, unit);
+    if (type === 'weight') {
+      // For weights, convert based on display unit setting
+      const currentUnit = displayUnit === 'kg' ? 'metric' : 'imperial';
+      const converted = convertValue(value, 'weight', originalUnit, currentUnit);
       return converted.toString();
     } else {
-      // Show original value
+      // For measurements, keep original values
       return value.toString();
     }
   };
 
   const getUnitIndicator = (originalUnit: 'metric' | 'imperial', type: 'weight' | 'measurement' = 'weight'): string => {
-    if (showUnifiedUnits) {
-      // Always show current preferred unit
-      return type === 'weight' ? 
-        (unit === 'metric' ? 'kg' : 'lbs') : 
-        (unit === 'metric' ? 'cm' : 'in');
+    if (type === 'weight') {
+      // Always show current display unit for weights
+      return displayUnit;
     } else {
-      // Show original unit
-      return type === 'weight' ? 
-        (originalUnit === 'metric' ? 'kg' : 'lbs') : 
-        (originalUnit === 'metric' ? 'cm' : 'in');
+      // For measurements, show original unit
+      return originalUnit === 'metric' ? 'cm' : 'in';
     }
   };
 
@@ -868,13 +865,13 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowUnifiedUnits(!showUnifiedUnits)}
+              onClick={() => setDisplayUnit(displayUnit === 'kg' ? 'lbs' : 'kg')}
               className="text-xs transition-colors h-6 px-2 text-black font-medium"
               style={{ backgroundColor: '#479bf5' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
             >
-              {showUnifiedUnits ? `Unified (${formatUnit('weight')})` : 'Original Units'}
+              {displayUnit === 'kg' ? 'kg' : 'lbs'}
             </Button>
           </div>
         </CardHeader>
