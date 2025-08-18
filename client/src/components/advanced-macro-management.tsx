@@ -36,20 +36,23 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const [autoAdjustmentFrequency, setAutoAdjustmentFrequency] = useState<'weekly' | 'biweekly'>('weekly');
   
   // Calculate next adjustment date
-  const calculateNextAdjustmentDate = (lastAdjustment: string | null, frequency: 'weekly' | 'biweekly') => {
+  const calculateNextAdjustmentDate = (settings: any, frequency: 'weekly' | 'biweekly') => {
     const now = new Date();
     let nextDate: Date;
     
-    if (lastAdjustment) {
-      // If we have a last adjustment date, calculate from there
-      const lastDate = new Date(lastAdjustment);
+    // Use lastAutoAdjustment if available, otherwise use the settings updatedAt date (when auto-adjustment was enabled)
+    const baseDate = settings?.lastAutoAdjustment || settings?.updatedAt;
+    
+    if (baseDate) {
+      // Calculate from the base date (either last adjustment or when auto-adjustment was enabled)
+      const startDate = new Date(baseDate);
       if (frequency === 'weekly') {
-        nextDate = new Date(lastDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        nextDate = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
       } else {
-        nextDate = new Date(lastDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+        nextDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
       }
     } else {
-      // If no last adjustment, calculate from today
+      // Fallback: calculate from today
       if (frequency === 'weekly') {
         // Next Monday
         const daysUntilMonday = (1 + 7 - now.getDay()) % 7 || 7;
@@ -1077,7 +1080,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     <Clock className="w-3 h-3" />
                     Next adjustment: {(() => {
                       const nextDate = calculateNextAdjustmentDate(
-                        autoAdjustmentSettings?.lastAutoAdjustment || null,
+                        autoAdjustmentSettings,
                         autoAdjustmentFrequency
                       );
                       return formatNextAdjustmentDate(nextDate);
