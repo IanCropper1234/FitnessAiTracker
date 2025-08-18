@@ -102,14 +102,14 @@ export class GoalSynchronizationService {
    */
   private static async syncUserProfileFromDietGoal(userId: number, dietGoal: any): Promise<void> {
     try {
-      // Map dietGoal.goal to userProfile.fitnessGoal
+      // Map dietGoal.goal to userProfile.fitnessGoal (standardized mapping)
       const fitnessGoalMapping: Record<string, string> = {
-        'cut': 'Weight Loss',
-        'bulk': 'Muscle Gain',
-        'maintain': 'Maintenance'
+        'cut': 'fat_loss',
+        'bulk': 'muscle_gain',
+        'maintain': 'maintenance'
       };
 
-      const fitnessGoal = fitnessGoalMapping[dietGoal.goal] || 'Maintenance';
+      const fitnessGoal = fitnessGoalMapping[dietGoal.goal] || 'maintenance';
 
       // Update user profile
       await db.update(userProfiles)
@@ -122,6 +122,61 @@ export class GoalSynchronizationService {
       console.log(`👤 Updated userProfile.fitnessGoal: ${fitnessGoal}`);
     } catch (error) {
       console.error('Error syncing user profile from diet goal:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sync from Weight Goal to all other goals (reverse sync)
+   * When user creates/updates weight goal, update dietGoal and userProfile accordingly
+   */
+  static async syncFromWeightGoal(userId: number, weightGoalType: string, targetWeightChangePerWeek: number): Promise<void> {
+    try {
+      console.log(`🔄 Syncing goals from weightGoal for user ${userId}:`, {
+        goalType: weightGoalType,
+        weeklyChange: targetWeightChangePerWeek
+      });
+
+      // Map weight goal type to diet goal and fitness goal
+      let dietGoalType: string;
+      let fitnessGoal: string;
+
+      switch (weightGoalType) {
+        case 'cutting':
+          dietGoalType = 'cut';
+          fitnessGoal = 'fat_loss';
+          break;
+        case 'bulking':
+          dietGoalType = 'bulk';
+          fitnessGoal = 'muscle_gain';
+          break;
+        case 'maintenance':
+        default:
+          dietGoalType = 'maintain';
+          fitnessGoal = 'maintenance';
+          break;
+      }
+
+      // Update userProfile.fitnessGoal
+      const existingProfile = await db.select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, userId))
+        .limit(1);
+
+      if (existingProfile.length > 0) {
+        await db.update(userProfiles)
+          .set({
+            fitnessGoal,
+            updatedAt: new Date()
+          })
+          .where(eq(userProfiles.id, existingProfile[0].id));
+
+        console.log(`👤 Updated userProfile.fitnessGoal: ${fitnessGoal}`);
+      }
+
+      console.log(`✅ Successfully synced goals from weightGoal for user ${userId}`);
+    } catch (error) {
+      console.error('Error syncing from weight goal:', error);
       throw error;
     }
   }

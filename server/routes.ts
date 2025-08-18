@@ -3040,8 +3040,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
             console.log(`Synced diet goal weekly weight target: ${weightGoal.targetWeightChangePerWeek}kg/week`);
             
-            // Sync all other goals from diet goal (single source of truth)
-            await GoalSynchronizationService.syncAllGoalsFromDietGoal(weightGoal.userId);
+            // Sync from weight goal to other goals (weight goal as source)
+            await GoalSynchronizationService.syncFromWeightGoal(
+              weightGoal.userId, 
+              weightGoal.goalType, 
+              parseFloat(weightGoal.targetWeightChangePerWeek || '0')
+            );
           }
         } catch (syncError) {
           console.error('Failed to sync weight goal to diet goal:', syncError);
