@@ -76,6 +76,18 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
     }
   });
 
+  // Get weight goals to determine fitness goal
+  const { data: weightGoals } = useQuery({
+    queryKey: ['/api/weight-goals'],
+    queryFn: async () => {
+      const response = await fetch('/api/weight-goals', {
+        credentials: 'include'
+      });
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
   if (isLoading) {
     return (
       <Card>
@@ -120,23 +132,51 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
 
   const readinessScore = calculateReadinessScore();
 
-  // Determine phase based on user's fitness goal, not weight change
+  // Determine phase based on user's fitness goal from multiple sources
   const getCurrentPhase = () => {
-    const fitnessGoal = userProfile?.user?.fitnessGoal;
+    // Try to get fitness goal from user profile first
+    let fitnessGoal = userProfile?.user?.fitnessGoal;
     
-    // Map fitness goals to RP phases
-    switch (fitnessGoal) {
+    // If not found in profile, check weight goals
+    if (!fitnessGoal && weightGoals && weightGoals.length > 0) {
+      const latestWeightGoal = weightGoals[0];
+      fitnessGoal = latestWeightGoal.goalType;
+    }
+    
+    // Debug: Log the goal types for troubleshooting
+    console.log('RP Analysis Debug:', {
+      profileGoal: userProfile?.user?.fitnessGoal,
+      weightGoalType: weightGoals?.[0]?.goalType,
+      finalGoal: fitnessGoal
+    });
+    
+    // Map fitness goals to RP phases (be more inclusive in mapping)
+    switch (fitnessGoal?.toLowerCase()) {
       case 'weight_loss':
       case 'fat_loss':
+      case 'fat loss':
+      case 'cutting':
+      case 'cut':
         return 'Fat Loss';
       case 'muscle_gain':
+      case 'muscle gain':
       case 'bulk':
+      case 'bulking':
       case 'gain_muscle':
+      case 'gain muscle':
+      case 'mass_gain':
         return 'Muscle Gain';
       case 'maintain':
       case 'maintenance':
       case 'body_recomposition':
+      case 'recomposition':
+      case 'recomp':
       default:
+        // If we have positive weight change target, assume muscle gain
+        if (weightGoals?.[0]?.targetWeightChangePerWeek && 
+            parseFloat(weightGoals[0].targetWeightChangePerWeek) > 0) {
+          return 'Muscle Gain';
+        }
         return 'Maintenance';
     }
   };
