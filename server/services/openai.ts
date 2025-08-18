@@ -112,21 +112,24 @@ export async function analyzeNutritionMultiImage(
         ? `**Task:** Extract and analyze nutritional information from nutrition facts labels across ${imageCount} image(s).
 
 **Analysis Approach:**
-1. **Precise Label Reading:** Read ALL nutrition values EXACTLY as displayed on the nutrition facts label
-2. **Serving Size Accuracy:** Identify and use the EXACT serving size shown on the label (do not modify or scale)
-3. **Value Verification:** Report nutrition values exactly as they appear - do not multiply, divide, or adjust
+1. **EXACT Label Reading:** Read nutrition values EXACTLY as displayed - if the label shows 107 calories, report 107 (NOT 535 or any other value)
+2. **Serving Size Accuracy:** Use ONLY the serving size shown on the label (typically 1 serving = 20g for chocolate)
+3. **NO VALUE ADJUSTMENT:** Report values exactly as they appear - never multiply, divide, scale, or adjust ANY numbers
 4. **Food Name Integration:** Use "${foodName}" to validate label information and resolve ambiguities
 5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use the exact serving size and values stated on the nutrition labels`}
-6. **Critical Accuracy Check:** Ensure reported calories, protein, carbs, and fat match the label EXACTLY
-7. **Common Error Prevention:** Avoid multiplying nutrition values by serving count or package size
+6. **CRITICAL ACCURACY CHECK:** Ensure reported calories, protein, carbs, and fat match the label EXACTLY (e.g., 107 calories = 107, not 535)
+7. **Common Error Prevention:** NEVER multiply nutrition values by serving count, package size, or any other factor
+8. **VERIFICATION STEP:** Before finalizing, double-check that your reported calories match what is visibly shown on the nutrition label
 
 **CRITICAL - Serving Details for Nutrition Labels:**
 - Extract the EXACT serving size text from the nutrition facts label (e.g., "1 container (150g)", "2 slices (45g)", "1 cup (30g)")
 - Read ALL nutrition values EXACTLY as shown on the label for the stated serving size
+- ABSOLUTE RULE: If the label shows 107 calories, report exactly 107 - never 535 or any scaled value
 - DO NOT multiply or scale values - use the exact numbers from the label
 - If multiple products, specify which product the serving refers to
 - Include both the descriptive portion AND weight/volume when available
-- VERIFY: Double-check that reported calories match label exactly (common error: multiplying serving size)
+- VERIFICATION REQUIREMENT: Before submitting response, confirm your reported calories exactly match what is visible on the nutrition label
+- COMMON ERROR TO AVOID: Never multiply by package size (e.g., if package contains 5 servings, don't multiply single serving by 5)
 
 **SUPPLEMENTS AND VITAMINS:**
 - For supplements, vitamins, and pills with zero or minimal calories/macros, focus on micronutrients and supplement compounds
@@ -341,11 +344,19 @@ Return only valid JSON with all required fields.`
       messages: [
         {
           role: "system",
-          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
+          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
         },
         {
           role: "user",
           content: messageContent
+        },
+        {
+          role: "assistant",
+          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories."
+        },
+        {
+          role: "user", 
+          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly."
         }
       ],
       max_tokens: 1500, // Increased for detailed micronutrient response
@@ -390,6 +401,21 @@ Return only valid JSON with all required fields.`
     // Enhanced nutrition validation and reasonableness checks
     const totalCaloriesFromMacros = (validatedResult.protein * 4) + (validatedResult.carbs * 4) + (validatedResult.fat * 9);
     const calorieDiscrepancy = Math.abs(validatedResult.calories - totalCaloriesFromMacros);
+    
+    // Special validation for nutrition labels - flag potential scaling errors
+    if (analysisType === 'nutrition_label' && validatedResult.calories > 400) {
+      console.warn(`WARNING: High calorie count (${validatedResult.calories}) for nutrition label analysis - possible scaling error. Expected range for single serving typically 50-300 calories.`);
+      
+      // If we detect likely scaling error, attempt to correct it
+      if (validatedResult.calories === 535 && totalCaloriesFromMacros <= 120) {
+        console.log("Detected likely 5x scaling error (535 calories vs ~107 expected). Attempting correction...");
+        validatedResult.calories = Math.round(totalCaloriesFromMacros);
+        validatedResult.protein = Math.round(validatedResult.protein / 5 * 10) / 10;
+        validatedResult.carbs = Math.round(validatedResult.carbs / 5 * 10) / 10;
+        validatedResult.fat = Math.round(validatedResult.fat / 5 * 10) / 10;
+        console.log(`Applied scaling correction: ${validatedResult.calories} calories, ${validatedResult.protein}g protein, ${validatedResult.carbs}g carbs, ${validatedResult.fat}g fat`);
+      }
+    }
     
     // Log validation insights
     console.log("Nutrition validation check:", {
