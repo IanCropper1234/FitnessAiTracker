@@ -534,19 +534,25 @@ export class AdvancedMacroManagementService {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_cutting';
           }
-        } else if (goalType === 'bulking' || goalType === 'bulk') {
+        } else if (goalType === 'bulking' || goalType === 'bulk' || 
+                   targetWeightChangePerWeek > 0 || 
+                   (currentDietGoal?.goal && ['gain', 'muscle_gain', 'bulking'].includes(currentDietGoal.goal.toLowerCase()))) {
           // Bulking phase: RP methodology - maintain during optimal progress, adjust after 2+ week plateaus
-          if (adherencePercentage >= 90 && weightChange <= 0) {
+          console.log('RP Analysis - Bulking detected:', { goalType, targetWeightChangePerWeek, weightChange, adherencePercentage });
+          
+          if (adherencePercentage >= 80 && weightChange <= 0) {
+            // Weight loss or no gain during bulking = increase calories
             adjustmentRecommendation = 'increase_calories';
             adjustmentReason = 'high_adherence_no_weight_gain';
+            console.log('RP Recommendation: Increase calories due to weight loss/no gain during bulk');
           } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 2.5) {
             // Only decrease if gaining significantly more than target (very conservative)
             adjustmentRecommendation = 'decrease_calories';
             adjustmentReason = 'excessive_weight_gain';
-          } else if (adherencePercentage < 80) {
+          } else if (adherencePercentage < 70) {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_bulking';
-          } else if (adherencePercentage >= 90 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.5) {
+          } else if (adherencePercentage >= 80 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.0) {
             // Optimal progress: maintain calories, only adjust after 2+ week plateaus or if significantly outside range
             adjustmentRecommendation = 'maintain';
             adjustmentReason = 'optimal_bulk_progress';

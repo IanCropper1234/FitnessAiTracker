@@ -3,7 +3,7 @@ import {
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences,
   muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, savedMealPlans, savedMeals,
-  savedWorkoutTemplates, weightGoals,
+  savedWorkoutTemplates, weightGoals, dietGoals,
   type User, type InsertUser, type UpsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -18,7 +18,7 @@ import {
   type SavedMeal, type InsertSavedMeal, 
   type WeightGoal, type InsertWeightGoal
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
   // Database access
@@ -732,36 +732,67 @@ export class MemStorage implements IStorage {
 
   // Diet Goals
   async getDietGoal(userId: number): Promise<any | undefined> {
-    return undefined; // Stub for memory storage
+    const db = this.getDb();
+    const [result] = await db.select()
+      .from(dietGoals)
+      .where(eq(dietGoals.userId, userId))
+      .orderBy(desc(dietGoals.updatedAt))
+      .limit(1);
+    return result;
   }
 
   async createDietGoal(goal: any): Promise<any> {
-    throw new Error("Not implemented in memory storage");
+    const db = this.getDb();
+    const [result] = await db.insert(dietGoals).values(goal).returning();
+    return result;
   }
 
   async updateDietGoal(userId: number, goal: any): Promise<any | undefined> {
-    return undefined; // Stub for memory storage
+    const db = this.getDb();
+    const [result] = await db.update(dietGoals)
+      .set({ ...goal, updatedAt: new Date() })
+      .where(eq(dietGoals.userId, userId))
+      .returning();
+    return result;
   }
 
-  // Weight Goals (stub implementation for memory storage)
+  // Weight Goals
   async getWeightGoals(userId: number): Promise<any[]> {
-    return [];
+    const db = this.getDb();
+    return await db.select().from(weightGoals).where(eq(weightGoals.userId, userId));
   }
 
   async getActiveWeightGoal(userId: number): Promise<any | undefined> {
-    return undefined;
+    const db = this.getDb();
+    const [result] = await db.select()
+      .from(weightGoals)
+      .where(and(
+        eq(weightGoals.userId, userId),
+        eq(weightGoals.isActive, true)
+      ))
+      .limit(1);
+    return result;
   }
 
   async createWeightGoal(goal: any): Promise<any> {
-    throw new Error("Not implemented in memory storage");
+    const db = this.getDb();
+    const [result] = await db.insert(weightGoals).values(goal).returning();
+    return result;
   }
 
   async updateWeightGoal(id: number, goal: any): Promise<any | undefined> {
-    return undefined;
+    const db = this.getDb();
+    const [result] = await db.update(weightGoals)
+      .set({ ...goal, updatedAt: new Date() })
+      .where(eq(weightGoals.id, id))
+      .returning();
+    return result;
   }
 
   async deleteWeightGoal(id: number): Promise<boolean> {
-    return false;
+    const db = this.getDb();
+    const result = await db.delete(weightGoals).where(eq(weightGoals.id, id));
+    return result.rowCount > 0;
   }
 
   // Saved Workout Templates (stub implementation for memory storage)
