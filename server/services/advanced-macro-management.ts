@@ -451,7 +451,14 @@ export class AdvancedMacroManagementService {
         adherencePercentage = AdvancedMacroManagementService.calculateAdherence(dailyTotals, currentDietGoal);
       }
 
-      // Get weight data for RP analysis (current week and previous week)
+      // Get weight data for RP analysis (14-day lookback for more accurate weight trend)
+      
+      console.log('🏋️ Weight Query Debug - Date ranges:', {
+        weekStart: weekStart.toISOString(),
+        weekEnd: weekEnd.toISOString(),
+        previousWeekStart: previousWeekStart.toISOString(),
+        fourteenDaysAgo: new Date(weekStart.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
+      });
 
       const [currentWeekWeight, previousWeekWeight] = await Promise.all([
         // Current week weight (latest entry in the week)
@@ -465,17 +472,22 @@ export class AdvancedMacroManagementService {
           .orderBy(desc(bodyMetrics.date))
           .limit(1),
         
-        // Previous week weight (latest entry from previous week)
+        // Previous 14 days weight for better trend analysis (excluding current week)
         db.select()
           .from(bodyMetrics)
           .where(and(
             eq(bodyMetrics.userId, userId),
-            gte(bodyMetrics.date, previousWeekStart),
-            lte(bodyMetrics.date, weekStart)
+            gte(bodyMetrics.date, new Date(weekStart.getTime() - 14 * 24 * 60 * 60 * 1000)),
+            lt(bodyMetrics.date, weekStart)
           ))
           .orderBy(desc(bodyMetrics.date))
           .limit(1)
       ]);
+
+      console.log('🏋️ Weight Data Found:', {
+        currentWeekWeight: currentWeekWeight[0],
+        previousWeekWeight: previousWeekWeight[0]
+      });
 
       // Calculate weight change and trend analysis with unit conversion
       let weightChange = 0;

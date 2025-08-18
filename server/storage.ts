@@ -738,6 +738,7 @@ export class MemStorage implements IStorage {
       .where(eq(dietGoals.userId, userId))
       .orderBy(desc(dietGoals.updatedAt))
       .limit(1);
+    console.log('💾 getDietGoal query result:', result);
     return result;
   }
 
