@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { weeklyNutritionGoals, dailyWellnessCheckins, weeklyWellnessSummaries, mealMacroDistribution, macroFlexibilityRules, dietGoals, nutritionLogs, bodyMetrics } from '../../shared/schema';
-import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, and, gte, lte, lt, desc } from 'drizzle-orm';
 import { UnitConverter } from '../../shared/utils/unit-conversion';
 import { DailyWellnessService } from './daily-wellness-service';
 
