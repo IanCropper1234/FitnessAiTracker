@@ -306,57 +306,50 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
   };
 
-  // Get actual weekly weight change from weekly goals data with proper NULL handling
-  const getWeeklyWeightChange = () => {
-    if (weeklyGoals && weeklyGoals.length > 0) {
-      // Try to get weight change from current and previous weights
-      if (weeklyGoals[0].currentWeight && weeklyGoals[0].previousWeight) {
-        const current = parseFloat(weeklyGoals[0].currentWeight);
-        const previous = parseFloat(weeklyGoals[0].previousWeight);
-        if (!isNaN(current) && !isNaN(previous)) {
-          return current - previous;
-        }
-      }
-      // Fallback to direct weight change field
-      if (weeklyGoals[0].weightChange) {
-        const weightChange = parseFloat(weeklyGoals[0].weightChange);
-        return !isNaN(weightChange) ? weightChange : null;
-      }
+  // Get 14-day weight change independent of weekly analysis
+  const get14DayWeightChange = () => {
+    if (!bodyMetrics || bodyMetrics.length < 2) {
+      return null;
     }
     
-    // Manual calculation from body metrics if weekly goals don't have weight data
-    if (bodyMetrics && bodyMetrics.length > 1 && selectedWeek) {
-      const weekStart = new Date(selectedWeek);
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekEnd.getDate() + 6);
-      
-      const previousWeekStart = new Date(weekStart);
-      previousWeekStart.setDate(previousWeekStart.getDate() - 7);
-      
-      // Get current week weight (most recent in the week)
-      const currentWeekMetrics = bodyMetrics.filter((metric: any) => {
-        const metricDate = new Date(metric.date);
-        return metricDate >= weekStart && metricDate <= weekEnd;
-      }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      
-      // Get previous week weight (most recent from previous week)
-      const previousWeekMetrics = bodyMetrics.filter((metric: any) => {
-        const metricDate = new Date(metric.date);
-        return metricDate >= previousWeekStart && metricDate < weekStart;
-      }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      
-      if (currentWeekMetrics.length > 0 && previousWeekMetrics.length > 0) {
-        const currentWeight = parseFloat(currentWeekMetrics[0].weight);
-        const previousWeight = parseFloat(previousWeekMetrics[0].weight);
-        
-        if (!isNaN(currentWeight) && !isNaN(previousWeight)) {
-          console.log('Manual weight calculation:', { currentWeight, previousWeight, change: currentWeight - previousWeight });
-          return currentWeight - previousWeight;
-        }
-      }
+    const now = new Date();
+    const fourteenDaysAgo = new Date(now);
+    fourteenDaysAgo.setDate(now.getDate() - 14);
+    
+    // Get all weight data from the past 14 days, sorted by date (newest first)
+    const recentMetrics = bodyMetrics.filter((metric: any) => {
+      const metricDate = new Date(metric.date);
+      return metricDate >= fourteenDaysAgo;
+    }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    if (recentMetrics.length < 2) {
+      return null;
     }
     
-    return null; // Return null when no valid weight data available
+    // Get most recent weight and earliest weight in the 14-day period
+    const mostRecentWeight = parseFloat(recentMetrics[0].weight);
+    const earliestWeight = parseFloat(recentMetrics[recentMetrics.length - 1].weight);
+    
+    if (!isNaN(mostRecentWeight) && !isNaN(earliestWeight)) {
+      const weightChange = mostRecentWeight - earliestWeight;
+      const daysDifference = Math.max(1, Math.ceil((new Date(recentMetrics[0].date).getTime() - new Date(recentMetrics[recentMetrics.length - 1].date).getTime()) / (1000 * 60 * 60 * 24)));
+      
+      // Convert to weekly rate (14 days = 2 weeks, so divide by 2)
+      const weeklyRate = weightChange / Math.max(1, daysDifference / 7);
+      
+      console.log('14-day weight calculation:', { 
+        mostRecentWeight, 
+        earliestWeight, 
+        weightChange, 
+        daysDifference, 
+        weeklyRate,
+        dataPoints: recentMetrics.length 
+      });
+      
+      return weeklyRate;
+    }
+    
+    return null;
   };
 
   // Format weight change with user's preferred unit
@@ -978,10 +971,10 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <div className="text-right">
                           <span className="text-sm font-medium text-black dark:text-white">
-                            {formatWeightChangeWithUnit(getWeeklyWeightChange() || 0)}
+                            {formatWeightChangeWithUnit(get14DayWeightChange() || 0)}
                           </span>
                           <div className="text-xs text-gray-500 dark:text-gray-400">
-                            {getWeeklyWeightChange() === null ? 'Add weight data in Body section' : 'Current week'}
+                            {get14DayWeightChange() === null ? 'Add weight data in Body section' : 'Past 14 days'}
                           </div>
                         </div>
                       </div>
@@ -1066,7 +1059,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Weight Change</span>
                         <span className="text-sm font-medium text-black dark:text-white">
-                          {formatWeightChangeWithUnit(getWeeklyWeightChange() || 0)}
+                          {formatWeightChangeWithUnit(get14DayWeightChange() || 0)}
                         </span>
                       </div>
                       <div className="flex justify-between">
