@@ -347,10 +347,24 @@ export function AddFood({ user }: AddFoodProps) {
         // Scale micronutrients proportionally if they exist
         ...(baseAIResult.micronutrients && {
           micronutrients: Object.fromEntries(
-            Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
-              key, 
-              typeof value === 'number' ? Math.round((value * multiplier) * 100) / 100 : value
-            ])
+            Object.entries(baseAIResult.micronutrients).map(([categoryKey, categoryValue]: [string, any]) => {
+              if (typeof categoryValue === 'object' && categoryValue !== null) {
+                // This is a category object (e.g., "Major Minerals", "Vitamins")
+                const scaledCategory = Object.fromEntries(
+                  Object.entries(categoryValue).map(([nutrientKey, nutrientValue]: [string, any]) => [
+                    nutrientKey,
+                    typeof nutrientValue === 'number' ? Math.round((nutrientValue * multiplier) * 100) / 100 : nutrientValue
+                  ])
+                );
+                return [categoryKey, scaledCategory];
+              } else if (typeof categoryValue === 'number') {
+                // This is a direct nutrient value
+                return [categoryKey, Math.round((categoryValue * multiplier) * 100) / 100];
+              } else {
+                // This is a non-numeric value, keep as is
+                return [categoryKey, categoryValue];
+              }
+            })
           )
         })
       };
@@ -388,10 +402,24 @@ export function AddFood({ user }: AddFoodProps) {
         // Scale micronutrients proportionally if they exist
         ...(baseAIResult.micronutrients && {
           micronutrients: Object.fromEntries(
-            Object.entries(baseAIResult.micronutrients).map(([key, value]: [string, any]) => [
-              key, 
-              typeof value === 'number' ? Math.round((value * multiplier) * 100) / 100 : value
-            ])
+            Object.entries(baseAIResult.micronutrients).map(([categoryKey, categoryValue]: [string, any]) => {
+              if (typeof categoryValue === 'object' && categoryValue !== null) {
+                // This is a category object (e.g., "Major Minerals", "Vitamins")
+                const scaledCategory = Object.fromEntries(
+                  Object.entries(categoryValue).map(([nutrientKey, nutrientValue]: [string, any]) => [
+                    nutrientKey,
+                    typeof nutrientValue === 'number' ? Math.round((nutrientValue * multiplier) * 100) / 100 : nutrientValue
+                  ])
+                );
+                return [categoryKey, scaledCategory];
+              } else if (typeof categoryValue === 'number') {
+                // This is a direct nutrient value
+                return [categoryKey, Math.round((categoryValue * multiplier) * 100) / 100];
+              } else {
+                // This is a non-numeric value, keep as is
+                return [categoryKey, categoryValue];
+              }
+            })
           )
         })
       };
