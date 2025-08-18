@@ -676,7 +676,13 @@ export class AdvancedMacroManagementService {
                   // Only update missing weight data, preserve all other stored values
                   if (!updatedGoal.currentWeight) updatedGoal.currentWeight = calculatedData.currentWeight;
                   if (!updatedGoal.previousWeight) updatedGoal.previousWeight = calculatedData.previousWeight;
-                  // Never override stored adjustmentRecommendation
+                  // Update recommendation if weight data changed or for fresh analysis
+              if (calculatedData.adjustmentRecommendation && 
+                  (calculatedData.currentWeight !== null || calculatedData.previousWeight !== null)) {
+                updatedGoal.adjustmentRecommendation = calculatedData.adjustmentRecommendation;
+                updatedGoal.adjustmentReason = calculatedData.adjustmentReason;
+                updatedGoal.adjustmentPercentage = calculatedData.adjustmentPercentage;
+              }
                 }
               }
             }
