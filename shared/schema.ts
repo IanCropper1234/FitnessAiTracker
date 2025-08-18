@@ -42,7 +42,7 @@ export const userProfiles = pgTable("user_profiles", {
   weightUnit: text("weight_unit").default("metric"), // metric (kg) or imperial (lbs)
   heightUnit: text("height_unit").default("metric"), // metric (cm) or imperial (inches)
   activityLevel: text("activity_level"), // sedentary, lightly_active, moderately_active, very_active
-  fitnessGoal: text("fitness_goal"), // fat_loss, muscle_gain, maintenance
+  fitnessGoal: text("fitness_goal").$type<'fat_loss' | 'muscle_gain' | 'maintenance'>(), // Standardized: fat_loss, muscle_gain, maintenance
   dietaryRestrictions: text("dietary_restrictions").array(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -115,9 +115,12 @@ async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string,
   let calorieAdjustment = 0;
   let weeklyWeightTarget = 0;
   
+  // Standardized goal mapping: Only three core options
   switch (fitnessGoal) {
-    case "Weight Loss":
-    case "weight_loss":
+    case "Fat Loss":
+    case "fat_loss":
+    case "Weight Loss": // Legacy support
+    case "weight_loss": // Legacy support
       dietGoal = "cut";
       calorieAdjustment = -300; // 300 calorie deficit
       weeklyWeightTarget = -0.5; // 0.5kg loss per week
@@ -128,29 +131,18 @@ async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string,
       calorieAdjustment = +250; // 250 calorie surplus
       weeklyWeightTarget = 0.25; // 0.25kg gain per week
       break;
-    case "Body Recomposition":
-    case "body_recomposition":
-      dietGoal = "maintain";
-      calorieAdjustment = 0; // Maintenance calories
-      weeklyWeightTarget = 0;
-      break;
-    case "Strength Gain":
-    case "strength_gain":
-      dietGoal = "bulk";
-      calorieAdjustment = +200; // Modest surplus
-      weeklyWeightTarget = 0.2;
-      break;
-    case "Endurance Improvement":
-    case "endurance_improvement":
-      dietGoal = "maintain";
-      calorieAdjustment = +100; // Slight surplus for recovery
-      weeklyWeightTarget = 0;
-      break;
     case "Maintenance":
     case "maintenance":
+    // Legacy goals mapped to maintenance
+    case "Body Recomposition":
+    case "body_recomposition":
+    case "Strength Gain":
+    case "strength_gain":
+    case "Endurance Improvement":
+    case "endurance_improvement":
     default:
       dietGoal = "maintain";
-      calorieAdjustment = 0;
+      calorieAdjustment = 0; // Maintenance calories
       weeklyWeightTarget = 0;
       break;
   }

@@ -115,10 +115,15 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
         }
       }
 
-      // Map user profile fitness goal to weight goal type
+      // Map user profile fitness goal to weight goal type (standardized mapping)
       let goalType: 'cutting' | 'bulking' | 'maintenance' = 'maintenance';
       if (profile?.fitnessGoal === 'fat_loss') goalType = 'cutting';
       else if (profile?.fitnessGoal === 'muscle_gain') goalType = 'bulking';
+      // Legacy support for old goal types
+      else if (profile?.fitnessGoal === 'weight_loss') goalType = 'cutting';
+      else if (profile?.fitnessGoal === 'body_recomposition') goalType = 'maintenance';
+      else if (profile?.fitnessGoal === 'strength') goalType = 'maintenance';
+      else if (profile?.fitnessGoal === 'endurance') goalType = 'maintenance';
 
       // Calculate weekly change for the selected goal type
       const weeklyChange = currentWeight ? calculateRPWeeklyChange(goalType, parseFloat(currentWeight)).toString() : '';
@@ -171,8 +176,12 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       queryClient.invalidateQueries({ queryKey: ['/api/analytics/comprehensive', userId] });
       setIsAddingGoal(false);
       // Reset form but keep user profile goal type if available
-      const profileGoalType = userProfile?.user?.fitnessGoal === 'fat_loss' ? 'cutting' : 
-                              userProfile?.user?.fitnessGoal === 'muscle_gain' ? 'bulking' : 'maintenance';
+      // Standardized goal mapping for UI reset
+      let profileGoalType: 'cutting' | 'bulking' | 'maintenance' = 'maintenance';
+      const fitnessGoal = userProfile?.user?.fitnessGoal;
+      if (fitnessGoal === 'fat_loss' || fitnessGoal === 'weight_loss') profileGoalType = 'cutting';
+      else if (fitnessGoal === 'muscle_gain') profileGoalType = 'bulking';
+      // All other goals (maintenance, body_recomposition, strength, endurance) map to maintenance
       
       setFormData({
         currentWeight: '',

@@ -157,12 +157,9 @@ function ActivityGoalsCard() {
               <SelectValue placeholder="Select fitness goal" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="weight_loss">Weight Loss</SelectItem>
+              <SelectItem value="fat_loss">Fat Loss</SelectItem>
               <SelectItem value="muscle_gain">Muscle Gain</SelectItem>
               <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="body_recomposition">Body Recomposition</SelectItem>
-              <SelectItem value="strength">Strength Gain</SelectItem>
-              <SelectItem value="endurance">Endurance Improvement</SelectItem>
             </SelectContent>
           </Select>
         </div>

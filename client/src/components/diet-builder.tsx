@@ -380,15 +380,27 @@ export function DietBuilder({ userId }: DietBuilderProps) {
       if (fitnessGoal) {
         let expectedDietGoal = 'maintain';
         
+        // Standardized goal mapping aligned with backend
         switch (fitnessGoal) {
-          case 'Weight Loss':
-          case 'weight_loss':
+          case 'Fat Loss':
+          case 'fat_loss':
+          case 'Weight Loss': // Legacy support
+          case 'weight_loss': // Legacy support
             expectedDietGoal = 'cut';
             break;
           case 'Muscle Gain':
           case 'muscle_gain':
             expectedDietGoal = 'bulk';
             break;
+          case 'Maintenance':
+          case 'maintenance':
+          // Legacy goals mapped to maintenance
+          case 'Body Recomposition':
+          case 'body_recomposition':
+          case 'Strength Gain':
+          case 'strength_gain':
+          case 'Endurance Improvement':
+          case 'endurance_improvement':
           case 'Maintain Weight':
           case 'maintain_weight':
           default:
