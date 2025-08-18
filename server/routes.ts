@@ -2369,7 +2369,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         usageCount: 0
       };
 
-      const savedTemplate = await storage.createSavedWorkoutTemplate(templateData);
+      // Create saved workout template using direct database operation
+      const [savedTemplate] = await db.insert(savedWorkoutTemplates).values({
+        userId: Number(userId),
+        name: templateName,
+        description: templateData.description,
+        exerciseTemplates: exerciseTemplates,
+        tags: templateData.tags || [],
+        estimatedDuration: templateData.estimatedDuration,
+        difficulty: templateData.difficulty || 'intermediate',
+        usageCount: 0
+      }).returning();
       
       res.json({ 
         success: true, 
