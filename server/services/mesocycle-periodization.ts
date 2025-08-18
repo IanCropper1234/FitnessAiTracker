@@ -12,6 +12,7 @@ import {
 } from "@shared/schema";
 import { eq, and, gte, lte, sql, desc, isNotNull, inArray } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
+import { RPAlgorithmCore } from "./rp-algorithm-core";
 
 interface VolumeProgression {
   muscleGroupId: number;
@@ -69,36 +70,17 @@ export class MesocyclePeriodization {
       let targetSets = landmark.mev; // Start at MEV
       let phase: 'accumulation' | 'intensification' | 'deload' = 'accumulation';
       
-      // RP Volume Progression Algorithm
-      if (currentWeek <= totalWeeks - 2) {
-        // Accumulation phase: Progressive volume increase
-        const progressionRate = (landmark.mav - landmark.mev) / (totalWeeks - 2);
-        targetSets = Math.round(landmark.mev + (progressionRate * (currentWeek - 1)));
-        
-        // Apply auto-regulation adjustments
-        if (landmark.recoveryLevel !== null && landmark.recoveryLevel < 4) {
-          // Poor recovery: reduce volume by 10-20%
-          targetSets = Math.round(targetSets * 0.8);
-        } else if (landmark.recoveryLevel !== null && landmark.recoveryLevel > 7 && 
-                   landmark.adaptationLevel !== null && landmark.adaptationLevel > 6) {
-          // Good recovery and adaptation: can push closer to MAV
-          targetSets = Math.min(targetSets * 1.1, landmark.mav);
-        }
-        
-        // Safety check: don't exceed MAV in accumulation
-        targetSets = Math.min(targetSets, landmark.mav);
-        phase = 'accumulation';
-        
-      } else if (currentWeek === totalWeeks - 1) {
-        // Intensification phase: Push to MAV/MRV
-        targetSets = (landmark.recoveryLevel !== null && landmark.recoveryLevel >= 6) ? landmark.mav : Math.round(landmark.mav * 0.9);
-        phase = 'intensification';
-        
-      } else {
-        // Deload week: Drop to MEV or below
-        targetSets = Math.round(landmark.mev * 0.7);
-        phase = 'deload';
-      }
+      // Use unified RP Volume Progression Algorithm
+      const progression = RPAlgorithmCore.calculateVolumeProgression(currentWeek, totalWeeks, {
+        mev: landmark.mev,
+        mav: landmark.mav,
+        mrv: landmark.mrv,
+        recoveryLevel: landmark.recoveryLevel,
+        adaptationLevel: landmark.adaptationLevel
+      });
+      
+      targetSets = progression.targetSets;
+      phase = progression.phase;
       
       progressions.push({
         muscleGroupId: landmark.muscleGroupId,
@@ -120,79 +102,14 @@ export class MesocyclePeriodization {
     fatigueScore: number;
     reasons: string[];
   }> {
+    // Use unified RP Algorithm Core for fatigue analysis
+    const analysis = await RPAlgorithmCore.analyzeFatigue(userId, 10);
     
-    // Get recent auto-regulation feedback (last 10 days for more stable analysis)
-    const recentFeedback = await db
-      .select({
-        pumpQuality: autoRegulationFeedback.pumpQuality,
-        muscleSoreness: autoRegulationFeedback.muscleSoreness,
-        perceivedEffort: autoRegulationFeedback.perceivedEffort,
-        energyLevel: autoRegulationFeedback.energyLevel,
-        sleepQuality: autoRegulationFeedback.sleepQuality,
-        createdAt: autoRegulationFeedback.createdAt
-      })
-      .from(autoRegulationFeedback)
-      .innerJoin(workoutSessions, eq(autoRegulationFeedback.sessionId, workoutSessions.id))
-      .where(
-        and(
-          eq(autoRegulationFeedback.userId, userId),
-          gte(autoRegulationFeedback.createdAt, sql`NOW() - INTERVAL '10 days'`)
-        )
-      )
-      .orderBy(desc(autoRegulationFeedback.createdAt));
-
-    if (recentFeedback.length === 0) {
-      return { shouldDeload: false, fatigueScore: 0, reasons: [] };
-    }
-
-    // Calculate fatigue indicators
-    const avgPump = recentFeedback.reduce((sum, f) => sum + f.pumpQuality, 0) / recentFeedback.length;
-    const avgSoreness = recentFeedback.reduce((sum, f) => sum + f.muscleSoreness, 0) / recentFeedback.length;
-    const avgEffort = recentFeedback.reduce((sum, f) => sum + f.perceivedEffort, 0) / recentFeedback.length;
-    const avgEnergy = recentFeedback.reduce((sum, f) => sum + f.energyLevel, 0) / recentFeedback.length;
-    const avgSleep = recentFeedback.reduce((sum, f) => sum + f.sleepQuality, 0) / recentFeedback.length;
-
-    // RP Fatigue Analysis Algorithm
-    const fatigueScore = (
-      (10 - avgPump) * 0.25 +        // Poor pump quality indicates fatigue
-      (avgSoreness) * 0.2 +          // High soreness indicates incomplete recovery
-      (avgEffort) * 0.2 +            // High effort for same loads indicates fatigue
-      (10 - avgEnergy) * 0.2 +       // Low energy indicates systemic fatigue
-      (10 - avgSleep) * 0.15         // Poor sleep affects recovery
-    );
-
-    const reasons: string[] = [];
-    let shouldDeload = false;
-
-    // Deload triggers based on RP methodology
-    if (avgPump < 6) {
-      reasons.push("Pump quality declining (< 6/10)");
-      shouldDeload = true;
-    }
-    if (avgSoreness > 7) {
-      reasons.push("Excessive muscle soreness (> 7/10)");
-      shouldDeload = true;
-    }
-    if (avgEffort > 8) {
-      reasons.push("Perceived effort too high (> 8/10)");
-      shouldDeload = true;
-    }
-    if (avgEnergy < 5) {
-      reasons.push("Low energy levels (< 5/10)");
-      shouldDeload = true;
-    }
-    if (avgSleep < 5) {
-      reasons.push("Poor sleep quality (< 5/10)");
-      shouldDeload = true;
-    }
-
-    // Overall fatigue score threshold
-    if (fatigueScore > 6.5) {
-      reasons.push(`High overall fatigue score (${fatigueScore.toFixed(1)}/10)`);
-      shouldDeload = true;
-    }
-
-    return { shouldDeload, fatigueScore, reasons };
+    return {
+      shouldDeload: analysis.deloadRecommended,
+      fatigueScore: analysis.overallFatigue,
+      reasons: analysis.reasons
+    };
   }
 
   /**
@@ -350,7 +267,8 @@ export class MesocyclePeriodization {
     }
 
     // Update volume landmarks for each trained muscle group
-    for (const [muscleGroupId, setsThisSession] of muscleGroupSets) {
+    for (const muscleGroupEntry of Array.from(muscleGroupSets.entries())) {
+      const [muscleGroupId, setsThisSession] = muscleGroupEntry;
       await this.updateSingleMuscleGroupVolume(
         userId,
         muscleGroupId,
@@ -1400,37 +1318,37 @@ export class MesocyclePeriodization {
               const weightNum = parseFloat(lastWeight.toString());
               // If RPE was 8+ and RIR was 0-1 (or null), increase weight by 2.5-5%
               if (lastRpe >= 8 && (lastRir === null || lastRir <= 1)) {
-                progressedWeight = Math.round((weightNum * 1.025) * 4) / 4; // 2.5% increase, rounded to nearest 0.25
+                progressedWeight = (Math.round((weightNum * 1.025) * 4) / 4).toString(); // 2.5% increase, rounded to nearest 0.25
                 progressedRpe = Math.max(7, Math.min(8, lastRpe)); // Target similar RPE
                 progressedRir = Math.max(1, Math.min(2, (lastRir || 0) + 1)); // Slightly more RIR with heavier weight
               }
               // If RPE was 6-7 and RIR was 2-3, increase weight by 5-7.5%
               else if (lastRpe >= 6 && lastRpe <= 7 && lastRir !== null && lastRir >= 2 && lastRir <= 3) {
-                progressedWeight = Math.round((weightNum * 1.05) * 4) / 4; // 5% increase
+                progressedWeight = (Math.round((weightNum * 1.05) * 4) / 4).toString(); // 5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe + 1)); // Target slightly higher RPE
                 progressedRir = Math.max(1, Math.min(2, lastRir)); // Maintain RIR
               }
               // If RPE was <6 and RIR was 4+, increase weight by 7.5-10%
               else if (lastRpe < 6 && lastRir !== null && lastRir >= 4) {
-                progressedWeight = Math.round((weightNum * 1.075) * 4) / 4; // 7.5% increase
+                progressedWeight = (Math.round((weightNum * 1.075) * 4) / 4).toString(); // 7.5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe + 2)); // Target higher RPE
                 progressedRir = Math.max(1, Math.min(3, lastRir - 1)); // Reduce RIR
               }
               // If RPE was too high (9-10), reduce weight slightly
               else if (lastRpe >= 9) {
-                progressedWeight = Math.round((weightNum * 0.975) * 4) / 4; // 2.5% decrease
+                progressedWeight = (Math.round((weightNum * 0.975) * 4) / 4).toString(); // 2.5% decrease
                 progressedRpe = 8; // Target lower RPE
                 progressedRir = 2; // Target more RIR
               }
               // If RPE was 6-8 but RIR is null, apply conservative progression
               else if (lastRpe >= 6 && lastRpe <= 8 && lastRir === null) {
-                progressedWeight = Math.round((weightNum * 1.025) * 4) / 4; // 2.5% increase
+                progressedWeight = (Math.round((weightNum * 1.025) * 4) / 4).toString(); // 2.5% increase
                 progressedRpe = Math.max(7, Math.min(8, lastRpe)); // Target similar RPE
                 progressedRir = 2; // Conservative RIR target
               }
               // Otherwise keep same weight
               else {
-                progressedWeight = weightNum;
+                progressedWeight = weightNum.toString();
                 progressedRpe = lastRpe;
                 progressedRir = lastRir || 2; // Default RIR if null
               }
@@ -1446,10 +1364,10 @@ export class MesocyclePeriodization {
                 const suggestedReps = repsArray[0];
                 
                 // Adjust based on progression strategy
-                if (progressedWeight && progressedWeight > parseFloat(lastWeight.toString())) {
+                if (progressedWeight && parseFloat(progressedWeight) > parseFloat(lastWeight.toString())) {
                   // If weight increased, suggest slightly fewer reps
                   progressedActualReps = Math.max(suggestedReps - 1, 1).toString();
-                } else if (progressedWeight && progressedWeight === parseFloat(lastWeight.toString())) {
+                } else if (progressedWeight && parseFloat(progressedWeight) === parseFloat(lastWeight.toString())) {
                   // Same weight, aim for same or more reps
                   progressedActualReps = Math.max(suggestedReps, 1).toString();
                 } else {

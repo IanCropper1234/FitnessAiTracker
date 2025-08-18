@@ -64,7 +64,7 @@ The system utilizes 28 production tables covering user management, nutrition, tr
 All core API routes are protected by authentication.
 
 ### Service Layer Architecture
-Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, and `ShoppingListGenerator`. Key algorithm implementations include RP-based auto-regulation, volume landmark calculations (MV, MEV, MAV, MRV), progressive overload, phase transition logic, and systemic fatigue monitoring.
+Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, `ShoppingListGenerator`, and **`RPAlgorithmCore` (Aug 2025)** - unified RP algorithm service providing centralized fatigue analysis, volume calculations, and auto-regulation logic. Key algorithm implementations include RP-based auto-regulation, volume landmark calculations (MV, MEV, MAV, MRV), progressive overload, phase transition logic, and systemic fatigue monitoring - all now consolidated through the unified core service.
 
 ### Key Features & Implementations
 - **iOS-style Notification System**: Comprehensive system with features like drag-to-dismiss, auto-hide, action buttons, and native animations.
@@ -81,6 +81,7 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Muscle Group Classification**: Refined muscle group focus options to precise anatomical classifications for improved AI exercise recommendations.
 - **Goal Standardization System (Aug 2025)**: Unified goal management with three standardized options (Fat Loss, Muscle Gain, Maintenance) across all components, Goal Synchronization Service ensuring data consistency, and `/api/unified-goals` endpoint as single source of truth.
 - **Weight Unit Standardization (Aug 2025)**: Database standardization to metric (kg), UnitConverter utility for consistent display preferences, enhanced weight calculations with 10-14 day averaging periods and data validation filtering. Frontend-backend alignment with simplified body tracking unit toggle (kg ↔ lbs conversion). **Step 6 Complete**: All 71+ LSP errors in server/routes.ts resolved with proper userId type conversions and API data structure validation. **Critical Fix**: Save workout session as template functionality restored (403 error resolved).
+- **RP Algorithm Core Unification (Aug 2025)**: **Step 7 Complete** - Created centralized `RPAlgorithmCore` service consolidating duplicate fatigue analysis and volume calculation logic across multiple services. Eliminated code duplication between auto-regulation-algorithms.ts and mesocycle-periodization.ts. Unified feedback scoring algorithms using consistent RP methodology. Fixed all LSP errors in mesocycle-periodization.ts including Map iteration and type conversion issues. All RP calculations now use single source of truth while maintaining backward compatibility.
 
 ### iOS App Development Strategy - Expo Approach
 TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.

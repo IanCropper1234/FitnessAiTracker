@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { eq, and, desc, gte } from "drizzle-orm";
 import { autoRegulationFeedback, workoutSessions, volumeLandmarks, exerciseMuscleMapping, workoutExercises, muscleGroups } from "../shared/schema";
+import { RPAlgorithmCore } from "./services/rp-algorithm-core";
 
 interface VolumeRecommendation {
   muscleGroupId: number;
@@ -245,67 +246,12 @@ async function calculateMuscleGroupVolume(
   }
 }
 
-// Comprehensive fatigue analysis
+// Comprehensive fatigue analysis using unified RP Algorithm Core
 export async function getFatigueAnalysis(userId: number, days: number = 14): Promise<FatigueAnalysis> {
   try {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-
-    // Get recent auto-regulation feedback
-    const recentFeedback = await db
-      .select({
-        feedback: autoRegulationFeedback,
-        session: workoutSessions
-      })
-      .from(autoRegulationFeedback)
-      .innerJoin(workoutSessions, eq(autoRegulationFeedback.sessionId, workoutSessions.id))
-      .where(
-        and(
-          eq(autoRegulationFeedback.userId, userId),
-          gte(workoutSessions.date, startDate)
-        )
-      )
-      .orderBy(desc(workoutSessions.date));
-
-    if (recentFeedback.length === 0) {
-      return {
-        overallFatigue: 5,
-        recoveryTrend: "stable",
-        deloadRecommended: false,
-        muscleGroupFatigue: []
-      };
-    }
-
-    // Calculate overall fatigue trend
-    const fatigueScores = recentFeedback.map(item => {
-      const recovery = (item.feedback.energyLevel + item.feedback.sleepQuality + (10 - item.feedback.muscleSoreness)) / 3;
-      const performance = (item.feedback.pumpQuality + (10 - item.feedback.perceivedEffort)) / 2;
-      return 10 - ((recovery + performance) / 2); // Higher score = more fatigue
-    });
-
-    const overallFatigue = fatigueScores.reduce((sum, score) => sum + score, 0) / fatigueScores.length;
-
-    // Determine trend (compare first half vs second half)
-    const midPoint = Math.floor(fatigueScores.length / 2);
-    const earlierAvg = fatigueScores.slice(0, midPoint).reduce((sum, score) => sum + score, 0) / midPoint;
-    const recentAvg = fatigueScores.slice(midPoint).reduce((sum, score) => sum + score, 0) / (fatigueScores.length - midPoint);
+    // Use unified RP fatigue analysis
+    const analysis = await RPAlgorithmCore.analyzeFatigue(userId, days);
     
-    let recoveryTrend: FatigueAnalysis["recoveryTrend"] = "stable";
-    if (recentAvg > earlierAvg + 0.5) {
-      recoveryTrend = "declining";
-    } else if (recentAvg < earlierAvg - 0.5) {
-      recoveryTrend = "improving";
-    }
-
-    // Deload recommendation logic (RP methodology)
-    const consecutiveHighFatigue = fatigueScores.slice(-3).filter(score => score >= 7).length;
-    const deloadRecommended = overallFatigue >= 7 || consecutiveHighFatigue >= 2;
-    
-    let daysToDeload: number | undefined;
-    if (deloadRecommended) {
-      daysToDeload = Math.max(3, Math.min(7, Math.round(overallFatigue)));
-    }
-
     // Calculate muscle group specific fatigue
     const allMuscleGroups = await db.select().from(muscleGroups);
     const landmarks = await db.select().from(volumeLandmarks).where(eq(volumeLandmarks.userId, userId));
@@ -315,11 +261,11 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
         const landmark = landmarks.find(l => l.muscleGroupId === mg.id);
         
         let volumeStress = 0;
-        let fatigueLevel = overallFatigue; // Default to overall fatigue
+        let fatigueLevel = analysis.overallFatigue; // Use unified fatigue score
         
         if (landmark && landmark.mav > 0) {
           volumeStress = volume / landmark.mav; // Ratio of current to MAV
-          fatigueLevel = Math.min(10, overallFatigue * (1 + volumeStress * 0.2));
+          fatigueLevel = Math.min(10, analysis.overallFatigue * (1 + volumeStress * 0.2));
         }
 
         return {
@@ -332,10 +278,10 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
     );
 
     return {
-      overallFatigue,
-      recoveryTrend,
-      deloadRecommended,
-      daysToDeload,
+      overallFatigue: analysis.overallFatigue,
+      recoveryTrend: analysis.recoveryTrend,
+      deloadRecommended: analysis.deloadRecommended,
+      daysToDeload: analysis.daysToDeload,
       muscleGroupFatigue
     };
   } catch (error) {
@@ -349,7 +295,7 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
   }
 }
 
-// Get current volume recommendations for user
+// Get current volume recommendations for user using unified RP Algorithm Core
 export async function getVolumeRecommendations(userId: number): Promise<VolumeRecommendation[]> {
   try {
     // Get the most recent feedback (within last 7 days)
@@ -368,9 +314,9 @@ export async function getVolumeRecommendations(userId: number): Promise<VolumeRe
       .orderBy(desc(autoRegulationFeedback.createdAt))
       .limit(1);
 
-    // Pass feedback if available, otherwise generate recommendations without feedback
+    // Use unified RP algorithm for recommendations
     const feedback = recentFeedback.length > 0 ? recentFeedback[0] : undefined;
-    return await generateVolumeRecommendations(userId, feedback);
+    return await RPAlgorithmCore.generateVolumeRecommendations(userId, feedback);
   } catch (error) {
     console.error('Error getting volume recommendations:', error);
     return [];
