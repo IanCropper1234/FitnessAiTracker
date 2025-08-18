@@ -70,10 +70,12 @@ export interface NutritionAnalysis {
   category?: string; // protein, carb, fat, mixed
   mealSuitability?: string[]; // pre-workout, post-workout, regular, snack
   assumptions?: string; // key assumptions made during analysis
-  servingDetails?: string; // clarification of portion analyzed
-  portionWeight?: number; // standardized portion weight (e.g., 100, 150, 200)
-  portionUnit?: string; // standardized portion unit (e.g., "g", "ml", "pieces")
+  servingDetails?: string; // clarification of portion analyzed with optimal unit
+  portionWeight?: number; // appropriate portion weight for food type
+  portionUnit?: string; // optimal unit for this food type (g, ml, cups, pieces, servings, etc.)
+  ingredientBreakdown?: string[]; // components analyzed for complex foods
   micronutrients?: MicronutrientData; // comprehensive vitamin and mineral data
+  nutritionValidation?: string; // reasonableness assessment of calculated values
 }
 
 const openai = new OpenAI({ 
@@ -129,20 +131,38 @@ export async function analyzeNutritionMultiImage(
 - Use serving size from supplement facts panel (e.g., "1 capsule", "2 tablets", "1 softgel")
 - Set calories/protein/carbs/fat to 0 for pure supplements and focus on supplement compound extraction
 - Look for active ingredients beyond standard vitamins/minerals (CoQ10, curcumin, probiotics, etc.)`
-        : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s).
+        : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s) with enhanced ingredient decomposition.
 
-**Analysis Approach:**
-1. **Food Identification:** Identify all food items across the images using "${foodName}" as guidance
-2. **Multi-Image Analysis:** Examine all images to get a complete view of the food/meal
-3. **Portion Estimation:** Carefully estimate the actual portion size visible in the images (weight, volume, or pieces)
-4. **Size Comparison:** Use visual reference objects (plates, utensils, hands, etc.) to estimate portion size
-5. **Food Name Validation:** Use "${foodName}" to confirm food identification and resolve discrepancies
-6. **Nutrition Estimation:** Provide comprehensive nutritional estimates for the complete food portion shown
+**ENHANCED ANALYSIS APPROACH:**
+1. **COMPREHENSIVE FOOD IDENTIFICATION:** 
+   - Identify ALL visible food items across images using "${foodName}" as primary guidance
+   - Break down complex dishes into individual components (e.g., pasta dish → pasta, sauce, vegetables, cheese, meat)
+   - Analyze each component separately for accurate nutrition calculation
 
-**CRITICAL - Serving Details for Actual Food:**
-- Estimate the actual portion size shown in the images with confidence level
-- Describe reasoning for portion estimation (e.g., "approximately 150g based on plate size", "2 medium-sized pieces estimated at 80g each")
-- Include your confidence in the portion estimate and any assumptions made`;
+2. **MULTI-IMAGE COMPOSITION ANALYSIS:**
+   - Examine all ${imageCount} images to understand complete meal composition
+   - Look for ingredients not immediately obvious (sauces, seasonings, cooking oils, etc.)
+   - Consider cooking methods that affect nutrition (fried vs grilled, added fats, etc.)
+
+3. **INTELLIGENT PORTION ESTIMATION:**
+   - Estimate portion size using visual references (plates, utensils, hands, common objects)
+   - Choose appropriate unit: liquids→ml/cups, solids→g, countable→pieces, prepared dishes→servings
+   - Cross-reference with typical serving sizes for validation
+
+4. **INGREDIENT-LEVEL NUTRITION CALCULATION:**
+   - Calculate nutrition for each identified component
+   - Sum components for total meal nutrition
+   - Include micronutrients from all identified ingredients
+
+5. **PORTION UNIT OPTIMIZATION:**
+   - Select most appropriate unit for the specific food type shown
+   - Liquids: ml, cups, L | Solids: g, oz | Countable: pieces, slices | Prepared: servings, bowls
+
+**CRITICAL - Enhanced Serving Details for Actual Food:**
+- Provide detailed breakdown of visible components
+- Estimate portion size with reasoning and confidence level
+- Choose optimal unit for the food type
+- Include ingredient assumptions and cooking method considerations`;
 
       messageContent = [
         {
@@ -153,7 +173,7 @@ ${analysisInstructions}
 ${foodDescription ? `
 **Additional Context:** ${foodDescription}` : ''}
 
-**Output Requirements - JSON format with these exact fields:**
+**Enhanced Output Requirements - JSON format with these EXACT fields:**
 - calories: ${analysisType === 'nutrition_label' ? 'total calories from label(s)' : 'estimated total calories'} (number)
 - protein: ${analysisType === 'nutrition_label' ? 'protein from label(s)' : 'estimated protein'} in grams (number) 
 - carbs: ${analysisType === 'nutrition_label' ? 'carbohydrates from label(s)' : 'estimated carbohydrates'} in grams (number)
@@ -161,11 +181,12 @@ ${foodDescription ? `
 - confidence: confidence level 0-1 (number, ${analysisType === 'nutrition_label' ? '0.9-1.0 for clear labels' : '0.6-0.8 for food estimation'})
 - category: primary macro category (string: "protein", "carb", "fat", or "mixed")
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
-- assumptions: key assumptions made during analysis (string)
-- servingDetails: description of portion analyzed${imageCount > 1 ? ' across all images' : ''} (string)
-- portionWeight: standardized portion weight as number (e.g., 100, 150, 200)
-- portionUnit: standardized portion unit as string (e.g., "g", "ml", "pieces")
-- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+- assumptions: key assumptions about ingredients, preparation, and cooking methods (string)
+- servingDetails: description with OPTIMAL UNIT for this food type${imageCount > 1 ? ' analyzed across all images' : ''} (string)
+- portionWeight: appropriate portion weight as number (choose realistic: 100, 150, 200, 240, 250, 300, etc.)
+- portionUnit: OPTIMAL unit for this specific food type (string: "g", "ml", "cups", "pieces", "servings", "tbsp", etc.)
+- ingredientBreakdown: array of identified food components (e.g., ["grilled chicken: 120g", "brown rice: 150g", "broccoli: 80g"])
+- micronutrients: comprehensive vitamin and mineral data from ALL components (object with fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
@@ -173,7 +194,11 @@ ${foodDescription ? `
   * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
   * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
   
-  **CRITICAL:** ${analysisType === 'nutrition_label' ? 'Extract ALL visible vitamins, minerals, and supplement compounds from nutrition labels. Convert % Daily Values to actual amounts using standard references.' : 'Estimate micronutrients based on identified food components and typical nutritional profiles.'}
+  **CRITICAL REQUIREMENTS:**
+  ${analysisType === 'nutrition_label' ? 
+    '- Extract ALL visible vitamins, minerals, and supplement compounds from labels\n  - Convert % Daily Values to actual amounts using standard references\n  - Include supplement-specific compounds beyond basic vitamins/minerals' : 
+    '- Break down visible food into individual components\n  - Calculate micronutrients based on ALL identified ingredients\n  - Include nutrients from cooking methods (added oils, seasonings, etc.)\n  - Choose optimal unit type for the specific food category shown'}
+- nutritionValidation: brief reasonableness check of calculated values (string)
 
 Return only valid JSON with all required fields.`
         }
@@ -211,16 +236,44 @@ Return only valid JSON with all required fields.`
           type: "text",
           text: prompt + `
 
-**Task:** Provide comprehensive nutritional analysis for the specified food.
+**Task:** Provide comprehensive nutritional analysis for the specified food with enhanced ingredient breakdown and optimal unit selection.
 
-**Analysis Requirements:**
-1. **Food Identification:** Analyze "${primaryInput}"${foodDescription && foodName !== foodDescription ? ` with additional context: "${foodDescription}"` : ''}
-2. **Standard Nutrition:** Use established nutritional databases and references
-3. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s)`}
-4. **Comprehensive Data:** Include both macronutrients and micronutrients
-5. **Supplements Handling:** For supplements, vitamins, pills, or powders with minimal calories, focus on micronutrient content even if macros are zero
+**ENHANCED ANALYSIS REQUIREMENTS:**
 
-**Output Requirements - JSON format with these exact fields:**
+1. **FOOD DECOMPOSITION & INGREDIENT ANALYSIS:**
+   - For complex foods/dishes: BREAK DOWN into individual components (e.g., "chicken sandwich" → bread, chicken, lettuce, mayo, etc.)
+   - Analyze each ingredient separately and combine for total nutrition
+   - For processed foods: Consider both listed ingredients and preparation methods
+   - For beverages: Analyze liquid base + any added ingredients (milk, sugar, flavoring, etc.)
+   - Example: "Chocolate protein smoothie" → protein powder + milk + banana + cocoa powder, etc.
+
+2. **INTELLIGENT UNIT SELECTION:**
+   - Choose the MOST APPROPRIATE unit for the specific food type:
+   - **Liquids**: ml, L, cups, fl oz (milk, juice, smoothies, soup)
+   - **Solids by weight**: g, kg, oz, lbs (meat, vegetables, fruits)
+   - **Volume foods**: cups, tbsp, tsp (rice, cereal, nuts, flour)
+   - **Countable items**: pieces, slices, servings (bread, eggs, cookies)
+   - **Prepared dishes**: servings, portions, bowls (pasta, salad, casserole)
+   - **Small items**: pieces, units (vitamins, pills, individual snacks)
+
+3. **CONTEXTUAL PORTION ANALYSIS:**
+   - Food: "${primaryInput}"${foodDescription && foodName !== foodDescription ? ` with context: "${foodDescription}"` : ''}
+   - Determine realistic serving sizes based on food type and common consumption patterns
+   - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
+
+4. **COMPREHENSIVE MICRONUTRIENT EXTRACTION:**
+   - Include ALL significant vitamins and minerals naturally present in the food components
+   - For processed foods: Include fortified vitamins/minerals commonly added
+   - For supplements: Extract ALL active compounds and ingredients
+   - Use scientific nutritional databases for accuracy
+
+5. **NUTRITION VALIDATION & REASONABLENESS CHECK:**
+   - Verify macronutrient ratios make sense for the food type
+   - Check that micronutrient levels are realistic and not excessive
+   - Ensure portion sizes align with typical consumption patterns
+   - Flag any unusual or potentially incorrect values
+
+**OUTPUT REQUIREMENTS - JSON format with these EXACT fields:**
 - calories: total calories (number)
 - protein: protein in grams (number) 
 - carbs: carbohydrates in grams (number)
@@ -228,17 +281,25 @@ Return only valid JSON with all required fields.`
 - confidence: confidence level 0-1 (number, 0.8-0.9 for known foods)
 - category: primary macro category (string: "protein", "carb", "fat", or "mixed")
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
-- assumptions: key assumptions about preparation or variety (string)
-- servingDetails: realistic serving size description (string: e.g., "1 medium ${primaryInput} (150g)", "2 pieces (60g)", "1 cup (200g)")
-- portionWeight: standardized portion weight as number (e.g., 100, 150, 200)
-- portionUnit: standardized portion unit as string (e.g., "g", "ml", "pieces")
-- micronutrients: comprehensive vitamin and mineral data (object with optional fields):
+- assumptions: key assumptions about preparation, variety, and ingredient composition (string)
+- servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "150g portion", "2 medium pieces")
+- portionWeight: standardized portion weight as number (choose appropriate: 100, 150, 200, 240, 250, 300, etc.)
+- portionUnit: OPTIMAL unit for this food type (string: "g", "ml", "cups", "pieces", "servings", "tbsp", etc.)
+- ingredientBreakdown: array of food components analyzed (e.g., ["whole wheat bread: 80g", "grilled chicken: 100g", "lettuce: 20g"])
+- micronutrients: comprehensive vitamin and mineral data based on all ingredients (object with fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
-  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
-  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), starch (g), alcohol (g)
-  * Supplement Compounds: coq10 (mg), glucosamine (mg), chondroitin (mg), msm (mg), probiotics (CFU), prebiotics (g), collagen (g), creatine (g), betaAlanine (mg), citrullineMalate (g), bcaa (g), glutamine (g), ashwagandha (mg), turmeric (mg), curcumin (mg), spirulina (g), chlorella (g), wheyProtein (g), caseinProtein (g), plantProtein (g), enzymes (units), antioxidants (ORAC)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g)
+  * Supplement Compounds (if applicable): coq10 (mg), glucosamine (mg), probiotics (CFU), collagen (g), creatine (g), bcaa (g), etc.
+- nutritionValidation: brief assessment of result reasonableness (string: e.g., "Values consistent with typical chicken breast nutrition")
+
+**CRITICAL INSTRUCTIONS:**
+- ALWAYS break down complex foods into components
+- ALWAYS choose the most logical unit for the food type
+- ALWAYS include realistic micronutrient data based on actual food composition
+- ALWAYS validate that your nutritional values make sense
 
 Return only valid JSON with all required fields.`
         }
@@ -291,7 +352,7 @@ Return only valid JSON with all required fields.`
       throw new Error("OpenAI returned invalid JSON - please try again or contact support");
     }
     
-    // Validate required fields with defaults
+    // Enhanced validation with additional fields and reasonableness checks
     const validatedResult = {
       calories: typeof parsed.calories === 'number' ? parsed.calories : 0,
       protein: typeof parsed.protein === 'number' ? parsed.protein : 0,
@@ -300,12 +361,33 @@ Return only valid JSON with all required fields.`
       confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
       category: parsed.category || 'mixed',
       mealSuitability: Array.isArray(parsed.mealSuitability) ? parsed.mealSuitability : ['regular'],
-      assumptions: parsed.assumptions || 'Basic nutritional estimation',
+      assumptions: parsed.assumptions || 'Basic nutritional estimation with standard preparation methods',
       servingDetails: parsed.servingDetails || `${quantity} ${unit}`,
       portionWeight: typeof parsed.portionWeight === 'number' ? parsed.portionWeight : null,
       portionUnit: typeof parsed.portionUnit === 'string' ? parsed.portionUnit : null,
-      micronutrients: parsed.micronutrients || {}
+      ingredientBreakdown: Array.isArray(parsed.ingredientBreakdown) ? parsed.ingredientBreakdown : [],
+      micronutrients: parsed.micronutrients || {},
+      nutritionValidation: parsed.nutritionValidation || 'Standard nutritional calculation'
     };
+
+    // Enhanced nutrition validation and reasonableness checks
+    const totalCaloriesFromMacros = (validatedResult.protein * 4) + (validatedResult.carbs * 4) + (validatedResult.fat * 9);
+    const calorieDiscrepancy = Math.abs(validatedResult.calories - totalCaloriesFromMacros);
+    
+    // Log validation insights
+    console.log("Nutrition validation check:", {
+      reportedCalories: validatedResult.calories,
+      calculatedCalories: totalCaloriesFromMacros,
+      discrepancy: calorieDiscrepancy,
+      ingredientCount: validatedResult.ingredientBreakdown.length,
+      micronutrientCount: Object.keys(validatedResult.micronutrients).length,
+      optimalUnit: validatedResult.portionUnit
+    });
+
+    // Warn about significant discrepancies (but don't fail - AI might account for other factors)
+    if (calorieDiscrepancy > 50 && validatedResult.calories > 100) {
+      console.warn("Significant calorie discrepancy detected - this may indicate complex food composition or estimation challenges");
+    }
     
     // Validate that we have meaningful nutritional data
     // Allow supplements with zero macros but micronutrients
