@@ -306,9 +306,9 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     return `${sign}${convertedChange.toFixed(1)}${unitLabel}`;
   };
 
-  // Get 14-day weight change independent of weekly analysis
+  // Enhanced weight change calculation with data validation and longer averaging
   const get14DayWeightChange = () => {
-    if (!bodyMetrics || bodyMetrics.length < 2) {
+    if (!bodyMetrics || bodyMetrics.length < 3) {
       return null;
     }
     
@@ -317,39 +317,58 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     fourteenDaysAgo.setDate(now.getDate() - 14);
     
     // Get all weight data from the past 14 days, sorted by date (newest first)
-    const recentMetrics = bodyMetrics.filter((metric: any) => {
+    let recentMetrics = bodyMetrics.filter((metric: any) => {
       const metricDate = new Date(metric.date);
-      return metricDate >= fourteenDaysAgo;
+      const weight = parseFloat(metric.weight);
+      return metricDate >= fourteenDaysAgo && !isNaN(weight) && weight > 0;
     }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
     
-    if (recentMetrics.length < 2) {
+    if (recentMetrics.length < 3) {
       return null;
     }
     
-    // Get most recent weight and earliest weight in the 14-day period
-    const mostRecentWeight = parseFloat(recentMetrics[0].weight);
-    const earliestWeight = parseFloat(recentMetrics[recentMetrics.length - 1].weight);
+    // Filter out obvious data entry errors (weight changes > 5kg in a single day)
+    const validMetrics = recentMetrics.filter((metric: any, index: number) => {
+      if (index === 0) return true; // Always include the most recent
+      
+      const currentWeight = parseFloat(metric.weight);
+      const previousWeight = parseFloat(recentMetrics[index - 1].weight);
+      const daysDiff = Math.abs(new Date(recentMetrics[index - 1].date).getTime() - new Date(metric.date).getTime()) / (1000 * 60 * 60 * 24);
+      
+      // Flag as error if weight change > 5kg per day or > 10kg per week
+      const dailyChange = Math.abs(currentWeight - previousWeight) / Math.max(1, daysDiff);
+      return dailyChange <= 5; // Max 5kg change per day is reasonable threshold
+    });
     
-    if (!isNaN(mostRecentWeight) && !isNaN(earliestWeight)) {
-      const weightChange = mostRecentWeight - earliestWeight;
-      const daysDifference = Math.max(1, Math.ceil((new Date(recentMetrics[0].date).getTime() - new Date(recentMetrics[recentMetrics.length - 1].date).getTime()) / (1000 * 60 * 60 * 24)));
-      
-      // Convert to weekly rate (14 days = 2 weeks, so divide by 2)
-      const weeklyRate = weightChange / Math.max(1, daysDifference / 7);
-      
-      console.log('14-day weight calculation:', { 
-        mostRecentWeight, 
-        earliestWeight, 
-        weightChange, 
-        daysDifference, 
-        weeklyRate,
-        dataPoints: recentMetrics.length 
-      });
-      
-      return weeklyRate;
+    if (validMetrics.length < 3) {
+      return null;
     }
     
-    return null;
+    // Use linear regression for more stable trend calculation
+    const dataPoints = validMetrics.map((metric: any, index: number) => ({
+      day: index,
+      weight: parseFloat(metric.weight)
+    }));
+    
+    // Calculate linear trend (slope = weight change per day)
+    const n = dataPoints.length;
+    const sumX = dataPoints.reduce((sum, point) => sum + point.day, 0);
+    const sumY = dataPoints.reduce((sum, point) => sum + point.weight, 0);
+    const sumXY = dataPoints.reduce((sum, point) => sum + point.day * point.weight, 0);
+    const sumXX = dataPoints.reduce((sum, point) => sum + point.day * point.day, 0);
+    
+    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const weeklyTrend = slope * 7; // Convert daily slope to weekly rate
+    
+    console.log('Enhanced 14-day weight calculation:', { 
+      totalDataPoints: recentMetrics.length,
+      validDataPoints: validMetrics.length,
+      filteredOutliers: recentMetrics.length - validMetrics.length,
+      weeklyTrend,
+      slope
+    });
+    
+    return weeklyTrend;
   };
 
   // Format weight change with user's preferred unit

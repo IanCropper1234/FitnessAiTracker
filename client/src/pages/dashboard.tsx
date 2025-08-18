@@ -213,42 +213,45 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   
   const currentWeight = getCurrentWeight();
   
-  // Calculate weekly weight trend with unit conversion
+  // Enhanced weekly weight trend with data validation and stable calculation
   const getWeightTrend = () => {
-    if (!bodyMetrics || bodyMetrics.length < 2) return null;
+    if (!bodyMetrics || bodyMetrics.length < 3) return null;
     
     const today = new Date();
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const tenDaysAgo = new Date(today);
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
     
-    // Get most recent weight (convert if imperial)
-    const recentEntry = bodyMetrics[0];
-    if (!recentEntry.weight || isNaN(recentEntry.weight)) return null;
-    const recentWeight = recentEntry.unit === 'imperial' ? 
-      Number(recentEntry.weight) / 2.20462 : Number(recentEntry.weight);
-    
-    // Find weight from approximately 7 days ago
-    const weekOldEntry = bodyMetrics.find((entry: any) => {
+    // Get recent weight data with validation (all units now standardized to metric)
+    const validMetrics = bodyMetrics.filter((entry: any) => {
+      const weight = parseFloat(entry.weight);
       const entryDate = new Date(entry.date);
-      return entryDate <= sevenDaysAgo;
+      return !isNaN(weight) && weight > 0 && entryDate >= tenDaysAgo;
+    }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    if (validMetrics.length < 3) return null;
+    
+    // Filter out data entry errors (weight changes > 5kg between consecutive entries)
+    const cleanMetrics = validMetrics.filter((entry: any, index: number) => {
+      if (index === 0) return true;
+      
+      const currentWeight = parseFloat(entry.weight);
+      const prevWeight = parseFloat(validMetrics[index - 1].weight);
+      const daysDiff = Math.abs(new Date(validMetrics[index - 1].date).getTime() - new Date(entry.date).getTime()) / (1000 * 60 * 60 * 24);
+      
+      const dailyChange = Math.abs(currentWeight - prevWeight) / Math.max(1, daysDiff);
+      return dailyChange <= 5; // Reasonable threshold for daily weight change
     });
     
-    if (weekOldEntry && weekOldEntry.weight && !isNaN(weekOldEntry.weight)) {
-      const oldWeight = weekOldEntry.unit === 'imperial' ? 
-        Number(weekOldEntry.weight) / 2.20462 : Number(weekOldEntry.weight);
-      return recentWeight - oldWeight;
-    }
+    if (cleanMetrics.length < 3) return null;
     
-    // Fallback: compare with previous entry if no week-old data
-    if (bodyMetrics.length > 1) {
-      const prevEntry = bodyMetrics[1];
-      if (!prevEntry.weight || isNaN(prevEntry.weight)) return null;
-      const prevWeight = prevEntry.unit === 'imperial' ? 
-        Number(prevEntry.weight) / 2.20462 : Number(prevEntry.weight);
-      return recentWeight - prevWeight;
-    }
+    // Use simple 7-day average comparison for dashboard (less complex than linear regression)
+    const recentAvg = cleanMetrics.slice(0, Math.min(3, cleanMetrics.length))
+      .reduce((sum, entry) => sum + parseFloat(entry.weight), 0) / Math.min(3, cleanMetrics.length);
     
-    return null;
+    const olderAvg = cleanMetrics.slice(-Math.min(3, cleanMetrics.length))
+      .reduce((sum, entry) => sum + parseFloat(entry.weight), 0) / Math.min(3, cleanMetrics.length);
+    
+    return recentAvg - olderAvg;
   };
   
   const weightTrend = getWeightTrend();

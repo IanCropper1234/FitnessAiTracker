@@ -121,7 +121,7 @@ export class MesocyclePeriodization {
     reasons: string[];
   }> {
     
-    // Get recent auto-regulation feedback (last 7 days)
+    // Get recent auto-regulation feedback (last 10 days for more stable analysis)
     const recentFeedback = await db
       .select({
         pumpQuality: autoRegulationFeedback.pumpQuality,
@@ -136,7 +136,7 @@ export class MesocyclePeriodization {
       .where(
         and(
           eq(autoRegulationFeedback.userId, userId),
-          gte(autoRegulationFeedback.createdAt, sql`NOW() - INTERVAL '7 days'`)
+          gte(autoRegulationFeedback.createdAt, sql`NOW() - INTERVAL '10 days'`)
         )
       )
       .orderBy(desc(autoRegulationFeedback.createdAt));
