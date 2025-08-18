@@ -903,7 +903,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Weight Change:</span>
                           <span className="font-medium text-black dark:text-white">
-                            {formatWeightChangeWithUnit(getWeeklyWeightChange() || 0)}
+                            {formatWeightChangeWithUnit(get14DayWeightChange() || 0)}
                           </span>
                         </div>
                       )}
