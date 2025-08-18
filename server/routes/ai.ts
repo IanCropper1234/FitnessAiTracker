@@ -207,9 +207,8 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
                  typeof value === 'number' &&
                  value > 0;
         }).length;
-        // Consider record complete if it has at least 3 meaningful micronutrients
-        // This is more realistic given that most food databases have limited micro data
-        return meaningfulValues >= 3;
+        // Consider record complete if it has at least 5 meaningful micronutrients
+        return meaningfulValues >= 5;
       }).length,
       avgMicronutrientsPerRecord: nutrition.reduce((acc: number, n: any) => {
         const micro = n.micronutrients || {};
