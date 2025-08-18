@@ -681,7 +681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Auto-sync diet goals when fitness goal changes
       if (fitnessGoalChanged && profileData.fitnessGoal) {
         try {
-          await syncDietGoalsWithFitnessGoal(userId, profileData.fitnessGoal, profileData);
+          await syncDietGoalsWithFitnessGoal(Number(userId), profileData.fitnessGoal, profileData);
         } catch (error) {
           console.warn('Failed to sync diet goals with fitness goal:', error);
           // Don't fail the profile update if diet goal sync fails
@@ -927,7 +927,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const date = req.query.date ? new Date(req.query.date as string) : new Date();
       
-      const summary = await getNutritionSummary(userId, date);
+      const summary = await getNutritionSummary(Number(userId), date);
       res.json(summary);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -939,7 +939,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const logData = {
         ...req.body,
-        userId: userId,
+        userId: Number(userId),
         date: new Date(req.body.date)
       };
       
@@ -1056,7 +1056,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { activityLevel, fitnessGoal, height, weight, age } = req.body;
       
       const goal = await storage.createNutritionGoal({
-        userId: userId,
+        userId: Number(userId),
         dailyCalories: 2000, // Will be calculated by AI later
         protein: "150",
         carbs: "200",
@@ -1263,7 +1263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const copiedLogs = [];
       for (const log of logsToCopy) {
         const newLog = {
-          userId,
+          userId: Number(userId),
           date: new Date(toDate),
           foodName: log.foodName,
           quantity: log.quantity,
@@ -1369,7 +1369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Calculated totals:', { totalCalories, totalProtein, totalCarbs, totalFat });
       
       const mealData = {
-        userId: userId,
+        userId: Number(userId),
         name,
         description: description || null,
         foodItems: foodItems.map((item: any) => ({
@@ -1697,7 +1697,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.userId;
       const date = req.query.date as string; // Optional date filter
-      const stats = await getTrainingStats(userId, date);
+      const stats = await getTrainingStats(Number(userId), date);
       res.json(stats);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1739,7 +1739,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Check if user is authenticated to get user-specific exercises
       const userId = req.userId; // May be undefined if not authenticated
-      const exercises = await storage.getExercises(userId);
+      const exercises = await storage.getExercises(userId ? Number(userId) : undefined);
       res.json(exercises);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1750,7 +1750,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const sessionData = req.body;
       const userId = req.userId;
-      const result = await createWorkoutSession(userId, sessionData.sessionId, sessionData);
+      const result = await createWorkoutSession(Number(userId), sessionData.sessionId, sessionData);
       res.json(result);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -1765,7 +1765,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create the workout session
       const session = await storage.createWorkoutSession({
-        userId: userId,
+        userId: Number(userId),
         programId: null, // No program required for individual sessions
         name: sessionData.name,
         date: new Date(),
@@ -1780,7 +1780,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Get auto-progressed values for new sessions
         const progressedValues = await getAutoProgressedValues(
           exercise.exerciseId, 
-          userId, 
+          Number(userId), 
           exercise
         );
 
@@ -2892,7 +2892,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Parse date as YYYY-MM-DD and treat as UTC to avoid timezone issues
         const targetDate = new Date(dateStr + 'T00:00:00.000Z');
         console.log('📅 GET: Parsed date:', targetDate.toISOString());
-        const checkin = await DailyWellnessService.getDailyCheckin(userId, targetDate);
+        const checkin = await DailyWellnessService.getDailyCheckin(Number(userId), targetDate);
         console.log('📅 GET: Found checkin:', checkin ? `id:${checkin.id}` : 'null');
         res.json(checkin);
       } else {
@@ -2901,7 +2901,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - 7);
         
-        const checkins = await DailyWellnessService.getDailyCheckins(userId, startDate, endDate);
+        const checkins = await DailyWellnessService.getDailyCheckins(Number(userId), startDate, endDate);
         res.json(checkins);
       }
     } catch (error: any) {
@@ -2922,7 +2922,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         : new Date(date);
       console.log('💾 POST: Parsed date:', targetDate.toISOString());
       
-      const checkin = await DailyWellnessService.upsertDailyCheckin(userId, targetDate, {
+      const checkin = await DailyWellnessService.upsertDailyCheckin(Number(userId), targetDate, {
         energyLevel,
         hungerLevel,
         sleepQuality,
@@ -2950,7 +2950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'weekStartDate query parameter is required' });
       }
       
-      const summary = await DailyWellnessService.getWeeklySummary(userId, new Date(weekStartDate as string));
+      const summary = await DailyWellnessService.getWeeklySummary(Number(userId), new Date(weekStartDate as string));
       res.json(summary);
     } catch (error: any) {
       console.error('Error fetching weekly wellness summary:', error);
@@ -2963,7 +2963,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const { weekStartDate } = req.body;
       
-      const summary = await DailyWellnessService.upsertWeeklySummary(userId, new Date(weekStartDate));
+      const summary = await DailyWellnessService.upsertWeeklySummary(Number(userId), new Date(weekStartDate));
       res.json(summary);
     } catch (error: any) {
       console.error('Error creating weekly wellness summary:', error);
@@ -3461,7 +3461,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/unified-goals", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const unifiedGoals = await GoalSynchronizationService.getUnifiedGoalData(userId);
+      const unifiedGoals = await GoalSynchronizationService.getUnifiedGoalData(Number(userId));
       res.json(unifiedGoals || {});
     } catch (error: any) {
       console.error('Get unified goals error:', error);
@@ -3475,7 +3475,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const weekStartDate = req.query.weekStartDate as string;
       
-      const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(userId, weekStartDate);
+      const weeklyGoals = await AdvancedMacroManagementService.getWeeklyGoals(Number(userId), weekStartDate);
       res.json(weeklyGoals);
     } catch (error: any) {
       console.error('Get weekly goals error:', error);
@@ -3487,7 +3487,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/meal-distribution", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const distributions = await AdvancedMacroManagementService.getMealDistributions(userId);
+      const distributions = await AdvancedMacroManagementService.getMealDistributions(Number(userId));
       res.json(distributions);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -3499,7 +3499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const distribution = await AdvancedMacroManagementService.createMealDistribution({
         ...req.body,
-        userId
+        userId: Number(userId)
       });
       res.json(distribution);
     } catch (error: any) {
@@ -3511,7 +3511,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/flexibility-rules", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const rules = await AdvancedMacroManagementService.getFlexibilityRules(userId);
+      const rules = await AdvancedMacroManagementService.getFlexibilityRules(Number(userId));
       res.json(rules);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -3523,7 +3523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.userId;
       const rule = await AdvancedMacroManagementService.createFlexibilityRule({
         ...req.body,
-        userId
+        userId: Number(userId)
       });
       res.json(rule);
     } catch (error: any) {
@@ -3540,7 +3540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const startDate = req.query.startDate as string || new Date().toISOString();
       const endDate = req.query.endDate as string || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       
-      const shoppingList = await ShoppingListGenerator.generateFromMealPlans(userId, startDate, endDate);
+      const shoppingList = await ShoppingListGenerator.generateFromMealPlans(Number(userId), startDate, endDate);
       res.json(shoppingList);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -3550,7 +3550,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/shopping-list/optimized", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const dietGoals = await storage.getDietGoal(userId);
+      const dietGoals = await storage.getDietGoal(Number(userId));
       
       if (!dietGoals) {
         return res.status(404).json({ message: "Diet goals not found. Please set up your nutrition targets first." });

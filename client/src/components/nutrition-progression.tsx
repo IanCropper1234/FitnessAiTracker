@@ -7,7 +7,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, Calendar, Activity, Target } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
-import { convertWeight, getUserWeightUnit } from "@shared/utils/metric-conversion";
 
 interface NutritionProgressionProps {
   userId: number;
@@ -177,7 +176,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
           
           if (metricUnit !== preferredUnit) {
-            weight = convertWeight(weight, metricUnit, preferredUnit);
+            weight = UnitConverter.convertWeightChange(weight, metricUnit, preferredUnit);
           }
           
           return {
@@ -426,7 +425,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           const targetUnit = preferredUnit;
           
           if (metricUnit !== targetUnit) {
-            weight = convertWeight(weight, metricUnit, targetUnit);
+            weight = UnitConverter.convertWeightChange(weight, metricUnit, targetUnit);
           }
           return {
             date: new Date(metric.date).toLocaleDateString(),
@@ -744,10 +743,10 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
       const lastUnit = lastEntry.unit === 'imperial' ? 'lbs' : 'kg';
       
       if (firstUnit !== preferredUnit) {
-        firstWeight = convertWeight(firstWeight, firstUnit, preferredUnit);
+        firstWeight = UnitConverter.convertWeightChange(firstWeight, firstUnit, preferredUnit);
       }
       if (lastUnit !== preferredUnit) {
-        lastWeight = convertWeight(lastWeight, lastUnit, preferredUnit);
+        lastWeight = UnitConverter.convertWeightChange(lastWeight, lastUnit, preferredUnit);
       }
       
       weightChange = lastWeight - firstWeight;
@@ -922,7 +921,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
                       let weight = parseFloat(metric.weight);
                       const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
                       if (metricUnit !== preferredUnit) {
-                        weight = convertWeight(weight, metricUnit, preferredUnit);
+                        weight = UnitConverter.convertWeightChange(weight, metricUnit, preferredUnit);
                       }
                       return sum + weight;
                     }, 0) / bodyMetrics.length;

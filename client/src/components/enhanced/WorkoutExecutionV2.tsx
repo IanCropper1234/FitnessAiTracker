@@ -12,6 +12,7 @@ import { useIOSNotifications } from '@/components/ui/ios-notification-manager';
 import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useFeature } from '@/hooks/useFeature';
+import { UnitConverter } from '@shared/utils/unit-conversion';
 
 // Enhanced components
 import { RestTimerFAB } from './RestTimerFAB';
@@ -313,6 +314,32 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       setSpecialConfigs(initialSpecialConfigs);
     }
   }, [session]);
+
+  // Initialize weightUnit from user profile and body metrics
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/user/profile'],
+    queryFn: async () => {
+      const response = await fetch(`/api/user/profile`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
+  const { data: bodyMetrics } = useQuery({
+    queryKey: ['/api/body-metrics'],
+    queryFn: async () => {
+      const response = await fetch(`/api/body-metrics`);
+      return response.json();
+    }
+  });
+
+  // Update weight unit when profile or metrics change
+  useEffect(() => {
+    if (userProfile || bodyMetrics) {
+      const preferredUnit = UnitConverter.getUserWeightUnit(userProfile?.user, bodyMetrics);
+      setWeightUnit(preferredUnit);
+    }
+  }, [userProfile, bodyMetrics]);
 
   // Rest timer countdown
   useEffect(() => {
