@@ -18,6 +18,8 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - All RP components must use synchronized data sources from weekly goals API
 - Adherence percentages, weight changes, and energy levels must match across RP Analysis and Progress Metrics
 - Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
+- **Goal Standardization (Aug 2025)**: All goal-setting components use only three standardized options: Fat Loss, Muscle Gain, Maintenance
+- **Single Source of Truth**: dietGoals table serves as primary data source with Goal Synchronization Service managing cross-component consistency
 
 **Critical Routing Rules (Wouter):**
 - **ROUTE ORDER MATTERS**: More specific routes must be placed BEFORE more generic routes
@@ -77,6 +79,7 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **UI Simplification**: Meal timing and dietary restrictions sections hidden from user profile page.
 - **Training Experience Classification**: AI exercise recommendation system uses research-based experience levels: Beginner, Intermediate, Advanced, Elite.
 - **Muscle Group Classification**: Refined muscle group focus options to precise anatomical classifications for improved AI exercise recommendations.
+- **Goal Standardization System (Aug 2025)**: Unified goal management with three standardized options (Fat Loss, Muscle Gain, Maintenance) across all components, Goal Synchronization Service ensuring data consistency, and `/api/unified-goals` endpoint as single source of truth.
 
 ### iOS App Development Strategy - Expo Approach
 TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.
