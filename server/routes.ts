@@ -794,6 +794,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual trigger for auto-adjustment (for testing)
+  app.post("/api/auto-adjustment/trigger", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { autoAdjustmentScheduler } = await import("./services/auto-adjustment-scheduler");
+      
+      // Get current user to check if auto-adjustment is enabled
+      const user = await storage.getUser(userId);
+      if (!user?.autoAdjustmentSettings?.autoAdjustmentEnabled) {
+        return res.status(400).json({ message: "Auto-adjustment not enabled for this user" });
+      }
+
+      // Force trigger adjustment for testing
+      const { AdvancedMacroManagementService } = await import("./services/advanced-macro-management");
+      
+      // Get current week
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + mondayOffset);
+      monday.setHours(0, 0, 0, 0);
+      const currentWeek = monday.toISOString().split('T')[0];
+
+      // Calculate and apply adjustment
+      const adjustmentResult = await AdvancedMacroManagementService.calculateWeeklyAdjustment(userId, currentWeek);
+      
+      if (adjustmentResult.adjustment?.adjustmentPercentage !== 0) {
+        const applyResult = await AdvancedMacroManagementService.applyWeeklyAdjustment(
+          userId, 
+          currentWeek, 
+          adjustmentResult.adjustment.adjustmentPercentage
+        );
+        
+        // Update last adjustment timestamp
+        const settings = user.autoAdjustmentSettings as any;
+        const updatedSettings = {
+          ...settings,
+          lastAutoAdjustment: new Date().toISOString()
+        };
+        
+        await storage.updateUser(userId, {
+          autoAdjustmentSettings: updatedSettings
+        });
+        
+        res.json({
+          message: "Auto-adjustment applied successfully",
+          adjustmentPercentage: adjustmentResult.adjustment.adjustmentPercentage,
+          newTargets: applyResult,
+          nextAdjustmentDate: new Date(Date.now() + (settings.autoAdjustmentFrequency === 'weekly' ? 7 : 14) * 24 * 60 * 60 * 1000).toISOString()
+        });
+      } else {
+        res.json({
+          message: "No adjustment needed based on current data",
+          adjustmentPercentage: 0
+        });
+      }
+      
+    } catch (error: any) {
+      console.error('Error triggering auto-adjustment:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Workout settings endpoints
   app.get("/api/workout-settings", requireAuth, async (req, res) => {
     try {
