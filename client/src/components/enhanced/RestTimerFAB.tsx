@@ -251,10 +251,8 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     setFabPosition({ x: newX, y: newY });
   };
 
-  // Auto-hide when not active
-  if (!isActive && timeRemaining === 0) {
-    return null;
-  }
+  // Always show the timer FAB - either active with countdown or inactive for manual start
+  // This ensures the timer is always accessible during workouts
 
   // Get safe positioning with overflow prevention
   const getSafePosition = () => {
