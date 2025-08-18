@@ -161,38 +161,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     });
   };
 
-  // Manual trigger mutation for testing
-  const triggerAdjustmentMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/auto-adjustment/trigger', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to trigger adjustment');
-      }
-      return response.json();
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Auto-Adjustment Triggered",
-        description: data.message + (data.adjustmentPercentage ? ` (${data.adjustmentPercentage}% change)` : ''),
-      });
-      refetchAutoSettings();
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Adjustment Error", 
-        description: error.message || "Failed to trigger auto-adjustment",
-        variant: "destructive"
-      });
-    }
-  });
-
   // Get current diet goals
   const { data: dietGoals } = useQuery({
     queryKey: ['/api/diet-goals'],
@@ -1118,21 +1086,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       return formatNextAdjustmentDate(nextDate);
                     })()}
                   </div>
-                  
-                  {/* Developer testing button */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-800">
-                      <Button
-                        onClick={() => triggerAdjustmentMutation.mutate()}
-                        disabled={triggerAdjustmentMutation.isPending}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs bg-yellow-50 hover:bg-yellow-100 border-yellow-300 text-yellow-800"
-                      >
-                        {triggerAdjustmentMutation.isPending ? 'Testing...' : 'Test Auto-Adjustment Now'}
-                      </Button>
-                    </div>
-                  )}
                 </div>
               )}
 
