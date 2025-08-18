@@ -112,17 +112,21 @@ export async function analyzeNutritionMultiImage(
         ? `**Task:** Extract and analyze nutritional information from nutrition facts labels across ${imageCount} image(s).
 
 **Analysis Approach:**
-1. **Label Reading:** Read all nutrition facts labels visible across the images
-2. **Information Aggregation:** If multiple labels are shown, combine or average the information as appropriate
-3. **Serving Size Recognition:** Identify exact serving sizes from all labels (e.g., "1 cup (240ml)", "2 pieces (30g)", etc.)
+1. **Precise Label Reading:** Read ALL nutrition values EXACTLY as displayed on the nutrition facts label
+2. **Serving Size Accuracy:** Identify and use the EXACT serving size shown on the label (do not modify or scale)
+3. **Value Verification:** Report nutrition values exactly as they appear - do not multiply, divide, or adjust
 4. **Food Name Integration:** Use "${foodName}" to validate label information and resolve ambiguities
-5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use the exact serving size stated on the nutrition labels`}
-6. **Accuracy Priority:** Base all values on what's clearly visible in the nutrition labels
+5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use the exact serving size and values stated on the nutrition labels`}
+6. **Critical Accuracy Check:** Ensure reported calories, protein, carbs, and fat match the label EXACTLY
+7. **Common Error Prevention:** Avoid multiplying nutrition values by serving count or package size
 
 **CRITICAL - Serving Details for Nutrition Labels:**
 - Extract the EXACT serving size text from the nutrition facts label (e.g., "1 container (150g)", "2 slices (45g)", "1 cup (30g)")
+- Read ALL nutrition values EXACTLY as shown on the label for the stated serving size
+- DO NOT multiply or scale values - use the exact numbers from the label
 - If multiple products, specify which product the serving refers to
 - Include both the descriptive portion AND weight/volume when available
+- VERIFY: Double-check that reported calories match label exactly (common error: multiplying serving size)
 
 **SUPPLEMENTS AND VITAMINS:**
 - For supplements, vitamins, and pills with zero or minimal calories/macros, focus on micronutrients and supplement compounds
@@ -174,10 +178,10 @@ ${foodDescription ? `
 **Additional Context:** ${foodDescription}` : ''}
 
 **Enhanced Output Requirements - JSON format with these EXACT fields:**
-- calories: ${analysisType === 'nutrition_label' ? 'total calories from label(s)' : 'estimated total calories'} (number)
-- protein: ${analysisType === 'nutrition_label' ? 'protein from label(s)' : 'estimated protein'} in grams (number) 
-- carbs: ${analysisType === 'nutrition_label' ? 'carbohydrates from label(s)' : 'estimated carbohydrates'} in grams (number)
-- fat: ${analysisType === 'nutrition_label' ? 'fat from label(s)' : 'estimated fat'} in grams (number)
+- calories: ${analysisType === 'nutrition_label' ? 'EXACT calories as shown on label (do not multiply or scale)' : 'estimated total calories'} (number)
+- protein: ${analysisType === 'nutrition_label' ? 'EXACT protein grams as shown on label (do not multiply or scale)' : 'estimated protein'} in grams (number) 
+- carbs: ${analysisType === 'nutrition_label' ? 'EXACT carbohydrate grams as shown on label (do not multiply or scale)' : 'estimated carbohydrates'} in grams (number)
+- fat: ${analysisType === 'nutrition_label' ? 'EXACT fat grams as shown on label (do not multiply or scale)' : 'estimated fat'} in grams (number)
 - confidence: confidence level 0-1 (number, ${analysisType === 'nutrition_label' ? '0.9-1.0 for clear labels' : '0.6-0.8 for food estimation'})
 - category: primary macro category (string: "protein", "carb", "fat", or "mixed")
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
@@ -196,9 +200,9 @@ ${foodDescription ? `
   
   **CRITICAL REQUIREMENTS:**
   ${analysisType === 'nutrition_label' ? 
-    '- Extract ALL visible vitamins, minerals, and supplement compounds from labels\n  - Convert % Daily Values to actual amounts using standard references\n  - Include supplement-specific compounds beyond basic vitamins/minerals' : 
+    '- Read and report nutrition values EXACTLY as they appear on the label\n  - DO NOT multiply values by serving count or package size\n  - Extract ALL visible vitamins, minerals, and supplement compounds from labels\n  - Convert % Daily Values to actual amounts using standard references\n  - Include supplement-specific compounds beyond basic vitamins/minerals\n  - VERIFY: Reported calories must match label exactly (common mistake: incorrect scaling)' : 
     '- Break down visible food into individual components\n  - Calculate micronutrients based on ALL identified ingredients\n  - Include nutrients from cooking methods (added oils, seasonings, etc.)\n  - Choose optimal unit type for the specific food category shown'}
-- nutritionValidation: brief reasonableness check of calculated values (string)
+- nutritionValidation: brief reasonableness check and verification that values match label exactly (string)
 
 Return only valid JSON with all required fields.`
         }
