@@ -3142,10 +3142,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/body-metrics", requireAuth, async (req, res) => {
     try {
+      const userId = req.userId;
+      const { weight, unit, date, ...otherData } = req.body;
+      
+      // Store user's unit preference in profile (for display purposes)
+      if (unit && (unit === 'imperial' || unit === 'metric')) {
+        try {
+          const existingProfile = await db.select()
+            .from(userProfiles)
+            .where(eq(userProfiles.userId, userId))
+            .limit(1);
+
+          if (existingProfile.length > 0) {
+            await db.update(userProfiles)
+              .set({
+                weightUnit: unit,
+                updatedAt: new Date()
+              })
+              .where(eq(userProfiles.id, existingProfile[0].id));
+          }
+        } catch (profileError) {
+          console.error('Failed to update user weight unit preference:', profileError);
+          // Don't fail the body metric creation if profile update fails
+        }
+      }
+      
+      // Convert weight to metric for database storage (standardization)
+      let metricWeight = weight;
+      if (unit === 'imperial' && weight) {
+        metricWeight = parseFloat(weight) * 0.45359237; // Convert lbs to kg
+      }
+      
       const metricData = {
-        ...req.body,
-        date: new Date(req.body.date)
+        ...otherData,
+        userId,
+        weight: metricWeight,
+        unit: 'metric', // Always store as metric in database
+        date: new Date(date)
       };
+      
       const metric = await storage.createBodyMetric(metricData);
       res.json(metric);
     } catch (error: any) {

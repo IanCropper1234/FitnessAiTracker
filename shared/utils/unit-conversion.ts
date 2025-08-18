@@ -77,9 +77,18 @@ export class UnitConverter {
 
   /**
    * Get user's preferred weight unit from various sources
+   * Since database now stores all weights in metric, we prioritize user profile preference
    */
   static getUserWeightUnit(userProfile?: any, bodyMetrics?: any[]): 'kg' | 'lbs' {
-    // Priority: Latest body metric unit > user profile > default to kg
+    // Priority: User profile weight_unit > legacy body metric unit > default to kg
+    
+    // Check user profile first (primary source after database standardization)
+    if (userProfile?.user?.weightUnit) {
+      if (userProfile.user.weightUnit === 'imperial') return 'lbs';
+      if (userProfile.user.weightUnit === 'metric') return 'kg';
+    }
+    
+    // Fallback: Check latest body metric for legacy preference
     if (bodyMetrics && bodyMetrics.length > 0) {
       const latestMetric = bodyMetrics[0];
       if (latestMetric.unit === 'imperial') return 'lbs';
