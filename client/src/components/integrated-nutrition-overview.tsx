@@ -1888,20 +1888,37 @@ export function IntegratedNutritionOverview({
                                 <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
                                   {log.quantity} {log.unit}, {log.calories} calories
                                 </div>
-                                {log.micronutrients && (
-                                  log.micronutrients.vitaminA || log.micronutrients.vitaminD || log.micronutrients.vitaminE || log.micronutrients.vitaminK ||
-                                  log.micronutrients.vitaminC || log.micronutrients.vitaminB1 || log.micronutrients.vitaminB2 || log.micronutrients.vitaminB3 ||
-                                  log.micronutrients.vitaminB6 || log.micronutrients.vitaminB12 || log.micronutrients.calcium || log.micronutrients.magnesium ||
-                                  log.micronutrients.phosphorus || log.micronutrients.potassium || log.micronutrients.sodium || log.micronutrients.iron ||
-                                  log.micronutrients.zinc || log.micronutrients.selenium || log.micronutrients.copper || log.micronutrients.manganese ||
-                                  log.micronutrients.iodine || log.micronutrients.chromium || log.micronutrients.molybdenum ||
-                                  (log.micronutrients.sugar !== null && log.micronutrients.sugar !== undefined) || 
-                                  (log.micronutrients.fiber !== null && log.micronutrients.fiber !== undefined) || 
-                                  (log.micronutrients.saturatedFat !== null && log.micronutrients.saturatedFat !== undefined) || 
-                                  (log.micronutrients.cholesterol !== null && log.micronutrients.cholesterol !== undefined) ||
-                                  (log.micronutrients.monounsaturatedFat !== null && log.micronutrients.monounsaturatedFat !== undefined) ||
-                                  (log.micronutrients.polyunsaturatedFat !== null && log.micronutrients.polyunsaturatedFat !== undefined)
-                                ) && (
+                                {(() => {
+                                  if (!log.micronutrients) return false;
+                                  
+                                  // Check for legacy flat structure micronutrients
+                                  const hasLegacyMicronutrients = (
+                                    log.micronutrients.vitaminA || log.micronutrients.vitaminD || log.micronutrients.vitaminE || log.micronutrients.vitaminK ||
+                                    log.micronutrients.vitaminC || log.micronutrients.vitaminB1 || log.micronutrients.vitaminB2 || log.micronutrients.vitaminB3 ||
+                                    log.micronutrients.vitaminB6 || log.micronutrients.vitaminB12 || log.micronutrients.calcium || log.micronutrients.magnesium ||
+                                    log.micronutrients.phosphorus || log.micronutrients.potassium || log.micronutrients.sodium || log.micronutrients.iron ||
+                                    log.micronutrients.zinc || log.micronutrients.selenium || log.micronutrients.copper || log.micronutrients.manganese ||
+                                    log.micronutrients.iodine || log.micronutrients.chromium || log.micronutrients.molybdenum ||
+                                    (log.micronutrients.sugar !== null && log.micronutrients.sugar !== undefined) || 
+                                    (log.micronutrients.fiber !== null && log.micronutrients.fiber !== undefined) || 
+                                    (log.micronutrients.saturatedFat !== null && log.micronutrients.saturatedFat !== undefined) || 
+                                    (log.micronutrients.cholesterol !== null && log.micronutrients.cholesterol !== undefined) ||
+                                    (log.micronutrients.monounsaturatedFat !== null && log.micronutrients.monounsaturatedFat !== undefined) ||
+                                    (log.micronutrients.polyunsaturatedFat !== null && log.micronutrients.polyunsaturatedFat !== undefined)
+                                  );
+                                  
+                                  // Check for new nested structure micronutrients
+                                  const hasNestedMicronutrients = Object.values(log.micronutrients).some((category: any) => {
+                                    if (typeof category === 'object' && category !== null) {
+                                      return Object.values(category).some((value: any) => 
+                                        value !== null && value !== undefined && value !== 0
+                                      );
+                                    }
+                                    return false;
+                                  });
+                                  
+                                  return hasLegacyMicronutrients || hasNestedMicronutrients;
+                                })() && (
                                   <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
                                     Nutrients
                                   </Badge>
