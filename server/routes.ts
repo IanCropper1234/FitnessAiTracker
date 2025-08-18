@@ -2331,7 +2331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verify the session belongs to the user
-      if (originalSession.userId !== userId) {
+      if (originalSession.userId !== Number(userId)) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -2358,7 +2358,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create saved workout template with exercises as JSON
       const templateData = {
-        userId: userId,
+        userId: Number(userId),
         name: templateName,
         description: `Template created from workout session: ${originalSession.name}`,
         exerciseTemplates: exerciseTemplates,
