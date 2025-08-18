@@ -232,6 +232,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
   });
 
   const handleSubmit = () => {
+    // Validate required fields only
     if (!formData.targetWeight) {
       toast({
         title: "Error",
@@ -240,6 +241,8 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
       });
       return;
     }
+
+    // Target date is optional - no validation needed
 
     const goalData = {
       userId,
