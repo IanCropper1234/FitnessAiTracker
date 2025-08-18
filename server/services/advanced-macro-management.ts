@@ -521,6 +521,19 @@ export class AdvancedMacroManagementService {
         const goalType = currentDietGoal.goal; // 'cutting', 'bulking', 'maintenance'
         const targetWeightChangePerWeek = parseFloat(currentDietGoal.weeklyWeightTarget || '0');
 
+        // DEBUG: Log all relevant variables for RP analysis
+        console.log('🔍 RP Algorithm Debug - All Variables:', {
+          hasCurrentDietGoal: !!currentDietGoal,
+          hasCurrentWeight: !!currentWeight,
+          hasPreviousWeight: !!previousWeight,
+          goalType,
+          goalTypeString: typeof goalType,
+          targetWeightChangePerWeek,
+          weightChange,
+          adherencePercentage,
+          currentDietGoalFull: currentDietGoal
+        });
+
         // RP methodology: Adjust based on adherence + weight change vs target
         if (goalType === 'cutting') {
           // Cutting phase: target weight loss
@@ -537,25 +550,44 @@ export class AdvancedMacroManagementService {
         } else if (goalType === 'bulking' || goalType === 'bulk' || 
                    targetWeightChangePerWeek > 0 || 
                    (currentDietGoal?.goal && ['gain', 'muscle_gain', 'bulking'].includes(currentDietGoal.goal.toLowerCase()))) {
-          // Bulking phase: RP methodology - maintain during optimal progress, adjust after 2+ week plateaus
-          console.log('RP Analysis - Bulking detected:', { goalType, targetWeightChangePerWeek, weightChange, adherencePercentage });
+          // Bulking phase: RP methodology - adjust for suboptimal weight changes
+          console.log('🏋️ RP Analysis - Bulking/Muscle Gain detected:', { 
+            goalType, 
+            dietGoal: currentDietGoal?.goal,
+            targetWeightChangePerWeek, 
+            weightChange, 
+            adherencePercentage 
+          });
           
           if (adherencePercentage >= 80 && weightChange <= 0) {
             // Weight loss or no gain during bulking = increase calories
             adjustmentRecommendation = 'increase_calories';
-            adjustmentReason = 'high_adherence_no_weight_gain';
-            console.log('RP Recommendation: Increase calories due to weight loss/no gain during bulk');
+            adjustmentReason = 'weight_loss_during_bulk';
+            console.log('🚀 RP Recommendation: INCREASE CALORIES - Weight loss/no gain during muscle gain phase');
+          } else if (adherencePercentage >= 80 && weightChange < targetWeightChangePerWeek * 0.5) {
+            // Weight gain too slow for bulking - increase calories  
+            adjustmentRecommendation = 'increase_calories';
+            adjustmentReason = 'insufficient_weight_gain';
+            console.log('🚀 RP Recommendation: INCREASE CALORIES - Weight gain too slow for muscle gain');
           } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 2.5) {
             // Only decrease if gaining significantly more than target (very conservative)
             adjustmentRecommendation = 'decrease_calories';
             adjustmentReason = 'excessive_weight_gain';
+            console.log('⬇️ RP Recommendation: DECREASE CALORIES - Excessive weight gain');
           } else if (adherencePercentage < 70) {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_bulking';
+            console.log('📈 RP Recommendation: IMPROVE ADHERENCE - Low adherence during bulk');
           } else if (adherencePercentage >= 80 && weightChange > 0 && weightChange <= targetWeightChangePerWeek * 2.0) {
-            // Optimal progress: maintain calories, only adjust after 2+ week plateaus or if significantly outside range
+            // Optimal progress: maintain calories
             adjustmentRecommendation = 'maintain';
             adjustmentReason = 'optimal_bulk_progress';
+            console.log('✅ RP Recommendation: MAINTAIN - Optimal weight gain progress');
+          } else {
+            // Default case for edge scenarios
+            adjustmentRecommendation = 'increase_calories';
+            adjustmentReason = 'default_bulk_adjustment';
+            console.log('🔧 RP Recommendation: DEFAULT INCREASE - Edge case during bulk');
           }
         } else {
           // Maintenance phase
