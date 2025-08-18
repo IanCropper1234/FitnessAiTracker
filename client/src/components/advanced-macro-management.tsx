@@ -857,7 +857,21 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     <div className="space-y-1">
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Goal Type:</span>
-                        <span className="font-medium text-black dark:text-white capitalize">{weeklyGoals[0].goalType}</span>
+                        <span className="font-medium text-black dark:text-white capitalize">
+                          {(() => {
+                            // Get goal type from weight goals if available
+                            if (weightGoals && weightGoals.length > 0) {
+                              const activeGoal = weightGoals.find((goal: any) => goal.isActive) || weightGoals[0];
+                              if (activeGoal?.goalType === 'bulking') return 'Muscle Gain';
+                              if (activeGoal?.goalType === 'cutting') return 'Fat Loss';
+                              if (activeGoal?.targetWeightChangePerWeek && parseFloat(activeGoal.targetWeightChangePerWeek) > 0) {
+                                return 'Muscle Gain';
+                              }
+                            }
+                            // Fallback to weekly goals data
+                            return weeklyGoals[0].goalType || 'Maintenance';
+                          })()}
+                        </span>
                       </div>
                       {weeklyGoals[0].currentWeight && weeklyGoals[0].previousWeight && (
                         <div className="flex justify-between">

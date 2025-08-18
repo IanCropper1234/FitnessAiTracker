@@ -147,8 +147,19 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
     console.log('RP Analysis Debug:', {
       profileGoal: userProfile?.user?.fitnessGoal,
       weightGoalType: weightGoals?.[0]?.goalType,
+      weightChangeTarget: weightGoals?.[0]?.targetWeightChangePerWeek,
       finalGoal: fitnessGoal
     });
+    
+    // Enhanced smart detection: Check if user has positive weight change target (bulking indicator)
+    const hasPositiveWeightTarget = weightGoals?.[0]?.targetWeightChangePerWeek && 
+                                   parseFloat(weightGoals[0].targetWeightChangePerWeek) > 0;
+    
+    // If user has positive weight change target, it's muscle gain regardless of other fields
+    if (hasPositiveWeightTarget) {
+      console.log('RP Analysis: Detected Muscle Gain based on positive weight target');
+      return 'Muscle Gain';
+    }
     
     // Map fitness goals to RP phases (be more inclusive in mapping)
     switch (fitnessGoal?.toLowerCase()) {
@@ -172,11 +183,6 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
       case 'recomposition':
       case 'recomp':
       default:
-        // If we have positive weight change target, assume muscle gain
-        if (weightGoals?.[0]?.targetWeightChangePerWeek && 
-            parseFloat(weightGoals[0].targetWeightChangePerWeek) > 0) {
-          return 'Muscle Gain';
-        }
         return 'Maintenance';
     }
   };
