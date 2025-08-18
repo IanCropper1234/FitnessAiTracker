@@ -26,6 +26,11 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
   onCustomTimeSet,
   draggable = true
 }) => {
+  // Debug log to ensure component is rendering
+  console.log('RestTimerFAB rendering:', { isActive, timeRemaining, totalTime });
+  
+  // Force show the timer for debugging
+  const shouldShow = true; // Always show for debugging
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCustomTime, setShowCustomTime] = useState(false);
   const [customMinutes, setCustomMinutes] = useState(3);

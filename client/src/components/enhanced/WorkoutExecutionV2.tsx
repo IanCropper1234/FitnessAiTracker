@@ -1731,29 +1731,27 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         )}
       </div>
-      {/* Enhanced Rest Timer FAB */}
-      {restTimerFABEnabled && (
-        <RestTimerFAB
-          isActive={isRestTimerActive}
-          timeRemaining={restTimeRemaining}
-          totalTime={customRestTime || currentExercise?.restPeriod || 120}
-          defaultRestPeriod={currentExercise?.restPeriod || 120}
-          onSkip={() => {
-            setIsRestTimerActive(false);
-            setRestTimeRemaining(0);
-          }}
-          onCustomTimeSet={(seconds) => {
-            setCustomRestTime(seconds);
-            setRestTimeRemaining(seconds);
-            setIsRestTimerActive(true);
-            toast({
-              title: "Custom Rest Timer Started",
-              description: `Rest for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`,
-              duration: 2000,
-            });
-          }}
-        />
-      )}
+      {/* Enhanced Rest Timer FAB - Always show during workout execution */}
+      <RestTimerFAB
+        isActive={isRestTimerActive}
+        timeRemaining={restTimeRemaining}
+        totalTime={customRestTime || currentExercise?.restPeriod || 120}
+        defaultRestPeriod={currentExercise?.restPeriod || 120}
+        onSkip={() => {
+          setIsRestTimerActive(false);
+          setRestTimeRemaining(0);
+        }}
+        onCustomTimeSet={(seconds) => {
+          setCustomRestTime(seconds);
+          setRestTimeRemaining(seconds);
+          setIsRestTimerActive(true);
+          toast({
+            title: "Custom Rest Timer Started",
+            description: `Rest for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`,
+            duration: 2000,
+          });
+        }}
+      />
       
       {/* Progress Save Indicator */}
       <ProgressSaveIndicator
