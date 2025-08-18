@@ -438,8 +438,15 @@ export class AdvancedMacroManagementService {
       const avgCalories = totalCalories / Math.max(daysWithLogs, 1);
       const avgProtein = totalProtein / Math.max(daysWithLogs, 1);
 
-      // Get user's diet goals for adherence calculation using past days only
-      const dietGoalsData = await db.select().from(dietGoals).where(eq(dietGoals.userId, userId)).limit(1);
+      // Get user's diet goals for adherence calculation - FIXED TO USE LATEST RECORD
+      const dietGoalsData = await db.select()
+        .from(dietGoals)
+        .where(eq(dietGoals.userId, userId))
+        .orderBy(desc(dietGoals.updatedAt))
+        .limit(1);
+      
+      console.log('💾 getDietGoal query result in RP calculation:', dietGoalsData[0]);
+      
       let adherencePercentage = 0;
       let currentDietGoal = null;
 
@@ -511,6 +518,15 @@ export class AdvancedMacroManagementService {
         // Convert weights to common unit for accurate comparison
         const currentConverted = UnitConverter.convertWeight(currentWeight, currentWeightUnit);
         const previousConverted = UnitConverter.convertWeight(previousWeight, previousWeightUnit);
+        
+        console.log('⚖️ Weight Conversion Debug:', {
+          currentWeight,
+          currentWeightUnit,
+          previousWeight,
+          previousWeightUnit,
+          currentConverted,
+          previousConverted
+        });
         
         // Calculate weight change in kg for consistent RP analysis
         weightChange = currentConverted.kg - previousConverted.kg;
