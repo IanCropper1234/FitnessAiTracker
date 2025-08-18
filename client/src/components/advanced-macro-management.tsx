@@ -139,7 +139,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   useEffect(() => {
     if (autoAdjustmentSettings) {
       setAutoAdjustmentEnabled(autoAdjustmentSettings.autoAdjustmentEnabled || false);
-      setAutoAdjustmentFrequency(autoAdjustmentSettings.autoAdjustmentFrequency || 'weekly');
+      setAutoAdjustmentFrequency(autoAdjustmentSettings.autoAdjustmentFrequency || 'biweekly');
     }
   }, [autoAdjustmentSettings]);
 
@@ -1081,7 +1081,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     Next adjustment: {(() => {
                       const nextDate = calculateNextAdjustmentDate(
                         autoAdjustmentSettings,
-                        autoAdjustmentFrequency
+                        autoAdjustmentSettings?.autoAdjustmentFrequency || 'biweekly'
                       );
                       return formatNextAdjustmentDate(nextDate);
                     })()}

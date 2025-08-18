@@ -735,7 +735,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         autoAdjustmentEnabled: settings.autoAdjustmentEnabled || false,
         autoAdjustmentFrequency: settings.autoAdjustmentFrequency || 'weekly',
-        lastAutoAdjustment: settings.lastAutoAdjustment || null
+        lastAutoAdjustment: settings.lastAutoAdjustment || null,
+        updatedAt: settings.updatedAt || null
       });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -772,6 +773,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         autoAdjustmentEnabled,
         autoAdjustmentFrequency,
         lastAutoAdjustment: null,
+        updatedAt: settings.updatedAt,
         message: "Settings saved successfully"
       });
     } catch (error: any) {
