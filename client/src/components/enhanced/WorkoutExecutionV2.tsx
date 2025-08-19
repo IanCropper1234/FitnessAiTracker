@@ -1793,13 +1793,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         </div>
         
-        {/* Ultra Compact Action Buttons */}
-        <div className={`${
-          // Check if all sets are completed for conditional layout
-          Object.values(workoutData).flat().length > 0 && Object.values(workoutData).flat().every(set => set?.completed)
-            ? 'flex justify-center' // Single button layout when workout is complete
-            : 'grid grid-cols-2 gap-1.5' // Two button layout otherwise
-        }`}>
+        {/* Ultra Compact Action Buttons - Only Save & Exit (Complete Workout handled by GlobalCompleteSetButton) */}
+        <div className="flex justify-center">
           <button 
             onClick={saveAndExit} 
             disabled={saveProgressMutation.isPending}
@@ -1808,18 +1803,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             <Save className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Save & Exit</span>
           </button>
-          
-          {/* Hide Complete Workout button when all sets are completed (handled by GlobalCompleteSetButton) */}
-          {!(Object.values(workoutData).flat().length > 0 && Object.values(workoutData).flat().every(set => set?.completed)) && (
-            <button 
-              onClick={completeWorkout} 
-              disabled={saveProgressMutation.isPending}
-              className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-1.5  flex items-center justify-center gap-1 transition-colors"
-            >
-              <CheckCircle className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Complete Workout</span>
-            </button>
-          )}
         </div>
         
         {/* Loading indicator */}
