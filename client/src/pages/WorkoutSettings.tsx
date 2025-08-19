@@ -69,7 +69,7 @@ export default function WorkoutSettings() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Renaissance Periodization (RP) Features
+            Scientific Training Features
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -164,10 +164,10 @@ export default function WorkoutSettings() {
           <div className="space-y-2">
             <h3 className="font-medium text-blue-900 dark:text-blue-100">About Auto-Regulation Feedback</h3>
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              The Renaissance Periodization auto-regulation system uses your RPE feedback to intelligently adjust training volume and intensity. When enabled, you'll be prompted to rate your perceived exertion after completing each exercise during your workout.
+              The evidence-based auto-regulation system uses your RPE feedback to intelligently adjust training volume and intensity. When enabled, you'll be prompted to rate your perceived exertion after completing each exercise during your workout.
             </p>
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              This data is then combined with your post-workout wellness feedback to provide comprehensive training recommendations following RP methodology.
+              This data is then combined with your post-workout wellness feedback to provide comprehensive training recommendations following scientific methodology.
             </p>
           </div>
         </CardContent>

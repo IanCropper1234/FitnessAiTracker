@@ -1315,13 +1315,55 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
             </div>
 
-            {/* Progress Display - Bar View Only */}
+            {/* Progress Display - Conditional based on circular progress setting */}
             <div className="space-y-1">
-              <Progress value={progressPercentage} className="h-1.5 bg-muted" />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Workout Progress</span>
-                <span>{Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min elapsed</span>
-              </div>
+              {circularProgressEnabled ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-8 h-8">
+                      <svg className="w-8 h-8 -rotate-90" viewBox="0 0 32 32">
+                        <circle
+                          cx="16"
+                          cy="16"
+                          r="14"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          className="text-muted-foreground/30"
+                        />
+                        <circle
+                          cx="16"
+                          cy="16"
+                          r="14"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          className="text-primary transition-all duration-300"
+                          strokeDasharray={`${88 * progressPercentage / 100} 88`}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-medium text-primary">
+                          {Math.round(progressPercentage)}%
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Workout Progress</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min elapsed
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <Progress value={progressPercentage} className="h-1.5 bg-muted" />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Workout Progress</span>
+                    <span>{Math.floor((Date.now() - sessionStartTime) / 1000 / 60)}min elapsed</span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Special Training Method Details */}
@@ -1816,27 +1858,29 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         )}
       </div>
-      {/* Enhanced Rest Timer FAB - Always show during workout execution */}
-      <RestTimerFAB
-        isActive={isRestTimerActive}
-        timeRemaining={restTimeRemaining}
-        totalTime={customRestTime || currentExercise?.restPeriod || 120}
-        defaultRestPeriod={currentExercise?.restPeriod || 120}
-        onSkip={() => {
-          setIsRestTimerActive(false);
-          setRestTimeRemaining(0);
-        }}
-        onCustomTimeSet={(seconds) => {
-          setCustomRestTime(seconds);
-          setRestTimeRemaining(seconds);
-          setIsRestTimerActive(true);
-          toast({
-            title: "Custom Rest Timer Started",
-            description: `Rest for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`,
-            duration: 2000,
-          });
-        }}
-      />
+      {/* Enhanced Rest Timer FAB - Show only if feature is enabled */}
+      {restTimerFABEnabled && (
+        <RestTimerFAB
+          isActive={isRestTimerActive}
+          timeRemaining={restTimeRemaining}
+          totalTime={customRestTime || currentExercise?.restPeriod || 120}
+          defaultRestPeriod={currentExercise?.restPeriod || 120}
+          onSkip={() => {
+            setIsRestTimerActive(false);
+            setRestTimeRemaining(0);
+          }}
+          onCustomTimeSet={(seconds) => {
+            setCustomRestTime(seconds);
+            setRestTimeRemaining(seconds);
+            setIsRestTimerActive(true);
+            toast({
+              title: "Custom Rest Timer Started",
+              description: `Rest for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`,
+              duration: 2000,
+            });
+          }}
+        />
+      )}
       {/* Progress Save Indicator */}
       <ProgressSaveIndicator
         status={saveStatus}
