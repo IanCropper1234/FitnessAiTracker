@@ -1618,18 +1618,17 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                                 `${set.weight}${weightUnit} × ${set.actualReps} reps @ RPE ${set.rpe}`
                               ) : index === currentSetIndex ? (
                                 // For active set, show current live values being entered
-                                <>
-                                  {set.weight > 0 ? `${set.weight}${weightUnit}` : 'Weight'} × {set.actualReps > 0 ? `${set.actualReps}` : `${set.targetReps}`} reps
-                                  {set.rpe > 0 && ` @ RPE ${set.rpe}`}
-                                </>
+                                (<>
+                                  {set.weight > 0 ? `${set.weight}${weightUnit}` : 'Weight'}× {set.actualReps > 0 ? `${set.actualReps}` : `${set.targetReps}`}reps
+                                                                    {set.rpe > 0 && ` @ RPE ${set.rpe}`}
+                                </>)
                               ) : (
                                 // For pending sets, show target/recommended values
-                                <>
-                                  Target: {getSetRecommendation(currentExercise.exerciseId, set.setNumber)?.recommendedReps || set.targetReps} reps
-                                  {getSetRecommendation(currentExercise.exerciseId, set.setNumber) && (
+                                (<>Target: {getSetRecommendation(currentExercise.exerciseId, set.setNumber)?.recommendedReps || set.targetReps}reps
+                                                                    {getSetRecommendation(currentExercise.exerciseId, set.setNumber) && (
                                     <span className="text-emerald-500 ml-1 font-medium">(Recommended)</span>
                                   )}
-                                </>
+                                </>)
                               )}
                             </div>
                             
@@ -1798,7 +1797,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           <button 
             onClick={saveAndExit} 
             disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5  border border-border/30 flex items-center justify-center gap-1 transition-colors"
+            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5 border border-border/30 flex items-center justify-center gap-1 transition-colors pl-[131px] pr-[131px] pt-[6px] pb-[6px]"
           >
             <Save className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Save & Exit</span>
@@ -1840,7 +1839,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           });
         }}
       />
-      
       {/* Progress Save Indicator */}
       <ProgressSaveIndicator
         status={saveStatus}
@@ -1852,7 +1850,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           setSaveMessage('');
         }}
       />
-      
       {/* Auto-Regulation Feedback Modal */}
       {showAutoRegulation && currentSetForFeedback && currentExercise && (
         <div className="fixed inset-0 bg-black/50 z-[90] flex items-center justify-center p-4">
@@ -1911,7 +1908,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         </div>
       )}
-
     </div>
   );
 };
