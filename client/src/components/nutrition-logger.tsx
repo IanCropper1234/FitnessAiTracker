@@ -46,9 +46,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
   // Sync local meal type with parent state changes
   useEffect(() => {
     if (initialMealType) {
+      console.log('NutritionLogger: Syncing meal type from parent:', initialMealType);
       setMealType(initialMealType);
     }
   }, [initialMealType]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('NutritionLogger: Current meal type state:', mealType);
+  }, [mealType]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
@@ -416,7 +422,9 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
                 Add to Meal Type <span className="text-red-500">*</span>
               </Label>
               <Select value={mealType} onValueChange={(value) => {
+                console.log('NutritionLogger: Meal type changed from', mealType, 'to', value);
                 setMealType(value);
+                console.log('NutritionLogger: Calling onMealTypeChange with value:', value);
                 onMealTypeChange?.(value);
               }}>
                 <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${

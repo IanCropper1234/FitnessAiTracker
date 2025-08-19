@@ -102,6 +102,7 @@ export function Nutrition({
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
   const [loggerSelectedDate, setLoggerSelectedDate] = useState<string>();
+  const [persistentMealType, setPersistentMealType] = useState('breakfast');
   const [, setLocation] = useLocation();
   const activeTab = externalActiveTab || "overview";
   const setActiveTab = onTabChange || (() => {});
@@ -323,6 +324,11 @@ export function Nutrition({
             <NutritionLogger 
               userId={user.id}
               selectedDate={loggerSelectedDate}
+              initialMealType={persistentMealType}
+              onMealTypeChange={(newMealType) => {
+                console.log('Nutrition page: Received meal type change:', newMealType);
+                setPersistentMealType(newMealType);
+              }}
               onComplete={() => {
                 console.log('NutritionLogger onComplete called, setting showLogger to false');
                 setShowLogger(false);

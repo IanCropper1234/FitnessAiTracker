@@ -891,7 +891,10 @@ export function DailyFoodLog({
           userId={userId}
           selectedDate={selectedDate}
           initialMealType={persistentMealType}
-          onMealTypeChange={setPersistentMealType}
+          onMealTypeChange={(newMealType) => {
+            console.log('DailyFoodLog: Received meal type change:', newMealType);
+            setPersistentMealType(newMealType);
+          }}
           onComplete={() => {
             setShowLogger(false);
             queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });
