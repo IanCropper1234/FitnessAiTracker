@@ -2,7 +2,7 @@ import {
   users, userProfiles, nutritionGoals, nutritionLogs, trainingPrograms, 
   exercises, workoutSessions, workoutExercises, autoRegulationFeedback, weightLogs,
   foodCategories, foodItems, mealPlans, weeklyNutritionGoals, dietPhases, mealTimingPreferences, bodyMetrics, savedMealPlans, savedMeals, dietGoals, weightGoals,
-  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates, savedWorkoutTemplates,
+  muscleGroups, volumeLandmarks, weeklyVolumeTracking, exerciseMuscleMapping, mesocycles, trainingTemplates, savedWorkoutTemplates, loadProgressionTracking,
   type User, type InsertUser, type UpsertUser, type UserProfile, type InsertUserProfile,
   type NutritionGoal, type InsertNutritionGoal, type NutritionLog, type InsertNutritionLog,
   type TrainingProgram, type InsertTrainingProgram, type Exercise, type InsertExercise,
@@ -353,7 +353,11 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`Attempting to delete workout session ${id}`);
       
-      // First delete related workout exercises
+      // First delete load progression tracking records
+      console.log('Deleting load progression tracking...');
+      await db.delete(loadProgressionTracking).where(eq(loadProgressionTracking.sessionId, id));
+      
+      // Delete related workout exercises
       console.log('Deleting workout exercises...');
       await db.delete(workoutExercises).where(eq(workoutExercises.sessionId, id));
       
