@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Zap, AlertTriangle } from 'lucide-react';
-import { useFeatures, updateFeatureFlag, getFeatureFlags } from '@/hooks/useFeature';
+import { useWorkoutSettings } from '@/hooks/useSettings';
 import { useToast } from '@/hooks/use-toast';
 
 interface FeatureFlagManagerProps {
@@ -17,14 +17,14 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
   isOpen,
   onClose,
 }) => {
-  const features = useFeatures();
+  const [settings, updateSettings] = useWorkoutSettings();
   const { toast } = useToast();
   const [isDeveloperMode, setIsDeveloperMode] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleFeatureToggle = (featureName: keyof typeof features, enabled: boolean) => {
-    updateFeatureFlag(featureName, enabled);
+  const handleFeatureToggle = (featureName: keyof typeof settings, enabled: boolean) => {
+    updateSettings({ [featureName]: enabled });
     toast({
       title: enabled ? "Feature Enabled" : "Feature Disabled",
       description: `${featureName} has been ${enabled ? 'enabled' : 'disabled'}`,
@@ -32,22 +32,30 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
   };
 
   const resetToDefaults = () => {
-    Object.keys(features).forEach(key => {
-      updateFeatureFlag(key as keyof typeof features, false);
+    updateSettings({
+      workoutExecutionV2: true,
+      spinnerSetInput: true,
+      gestureNavigation: true,
+      circularProgress: true,
+      restTimerFAB: true,
+      workoutSummary: true,
+      autoRegulationFeedback: false
     });
     toast({
       title: "Features Reset",
-      description: "All features have been reset to default (disabled)",
+      description: "All features have been reset to defaults",
     });
   };
 
   const enableAllV2Features = () => {
-    updateFeatureFlag('workoutExecutionV2', true);
-    updateFeatureFlag('spinnerSetInput', true);
-    updateFeatureFlag('gestureNavigation', true);
-    updateFeatureFlag('circularProgress', true);
-    updateFeatureFlag('restTimerFAB', true);
-    updateFeatureFlag('workoutSummary', true);
+    updateSettings({
+      workoutExecutionV2: true,
+      spinnerSetInput: true,
+      gestureNavigation: true,
+      circularProgress: true,
+      restTimerFAB: true,
+      workoutSummary: true
+    });
     // Note: autoRegulationFeedback is kept separate as it's optional scientific methodology
     
     toast({
@@ -97,7 +105,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="workoutExecutionV2"
-                  checked={features.workoutExecutionV2}
+                  checked={settings.workoutExecutionV2}
                   onCheckedChange={(checked) => handleFeatureToggle('workoutExecutionV2', checked)}
                 />
               </div>
@@ -113,7 +121,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="spinnerSetInput"
-                  checked={features.spinnerSetInput}
+                  checked={settings.spinnerSetInput}
                   onCheckedChange={(checked) => handleFeatureToggle('spinnerSetInput', checked)}
                 />
               </div>
@@ -129,7 +137,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="gestureNavigation"
-                  checked={features.gestureNavigation}
+                  checked={settings.gestureNavigation}
                   onCheckedChange={(checked) => handleFeatureToggle('gestureNavigation', checked)}
                 />
               </div>
@@ -145,7 +153,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="circularProgress"
-                  checked={features.circularProgress}
+                  checked={settings.circularProgress}
                   onCheckedChange={(checked) => handleFeatureToggle('circularProgress', checked)}
                 />
               </div>
@@ -161,7 +169,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="restTimerFAB"
-                  checked={features.restTimerFAB}
+                  checked={settings.restTimerFAB}
                   onCheckedChange={(checked) => handleFeatureToggle('restTimerFAB', checked)}
                 />
               </div>
@@ -177,7 +185,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="workoutSummary"
-                  checked={features.workoutSummary}
+                  checked={settings.workoutSummary}
                   onCheckedChange={(checked) => handleFeatureToggle('workoutSummary', checked)}
                 />
               </div>
@@ -196,7 +204,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                 </div>
                 <Switch
                   id="autoRegulationFeedback"
-                  checked={features.autoRegulationFeedback}
+                  checked={settings.autoRegulationFeedback}
                   onCheckedChange={(checked) => handleFeatureToggle('autoRegulationFeedback', checked)}
                 />
               </div>

@@ -47,18 +47,7 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
     },
   });
 
-  // Update feature flags based on session features
-  useEffect(() => {
-    if (session?.features) {
-      updateFeatureFlags({
-        spinnerSetInput: session.features.spinnerSetInput || false,
-        gestureNavigation: session.features.gestureNavigation || false,
-        circularProgress: session.features.circularProgress || false,
-        restTimerFAB: session.features.restTimerFAB || false,
-        workoutSummary: session.features.workoutSummary || false,
-      });
-    }
-  }, [session?.features]);
+  // Session features are now handled by the global settings system
 
   // Error handling with automatic fallback
   if (error) {
