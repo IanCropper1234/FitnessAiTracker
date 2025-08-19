@@ -217,7 +217,7 @@ export default function MesocycleProgramBuilder({
             Create New Mesocycle
           </DialogTitle>
           <DialogDescription>
-            Design your training program using proven RP methodology. Choose from templates or build custom.
+            Design your training program using proven scientific methodology. Choose from templates or build custom.
           </DialogDescription>
         </DialogHeader>
 
@@ -268,7 +268,7 @@ export default function MesocycleProgramBuilder({
                 </CardHeader>
                 <CardContent className="pt-0">
                   <p className="text-xs text-muted-foreground">
-                    Choose from proven RP training templates
+                    Choose from proven scientific training templates
                   </p>
                 </CardContent>
               </Card>

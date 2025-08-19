@@ -155,7 +155,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         description: "Your custom training template has been created successfully",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/training/templates'] });
-      setShowCreateDialog(false);
+      // setShowCreateDialog(false); // Commented out - function not available in this scope
     },
   });
 
@@ -404,11 +404,11 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
                 </div>
               </div>
 
-              {/* RP Methodology Highlights */}
+              {/* Scientific Methodology Highlights */}
               <div className="space-y-2">
                 <h4 className="font-medium text-sm flex items-center gap-1">
                   <TrendingUp className="h-4 w-4" />
-                  RP Methodology
+                  Scientific Methodology
                 </h4>
                 <div className="text-xs space-y-1">
                   {template.rpMethodology?.progressionRules?.slice(0, 2).map((rule, index) => (
@@ -543,7 +543,7 @@ export function TemplateDetailModal({
           <Tabs defaultValue="workouts" className="w-full">
             <TabsList>
               <TabsTrigger value="workouts">Workouts</TabsTrigger>
-              <TabsTrigger value="methodology">RP Methodology</TabsTrigger>
+              <TabsTrigger value="methodology">Scientific Methodology</TabsTrigger>
               <TabsTrigger value="volume">Volume Guidelines</TabsTrigger>
             </TabsList>
 
@@ -628,7 +628,7 @@ export function TemplateDetailModal({
             <TabsContent value="volume" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>RP Volume Landmarks</CardTitle>
+                  <CardTitle>Scientific Volume Landmarks</CardTitle>
                   <CardDescription>
                     Minimum Effective Volume (MEV), Maximum Adaptive Volume (MAV), and Maximum Recoverable Volume (MRV) per muscle group
                   </CardDescription>

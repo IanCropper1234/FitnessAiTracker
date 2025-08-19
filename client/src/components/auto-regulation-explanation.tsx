@@ -29,7 +29,7 @@ export function AutoRegulationExplanation() {
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription className="font-medium">
-              <strong>Auto-regulation automatically adjusts your future training volume</strong> based on your post-workout feedback using Renaissance Periodization methodology. Here's how your feedback impacts upcoming sessions:
+              <strong>Auto-regulation automatically adjusts your future training volume</strong> based on your post-workout feedback using evidence-based scientific methodology. Here's how your feedback impacts upcoming sessions:
             </AlertDescription>
           </Alert>
 

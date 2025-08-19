@@ -9,7 +9,7 @@ interface RPAnalysisProps {
 }
 
 export function RPAnalysis({ userId }: RPAnalysisProps) {
-  // Get comprehensive analytics for RP analysis
+  // Get comprehensive analytics for scientific analysis
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['/api/analytics/comprehensive', userId],
     queryFn: async () => {
@@ -106,7 +106,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5" />
-            RP Analysis Dashboard
+            Scientific Analysis Dashboard
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -116,7 +116,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
               <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
               <div className="dot w-2 h-2 bg-blue-600 rounded-full"></div>
             </div>
-            <span className="text-muted-foreground">Loading RP analysis...</span>
+            <span className="text-muted-foreground">Loading scientific analysis...</span>
           </div>
         </CardContent>
       </Card>
@@ -129,7 +129,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
   const weightTrend = parseFloat(weeklyGoals?.[0]?.weightChange || "0");
   const energyLevel = parseFloat(weeklyGoals?.[0]?.energyLevels || "5");
   
-  // Calculate RP readiness score based on wellness metrics - use consistent data sources
+  // Calculate scientific readiness score based on wellness metrics - use consistent data sources
   const calculateReadinessScore = () => {
     // Use energy level from weekly goals (same source as Progress Metrics)
     const energyFromGoals = parseFloat(weeklyGoals?.[0]?.energyLevels || "5");
@@ -151,7 +151,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
       const goalType = unifiedGoals.goalType;
       const weeklyWeightTarget = unifiedGoals.weeklyWeightTarget || 0;
       
-      console.log('RP Analysis - Using Unified Goals:', {
+      console.log('Scientific Analysis - Using Unified Goals:', {
         goalType,
         weeklyWeightTarget,
         fitnessGoal: unifiedGoals.fitnessGoal

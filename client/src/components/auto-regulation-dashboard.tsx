@@ -103,7 +103,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
             Auto-Regulation Dashboard
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            AI-powered training adjustments based on your feedback and Renaissance Periodization methodology.
+            AI-powered training adjustments based on your feedback and evidence-based training methodology.
           </p>
         </CardHeader>
       </Card>
@@ -223,7 +223,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
               Volume Recommendations
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              AI-generated volume adjustments based on your recent feedback and RP methodology.
+              AI-generated volume adjustments based on your recent feedback and scientific methodology.
             </p>
           </CardHeader>
           <CardContent>

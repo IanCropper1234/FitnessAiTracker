@@ -48,7 +48,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
     updateFeatureFlag('circularProgress', true);
     updateFeatureFlag('restTimerFAB', true);
     updateFeatureFlag('workoutSummary', true);
-    // Note: autoRegulationFeedback is kept separate as it's optional RP methodology
+    // Note: autoRegulationFeedback is kept separate as it's optional scientific methodology
     
     toast({
       title: "V2 Features Enabled",

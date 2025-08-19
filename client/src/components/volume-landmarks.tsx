@@ -126,16 +126,16 @@ export function VolumeLandmarks() {
       <div className="space-y-2">
         <h2 className="text-2xl font-bold">Volume Landmarks</h2>
         <p className="text-muted-foreground">
-          Renaissance Periodization volume landmarks for optimal hypertrophy training
+          Evidence-based volume landmarks for optimal hypertrophy training
         </p>
       </div>
 
-      {/* RP Methodology Info */}
+      {/* Scientific Methodology Info */}
       <Card className="border-blue-200 dark:border-blue-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Info className="h-5 w-5 text-blue-500" />
-            Renaissance Periodization Volume Landmarks
+            Evidence-Based Volume Landmarks
           </CardTitle>
           <CardDescription>
             Evidence-based training volumes for maximum muscle growth

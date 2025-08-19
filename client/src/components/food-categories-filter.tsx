@@ -34,10 +34,10 @@ export function FoodCategoriesFilter({
     <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-black dark:text-white">
-          RP Diet Coach Filters
+          Scientific Diet Coach Filters
         </CardTitle>
         <CardDescription className="text-gray-600 dark:text-gray-400">
-          Filter foods by Renaissance Periodization methodology
+          Filter foods by evidence-based nutrition methodology
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

@@ -85,7 +85,7 @@ export default function WorkoutFeedbackDialog({
         <DialogHeader>
           <DialogTitle>Workout Feedback - Auto-Regulation</DialogTitle>
           <DialogDescription>
-            Your feedback helps optimize future training volume and intensity based on Renaissance Periodization methodology.
+            Your feedback helps optimize future training volume and intensity based on evidence-based training methodology.
           </DialogDescription>
         </DialogHeader>
 

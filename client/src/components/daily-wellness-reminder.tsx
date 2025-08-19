@@ -153,7 +153,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
                       Today's Check-in Complete
                     </p>
                     <p className="text-xs text-green-700 dark:text-green-300">
-                      Your wellness data has been recorded and will contribute to personalized RP recommendations
+                      Your wellness data has been recorded and will contribute to personalized scientific recommendations
                     </p>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
                     onClick={() => setLocation('/rp-coach')}
                     className="text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-600"
                   >
-                    RP Analysis
+                    Scientific Analysis
                   </Button>
                 </div>
               </div>
@@ -185,7 +185,7 @@ export function DailyWellnessReminder({ userId, compact = false }: DailyWellness
                       Complete Today's Check-in
                     </p>
                     <p className="text-xs text-orange-700 dark:text-orange-300">
-                      Track your energy, hunger, sleep, and adherence for personalized RP guidance
+                      Track your energy, hunger, sleep, and adherence for personalized scientific guidance
                     </p>
                   </div>
                 </div>

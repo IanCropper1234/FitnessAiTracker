@@ -125,10 +125,10 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" />
-            RP Diet Coach Shopping List
+            Scientific Diet Coach Shopping List
           </CardTitle>
           <CardDescription>
-            Automated shopping lists based on Renaissance Periodization methodology
+            Automated shopping lists based on evidence-based nutrition methodology
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,7 +161,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
               <TabsList>
                 <TabsTrigger value="optimized" className="flex items-center gap-2">
                   <Target className="w-4 h-4" />
-                  RP Optimized
+                  Scientifically Optimized
                 </TabsTrigger>
                 <TabsTrigger value="history" className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
@@ -183,9 +183,9 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
         <TabsContent value="optimized" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">RP Methodology Optimized List</CardTitle>
+              <CardTitle className="text-lg">Evidence-Based Optimized List</CardTitle>
               <CardDescription>
-                Foods selected based on your macro targets and Renaissance Periodization principles
+                Foods selected based on your macro targets and evidence-based nutrition principles
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -230,7 +230,7 @@ export function ShoppingListGenerator({ userId }: ShoppingListGeneratorProps) {
                   
                   <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 ">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                      RP Shopping Tips:
+                      Scientific Shopping Tips:
                     </h4>
                     <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                       <li>• Buy protein sources in bulk for cost efficiency</li>

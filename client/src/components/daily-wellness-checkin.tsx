@@ -202,7 +202,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       </CardHeader>
       
       <CardContent className="space-y-6 pl-[5px] pr-[5px]">
-        {/* Core Required Metrics (for RP adjustments) */}
+        {/* Core Required Metrics (for scientific adjustments) */}
         <div className="space-y-4">
           <h4 className="font-medium text-black dark:text-white flex items-center gap-2">
             <Zap className="w-4 h-4 text-orange-500" />
@@ -360,7 +360,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
 
         {/* Impact Info */}
         <div className="bg-blue-50 dark:bg-blue-950/30  p-3 text-xs text-gray-600 dark:text-gray-400">
-          <p><strong>RP Methodology:</strong> Daily wellness data is averaged weekly and used to adjust next week's macro targets. Low energy (≤4) reduces calorie deficit by 1%, high hunger (≥8) makes adjustments 2% more conservative.</p>
+          <p><strong>Scientific Methodology:</strong> Daily wellness data is averaged weekly and used to adjust next week's macro targets. Low energy (≤4) reduces calorie deficit by 1%, high hunger (≥8) makes adjustments 2% more conservative.</p>
         </div>
       </CardContent>
     </Card>

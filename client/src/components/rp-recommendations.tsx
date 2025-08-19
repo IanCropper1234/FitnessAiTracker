@@ -26,7 +26,7 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
   const queryClient = useQueryClient();
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
 
-  // Calculate current week start date (same logic as RP Analysis)
+  // Calculate current week start date (same logic as Scientific Analysis)
   const getCurrentWeekStart = () => {
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -38,7 +38,7 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
 
   const currentWeekStart = getCurrentWeekStart();
 
-  // Get current weekly goals for recommendations (same as RP Analysis)
+  // Get current weekly goals for recommendations (same as Scientific Analysis)
   const { data: weeklyGoals } = useQuery({
     queryKey: ['/api/weekly-goals', currentWeekStart],
     queryFn: async () => {
