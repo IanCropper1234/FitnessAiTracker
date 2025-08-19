@@ -96,7 +96,17 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       queryClient.refetchQueries({ queryKey: ['/api/nutrition/summary'] });
       
       showSuccess("Food logged successfully!");
-      onComplete?.();
+      
+      // Reset form fields but preserve meal type for easy continued logging
+      setFoodQuery('');
+      setSelectedFood(null);
+      setSelectedSavedMeal(null);
+      setQuantity('1');
+      setUnit('serving');
+      // Keep mealType unchanged so user can continue logging foods to same meal
+      
+      // Note: Don't call onComplete?.() immediately to keep modal open for continued logging
+      // User can manually close when done logging multiple items
     },
     onError: (error: any) => {
       showError("Failed to log food", error.message);
@@ -398,7 +408,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
             {/* Meal Type */}
             <div>
               <Label htmlFor="meal-type" className="text-black dark:text-white text-sm font-medium">
-                Meal Type <span className="text-red-500">*</span>
+                Add to Meal Type <span className="text-red-500">*</span>
               </Label>
               <Select value={mealType} onValueChange={setMealType}>
                 <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${
