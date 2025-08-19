@@ -6,22 +6,22 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Settings, Activity } from 'lucide-react';
-import { useFeature, updateFeatureFlag } from '@/hooks/useFeature';
+import { useWorkoutSetting } from '@/hooks/useSettings';
 import { useToast } from '@/hooks/use-toast';
 
 export default function WorkoutSettings() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Get current feature flags
-  const autoRegulationFeedback = useFeature('autoRegulationFeedback');
-  const gestureNavigation = useFeature('gestureNavigation');
-  const circularProgress = useFeature('circularProgress');
-  const restTimerFAB = useFeature('restTimerFAB');
+  // Get current settings
+  const [autoRegulationFeedback, setAutoRegulationFeedback] = useWorkoutSetting('autoRegulationFeedback');
+  const [gestureNavigation, setGestureNavigation] = useWorkoutSetting('gestureNavigation');
+  const [circularProgress, setCircularProgress] = useWorkoutSetting('circularProgress');
+  const [restTimerFAB, setRestTimerFAB] = useWorkoutSetting('restTimerFAB');
 
-  const handleFeatureToggle = async (featureName: string, enabled: boolean) => {
+  const handleFeatureToggle = (setter: (value: boolean) => void, featureName: string, enabled: boolean) => {
     try {
-      await updateFeatureFlag(featureName as any, enabled);
+      setter(enabled);
       
       const featureDisplayNames: Record<string, string> = {
         autoRegulationFeedback: 'Auto-Regulation Feedback',
@@ -95,7 +95,7 @@ export default function WorkoutSettings() {
             <Switch
               id="autoRegulationFeedback"
               checked={autoRegulationFeedback}
-              onCheckedChange={(checked) => handleFeatureToggle('autoRegulationFeedback', checked)}
+              onCheckedChange={(checked) => handleFeatureToggle(setAutoRegulationFeedback, 'autoRegulationFeedback', checked)}
               className="ml-4"
             />
           </div>
@@ -120,7 +120,7 @@ export default function WorkoutSettings() {
             <Switch
               id="gestureNavigation"
               checked={gestureNavigation}
-              onCheckedChange={(checked) => handleFeatureToggle('gestureNavigation', checked)}
+              onCheckedChange={(checked) => handleFeatureToggle(setGestureNavigation, 'gestureNavigation', checked)}
             />
           </div>
 
@@ -136,7 +136,7 @@ export default function WorkoutSettings() {
             <Switch
               id="circularProgress"
               checked={circularProgress}
-              onCheckedChange={(checked) => handleFeatureToggle('circularProgress', checked)}
+              onCheckedChange={(checked) => handleFeatureToggle(setCircularProgress, 'circularProgress', checked)}
             />
           </div>
 
@@ -152,7 +152,7 @@ export default function WorkoutSettings() {
             <Switch
               id="restTimerFAB"
               checked={restTimerFAB}
-              onCheckedChange={(checked) => handleFeatureToggle('restTimerFAB', checked)}
+              onCheckedChange={(checked) => handleFeatureToggle(setRestTimerFAB, 'restTimerFAB', checked)}
             />
           </div>
         </CardContent>

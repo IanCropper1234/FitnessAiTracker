@@ -9,7 +9,7 @@ import {
   Smartphone,
   CheckCircle2
 } from 'lucide-react';
-import { useFeature } from '@/hooks/useFeature';
+import { useWorkoutSetting } from '@/hooks/useSettings';
 
 interface FeatureShowcaseProps {
   isVisible: boolean;
@@ -21,11 +21,11 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> = ({
   onClose,
 }) => {
   // Check which features are enabled
-  const workoutExecutionV2 = useFeature('workoutExecutionV2');
-  const spinnerSetInput = useFeature('spinnerSetInput');
-  const gestureNavigation = useFeature('gestureNavigation');
-  const circularProgress = useFeature('circularProgress');
-  const restTimerFAB = useFeature('restTimerFAB');
+  const [workoutExecutionV2] = useWorkoutSetting('workoutExecutionV2');
+  const [spinnerSetInput] = useWorkoutSetting('spinnerSetInput');
+  const [gestureNavigation] = useWorkoutSetting('gestureNavigation');
+  const [circularProgress] = useWorkoutSetting('circularProgress');
+  const [restTimerFAB] = useWorkoutSetting('restTimerFAB');
 
   const features = [
     {

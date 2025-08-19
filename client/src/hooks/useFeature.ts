@@ -116,6 +116,7 @@ export const updateFeatureFlags = async (newFeatures: Partial<FeatureFlags>) => 
   if (isServerSyncEnabled && isInitialized) {
     try {
       await apiRequest('PUT', '/api/workout-settings', globalFeatures);
+      console.log('Feature flags synced to server');
     } catch (error) {
       console.warn('Failed to sync feature flags to server:', error);
     }
@@ -170,14 +171,13 @@ export const initializeFeatures = async (enableServerSync = true) => {
         // Check if we have local customizations stored
         const hasLocalSettings = savedSettings && savedSettings !== 'null';
         
-        if (hasLocalSettings) {
+        if (hasLocalSettings && savedSettings) {
           console.log('Local settings exist - prioritizing local over server');
           // User has made local changes, don't override with server
-          const localSettings = JSON.parse(savedSettings);
+          const localSettings = JSON.parse(savedSettings!);
           
-          // Only merge new server properties that don't exist locally
-          const mergedSettings = { ...serverFeatures, ...localSettings };
-          globalFeatures = mergedSettings;
+          // Completely prioritize local settings over server
+          globalFeatures = { ...defaultFeatures, ...localSettings };
           
           // Don't immediately sync back to server during initialization
           // This prevents infinite loops - server sync will happen when user changes settings
@@ -213,6 +213,17 @@ export const useFeatureInitialization = (isAuthenticated: boolean) => {
   useEffect(() => {
     if (isAuthenticated && !isInitialized && !isInitializing) {
       console.log('User authenticated, initializing features');
+      // Load from localStorage first before any server sync
+      const savedSettings = localStorage.getItem('workout-settings');
+      if (savedSettings) {
+        try {
+          const localSettings = JSON.parse(savedSettings!);
+          globalFeatures = { ...defaultFeatures, ...localSettings };
+          console.log('Pre-loaded local settings before server sync:', globalFeatures);
+        } catch (error) {
+          console.warn('Failed to pre-load local settings:', error);
+        }
+      }
       initializeFeatures(true);
     } else if (!isAuthenticated) {
       console.log('User logged out, preserving settings');

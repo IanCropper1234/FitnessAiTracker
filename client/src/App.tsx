@@ -47,7 +47,7 @@ import { GlobalCompleteSetButton } from "@/components/GlobalCompleteSetButton";
 import { FirstTimeUserLoading } from "@/components/FirstTimeUserLoading";
 import { AppInitialLoading } from "@/components/AppInitialLoading";
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
-import { useFeatureInitialization } from "@/hooks/useFeature";
+import { initializeWorkoutSettings } from "@/hooks/useSettings";
 import { AnimatePresence } from "framer-motion";
 
 interface User {
@@ -64,7 +64,12 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [activeTrainingTab, setActiveTrainingTab] = useState("sessions");
   
   // Initialize feature flags when user authentication state changes
-  useFeatureInitialization(!!user);
+  // Initialize workout settings when app starts
+  useEffect(() => {
+    if (user) {
+      initializeWorkoutSettings();
+    }
+  }, [user]);
   
   // Global date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);

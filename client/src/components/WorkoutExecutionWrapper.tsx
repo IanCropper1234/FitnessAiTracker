@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useFeature, updateFeatureFlags } from '@/hooks/useFeature';
+import { useWorkoutSetting } from '@/hooks/useSettings';
 import { WorkoutExecution } from './workout-execution';
 import { WorkoutExecutionV2 } from './enhanced/WorkoutExecutionV2';
 
@@ -31,8 +31,8 @@ export const WorkoutExecutionWrapper: React.FC<WorkoutExecutionWrapperProps> = (
   onComplete,
   fallbackMode = false,
 }) => {
-  // Global feature flags
-  const isV2Enabled = useFeature('workoutExecutionV2');
+  // Global settings
+  const [isV2Enabled] = useWorkoutSetting('workoutExecutionV2');
   
   // Fetch session to determine version
   const { data: session, isLoading, error } = useQuery<WorkoutSession>({

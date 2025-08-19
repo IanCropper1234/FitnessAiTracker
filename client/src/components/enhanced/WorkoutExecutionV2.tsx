@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useIOSNotifications } from '@/components/ui/ios-notification-manager';
 import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
-import { useFeature } from '@/hooks/useFeature';
+import { useWorkoutSetting } from '@/hooks/useSettings';
 import { UnitConverter } from '@shared/utils/unit-conversion';
 
 // Enhanced components
@@ -103,12 +103,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   sessionId,
   onComplete,
 }) => {
-  // Feature flags
-  const isV2Enabled = useFeature('workoutExecutionV2');
-  const gestureNavEnabled = useFeature('gestureNavigation');
-  const restTimerFABEnabled = useFeature('restTimerFAB');
-  const circularProgressFeature = useFeature('circularProgress');
-  const autoRegulationFeedbackEnabled = useFeature('autoRegulationFeedback');
+  // Settings
+  const [isV2Enabled] = useWorkoutSetting('workoutExecutionV2');
+  const [gestureNavEnabled] = useWorkoutSetting('gestureNavigation');
+  const [restTimerFABEnabled] = useWorkoutSetting('restTimerFAB');
+  const [circularProgressFeature] = useWorkoutSetting('circularProgress');
+  const [autoRegulationFeedbackEnabled] = useWorkoutSetting('autoRegulationFeedback');
   
   // Workout execution context
   const workoutContext = useWorkoutExecution();
