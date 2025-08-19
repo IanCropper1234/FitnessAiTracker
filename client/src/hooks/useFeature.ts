@@ -76,15 +76,22 @@ export const useFeatures = (): FeatureFlags => {
 };
 
 export const updateFeatureFlag = async (featureName: keyof FeatureFlags, enabled: boolean) => {
+  console.log(`Updating feature flag: ${featureName} = ${enabled}`);
   globalFeatures[featureName] = enabled;
   
-  // Save to localStorage for persistence
-  localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+  // Save to localStorage for persistence - this is crucial
+  try {
+    localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+    console.log('Settings saved to localStorage:', globalFeatures);
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error);
+  }
   
   // Sync to server if enabled
   if (isServerSyncEnabled) {
     try {
       await apiRequest('PUT', '/api/workout-settings', globalFeatures);
+      console.log('Settings synced to server');
     } catch (error) {
       console.warn('Failed to sync feature flag to server:', error);
       // Continue with local update even if server sync fails
@@ -136,7 +143,7 @@ export const initializeFeatures = async (enableServerSync = true) => {
     const savedSettings = localStorage.getItem('workout-settings');
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings);
-      // Merge with defaults but prioritize saved settings
+      // Prioritize saved settings over defaults
       globalFeatures = { ...defaultFeatures, ...parsedSettings };
       console.log('Features loaded from localStorage:', globalFeatures);
     } else {
@@ -156,11 +163,33 @@ export const initializeFeatures = async (enableServerSync = true) => {
       });
       if (response.ok) {
         const serverFeatures = await response.json() as FeatureFlags;
-        // Only merge server features, don't override with defaults again
-        globalFeatures = { ...globalFeatures, ...serverFeatures };
-        // Save to localStorage for future loads
-        localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
-        console.log('Features synced from server:', globalFeatures);
+        console.log('Server features received:', serverFeatures);
+        
+        // Check if we have local customizations stored
+        const hasLocalSettings = savedSettings && savedSettings !== 'null';
+        
+        if (hasLocalSettings) {
+          console.log('Local settings exist - prioritizing local over server');
+          // User has made local changes, don't override with server
+          const localSettings = JSON.parse(savedSettings);
+          
+          // Only merge new server properties that don't exist locally
+          const mergedSettings = { ...serverFeatures, ...localSettings };
+          globalFeatures = mergedSettings;
+          
+          // Update server with our local preferences
+          try {
+            await apiRequest('PUT', '/api/workout-settings', globalFeatures);
+            console.log('Updated server with local preferences');
+          } catch (error) {
+            console.warn('Failed to update server with local preferences');
+          }
+        } else {
+          console.log('No local settings - using server settings');
+          // No local customizations, use server settings
+          globalFeatures = { ...defaultFeatures, ...serverFeatures };
+          localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+        }
       }
     } catch (error) {
       console.warn('Failed to load features from server, using cached/defaults:', error);
