@@ -558,13 +558,33 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
   // Define updateSet function before completeSet to avoid initialization errors
   const updateSet = (exerciseId: number, setIndex: number, field: keyof WorkoutSet, value: any) => {
-    setWorkoutData(prev => {
-      const newData = {
-        ...prev,
-        [exerciseId]: prev[exerciseId].map((set, i) => 
-          i === setIndex ? { ...set, [field]: value } : set
-        )
-      };
+    try {
+      // Validate input values based on field type
+      let validatedValue = value;
+      
+      if (field === 'rpe') {
+        const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+        if (isNaN(numericValue) || numericValue < 1 || numericValue > 10) {
+          console.error('Invalid RPE value:', value);
+          return;
+        }
+        validatedValue = numericValue;
+      } else if (field === 'weight' || field === 'actualReps') {
+        const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+        if (isNaN(numericValue) || numericValue < 0) {
+          console.error(`Invalid ${field} value:`, value);
+          return;
+        }
+        validatedValue = numericValue;
+      }
+      
+      setWorkoutData(prev => {
+        const newData = {
+          ...prev,
+          [exerciseId]: prev[exerciseId].map((set, i) => 
+            i === setIndex ? { ...set, [field]: validatedValue } : set
+          )
+        };
       
       // Auto-save when completing a set
       if (field === 'completed' && value === true && session) {
@@ -589,8 +609,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         autoSaveMutation.mutate(progressData);
       }
       
-      return newData;
-    });
+        return newData;
+      });
+    } catch (error) {
+      console.error('Error in updateSet:', error, {exerciseId, setIndex, field, value});
+    }
   };
 
   // Define completeSet function with useCallback for stable reference

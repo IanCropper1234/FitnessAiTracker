@@ -164,7 +164,15 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleRpeChange = (value: number) => {
-    onUpdateSet('rpe', value);
+    try {
+      // Ensure value is a valid number
+      const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+      if (!isNaN(numericValue) && numericValue >= 1 && numericValue <= 10) {
+        onUpdateSet('rpe', numericValue);
+      }
+    } catch (error) {
+      console.error('Error updating RPE:', error);
+    }
   };
 
   const handleUseRecommendation = () => {
@@ -956,7 +964,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   <label className="text-xs font-medium text-foreground">RPE</label>
                   <Select
                     value={set.rpe ? set.rpe.toString() : "8"}
-                    onValueChange={(value) => handleRpeChange(parseFloat(value))}
+                    onValueChange={(value) => {
+                      try {
+                        const numericValue = parseFloat(value);
+                        handleRpeChange(numericValue);
+                      } catch (error) {
+                        console.error('Error parsing RPE value:', error);
+                      }
+                    }}
                   >
                     <SelectTrigger className="h-9 text-sm border border-border/50 bg-background touch-target ios-touch-feedback">
                       <SelectValue placeholder="8" />
