@@ -130,11 +130,16 @@ export const initializeFeatures = async (enableServerSync = true) => {
     const savedSettings = localStorage.getItem('workout-settings');
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings);
+      // Merge with defaults but prioritize saved settings
       globalFeatures = { ...defaultFeatures, ...parsedSettings };
       console.log('Features loaded from localStorage:', globalFeatures);
+    } else {
+      // No saved settings, start with defaults
+      globalFeatures = { ...defaultFeatures };
     }
   } catch (error) {
     console.warn('Failed to load features from localStorage:', error);
+    globalFeatures = { ...defaultFeatures };
   }
   
   // Then try to sync with server if enabled
@@ -145,7 +150,8 @@ export const initializeFeatures = async (enableServerSync = true) => {
       });
       if (response.ok) {
         const serverFeatures = await response.json() as FeatureFlags;
-        globalFeatures = { ...defaultFeatures, ...serverFeatures };
+        // Only merge server features, don't override with defaults again
+        globalFeatures = { ...globalFeatures, ...serverFeatures };
         // Save to localStorage for future loads
         localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
         console.log('Features synced from server:', globalFeatures);
@@ -174,8 +180,11 @@ export const useFeatureInitialization = (isAuthenticated: boolean) => {
     if (isAuthenticated && !isInitialized) {
       initializeFeatures(true);
     } else if (!isAuthenticated && isInitialized) {
-      // Reset to defaults when logged out
-      globalFeatures = { ...defaultFeatures };
+      // Save current settings before logout
+      if (globalFeatures) {
+        localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+      }
+      // Reset initialization flag but keep features for next login
       isInitialized = false;
       isServerSyncEnabled = false;
     }
