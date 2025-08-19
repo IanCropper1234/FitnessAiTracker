@@ -1160,7 +1160,7 @@ button, .ios-button {
   --ios-fill: hsl(220, 14%, 94%);
   --ios-fill-secondary: hsl(220, 14%, 91%);
   
-  /* Legacy FitAI variables for backward compatibility */
+  /* Legacy TrainPro variables for backward compatibility */
   --success: hsl(142, 76%, 36%);
   --success-foreground: hsl(0, 0%, 100%);
   --warning: hsl(28, 86%, 50%);

@@ -2,9 +2,9 @@
   <!-- Background Circle -->
   <circle cx="256" cy="256" r="256" fill="#3b82f6"/>
   
-  <!-- FitAI Text -->
-  <text x="256" y="200" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">Fit</text>
-  <text x="256" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#fbbf24" text-anchor="middle">AI</text>
+  <!-- TrainPro Text -->
+  <text x="256" y="200" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">Train</text>
+  <text x="256" y="280" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="#fbbf24" text-anchor="middle">Pro</text>
   
   <!-- Fitness Icon - Dumbbell -->
   <g transform="translate(256, 340)">

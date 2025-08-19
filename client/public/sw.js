@@ -1,5 +1,5 @@
-// Service Worker for FitAI PWA - iOS Compatible
-const CACHE_NAME = 'fitai-v1.2.0';
+// Service Worker for TrainPro PWA - iOS Compatible
+const CACHE_NAME = 'trainpro-v1.2.0';
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -10,26 +10,26 @@ const urlsToCache = [
 
 // Install event - cache essential resources
 self.addEventListener('install', (event) => {
-  console.log('FitAI Service Worker installing...');
+  console.log('TrainPro Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('FitAI cache opened');
+        console.log('TrainPro cache opened');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('FitAI essential resources cached');
+        console.log('TrainPro essential resources cached');
         return self.skipWaiting(); // Activate immediately
       })
       .catch((error) => {
-        console.error('FitAI service worker install failed:', error);
+        console.error('TrainPro service worker install failed:', error);
       })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('FitAI Service Worker activating...');
+  console.log('TrainPro Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -41,7 +41,7 @@ self.addEventListener('activate', (event) => {
         })
       );
     }).then(() => {
-      console.log('FitAI Service Worker activated');
+      console.log('TrainPro Service Worker activated');
       return self.clients.claim(); // Take control of existing clients
     })
   );

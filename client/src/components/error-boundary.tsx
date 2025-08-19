@@ -44,12 +44,12 @@ class ErrorReportingService {
         url: window.location.href
       };
 
-      const existingReports = JSON.parse(localStorage.getItem('fitai_error_reports') || '[]');
+      const existingReports = JSON.parse(localStorage.getItem('trainpro_error_reports') || '[]');
       existingReports.push(errorReport);
       
       // Keep only last 10 reports
       const recentReports = existingReports.slice(-10);
-      localStorage.setItem('fitai_error_reports', JSON.stringify(recentReports));
+      localStorage.setItem('trainpro_error_reports', JSON.stringify(recentReports));
     } catch (storageError) {
       console.warn('Could not store error report:', storageError);
     }

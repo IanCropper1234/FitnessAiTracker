@@ -57,7 +57,7 @@ interface TemplateData {
 }
 
 // Auto-save functionality constants
-const AUTO_SAVE_KEY = 'fitai_template_draft';
+const AUTO_SAVE_KEY = 'trainpro_template_draft';
 const AUTO_SAVE_INTERVAL = 300; // 300ms debounce for immediate save
 
 // Helper functions for auto-save

@@ -11,7 +11,7 @@
     <!-- iOS Meta Tags for PWA - Enhanced for iPhone 12 mini -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="FitAI" />
+    <meta name="apple-mobile-web-app-title" content="TrainPro" />
     <meta name="mobile-web-app-capable" content="yes" />
     
     <!-- iOS Touch Icons -->
@@ -34,19 +34,19 @@
     <!-- SEO Meta Tags -->
     <meta name="description" content="Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations. Track workouts, log nutrition, and optimize your fitness journey." />
     <meta name="keywords" content="fitness, workout tracker, nutrition, Renaissance Periodization, AI coach, bodybuilding, strength training" />
-    <meta name="author" content="FitAI" />
+    <meta name="author" content="TrainPro" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://fitai.app/" />
-    <meta property="og:title" content="FitAI - AI-Powered Fitness Coach" />
+    <meta property="og:url" content="https://trainpro.app/" />
+    <meta property="og:title" content="TrainPro - AI-Powered Fitness Coach" />
     <meta property="og:description" content="Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations" />
     <meta property="og:image" content="/icons/icon-512x512.png" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://fitai.app/" />
-    <meta property="twitter:title" content="FitAI - AI-Powered Fitness Coach" />
+    <meta property="twitter:url" content="https://trainpro.app/" />
+    <meta property="twitter:title" content="TrainPro - AI-Powered Fitness Coach" />
     <meta property="twitter:description" content="Complete Renaissance Periodization training and nutrition coaching with AI-powered recommendations" />
     <meta property="twitter:image" content="/icons/icon-512x512.png" />
     <script>
@@ -73,15 +73,15 @@
             const registration = await navigator.serviceWorker.register('/sw.js', {
               scope: '/'
             });
-            console.log('FitAI PWA: ServiceWorker registered successfully');
+            console.log('TrainPro PWA: ServiceWorker registered successfully');
             
             // Check for updates
             registration.addEventListener('updatefound', () => {
-              console.log('FitAI PWA: Update found, installing...');
+              console.log('TrainPro PWA: Update found, installing...');
             });
             
           } catch (error) {
-            console.error('FitAI PWA: ServiceWorker registration failed:', error);
+            console.error('TrainPro PWA: ServiceWorker registration failed:', error);
           }
         });
       }
@@ -100,9 +100,9 @@
       window.addEventListener('load', () => {
         if (isIOSDevice()) {
           if (isInStandaloneMode()) {
-            console.log('FitAI PWA: Running as standalone app on iOS');
+            console.log('TrainPro PWA: Running as standalone app on iOS');
           } else {
-            console.log('FitAI PWA: Running in Safari - can be installed via Share > Add to Home Screen');
+            console.log('TrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen');
           }
         }
       });
@@ -112,14 +112,14 @@
       window.addEventListener('beforeinstallprompt', (e) => {
         // Store the event for later use
         deferredPrompt = e;
-        console.log('FitAI PWA: Install prompt available');
+        console.log('TrainPro PWA: Install prompt available');
         
         // Store for later use when user clicks install button
         // Note: prompt() can only be called in response to user gesture
       });
 
       window.addEventListener('appinstalled', (evt) => {
-        console.log('FitAI PWA: Successfully installed');
+        console.log('TrainPro PWA: Successfully installed');
         deferredPrompt = null;
       });
     </script>

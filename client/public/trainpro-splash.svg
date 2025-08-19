@@ -1,0 +1,22 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="#0a0a0a"/>
+  
+  <!-- Large T Shape -->
+  <rect x="192" y="256" width="640" height="96" fill="#ffffff"/>
+  <rect x="448" y="256" width="128" height="512" fill="#ffffff"/>
+  
+  <!-- TrainPro Text -->
+  <text x="512" y="880" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" fill="#ffffff">TrainPro</text>
+  <text x="512" y="920" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" fill="#666666">AI-Powered Fitness Coach</text>
+  
+  <!-- Pro Badge -->
+  <rect x="704" y="608" width="96" height="96" fill="#ffffff"/>
+  <text x="752" y="668" font-family="Arial, sans-serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#0a0a0a">PRO</text>
+  
+  <!-- AI Lines -->
+  <rect x="256" y="416" width="512" height="6" fill="#666666"/>
+  <rect x="256" y="440" width="384" height="6" fill="#666666"/>
+  <rect x="256" y="464" width="448" height="6" fill="#666666"/>
+  <rect x="256" y="488" width="320" height="6" fill="#666666"/>
+</svg>
