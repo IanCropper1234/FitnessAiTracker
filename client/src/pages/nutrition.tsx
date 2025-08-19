@@ -146,7 +146,12 @@ export function Nutrition({
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id, selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/summary/${user.id}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/summary?date=${selectedDate}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch nutrition summary');
+      }
       return response.json();
     }
   });
@@ -154,7 +159,12 @@ export function Nutrition({
   const { data: nutritionLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['/api/nutrition/logs', user.id, selectedDate],
     queryFn: async () => {
-      const response = await fetch(`/api/nutrition/logs/${user.id}?date=${selectedDate}`);
+      const response = await fetch(`/api/nutrition/logs?date=${selectedDate}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch nutrition logs');
+      }
       return response.json();
     }
   });
