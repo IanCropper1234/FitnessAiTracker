@@ -14,6 +14,11 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 5000
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",

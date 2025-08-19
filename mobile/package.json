@@ -8,11 +8,14 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:ios": "eas build --platform ios",
-    "submit:ios": "eas submit --platform ios"
+    "submit:ios": "eas submit --platform ios",
+    "update:production": "eas update --branch production",
+    "update:preview": "eas update --branch preview"
   },
   "dependencies": {
     "expo": "~51.0.0",
     "expo-status-bar": "~1.12.1",
+    "expo-updates": "~0.25.0",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-webview": "13.8.6",
