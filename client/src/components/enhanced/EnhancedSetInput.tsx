@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -163,17 +163,29 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     onUpdateSet('actualReps', value);
   };
 
-  const handleRpeChange = (value: number) => {
+  const handleRpeChange = useCallback((value: number) => {
     try {
+      console.log('RPE Change triggered:', value, typeof value);
+      
       // Ensure value is a valid number
       const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-      if (!isNaN(numericValue) && numericValue >= 1 && numericValue <= 10) {
-        onUpdateSet('rpe', numericValue);
+      
+      if (isNaN(numericValue)) {
+        console.error('RPE value is NaN:', value);
+        return;
       }
+      
+      if (numericValue < 1 || numericValue > 10) {
+        console.error('RPE value out of range (1-10):', numericValue);
+        return;
+      }
+      
+      console.log('Calling onUpdateSet with RPE:', numericValue);
+      onUpdateSet('rpe', numericValue);
     } catch (error) {
-      console.error('Error updating RPE:', error);
+      console.error('Error in handleRpeChange:', error, {value, type: typeof value});
     }
-  };
+  }, [onUpdateSet]);
 
   const handleUseRecommendation = () => {
     // Use set-specific recommendation if available, otherwise fall back to general recommendation
@@ -964,14 +976,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   <label className="text-xs font-medium text-foreground">RPE</label>
                   <Select
                     value={set.rpe ? set.rpe.toString() : "8"}
-                    onValueChange={(value) => {
-                      try {
-                        const numericValue = parseFloat(value);
-                        handleRpeChange(numericValue);
-                      } catch (error) {
-                        console.error('Error parsing RPE value:', error);
-                      }
-                    }}
+                    onValueChange={(value) => handleRpeChange(parseFloat(value))}
                   >
                     <SelectTrigger className="h-9 text-sm border border-border/50 bg-background touch-target ios-touch-feedback">
                       <SelectValue placeholder="8" />
