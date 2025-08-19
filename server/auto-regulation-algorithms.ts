@@ -1,7 +1,7 @@
 import { db } from "./db";
 import { eq, and, desc, gte } from "drizzle-orm";
 import { autoRegulationFeedback, workoutSessions, volumeLandmarks, exerciseMuscleMapping, workoutExercises, muscleGroups } from "../shared/schema";
-import { RPAlgorithmCore } from "./services/rp-algorithm-core";
+import { SciAlgorithmCore } from "./services/scientific-algorithm-core";
 
 interface VolumeRecommendation {
   muscleGroupId: number;
@@ -75,7 +75,7 @@ export async function generateVolumeRecommendations(
         const avgPerformance = (feedback.pumpQuality + (10 - feedback.perceivedEffort)) / 2;
         const overallReadiness = (avgRecovery + avgPerformance) / 2;
 
-        // RP Auto-regulation Logic
+        // Scientific Auto-regulation Logic
         if (overallReadiness >= 8) {
           // High readiness - can increase volume
         if (currentVolume < landmark.mav) {
@@ -246,11 +246,11 @@ async function calculateMuscleGroupVolume(
   }
 }
 
-// Comprehensive fatigue analysis using unified RP Algorithm Core
+// Comprehensive fatigue analysis using unified Scientific Algorithm Core
 export async function getFatigueAnalysis(userId: number, days: number = 14): Promise<FatigueAnalysis> {
   try {
-    // Use unified RP fatigue analysis
-    const analysis = await RPAlgorithmCore.analyzeFatigue(userId, days);
+    // Use unified scientific fatigue analysis
+    const analysis = await SciAlgorithmCore.analyzeFatigue(userId, days);
     
     // Calculate muscle group specific fatigue
     const allMuscleGroups = await db.select().from(muscleGroups);
@@ -314,9 +314,9 @@ export async function getVolumeRecommendations(userId: number): Promise<VolumeRe
       .orderBy(desc(autoRegulationFeedback.createdAt))
       .limit(1);
 
-    // Use unified RP algorithm for recommendations
+    // Use unified scientific algorithm for recommendations
     const feedback = recentFeedback.length > 0 ? recentFeedback[0] : undefined;
-    return await RPAlgorithmCore.generateVolumeRecommendations(userId, feedback);
+    return await SciAlgorithmCore.generateVolumeRecommendations(userId, feedback);
   } catch (error) {
     console.error('Error getting volume recommendations:', error);
     return [];

@@ -12,7 +12,7 @@ import {
 } from "@shared/schema";
 import { eq, and, gte, lte, sql, desc, isNotNull, inArray } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
-import { RPAlgorithmCore } from "./rp-algorithm-core";
+import { SciAlgorithmCore } from "./scientific-algorithm-core";
 
 interface VolumeProgression {
   muscleGroupId: number;
@@ -70,8 +70,8 @@ export class MesocyclePeriodization {
       let targetSets = landmark.mev; // Start at MEV
       let phase: 'accumulation' | 'intensification' | 'deload' = 'accumulation';
       
-      // Use unified RP Volume Progression Algorithm
-      const progression = RPAlgorithmCore.calculateVolumeProgression(currentWeek, totalWeeks, {
+      // Use unified Scientific Volume Progression Algorithm
+      const progression = SciAlgorithmCore.calculateVolumeProgression(currentWeek, totalWeeks, {
         mev: landmark.mev,
         mav: landmark.mav,
         mrv: landmark.mrv,
@@ -102,8 +102,8 @@ export class MesocyclePeriodization {
     fatigueScore: number;
     reasons: string[];
   }> {
-    // Use unified RP Algorithm Core for fatigue analysis
-    const analysis = await RPAlgorithmCore.analyzeFatigue(userId, 10);
+    // Use unified Scientific Algorithm Core for fatigue analysis
+    const analysis = await SciAlgorithmCore.analyzeFatigue(userId, 10);
     
     return {
       shouldDeload: analysis.deloadRecommended,

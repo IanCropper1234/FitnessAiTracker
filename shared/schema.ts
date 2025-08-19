@@ -382,12 +382,12 @@ export const muscleGroups = pgTable("muscle_groups", {
   translations: jsonb("translations"), // multilingual names
 });
 
-// Volume Landmarks per muscle group per user (RP Methodology)
+// Volume Landmarks per muscle group per user (Scientific Methodology)
 export const volumeLandmarks = pgTable("volume_landmarks", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
-  // Renaissance Periodization Volume Landmarks
+  // Evidence-Based Volume Landmarks
   mv: integer("mv").notNull().default(0), // Maintenance Volume (sets/week)
   mev: integer("mev").notNull().default(8), // Minimum Effective Volume
   mav: integer("mav").notNull().default(16), // Maximum Adaptive Volume

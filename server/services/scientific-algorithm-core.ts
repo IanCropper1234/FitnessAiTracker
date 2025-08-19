@@ -9,18 +9,18 @@ import {
 } from "@shared/schema";
 
 /**
- * Core RP (Renaissance Periodization) Algorithm Service
- * Provides unified implementations for all RP-based calculations
+ * Core Scientific Algorithm Service
+ * Provides unified implementations for all evidence-based calculations
  */
 
-export interface RPFeedbackScores {
+export interface ScienceFeedbackScores {
   recoveryScore: number;    // 1-10 scale
   adaptationScore: number;  // 1-10 scale
   fatigueScore: number;     // 1-10 scale
   overallReadiness: number; // 1-10 scale
 }
 
-export interface RPFatigueAnalysis {
+export interface ScienceFatigueAnalysis {
   overallFatigue: number;
   recoveryTrend: "improving" | "declining" | "stable";
   deloadRecommended: boolean;
@@ -28,7 +28,7 @@ export interface RPFatigueAnalysis {
   reasons: string[];
 }
 
-export interface RPVolumeRecommendation {
+export interface ScienceVolumeRecommendation {
   muscleGroupId: number;
   muscleGroupName: string;
   currentVolume: number;
@@ -40,7 +40,7 @@ export interface RPVolumeRecommendation {
   adjustmentReason?: string;
 }
 
-export class RPAlgorithmCore {
+export class SciAlgorithmCore {
   
   /**
    * Core RP feedback scoring algorithm
@@ -52,7 +52,7 @@ export class RPAlgorithmCore {
     perceivedEffort: number;
     energyLevel: number;
     sleepQuality: number;
-  }): RPFeedbackScores {
+  }): ScienceFeedbackScores {
     
     const { pumpQuality, muscleSoreness, perceivedEffort, energyLevel, sleepQuality } = feedbackData;
     
@@ -93,10 +93,10 @@ export class RPAlgorithmCore {
   }
   
   /**
-   * Unified RP fatigue analysis
+   * Unified scientific fatigue analysis
    * Replaces duplicate logic in multiple files
    */
-  static async analyzeFatigue(userId: number, days: number = 10): Promise<RPFatigueAnalysis> {
+  static async analyzeFatigue(userId: number, days: number = 10): Promise<ScienceFatigueAnalysis> {
     
     // Get recent feedback data
     const recentFeedback = await db
@@ -271,14 +271,14 @@ export class RPAlgorithmCore {
   }
   
   /**
-   * Generate volume recommendations using unified RP logic
+   * Generate volume recommendations using unified scientific logic
    */
   static async generateVolumeRecommendations(
     userId: number,
     feedbackData?: any
-  ): Promise<RPVolumeRecommendation[]> {
+  ): Promise<ScienceVolumeRecommendation[]> {
     
-    const recommendations: RPVolumeRecommendation[] = [];
+    const recommendations: ScienceVolumeRecommendation[] = [];
     
     // Get user's volume landmarks with muscle group names
     const landmarks = await db
@@ -295,7 +295,7 @@ export class RPAlgorithmCore {
       .where(eq(volumeLandmarks.userId, userId));
     
     for (const landmark of landmarks) {
-      let recommendation: RPVolumeRecommendation["recommendation"] = "maintain";
+      let recommendation: ScienceVolumeRecommendation["recommendation"] = "maintain";
       let adjustmentPercentage = 0;
       let reason = "Maintaining current volume";
       let confidence = 5;

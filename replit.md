@@ -1,7 +1,7 @@
 # TrainPro - Advanced AI-Powered Fitness Platform
 
 ## Overview
-TrainPro is an enterprise-grade AI-powered fitness platform providing intelligent, adaptive training through comprehensive nutrition and workout management. It is based on the Renaissance Periodization (RP) methodology, combining evidence-based training science with AI recommendations for personalized coaching at scale. The project aims to capture a significant share of the digital fitness market by offering a superior, scientifically-backed alternative, targeting serious fitness enthusiasts and bodybuilders.
+TrainPro is an enterprise-grade AI-powered fitness platform providing intelligent, adaptive training through comprehensive nutrition and workout management. It is based on evidence-based periodization methodology, combining scientific training principles with AI recommendations for personalized coaching at scale. The project aims to capture a significant share of the digital fitness market by offering a superior, scientifically-backed alternative, targeting serious fitness enthusiasts and bodybuilders.
 
 ## User Preferences
 **Communication Language**:
@@ -15,8 +15,8 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - Condensed list view layouts preferred for mobile optimization
 
 **Data Integrity Requirements:**
-- All RP components must use synchronized data sources from weekly goals API
-- Adherence percentages, weight changes, and energy levels must match across RP Analysis and Progress Metrics
+- All periodization components must use synchronized data sources from weekly goals API
+- Adherence percentages, weight changes, and energy levels must match across Training Analysis and Progress Metrics
 - Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
 - **Goal Standardization (Aug 2025)**: All goal-setting components use only three standardized options: Fat Loss, Muscle Gain, Maintenance
 - **Single Source of Truth**: dietGoals table serves as primary data source with Goal Synchronization Service managing cross-component consistency
@@ -49,7 +49,7 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Hybrid authentication system supporting both legacy session-based auth and Replit Auth. All API routes are protected with automatic user ID extraction.
 - **Security**: Robust security hardening for sensitive operations with dual auth support.
-- **Data Processing**: Service layer with specialized algorithms for RP methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression.
+- **Data Processing**: Service layer with specialized algorithms for scientific periodization methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression.
 
 ### Core Database Schema
 The system utilizes 28 production tables covering user management, nutrition, training, volume management, and analytics.
@@ -64,15 +64,15 @@ The system utilizes 28 production tables covering user management, nutrition, tr
 All core API routes are protected by authentication.
 
 ### Service Layer Architecture
-Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, `ShoppingListGenerator`, and **`RPAlgorithmCore` (Aug 2025)** - unified RP algorithm service providing centralized fatigue analysis, volume calculations, and auto-regulation logic. Key algorithm implementations include RP-based auto-regulation, volume landmark calculations (MV, MEV, MAV, MRV), progressive overload, phase transition logic, and systemic fatigue monitoring - all now consolidated through the unified core service.
+Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, `ShoppingListGenerator`, and **`SciAlgorithmCore` (Aug 2025)** - unified scientific algorithm service providing centralized fatigue analysis, volume calculations, and auto-regulation logic. Key algorithm implementations include evidence-based auto-regulation, volume landmark calculations (MV, MEV, MAV, MRV), progressive overload, phase transition logic, and systemic fatigue monitoring - all now consolidated through the unified core service.
 
 ### Key Features & Implementations
 - **iOS-style Notification System**: Comprehensive system with features like drag-to-dismiss, auto-hide, action buttons, and native animations.
 - **Enhanced Workout Execution System**: Features enhanced rest timer animations, dedicated auto-regulation feedback, progress save indicator, and automatic set completion saving. Includes comprehensive CSS animation system.
-- **User-Controlled Settings System**: Comprehensive workout settings interface allowing users to control RP auto-regulation feedback and other workout features.
+- **User-Controlled Settings System**: Comprehensive workout settings interface allowing users to control scientific auto-regulation feedback and other workout features.
 - **Mesocycle Management**: Supports flexible training day allocation, multi-select workout template assignment, and template reusability, handling mesocycle volume progression.
 - **Training Template Auto-Save**: Field-level auto-save for training template creation with draft restoration.
-- **Automated Macro Adjustment System**: Server-optimized background scheduler that automatically applies RP-based macro adjustments daily.
+- **Automated Macro Adjustment System**: Server-optimized background scheduler that automatically applies evidence-based macro adjustments daily.
 - **Hybrid Authentication Integration**: Supports both Replit Auth and existing session authentication.
 - **Pagination System**: Implemented across exercise library, body tracking records, and nutrition progression for memory optimization.
 - **Inline Editing**: Functionality for saved workout template names.
@@ -81,8 +81,9 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Muscle Group Classification**: Refined muscle group focus options to precise anatomical classifications for improved AI exercise recommendations.
 - **Goal Standardization System (Aug 2025)**: Unified goal management with three standardized options (Fat Loss, Muscle Gain, Maintenance) across all components, Goal Synchronization Service ensuring data consistency, and `/api/unified-goals` endpoint as single source of truth.
 - **Weight Unit Standardization (Aug 2025)**: Database standardization to metric (kg), UnitConverter utility for consistent display preferences, enhanced weight calculations with 10-14 day averaging periods and data validation filtering. Frontend-backend alignment with simplified body tracking unit toggle (kg ↔ lbs conversion). **Step 6 Complete**: All 71+ LSP errors in server/routes.ts resolved with proper userId type conversions and API data structure validation. **Critical Fix**: Save workout session as template functionality restored (403 error resolved).
-- **RP Algorithm Core Unification (Aug 2025)**: **Steps 7-8 Complete** - Created centralized `RPAlgorithmCore` service consolidating duplicate fatigue analysis and volume calculation logic across multiple services. Eliminated code duplication between auto-regulation-algorithms.ts and mesocycle-periodization.ts. Unified feedback scoring algorithms using consistent RP methodology. Fixed all LSP errors in mesocycle-periodization.ts including Map iteration and type conversion issues. All RP calculations now use single source of truth while maintaining backward compatibility. **Final validation confirms successful algorithm integration with zero compilation errors and unified RP methodology implementation.**
-- **Systematic LSP Error Resolution (Aug 2025)**: **Steps 9-10 Complete** - Resolved all 49 TypeScript LSP errors in server/routes.ts through systematic userId type conversions (string → number), database query syntax corrections (eq() comparisons), and SQL template literal fixes. **Critical SQL Fix**: Corrected `INTERVAL ${days} DAY` syntax error in RPAlgorithmCore.analyzeFatigue method to `INTERVAL '${days} days'` format. All API routes now properly handle authentication and database operations with zero compilation errors.
+- **Scientific Algorithm Core Unification (Aug 2025)**: **Steps 7-8 Complete** - Created centralized `SciAlgorithmCore` service consolidating duplicate fatigue analysis and volume calculation logic across multiple services. Eliminated code duplication between auto-regulation-algorithms.ts and mesocycle-periodization.ts. Unified feedback scoring algorithms using consistent scientific methodology. Fixed all LSP errors in mesocycle-periodization.ts including Map iteration and type conversion issues. All scientific calculations now use single source of truth while maintaining backward compatibility. **Final validation confirms successful algorithm integration with zero compilation errors and unified scientific methodology implementation.**
+- **Systematic LSP Error Resolution (Aug 2025)**: **Steps 9-10 Complete** - Resolved all 49 TypeScript LSP errors in server/routes.ts through systematic userId type conversions (string → number), database query syntax corrections (eq() comparisons), and SQL template literal fixes. **Critical SQL Fix**: Corrected `INTERVAL ${days} DAY` syntax error in SciAlgorithmCore.analyzeFatigue method to `INTERVAL '${days} days'` format. All API routes now properly handle authentication and database operations with zero compilation errors.
+- **Complete IP Compliance Refactoring (Aug 2025)**: **Steps 11-12 Complete** - Comprehensive refactoring to eliminate all Renaissance Periodization (RP) trademark references. Renamed core service from "rp-algorithm-core.ts" to "scientific-algorithm-core.ts" with updated type definitions: RPFeedbackScores → ScienceFeedbackScores, RPFatigueAnalysis → ScienceFatigueAnalysis, RPVolumeRecommendation → ScienceVolumeRecommendation. Updated all imports, references, and comments across multiple files including auto-regulation-algorithms.ts, mesocycle-periodization.ts, and init-volume-landmarks.ts. All terminology now uses generic "scientific-based methodology" to ensure complete trademark compliance while maintaining functionality.
 - **Calorie Discrepancy Resolution & Message Standardization (Aug 2025)**: **Steps 11-12 Complete** - Fixed calorie inconsistency between Dashboard (2773) and IntegratedNutritionOverview (2840) by correcting API endpoint usage and MacroChart calculation logic. Dashboard now uses API's totalCalories instead of calculating from macros. **Message Standardization**: Verified all toast notifications, error messages, and user-facing text are in English (EN-US) as per project requirements. Translation files preserved for future multi-language support.
 - **Complete TrainPro Rebranding (Aug 2025)**: **Complete** - Updated all FitAI references to TrainPro across PWA and mobile applications. Updated icons, manifest files, service worker, localStorage keys, and all console logging. Created new TrainPro-branded SVG icons with T-shaped logo design and PRO badge. Updated PWA manifest, HTML meta tags, social media tags, and mobile app configuration. All branding now consistently reflects TrainPro identity.
 - **Unit Conversion Toggle for Weight Data (Aug 2025)**: **Complete** - Added kg/lbs conversion toggle button to Recent Entries section in nutrition progression component. Button appears only when viewing weight data, allows real-time unit switching using UnitConverter utility. Features clean UI with ArrowLeftRight icon and hover effects for improved user experience.

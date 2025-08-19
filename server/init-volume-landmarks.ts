@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { muscleGroups, volumeLandmarks, exerciseMuscleMapping, exercises } from "@shared/schema";
-import { rpMuscleGroups, rpVolumeLandmarks, exerciseMuscleMapping as exerciseMapping } from "./data/muscle-groups";
+import { scientificMuscleGroups, rpVolumeLandmarks, exerciseMuscleMapping as exerciseMapping } from "./data/muscle-groups";
 import { eq, and } from "drizzle-orm";
 
 export async function initializeVolumeLandmarks() {
@@ -20,11 +20,11 @@ export async function initializeVolumeLandmarks() {
       console.log("Inserting muscle groups...");
       
       // Insert muscle groups
-      for (const muscleGroup of rpMuscleGroups) {
+      for (const muscleGroup of scientificMuscleGroups) {
         await db.insert(muscleGroups).values(muscleGroup);
       }
       
-      console.log(`Inserted ${rpMuscleGroups.length} muscle groups`);
+      console.log(`Inserted ${scientificMuscleGroups.length} muscle groups`);
     } else {
       console.log("Muscle groups already exist");
     }

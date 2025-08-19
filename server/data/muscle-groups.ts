@@ -1,5 +1,5 @@
-// Renaissance Periodization Muscle Groups with RP Volume Landmarks
-export const rpMuscleGroups = [
+// Evidence-Based Muscle Groups with Scientific Volume Landmarks
+export const scientificMuscleGroups = [
   // Push (Upper Body)
   {
     name: "chest",
