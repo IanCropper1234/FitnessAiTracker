@@ -697,7 +697,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="10"
                               max="20"
-                              value={template.specialConfig.targetReps || 15}
+                              value={template.specialConfig.targetReps ?? 15}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'targetReps', value === '' ? '' : (parseInt(value) || 15));
@@ -710,7 +710,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="1"
                               max="5"
-                              value={template.specialConfig.miniSets || 3}
+                              value={template.specialConfig.miniSets ?? 3}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'miniSets', value === '' ? '' : (parseInt(value) || 3));
@@ -723,7 +723,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="15"
                               max="30"
-                              value={template.specialConfig.restSeconds || 20}
+                              value={template.specialConfig.restSeconds ?? 20}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 20));
@@ -742,7 +742,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="1"
                               max="5"
-                              value={template.specialConfig.miniSets || 3}
+                              value={template.specialConfig.miniSets ?? 3}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'miniSets', value === '' ? '' : (parseInt(value) || 3));
@@ -755,7 +755,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="15"
                               max="30"
-                              value={template.specialConfig.restSeconds || 20}
+                              value={template.specialConfig.restSeconds ?? 20}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 20));
@@ -803,7 +803,7 @@ export function CreateWorkoutSession() {
                                   type="number"
                                   min="5"
                                   max="30"
-                                  value={(template.specialConfig?.weightReductions || [])[dropIndex] || 15}
+                                  value={(template.specialConfig?.weightReductions ?? [])[dropIndex] ?? 15}
                                   onChange={(e) => {
                                     const newReductions = [...(template.specialConfig?.weightReductions || Array(template.specialConfig?.dropSets || 3).fill(15))];
                                     const value = e.target.value;
@@ -825,7 +825,7 @@ export function CreateWorkoutSession() {
                                   type="number"
                                   min="5"
                                   max="20"
-                                  value={(template.specialConfig?.dropSetReps || [])[dropIndex] || 8}
+                                  value={(template.specialConfig?.dropSetReps ?? [])[dropIndex] ?? 8}
                                   onChange={(e) => {
                                     const newReps = [...(template.specialConfig?.dropSetReps || Array(template.specialConfig?.dropSets || 3).fill(8))];
                                     const value = e.target.value;
@@ -844,7 +844,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig?.dropRestSeconds || 10}
+                              value={template.specialConfig?.dropRestSeconds ?? 10}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'dropRestSeconds', value === '' ? '' : (parseInt(value) || 10));
@@ -864,7 +864,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="30"
                               max="60"
-                              value={template.specialConfig?.totalTargetReps || 40}
+                              value={template.specialConfig?.totalTargetReps ?? 40}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'totalTargetReps', value === '' ? '' : (parseInt(value) || 40));
@@ -877,7 +877,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig?.miniSetReps || 8}
+                              value={template.specialConfig?.miniSetReps ?? 8}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'miniSetReps', value === '' ? '' : (parseInt(value) || 8));
@@ -890,7 +890,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="5"
                               max="15"
-                              value={template.specialConfig?.restSeconds || template.specialConfig?.giantRestSeconds || 15}
+                              value={template.specialConfig?.restSeconds ?? template.specialConfig?.giantRestSeconds ?? 15}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 15));
@@ -962,7 +962,7 @@ export function CreateWorkoutSession() {
                               type="number"
                               min="30"
                               max="120"
-                              value={template.specialConfig?.restSeconds || 60}
+                              value={template.specialConfig?.restSeconds ?? 60}
                               onChange={(e) => {
                                 const value = e.target.value;
                                 updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 60));
