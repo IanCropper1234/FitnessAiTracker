@@ -661,12 +661,15 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <Input
                   type="number"
                   value={specialConfig?.targetReps ?? 15}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    targetReps: parseInt(e.target.value) || 15,
-                    miniSets: specialConfig?.miniSets || 3,
-                    restSeconds: specialConfig?.restSeconds || 20
-                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      targetReps: value === '' ? '' : (parseInt(value) || 15),
+                      miniSets: specialConfig?.miniSets || 3,
+                      restSeconds: specialConfig?.restSeconds || 20
+                    });
+                  }}
                   min="10"
                   max="20"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -677,12 +680,15 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <Input
                   type="number"
                   value={specialConfig?.miniSets ?? 3}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    miniSets: parseInt(e.target.value) || 3,
-                    targetReps: specialConfig?.targetReps || 15,
-                    restSeconds: specialConfig?.restSeconds || 20
-                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      miniSets: value === '' ? '' : (parseInt(value) || 3),
+                      targetReps: specialConfig?.targetReps || 15,
+                      restSeconds: specialConfig?.restSeconds || 20
+                    });
+                  }}
                   min="1"
                   max="5"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -693,12 +699,15 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <Input
                   type="number"
                   value={specialConfig?.restSeconds ?? 20}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    restSeconds: parseInt(e.target.value) || 20,
-                    targetReps: specialConfig?.targetReps || 15,
-                    miniSets: specialConfig?.miniSets || 3
-                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      restSeconds: value === '' ? '' : (parseInt(value) || 20),
+                      targetReps: specialConfig?.targetReps || 15,
+                      miniSets: specialConfig?.miniSets || 3
+                    });
+                  }}
                   min="15"
                   max="30"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -749,11 +758,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <Input
                   type="number"
                   value={specialConfig?.miniSets ?? 3}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    miniSets: parseInt(e.target.value) || 3,
-                    restSeconds: specialConfig?.restSeconds || 20
-                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      miniSets: value === '' ? '' : (parseInt(value) || 3),
+                      restSeconds: specialConfig?.restSeconds || 20
+                    });
+                  }}
                   min="1"
                   max="5"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -764,11 +776,14 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <Input
                   type="number"
                   value={specialConfig?.restSeconds ?? 20}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    restSeconds: parseInt(e.target.value) || 20,
-                    miniSets: specialConfig?.miniSets || 3
-                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      restSeconds: value === '' ? '' : (parseInt(value) || 20),
+                      miniSets: specialConfig?.miniSets || 3
+                    });
+                  }}
                   min="15"
                   max="30"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -837,10 +852,13 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <Input
                   type="number"
                   value={specialConfig?.restSeconds ?? 60}
-                  onChange={(e) => onSpecialConfigChange?.({
-                    ...specialConfig,
-                    restSeconds: parseInt(e.target.value) || 60
-                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      restSeconds: value === '' ? '' : (parseInt(value) || 60)
+                    });
+                  }}
                   min="30"
                   max="120"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
