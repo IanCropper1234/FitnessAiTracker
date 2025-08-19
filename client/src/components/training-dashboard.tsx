@@ -948,103 +948,59 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
-      {/* Training Stats Cards - Redesigned with Nutrition Overview Style */}
-      <Card className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-lg">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            Training Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 pt-2">
-          {/* Sessions Row */}
-          <div className="flex items-center gap-3">
-            <div className="w-16 text-xs font-medium text-blue-600 dark:text-blue-400">
-              Sessions
-            </div>
-            <div className="flex-1 flex items-center gap-2">
-              <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
+      {/* Training Stats Cards - Simple Clean Layout without Arbitrary Targets */}
+      <div className="grid grid-cols-3 gap-2 w-full">
+        <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <CardContent className="p-3 text-center">
+            <div className="flex flex-col items-center gap-1">
+              <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
                 {trainingStats?.totalSessions || 0}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
-              <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
-                {Math.max(12, (trainingStats?.totalSessions || 0))} {/* Target: Current or minimum 12 */}
+              <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                Total Sessions
               </div>
-              <div className="flex-1 relative">
-                <div className="nutrition-progress-bar h-2">
-                  <div 
-                    className="nutrition-progress-fill bg-blue-500 h-2"
-                    style={{ 
-                      width: `${Math.min(100, ((trainingStats?.totalSessions || 0) / Math.max(12, (trainingStats?.totalSessions || 0))) * 100)}%` 
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="text-xs font-medium text-blue-700 dark:text-blue-300 min-w-[2.5rem] text-right">
-                {Math.round(((trainingStats?.totalSessions || 0) / Math.max(12, (trainingStats?.totalSessions || 0))) * 100)}%
+              <div className="text-xs text-blue-600 dark:text-blue-400">
+                workouts completed
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Volume Row */}
-          <div className="flex items-center gap-3">
-            <div className="w-16 text-xs font-medium text-green-600 dark:text-green-400">
-              Volume
-            </div>
-            <div className="flex-1 flex items-center gap-2">
-              <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
+        <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+          <CardContent className="p-3 text-center">
+            <div className="flex flex-col items-center gap-1">
+              <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <div className="text-lg font-bold text-green-900 dark:text-green-100">
                 {Math.round((trainingStats?.totalVolume || 0) / 1000)}k
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
-              <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
-                {Math.max(50, Math.round((trainingStats?.totalVolume || 0) / 1000))}k {/* Target: Current or minimum 50k */}
+              <div className="text-xs text-green-700 dark:text-green-300 font-medium">
+                Total Volume
               </div>
-              <div className="flex-1 relative">
-                <div className="nutrition-progress-bar h-2">
-                  <div 
-                    className="nutrition-progress-fill bg-green-500 h-2"
-                    style={{ 
-                      width: `${Math.min(100, ((trainingStats?.totalVolume || 0) / (Math.max(50000, (trainingStats?.totalVolume || 0)))) * 100)}%` 
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="text-xs font-medium text-green-700 dark:text-green-300 min-w-[2.5rem] text-right">
-                {Math.round(((trainingStats?.totalVolume || 0) / (Math.max(50000, (trainingStats?.totalVolume || 0)))) * 100)}%
+              <div className="text-xs text-green-600 dark:text-green-400">
+                kg lifted lifetime
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Average Session Row */}
-          <div className="flex items-center gap-3">
-            <div className="w-16 text-xs font-medium text-orange-600 dark:text-orange-400">
-              Avg Time
-            </div>
-            <div className="flex-1 flex items-center gap-2">
-              <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
+        <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
+          <CardContent className="p-3 text-center">
+            <div className="flex flex-col items-center gap-1">
+              <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+              <div className="text-lg font-bold text-orange-900 dark:text-orange-100">
                 {trainingStats?.averageSessionLength || 0}m
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
-              <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
-                {Math.max(60, (trainingStats?.averageSessionLength || 0))}m {/* Target: Current or minimum 60 minutes */}
+              <div className="text-xs text-orange-700 dark:text-orange-300 font-medium">
+                Avg Session
               </div>
-              <div className="flex-1 relative">
-                <div className="nutrition-progress-bar h-2">
-                  <div 
-                    className="nutrition-progress-fill bg-orange-500 h-2"
-                    style={{ 
-                      width: `${Math.min(100, ((trainingStats?.averageSessionLength || 0) / Math.max(60, (trainingStats?.averageSessionLength || 0))) * 100)}%` 
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="text-xs font-medium text-orange-700 dark:text-orange-300 min-w-[2.5rem] text-right">
-                {Math.round(((trainingStats?.averageSessionLength || 0) / Math.max(60, (trainingStats?.averageSessionLength || 0))) * 100)}%
+              <div className="text-xs text-orange-600 dark:text-orange-400">
+                minutes per workout
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
       {/* Header with Feature Manager Button - Only show for developer users */}
       {userData?.showDeveloperFeatures && (
         <div className="flex items-center justify-between mb-4">
