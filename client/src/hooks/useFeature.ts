@@ -87,8 +87,8 @@ export const updateFeatureFlag = async (featureName: keyof FeatureFlags, enabled
     console.error('Failed to save to localStorage:', error);
   }
   
-  // Sync to server if enabled
-  if (isServerSyncEnabled) {
+  // Sync to server if enabled and not during initialization
+  if (isServerSyncEnabled && isInitialized) {
     try {
       await apiRequest('PUT', '/api/workout-settings', globalFeatures);
       console.log('Settings synced to server');
@@ -96,6 +96,8 @@ export const updateFeatureFlag = async (featureName: keyof FeatureFlags, enabled
       console.warn('Failed to sync feature flag to server:', error);
       // Continue with local update even if server sync fails
     }
+  } else {
+    console.log('Server sync skipped - not initialized or sync disabled');
   }
   
   // Trigger re-render in components using this feature
@@ -110,8 +112,8 @@ export const updateFeatureFlags = async (newFeatures: Partial<FeatureFlags>) => 
   // Save to localStorage for persistence
   localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
   
-  // Sync to server if enabled
-  if (isServerSyncEnabled) {
+  // Sync to server if enabled and fully initialized
+  if (isServerSyncEnabled && isInitialized) {
     try {
       await apiRequest('PUT', '/api/workout-settings', globalFeatures);
     } catch (error) {
@@ -177,13 +179,9 @@ export const initializeFeatures = async (enableServerSync = true) => {
           const mergedSettings = { ...serverFeatures, ...localSettings };
           globalFeatures = mergedSettings;
           
-          // Update server with our local preferences
-          try {
-            await apiRequest('PUT', '/api/workout-settings', globalFeatures);
-            console.log('Updated server with local preferences');
-          } catch (error) {
-            console.warn('Failed to update server with local preferences');
-          }
+          // Don't immediately sync back to server during initialization
+          // This prevents infinite loops - server sync will happen when user changes settings
+          console.log('Local preferences kept, server sync skipped during init');
         } else {
           console.log('No local settings - using server settings');
           // No local customizations, use server settings
