@@ -77,16 +77,13 @@ export const useFeatures = (): FeatureFlags => {
 export const updateFeatureFlag = async (featureName: keyof FeatureFlags, enabled: boolean) => {
   globalFeatures[featureName] = enabled;
   
+  // Save to localStorage for persistence
+  localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+  
   // Sync to server if enabled
   if (isServerSyncEnabled) {
     try {
-      await apiRequest('/api/workout-settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(globalFeatures),
-      });
+      await apiRequest('PUT', '/api/workout-settings', globalFeatures);
     } catch (error) {
       console.warn('Failed to sync feature flag to server:', error);
       // Continue with local update even if server sync fails
@@ -102,16 +99,13 @@ export const updateFeatureFlag = async (featureName: keyof FeatureFlags, enabled
 export const updateFeatureFlags = async (newFeatures: Partial<FeatureFlags>) => {
   globalFeatures = { ...globalFeatures, ...newFeatures };
   
+  // Save to localStorage for persistence
+  localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+  
   // Sync to server if enabled
   if (isServerSyncEnabled) {
     try {
-      await apiRequest('/api/workout-settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(globalFeatures),
-      });
+      await apiRequest('PUT', '/api/workout-settings', globalFeatures);
     } catch (error) {
       console.warn('Failed to sync feature flags to server:', error);
     }
@@ -131,16 +125,38 @@ export const initializeFeatures = async (enableServerSync = true) => {
   
   isServerSyncEnabled = enableServerSync;
   
+  // First try to load from localStorage for immediate availability
+  try {
+    const savedSettings = localStorage.getItem('workout-settings');
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
+      globalFeatures = { ...defaultFeatures, ...parsedSettings };
+      console.log('Features loaded from localStorage:', globalFeatures);
+    }
+  } catch (error) {
+    console.warn('Failed to load features from localStorage:', error);
+  }
+  
+  // Then try to sync with server if enabled
   if (enableServerSync) {
     try {
-      const serverFeatures = await apiRequest('/api/workout-settings') as FeatureFlags;
-      globalFeatures = { ...defaultFeatures, ...serverFeatures };
-      console.log('Features initialized from server:', globalFeatures);
+      const response = await fetch('/api/workout-settings', {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const serverFeatures = await response.json() as FeatureFlags;
+        globalFeatures = { ...defaultFeatures, ...serverFeatures };
+        // Save to localStorage for future loads
+        localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
+        console.log('Features synced from server:', globalFeatures);
+      }
     } catch (error) {
-      console.warn('Failed to load features from server, using defaults:', error);
-      globalFeatures = { ...defaultFeatures };
+      console.warn('Failed to load features from server, using cached/defaults:', error);
     }
-  } else {
+  }
+  
+  // Ensure we have at least default features
+  if (!globalFeatures) {
     globalFeatures = { ...defaultFeatures };
   }
   
