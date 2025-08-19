@@ -948,59 +948,103 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
-      {/* Training Stats Cards */}
-      <div className="grid grid-cols-3 gap-2 w-full pl-[5px] pr-[5px] ml-[0px] mr-[0px]">
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
-            <Calendar className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Total Sessions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
-              {trainingStats?.totalSessions || 0}
+      {/* Training Stats Cards - Redesigned with Nutrition Overview Style */}
+      <Card className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-lg">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+            <Activity className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            Training Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-2">
+          {/* Sessions Row */}
+          <div className="flex items-center gap-3">
+            <div className="w-16 text-xs font-medium text-blue-600 dark:text-blue-400">
+              Sessions
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              workouts completed
-            </p>
-          </CardContent>
-        </Card>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
+                {trainingStats?.totalSessions || 0}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+              <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
+                {Math.max(12, (trainingStats?.totalSessions || 0))} {/* Target: Current or minimum 12 */}
+              </div>
+              <div className="flex-1 relative">
+                <div className="nutrition-progress-bar h-2">
+                  <div 
+                    className="nutrition-progress-fill bg-blue-500 h-2"
+                    style={{ 
+                      width: `${Math.min(100, ((trainingStats?.totalSessions || 0) / Math.max(12, (trainingStats?.totalSessions || 0))) * 100)}%` 
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="text-xs font-medium text-blue-700 dark:text-blue-300 min-w-[2.5rem] text-right">
+                {Math.round(((trainingStats?.totalSessions || 0) / Math.max(12, (trainingStats?.totalSessions || 0))) * 100)}%
+              </div>
+            </div>
+          </div>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
-            <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Total Volume
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
-              {trainingStats?.totalVolume || 0}
+          {/* Volume Row */}
+          <div className="flex items-center gap-3">
+            <div className="w-16 text-xs font-medium text-green-600 dark:text-green-400">
+              Volume
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              kg lifted this month
-            </p>
-          </CardContent>
-        </Card>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
+                {Math.round((trainingStats?.totalVolume || 0) / 1000)}k
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+              <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
+                {Math.max(50, Math.round((trainingStats?.totalVolume || 0) / 1000))}k {/* Target: Current or minimum 50k */}
+              </div>
+              <div className="flex-1 relative">
+                <div className="nutrition-progress-bar h-2">
+                  <div 
+                    className="nutrition-progress-fill bg-green-500 h-2"
+                    style={{ 
+                      width: `${Math.min(100, ((trainingStats?.totalVolume || 0) / (Math.max(50000, (trainingStats?.totalVolume || 0)))) * 100)}%` 
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="text-xs font-medium text-green-700 dark:text-green-300 min-w-[2.5rem] text-right">
+                {Math.round(((trainingStats?.totalVolume || 0) / (Math.max(50000, (trainingStats?.totalVolume || 0)))) * 100)}%
+              </div>
+            </div>
+          </div>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
-            <Clock className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Avg Session
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
-              {trainingStats?.averageSessionLength || 0}
+          {/* Average Session Row */}
+          <div className="flex items-center gap-3">
+            <div className="w-16 text-xs font-medium text-orange-600 dark:text-orange-400">
+              Avg Time
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              minutes per workout
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="text-sm font-bold text-black dark:text-white min-w-[3rem]">
+                {trainingStats?.averageSessionLength || 0}m
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">/</div>
+              <div className="text-xs text-gray-700 dark:text-gray-300 min-w-[2.5rem]">
+                {Math.max(60, (trainingStats?.averageSessionLength || 0))}m {/* Target: Current or minimum 60 minutes */}
+              </div>
+              <div className="flex-1 relative">
+                <div className="nutrition-progress-bar h-2">
+                  <div 
+                    className="nutrition-progress-fill bg-orange-500 h-2"
+                    style={{ 
+                      width: `${Math.min(100, ((trainingStats?.averageSessionLength || 0) / Math.max(60, (trainingStats?.averageSessionLength || 0))) * 100)}%` 
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="text-xs font-medium text-orange-700 dark:text-orange-300 min-w-[2.5rem] text-right">
+                {Math.round(((trainingStats?.averageSessionLength || 0) / Math.max(60, (trainingStats?.averageSessionLength || 0))) * 100)}%
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       {/* Header with Feature Manager Button - Only show for developer users */}
       {userData?.showDeveloperFeatures && (
         <div className="flex items-center justify-between mb-4">
