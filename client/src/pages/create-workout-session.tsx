@@ -625,7 +625,10 @@ export function CreateWorkoutSession() {
                         min="1"
                         max="10"
                         value={template.sets}
-                        onChange={(e) => updateExerciseTemplate(index, 'sets', parseInt(e.target.value) || 1)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          updateExerciseTemplate(index, 'sets', value === '' ? '' : (parseInt(value) || 1));
+                        }}
                       />
                     </div>
                     
@@ -645,7 +648,10 @@ export function CreateWorkoutSession() {
                         min="30"
                         max="300"
                         value={template.restPeriod}
-                        onChange={(e) => updateExerciseTemplate(index, 'restPeriod', parseInt(e.target.value) || 90)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          updateExerciseTemplate(index, 'restPeriod', value === '' ? '' : (parseInt(value) || 90));
+                        }}
                       />
                     </div>
                   </div>
@@ -692,7 +698,10 @@ export function CreateWorkoutSession() {
                               min="10"
                               max="20"
                               value={template.specialConfig.targetReps || 15}
-                              onChange={(e) => updateSpecialConfig(index, 'targetReps', parseInt(e.target.value) || 15)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'targetReps', value === '' ? '' : (parseInt(value) || 15));
+                              }}
                             />
                           </div>
                           <div className="space-y-1">
@@ -702,7 +711,10 @@ export function CreateWorkoutSession() {
                               min="1"
                               max="5"
                               value={template.specialConfig.miniSets || 3}
-                              onChange={(e) => updateSpecialConfig(index, 'miniSets', parseInt(e.target.value) || 3)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'miniSets', value === '' ? '' : (parseInt(value) || 3));
+                              }}
                             />
                           </div>
                           <div className="space-y-1">
@@ -712,7 +724,10 @@ export function CreateWorkoutSession() {
                               min="15"
                               max="30"
                               value={template.specialConfig.restSeconds || 20}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 20)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 20));
+                              }}
                             />
                           </div>
                         </div>
@@ -728,7 +743,10 @@ export function CreateWorkoutSession() {
                               min="1"
                               max="5"
                               value={template.specialConfig.miniSets || 3}
-                              onChange={(e) => updateSpecialConfig(index, 'miniSets', parseInt(e.target.value) || 3)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'miniSets', value === '' ? '' : (parseInt(value) || 3));
+                              }}
                             />
                           </div>
                           <div className="space-y-1">
@@ -738,7 +756,10 @@ export function CreateWorkoutSession() {
                               min="15"
                               max="30"
                               value={template.specialConfig.restSeconds || 20}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 20)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 20));
+                              }}
                             />
                           </div>
                         </div>
@@ -785,7 +806,8 @@ export function CreateWorkoutSession() {
                                   value={(template.specialConfig?.weightReductions || [])[dropIndex] || 15}
                                   onChange={(e) => {
                                     const newReductions = [...(template.specialConfig?.weightReductions || Array(template.specialConfig?.dropSets || 3).fill(15))];
-                                    newReductions[dropIndex] = parseInt(e.target.value) || 15;
+                                    const value = e.target.value;
+                                    newReductions[dropIndex] = value === '' ? '' : (parseInt(value) || 15);
                                     updateSpecialConfig(index, 'weightReductions', newReductions);
                                   }}
                                   className="w-20"
@@ -806,7 +828,8 @@ export function CreateWorkoutSession() {
                                   value={(template.specialConfig?.dropSetReps || [])[dropIndex] || 8}
                                   onChange={(e) => {
                                     const newReps = [...(template.specialConfig?.dropSetReps || Array(template.specialConfig?.dropSets || 3).fill(8))];
-                                    newReps[dropIndex] = parseInt(e.target.value) || 8;
+                                    const value = e.target.value;
+                                    newReps[dropIndex] = value === '' ? '' : (parseInt(value) || 8);
                                     updateSpecialConfig(index, 'dropSetReps', newReps);
                                   }}
                                   className="w-20"
@@ -822,7 +845,10 @@ export function CreateWorkoutSession() {
                               min="5"
                               max="15"
                               value={template.specialConfig?.dropRestSeconds || 10}
-                              onChange={(e) => updateSpecialConfig(index, 'dropRestSeconds', parseInt(e.target.value) || 10)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'dropRestSeconds', value === '' ? '' : (parseInt(value) || 10));
+                              }}
                               className="w-32"
                             />
                           </div>
@@ -839,7 +865,10 @@ export function CreateWorkoutSession() {
                               min="30"
                               max="60"
                               value={template.specialConfig?.totalTargetReps || 40}
-                              onChange={(e) => updateSpecialConfig(index, 'totalTargetReps', parseInt(e.target.value) || 40)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'totalTargetReps', value === '' ? '' : (parseInt(value) || 40));
+                              }}
                             />
                           </div>
                           <div className="space-y-1">
@@ -849,7 +878,10 @@ export function CreateWorkoutSession() {
                               min="5"
                               max="15"
                               value={template.specialConfig?.miniSetReps || 8}
-                              onChange={(e) => updateSpecialConfig(index, 'miniSetReps', parseInt(e.target.value) || 8)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'miniSetReps', value === '' ? '' : (parseInt(value) || 8));
+                              }}
                             />
                           </div>
                           <div className="space-y-1">
@@ -859,7 +891,10 @@ export function CreateWorkoutSession() {
                               min="5"
                               max="15"
                               value={template.specialConfig?.restSeconds || template.specialConfig?.giantRestSeconds || 15}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 15)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 15));
+                              }}
                             />
                           </div>
                         </div>
@@ -928,7 +963,10 @@ export function CreateWorkoutSession() {
                               min="30"
                               max="120"
                               value={template.specialConfig?.restSeconds || 60}
-                              onChange={(e) => updateSpecialConfig(index, 'restSeconds', parseInt(e.target.value) || 60)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                updateSpecialConfig(index, 'restSeconds', value === '' ? '' : (parseInt(value) || 60));
+                              }}
                             />
                           </div>
                         </div>
