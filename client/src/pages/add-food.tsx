@@ -219,12 +219,12 @@ export function AddFood({ user }: AddFoodProps) {
         description: "Food logged successfully!"
       });
       
-      // Clear form after successful logging
+      // Clear form after successful logging, but preserve meal type for convenience
       setSelectedFood(null);
       setFoodQuery('');
       setQuantity('1');
-      setUnit('g');
-      setMealType('');
+      setUnit('serving');
+      // Don't reset mealType to allow quick consecutive logging to same meal
       clearCapturedImages();
       setBaseAIResult(null);
       setDynamicMacros(null);
