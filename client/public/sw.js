@@ -1,5 +1,5 @@
 // Service Worker for TrainPro PWA - iOS Compatible
-const CACHE_NAME = 'trainpro-v1.2.0';
+const CACHE_NAME = 'trainpro-v1.3.0';
 const urlsToCache = [
   '/',
   '/manifest.json',

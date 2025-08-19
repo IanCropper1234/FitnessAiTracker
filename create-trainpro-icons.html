@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TrainPro Icon Generator</title>
+    <style>
+        canvas { border: 1px solid #ccc; margin: 10px; }
+        .icon-container { display: inline-block; margin: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>TrainPro Icon Generator</h1>
+    <div id="icons"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 180, 192, 384, 512];
+        
+        function createTrainProIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Scale factors
+            const scale = size / 512;
+            
+            // Main T Shape
+            ctx.fillStyle = '#ffffff';
+            // Horizontal bar
+            ctx.fillRect(96 * scale, 128 * scale, 320 * scale, 48 * scale);
+            // Vertical bar
+            ctx.fillRect(232 * scale, 128 * scale, 48 * scale, 256 * scale);
+            
+            // PRO Badge
+            ctx.fillRect(352 * scale, 352 * scale, 64 * scale, 48 * scale);
+            
+            // PRO Text
+            ctx.fillStyle = '#0a0a0a';
+            ctx.font = `bold ${20 * scale}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('PRO', 384 * scale, 380 * scale);
+            
+            // AI Accent Lines
+            ctx.fillStyle = '#666666';
+            ctx.fillRect(128 * scale, 200 * scale, 256 * scale, 3 * scale);
+            ctx.fillRect(128 * scale, 212 * scale, 192 * scale, 3 * scale);
+            ctx.fillRect(128 * scale, 224 * scale, 224 * scale, 3 * scale);
+            ctx.fillRect(128 * scale, 236 * scale, 160 * scale, 3 * scale);
+            
+            return canvas;
+        }
+        
+        const iconsDiv = document.getElementById('icons');
+        
+        sizes.forEach(size => {
+            const canvas = createTrainProIcon(size);
+            const container = document.createElement('div');
+            container.className = 'icon-container';
+            
+            const label = document.createElement('div');
+            label.textContent = `${size}x${size}`;
+            
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `icon-${size}x${size}.png`;
+            link.textContent = 'Download';
+            
+            container.appendChild(label);
+            container.appendChild(canvas);
+            container.appendChild(document.createElement('br'));
+            container.appendChild(link);
+            
+            iconsDiv.appendChild(container);
+        });
+        
+        // Auto-download all icons
+        setTimeout(() => {
+            sizes.forEach(size => {
+                const canvas = createTrainProIcon(size);
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `icon-${size}x${size}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }, 1000);
+    </script>
+</body>
+</html>
