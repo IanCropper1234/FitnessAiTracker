@@ -471,6 +471,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   protein={nutritionSummary.totalProtein}
                   carbs={nutritionSummary.totalCarbs}
                   fat={nutritionSummary.totalFat}
+                  totalCalories={nutritionSummary.totalCalories}
                   goalProtein={dietGoals?.targetProtein || nutritionSummary.goalProtein}
                   goalCarbs={dietGoals?.targetCarbs || nutritionSummary.goalCarbs}
                   goalFat={dietGoals?.targetFat || nutritionSummary.goalFat}

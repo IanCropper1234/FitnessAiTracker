@@ -5,6 +5,7 @@ interface MacroChartProps {
   protein: number;
   carbs: number;
   fat: number;
+  totalCalories?: number;
   goalProtein?: number;
   goalCarbs?: number;
   goalFat?: number;
@@ -15,6 +16,7 @@ export function MacroChart({
   protein, 
   carbs, 
   fat, 
+  totalCalories,
   goalProtein = 0, 
   goalCarbs = 0, 
   goalFat = 0,
@@ -25,7 +27,8 @@ export function MacroChart({
   const proteinCals = protein * 4;
   const carbsCals = carbs * 4;
   const fatCals = fat * 9;
-  const totalCals = proteinCals + carbsCals + fatCals;
+  // Use provided totalCalories if available, otherwise calculate from macros
+  const totalCals = totalCalories ?? (proteinCals + carbsCals + fatCals);
 
   const data = [
     {
