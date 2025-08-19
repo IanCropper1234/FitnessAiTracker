@@ -955,8 +955,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
           {/* Total Volume - Large Tile */}
           <div className="col-span-2 relative overflow-hidden">
             <div 
-              className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-600 dark:via-blue-700 dark:to-blue-800 p-6 transition-all duration-300 active:scale-[0.98] ios-touch-feedback"
+              className="ios-control-center-tile bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-600 dark:via-blue-700 dark:to-blue-800 p-6 transition-all duration-300 active:scale-[0.98] ios-touch-feedback"
               style={{ borderRadius: '20px' }}
+              data-ios-tile="true"
             >
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
@@ -1025,8 +1026,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
           {/* Total Sessions */}
           <div 
-            className="bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
+            className="ios-control-center-tile bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
             style={{ borderRadius: '20px' }}
+            data-ios-tile="true"
           >
             {/* Background Accent */}
             <div className="absolute top-2 right-2 w-20 h-20 bg-white/10 rounded-full transform rotate-12"></div>
@@ -1056,8 +1058,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
           {/* Average Session Time */}
           <div 
-            className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 dark:from-orange-500 dark:via-orange-600 dark:to-orange-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
+            className="ios-control-center-tile bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 dark:from-orange-500 dark:via-orange-600 dark:to-orange-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
             style={{ borderRadius: '20px' }}
+            data-ios-tile="true"
           >
             {/* Background Accent */}
             <div className="absolute bottom-2 left-2 w-16 h-16 bg-white/10 rounded-full transform -rotate-12"></div>
@@ -1086,8 +1089,9 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
         {/* Achievement Badge */}
         {trainingStats && trainingStats.totalSessions > 0 && (
           <div 
-            className="bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 dark:from-purple-600 dark:via-purple-700 dark:to-indigo-700 p-4 relative overflow-hidden"
+            className="ios-control-center-tile bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 dark:from-purple-600 dark:via-purple-700 dark:to-indigo-700 p-4 relative overflow-hidden"
             style={{ borderRadius: '16px' }}
+            data-ios-tile="true"
           >
             {/* Sparkle Effects */}
             <div className="absolute top-2 right-4 w-2 h-2 bg-white rounded-full animate-pulse"></div>
