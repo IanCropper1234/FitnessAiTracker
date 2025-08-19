@@ -649,6 +649,41 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       );
       
       if (nextUncompletedSetIndex !== -1) {
+        // Auto-prefill function: Copy data from previous set to next set
+        const previousSetIndex = currentSetIndex;
+        const previousSet = setsForCurrentExercise[previousSetIndex];
+        const nextSet = setsForCurrentExercise[nextUncompletedSetIndex];
+        
+        if (previousSet && nextSet && !nextSet.completed) {
+          // Copy weight, reps, RPE from previous set
+          const updatedNextSet = {
+            ...nextSet,
+            weight: previousSet.weight || 0,
+            actualReps: previousSet.actualReps || 0,
+            rpe: previousSet.rpe || 8
+          };
+          
+          // Update the workout data with prefilled values
+          setWorkoutData(prev => ({
+            ...prev,
+            [currentExercise.id]: prev[currentExercise.id].map((set, i) => 
+              i === nextUncompletedSetIndex ? updatedNextSet : set
+            )
+          }));
+          
+          // Note: Special methods and configs are already shared across all sets of an exercise
+          // No need to copy them per set as they apply to the entire exercise
+          
+          // Show notification about auto-prefill
+          showSuccess("Set Completed!", `Moving to set ${nextUncompletedSetIndex + 1} (Auto-prefilled from previous set)`, {
+            autoHideDelay: 3000,
+            action: {
+              label: "Continue",
+              onClick: () => console.log("Continuing to next set")
+            }
+          });
+        }
+        
         // Move to next uncompleted set in current exercise
         setCurrentSetIndex(nextUncompletedSetIndex);
         
