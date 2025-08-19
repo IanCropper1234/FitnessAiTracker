@@ -14,6 +14,11 @@ interface WorkoutExecutionState {
     totalSets: number;
   } | null;
   
+  // Complete Workout functionality
+  canCompleteWorkout: boolean;
+  onCompleteWorkout: (() => void) | null;
+  allSetsCompleted: boolean;
+  
   // Menu bar visibility
   hideMenuBar: boolean;
 }
@@ -25,6 +30,9 @@ interface WorkoutExecutionContextType {
   setCompleteSetHandler: (handler: (() => void) | null) => void;
   setCanCompleteSet: (canComplete: boolean) => void;
   setCurrentSetInfo: (info: WorkoutExecutionState['currentSetInfo']) => void;
+  setCompleteWorkoutHandler: (handler: (() => void) | null) => void;
+  setCanCompleteWorkout: (canComplete: boolean) => void;
+  setAllSetsCompleted: (completed: boolean) => void;
   setHideMenuBar: (hide: boolean) => void;
 }
 
@@ -34,6 +42,9 @@ const defaultState: WorkoutExecutionState = {
   canCompleteSet: false,
   onCompleteSet: null,
   currentSetInfo: null,
+  canCompleteWorkout: false,
+  onCompleteWorkout: null,
+  allSetsCompleted: false,
   hideMenuBar: false,
 };
 
@@ -65,6 +76,18 @@ export const WorkoutExecutionProvider: React.FC<{ children: React.ReactNode }> =
     setState(prev => ({ ...prev, currentSetInfo: info }));
   }, []);
 
+  const setCompleteWorkoutHandler = useCallback((handler: (() => void) | null) => {
+    setState(prev => ({ ...prev, onCompleteWorkout: handler }));
+  }, []);
+
+  const setCanCompleteWorkout = useCallback((canComplete: boolean) => {
+    setState(prev => ({ ...prev, canCompleteWorkout: canComplete }));
+  }, []);
+
+  const setAllSetsCompleted = useCallback((completed: boolean) => {
+    setState(prev => ({ ...prev, allSetsCompleted: completed }));
+  }, []);
+
   const setHideMenuBar = useCallback((hide: boolean) => {
     setState(prev => ({ ...prev, hideMenuBar: hide }));
   }, []);
@@ -77,6 +100,9 @@ export const WorkoutExecutionProvider: React.FC<{ children: React.ReactNode }> =
       setCompleteSetHandler,
       setCanCompleteSet,
       setCurrentSetInfo,
+      setCompleteWorkoutHandler,
+      setCanCompleteWorkout,
+      setAllSetsCompleted,
       setHideMenuBar,
     }}>
       {children}
@@ -96,6 +122,9 @@ export const useWorkoutExecution = () => {
       setCompleteSetHandler: () => {},
       setCanCompleteSet: () => {},
       setCurrentSetInfo: () => {},
+      setCompleteWorkoutHandler: () => {},
+      setCanCompleteWorkout: () => {},
+      setAllSetsCompleted: () => {},
       setHideMenuBar: () => {},
     };
   }

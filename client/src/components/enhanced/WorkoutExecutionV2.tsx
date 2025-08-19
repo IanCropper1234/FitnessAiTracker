@@ -738,11 +738,22 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       // Use a stable wrapper function that calls the latest version
       workoutContext.setCompleteSetHandler(() => completeSetRef.current());
       workoutContext.setCanCompleteSet(!!isSetValid);
+      
+      // Set complete workout handler
+      workoutContext.setCompleteWorkoutHandler(completeWorkout);
+      
+      // Check if all sets are completed
+      const allSets = Object.values(workoutData).flat();
+      const allCompleted = allSets.length > 0 && allSets.every(set => set?.completed);
+      workoutContext.setAllSetsCompleted(allCompleted);
+      workoutContext.setCanCompleteWorkout(allCompleted);
     } else {
       workoutContext.setCompleteSetHandler(null);
       workoutContext.setCanCompleteSet(false);
+      workoutContext.setCompleteWorkoutHandler(null);
+      workoutContext.setCanCompleteWorkout(false);
     }
-  }, [activeTab, isSetValid]); // Removed completeSet to prevent infinite loops
+  }, [activeTab, isSetValid, workoutData]); // Added workoutData to track completion status
 
   // Update current set info
   useEffect(() => {
@@ -1760,7 +1771,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         </div>
         
         {/* Ultra Compact Action Buttons */}
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className={`${
+          // Check if all sets are completed for conditional layout
+          Object.values(workoutData).flat().length > 0 && Object.values(workoutData).flat().every(set => set?.completed)
+            ? 'flex justify-center' // Single button layout when workout is complete
+            : 'grid grid-cols-2 gap-1.5' // Two button layout otherwise
+        }`}>
           <button 
             onClick={saveAndExit} 
             disabled={saveProgressMutation.isPending}
@@ -1769,14 +1785,18 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             <Save className="h-3.5 w-3.5" />
             <span className="text-xs font-medium">Save & Exit</span>
           </button>
-          <button 
-            onClick={completeWorkout} 
-            disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-1.5  flex items-center justify-center gap-1 transition-colors"
-          >
-            <CheckCircle className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">Complete Workout</span>
-          </button>
+          
+          {/* Hide Complete Workout button when all sets are completed (handled by GlobalCompleteSetButton) */}
+          {!(Object.values(workoutData).flat().length > 0 && Object.values(workoutData).flat().every(set => set?.completed)) && (
+            <button 
+              onClick={completeWorkout} 
+              disabled={saveProgressMutation.isPending}
+              className="ios-touch-feedback bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-1.5  flex items-center justify-center gap-1 transition-colors"
+            >
+              <CheckCircle className="h-3.5 w-3.5" />
+              <span className="text-xs font-medium">Complete Workout</span>
+            </button>
+          )}
         </div>
         
         {/* Loading indicator */}
