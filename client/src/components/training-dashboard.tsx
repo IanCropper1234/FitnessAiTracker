@@ -948,58 +948,128 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
-      {/* Training Stats Cards */}
-      <div className="grid grid-cols-3 gap-2 w-full pl-[5px] pr-[5px] ml-[0px] mr-[0px]">
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
-            <Calendar className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Total Sessions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
-              {trainingStats?.totalSessions || 0}
+      {/* Training Stats Cards - iOS Optimized Split Layout */}
+      <div className="space-y-3 px-4">
+        {/* Featured Primary Stat - Total Volume */}
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 transition-all duration-200 active:scale-[0.98] ios-touch-feedback">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      Total Volume
+                    </h3>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      This month's progress
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+                    {trainingStats?.totalVolume ? (trainingStats.totalVolume / 1000).toFixed(1) : '0.0'}
+                  </span>
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                    tons lifted
+                  </span>
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400">
+                  {trainingStats?.totalVolume || 0} kg total volume
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Target: 50 tons</div>
+                <div className="w-20 h-2 bg-blue-200 dark:bg-blue-800 overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500 dark:bg-blue-400 transition-all duration-500"
+                    style={{ 
+                      width: `${Math.min(100, ((trainingStats?.totalVolume || 0) / 50000) * 100)}%`
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              workouts completed
-            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
-            <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Total Volume
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
-              {trainingStats?.totalVolume || 0}
-            </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              kg lifted this month
-            </p>
-          </CardContent>
-        </Card>
+        {/* Secondary Stats Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Total Sessions */}
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 transition-all duration-200 active:scale-[0.98] ios-touch-feedback">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Sessions
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Workouts completed
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {trainingStats?.totalSessions || 0}
+                </span>
+                <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+2 this week</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
-            <Clock className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
-            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
-              Avg Session
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <div className="text-lg font-bold text-black dark:text-white text-center">
-              {trainingStats?.averageSessionLength || 0}
+          {/* Average Session Length */}
+          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 transition-all duration-200 active:scale-[0.98] ios-touch-feedback">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Avg Session
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Time per workout
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {trainingStats?.averageSessionLength || 0}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">min</span>
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Optimal range
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Motivational Banner */}
+        {trainingStats && trainingStats.totalSessions > 0 && (
+          <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border border-emerald-200 dark:border-emerald-800 p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
+                Great progress this month!
+              </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              minutes per workout
+            <p className="text-xs text-emerald-700 dark:text-emerald-300">
+              You're building consistent training habits. Keep it up!
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </div>
       {/* Header with Feature Manager Button - Only show for developer users */}
       {userData?.showDeveloperFeatures && (
