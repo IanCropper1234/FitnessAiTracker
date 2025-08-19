@@ -324,7 +324,7 @@ export function Nutrition({
             <NutritionLogger 
               userId={user.id}
               selectedDate={loggerSelectedDate}
-              initialMealType={persistentMealType}
+              mealType={persistentMealType}
               onMealTypeChange={(newMealType) => {
                 console.log('Nutrition page: Received meal type change:', newMealType);
                 setPersistentMealType(newMealType);

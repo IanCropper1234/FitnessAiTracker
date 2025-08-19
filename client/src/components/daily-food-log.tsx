@@ -890,7 +890,7 @@ export function DailyFoodLog({
         <NutritionLogger 
           userId={userId}
           selectedDate={selectedDate}
-          initialMealType={persistentMealType}
+          mealType={persistentMealType}
           onMealTypeChange={(newMealType) => {
             console.log('DailyFoodLog: Received meal type change:', newMealType);
             setPersistentMealType(newMealType);

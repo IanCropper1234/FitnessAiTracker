@@ -17,8 +17,8 @@ interface NutritionLoggerProps {
   userId: number;
   selectedDate?: string;
   onComplete?: () => void;
-  initialMealType?: string;
-  onMealTypeChange?: (mealType: string) => void;
+  mealType: string;
+  onMealTypeChange: (mealType: string) => void;
 }
 
 interface FoodSearchResult {
@@ -32,7 +32,7 @@ interface FoodSearchResult {
   mealSuitability?: string[];
 }
 
-export function NutritionLogger({ userId, selectedDate, onComplete, initialMealType, onMealTypeChange }: NutritionLoggerProps) {
+export function NutritionLogger({ userId, selectedDate, onComplete, mealType, onMealTypeChange }: NutritionLoggerProps) {
   const { t } = useLanguage();
   const { showSuccess, showError } = useIOSNotifications();
   
@@ -41,25 +41,8 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
-  const [mealType, setMealType] = useState(() => {
-    console.log('NutritionLogger: Initial meal type setup, initialMealType:', initialMealType);
-    return initialMealType || 'breakfast';
-  });
-
-  // Sync local meal type with parent state changes
-  useEffect(() => {
-    console.log('NutritionLogger: useEffect triggered. initialMealType:', initialMealType, 'current mealType:', mealType);
-    // Always sync if initialMealType is provided, regardless of current value
-    if (initialMealType) {
-      console.log('NutritionLogger: Syncing meal type from parent:', initialMealType);
-      setMealType(initialMealType);
-    }
-  }, [initialMealType]);
-
-  // Debug logging
-  useEffect(() => {
-    console.log('NutritionLogger: Current meal type state:', mealType);
-  }, [mealType]);
+  
+  console.log('NutritionLogger: Rendered with mealType:', mealType);
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
@@ -431,14 +414,8 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
                 value={mealType} 
                 onValueChange={(value) => {
                   console.log('NutritionLogger: Meal type dropdown changed from', mealType, 'to', value);
-                  setMealType(value);
-                  console.log('NutritionLogger: Calling onMealTypeChange with value:', value);
-                  if (onMealTypeChange) {
-                    onMealTypeChange(value);
-                    console.log('NutritionLogger: Successfully called onMealTypeChange');
-                  } else {
-                    console.log('NutritionLogger: onMealTypeChange is not provided');
-                  }
+                  onMealTypeChange(value);
+                  console.log('NutritionLogger: Called onMealTypeChange with value:', value);
                 }}
               >
                 <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${
