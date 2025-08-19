@@ -113,7 +113,7 @@ export class RPAlgorithmCore {
       .where(
         and(
           eq(autoRegulationFeedback.userId, userId),
-          gte(autoRegulationFeedback.createdAt, sql`NOW() - INTERVAL '${days} days'`)
+          gte(autoRegulationFeedback.createdAt, sql`NOW() - INTERVAL ${days} DAY`)
         )
       )
       .orderBy(desc(autoRegulationFeedback.createdAt));
