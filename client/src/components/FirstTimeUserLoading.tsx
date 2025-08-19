@@ -28,7 +28,7 @@ const LOADING_STEPS: LoadingStep[] = [
   {
     id: 'training',
     title: 'Preparing Training System',
-    subtitle: 'Loading Renaissance Periodization methods',
+    subtitle: 'Loading Evidence-based methodology methods',
     icon: Dumbbell,
     duration: 1500
   },

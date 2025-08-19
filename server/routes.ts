@@ -1655,7 +1655,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return acc;
       }, {});
       
-      // Generate RP-based recommendations
+      // Generate scientific-based recommendations
       const recommendations = [];
       
       // Pre-workout recommendations (high carb, low fat)

@@ -96,7 +96,7 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
     onSuccess: () => {
       toast({
         title: "Recommendations Updated",
-        description: "New RP-based recommendations have been generated based on your progress."
+        description: "New scientific-based recommendations have been generated based on your progress."
       });
       // Invalidate both the general query and the specific week query
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-goals'] });

@@ -23,9 +23,9 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
   try {
     const { userGoals, currentExercises, trainingHistory, muscleGroupFocus, experienceLevel, availableEquipment, timeConstraints, injuryRestrictions } = req.body;
 
-    const systemPrompt = `You are an expert Renaissance Periodization (RP) methodology coach specializing in evidence-based exercise selection and program design. Your expertise includes:
+    const systemPrompt = `You are an expert evidence-based fitness coach specializing in scientific exercise selection and program design. Your expertise includes:
 
-    1. **RP Volume Landmarks**: Understanding MV, MEV, MAV, and MRV for all muscle groups
+    1. **Volume Landmarks**: Understanding MV, MEV, MAV, and MRV for all muscle groups
     2. **Fatigue Management**: Balancing stimulus and recovery based on RPE and fatigue indicators
     3. **Exercise Selection Principles**: Choosing exercises based on:
        - Muscle length-tension relationships
@@ -36,9 +36,9 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
     4. **Special Training Methods**: When and how to implement MyoReps, Drop Sets, Giant Sets
     5. **Periodization**: Structuring volume progression throughout mesocycles
 
-    Always provide evidence-based recommendations with clear reasoning rooted in RP methodology.`;
+    Always provide evidence-based recommendations with clear reasoning rooted in scientific methodology.`;
 
-    const userPrompt = `Based on the following user data, provide intelligent exercise recommendations following RP methodology:
+    const userPrompt = `Based on the following user data, provide intelligent exercise recommendations following evidence-based scientific methodology:
 
     **User Goals**: ${userGoals?.join(', ') || 'General fitness'}
     **Experience Level**: ${experienceLevel || 'intermediate'}
@@ -60,8 +60,8 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
 
     Please analyze this data and provide:
     1. 3-5 specific exercise recommendations SELECTED ONLY from the exercise library above
-    2. RP-based reasoning for each recommendation
-    3. Optimal set/rep ranges based on RP guidelines
+    2. Science-based reasoning for each recommendation
+    3. Optimal set/rep ranges based on scientific guidelines
     4. Special training method suggestions where appropriate
     5. Volume progression considerations
 
@@ -80,7 +80,7 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
           "sets": number,
           "reps": "string (e.g., '6-8', '8-12')",
           "restPeriod": number,
-          "reasoning": "string - RP-based explanation",
+          "reasoning": "string - Science-based explanation",
           "progressionNotes": "string - how to progress this exercise",
           "specialMethod": "myorepMatch|myorepNoMatch|dropSet|giant_set|null",
           "specialConfig": object or null,
@@ -170,10 +170,13 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
       const { eq, gte } = await import('drizzle-orm');
       
       // Fix time range mapping to match frontend values
-      const daysAgo = timeRange === '7days' || timeRange === 'Last 7 Days' ? 7 : 
-                     timeRange === '14days' ? 14 :
-                     timeRange === '30days' ? 30 :
-                     timeRange === '90days' ? 90 : 7; // default to 7 days
+      let daysAgo = 7; // default
+      if (timeRange) {
+        if (timeRange.includes('7') || timeRange === 'Last 7 Days') daysAgo = 7;
+        else if (timeRange.includes('14')) daysAgo = 14;
+        else if (timeRange.includes('30')) daysAgo = 30;
+        else if (timeRange.includes('90')) daysAgo = 90;
+      }
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysAgo);
       
@@ -321,13 +324,24 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
       max_tokens: 2500
     });
 
-    const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
-    res.json(aiResponse);
+    const responseContent = response.choices[0].message.content;
+    if (!responseContent) {
+      throw new Error('Empty response from AI');
+    }
+
+    try {
+      const aiResponse = JSON.parse(responseContent);
+      res.json(aiResponse);
+    } catch (parseError) {
+      console.error('JSON parsing error:', parseError);
+      console.error('Raw AI response:', responseContent);
+      throw new Error('The AI response did not match the expected JSON pattern. Please try again.');
+    }
 
   } catch (error: any) {
     console.error('Error analyzing nutrition:', error);
     res.status(500).json({ 
-      message: 'Failed to analyze nutrition',
+      message: error.message.includes('pattern') ? error.message : 'Failed to analyze nutrition',
       error: error.message 
     });
   }
@@ -411,12 +425,12 @@ router.post('/program-optimization', requireAuth, async (req, res) => {
   try {
     const { currentProgram, userGoals, performanceData } = req.body;
 
-    const systemPrompt = `You are an expert RP methodology analyst. Analyze training programs for optimization opportunities based on:
+    const systemPrompt = `You are an expert evidence-based fitness analyst. Analyze training programs for optimization opportunities based on:
     1. Volume distribution across muscle groups
     2. Exercise selection efficiency 
     3. Fatigue management
     4. Progressive overload potential
-    5. RP periodization principles`;
+    5. Scientific periodization principles`;
 
     const userPrompt = `Analyze this training program and provide optimization suggestions:
 
@@ -428,7 +442,7 @@ router.post('/program-optimization', requireAuth, async (req, res) => {
     {
       "analysis": "string - overall program assessment",
       "optimizations": ["string array - specific improvements"],
-      "rpAdjustments": ["string array - RP methodology adjustments"]
+      "scientificAdjustments": ["string array - Evidence-based methodology adjustments"]
     }`;
 
     const response = await openai.chat.completions.create({

@@ -1395,7 +1395,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
 
                       {/* RP Methodology Info */}
                       <div className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                        <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-2">Renaissance Periodization Guidelines</h4>
+                        <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-2">Evidence-based methodology Guidelines</h4>
                         <ul className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
                           <li>• Protein: 0.8-1.2g per lb bodyweight for muscle preservation</li>
                           <li>• Fat: 20-35% of calories for hormone production</li>

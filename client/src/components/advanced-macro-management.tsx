@@ -664,7 +664,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     return rec;
   })();
 
-  // Create default RP-based meal distribution
+  // Create default Science-based meal distribution
   const createDefaultMealDistribution = async () => {
     const defaultDistributions = [
       {
@@ -889,7 +889,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                     {weeklyGoals[0].adjustmentRecommendation === 'improve_adherence' && <Target className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />}
                     {weeklyGoals[0].adjustmentRecommendation === 'maintain' && <ArrowRight className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
                     <h3 className="font-semibold text-black dark:text-white">
-                      Renaissance Periodization Analysis
+                      Evidence-based methodology Analysis
                     </h3>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">

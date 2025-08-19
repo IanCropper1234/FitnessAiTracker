@@ -183,7 +183,7 @@ function ExerciseForm({ exercise, isOpen, onClose, onSuccess }: ExerciseFormProp
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Exercise" : "Create New Exercise"}</DialogTitle>
           <DialogDescription>
-            {isEditing ? "Update exercise details" : "Add a new exercise to the library with Renaissance Periodization methodology"}
+            {isEditing ? "Update exercise details" : "Add a new exercise to the library with Evidence-based methodology methodology"}
           </DialogDescription>
         </DialogHeader>
 

@@ -80,11 +80,11 @@ export default function WorkoutSettings() {
                   Auto-Regulation Feedback
                 </Label>
                 <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700 text-xs">
-                  RP Method
+                  Science Method
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Collect RPE (Rate of Perceived Exertion) feedback during workouts. This helps optimize future training volume and intensity based on Renaissance Periodization methodology.
+                Collect RPE (Rate of Perceived Exertion) feedback during workouts. This helps optimize future training volume and intensity based on evidence-based scientific methodology.
               </p>
               <div className="mt-2 text-xs text-muted-foreground">
                 • Triggers after the last set of each exercise

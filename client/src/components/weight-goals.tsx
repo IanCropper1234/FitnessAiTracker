@@ -56,7 +56,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
     targetDate: ''
   });
 
-  // Calculate RP-based weekly change recommendations
+  // Calculate Science-based weekly change recommendations
   const calculateRPWeeklyChange = (goalType: string, currentWeight: number) => {
     const bodyWeight = currentWeight;
     
@@ -433,7 +433,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
             <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 ">
               <Target className="w-4 h-4 text-blue-600" />
               <div className="text-sm text-blue-700 dark:text-blue-300">
-                <strong>Renaissance Periodization</strong> - Using evidence-based weight change recommendations for optimal body composition results
+                <strong>Evidence-based methodology</strong> - Using evidence-based weight change recommendations for optimal body composition results
               </div>
             </div>
 
