@@ -214,13 +214,16 @@ export function IntegratedNutritionOverview({
   const { data: nutritionSummary, isLoading: summaryLoading, error: summaryError } = useQuery({
     queryKey: ['/api/nutrition/summary', userId, selectedDate],
     queryFn: async () => {
+      console.log('IntegratedNutritionOverview: Fetching nutrition summary for date:', selectedDate);
       const response = await fetch(`/api/nutrition/summary?date=${selectedDate}`, {
         credentials: 'include'
       });
       if (!response.ok) {
         throw new Error('Failed to fetch nutrition summary');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('IntegratedNutritionOverview: Received nutrition summary:', data);
+      return data;
     },
     retry: 3
   });
