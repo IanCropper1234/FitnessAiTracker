@@ -27,6 +27,7 @@ const defaultFeatures: FeatureFlags = {
 let globalFeatures: FeatureFlags = { ...defaultFeatures };
 let isServerSyncEnabled = false;
 let isInitialized = false;
+let isInitializing = false; // Prevent multiple concurrent initializations
 
 export const useFeature = (featureName: keyof FeatureFlags): boolean => {
   const [isEnabled, setIsEnabled] = useState(globalFeatures[featureName]);
@@ -121,8 +122,13 @@ export const getFeatureFlags = (): FeatureFlags => ({ ...globalFeatures });
 
 // Initialize features from server
 export const initializeFeatures = async (enableServerSync = true) => {
-  if (isInitialized) return;
+  if (isInitialized || isInitializing) {
+    console.log('Features already initialized or initializing, skipping');
+    return;
+  }
   
+  console.log('Initializing features...');
+  isInitializing = true;
   isServerSyncEnabled = enableServerSync;
   
   // First try to load from localStorage for immediate availability
@@ -167,6 +173,7 @@ export const initializeFeatures = async (enableServerSync = true) => {
   }
   
   isInitialized = true;
+  isInitializing = false;
   
   // Trigger update for all components
   window.dispatchEvent(new CustomEvent('featureFlagsUpdated', { 
@@ -177,15 +184,18 @@ export const initializeFeatures = async (enableServerSync = true) => {
 // Hook to initialize features when user is authenticated
 export const useFeatureInitialization = (isAuthenticated: boolean) => {
   useEffect(() => {
-    if (isAuthenticated && !isInitialized) {
+    if (isAuthenticated && !isInitialized && !isInitializing) {
+      console.log('User authenticated, initializing features');
       initializeFeatures(true);
-    } else if (!isAuthenticated && isInitialized) {
+    } else if (!isAuthenticated) {
+      console.log('User logged out, preserving settings');
       // Save current settings before logout
       if (globalFeatures) {
         localStorage.setItem('workout-settings', JSON.stringify(globalFeatures));
       }
-      // Reset initialization flag but keep features for next login
+      // Reset only when actually logging out
       isInitialized = false;
+      isInitializing = false;
       isServerSyncEnabled = false;
     }
   }, [isAuthenticated]);
