@@ -948,126 +948,168 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
-      {/* Training Stats Cards - iOS Optimized Split Layout */}
-      <div className="space-y-3 px-4">
-        {/* Featured Primary Stat - Total Volume */}
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 transition-all duration-200 active:scale-[0.98] ios-touch-feedback">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-blue-500 dark:bg-blue-600 flex items-center justify-center text-white">
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                      Total Volume
-                    </h3>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
-                      This month's progress
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-3xl font-bold text-blue-900 dark:text-blue-100">
-                    {trainingStats?.totalVolume ? (trainingStats.totalVolume / 1000).toFixed(1) : '0.0'}
-                  </span>
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    tons lifted
-                  </span>
-                </div>
-                <p className="text-xs text-blue-600 dark:text-blue-400">
-                  {trainingStats?.totalVolume || 0} kg total volume
-                </p>
+      {/* Training Stats Cards - iOS Control Center Inspired */}
+      <div className="space-y-4 px-4">
+        {/* Stats Grid - iOS Control Center Style */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Total Volume - Large Tile */}
+          <div className="col-span-2 relative overflow-hidden">
+            <div 
+              className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-600 dark:via-blue-700 dark:to-blue-800 p-6 transition-all duration-300 active:scale-[0.98] ios-touch-feedback"
+              style={{ borderRadius: '20px' }}
+            >
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-4 right-4 w-32 h-32 bg-white rounded-full transform rotate-12 translate-x-8 -translate-y-4"></div>
+                <div className="absolute bottom-4 left-4 w-24 h-24 bg-white rounded-full transform -rotate-12 -translate-x-4 translate-y-2"></div>
               </div>
-              <div className="text-right">
-                <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Target: 50 tons</div>
-                <div className="w-20 h-2 bg-blue-200 dark:bg-blue-800 overflow-hidden">
-                  <div 
-                    className="h-full bg-blue-500 dark:bg-blue-400 transition-all duration-500"
-                    style={{ 
-                      width: `${Math.min(100, ((trainingStats?.totalVolume || 0) / 50000) * 100)}%`
-                    }}
-                  />
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div 
+                      className="w-12 h-12 bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                      style={{ borderRadius: '12px' }}
+                    >
+                      <TrendingUp className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">
+                        Total Volume
+                      </h3>
+                      <p className="text-sm text-blue-100">
+                        This month's lifting
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-black text-white">
+                      {trainingStats?.totalVolume ? (trainingStats.totalVolume / 1000).toFixed(1) : '0.0'}
+                    </span>
+                    <span className="text-lg font-semibold text-blue-100">
+                      tons
+                    </span>
+                  </div>
+                  <p className="text-sm text-blue-100 mt-1">
+                    {trainingStats?.totalVolume || 0} kg lifted
+                  </p>
+                </div>
+                
+                {/* Progress Ring */}
+                <div className="relative w-16 h-16">
+                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
+                    <circle 
+                      cx="32" cy="32" r="28" 
+                      stroke="rgba(255,255,255,0.2)" 
+                      strokeWidth="4" 
+                      fill="transparent"
+                    />
+                    <circle 
+                      cx="32" cy="32" r="28" 
+                      stroke="white" 
+                      strokeWidth="4" 
+                      fill="transparent"
+                      strokeDasharray={`${Math.min(100, ((trainingStats?.totalVolume || 0) / 50000) * 175.84)} 175.84`}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">
+                      {Math.min(100, Math.round(((trainingStats?.totalVolume || 0) / 50000) * 100))}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Secondary Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
           {/* Total Sessions */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 transition-all duration-200 active:scale-[0.98] ios-touch-feedback">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Sessions
-                  </h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Workouts completed
-                  </p>
-                </div>
+          <div 
+            className="bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
+            style={{ borderRadius: '20px' }}
+          >
+            {/* Background Accent */}
+            <div className="absolute top-2 right-2 w-20 h-20 bg-white/10 rounded-full transform rotate-12"></div>
+            
+            <div className="relative z-10">
+              <div 
+                className="w-10 h-10 bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4"
+                style={{ borderRadius: '10px' }}
+              >
+                <Calendar className="w-5 h-5" />
               </div>
-              <div className="flex items-baseline justify-between">
-                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              
+              <div className="flex items-baseline gap-1 mb-2">
+                <span className="text-3xl font-black text-white">
                   {trainingStats?.totalSessions || 0}
                 </span>
-                <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>+2 this week</span>
+                <div className="flex items-center gap-1 ml-1">
+                  <TrendingUp className="w-3 h-3 text-emerald-100" />
+                  <span className="text-xs font-medium text-emerald-100">+2</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              
+              <p className="text-sm font-semibold text-emerald-100">Sessions</p>
+              <p className="text-xs text-emerald-200">Completed</p>
+            </div>
+          </div>
 
-          {/* Average Session Length */}
-          <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 transition-all duration-200 active:scale-[0.98] ios-touch-feedback">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Avg Session
-                  </h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Time per workout
-                  </p>
-                </div>
+          {/* Average Session Time */}
+          <div 
+            className="bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 dark:from-orange-500 dark:via-orange-600 dark:to-orange-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
+            style={{ borderRadius: '20px' }}
+          >
+            {/* Background Accent */}
+            <div className="absolute bottom-2 left-2 w-16 h-16 bg-white/10 rounded-full transform -rotate-12"></div>
+            
+            <div className="relative z-10">
+              <div 
+                className="w-10 h-10 bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4"
+                style={{ borderRadius: '10px' }}
+              >
+                <Clock className="w-5 h-5" />
               </div>
-              <div className="flex items-baseline justify-between">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {trainingStats?.averageSessionLength || 0}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">min</span>
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Optimal range
-                </div>
+              
+              <div className="flex items-baseline gap-1 mb-2">
+                <span className="text-3xl font-black text-white">
+                  {trainingStats?.averageSessionLength || 0}
+                </span>
+                <span className="text-sm font-medium text-orange-100">min</span>
               </div>
-            </CardContent>
-          </Card>
+              
+              <p className="text-sm font-semibold text-orange-100">Avg Time</p>
+              <p className="text-xs text-orange-200">Per session</p>
+            </div>
+          </div>
         </div>
 
-        {/* Motivational Banner */}
+        {/* Achievement Badge */}
         {trainingStats && trainingStats.totalSessions > 0 && (
-          <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900 border border-emerald-200 dark:border-emerald-800 p-4 text-center">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
-                Great progress this month!
-              </span>
+          <div 
+            className="bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 dark:from-purple-600 dark:via-purple-700 dark:to-indigo-700 p-4 relative overflow-hidden"
+            style={{ borderRadius: '16px' }}
+          >
+            {/* Sparkle Effects */}
+            <div className="absolute top-2 right-4 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            <div className="absolute top-6 right-8 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute bottom-4 left-6 w-1.5 h-1.5 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+            
+            <div className="relative z-10 flex items-center justify-center gap-3">
+              <div 
+                className="w-8 h-8 bg-white/20 backdrop-blur-sm flex items-center justify-center"
+                style={{ borderRadius: '8px' }}
+              >
+                <CheckCircle2 className="w-4 h-4 text-white" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-white">
+                  Building Great Habits! 
+                </p>
+                <p className="text-xs text-purple-100">
+                  Keep up the consistent training
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-emerald-700 dark:text-emerald-300">
-              You're building consistent training habits. Keep it up!
-            </p>
           </div>
         )}
       </div>
