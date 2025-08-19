@@ -1799,7 +1799,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5  border border-border/30 flex items-center justify-center gap-1 transition-colors w-full"
         >
           <Save className="h-3.5 w-3.5" />
-          <span className="text-xs font-medium">Save & Exit</span>
+          <span className="font-medium text-[16px]">Save & Exit</span>
         </button>
         
         {/* Loading indicator */}
