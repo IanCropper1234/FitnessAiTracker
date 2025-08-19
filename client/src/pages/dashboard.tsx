@@ -70,7 +70,6 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
   const { data: nutritionSummary, isLoading: nutritionLoading, error: nutritionError, refetch: refetchNutrition } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id, dateQueryParam],
     queryFn: async () => {
-      console.log('Dashboard: Fetching nutrition summary for date:', dateQueryParam);
       const response = await fetch(`/api/nutrition/summary?date=${dateQueryParam}`, {
         credentials: 'include'
       });
@@ -80,9 +79,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
         }
         throw new Error('Failed to fetch nutrition summary');
       }
-      const data = await response.json();
-      console.log('Dashboard: Received nutrition summary:', data);
-      return data;
+      return response.json();
     },
     enabled: !!user?.id,
     retry: (failureCount, error) => {
