@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown, ChevronRight } from "lucide-react";
+import { Scale, Ruler, TrendingUp, Plus, Trash2, Target, User, Calendar, ChevronDown, ChevronRight, ArrowLeftRight } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { WeightGoals } from "./weight-goals";
 
@@ -862,17 +862,14 @@ export function BodyTracking({ userId, selectedDate: externalSelectedDate, setSe
               <TrendingUp className="w-4 h-4 text-blue-600 flex-shrink-0" />
               <span className="truncate">Progress Timeline</span>
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setDisplayUnit(displayUnit === 'kg' ? 'lbs' : 'kg')}
-              className="text-xs transition-colors h-6 px-2 text-black font-medium"
-              style={{ backgroundColor: '#479bf5' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
+              className="flex items-center gap-1 text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium border border-gray-200 dark:border-gray-600"
+              title="Toggle between kg and lbs"
             >
-              {displayUnit === 'kg' ? 'kg' : 'lbs'}
-            </Button>
+              <ArrowLeftRight className="w-3 h-3" />
+              {displayUnit}
+            </button>
           </div>
         </CardHeader>
         <CardContent className="p-2">
