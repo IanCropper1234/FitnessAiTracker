@@ -41,12 +41,16 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
-  const [mealType, setMealType] = useState(initialMealType || 'breakfast');
+  const [mealType, setMealType] = useState(() => {
+    console.log('NutritionLogger: Initial meal type setup, initialMealType:', initialMealType);
+    return initialMealType || 'breakfast';
+  });
 
   // Sync local meal type with parent state changes
   useEffect(() => {
     console.log('NutritionLogger: useEffect triggered. initialMealType:', initialMealType, 'current mealType:', mealType);
-    if (initialMealType && initialMealType !== mealType) {
+    // Always sync if initialMealType is provided, regardless of current value
+    if (initialMealType) {
       console.log('NutritionLogger: Syncing meal type from parent:', initialMealType);
       setMealType(initialMealType);
     }
@@ -424,12 +428,17 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
                 Add to Meal Type <span className="text-red-500">*</span>
               </Label>
               <Select 
-                value={mealType || ''} 
+                value={mealType} 
                 onValueChange={(value) => {
-                  console.log('NutritionLogger: Meal type changed from', mealType, 'to', value);
+                  console.log('NutritionLogger: Meal type dropdown changed from', mealType, 'to', value);
                   setMealType(value);
                   console.log('NutritionLogger: Calling onMealTypeChange with value:', value);
-                  onMealTypeChange?.(value);
+                  if (onMealTypeChange) {
+                    onMealTypeChange(value);
+                    console.log('NutritionLogger: Successfully called onMealTypeChange');
+                  } else {
+                    console.log('NutritionLogger: onMealTypeChange is not provided');
+                  }
                 }}
               >
                 <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${
