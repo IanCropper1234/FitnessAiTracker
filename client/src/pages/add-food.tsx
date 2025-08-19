@@ -90,7 +90,10 @@ export function AddFood({ user }: AddFoodProps) {
   
   const [mealType, setMealType] = useState(() => {
     // Try to get from localStorage for persistence, fallback to smart detection
-    return localStorage.getItem('lastSelectedMealType') || getSmartMealType();
+    const stored = localStorage.getItem('lastSelectedMealType');
+    const smart = getSmartMealType();
+    console.log('AddFood: Initializing meal type. Stored:', stored, 'Smart:', smart, 'URL param:', mealTypeParam);
+    return stored || smart;
   });
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
@@ -122,6 +125,11 @@ export function AddFood({ user }: AddFoodProps) {
   useEffect(() => {
     setHistoryDisplayLimit(10);
   }, [historySearchQuery]);
+
+  // Debug logging for meal type changes
+  useEffect(() => {
+    console.log('AddFood: Current meal type state:', mealType);
+  }, [mealType]);
 
   // Database search functionality removed - AI-only mode
 
