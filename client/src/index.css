@@ -67,15 +67,6 @@
     border-bottom-left-radius: 9999px !important;
     border-bottom-right-radius: 9999px !important;
   }
-
-  /* Exception for iOS Control Center training stats - allow rounded corners */
-  .ios-control-center-tile,
-  .ios-control-center-tile *,
-  div[style*="borderRadius"],
-  [data-ios-tile="true"],
-  [data-ios-tile="true"] * {
-    border-radius: revert !important;
-  }
   
   .timer-fab-circle *,
   .timer-fab-circle *:before,

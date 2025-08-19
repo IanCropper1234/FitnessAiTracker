@@ -948,174 +948,58 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
   return (
     <div className="space-y-6">{/* Removed p-6 and header section */}
-      {/* Training Stats Cards - iOS Control Center Inspired */}
-      <div className="space-y-4 px-4">
-        {/* Stats Grid - iOS Control Center Style */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Total Volume - Large Tile */}
-          <div className="col-span-2 relative overflow-hidden">
-            <div 
-              className="ios-control-center-tile bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-600 dark:via-blue-700 dark:to-blue-800 p-6 transition-all duration-300 active:scale-[0.98] ios-touch-feedback"
-              style={{ borderRadius: '20px' }}
-              data-ios-tile="true"
-            >
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-4 right-4 w-32 h-32 bg-white rounded-full transform rotate-12 translate-x-8 -translate-y-4"></div>
-                <div className="absolute bottom-4 left-4 w-24 h-24 bg-white rounded-full transform -rotate-12 -translate-x-4 translate-y-2"></div>
-              </div>
-              
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div 
-                      className="w-12 h-12 bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
-                      style={{ borderRadius: '12px' }}
-                    >
-                      <TrendingUp className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">
-                        Total Volume
-                      </h3>
-                      <p className="text-sm text-blue-100">
-                        This month's lifting
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-black text-white">
-                      {trainingStats?.totalVolume ? (trainingStats.totalVolume / 1000).toFixed(1) : '0.0'}
-                    </span>
-                    <span className="text-lg font-semibold text-blue-100">
-                      tons
-                    </span>
-                  </div>
-                  <p className="text-sm text-blue-100 mt-1">
-                    {trainingStats?.totalVolume || 0} kg lifted
-                  </p>
-                </div>
-                
-                {/* Progress Ring */}
-                <div className="relative w-16 h-16">
-                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
-                    <circle 
-                      cx="32" cy="32" r="28" 
-                      stroke="rgba(255,255,255,0.2)" 
-                      strokeWidth="4" 
-                      fill="transparent"
-                    />
-                    <circle 
-                      cx="32" cy="32" r="28" 
-                      stroke="white" 
-                      strokeWidth="4" 
-                      fill="transparent"
-                      strokeDasharray={`${Math.min(100, ((trainingStats?.totalVolume || 0) / 50000) * 175.84)} 175.84`}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">
-                      {Math.min(100, Math.round(((trainingStats?.totalVolume || 0) / 50000) * 100))}%
-                    </span>
-                  </div>
-                </div>
-              </div>
+      {/* Training Stats Cards */}
+      <div className="grid grid-cols-3 gap-2 w-full pl-[5px] pr-[5px] ml-[0px] mr-[0px]">
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <Calendar className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              Total Sessions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
+              {trainingStats?.totalSessions || 0}
             </div>
-          </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              workouts completed
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* Total Sessions */}
-          <div 
-            className="ios-control-center-tile bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
-            style={{ borderRadius: '20px' }}
-            data-ios-tile="true"
-          >
-            {/* Background Accent */}
-            <div className="absolute top-2 right-2 w-20 h-20 bg-white/10 rounded-full transform rotate-12"></div>
-            
-            <div className="relative z-10">
-              <div 
-                className="w-10 h-10 bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4"
-                style={{ borderRadius: '10px' }}
-              >
-                <Calendar className="w-5 h-5" />
-              </div>
-              
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-3xl font-black text-white">
-                  {trainingStats?.totalSessions || 0}
-                </span>
-                <div className="flex items-center gap-1 ml-1">
-                  <TrendingUp className="w-3 h-3 text-emerald-100" />
-                  <span className="text-xs font-medium text-emerald-100">+2</span>
-                </div>
-              </div>
-              
-              <p className="text-sm font-semibold text-emerald-100">Sessions</p>
-              <p className="text-xs text-emerald-200">Completed</p>
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <TrendingUp className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              Total Volume
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
+              {trainingStats?.totalVolume || 0}
             </div>
-          </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              kg lifted this month
+            </p>
+          </CardContent>
+        </Card>
 
-          {/* Average Session Time */}
-          <div 
-            className="ios-control-center-tile bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 dark:from-orange-500 dark:via-orange-600 dark:to-orange-700 p-5 transition-all duration-300 active:scale-[0.98] ios-touch-feedback relative overflow-hidden"
-            style={{ borderRadius: '20px' }}
-            data-ios-tile="true"
-          >
-            {/* Background Accent */}
-            <div className="absolute bottom-2 left-2 w-16 h-16 bg-white/10 rounded-full transform -rotate-12"></div>
-            
-            <div className="relative z-10">
-              <div 
-                className="w-10 h-10 bg-white/20 backdrop-blur-sm flex items-center justify-center text-white mb-4"
-                style={{ borderRadius: '10px' }}
-              >
-                <Clock className="w-5 h-5" />
-              </div>
-              
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-3xl font-black text-white">
-                  {trainingStats?.averageSessionLength || 0}
-                </span>
-                <span className="text-sm font-medium text-orange-100">min</span>
-              </div>
-              
-              <p className="text-sm font-semibold text-orange-100">Avg Time</p>
-              <p className="text-xs text-orange-200">Per session</p>
+        <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <CardHeader className="flex flex-col items-center space-y-0 pb-1 pt-2 px-2">
+            <Clock className="h-3 w-3 text-gray-600 dark:text-gray-400 mb-1" />
+            <CardTitle className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center leading-tight">
+              Avg Session
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 pb-2">
+            <div className="text-lg font-bold text-black dark:text-white text-center">
+              {trainingStats?.averageSessionLength || 0}
             </div>
-          </div>
-        </div>
-
-        {/* Achievement Badge */}
-        {trainingStats && trainingStats.totalSessions > 0 && (
-          <div 
-            className="ios-control-center-tile bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 dark:from-purple-600 dark:via-purple-700 dark:to-indigo-700 p-4 relative overflow-hidden"
-            style={{ borderRadius: '16px' }}
-            data-ios-tile="true"
-          >
-            {/* Sparkle Effects */}
-            <div className="absolute top-2 right-4 w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            <div className="absolute top-6 right-8 w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-            <div className="absolute bottom-4 left-6 w-1.5 h-1.5 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-            
-            <div className="relative z-10 flex items-center justify-center gap-3">
-              <div 
-                className="w-8 h-8 bg-white/20 backdrop-blur-sm flex items-center justify-center"
-                style={{ borderRadius: '8px' }}
-              >
-                <CheckCircle2 className="w-4 h-4 text-white" />
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-bold text-white">
-                  Building Great Habits! 
-                </p>
-                <p className="text-xs text-purple-100">
-                  Keep up the consistent training
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+              minutes per workout
+            </p>
+          </CardContent>
+        </Card>
       </div>
       {/* Header with Feature Manager Button - Only show for developer users */}
       {userData?.showDeveloperFeatures && (
