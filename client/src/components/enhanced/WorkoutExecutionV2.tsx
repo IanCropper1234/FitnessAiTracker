@@ -1793,16 +1793,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         </div>
         
         {/* Ultra Compact Action Buttons - Only Save & Exit (Complete Workout handled by GlobalCompleteSetButton) */}
-        <div className="flex justify-center">
-          <button 
-            onClick={saveAndExit} 
-            disabled={saveProgressMutation.isPending}
-            className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5 border border-border/30 flex items-center justify-center gap-1 transition-colors pl-[131px] pr-[131px] pt-[6px] pb-[6px]"
-          >
-            <Save className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">Save & Exit</span>
-          </button>
-        </div>
+        <button 
+          onClick={saveAndExit} 
+          disabled={saveProgressMutation.isPending}
+          className="ios-touch-feedback bg-secondary hover:bg-secondary/80 text-secondary-foreground py-1.5 px-1.5  border border-border/30 flex items-center justify-center gap-1 transition-colors w-full"
+        >
+          <Save className="h-3.5 w-3.5" />
+          <span className="text-xs font-medium">Save & Exit</span>
+        </button>
         
         {/* Loading indicator */}
         {saveProgressMutation.isPending && (
