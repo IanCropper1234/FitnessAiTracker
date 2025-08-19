@@ -1120,7 +1120,7 @@ export function AddFood({ user }: AddFoodProps) {
                       localStorage.setItem('lastSelectedMealType', value);
                     }}>
                       <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                        <SelectValue />
+                        <SelectValue placeholder="Select meal type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="breakfast">Breakfast</SelectItem>
@@ -1245,7 +1245,7 @@ export function AddFood({ user }: AddFoodProps) {
                       localStorage.setItem('lastSelectedMealType', value);
                     }}>
                       <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                        <SelectValue />
+                        <SelectValue placeholder="Select meal type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="breakfast">Breakfast</SelectItem>
@@ -1441,7 +1441,7 @@ export function AddFood({ user }: AddFoodProps) {
                     localStorage.setItem('lastSelectedMealType', value);
                   }}>
                     <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                      <SelectValue />
+                      <SelectValue placeholder="Select meal type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="breakfast">Breakfast</SelectItem>
