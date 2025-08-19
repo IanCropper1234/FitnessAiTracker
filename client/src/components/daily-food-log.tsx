@@ -219,6 +219,8 @@ export function DailyFoodLog({
   const { showSuccess, showError } = useIOSNotifications();
   const queryClient = useQueryClient();
   const [showLogger, setShowLogger] = useState(false);
+  // Persistent meal type state to survive component unmounting
+  const [persistentMealType, setPersistentMealType] = useState('breakfast');
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showCopyMeal, setShowCopyMeal] = useState(false);
@@ -447,11 +449,7 @@ export function DailyFoodLog({
 
   const handleCopyMeals = () => {
     if (!copyFromDate) {
-      toast({
-        title: "Error",
-        description: "Please select a date to copy from",
-        variant: "destructive"
-      });
+      showError("Error", "Please select a date to copy from");
       return;
     }
 
@@ -485,11 +483,7 @@ export function DailyFoodLog({
 
   const handleBulkCopyToDate = () => {
     if (selectedLogs.length === 0 || !copyToDate) {
-      toast({
-        title: "Error",
-        description: "Please select entries and a target date",
-        variant: "destructive"
-      });
+      showError("Error", "Please select entries and a target date");
       return;
     }
     bulkCopyToDateMutation.mutate({ logIds: selectedLogs, targetDate: copyToDate });
@@ -896,6 +890,8 @@ export function DailyFoodLog({
         <NutritionLogger 
           userId={userId}
           selectedDate={selectedDate}
+          initialMealType={persistentMealType}
+          onMealTypeChange={setPersistentMealType}
           onComplete={() => {
             setShowLogger(false);
             queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary'] });

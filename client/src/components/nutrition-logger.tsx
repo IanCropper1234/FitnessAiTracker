@@ -17,6 +17,8 @@ interface NutritionLoggerProps {
   userId: number;
   selectedDate?: string;
   onComplete?: () => void;
+  initialMealType?: string;
+  onMealTypeChange?: (mealType: string) => void;
 }
 
 interface FoodSearchResult {
@@ -30,7 +32,7 @@ interface FoodSearchResult {
   mealSuitability?: string[];
 }
 
-export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionLoggerProps) {
+export function NutritionLogger({ userId, selectedDate, onComplete, initialMealType, onMealTypeChange }: NutritionLoggerProps) {
   const { t } = useLanguage();
   const { showSuccess, showError } = useIOSNotifications();
   
@@ -39,7 +41,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
   const [selectedFood, setSelectedFood] = useState<FoodSearchResult | null>(null);
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
-  const [mealType, setMealType] = useState('breakfast');
+  const [mealType, setMealType] = useState(initialMealType || 'breakfast');
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
@@ -170,11 +172,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
       };
       foodName = selectedFood.name;
     } else {
-      toast({
-        title: "Error",
-        description: "Please search for food first",
-        variant: "destructive"
-      });
+      showError("Error", "Please search for food first");
       return;
     }
 
@@ -410,7 +408,10 @@ export function NutritionLogger({ userId, selectedDate, onComplete }: NutritionL
               <Label htmlFor="meal-type" className="text-black dark:text-white text-sm font-medium">
                 Add to Meal Type <span className="text-red-500">*</span>
               </Label>
-              <Select value={mealType} onValueChange={setMealType}>
+              <Select value={mealType} onValueChange={(value) => {
+                setMealType(value);
+                onMealTypeChange?.(value);
+              }}>
                 <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${
                   !mealType.trim() ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
                 }`}>
