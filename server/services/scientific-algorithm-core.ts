@@ -43,7 +43,7 @@ export interface ScienceVolumeRecommendation {
 export class SciAlgorithmCore {
   
   /**
-   * Core RP feedback scoring algorithm
+   * Core scientific feedback scoring algorithm
    * Used by both auto-regulation and mesocycle systems
    */
   static calculateFeedbackScores(feedbackData: {

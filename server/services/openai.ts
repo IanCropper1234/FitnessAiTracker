@@ -651,7 +651,7 @@ Return only valid JSON with all required fields.`
   - Nuts/seeds: vitamin E (5-15mg), magnesium (50-200mg), zinc (1-5mg)
   Always include fiber content (estimate based on food type), sugar breakdown (natural vs added), and fat composition. Use established USDA nutritional profiles for realistic estimates.
 
-**Category Guidelines (Renaissance Periodization methodology):**
+**Category Guidelines (Evidence-based sports nutrition methodology):**
 - "protein": >20g protein per 100 calories (chicken, fish, eggs, protein powder)
 - "carb": >15g carbs per 100 calories, low fat (rice, oats, fruits, bread)  
 - "fat": >8g fat per 100 calories (nuts, oils, avocado, fatty fish)
@@ -699,7 +699,7 @@ Return only valid JSON with all required fields.`
 - Use established nutritional databases as reference
 - Provide realistic estimates based on food composition knowledge
 - Include fiber, sugar breakdown, and fat composition details
-- Apply Renaissance Periodization methodology for meal timing recommendations
+- Apply evidence-based sports nutrition methodology for meal timing recommendations
 
 Goal: Deliver the most comprehensive, accurate nutritional analysis possible, with special emphasis on capturing the full micronutrient profile that users need for complete nutritional tracking.`
         },
@@ -803,7 +803,7 @@ export async function generateWeeklyWorkoutPlan(
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
-    const prompt = `Generate a complete ${sessionsPerWeek}-day weekly workout plan using Renaissance Periodization (RP) methodology.
+    const prompt = `Generate a complete ${sessionsPerWeek}-day weekly workout plan using evidence-based periodization methodology.
 
 **Client Profile:**
 - Goals: ${goals.join(', ')}

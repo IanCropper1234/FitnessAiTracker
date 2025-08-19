@@ -295,7 +295,7 @@ export async function getFatigueAnalysis(userId: number, days: number = 14): Pro
   }
 }
 
-// Get current volume recommendations for user using unified RP Algorithm Core
+// Get current volume recommendations for user using unified Scientific Algorithm Core
 export async function getVolumeRecommendations(userId: number): Promise<VolumeRecommendation[]> {
   try {
     // Get the most recent feedback (within last 7 days)
@@ -316,7 +316,12 @@ export async function getVolumeRecommendations(userId: number): Promise<VolumeRe
 
     // Use unified scientific algorithm for recommendations
     const feedback = recentFeedback.length > 0 ? recentFeedback[0] : undefined;
-    return await SciAlgorithmCore.generateVolumeRecommendations(userId, feedback);
+    const recommendations = await SciAlgorithmCore.generateVolumeRecommendations(userId, feedback);
+    // Convert to VolumeRecommendation format for compatibility
+    return recommendations.map(rec => ({
+      ...rec,
+      adjustmentReason: rec.adjustmentReason || rec.reason
+    }));
   } catch (error) {
     console.error('Error getting volume recommendations:', error);
     return [];
