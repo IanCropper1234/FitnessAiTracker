@@ -89,8 +89,8 @@ export function AddFood({ user }: AddFoodProps) {
   };
   
   const [mealType, setMealType] = useState(() => {
-    // Try to get from localStorage for persistence, fallback to smart detection
-    const stored = localStorage.getItem('lastSelectedMealType');
+    // Try to get from sessionStorage for persistence, fallback to smart detection
+    const stored = sessionStorage.getItem('lastSelectedMealType');
     const smart = getSmartMealType();
     console.log('AddFood: Initializing meal type. Stored:', stored, 'Smart:', smart, 'URL param:', mealTypeParam);
     return stored || smart;
@@ -1117,10 +1117,10 @@ export function AddFood({ user }: AddFoodProps) {
                     <Select value={mealType} onValueChange={(value) => {
                       console.log('AddFood Recent Foods: Meal type changed to:', value);
                       setMealType(value);
-                      localStorage.setItem('lastSelectedMealType', value);
+                      sessionStorage.setItem('lastSelectedMealType', value);
                     }}>
                       <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                        <SelectValue placeholder="Select meal type" />
+                        <SelectValue placeholder={mealType ? mealType.charAt(0).toUpperCase() + mealType.slice(1) : "Select meal type"} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="breakfast">Breakfast</SelectItem>
@@ -1242,10 +1242,10 @@ export function AddFood({ user }: AddFoodProps) {
                     <Select value={mealType} onValueChange={(value) => {
                       console.log('AddFood Saved Meals: Meal type changed to:', value);
                       setMealType(value);
-                      localStorage.setItem('lastSelectedMealType', value);
+                      sessionStorage.setItem('lastSelectedMealType', value);
                     }}>
                       <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                        <SelectValue placeholder="Select meal type" />
+                        <SelectValue placeholder={mealType ? mealType.charAt(0).toUpperCase() + mealType.slice(1) : "Select meal type"} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="breakfast">Breakfast</SelectItem>
@@ -1438,10 +1438,10 @@ export function AddFood({ user }: AddFoodProps) {
                   <Select value={mealType} onValueChange={(value) => {
                     console.log('AddFood Main Form: Meal type changed to:', value);
                     setMealType(value);
-                    localStorage.setItem('lastSelectedMealType', value);
+                    sessionStorage.setItem('lastSelectedMealType', value);
                   }}>
                     <SelectTrigger className="h-8 text-xs ios-touch-feedback">
-                      <SelectValue placeholder="Select meal type" />
+                      <SelectValue placeholder={mealType ? mealType.charAt(0).toUpperCase() + mealType.slice(1) : "Select meal type"} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="breakfast">Breakfast</SelectItem>
