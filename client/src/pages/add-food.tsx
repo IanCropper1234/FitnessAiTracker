@@ -88,7 +88,10 @@ export function AddFood({ user }: AddFoodProps) {
     return 'snack'; // Late night or early morning
   };
   
-  const [mealType, setMealType] = useState(getSmartMealType());
+  const [mealType, setMealType] = useState(() => {
+    // Try to get from localStorage for persistence, fallback to smart detection
+    return localStorage.getItem('lastSelectedMealType') || getSmartMealType();
+  });
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
   
@@ -1103,7 +1106,11 @@ export function AddFood({ user }: AddFoodProps) {
                   {/* Meal Type Selection for Recent Foods */}
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Add to Meal Type</Label>
-                    <Select value={mealType} onValueChange={setMealType}>
+                    <Select value={mealType} onValueChange={(value) => {
+                      console.log('AddFood Recent Foods: Meal type changed to:', value);
+                      setMealType(value);
+                      localStorage.setItem('lastSelectedMealType', value);
+                    }}>
                       <SelectTrigger className="h-8 text-xs ios-touch-feedback">
                         <SelectValue />
                       </SelectTrigger>
@@ -1224,7 +1231,11 @@ export function AddFood({ user }: AddFoodProps) {
                   {/* Meal Type Selection for Saved Meals */}
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Add to Meal Type</Label>
-                    <Select value={mealType} onValueChange={setMealType}>
+                    <Select value={mealType} onValueChange={(value) => {
+                      console.log('AddFood Saved Meals: Meal type changed to:', value);
+                      setMealType(value);
+                      localStorage.setItem('lastSelectedMealType', value);
+                    }}>
                       <SelectTrigger className="h-8 text-xs ios-touch-feedback">
                         <SelectValue />
                       </SelectTrigger>
@@ -1416,7 +1427,11 @@ export function AddFood({ user }: AddFoodProps) {
 
                 <div className="space-y-2">
                   <Label className="text-xs font-medium">Meal Type</Label>
-                  <Select value={mealType} onValueChange={setMealType}>
+                  <Select value={mealType} onValueChange={(value) => {
+                    console.log('AddFood Main Form: Meal type changed to:', value);
+                    setMealType(value);
+                    localStorage.setItem('lastSelectedMealType', value);
+                  }}>
                     <SelectTrigger className="h-8 text-xs ios-touch-feedback">
                       <SelectValue />
                     </SelectTrigger>
