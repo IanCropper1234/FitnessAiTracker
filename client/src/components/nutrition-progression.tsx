@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, ReferenceLine } from "recharts";
-import { TrendingUp, Calendar, Activity, Target } from "lucide-react";
+import { TrendingUp, Calendar, Activity, Target, ArrowLeftRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 
@@ -26,6 +26,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [chartType, setChartType] = useState<'weight' | 'bodyFat' | 'calories' | 'macros'>('weight');
+  
+  // Unit conversion state for Recent Entries display
+  const [displayUnit, setDisplayUnit] = useState<'kg' | 'lbs'>('kg');
   
   // Pagination state for memory optimization
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,13 +173,13 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           );
         }
         
-        const preferredUnit = getUserPreferredWeightUnit();
         const weightTableData = bodyMetrics?.map((metric: any) => {
           let weight = parseFloat(metric.weight);
           const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
           
-          if (metricUnit !== preferredUnit) {
-            weight = UnitConverter.convertWeightChange(weight, metricUnit, preferredUnit);
+          // Convert to displayUnit instead of user's preferred unit
+          if (metricUnit !== displayUnit) {
+            weight = UnitConverter.convertWeightChange(weight, metricUnit, displayUnit);
           }
           
           return {
@@ -186,7 +189,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
               year: '2-digit'
             }),
             weight: (weight && !isNaN(weight)) ? Number(weight).toFixed(1) : 'N/A',
-            unit: preferredUnit,
+            unit: displayUnit,
             bodyFat: metric.bodyFatPercentage ? `${metric.bodyFatPercentage}%` : '-'
           };
         }) || [];
@@ -981,16 +984,30 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       {/* Compact Data Table Section */}
       <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2">
-        <div className="mb-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
-            Recent Entries
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {chartType === 'weight' && `Weight data • ${timeRange}`}
-            {chartType === 'bodyFat' && `Body fat data • ${timeRange}`}
-            {chartType === 'calories' && `Daily calories • ${timeRange}`}
-            {chartType === 'macros' && `Macro data • ${timeRange}`}
-          </p>
+        <div className="mb-2 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
+              Recent Entries
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {chartType === 'weight' && `Weight data • ${timeRange}`}
+              {chartType === 'bodyFat' && `Body fat data • ${timeRange}`}
+              {chartType === 'calories' && `Daily calories • ${timeRange}`}
+              {chartType === 'macros' && `Macro data • ${timeRange}`}
+            </p>
+          </div>
+          
+          {/* Unit Toggle Button - Only show for weight chart */}
+          {chartType === 'weight' && (
+            <button
+              onClick={() => setDisplayUnit(displayUnit === 'kg' ? 'lbs' : 'kg')}
+              className="flex items-center gap-1 text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium border border-gray-200 dark:border-gray-600"
+              title="Toggle between kg and lbs"
+            >
+              <ArrowLeftRight className="w-3 h-3" />
+              {displayUnit}
+            </button>
+          )}
         </div>
         
         <div className="overflow-x-auto">
