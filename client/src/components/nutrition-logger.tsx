@@ -45,7 +45,8 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
 
   // Sync local meal type with parent state changes
   useEffect(() => {
-    if (initialMealType) {
+    console.log('NutritionLogger: useEffect triggered. initialMealType:', initialMealType, 'current mealType:', mealType);
+    if (initialMealType && initialMealType !== mealType) {
       console.log('NutritionLogger: Syncing meal type from parent:', initialMealType);
       setMealType(initialMealType);
     }
@@ -119,6 +120,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
       setQuantity('1');
       setUnit('serving');
       // Keep mealType unchanged so user can continue logging foods to same meal
+      console.log('NutritionLogger: After successful log, preserving meal type:', mealType);
       
       // Don't call onComplete() here - only call it when user explicitly closes modal
       // This allows continued logging with persistent meal type
@@ -421,12 +423,15 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
               <Label htmlFor="meal-type" className="text-black dark:text-white text-sm font-medium">
                 Add to Meal Type <span className="text-red-500">*</span>
               </Label>
-              <Select value={mealType} onValueChange={(value) => {
-                console.log('NutritionLogger: Meal type changed from', mealType, 'to', value);
-                setMealType(value);
-                console.log('NutritionLogger: Calling onMealTypeChange with value:', value);
-                onMealTypeChange?.(value);
-              }}>
+              <Select 
+                value={mealType || ''} 
+                onValueChange={(value) => {
+                  console.log('NutritionLogger: Meal type changed from', mealType, 'to', value);
+                  setMealType(value);
+                  console.log('NutritionLogger: Calling onMealTypeChange with value:', value);
+                  onMealTypeChange?.(value);
+                }}
+              >
                 <SelectTrigger className={`bg-white dark:bg-gray-800 text-black dark:text-white text-sm mt-1 ${
                   !mealType.trim() ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
                 }`}>
