@@ -86,7 +86,9 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Calorie Discrepancy Resolution & Message Standardization (Aug 2025)**: **Steps 11-12 Complete** - Fixed calorie inconsistency between Dashboard (2773) and IntegratedNutritionOverview (2840) by correcting API endpoint usage and MacroChart calculation logic. Dashboard now uses API's totalCalories instead of calculating from macros. **Message Standardization**: Verified all toast notifications, error messages, and user-facing text are in English (EN-US) as per project requirements. Translation files preserved for future multi-language support.
 
 ### iOS App Development Strategy - Expo Approach
-TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Development is primarily on Replit, with iOS building and testing on external macOS with Xcode.
+TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. **Complete Expo configuration exists** in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, **eliminating the need for macOS/Xcode**. Two deployment options available:
+- **Expo (Recommended)**: WebView wrapper with EAS Build - 1.5-2 hours, no macOS needed
+- **Capacitor (Alternative)**: Native integration - 4-6 hours, requires macOS/Xcode
 
 ## External Dependencies
 

@@ -31,7 +31,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "TBD-will-be-generated"
       }
     }
   }
