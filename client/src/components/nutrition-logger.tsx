@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "./language-provider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,13 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('serving');
   const [mealType, setMealType] = useState(initialMealType || 'breakfast');
+
+  // Sync local meal type with parent state changes
+  useEffect(() => {
+    if (initialMealType) {
+      setMealType(initialMealType);
+    }
+  }, [initialMealType]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedMealSuitability, setSelectedMealSuitability] = useState<string>();
@@ -107,8 +114,8 @@ export function NutritionLogger({ userId, selectedDate, onComplete, initialMealT
       setUnit('serving');
       // Keep mealType unchanged so user can continue logging foods to same meal
       
-      // Note: Don't call onComplete?.() immediately to keep modal open for continued logging
-      // User can manually close when done logging multiple items
+      // Don't call onComplete() here - only call it when user explicitly closes modal
+      // This allows continued logging with persistent meal type
     },
     onError: (error: any) => {
       showError("Failed to log food", error.message);
