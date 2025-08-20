@@ -6,12 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GripVertical, Plus, Trash2, Search, Filter } from "lucide-react";
+import { GripVertical, Plus, Trash2, Search, Filter, CheckCircle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useMobileDragDrop } from "@/hooks/useMobileDragDrop";
 import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
+import { cn } from "@/lib/utils";
 
 interface Exercise {
   id: number;
@@ -33,6 +34,7 @@ interface WorkoutExercise {
   targetReps: string;
   restPeriod: number;
   exercise: Exercise;
+  specialMethod?: string;
 }
 
 interface DraggableExerciseListProps {
@@ -61,6 +63,14 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
   const [categoryFilter, setCategoryFilter] = useState('all');
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Helper function to check if an exercise is completed
+  const isExerciseCompleted = (exerciseId: number, totalSets: number) => {
+    if (!workoutData || !workoutData[exerciseId]) return false;
+    const exerciseSets = workoutData[exerciseId];
+    const completedSets = exerciseSets.filter(set => set?.completed === true).length;
+    return completedSets >= totalSets && completedSets > 0;
+  };
 
   // Fetch available exercises for adding
   const { data: availableExercises = [] } = useQuery<Exercise[]>({
@@ -281,20 +291,26 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
 
       {/* Draggable Exercise List */}
       <div className="space-y-1.5">
-        {exercises.map((exercise, index) => (
-          <Card
-            key={exercise.id}
-            className={getItemClassName(
-              index,
-              `transition-all duration-200 cursor-pointer select-none ${
-                index === currentExerciseIndex
-                  ? 'ring-2 ring-primary bg-primary/5'
-                  : 'hover:bg-accent/50'
-              }`
-            )}
-            {...getDragHandleProps(index)}
-            onClick={() => onExerciseSelect(index)}
-          >
+        {exercises.map((exercise, index) => {
+          const isCompleted = isExerciseCompleted(exercise.id, workoutData?.[exercise.id]?.length || exercise.sets);
+          const isCurrentExercise = index === currentExerciseIndex;
+          
+          return (
+            <Card
+              key={exercise.id}
+              className={getItemClassName(
+                index,
+                `transition-all duration-200 cursor-pointer select-none ${
+                  isCompleted
+                    ? 'border-green-500/60 bg-green-50/80 dark:bg-green-950/20 hover:bg-green-100/80 dark:hover:bg-green-950/40'
+                    : isCurrentExercise
+                      ? 'ring-2 ring-primary bg-primary/5'
+                      : 'hover:bg-accent/50'
+                }`
+              )}
+              {...getDragHandleProps(index)}
+              onClick={() => onExerciseSelect(index)}
+            >
             <CardContent className="p-3">
               <div className="flex items-center gap-2.5">
                 {/* Drag Handle */}
@@ -305,12 +321,32 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
                 {/* Exercise Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span className="font-medium text-sm truncate">{exercise.exercise.name}</span>
+                    <span className={cn(
+                      "font-medium text-sm truncate",
+                      isCompleted && "text-green-700 dark:text-green-400"
+                    )}>
+                      {exercise.exercise.name}
+                    </span>
+                    {isCompleted && (
+                      <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    )}
                     <div className="flex gap-1 flex-shrink-0">
-                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                      <Badge 
+                        variant="outline" 
+                        className={cn(
+                          "text-xs px-1.5 py-0",
+                          isCompleted && "border-green-500/50 bg-green-100/50 dark:bg-green-950/50 text-green-700 dark:text-green-400"
+                        )}
+                      >
                         {workoutData?.[exercise.id]?.length || exercise.sets}s
                       </Badge>
-                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                      <Badge 
+                        variant="outline" 
+                        className={cn(
+                          "text-xs px-1.5 py-0",
+                          isCompleted && "border-green-500/50 bg-green-100/50 dark:bg-green-950/50 text-green-700 dark:text-green-400"
+                        )}
+                      >
                         {exercise.targetReps}r
                       </Badge>
                     </div>
@@ -357,7 +393,8 @@ export const DraggableExerciseList: React.FC<DraggableExerciseListProps> = ({
               </div>
             </CardContent>
           </Card>
-        ))}
+          );
+        })}
       </div>
 
       {exercises.length === 0 && (
