@@ -27,7 +27,12 @@ interface ValidationResult {
   feedback: string[];
 }
 
-export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: any) => void }) {
+export function ProgressiveRegistrationForm({ onSuccess, onSwitchToSignIn }: { 
+  onSuccess: (user: any) => void;
+  onSwitchToSignIn?: () => void;
+}) {
+  const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [registrationData, setRegistrationData] = useState<any>(null);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -46,7 +51,7 @@ export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: a
   const [emailValidated, setEmailValidated] = useState(false);
   const { toast } = useToast();
 
-  const totalSteps = 3;
+  const totalSteps = registrationComplete ? 4 : 3;
 
   // Real-time email validation
   const validateEmail = async (email: string) => {
@@ -163,8 +168,10 @@ export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: a
           variant: "default"
         });
 
-        // Show verification step or success
+        // Show verification step
         if (result.verificationRequired) {
+          setRegistrationComplete(true);
+          setRegistrationData(result);
           setStep(4); // Verification step
         } else {
           onSuccess(result.user);
@@ -184,28 +191,33 @@ export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: a
     }
   };
 
-  const StepIndicator = () => (
-    <div className="flex items-center justify-center mb-8">
-      {[1, 2, 3].map((stepNumber) => (
-        <div key={stepNumber} className="flex items-center">
-          <div className={`
-            w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-            ${step >= stepNumber 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-            }
-          `}>
-            {step > stepNumber ? <CheckCircle className="w-4 h-4" /> : stepNumber}
+  const StepIndicator = () => {
+    const maxStep = registrationComplete ? 4 : 3;
+    const stepLabels = ['Email', 'Details', 'Review', 'Verify'];
+    
+    return (
+      <div className="flex items-center justify-center mb-8">
+        {Array.from({ length: maxStep }, (_, i) => i + 1).map((stepNumber) => (
+          <div key={stepNumber} className="flex items-center">
+            <div className={`
+              w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+              ${step >= stepNumber 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+              }
+            `}>
+              {step > stepNumber ? <CheckCircle className="w-4 h-4" /> : stepNumber}
+            </div>
+            {stepNumber < maxStep && (
+              <div className={`w-12 h-0.5 mx-2 ${
+                step > stepNumber ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+              }`} />
+            )}
           </div>
-          {stepNumber < 3 && (
-            <div className={`w-12 h-0.5 mx-2 ${
-              step > stepNumber ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
-            }`} />
-          )}
-        </div>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  };
 
   return (
     <Card className="w-full max-w-md">
@@ -335,37 +347,122 @@ export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: a
           </div>
         )}
 
+        {/* Step 4: Email Verification Sent */}
+        {step === 4 && registrationComplete && (
+          <div className="space-y-6 text-center">
+            <div className="space-y-4">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-green-700 dark:text-green-400">
+                  Account Created Successfully!
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  We've sent a verification email to:
+                </p>
+                <p className="text-lg font-medium text-black dark:text-white">
+                  {data.email}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="text-left space-y-2">
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    Next Steps:
+                  </p>
+                  <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                    <li>• Check your email inbox for our verification message</li>
+                    <li>• Click the verification link to activate your account</li>
+                    <li>• Return here to sign in once verified</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              <p>Didn't receive the email? Check your spam folder or</p>
+              <button 
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+                onClick={() => {
+                  // TODO: Implement resend verification email
+                  toast({
+                    title: "Verification email resent",
+                    description: "Please check your inbox again.",
+                  });
+                }}
+              >
+                click here to resend
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-6">
-          {step > 1 && (
+        {step < 4 && (
+          <div className="flex justify-between mt-6">
+            {step > 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBack}
+                disabled={isLoading}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
+            
             <Button
-              type="button"
-              variant="outline"
-              onClick={handleBack}
-              disabled={isLoading}
+              onClick={handleNext}
+              disabled={isLoading || (step === 1 && !emailValidated) || (step === 2 && !passwordValidation.isValid)}
+              className={step === 1 ? "w-full" : "ml-auto"}
+            >
+              {isLoading ? (
+                <div className="w-4 h-4 border border-white border-t-transparent rounded-full animate-spin mr-2" />
+              ) : step === 3 ? (
+                'Create Account'
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* Step 4 Action Buttons */}
+        {step === 4 && registrationComplete && (
+          <div className="space-y-3 mt-6">
+            <Button
+              onClick={() => onSwitchToSignIn?.()}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+              Return to Sign In
             </Button>
-          )}
-          
-          <Button
-            onClick={handleNext}
-            disabled={isLoading || (step === 1 && !emailValidated) || (step === 2 && !passwordValidation.isValid)}
-            className={step === 1 ? "w-full" : "ml-auto"}
-          >
-            {isLoading ? (
-              <div className="w-4 h-4 border border-white border-t-transparent rounded-full animate-spin mr-2" />
-            ) : step === totalSteps ? (
-              'Create Account'
-            ) : (
-              <>
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </div>
+            <Button
+              variant="outline"
+              onClick={() => {
+                // Reset form for new registration
+                setStep(1);
+                setRegistrationComplete(false);
+                setRegistrationData(null);
+                setData({ email: '', name: '', password: '', preferredLanguage: 'en' });
+                setErrors({});
+                setEmailValidated(false);
+              }}
+              className="w-full"
+            >
+              Register Another Account
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

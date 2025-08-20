@@ -282,7 +282,14 @@ export default function Auth({ onSuccess }: AuthProps) {
                 </div>
 
                 {/* Enhanced Progressive Registration Form */}
-                <ProgressiveRegistrationForm onSuccess={onSuccess} />
+                <ProgressiveRegistrationForm 
+                  onSuccess={onSuccess} 
+                  onSwitchToSignIn={() => {
+                    // Switch to sign in tab
+                    const signInTab = document.querySelector('[value="signin"]') as HTMLElement;
+                    signInTab?.click();
+                  }}
+                />
               </div>
             </TabsContent>
           </Tabs>
