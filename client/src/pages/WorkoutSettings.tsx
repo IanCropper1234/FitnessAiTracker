@@ -56,13 +56,12 @@ export default function WorkoutSettings() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="font-bold flex items-center gap-2 text-[16px] text-center">
             <Settings className="h-6 w-6" />
             Workout Settings
           </h1>
         </div>
       </div>
-
       {/* Auto-Regulation Section */}
       <Card>
         <CardHeader>
@@ -100,7 +99,6 @@ export default function WorkoutSettings() {
           </div>
         </CardContent>
       </Card>
-
       {/* Interface Enhancements */}
       <Card>
         <CardHeader>
@@ -156,7 +154,6 @@ export default function WorkoutSettings() {
           </div>
         </CardContent>
       </Card>
-
       {/* Information */}
       <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/20">
         <CardContent className="pt-6">
