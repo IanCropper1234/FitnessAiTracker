@@ -404,7 +404,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex items-center justify-center gap-1.5 text-xs text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20"
+                      className="flex items-center justify-center gap-1.5 text-xs text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-300"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       Delete
