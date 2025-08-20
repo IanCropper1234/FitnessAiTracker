@@ -7,11 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp, RotateCcw, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Settings, Zap, ArrowRight, Heart, AlertCircle, ChevronDown, ChevronUp, RotateCcw, Clock, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UnitConverter } from "@shared/utils/unit-conversion";
 import { TimezoneUtils } from "@shared/utils/timezone";
@@ -34,6 +35,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
   const [showWellnessInfo, setShowWellnessInfo] = useState(false);
   const [autoAdjustmentEnabled, setAutoAdjustmentEnabled] = useState(false);
   const [autoAdjustmentFrequency, setAutoAdjustmentFrequency] = useState<'weekly' | 'biweekly'>('weekly');
+  const [showDisableConfirmation, setShowDisableConfirmation] = useState(false);
   
   // Calculate next adjustment date
   const calculateNextAdjustmentDate = (settings: any, frequency: 'weekly' | 'biweekly') => {
@@ -103,25 +105,31 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
   // Update auto-adjustment settings mutation
   const autoSettingsMutation = useMutation({
-    mutationFn: async (settings: { autoAdjustmentEnabled: boolean; autoAdjustmentFrequency: 'weekly' | 'biweekly' }) => {
+    mutationFn: async (settings: { autoAdjustmentEnabled: boolean; autoAdjustmentFrequency: 'weekly' | 'biweekly'; resetDate?: boolean }) => {
+      const payload = {
+        ...settings,
+        // When enabling auto-adjustment, reset the lastAutoAdjustment date to today
+        ...(settings.autoAdjustmentEnabled && settings.resetDate && { resetLastAdjustmentDate: true })
+      };
+      
       const response = await fetch('/api/auto-adjustment-settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(settings)
+        body: JSON.stringify(payload)
       });
       if (!response.ok) {
         throw new Error('Failed to update settings');
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast({
         title: "Settings Updated",
-        description: autoAdjustmentEnabled 
-          ? `Auto-adjustments enabled - will run ${autoAdjustmentFrequency === 'weekly' ? 'every week' : 'every 2 weeks'}`
+        description: variables.autoAdjustmentEnabled 
+          ? `Auto-adjustments enabled - will run ${variables.autoAdjustmentFrequency === 'weekly' ? 'every week' : 'every 2 weeks'}${variables.resetDate ? ' starting from today' : ''}`
           : "Auto-adjustments disabled",
       });
       refetchAutoSettings();
@@ -143,12 +151,30 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
   }, [autoAdjustmentSettings]);
 
-  // Handle auto-adjustment toggle
+  // Handle auto-adjustment toggle with confirmation for disable
   const handleAutoAdjustmentToggle = (enabled: boolean) => {
+    if (!enabled && autoAdjustmentEnabled) {
+      // Show confirmation dialog when trying to disable
+      setShowDisableConfirmation(true);
+      return;
+    }
+    
     setAutoAdjustmentEnabled(enabled);
     autoSettingsMutation.mutate({
       autoAdjustmentEnabled: enabled,
-      autoAdjustmentFrequency
+      autoAdjustmentFrequency,
+      resetDate: enabled // Reset date when enabling
+    });
+  };
+
+  // Confirm disable auto-adjustment
+  const confirmDisableAutoAdjustment = () => {
+    setAutoAdjustmentEnabled(false);
+    setShowDisableConfirmation(false);
+    autoSettingsMutation.mutate({
+      autoAdjustmentEnabled: false,
+      autoAdjustmentFrequency,
+      resetDate: false
     });
   };
 
@@ -157,7 +183,8 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     setAutoAdjustmentFrequency(frequency);
     autoSettingsMutation.mutate({
       autoAdjustmentEnabled,
-      autoAdjustmentFrequency: frequency
+      autoAdjustmentFrequency: frequency,
+      resetDate: false
     });
   };
 
@@ -352,10 +379,10 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     
     // Calculate linear trend (slope = weight change per day)
     const n = dataPoints.length;
-    const sumX = dataPoints.reduce((sum, point) => sum + point.day, 0);
-    const sumY = dataPoints.reduce((sum, point) => sum + point.weight, 0);
-    const sumXY = dataPoints.reduce((sum, point) => sum + point.day * point.weight, 0);
-    const sumXX = dataPoints.reduce((sum, point) => sum + point.day * point.day, 0);
+    const sumX = dataPoints.reduce((sum: number, point: any) => sum + point.day, 0);
+    const sumY = dataPoints.reduce((sum: number, point: any) => sum + point.weight, 0);
+    const sumXY = dataPoints.reduce((sum: number, point: any) => sum + point.day * point.weight, 0);
+    const sumXX = dataPoints.reduce((sum: number, point: any) => sum + point.day * point.day, 0);
     
     const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
     const weeklyTrend = slope * 7; // Convert daily slope to weekly rate
@@ -1166,6 +1193,39 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
           <RPRecommendations userId={userId} />
         </TabsContent>
       </Tabs>
+
+      {/* Disable Auto-Adjustment Confirmation Dialog */}
+      <AlertDialog open={showDisableConfirmation} onOpenChange={setShowDisableConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-orange-500" />
+              Disable Auto-Adjustment?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                You're about to disable automatic macro adjustments. This means:
+              </p>
+              <ul className="list-disc list-inside text-sm space-y-1 ml-4">
+                <li>Your calories and macros won't adjust automatically based on progress</li>
+                <li>You'll need to manually apply weekly adjustments</li>
+                <li>Your progress tracking will continue, but recommendations will be manual</li>
+              </ul>
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mt-3">
+                Are you sure you want to disable auto-adjustments?
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDisableConfirmation(false)}>
+              Keep Enabled
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDisableAutoAdjustment} className="bg-orange-600 hover:bg-orange-700">
+              Yes, Disable
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

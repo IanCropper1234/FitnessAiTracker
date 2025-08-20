@@ -743,20 +743,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/auto-adjustment-settings", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const { autoAdjustmentEnabled, autoAdjustmentFrequency } = req.body;
+      const { autoAdjustmentEnabled, autoAdjustmentFrequency, resetLastAdjustmentDate } = req.body;
       
-      console.log('Updating auto-adjustment settings in database:', {
+      console.log('🔧 Updating auto-adjustment settings in database:', {
         userId,
         autoAdjustmentEnabled,
-        autoAdjustmentFrequency
+        autoAdjustmentFrequency,
+        resetLastAdjustmentDate
       });
       
+      // Get current settings to preserve other data
+      const currentUser = await storage.getUser(userId);
+      const currentSettings = currentUser?.autoAdjustmentSettings as any || {};
+      
       const settings = {
+        ...currentSettings,
         autoAdjustmentEnabled,
         autoAdjustmentFrequency,
-        lastAutoAdjustment: null,
+        // Reset lastAutoAdjustment when user enables or explicitly requests reset
+        lastAutoAdjustment: (autoAdjustmentEnabled && resetLastAdjustmentDate) 
+          ? new Date().toISOString() 
+          : currentSettings.lastAutoAdjustment,
         updatedAt: new Date().toISOString()
       };
+      
+      console.log('💾 Final settings to save:', settings);
       
       const user = await storage.updateUser(userId, {
         autoAdjustmentSettings: settings
@@ -767,14 +778,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       res.json({
-        autoAdjustmentEnabled,
-        autoAdjustmentFrequency,
-        lastAutoAdjustment: null,
+        autoAdjustmentEnabled: settings.autoAdjustmentEnabled,
+        autoAdjustmentFrequency: settings.autoAdjustmentFrequency,
+        lastAutoAdjustment: settings.lastAutoAdjustment,
         updatedAt: settings.updatedAt,
-        message: "Settings saved successfully"
+        message: resetLastAdjustmentDate 
+          ? "Settings updated and adjustment date reset to today"
+          : "Settings saved successfully"
       });
     } catch (error: any) {
-      console.error('Error updating auto-adjustment settings:', error);
+      console.error('❌ Error updating auto-adjustment settings:', error);
       res.status(400).json({ message: error.message });
     }
   });
