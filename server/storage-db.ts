@@ -28,8 +28,34 @@ export class DatabaseStorage implements IStorage {
   }
   // Users - Hybrid system supporting both integer and string IDs
   async getUser(id: string | number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, Number(id)));
-    return user || undefined;
+    try {
+      const [user] = await db.select({
+        id: users.id,
+        email: users.email,
+        password: users.password,
+        name: users.name,
+        appleId: users.appleId,
+        preferredLanguage: users.preferredLanguage,
+        theme: users.theme,
+        showDeveloperFeatures: users.showDeveloperFeatures,
+        autoAdjustmentSettings: users.autoAdjustmentSettings,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        profileImageUrl: users.profileImageUrl,
+        emailVerified: users.emailVerified,
+        isActive: users.isActive,
+        registrationIp: users.registrationIp,
+        registrationUserAgent: users.registrationUserAgent
+      }).from(users).where(eq(users.id, Number(id)));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error in getUser:', error);
+      // Fallback to basic select if enhanced fields don't exist
+      const [user] = await db.select().from(users).where(eq(users.id, Number(id)));
+      return user || undefined;
+    }
   }
   
   async upsertUser(userData: UpsertUser): Promise<User> {
@@ -48,8 +74,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    try {
+      const [user] = await db.select({
+        id: users.id,
+        email: users.email,
+        password: users.password,
+        name: users.name,
+        appleId: users.appleId,
+        preferredLanguage: users.preferredLanguage,
+        theme: users.theme,
+        showDeveloperFeatures: users.showDeveloperFeatures,
+        autoAdjustmentSettings: users.autoAdjustmentSettings,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        profileImageUrl: users.profileImageUrl,
+        emailVerified: users.emailVerified,
+        isActive: users.isActive,
+        registrationIp: users.registrationIp,
+        registrationUserAgent: users.registrationUserAgent
+      }).from(users).where(eq(users.email, email));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error in getUserByEmail:', error);
+      // Fallback to basic select if enhanced fields don't exist
+      const [user] = await db.select().from(users).where(eq(users.email, email));
+      return user || undefined;
+    }
   }
 
   async createUser(user: InsertUser): Promise<User> {

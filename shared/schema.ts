@@ -32,7 +32,6 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   // Enhanced registration fields
   emailVerified: boolean("email_verified").default(false),
-  emailVerifiedAt: timestamp("email_verified_at"),
   isActive: boolean("is_active").default(false), // Account activation status
   registrationIp: text("registration_ip"),
   registrationUserAgent: text("registration_user_agent"),
@@ -63,7 +62,7 @@ export const emailVerificationTokens = pgTable("email_verification_tokens", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   usedAt: timestamp("used_at"),
-  used: boolean("used").default(false),
+
   attempts: integer("attempts").default(0).notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),

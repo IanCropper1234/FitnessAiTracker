@@ -311,7 +311,6 @@ export async function verifyEmailToken(token: string): Promise<{
     await db
       .update(emailVerificationTokens)
       .set({ 
-        used: true,
         usedAt: new Date()
       })
       .where(eq(emailVerificationTokens.token, token));
@@ -320,8 +319,7 @@ export async function verifyEmailToken(token: string): Promise<{
     await db
       .update(users)
       .set({ 
-        emailVerified: true,
-        emailVerifiedAt: new Date()
+        emailVerified: true
       })
       .where(eq(users.id, record.userId!));
 

@@ -55,6 +55,14 @@ export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: a
       return;
     }
 
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setEmailValidated(false);
+      setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+      return;
+    }
+
     try {
       const response = await fetch('/api/auth/validate-email', {
         method: 'POST',
@@ -72,11 +80,19 @@ export function ProgressiveRegistrationForm({ onSuccess }: { onSuccess: (user: a
         }
       } else {
         setEmailValidated(false);
-        setErrors(prev => ({ ...prev, email: result.error }));
+        // Provide more specific error messages
+        let errorMessage = result.error;
+        if (result.error === 'Email address is already registered') {
+          errorMessage = 'This email is already registered. Please use a different email or sign in.';
+        } else if (result.error === 'Validation failed') {
+          errorMessage = 'Unable to validate email. Please check your connection and try again.';
+        }
+        setErrors(prev => ({ ...prev, email: errorMessage }));
       }
     } catch (error) {
       console.error('Email validation error:', error);
       setEmailValidated(false);
+      setErrors(prev => ({ ...prev, email: 'Unable to validate email. Please check your connection and try again.' }));
     }
   };
 

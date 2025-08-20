@@ -669,14 +669,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(emailValidation.normalized);
-      if (existingUser) {
-        await logRegistrationAttempt(email, clientIP, userAgent, false, 'Email already registered');
-        return res.status(400).json({ 
-          valid: false, 
-          error: "Email address is already registered" 
-        });
+      // Check if user already exists (with error handling)
+      try {
+        const existingUser = await storage.getUserByEmail(emailValidation.normalized);
+        if (existingUser) {
+          await logRegistrationAttempt(email, clientIP, userAgent, false, 'Email already registered');
+          return res.status(400).json({ 
+            valid: false, 
+            error: "Email address is already registered" 
+          });
+        }
+      } catch (dbError) {
+        console.error('Database error during email validation:', dbError);
+        // Continue validation even if database check fails
       }
 
       res.json({ 
