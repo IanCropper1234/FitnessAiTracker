@@ -5,18 +5,10 @@ import { eq, and, desc, sql, gte, lte } from 'drizzle-orm';
 
 const router = Router();
 
-// Authentication middleware
-function requireAuth(req: any, res: any, next: any) {
-  const userId = (req.session as any)?.userId;
-  if (!userId || typeof userId !== 'number') {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  req.userId = userId;
-  next();
-}
+// Use global auth middleware - no need for custom auth in analytics routes
 
 // Get volume progression data for RP analytics
-router.get('/volume-progression/:timeRange', requireAuth, async (req, res) => {
+router.get('/volume-progression/:timeRange', async (req, res) => {
   try {
     const userId = (req.session as any).userId!;
     const timeRange = req.params.timeRange;
@@ -119,7 +111,7 @@ router.get('/volume-progression/:timeRange', requireAuth, async (req, res) => {
 });
 
 // Get muscle group distribution
-router.get('/muscle-group-distribution/:timeRange', requireAuth, async (req, res) => {
+router.get('/muscle-group-distribution/:timeRange', async (req, res) => {
   try {
     const userId = (req.session as any).userId!;
     const timeRange = req.params.timeRange;
@@ -221,7 +213,7 @@ router.get('/muscle-group-distribution/:timeRange', requireAuth, async (req, res
 });
 
 // Get exercise progress data
-router.get('/exercise-progress/:timeRange/:muscleGroup', requireAuth, async (req, res) => {
+router.get('/exercise-progress/:timeRange/:muscleGroup', async (req, res) => {
   try {
     const userId = (req.session as any).userId!;
     const timeRange = req.params.timeRange;
@@ -330,7 +322,7 @@ router.get('/exercise-progress/:timeRange/:muscleGroup', requireAuth, async (req
   }
 });
   // Get RP metrics data
-router.get('/rp-metrics/:timeRange', requireAuth, async (req, res) => {
+router.get('/rp-metrics/:timeRange', async (req, res) => {
   try {
     const userId = (req.session as any).userId!;
     const timeRange = req.params.timeRange;
