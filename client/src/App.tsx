@@ -163,7 +163,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 }}
               />
             ) : (
-              <Auth onSuccess={setUser} />
+              <Auth onSuccess={(user) => setUser({ ...user, emailVerified: user.emailVerified ?? true })} />
             )}
           </AnimatedPage>
         </Route>
@@ -187,9 +187,9 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         </Route>
         <Route path="/auth">
           <AnimatedPage>
-            <Auth onSuccess={(userData: User) => {
+            <Auth onSuccess={(userData: any) => {
               console.log('Auth onSuccess called with user:', userData);
-              setUser(userData);
+              setUser({ ...userData, emailVerified: userData.emailVerified ?? true });
               // Use setTimeout to ensure state update completes before navigation
               setTimeout(() => {
                 console.log('Navigating to dashboard after auth success');
