@@ -7,6 +7,7 @@ import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage-db";
+import { randomBytes } from "crypto";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -34,17 +35,19 @@ export function getSession() {
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
-    name: 'fitai.session', // Explicit session cookie name
+    name: 'trainpro.session', // Updated session cookie name for TrainPro
     resave: false,
     saveUninitialized: false,
     rolling: true, // Extend session on each request to keep user logged in
     cookie: {
-      httpOnly: true,
-      secure: false, // Allow cookies over HTTP for PWA development and Replit deployment
+      httpOnly: true, // Prevent XSS attacks
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
       maxAge: sessionTtl,
-      sameSite: 'lax', // PWA-friendly sameSite setting
-      path: '/' // Ensure cookie is available for all paths
-    },
+      sameSite: 'lax', // PWA-friendly sameSite setting - prevents CSRF while allowing normal navigation
+      path: '/', // Ensure cookie is available for all paths
+      // Additional security: prevent cookie access from client-side JavaScript
+    }
+    // Note: Using default express-session ID generation for compatibility
   });
 }
 

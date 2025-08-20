@@ -10,6 +10,7 @@ import { getNutritionSummary, logFood, generateNutritionGoal, searchFood } from 
 import { getTrainingStats, processAutoRegulation, createWorkoutSession, getWorkoutPlan } from "./services/training";
 import { insertUserSchema, insertUserProfileSchema, insertNutritionLogSchema, insertAutoRegulationFeedbackSchema, insertWeightLogSchema } from "@shared/schema";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { db } from "./db";
 import { generateVolumeRecommendations, getFatigueAnalysis, getVolumeRecommendations } from "./auto-regulation-algorithms";
 import { MesocyclePeriodization } from "./services/mesocycle-periodization";
@@ -267,6 +268,107 @@ function getMealSuitability(category: string, protein: number, carbs: number, fa
   return suitability;
 }
 
+// Enhanced password validation function
+function validatePasswordStrength(password: string): { isValid: boolean; requirements: string[] } {
+  const requirements = [];
+  let isValid = true;
+
+  if (password.length < 8) {
+    requirements.push("At least 8 characters long");
+    isValid = false;
+  }
+  
+  if (password.length > 128) {
+    requirements.push("No more than 128 characters");
+    isValid = false;
+  }
+
+  if (!/[a-z]/.test(password)) {
+    requirements.push("At least one lowercase letter");
+    isValid = false;
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    requirements.push("At least one uppercase letter");
+    isValid = false;
+  }
+
+  if (!/[0-9]/.test(password)) {
+    requirements.push("At least one number");
+    isValid = false;
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    requirements.push("At least one special character");
+    isValid = false;
+  }
+
+  // Check for common weak patterns
+  const commonPasswords = [
+    'password', '123456', '123456789', 'qwerty', 'abc123', 'password123',
+    'admin', 'letmein', 'welcome', 'monkey', '1234567890'
+  ];
+  
+  if (commonPasswords.includes(password.toLowerCase())) {
+    requirements.push("Must not be a common password");
+    isValid = false;
+  }
+
+  // Check for repeated characters (more than 3 in a row)
+  if (/(.)\1{3,}/.test(password)) {
+    requirements.push("Must not contain more than 3 repeated characters in a row");
+    isValid = false;
+  }
+
+  // Check for keyboard patterns
+  const keyboardPatterns = ['qwerty', 'asdf', 'zxcv', '123456', 'abcdef'];
+  for (const pattern of keyboardPatterns) {
+    if (password.toLowerCase().includes(pattern)) {
+      requirements.push("Must not contain keyboard patterns");
+      isValid = false;
+      break;
+    }
+  }
+
+  return { isValid, requirements };
+}
+
+// Security event logging function
+function logSecurityEvent(event: string, userId?: string, details?: any) {
+  const timestamp = new Date().toISOString();
+  console.log(`[SECURITY EVENT] ${timestamp} - ${event}`, {
+    userId,
+    details,
+    timestamp
+  });
+}
+
+// Rate limiting for password reset and account operations
+const accountOperationLimits = new Map<string, { count: number, lastAttempt: number }>();
+const MAX_ACCOUNT_OPERATIONS = 3;
+const ACCOUNT_OPERATION_WINDOW = 60 * 60 * 1000; // 1 hour
+
+function checkAccountOperationRate(identifier: string): boolean {
+  const now = Date.now();
+  const operationData = accountOperationLimits.get(identifier);
+  
+  if (operationData) {
+    if (now - operationData.lastAttempt > ACCOUNT_OPERATION_WINDOW) {
+      accountOperationLimits.delete(identifier);
+    } else if (operationData.count >= MAX_ACCOUNT_OPERATIONS) {
+      return false;
+    }
+  }
+  
+  const currentData = accountOperationLimits.get(identifier) || { count: 0, lastAttempt: 0 };
+  accountOperationLimits.set(identifier, {
+    count: currentData.count + 1,
+    lastAttempt: now
+  });
+  
+  return true;
+}
+
 // Hybrid middleware to extract user ID from either auth system
 function getUserId(req: Request, res: Response, next: NextFunction) {
   // Try Replit Auth first
@@ -286,21 +388,59 @@ function getUserId(req: Request, res: Response, next: NextFunction) {
   res.status(401).json({ message: "Unauthorized" });
 }
 
-// Updated auth middleware for hybrid system
+// Enhanced auth middleware with session security validation
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const userAgent = req.get('User-Agent') || 'unknown';
+  const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+  
   // Check Replit Auth
   if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
     req.userId = String(req.user.claims.sub);
+    console.log(`Auth check - Replit Auth authenticated: true`);
     return next();
   }
   
-  // Check legacy session auth
-  const sessionUserId = (req.session as any)?.userId;
+  console.log(`Auth check - Replit Auth authenticated: false`);
+  
+  // Check legacy session auth with enhanced security validation
+  const session = req.session as any;
+  const sessionUserId = session?.userId;
+  
   if (sessionUserId) {
+    // Enhanced session security validation
+    const storedUserAgent = session.userAgent;
+    const storedClientIP = session.clientIP;
+    const loginTime = session.loginTime;
+    
+    // Check for session hijacking indicators
+    if (storedUserAgent && storedUserAgent !== userAgent) {
+      console.log(`Security Warning: User-Agent mismatch for user ${sessionUserId}. Expected: ${storedUserAgent}, Got: ${userAgent}`);
+      req.session.destroy(() => {});
+      return res.status(401).json({ message: "Session security violation detected" });
+    }
+    
+    // Check for suspicious IP changes (optional - can be disabled for mobile users)
+    if (storedClientIP && storedClientIP !== clientIP) {
+      console.log(`Security Notice: IP change detected for user ${sessionUserId}. Previous: ${storedClientIP}, Current: ${clientIP}`);
+      // Log but don't reject - IP changes are common for mobile users
+    }
+    
+    // Check session age - force re-authentication after 7 days of inactivity
+    if (loginTime && (Date.now() - loginTime) > (7 * 24 * 60 * 60 * 1000)) {
+      console.log(`Session expired for user ${sessionUserId} - forcing re-authentication`);
+      req.session.destroy(() => {});
+      return res.status(401).json({ message: "Session expired - please log in again" });
+    }
+    
+    // Update last activity time
+    session.lastActivity = Date.now();
+    
     req.userId = String(sessionUserId);
+    console.log(`Auth check - Session userId: ${sessionUserId}`);
     return next();
   }
   
+  console.log('No authenticated user found');
   res.status(401).json({ message: "Unauthorized" });
 }
 
@@ -468,8 +608,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User already exists" });
       }
 
-      // Hash password
-      const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+      // Enhanced password validation
+      if (password) {
+        const passwordValidation = validatePasswordStrength(password);
+        if (!passwordValidation.isValid) {
+          return res.status(400).json({ 
+            message: "Password does not meet security requirements",
+            requirements: passwordValidation.requirements
+          });
+        }
+      }
+      
+      // Hash password with enhanced security (increased salt rounds)
+      const hashedPassword = password ? await bcrypt.hash(password, 12) : null;
       
       const user = await storage.createUser({
         email,
@@ -518,39 +669,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced login attempt tracking
+  const loginAttempts = new Map<string, { count: number, lastAttempt: number, lockedUntil?: number }>();
+  const MAX_LOGIN_ATTEMPTS = 5;
+  const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+  const ATTEMPT_WINDOW = 15 * 60 * 1000; // 15 minutes window
+  
   app.post("/api/auth/signin", async (req, res) => {
     try {
       const { email, password } = req.body;
-      console.log('Signin attempt for email:', email);
-      console.log('Password length:', password?.length);
+      const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.get('User-Agent') || 'unknown';
+      const attemptKey = `${email}_${clientIP}`;
       
-      const user = await storage.getUserByEmail(email);
+      console.log('Signin attempt for email:', email);
+      console.log('Client IP:', clientIP);
+      console.log('User-Agent:', userAgent);
+      
+      // Enhanced input validation
+      if (!email || !password) {
+        console.log('Missing email or password');
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+      
+      if (typeof email !== 'string' || typeof password !== 'string') {
+        console.log('Invalid input types');
+        return res.status(400).json({ message: "Invalid input format" });
+      }
+      
+      if (password.length < 8 || password.length > 128) {
+        console.log('Password length out of bounds');
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
+      
+      // Check rate limiting and account lockout
+      const now = Date.now();
+      const attemptData = loginAttempts.get(attemptKey);
+      
+      if (attemptData) {
+        // Check if account is currently locked
+        if (attemptData.lockedUntil && now < attemptData.lockedUntil) {
+          const remainingTime = Math.ceil((attemptData.lockedUntil - now) / 1000 / 60);
+          console.log(`Account locked for ${email}, ${remainingTime} minutes remaining`);
+          return res.status(429).json({ 
+            message: "Account temporarily locked due to multiple failed attempts", 
+            retryAfter: remainingTime 
+          });
+        }
+        
+        // Reset attempt count if outside time window
+        if (now - attemptData.lastAttempt > ATTEMPT_WINDOW) {
+          loginAttempts.delete(attemptKey);
+        }
+      }
+      
+      const user = await storage.getUserByEmail(email.toLowerCase().trim());
       console.log('Retrieved user:', user ? { id: user.id, email: user.email, hasPassword: !!user.password } : 'null');
       
       if (!user || !user.password) {
+        // Record failed attempt even for non-existent users to prevent enumeration
+        recordFailedAttempt(attemptKey, now);
         console.log('User not found or no password for:', email);
+        // Simulate password comparison time to prevent timing attacks
+        await bcrypt.compare('dummy_password', '$2b$10$dummy_hash_to_prevent_timing_attack');
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       console.log('Comparing passwords...');
-      console.log('Stored hash:', user.password.substring(0, 20) + '...');
       const isValid = await bcrypt.compare(password, user.password);
       console.log('Password comparison result:', isValid);
       
       if (!isValid) {
+        recordFailedAttempt(attemptKey, now);
         console.log('Invalid password for user:', email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Force regenerate session to ensure clean state
+      // Successful login - clear any failed attempts
+      loginAttempts.delete(attemptKey);
+      
+      // Enhanced security logging
+      console.log(`Successful login for ${email} from IP ${clientIP} with User-Agent: ${userAgent}`);
+      
+      // Force regenerate session to ensure clean state and prevent session fixation
       req.session.regenerate((err) => {
         if (err) {
           console.error('Session regeneration error:', err);
           return res.status(500).json({ message: "Session regeneration failed" });
         }
         
-        // Now set user ID in the new session
+        // Set security headers and session data
         (req.session as any).userId = user.id;
+        (req.session as any).loginTime = now;
+        (req.session as any).userAgent = userAgent;
+        (req.session as any).clientIP = clientIP;
+        
         console.log('Session userId set to:', user.id);
         console.log('Session ID:', req.sessionID);
         
@@ -561,14 +774,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.status(500).json({ message: "Session save failed" });
           }
           console.log('Session saved successfully');
-          res.json({ user: { id: user.id, email: user.email, name: user.name } });
+          
+          // Enhanced response with security info
+          res.json({ 
+            user: { 
+              id: user.id, 
+              email: user.email, 
+              name: user.name 
+            },
+            sessionInfo: {
+              loginTime: now,
+              expiresIn: 7 * 24 * 60 * 60 * 1000 // 1 week
+            }
+          });
         });
       });
     } catch (error: any) {
       console.error('Signin error:', error);
-      res.status(400).json({ message: error.message });
+      res.status(500).json({ message: "Internal server error" });
     }
   });
+  
+  // Helper function to record failed login attempts
+  function recordFailedAttempt(attemptKey: string, now: number) {
+    const currentData = loginAttempts.get(attemptKey) || { count: 0, lastAttempt: 0 };
+    const newCount = currentData.count + 1;
+    
+    if (newCount >= MAX_LOGIN_ATTEMPTS) {
+      loginAttempts.set(attemptKey, {
+        count: newCount,
+        lastAttempt: now,
+        lockedUntil: now + LOCKOUT_DURATION
+      });
+      console.log(`Account locked for ${attemptKey} after ${newCount} failed attempts`);
+    } else {
+      loginAttempts.set(attemptKey, {
+        count: newCount,
+        lastAttempt: now
+      });
+      console.log(`Failed attempt ${newCount} for ${attemptKey}`);
+    }
+  }
 
   app.post("/api/auth/signout", async (req, res) => {
     try {

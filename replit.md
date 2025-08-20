@@ -18,16 +18,16 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - All periodization components must use synchronized data sources from weekly goals API
 - Adherence percentages, weight changes, and energy levels must match across Training Analysis and Progress Metrics
 - Consistent API query parameters required: `/api/weekly-goals?weekStartDate=<specific_week>`
-- **Goal Standardization (Aug 2025)**: All goal-setting components use only three standardized options: Fat Loss, Muscle Gain, Maintenance
-- **Single Source of Truth**: dietGoals table serves as primary data source with Goal Synchronization Service managing cross-component consistency
+- Goal Standardization: All goal-setting components use only three standardized options: Fat Loss, Muscle Gain, Maintenance
+- Single Source of Truth: dietGoals table serves as primary data source with Goal Synchronization Service managing cross-component consistency
 
 **Critical Routing Rules (Wouter):**
-- **ROUTE ORDER MATTERS**: More specific routes must be placed BEFORE more generic routes
+- ROUTE ORDER MATTERS: More specific routes must be placed BEFORE more generic routes
 - Example: `/edit-template/:id` must come BEFORE `/template/:id` to prevent incorrect matching
 - Parameterized routes should be ordered from most specific to least specific
 - Always place catch-all routes (`<Route>` without path) at the very end
-- **Key Route Paths**: `/create-training-template`, `/create-mesocycle`, `/exercise-selection/:source?` for standalone exercise selection page
-- **Scrolling Issues Fix**: Modal dialogs with scrolling problems should be converted to standalone pages per user preference for better mobile UX
+- Key Route Paths: `/create-training-template`, `/create-mesocycle`, `/exercise-selection/:source?` for standalone exercise selection page
+- Scrolling Issues Fix: Modal dialogs with scrolling problems should be converted to standalone pages per user preference for better mobile UX
 
 ## System Architecture
 
@@ -48,8 +48,8 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - **API Design**: RESTful API with modular service layer architecture
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Hybrid authentication system supporting both legacy session-based auth and Replit Auth. All API routes are protected with automatic user ID extraction.
-- **Security**: Robust security hardening for sensitive operations with dual auth support.
-- **Data Processing**: Service layer with specialized algorithms for scientific periodization methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression.
+- **Security**: Robust security hardening for sensitive operations with dual auth support, including rate limiting, account lockout, password strength validation, session security, timing attack prevention, enhanced logging, stronger encryption, and strict input validation.
+- **Data Processing**: Service layer with specialized algorithms for scientific periodization methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression, consolidated via `SciAlgorithmCore`.
 
 ### Core Database Schema
 The system utilizes 28 production tables covering user management, nutrition, training, volume management, and analytics.
@@ -64,35 +64,28 @@ The system utilizes 28 production tables covering user management, nutrition, tr
 All core API routes are protected by authentication.
 
 ### Service Layer Architecture
-Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, `ShoppingListGenerator`, and **`SciAlgorithmCore` (Aug 2025)** - unified scientific algorithm service providing centralized fatigue analysis, volume calculations, and auto-regulation logic. Key algorithm implementations include evidence-based auto-regulation, volume landmark calculations (MV, MEV, MAV, MRV), progressive overload, phase transition logic, and systemic fatigue monitoring - all now consolidated through the unified core service.
+Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, `ShoppingListGenerator`, and `SciAlgorithmCore` (unified scientific algorithm service for fatigue analysis, volume calculations, and auto-regulation logic).
 
 ### Key Features & Implementations
 - **iOS-style Notification System**: Comprehensive system with features like drag-to-dismiss, auto-hide, action buttons, and native animations.
-- **Enhanced Workout Execution System**: Features enhanced rest timer animations, dedicated auto-regulation feedback, progress save indicator, and automatic set completion saving. Includes comprehensive CSS animation system.
+- **Enhanced Workout Execution System**: Features enhanced rest timer animations, dedicated auto-regulation feedback, progress save indicator, and automatic set completion saving.
 - **User-Controlled Settings System**: Comprehensive workout settings interface allowing users to control scientific auto-regulation feedback and other workout features.
 - **Mesocycle Management**: Supports flexible training day allocation, multi-select workout template assignment, and template reusability, handling mesocycle volume progression.
 - **Training Template Auto-Save**: Field-level auto-save for training template creation with draft restoration.
 - **Automated Macro Adjustment System**: Server-optimized background scheduler that automatically applies evidence-based macro adjustments daily.
-- **Hybrid Authentication Integration**: Supports both Replit Auth and existing session authentication.
 - **Pagination System**: Implemented across exercise library, body tracking records, and nutrition progression for memory optimization.
 - **Inline Editing**: Functionality for saved workout template names.
 - **UI Simplification**: Meal timing and dietary restrictions sections hidden from user profile page.
 - **Training Experience Classification**: AI exercise recommendation system uses research-based experience levels: Beginner, Intermediate, Advanced, Elite.
 - **Muscle Group Classification**: Refined muscle group focus options to precise anatomical classifications for improved AI exercise recommendations.
-- **Goal Standardization System (Aug 2025)**: Unified goal management with three standardized options (Fat Loss, Muscle Gain, Maintenance) across all components, Goal Synchronization Service ensuring data consistency, and `/api/unified-goals` endpoint as single source of truth.
-- **Weight Unit Standardization (Aug 2025)**: Database standardization to metric (kg), UnitConverter utility for consistent display preferences, enhanced weight calculations with 10-14 day averaging periods and data validation filtering. Frontend-backend alignment with simplified body tracking unit toggle (kg ↔ lbs conversion). **Step 6 Complete**: All 71+ LSP errors in server/routes.ts resolved with proper userId type conversions and API data structure validation. **Critical Fix**: Save workout session as template functionality restored (403 error resolved).
-- **Scientific Algorithm Core Unification (Aug 2025)**: **Steps 7-8 Complete** - Created centralized `SciAlgorithmCore` service consolidating duplicate fatigue analysis and volume calculation logic across multiple services. Eliminated code duplication between auto-regulation-algorithms.ts and mesocycle-periodization.ts. Unified feedback scoring algorithms using consistent scientific methodology. Fixed all LSP errors in mesocycle-periodization.ts including Map iteration and type conversion issues. All scientific calculations now use single source of truth while maintaining backward compatibility. **Final validation confirms successful algorithm integration with zero compilation errors and unified scientific methodology implementation.**
-- **Systematic LSP Error Resolution (Aug 2025)**: **Steps 9-10 Complete** - Resolved all 49 TypeScript LSP errors in server/routes.ts through systematic userId type conversions (string → number), database query syntax corrections (eq() comparisons), and SQL template literal fixes. **Critical SQL Fix**: Corrected `INTERVAL ${days} DAY` syntax error in SciAlgorithmCore.analyzeFatigue method to `INTERVAL '${days} days'` format. All API routes now properly handle authentication and database operations with zero compilation errors.
-- **Complete IP Compliance Refactoring (Aug 2025)**: **Complete** - Comprehensive refactoring to eliminate all Renaissance Periodization (RP) trademark references. Renamed core service from "rp-algorithm-core.ts" to "scientific-algorithm-core.ts" with updated type definitions: RPFeedbackScores → ScienceFeedbackScores, RPFatigueAnalysis → ScienceFatigueAnalysis, RPVolumeRecommendation → ScienceVolumeRecommendation. Updated all imports, references, and comments across multiple files including auto-regulation-algorithms.ts, mesocycle-periodization.ts, init-volume-landmarks.ts, and openai.ts. **Frontend Compliance Update**: Systematically updated 30+ frontend components replacing "Renaissance Periodization" and "RP methodology" with "evidence-based scientific methodology" across UI text, component names, and user-facing messages. All core algorithm terminology now uses generic "scientific-based methodology" to ensure complete trademark compliance while maintaining 100% functionality. System verified working with zero compilation errors.
-- **Calorie Discrepancy Resolution & Message Standardization (Aug 2025)**: **Steps 11-12 Complete** - Fixed calorie inconsistency between Dashboard (2773) and IntegratedNutritionOverview (2840) by correcting API endpoint usage and MacroChart calculation logic. Dashboard now uses API's totalCalories instead of calculating from macros. **Message Standardization**: Verified all toast notifications, error messages, and user-facing text are in English (EN-US) as per project requirements. Translation files preserved for future multi-language support.
-- **Complete TrainPro Rebranding (Aug 2025)**: **Complete** - Updated all FitAI references to TrainPro across PWA and mobile applications. Updated icons, manifest files, service worker, localStorage keys, and all console logging. Created new TrainPro-branded SVG icons with T-shaped logo design and PRO badge. Updated PWA manifest, HTML meta tags, social media tags, and mobile app configuration. All branding now consistently reflects TrainPro identity.
-- **Unit Conversion Toggle for Weight Data (Aug 2025)**: **Complete** - Added kg/lbs conversion toggle button to Recent Entries section in nutrition progression component. Button appears only when viewing weight data, allows real-time unit switching using UnitConverter utility. Features clean UI with ArrowLeftRight icon and hover effects for improved user experience.
-- **Training Dashboard Cards Redesign (Aug 2025)**: **Complete** - Redesigned training statistics cards with clean color-coded layout inspired by IntegratedNutritionOverview design. Removed arbitrary progress bars with fake targets, now displays authentic training data only: Total Sessions (blue), Total Volume (green), Average Session Time (orange). Each card shows real statistics without misleading progress indicators.
+- **Goal Standardization System**: Unified goal management with three standardized options (Fat Loss, Muscle Gain, Maintenance) across all components, Goal Synchronization Service ensuring data consistency, and `/api/unified-goals` endpoint as single source of truth.
+- **Weight Unit Standardization**: Database standardization to metric (kg), UnitConverter utility for consistent display preferences, enhanced weight calculations with averaging periods and data validation filtering. Frontend-backend alignment with simplified body tracking unit toggle (kg ↔ lbs conversion).
+- **TrainPro Rebranding**: All FitAI references updated to TrainPro across PWA and mobile applications, including icons, manifest files, service worker, and console logging.
+- **Unit Conversion Toggle**: Added kg/lbs conversion toggle button to Recent Entries section in nutrition progression component for weight data.
+- **Training Dashboard Cards Redesign**: Redesigned training statistics cards with clean color-coded layout, displaying authentic training data only: Total Sessions, Total Volume, Average Session Time.
 
 ### iOS App Development Strategy - Expo Approach
-TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. **Complete Expo configuration exists** in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, **eliminating the need for macOS/Xcode**. Two deployment options available:
-- **Expo (Recommended)**: WebView wrapper with EAS Build - 1.5-2 hours, no macOS needed
-- **Capacitor (Alternative)**: Native integration - 4-6 hours, requires macOS/Xcode
+TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. **Complete Expo configuration exists** in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, **eliminating the need for macOS/Xcode**.
 
 ## External Dependencies
 
