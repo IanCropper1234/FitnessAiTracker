@@ -376,7 +376,34 @@ const translations: Record<Language, Record<string, string>> = {
     "print": "列印",
     "download": "下載",
     "upload": "上傳",
-    "drag_and_drop": "拖曳放置"
+    "drag_and_drop": "拖曳放置",
+    
+    // Additional UI
+    "quick_actions": "快速操作",
+    "common_tasks": "常用功能",
+    "continue_workout": "繼續訓練",
+    "recent_activity": "最近活動",
+    "your_latest_updates": "最新動態",
+    "logged_food": "記錄食物",
+    "today": "今天",
+    "yesterday": "昨天",
+    "about": "約",
+    "hours_ago": "小時前",
+    "minutes_ago": "分鐘前",
+    "view": "檢視",
+    "overview": "總覽",
+    "macro_breakdown": "巨量營養素分佈",
+    "training_progress": "訓練進度",
+    "analytics": "分析",
+    "activity": "活動",
+    "profile_level": "檔案等級",
+    "body_fat": "體脂率",
+    "latest_entry": "最新記錄",
+    "this_week": "本週",
+    "volume": "訓練量",
+    "total_sessions": "總訓練次數",
+    "total_volume": "總訓練量",
+    "average_session_time": "平均訓練時間"
   }
 };
 
