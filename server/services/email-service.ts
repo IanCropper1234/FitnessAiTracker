@@ -62,7 +62,8 @@ class EmailService {
    */
   async sendVerificationEmail(data: VerificationEmailData): Promise<boolean> {
     try {
-      const verificationUrl = `${data.baseUrl}/verify-email?token=${data.verificationToken}`;
+      const verificationUrl = `${data.baseUrl}/api/auth/verify-email?token=${data.verificationToken}`;
+      console.log(`🔗 Generated verification URL: ${verificationUrl}`);
       
       const mailOptions = {
         from: {

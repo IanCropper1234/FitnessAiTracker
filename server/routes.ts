@@ -756,7 +756,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create new verification token and send email  
-      const baseUrl = process.env.REPLIT_DOMAIN || 'http://localhost:5000';
+      const baseUrl = process.env.BASE_URL || process.env.REPLIT_DOMAIN || 'https://mytrainpro.com';
       const result = await createEmailVerificationToken(
         user[0].id,
         email,
@@ -885,7 +885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Profile created for user:', profile.userId);
 
       // Create email verification token and send verification email
-      const baseUrl = process.env.REPLIT_DOMAIN || 'http://localhost:5000';
+      const baseUrl = process.env.BASE_URL || process.env.REPLIT_DOMAIN || 'https://mytrainpro.com';
       const verificationResult = await createEmailVerificationToken(
         newUser.id,
         emailValidation.normalized,
