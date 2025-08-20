@@ -1191,29 +1191,14 @@ export function IntegratedNutritionOverview({
         
         if (micronutrientLogs.length === 0) return null;
         
-        // Calculate daily micronutrient totals with improved validation and quantity scaling
+        // Calculate daily micronutrient totals with improved validation
         const dailyTotals = micronutrientLogs.reduce((totals: any, log: any) => {
           const micronutrients = log.micronutrients;
           if (micronutrients && typeof micronutrients === 'object') {
-            // Get the logged quantity for proportional scaling if needed
-            const loggedQuantity = parseFloat(log.quantity) || 1;
-            const baseQuantity = 100; // Most nutrition data is per 100g
-            const scalingFactor = loggedQuantity / baseQuantity;
-            
             Object.keys(micronutrients).forEach(nutrient => {
-              let value = micronutrients[nutrient];
-              
-              // Handle different data formats and null values
-              if (value === null || value === undefined || value === '') {
-                return; // Skip null/undefined/empty values
-              }
-              
-              // Parse the value
-              const parsedValue = parseFloat(value);
-              if (typeof parsedValue === 'number' && !isNaN(parsedValue) && parsedValue >= 0) {
-                // Apply quantity scaling for accurate daily totals
-                const scaledValue = parsedValue * scalingFactor;
-                totals[nutrient] = (totals[nutrient] || 0) + scaledValue;
+              const value = parseFloat(micronutrients[nutrient]);
+              if (typeof value === 'number' && !isNaN(value) && value > 0) {
+                totals[nutrient] = (totals[nutrient] || 0) + value;
               }
             });
           }
