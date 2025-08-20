@@ -42,13 +42,13 @@ export function AppInitialLoading({ className }: AppInitialLoadingProps) {
           initial={{ opacity: 0 }}
           animate={{ 
             opacity: 1,
-            transition: { delay: 0.2, duration: 0.4 }
+            transition: { delay: 0.1, duration: 0.3 }
           }}
           className="space-y-4"
         >
-          <LoadingSpinner size="md" className="text-primary mx-auto" />
-          <p className="text-sm text-muted-foreground">
-            Loading...
+          <LoadingSpinner size="md" className="text-blue-600 mx-auto" />
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Initializing TrainPro...
           </p>
         </motion.div>
       </div>

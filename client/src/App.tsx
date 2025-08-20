@@ -46,6 +46,7 @@ import { WorkoutExecutionProvider } from "@/contexts/WorkoutExecutionContext";
 import { GlobalCompleteSetButton } from "@/components/GlobalCompleteSetButton";
 import { FirstTimeUserLoading } from "@/components/FirstTimeUserLoading";
 import { AppInitialLoading } from "@/components/AppInitialLoading";
+import { InstantLoadingScreen } from "@/components/InstantLoadingScreen";
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
 import { initializeWorkoutSettings } from "@/hooks/useSettings";
 import { AnimatePresence } from "framer-motion";
@@ -563,6 +564,26 @@ function AppContent() {
 
 // Main App component that provides all contexts
 export default function App() {
+  // Track context initialization phases
+  const [contextsReady, setContextsReady] = useState(false);
+  
+  // Mark contexts as ready after minimal delay
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      const timer = setTimeout(() => {
+        setContextsReady(true);
+      }, 50); // Minimal delay for context setup
+      
+      return () => clearTimeout(timer);
+    });
+  }, []);
+  
+  // Show instant loading screen before any context initialization
+  if (!contextsReady) {
+    return <InstantLoadingScreen />;
+  }
+  
   return (
     <ErrorBoundary level="critical">
       <QueryClientProvider client={queryClient}>
