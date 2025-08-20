@@ -3229,8 +3229,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics routes
   app.use('/api/analytics', analyticsRoutes);
   
-  // AI routes
-  app.use('/api/ai', aiRoutes);
+  // AI routes - apply auth middleware
+  app.use('/api/ai', requireAuth, aiRoutes);
 
   // Nutrition Progression
   app.get("/api/nutrition/progression", requireAuth, async (req, res) => {

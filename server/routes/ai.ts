@@ -1,27 +1,9 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import OpenAI from 'openai';
 
 const router = Router();
 
-// Authentication middleware
-function requireAuth(req: any, res: any, next: any) {
-  const userId = (req.session as any)?.userId;
-  
-  // Check for both session-based auth and Replit auth
-  if (!userId) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  
-  // Convert userId to number if it's a string
-  const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
-  
-  if (isNaN(numericUserId) || numericUserId <= 0) {
-    return res.status(401).json({ message: "Invalid user ID" });
-  }
-  
-  req.userId = numericUserId;
-  next();
-}
+// Use the global auth middleware - no need for custom auth in AI routes
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -29,7 +11,7 @@ const openai = new OpenAI({
 });
 
 // AI Exercise Recommendations
-router.post('/exercise-recommendations', requireAuth, async (req, res) => {
+router.post('/exercise-recommendations', async (req, res) => {
   try {
     const { userGoals, currentExercises, trainingHistory, muscleGroupFocus, experienceLevel, availableEquipment, timeConstraints, injuryRestrictions } = req.body;
 
@@ -133,10 +115,10 @@ router.post('/exercise-recommendations', requireAuth, async (req, res) => {
 });
 
 // AI Nutrition Analysis
-router.post('/nutrition-analysis', requireAuth, async (req, res) => {
+router.post('/nutrition-analysis', async (req, res) => {
   try {
     const { userProfile, nutritionData, timeRange, healthConditions, primaryGoal } = req.body;
-    const userId = req.userId;
+    const userId = Number(req.userId);
 
     // If no user profile provided, fetch from database
     let profile = userProfile;
@@ -358,7 +340,7 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
 });
 
 // AI Food Analysis from Image
-router.post('/food-analysis', requireAuth, async (req, res) => {
+router.post('/food-analysis', async (req, res) => {
   try {
     const { image, context } = req.body;
 
@@ -431,7 +413,7 @@ router.post('/food-analysis', requireAuth, async (req, res) => {
 });
 
 // Program Optimization Analysis
-router.post('/program-optimization', requireAuth, async (req, res) => {
+router.post('/program-optimization', async (req, res) => {
   try {
     const { currentProgram, userGoals, performanceData } = req.body;
 
