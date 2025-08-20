@@ -313,6 +313,13 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const [, setLocation] = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
+  
+  // Auto-reset language to English if ZH-TW is selected (since it's not complete)
+  useEffect(() => {
+    if (language === 'zh-TW') {
+      setLanguage('en');
+    }
+  }, [language, setLanguage]);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -452,7 +459,12 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="zh-TW">中文 (繁體)</SelectItem>
+                      <SelectItem value="zh-TW" disabled>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="opacity-60">中文 (繁體)</span>
+                          <span className="text-xs text-gray-500 ml-2">Coming Soon</span>
+                        </div>
+                      </SelectItem>
                       <SelectItem value="es" disabled>
                         <div className="flex items-center justify-between w-full">
                           <span className="opacity-60">Español</span>
