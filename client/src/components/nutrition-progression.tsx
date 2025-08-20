@@ -859,7 +859,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
             </SelectContent>
           </Select>
           
-          <div className="flex bg-gray-100 dark:bg-gray-800  p-0.5">
+          <div className="flex bg-gray-100 dark:bg-gray-800 p-0.5 ml-[50px] mr-[50px]">
             {([
               { key: 'weight', label: 'Weight' },
               { key: 'bodyFat', label: 'Fat%' },
@@ -1000,7 +1000,6 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           {renderChart()}
         </div>
       </div>
-
       {/* Compact Data Table Section */}
       <div className="bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700 p-2">
         <div className="mb-2 flex items-center justify-between">
