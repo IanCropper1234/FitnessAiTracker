@@ -847,15 +847,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         {/* Compact Dropdown Controls */}
         <div className="flex items-center gap-1.5">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-24 h-7 text-xs font-medium">
+            <SelectTrigger className="w-20 h-7 text-xs font-medium">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">7 days</SelectItem>
-              <SelectItem value="14d">14 days</SelectItem>
-              <SelectItem value="30d">30 days</SelectItem>
-              <SelectItem value="90d">90 days</SelectItem>
-              <SelectItem value="1y">1 year</SelectItem>
+            <SelectContent className="min-w-20">
+              <SelectItem value="7d">7d</SelectItem>
+              <SelectItem value="14d">14d</SelectItem>
+              <SelectItem value="30d">30d</SelectItem>
+              <SelectItem value="90d">90d</SelectItem>
+              <SelectItem value="1y">1y</SelectItem>
             </SelectContent>
           </Select>
           
