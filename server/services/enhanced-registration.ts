@@ -6,6 +6,7 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { db } from '../db';
+import { emailService } from './email-service';
 import { users, emailVerificationTokens, registrationAttempts } from '@shared/schema';
 import { eq, sql, and, desc, lt } from 'drizzle-orm';
 
@@ -229,41 +230,64 @@ export async function logRegistrationAttempt(
 }
 
 /**
- * Create email verification token
+ * Create email verification token and send verification email  
  */
 export async function createEmailVerificationToken(
+  userId: number,
   email: string,
-  type: 'registration' | 'password_reset' | 'email_change' = 'registration',
-  userId?: number,
-  ipAddress?: string,
-  userAgent?: string
-): Promise<string> {
-  const token = generateVerificationToken();
-  const expiresAt = new Date(Date.now() + REGISTRATION_LIMITS.emailVerificationExpiryMinutes * 60 * 1000);
+  name: string,
+  baseUrl: string
+): Promise<{ success: boolean; token?: string; error?: string }> {
+  try {
+    // Generate verification token
+    const token = generateVerificationToken();
+    const expiresAt = new Date(Date.now() + REGISTRATION_LIMITS.emailVerificationExpiryMinutes * 60 * 1000);
 
-  await db.insert(emailVerificationTokens).values({
-    userId,
-    email,
-    token,
-    type,
-    expiresAt,
-    ipAddress,
-    userAgent,
-    createdAt: new Date(),
-    attempts: 0
-  });
+    // Store verification token in database
+    await db.insert(emailVerificationTokens).values({
+      userId,
+      token,
+      email,
+      expiresAt,
+      createdAt: new Date()
+    });
 
-  return token;
+    // Send verification email
+    const emailSent = await emailService.sendVerificationEmail({
+      to: email,
+      name,
+      verificationToken: token,
+      baseUrl
+    });
+
+    if (!emailSent) {
+      return {
+        success: false,
+        error: 'Failed to send verification email'
+      };
+    }
+
+    console.log(`✅ Verification email sent to ${email} for user ${userId}`);
+    return {
+      success: true,
+      token
+    };
+  } catch (error) {
+    console.error('Email verification token creation error:', error);
+    return {
+      success: false,
+      error: 'Failed to create verification token'
+    };
+  }
 }
 
 /**
  * Verify email verification token
  */
 export async function verifyEmailToken(token: string): Promise<{
-  valid: boolean;
+  success: boolean;
   email?: string;
   userId?: number;
-  type?: string;
   error?: string;
 }> {
   try {
@@ -278,7 +302,7 @@ export async function verifyEmailToken(token: string): Promise<{
       .limit(1);
 
     if (tokenRecord.length === 0) {
-      return { valid: false, error: 'Invalid or expired token' };
+      return { success: false, error: 'Invalid or expired token' };
     }
 
     const record = tokenRecord[0];
@@ -287,20 +311,41 @@ export async function verifyEmailToken(token: string): Promise<{
     await db
       .update(emailVerificationTokens)
       .set({ 
-        usedAt: new Date(),
-        attempts: record.attempts + 1
+        used: true,
+        usedAt: new Date()
       })
-      .where(eq(emailVerificationTokens.id, record.id));
+      .where(eq(emailVerificationTokens.token, token));
+
+    // Update user's email verification status
+    await db
+      .update(users)
+      .set({ 
+        emailVerified: true,
+        emailVerifiedAt: new Date()
+      })
+      .where(eq(users.id, record.userId!));
+
+    // Send welcome email
+    const user = await db
+      .select({ name: users.name })
+      .from(users)
+      .where(eq(users.id, record.userId!))
+      .limit(1);
+
+    if (user.length > 0) {
+      await emailService.sendWelcomeEmail(record.email, user[0].name);
+    }
+
+    console.log(`✅ Email verified for user ${record.userId}: ${record.email}`);
 
     return {
-      valid: true,
+      success: true,
       email: record.email,
-      userId: record.userId || undefined,
-      type: record.type
+      userId: record.userId || undefined
     };
   } catch (error) {
     console.error('Token verification error:', error);
-    return { valid: false, error: 'Verification failed' };
+    return { success: false, error: 'Verification failed' };
   }
 }
 

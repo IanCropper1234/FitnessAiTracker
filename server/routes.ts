@@ -22,13 +22,16 @@ import aiRoutes from "./routes/ai.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates, emailVerificationTokens, registrationAttempts } from "@shared/schema";
 import { 
-  validatePasswordStrength,
+  validatePassword,
   checkRegistrationRateLimit,
   logRegistrationAttempt,
   createEmailVerificationToken,
   verifyEmailToken,
-  validateEmailFormat
+  validateEmailFormat,
+  isEmailVerified,
+  getRegistrationStats
 } from "./services/enhanced-registration";
+import { emailService } from "./services/email-service";
 import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
 
 // Extend Request type to include userId
@@ -456,6 +459,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth middleware - re-enabling Replit Auth integration
   await setupAuth(app);
   
+  // Initialize email service
+  emailService.initialize().then(success => {
+    if (success) {
+      console.log('✅ Email service ready for verification emails');
+    } else {
+      console.log('⚠️ Email service initialization failed - verification emails will not work');
+    }
+  });
+  
   // Auth routes - supporting both legacy session auth and Replit Auth
   app.get('/api/auth/user', async (req: any, res) => {
     try {
@@ -678,6 +690,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email verification endpoint
+  app.get("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({
+          success: false,
+          error: 'Verification token is required'
+        });
+      }
+      
+      const result = await verifyEmailToken(token);
+      
+      if (result.success) {
+        // Redirect to success page or login with verification success
+        res.redirect('/?verified=true&message=Email%20verified%20successfully');
+      } else {
+        // Redirect to error page with error message
+        res.redirect(`/?verification-error=${encodeURIComponent(result.error || 'Verification failed')}`);
+      }
+    } catch (error) {
+      console.error('Email verification error:', error);
+      res.redirect('/?verification-error=server-error');
+    }
+  });
+
+  // Resend verification email endpoint
+  app.post("/api/auth/resend-verification", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          error: 'Email is required'
+        });
+      }
+      
+      // Find user by email
+      const user = await db
+        .select({ id: users.id, name: users.name, emailVerified: users.emailVerified })
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+      
+      if (!user.length) {
+        return res.status(404).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+      
+      if (user[0].emailVerified) {
+        return res.status(400).json({
+          success: false,
+          error: 'Email is already verified'
+        });
+      }
+      
+      // Create new verification token and send email  
+      const baseUrl = process.env.REPLIT_DOMAIN || 'http://localhost:5000';
+      const result = await createEmailVerificationToken(
+        user[0].id,
+        email,
+        user[0].name,
+        baseUrl
+      );
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          message: 'Verification email sent successfully'
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: result.error || 'Failed to send verification email'
+        });
+      }
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to resend verification email'
+      });
+    }
+  });
+
   // Step 2: Password strength validation (real-time)
   app.post("/api/auth/validate-password", async (req, res) => {
     try {
@@ -778,13 +879,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Profile created for user:', profile.userId);
 
-      // Create email verification token
-      const verificationToken = await createEmailVerificationToken(
-        emailValidation.normalized,
-        'registration',
+      // Create email verification token and send verification email
+      const baseUrl = process.env.REPLIT_DOMAIN || 'http://localhost:5000';
+      const verificationResult = await createEmailVerificationToken(
         newUser.id,
-        clientIP,
-        userAgent
+        emailValidation.normalized,
+        name.trim(),
+        baseUrl
       );
 
       // Log successful registration attempt
@@ -810,19 +911,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log('Enhanced user session saved successfully');
           
           // Return user info with verification status
-          res.status(201).json({ 
-            user: { 
-              id: newUser.id, 
-              email: newUser.email, 
-              name: newUser.name,
-              emailVerified: false
-            },
-            message: "Account created successfully! Please check your email for verification instructions.",
-            verificationRequired: true,
-            // In production, you would send the verification email here
-            // For demo purposes, we're returning the token
-            verificationToken
-          });
+          if (verificationResult.success) {
+            res.status(201).json({ 
+              user: { 
+                id: newUser.id, 
+                email: newUser.email, 
+                name: newUser.name,
+                emailVerified: false
+              },
+              message: "Account created successfully! Please check your email for verification instructions.",
+              verificationRequired: true,
+              verificationEmailSent: true
+            });
+          } else {
+            res.status(201).json({ 
+              user: { 
+                id: newUser.id, 
+                email: newUser.email, 
+                name: newUser.name,
+                emailVerified: false
+              },
+              message: "Account created successfully, but verification email failed to send. You can request a new verification email later.",
+              verificationRequired: true,
+              verificationEmailSent: false,
+              emailError: verificationResult.error
+            });
+          }
         });
       });
     } catch (error: any) {
