@@ -132,7 +132,7 @@ export function PasswordStrengthIndicator({
       </div>
 
       {/* Requirements Check */}
-      {validation.requirements.length > 0 && (
+      {validation.requirements && validation.requirements.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Password Requirements:
@@ -149,7 +149,7 @@ export function PasswordStrengthIndicator({
       )}
 
       {/* Feedback */}
-      {validation.feedback.length > 0 && (
+      {validation.feedback && validation.feedback.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Suggestions:
