@@ -123,7 +123,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
   // Get user's preferred weight unit using UnitConverter
   const getUserPreferredWeightUnit = () => {
-    return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics);
+    return UnitConverter.getUserWeightUnit(userProfile?.userProfile, bodyMetrics || []);
   };
 
   // Handle page change with smooth transition
@@ -846,7 +846,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         
         {/* Compact Dropdown Controls */}
         <div className="flex items-center gap-1.5">
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={(value) => setTimeRange(value as '7d' | '14d' | '30d' | '90d' | '1y')}>
             <SelectTrigger className="w-20 h-7 text-xs font-medium">
               <SelectValue />
             </SelectTrigger>
