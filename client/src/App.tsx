@@ -31,6 +31,7 @@ import RPCoachPage from "./pages/RPCoachPage";
 import NutritionFactsPage from "./pages/nutrition-facts";
 import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
 import WorkoutSettings from "./pages/WorkoutSettings";
+import EmailVerification from "./pages/email-verification";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
 
@@ -55,6 +56,7 @@ interface User {
   id: number;
   email: string;
   name: string;
+  emailVerified?: boolean;
 }
 
 
@@ -92,8 +94,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   //   // Cache clearing disabled to fix iOS PWA reload issue
   // }, []);
 
-  // Redirect to auth if no user (but not if we're already checking auth)
-  // IMPORTANT: Be more lenient with exercise-selection and template creation pages
+  // Redirect logic with email verification gate
   useEffect(() => {
     const protectedPages = [
       '/exercise-selection',
@@ -103,7 +104,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     ];
     const isProtectedPage = protectedPages.some(page => location.startsWith(page));
     
-    if (!user && location !== "/auth") {
+    if (!user && location !== "/auth" && location !== "/email-verification") {
       // Delay redirect for protected pages to allow auth recovery
       if (isProtectedPage) {
         console.log('Protected page detected, delaying auth redirect to allow recovery');
@@ -121,9 +122,22 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         setLocation("/auth");
       }
     } else if (user && location === "/auth") {
-      console.log('User authenticated, redirecting to dashboard');
-      // Use a timeout to ensure React has time to process the user state change
-      setTimeout(() => setLocation("/"), 50);
+      // Check email verification status
+      if (!user.emailVerified) {
+        console.log('User authenticated but email not verified, redirecting to verification');
+        setLocation("/email-verification");
+      } else {
+        console.log('User authenticated and verified, redirecting to dashboard');
+        setTimeout(() => setLocation("/"), 50);
+      }
+    } else if (user && !user.emailVerified && location !== "/email-verification" && location !== "/auth") {
+      // Block access to all pages if email not verified
+      console.log('User not verified, redirecting to verification page');
+      setLocation("/email-verification");
+    } else if (user && user.emailVerified && location === "/email-verification") {
+      // If verified user somehow ends up on verification page, redirect to dashboard
+      console.log('User already verified, redirecting to dashboard');
+      setLocation("/");
     }
   }, [user, location, setLocation]);
 
@@ -134,9 +148,25 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   return (
     <div className={`min-h-screen bg-white dark:bg-black ${showBottomNav || showNutritionMenu || showTrainingMenu ? 'pb-20' : 'pb-4'} theme-transition`}>
       <Switch>
+        <Route path="/email-verification">
+          <AnimatedPage>
+            {user && !user.emailVerified ? (
+              <EmailVerification 
+                user={user}
+                onVerificationSuccess={() => {
+                  // Refresh user data to get updated verification status
+                  window.location.reload();
+                }}
+              />
+            ) : (
+              <Auth onSuccess={setUser} />
+            )}
+          </AnimatedPage>
+        </Route>
+        
         <Route path="/">
           <AnimatedPage>
-            {user ? (
+            {user && user.emailVerified ? (
               <Dashboard 
                 user={user} 
                 selectedDate={selectedDate}

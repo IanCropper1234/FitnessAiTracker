@@ -22,14 +22,12 @@ import aiRoutes from "./routes/ai.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates, emailVerificationTokens, registrationAttempts } from "@shared/schema";
 import { 
-  validatePassword,
+  validatePasswordStrength,
   checkRegistrationRateLimit,
   logRegistrationAttempt,
   createEmailVerificationToken,
   verifyEmailToken,
-  validateEmailFormat,
-  isEmailVerified,
-  getRegistrationStats
+  validateEmailFormat
 } from "./services/enhanced-registration";
 import { emailService } from "./services/email-service";
 import { eq, and, desc, sql, lt, inArray, gt, isNotNull } from "drizzle-orm";
@@ -492,7 +490,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const user = await storage.getUser(sessionUserId);
         if (user) {
           console.log('Session auth user found:', user.email);
-          return res.json({ user });
+          // Return user with email verification status for frontend routing
+          return res.json({ 
+            user: {
+              ...user,
+              emailVerified: user.emailVerified || false
+            }
+          });
         }
       }
       
@@ -722,10 +726,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Resend verification email endpoint
+  // Resend verification email endpoint with rate limiting
   app.post("/api/auth/resend-verification", async (req, res) => {
     try {
       const { email } = req.body;
+      const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
       
       if (!email) {
         return res.status(400).json({
@@ -755,6 +760,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Rate limiting: Check for recent verification emails (60 seconds)
+      const recentToken = await db
+        .select({ createdAt: emailVerificationTokens.createdAt })
+        .from(emailVerificationTokens)
+        .where(and(
+          eq(emailVerificationTokens.userId, user[0].id),
+          sql`${emailVerificationTokens.createdAt} > NOW() - INTERVAL '60 seconds'`
+        ))
+        .orderBy(desc(emailVerificationTokens.createdAt))
+        .limit(1);
+      
+      if (recentToken.length > 0) {
+        const timeDiff = Math.ceil((Date.now() - new Date(recentToken[0].createdAt).getTime()) / 1000);
+        const waitTime = 60 - timeDiff;
+        
+        console.log(`Rate limit hit for ${email} - ${waitTime}s remaining`);
+        return res.status(429).json({
+          success: false,
+          error: `Please wait ${waitTime} seconds before requesting another verification email`,
+          waitTime: waitTime
+        });
+      }
+      
       // Create new verification token and send email  
       const baseUrl = process.env.BASE_URL || process.env.REPLIT_DOMAIN || 'https://mytrainpro.com';
       const result = await createEmailVerificationToken(
@@ -765,6 +793,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       
       if (result.success) {
+        console.log(`✅ Verification email resent to ${email} from IP ${clientIP}`);
         res.json({
           success: true,
           message: 'Verification email sent successfully'
