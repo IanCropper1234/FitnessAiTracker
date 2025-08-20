@@ -246,10 +246,10 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
     
     // Use simple 7-day average comparison for dashboard (less complex than linear regression)
     const recentAvg = cleanMetrics.slice(0, Math.min(3, cleanMetrics.length))
-      .reduce((sum: number, entry: any) => sum + parseFloat(entry.weight), 0) / Math.min(3, cleanMetrics.length);
+      .reduce((sum, entry) => sum + parseFloat(entry.weight), 0) / Math.min(3, cleanMetrics.length);
     
     const olderAvg = cleanMetrics.slice(-Math.min(3, cleanMetrics.length))
-      .reduce((sum: number, entry: any) => sum + parseFloat(entry.weight), 0) / Math.min(3, cleanMetrics.length);
+      .reduce((sum, entry) => sum + parseFloat(entry.weight), 0) / Math.min(3, cleanMetrics.length);
     
     return recentAvg - olderAvg;
   };
@@ -584,9 +584,9 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
             {/* Quick Actions */}
             <Card className="dashboard-card bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mt-[0px] mb-[0px]">
             <CardHeader>
-              <CardTitle className="text-black dark:text-white">{t("quick_actions") || "Quick Actions"}</CardTitle>
+              <CardTitle className="text-black dark:text-white">Quick Actions</CardTitle>
               <CardDescription className="text-gray-600 dark:text-gray-400">
-                {t("common_tasks") || "Common tasks"}
+                Common tasks
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -609,7 +609,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               >
                 <Dumbbell className="w-4 h-4 mr-2" />
                 {workoutSessions && workoutSessions.filter((session: any) => !session.isCompleted).length > 0 
-                  ? (t("continue_workout") || "Continue Workout")
+                  ? "Continue Workout"
                   : t("start_workout")}
               </Button>
               <Button 
@@ -619,7 +619,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}
                 onClick={() => setLocation('/profile')}
               >
-                {t("view")} {t("profile")}
+                View {t("profile")}
               </Button>
             </CardContent>
           </Card>

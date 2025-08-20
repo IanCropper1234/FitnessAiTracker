@@ -14,10 +14,10 @@ export function BottomNavigation() {
 
   // iOS-style navigation items (4 main tabs + center action button)
   const navItems = [
-    { path: "/", icon: Home, label: t("dashboard") },
-    { path: "/nutrition", icon: Utensils, label: t("nutrition") },
-    { path: "/training", icon: Dumbbell, label: t("training") },
-    { path: "/profile", icon: User, label: t("profile") },
+    { path: "/", icon: Home, label: "Dashboard" },
+    { path: "/nutrition", icon: Utensils, label: "Nutrition" },
+    { path: "/training", icon: Dumbbell, label: "Training" },
+    { path: "/profile", icon: User, label: "Profile" },
   ];
 
   const handleNavigation = (path: string) => {
