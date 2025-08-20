@@ -193,23 +193,22 @@ export function ProgressiveRegistrationForm({ onSuccess, onSwitchToSignIn }: {
 
   const StepIndicator = () => {
     const maxStep = registrationComplete ? 4 : 3;
-    const stepLabels = ['Email', 'Details', 'Review', 'Verify'];
     
     return (
-      <div className="flex items-center justify-center mb-8">
+      <div className="flex items-center justify-center mb-6 px-4 overflow-x-auto">
         {Array.from({ length: maxStep }, (_, i) => i + 1).map((stepNumber) => (
-          <div key={stepNumber} className="flex items-center">
+          <div key={stepNumber} className="flex items-center flex-shrink-0">
             <div className={`
-              w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+              w-7 h-7 rounded-none flex items-center justify-center text-xs font-medium
               ${step >= stepNumber 
                 ? 'bg-blue-600 text-white' 
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
               }
             `}>
-              {step > stepNumber ? <CheckCircle className="w-4 h-4" /> : stepNumber}
+              {step > stepNumber ? <CheckCircle className="w-3 h-3" /> : stepNumber}
             </div>
             {stepNumber < maxStep && (
-              <div className={`w-12 h-0.5 mx-2 ${
+              <div className={`w-8 h-0.5 mx-1 ${
                 step > stepNumber ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
               }`} />
             )}

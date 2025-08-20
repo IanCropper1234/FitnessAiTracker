@@ -26,6 +26,7 @@ export default function Auth({ onSuccess }: AuthProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("signin");
 
   const signUpMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name: string }) => {
@@ -170,7 +171,7 @@ export default function Auth({ onSuccess }: AuthProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
               <TabsTrigger 
                 value="signin" 
@@ -284,11 +285,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                 {/* Enhanced Progressive Registration Form */}
                 <ProgressiveRegistrationForm 
                   onSuccess={onSuccess} 
-                  onSwitchToSignIn={() => {
-                    // Switch to sign in tab
-                    const signInTab = document.querySelector('[value="signin"]') as HTMLElement;
-                    signInTab?.click();
-                  }}
+                  onSwitchToSignIn={() => setActiveTab("signin")}
                 />
               </div>
             </TabsContent>
