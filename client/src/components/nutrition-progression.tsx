@@ -24,7 +24,7 @@ interface ProgressData {
 
 export function NutritionProgression({ userId }: NutritionProgressionProps) {
   const { t } = useTranslation();
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
+  const [timeRange, setTimeRange] = useState<'7d' | '14d' | '30d' | '90d' | '1y'>('30d');
   const [chartType, setChartType] = useState<'weight' | 'bodyFat' | 'calories' | 'macros'>('weight');
   
   // Unit conversion state for Recent Entries display
@@ -43,6 +43,9 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     switch (timeRange) {
       case '7d':
         startDate.setDate(endDate.getDate() - 7);
+        break;
+      case '14d':
+        startDate.setDate(endDate.getDate() - 14);
         break;
       case '30d':
         startDate.setDate(endDate.getDate() - 30);
@@ -841,23 +844,20 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Progress</h2>
         </div>
         
-        {/* Compact Pill Controls */}
+        {/* Compact Dropdown Controls */}
         <div className="flex items-center gap-1.5">
-          <div className="flex bg-gray-100 dark:bg-gray-800  p-0.5">
-            {(['7d', '30d', '90d', '1y'] as const).map((range) => (
-              <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-2 py-0.5 text-xs font-medium  transition-all ${
-                  timeRange === range 
-                    ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                {range}
-              </button>
-            ))}
-          </div>
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="w-24 h-7 text-xs font-medium">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7d">7 days</SelectItem>
+              <SelectItem value="14d">14 days</SelectItem>
+              <SelectItem value="30d">30 days</SelectItem>
+              <SelectItem value="90d">90 days</SelectItem>
+              <SelectItem value="1y">1 year</SelectItem>
+            </SelectContent>
+          </Select>
           
           <div className="flex bg-gray-100 dark:bg-gray-800  p-0.5">
             {([
