@@ -376,16 +376,16 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               )}
 
               {/* Mesocycle Controls */}
-              <div className="flex flex-wrap gap-2 pt-2">
+              <div className="grid grid-cols-3 gap-3 pt-2">
                 <Button
                   size="sm"
                   onClick={() => handleAdvanceWeek(activeMesocycle.id)}
                   disabled={advanceWeekMutation.isPending || !canAdvanceWeek(activeMesocycle)}
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-center gap-1.5 text-xs"
                   title={!canAdvanceWeek(activeMesocycle) ? "Complete all current week sessions to advance" : ""}
                 >
-                  <TrendingUp className="h-4 w-4" />
-                  {advanceWeekMutation.isPending ? "Advancing..." : "Advance Week"}
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  {advanceWeekMutation.isPending ? "Advancing..." : "Advance"}
                 </Button>
                 
                 <Button
@@ -393,9 +393,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                   size="sm"
                   onClick={() => handlePauseMesocycle(activeMesocycle.id)}
                   disabled={updateMesocycleMutation.isPending}
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-center gap-1.5 text-xs"
                 >
-                  <Pause className="h-4 w-4" />
+                  <Pause className="h-3.5 w-3.5" />
                   Pause
                 </Button>
 
@@ -404,9 +404,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50"
+                      className="flex items-center justify-center gap-1.5 text-xs text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                       Delete
                     </Button>
                   </AlertDialogTrigger>
