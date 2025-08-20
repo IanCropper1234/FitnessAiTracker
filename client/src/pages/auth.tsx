@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, Mail, Lock, Smartphone } from "lucide-react";
+import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
 
 interface User {
   id: number;
@@ -252,79 +253,37 @@ export default function Auth({ onSuccess }: AuthProps) {
             </TabsContent>
             
             <TabsContent value="signup" className="space-y-4">
-              {/* Replit Auth Section - New users get all options */}
-              <div className="space-y-3">
-                <Button 
-                  onClick={handleReplitAuth}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
-                  type="button"
-                >
-                  <Smartphone className="h-4 w-4" />
-                  Sign up with Google • Apple • Email
-                </Button>
-                <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-                  Quick setup with your preferred account
-                </p>
-                
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full bg-gray-300 dark:bg-gray-600" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
-                      Or create manual account
-                    </span>
+              {/* Enhanced Registration with Replit Auth Options */}
+              <div className="space-y-4">
+                {/* Replit Auth Section */}
+                <div className="space-y-3">
+                  <Button 
+                    onClick={handleReplitAuth}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
+                    type="button"
+                  >
+                    <Smartphone className="h-4 w-4" />
+                    Sign up with Google • Apple • Email
+                  </Button>
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                    Quick setup with your preferred account
+                  </p>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full bg-gray-300 dark:bg-gray-600" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
+                        Or use enhanced manual registration
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Manual Account Creation */}
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div>
-                  <Label htmlFor="signup-name" className="text-black dark:text-white">{t("name") || "Name"}</Label>
-                  <Input
-                    id="signup-name"
-                    name="name"
-                    type="text"
-                    required
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signup-email" className="text-black dark:text-white flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    {t("email") || "Email"}
-                  </Label>
-                  <Input
-                    id="signup-email"
-                    name="email"
-                    type="email"
-                    required
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white"
-                    placeholder="your@email.com"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signup-password" className="text-black dark:text-white flex items-center gap-2">
-                    <Lock className="h-4 w-4" />
-                    {t("password") || "Password"}
-                  </Label>
-                  <Input
-                    id="signup-password"
-                    name="password"
-                    type="password"
-                    required
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-black dark:text-white"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
-                  disabled={signUpMutation.isPending}
-                >
-                  {signUpMutation.isPending ? (t("loading") || "Loading...") : (t("sign_up") || "Sign Up")}
-                </Button>
-              </form>
+                {/* Enhanced Progressive Registration Form */}
+                <ProgressiveRegistrationForm onSuccess={onSuccess} />
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>

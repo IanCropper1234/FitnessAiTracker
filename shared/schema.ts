@@ -30,6 +30,11 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  // Enhanced registration fields
+  emailVerified: boolean("email_verified").default(false),
+  isActive: boolean("is_active").default(false), // Account activation status
+  registrationIp: text("registration_ip"),
+  registrationUserAgent: text("registration_user_agent"),
 });
 
 export const userProfiles = pgTable("user_profiles", {
@@ -45,6 +50,32 @@ export const userProfiles = pgTable("user_profiles", {
   fitnessGoal: text("fitness_goal").$type<'fat_loss' | 'muscle_gain' | 'maintenance'>(), // Standardized: fat_loss, muscle_gain, maintenance
   dietaryRestrictions: text("dietary_restrictions").array(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Enhanced email verification system
+export const emailVerificationTokens = pgTable("email_verification_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  email: text("email").notNull(), // Support pre-registration verification
+  token: text("token").notNull().unique(),
+  type: text("type").notNull().default("registration"), // registration, password_reset, email_change
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  usedAt: timestamp("used_at"),
+  attempts: integer("attempts").default(0).notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+});
+
+// Registration attempt tracking for security
+export const registrationAttempts = pgTable("registration_attempts", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  ipAddress: text("ip_address").notNull(),
+  userAgent: text("user_agent"),
+  success: boolean("success").default(false),
+  failureReason: text("failure_reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const nutritionGoals = pgTable("nutrition_goals", {
@@ -714,3 +745,12 @@ export type SpecialMethodConfig =
 
 // Type definitions for database entities
 export type AutoRegulationFeedbackType = typeof autoRegulationFeedback.$inferSelect;
+export type EmailVerificationTokenType = typeof emailVerificationTokens.$inferSelect;
+export type RegistrationAttemptType = typeof registrationAttempts.$inferSelect;
+
+// Enhanced schema definitions for registration system
+export const insertEmailVerificationTokenSchema = createInsertSchema(emailVerificationTokens);
+export const insertRegistrationAttemptSchema = createInsertSchema(registrationAttempts);
+
+export type InsertEmailVerificationToken = z.infer<typeof insertEmailVerificationTokenSchema>;
+export type InsertRegistrationAttempt = z.infer<typeof insertRegistrationAttemptSchema>;
