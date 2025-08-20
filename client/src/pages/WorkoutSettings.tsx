@@ -60,7 +60,6 @@ export default function WorkoutSettings() {
             <Settings className="h-6 w-6" />
             Workout Settings
           </h1>
-          <p className="text-muted-foreground">Customize your workout experience</p>
         </div>
       </div>
 
