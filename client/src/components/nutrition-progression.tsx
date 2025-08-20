@@ -61,7 +61,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   const { startDate, endDate } = getDateRange();
 
   // Fetch progression data
-  const { data: progressionData, isLoading } = useQuery<ProgressData[]>({
+  const { data: rawProgressionData, isLoading } = useQuery<ProgressData[]>({
     queryKey: ['/api/nutrition/progression', timeRange],
     queryFn: async () => {
       const response = await fetch(
@@ -71,23 +71,42 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     }
   });
 
+  // Sort progression data by newest first for recent entries table
+  const progressionData = rawProgressionData ? 
+    [...rawProgressionData].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) : 
+    null;
+
+  // For charts, we need chronological order (oldest first)
+  const chartProgressionData = rawProgressionData ? 
+    [...rawProgressionData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) : 
+    null;
+
   // Fetch body metrics for weight/body fat trends
-  const { data: bodyMetrics } = useQuery({
+  const { data: rawBodyMetrics } = useQuery({
     queryKey: ['/api/body-metrics', timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/body-metrics`);
       const allMetrics = await response.json();
-      // Filter by date range and sort by date
+      // Filter by date range
       const filteredMetrics = allMetrics
         .filter((metric: any) => {
           const metricDate = new Date(metric.date);
           return metricDate >= startDate && metricDate <= endDate;
-        })
-        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        });
       
       return filteredMetrics;
     }
   });
+
+  // Sort body metrics by newest first for recent entries table
+  const bodyMetrics = rawBodyMetrics ? 
+    [...rawBodyMetrics].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()) : 
+    null;
+
+  // For charts, we need chronological order (oldest first)
+  const chartBodyMetrics = rawBodyMetrics ? 
+    [...rawBodyMetrics].sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()) : 
+    null;
 
   // Get user profile for unit preferences
   const { data: userProfile } = useQuery({
@@ -408,7 +427,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
   };
 
   const renderChart = () => {
-    if (!progressionData || progressionData.length === 0) {
+    if (!chartProgressionData || chartProgressionData.length === 0) {
       return (
         <div className="text-center py-12 text-gray-600 dark:text-gray-400">
           <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -421,7 +440,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
     switch (chartType) {
       case 'weight':
         const preferredUnit = getUserPreferredWeightUnit();
-        const weightData = bodyMetrics?.map((metric: any) => {
+        const weightData = chartBodyMetrics?.map((metric: any) => {
           let weight = parseFloat(metric.weight);
           // Convert weight to user's preferred unit
           const metricUnit = metric.unit === 'imperial' ? 'lbs' : 'kg';
@@ -502,7 +521,7 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
         );
 
       case 'bodyFat':
-        const bodyFatData = bodyMetrics?.filter((metric: any) => metric.bodyFatPercentage).map((metric: any) => ({
+        const bodyFatData = chartBodyMetrics?.filter((metric: any) => metric.bodyFatPercentage).map((metric: any) => ({
           date: new Date(metric.date).toLocaleDateString(),
           bodyFat: parseFloat(metric.bodyFatPercentage)
         })) || [];
@@ -564,13 +583,13 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'calories':
         // Calculate average calories for reference line
-        const avgCals = progressionData && progressionData.length > 0 
-          ? progressionData.reduce((sum, data) => sum + data.calories, 0) / progressionData.length 
+        const avgCals = chartProgressionData && chartProgressionData.length > 0 
+          ? chartProgressionData.reduce((sum, data) => sum + data.calories, 0) / chartProgressionData.length 
           : 0;
 
         return (
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={progressionData}>
+            <BarChart data={chartProgressionData || []}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
                 dataKey="date" 
@@ -624,15 +643,15 @@ export function NutritionProgression({ userId }: NutritionProgressionProps) {
 
       case 'macros':
         // Calculate average macros for reference lines
-        const avgMacros = progressionData && progressionData.length > 0 ? {
-          protein: progressionData.reduce((sum, data) => sum + data.protein, 0) / progressionData.length,
-          carbs: progressionData.reduce((sum, data) => sum + data.carbs, 0) / progressionData.length,
-          fat: progressionData.reduce((sum, data) => sum + data.fat, 0) / progressionData.length
+        const avgMacros = chartProgressionData && chartProgressionData.length > 0 ? {
+          protein: chartProgressionData.reduce((sum, data) => sum + data.protein, 0) / chartProgressionData.length,
+          carbs: chartProgressionData.reduce((sum, data) => sum + data.carbs, 0) / chartProgressionData.length,
+          fat: chartProgressionData.reduce((sum, data) => sum + data.fat, 0) / chartProgressionData.length
         } : { protein: 0, carbs: 0, fat: 0 };
 
         return (
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={progressionData}>
+            <BarChart data={chartProgressionData || []}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis 
                 dataKey="date" 
