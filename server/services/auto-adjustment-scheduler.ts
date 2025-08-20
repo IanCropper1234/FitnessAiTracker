@@ -122,14 +122,18 @@ export class AutoAdjustmentScheduler {
   }
 
   private shouldRunAdjustment(settings: AutoAdjustmentSettings): boolean {
+    // CRITICAL FIX: Don't run on first time if lastAutoAdjustment is null
+    // This should only run according to the user's schedule
     if (!settings.lastAutoAdjustment) {
-      // First time - run adjustment
-      return true;
+      console.log('🕐 No previous adjustment date - scheduling for next period');
+      return false;
     }
     
     const lastAdjustment = new Date(settings.lastAutoAdjustment);
     const now = new Date();
     const daysSinceLastAdjustment = Math.floor((now.getTime() - lastAdjustment.getTime()) / (1000 * 60 * 60 * 24));
+    
+    console.log(`⏰ Days since last adjustment: ${daysSinceLastAdjustment}, frequency: ${settings.autoAdjustmentFrequency}`);
     
     if (settings.autoAdjustmentFrequency === 'weekly') {
       return daysSinceLastAdjustment >= 7;

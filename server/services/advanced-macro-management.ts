@@ -202,12 +202,21 @@ export class AdvancedMacroManagementService {
     const getCurrentTargetCalories = () => {
       if (!currentGoals) return 2000;
       
+      console.log('🎯 Goal Detection Debug:', {
+        useCustomCalories: currentGoals.useCustomCalories,
+        customTargetCalories: currentGoals.customTargetCalories,
+        targetCalories: currentGoals.targetCalories,
+        goalType: currentGoals.goal
+      });
+      
       // When custom calories toggle is enabled, use custom values
       if (currentGoals.useCustomCalories && currentGoals.customTargetCalories) {
+        console.log('📊 Using CUSTOM calories:', parseFloat(currentGoals.customTargetCalories));
         return parseFloat(currentGoals.customTargetCalories);
       }
       
-      // Otherwise use suggested values
+      // Otherwise use TDEE-based suggested values
+      console.log('📊 Using TDEE-based calories:', parseFloat(currentGoals.targetCalories));
       return parseFloat(currentGoals.targetCalories) || 2000;
     };
 
@@ -597,11 +606,12 @@ export class AdvancedMacroManagementService {
             adjustmentRecommendation = 'increase_calories';
             adjustmentReason = 'insufficient_weight_gain';
             console.log('🚀 RP Recommendation: INCREASE CALORIES - Weight gain too slow for muscle gain');
-          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 2.5) {
-            // Only decrease if gaining significantly more than target (very conservative)
+          } else if (adherencePercentage >= 90 && weightChange > targetWeightChangePerWeek * 3.5) {
+            // FIXED: More conservative threshold - only decrease if gaining >350% of target
+            // This prevents premature calorie cuts during normal muscle gain fluctuations
             adjustmentRecommendation = 'decrease_calories';
             adjustmentReason = 'excessive_weight_gain';
-            console.log('⬇️ RP Recommendation: DECREASE CALORIES - Excessive weight gain');
+            console.log('⬇️ RP Recommendation: DECREASE CALORIES - Excessive weight gain (>3.5x target)');
           } else if (adherencePercentage < 70) {
             adjustmentRecommendation = 'improve_adherence';
             adjustmentReason = 'poor_adherence_bulking';
