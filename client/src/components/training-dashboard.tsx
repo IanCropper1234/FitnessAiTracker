@@ -207,7 +207,7 @@ function WorkoutSessionsWithBulkActions({
   return (
     <div className="space-y-3">
       {/* Compact Bulk Actions Header */}
-      <div className="flex items-center gap-2 p-2 bg-muted/50 ">
+      <div className="flex items-center gap-2 p-2 bg-muted/50 pt-[0px] pb-[0px]">
         <Button
           variant={bulkDeleteMode ? "destructive" : "outline"}
           size="sm"
@@ -259,7 +259,6 @@ function WorkoutSessionsWithBulkActions({
           </div>
         )}
       </div>
-
       {/* Sessions Grid */}
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 overflow-hidden">
         {sessions.map((session) => (
