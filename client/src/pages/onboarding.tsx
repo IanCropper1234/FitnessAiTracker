@@ -31,7 +31,7 @@ export default function Onboarding() {
         
         <h1 className="text-4xl font-bold mb-4 text-foreground">TrainPro</h1>
         <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-          Evidence-based training and nutrition coaching powered by Renaissance Periodization methodology
+          Evidence-based training and nutrition coaching powered by scientific methodology
         </p>
         
         {/* Language Selector */}

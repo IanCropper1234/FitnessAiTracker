@@ -51,7 +51,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete, mealType, on
 
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
-      // Enhanced search with RP categorization
+      // Enhanced search with evidence-based categorization
       let url = `/api/food/search?q=${encodeURIComponent(query)}`;
       if (selectedCategory) url += `&category=${selectedCategory}`;
       if (selectedMealSuitability) url += `&mealType=${selectedMealSuitability}`;
@@ -562,7 +562,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete, mealType, on
                 </div>
                 {aiAnalyzeMutation.data.mealSuitability && aiAnalyzeMutation.data.mealSuitability.length > 0 && (
                   <div className="mt-2 text-center">
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">RP Meal Timing:</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Meal Timing:</div>
                     <div className="flex justify-center gap-1 flex-wrap">
                       {aiAnalyzeMutation.data.mealSuitability.map((timing: string, idx: number) => (
                         <span key={idx} className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300  border border-blue-200 dark:border-blue-800">

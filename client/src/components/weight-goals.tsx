@@ -62,12 +62,12 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
     
     switch (goalType) {
       case 'cutting':
-        // RP principle: 0.5-1% of body weight per week for fat loss
+        // Evidence-based principle: 0.5-1% of body weight per week for fat loss
         if (bodyWeight < 70) return Math.round((bodyWeight * 0.005) * 10) / 10; // 0.5%
         return Math.round((bodyWeight * 0.007) * 10) / 10; // 0.7%
         
       case 'bulking':
-        // RP principle: 0.25-0.5% of body weight per week for muscle gain
+        // Evidence-based principle: 0.25-0.5% of body weight per week for muscle gain
         if (bodyWeight < 70) return Math.round((bodyWeight * 0.004) * 10) / 10; // 0.4%
         return Math.round((bodyWeight * 0.003) * 10) / 10; // 0.3%
         
@@ -409,8 +409,8 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
                   placeholder={`${userWeightUnit === 'metric' ? 'kg' : 'lbs'}/week`}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  {formData.goalType === 'cutting' && "RP recommends 0.5-1% body weight/week for fat loss"}
-                  {formData.goalType === 'bulking' && "RP recommends 0.25-0.5% body weight/week for muscle gain"}
+                  {formData.goalType === 'cutting' && "Evidence-based research recommends 0.5-1% body weight/week for fat loss"}
+                  {formData.goalType === 'bulking' && "Evidence-based research recommends 0.25-0.5% body weight/week for muscle gain"}
                   {formData.goalType === 'maintenance' && "No weekly change for maintenance"}
                 </p>
               </div>
@@ -429,7 +429,7 @@ export function WeightGoals({ userId, userWeightUnit = 'metric' }: WeightGoalsPr
               </p>
             </div>
 
-            {/* RP Methodology Indicator */}
+            {/* Evidence-based Methodology Indicator */}
             <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 ">
               <Target className="w-4 h-4 text-blue-600" />
               <div className="text-sm text-blue-700 dark:text-blue-300">

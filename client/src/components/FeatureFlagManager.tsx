@@ -64,6 +64,19 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
     });
   };
 
+  const getFeatureFlags = () => {
+    return {
+      workoutExecutionV2: settings.workoutExecutionV2,
+      spinnerSetInput: settings.spinnerSetInput,
+      gestureNavigation: settings.gestureNavigation,
+      circularProgress: settings.circularProgress,
+      restTimerFAB: settings.restTimerFAB,
+      workoutSummary: settings.workoutSummary,
+      autoRegulationFeedback: settings.autoRegulationFeedback,
+      lastUpdated: new Date().toISOString()
+    };
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -195,7 +208,7 @@ export const FeatureFlagManager: React.FC<FeatureFlagManagerProps> = ({
                   <Label htmlFor="autoRegulationFeedback" className="font-medium">
                     Auto-Regulation Feedback
                     <Badge variant="outline" className="ml-2 text-xs bg-blue-100 text-blue-700">
-                      RP Method
+                      Evidence-based Method
                     </Badge>
                   </Label>
                   <p className="text-sm text-muted-foreground">

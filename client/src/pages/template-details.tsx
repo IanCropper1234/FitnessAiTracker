@@ -313,7 +313,7 @@ export default function TemplateDetails() {
       {template.rpMethodology && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Renaissance Periodization Guidelines</CardTitle>
+            <CardTitle className="text-lg">Evidence-based Guidelines</CardTitle>
             <CardDescription>
               Evidence-based volume and progression recommendations
             </CardDescription>

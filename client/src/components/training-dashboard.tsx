@@ -1548,7 +1548,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
               <Target className="h-8 w-8 text-muted-foreground mb-3" />
               <h3 className="text-base font-semibold mb-2">No training programs yet</h3>
               <p className="text-sm text-muted-foreground text-center mb-3">
-                Create structured training programs with RP methodology.
+                Create structured training programs with evidence-based methodology.
               </p>
               <Button size="sm" className="text-black dark:text-black" style={{ backgroundColor: '#479bf5' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3582e6'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#479bf5'}>
                 <Plus className="h-4 w-4 mr-1" />
@@ -1575,7 +1575,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                 <h4 className="font-semibold text-blue-900 dark:text-blue-100">AI Training Analytics</h4>
               </div>
               <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
-                Advanced training analysis with AI insights and RP methodology tracking
+                Advanced training analysis with AI insights and evidence-based methodology tracking
               </p>
               <Button size="sm" onClick={() => setLocation('/training-analytics')} className="w-full">
                 View Analytics

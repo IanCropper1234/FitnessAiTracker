@@ -57,7 +57,7 @@ export default function WellnessTestPage() {
                 <ul className="text-sm text-green-700 space-y-1">
                   <li>• Weekly wellness check-ins save energy, hunger, sleep, stress, and adherence ratings</li>
                   <li>• Macro adjustment calculations now use real wellness data instead of hardcoded values</li>
-                  <li>• RP methodology adjusts calories based on user's weekly wellness feedback</li>
+                  <li>• Evidence-based methodology adjusts calories based on user's weekly wellness feedback</li>
                   <li>• Low energy (≤4) reduces deficit aggressiveness</li>
                   <li>• High hunger (≥8) makes the system more conservative</li>
                   <li>• Poor sleep (≤4) or high stress (≥8) reduces adjustment intensity</li>

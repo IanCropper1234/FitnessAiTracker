@@ -157,7 +157,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
         fitnessGoal: unifiedGoals.fitnessGoal
       });
       
-      // Map dietGoal types to RP phases
+      // Map dietGoal types to evidence-based phases
       switch (goalType.toLowerCase()) {
         case 'cut':
         case 'cutting':
@@ -180,7 +180,7 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
       fitnessGoal = latestWeightGoal.goalType;
     }
     
-    console.log('RP Analysis - Fallback to Legacy Goals:', {
+    console.log('Evidence-based Analysis - Fallback to Legacy Goals:', {
       profileGoal: userProfile?.user?.fitnessGoal,
       weightGoalType: weightGoals?.[0]?.goalType,
       weightChangeTarget: weightGoals?.[0]?.targetWeightChangePerWeek,
@@ -192,11 +192,11 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
                                    parseFloat(weightGoals[0].targetWeightChangePerWeek) > 0;
     
     if (hasPositiveWeightTarget) {
-      console.log('RP Analysis: Detected Muscle Gain based on positive weight target');
+      console.log('Evidence-based Analysis: Detected Muscle Gain based on positive weight target');
       return 'Muscle Gain';
     }
     
-    // Map fitness goals to RP phases
+    // Map fitness goals to evidence-based phases
     switch (fitnessGoal?.toLowerCase()) {
       case 'weight_loss':
       case 'fat_loss':
@@ -229,15 +229,15 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
 
   return (
     <div className="space-y-4">
-      {/* Overall RP Status */}
+      {/* Overall Evidence-based Status */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-blue-600" />
-            Renaissance Periodization Analysis
+            Evidence-based Analysis
           </CardTitle>
           <CardDescription>
-            Your nutrition performance analyzed using RP methodology
+            Your nutrition performance analyzed using evidence-based methodology
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -323,12 +323,12 @@ export function RPAnalysis({ userId }: RPAnalysisProps) {
         </CardContent>
       </Card>
 
-      {/* RP Recommendations Summary */}
+      {/* Evidence-based Recommendations Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="w-5 h-5 text-orange-600" />
-            RP Methodology Status
+            Evidence-based Methodology Status
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

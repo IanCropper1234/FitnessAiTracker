@@ -177,7 +177,7 @@ export default function CreateMesocyclePage() {
             Create New Mesocycle
           </h1>
           <p className="text-sm text-muted-foreground">
-            Design your training program using proven RP methodology
+            Design your training program using proven evidence-based methodology
           </p>
         </div>
       </div>

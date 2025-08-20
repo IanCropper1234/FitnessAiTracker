@@ -9,7 +9,7 @@ export default function Landing() {
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
           Your AI-powered fitness companion for intelligent training and nutrition management. 
-          Get personalized recommendations based on Renaissance Periodization methodology.
+          Get personalized recommendations based on evidence-based methodology.
         </p>
         <div className="space-y-4">
           <Button 

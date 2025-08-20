@@ -33,7 +33,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
         <Brain className="h-8 w-8 text-blue-600" />
         <div>
           
-          <p className="text-muted-foreground">Renaissance Periodization intelligent nutrition coaching</p>
+          <p className="text-muted-foreground">Evidence-based intelligent nutrition coaching</p>
         </div>
         
       </div>
@@ -60,7 +60,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
           </Card>
         </Collapsible>
 
-        {/* RP Analysis Section */}
+        {/* Analysis Section */}
         <Collapsible open={isAnalysisExpanded} onOpenChange={setIsAnalysisExpanded}>
           <Card className="border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10">
             <CollapsibleTrigger asChild>
@@ -68,7 +68,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    <span className="text-blue-900 dark:text-blue-100">RP Analysis</span>
+                    <span className="text-blue-900 dark:text-blue-100">Analysis</span>
                   </div>
                   <ChevronDown className="h-4 w-4 chevron-rotate text-blue-600 dark:text-blue-400" data-state={isAnalysisExpanded ? 'open' : 'closed'} />
                 </CardTitle>

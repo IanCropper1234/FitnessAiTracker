@@ -141,7 +141,7 @@ export default function WorkoutFeedbackPage() {
         <CardHeader>
           <CardTitle>Auto-Regulation Feedback</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Your feedback helps optimize future training volume and intensity based on Renaissance Periodization methodology.
+            Your feedback helps optimize future training volume and intensity based on evidence-based methodology.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">

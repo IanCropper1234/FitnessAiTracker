@@ -396,7 +396,7 @@ export default function CreateAIWorkoutSession() {
             <Brain className="h-6 w-6 text-blue-500" />
             Create AI Workout Session
           </h1>
-          <p className="text-sm text-muted-foreground">Generate intelligent, RP-based workout sessions tailored to your goals</p>
+          <p className="text-sm text-muted-foreground">Generate intelligent, evidence-based workout sessions tailored to your goals</p>
         </div>
       </div>
       <div className="grid lg:grid-cols-2 gap-6 min-h-0 max-h-[calc(100vh-120px)]">
@@ -426,7 +426,7 @@ export default function CreateAIWorkoutSession() {
                 </TabsList>
               </Tabs>
               <p className="text-xs text-muted-foreground mt-2">
-                Generate AI-powered exercise recommendations for a single training session using Renaissance Periodization methodology
+                Generate AI-powered exercise recommendations for a single training session using evidence-based methodology
               </p>
             </div>
             {/* Goals */}

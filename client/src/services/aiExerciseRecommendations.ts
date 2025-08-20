@@ -130,7 +130,7 @@ export class AIExerciseRecommendationService {
   }
   
   /**
-   * Get AI-powered exercise recommendations based on user data and RP methodology (legacy method)
+   * Get AI-powered exercise recommendations based on user data and evidence-based methodology (legacy method)
    */
   static async getExerciseRecommendations(
     request: ExerciseRecommendationRequest

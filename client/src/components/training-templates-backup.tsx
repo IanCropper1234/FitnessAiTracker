@@ -254,7 +254,7 @@ export default function TrainingTemplates({ userId, onTemplateSelect }: Training
         <div>
           <h3 className="text-lg font-semibold mb-2">Training Templates</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Choose from RP-based templates or create your own custom training programs
+            Choose from evidence-based templates or create your own custom training programs
           </p>
         </div>
 

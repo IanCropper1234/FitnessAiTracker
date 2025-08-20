@@ -208,7 +208,7 @@ export function RPRecommendations({ userId }: RPRecommendationsProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-purple-600" />
-            AI-Powered RP Recommendations
+            AI-Powered Evidence-based Recommendations
           </CardTitle>
           <CardDescription>
             Personalized adjustments based on your wellness check-ins and progress data

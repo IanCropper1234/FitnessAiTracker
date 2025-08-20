@@ -173,7 +173,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-300">RP Performance Score</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Renaissance Periodization Assessment</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Evidence-based Assessment</p>
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">

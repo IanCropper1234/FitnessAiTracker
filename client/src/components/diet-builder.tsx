@@ -1091,7 +1091,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                         <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1 text-left">
                           <li>• TDEE-based calculations</li>
                           <li>• Auto-regulation system</li>
-                          <li>• RP methodology</li>
+                          <li>• Evidence-based methodology</li>
                           <li>• Smart adjustments</li>
                         </ul>
                       </div>
@@ -1603,7 +1603,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
             <CardHeader>
               <CardTitle className="text-lg">Auto-Regulation & Feedback</CardTitle>
               <p className="text-sm text-muted-foreground">
-                RP methodology-based automatic adjustments based on your progress
+                Evidence-based automatic adjustments based on your progress
               </p>
             </CardHeader>
             <CardContent className="space-y-4">

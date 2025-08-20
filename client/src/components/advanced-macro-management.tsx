@@ -777,7 +777,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
             value="rp-analysis" 
             className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap rounded-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
           >
-            RP Analysis
+            Analysis
           </TabsTrigger>
           <TabsTrigger 
             value="rp-recommendations" 
@@ -864,7 +864,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                   >
                     <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                        Daily wellness ratings are averaged weekly for macro adjustments using RP methodology.
+                        Daily wellness ratings are averaged weekly for macro adjustments using evidence-based methodology.
                       </p>
                       
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-2">
@@ -907,7 +907,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                 </div>
               )}
 
-              {/* Show enhanced RP methodology recommendation if available */}
+              {/* Show enhanced evidence-based methodology recommendation if available */}
               {weeklyGoals && weeklyGoals.length > 0 && weeklyGoals[0].adjustmentRecommendation && selectedWeek && (
                 <div className="p-4 border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 pl-[16px] pr-[16px] ml-[-15px] mr-[-15px] mt-[10px] mb-[10px]">
                   <div className="flex items-center gap-2 mb-2">
@@ -1096,7 +1096,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                           </SelectContent>
                         </Select>
                         <p className="text-xs text-blue-600 dark:text-blue-400">
-                          Adjustments will be applied automatically based on your progress data and RP methodology.
+                          Adjustments will be applied automatically based on your progress data and evidence-based methodology.
                         </p>
                       </div>
                     )}
