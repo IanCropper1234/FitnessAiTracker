@@ -56,7 +56,7 @@ interface User {
   id: number;
   email: string;
   name: string;
-  emailVerified?: boolean;
+  emailVerified: boolean;
 }
 
 
@@ -156,6 +156,10 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 onVerificationSuccess={() => {
                   // Refresh user data to get updated verification status
                   window.location.reload();
+                }}
+                onReturnToLogin={() => {
+                  setUser(null);
+                  setLocation("/auth");
                 }}
               />
             ) : (

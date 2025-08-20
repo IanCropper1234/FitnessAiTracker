@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Clock, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
+import { Mail, Clock, RefreshCw, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -16,9 +16,10 @@ interface EmailVerificationProps {
     emailVerified: boolean;
   };
   onVerificationSuccess: () => void;
+  onReturnToLogin?: () => void;
 }
 
-export default function EmailVerification({ user, onVerificationSuccess }: EmailVerificationProps) {
+export default function EmailVerification({ user, onVerificationSuccess, onReturnToLogin }: EmailVerificationProps) {
   const [countdown, setCountdown] = useState(0);
   const [lastResendTime, setLastResendTime] = useState<number | null>(null);
   const { toast } = useToast();
@@ -178,6 +179,18 @@ export default function EmailVerification({ user, onVerificationSuccess }: Email
               )}
             </Button>
           </div>
+
+          {/* Return to Login Button */}
+          {onReturnToLogin && (
+            <Button 
+              onClick={onReturnToLogin}
+              variant="ghost"
+              className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Return to Login Page
+            </Button>
+          )}
 
           <div className="text-center text-xs text-gray-500 dark:text-gray-400">
             Verification emails can be resent every 60 seconds
