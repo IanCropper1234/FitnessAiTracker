@@ -8,6 +8,7 @@ import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Inf
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
+import { LanguageSelectorZhTw } from "@/components/LanguageSelectorZhTw";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
@@ -446,19 +447,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                     <Globe className="w-3.5 h-3.5" />
                     Language
                   </label>
-                  <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger className="w-full h-9 ios-touch-feedback touch-target">
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Español</SelectItem>
-                      <SelectItem value="ja">日本語</SelectItem>
-                      <SelectItem value="zh-CN">中文 (简体)</SelectItem>
-                      <SelectItem value="de">Deutsch</SelectItem>
-                      <SelectItem value="zh-TW">中文 (繁體)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <LanguageSelectorZhTw variant="default" className="w-full" />
                 </div>
 
                 {/* Theme Toggle */}
