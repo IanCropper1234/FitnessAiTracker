@@ -6,10 +6,20 @@ const router = Router();
 // Authentication middleware
 function requireAuth(req: any, res: any, next: any) {
   const userId = (req.session as any)?.userId;
-  if (!userId || typeof userId !== 'number') {
+  
+  // Check for both session-based auth and Replit auth
+  if (!userId) {
     return res.status(401).json({ message: "Not authenticated" });
   }
-  req.userId = userId;
+  
+  // Convert userId to number if it's a string
+  const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+  
+  if (isNaN(numericUserId) || numericUserId <= 0) {
+    return res.status(401).json({ message: "Invalid user ID" });
+  }
+  
+  req.userId = numericUserId;
   next();
 }
 
@@ -138,13 +148,13 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
       const [userProfileData] = await db
         .select()
         .from(userProfiles)
-        .where(eq(userProfiles.userId, userId))
+        .where(eq(userProfiles.userId, Number(userId)))
         .limit(1);
       
       const [userData] = await db
         .select()
         .from(users)
-        .where(eq(users.id, userId))
+        .where(eq(users.id, Number(userId)))
         .limit(1);
       
       // Improved profile handling with better default value management
@@ -167,7 +177,7 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
     if (!nutrition) {
       const { db } = await import('../db');
       const { nutritionLogs } = await import('../../shared/schema');
-      const { eq, gte } = await import('drizzle-orm');
+      const { eq, gte, and } = await import('drizzle-orm');
       
       // Fix time range mapping to match frontend values
       let daysAgo = 7; // default
@@ -183,7 +193,7 @@ router.post('/nutrition-analysis', requireAuth, async (req, res) => {
       nutrition = await db
         .select()
         .from(nutritionLogs)
-        .where(eq(nutritionLogs.userId, userId) && gte(nutritionLogs.date, startDate))
+        .where(and(eq(nutritionLogs.userId, Number(userId)), gte(nutritionLogs.date, startDate)))
         .orderBy(nutritionLogs.date)
         .limit(200); // Increase sample size for better analysis accuracy
     }
