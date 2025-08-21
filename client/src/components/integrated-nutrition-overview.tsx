@@ -1191,6 +1191,62 @@ export function IntegratedNutritionOverview({
         
         if (micronutrientLogs.length === 0) return null;
         
+        // Helper function to map nested nutrient names to flat names
+        const getNutrientFlatName = (nutrientName: string): string => {
+          const mapping: { [key: string]: string } = {
+            // Fat-Soluble Vitamins
+            'vitaminA': 'vitaminA',
+            'vitaminD': 'vitaminD', 
+            'vitaminE': 'vitaminE',
+            'vitaminK': 'vitaminK',
+            // Water-Soluble Vitamins
+            'vitaminC': 'vitaminC',
+            'vitaminB1': 'vitaminB1',
+            'vitaminB2': 'vitaminB2', 
+            'vitaminB3': 'vitaminB3',
+            'vitaminB5': 'vitaminB5',
+            'vitaminB6': 'vitaminB6',
+            'vitaminB7': 'vitaminB7',
+            'vitaminB9': 'vitaminB9',
+            'vitaminB12': 'vitaminB12',
+            'folate': 'folate',
+            // Major Minerals
+            'sodium': 'sodium',
+            'calcium': 'calcium',
+            'chloride': 'chloride',
+            'magnesium': 'magnesium',
+            'potassium': 'potassium',
+            'phosphorus': 'phosphorus',
+            // Trace Minerals
+            'iron': 'iron',
+            'zinc': 'zinc',
+            'copper': 'copper',
+            'iodine': 'iodine',
+            'chromium': 'chromium',
+            'fluoride': 'fluoride',
+            'selenium': 'selenium',
+            'manganese': 'manganese',
+            'molybdenum': 'molybdenum',
+            // Macronutrient Components
+            'fiber': 'fiber',
+            'sugar': 'sugar',
+            'omega3': 'omega3',
+            'omega6': 'omega6',
+            'starch': 'starch',
+            'alcohol': 'alcohol',
+            'transFat': 'transFat',
+            'addedSugar': 'addedSugar',
+            'cholesterol': 'cholesterol',
+            'saturatedFat': 'saturatedFat',
+            'solubleFiber': 'solubleFiber',
+            'insolubleFiber': 'insolubleFiber',
+            'monounsaturatedFat': 'monounsaturatedFat',
+            'polyunsaturatedFat': 'polyunsaturatedFat'
+          };
+          
+          return mapping[nutrientName] || nutrientName;
+        };
+        
         // Calculate daily micronutrient totals with support for both flat and nested structures
         const dailyTotals = micronutrientLogs.reduce((totals: any, log: any) => {
           const micronutrients = log.micronutrients;
@@ -1279,62 +1335,6 @@ export function IntegratedNutritionOverview({
             saturatedFat: null, // No RDA, limit is <10% of calories
             cholesterol: 300, // mg (upper limit)
           };
-        };
-        
-        // Helper function to map nested nutrient names to flat names
-        const getNutrientFlatName = (nutrientName: string): string => {
-          const mapping: { [key: string]: string } = {
-            // Fat-Soluble Vitamins
-            'vitaminA': 'vitaminA',
-            'vitaminD': 'vitaminD', 
-            'vitaminE': 'vitaminE',
-            'vitaminK': 'vitaminK',
-            // Water-Soluble Vitamins
-            'vitaminC': 'vitaminC',
-            'vitaminB1': 'vitaminB1',
-            'vitaminB2': 'vitaminB2', 
-            'vitaminB3': 'vitaminB3',
-            'vitaminB5': 'vitaminB5',
-            'vitaminB6': 'vitaminB6',
-            'vitaminB7': 'vitaminB7',
-            'vitaminB9': 'vitaminB9',
-            'vitaminB12': 'vitaminB12',
-            'folate': 'folate',
-            // Major Minerals
-            'sodium': 'sodium',
-            'calcium': 'calcium',
-            'chloride': 'chloride',
-            'magnesium': 'magnesium',
-            'potassium': 'potassium',
-            'phosphorus': 'phosphorus',
-            // Trace Minerals
-            'iron': 'iron',
-            'zinc': 'zinc',
-            'copper': 'copper',
-            'iodine': 'iodine',
-            'chromium': 'chromium',
-            'fluoride': 'fluoride',
-            'selenium': 'selenium',
-            'manganese': 'manganese',
-            'molybdenum': 'molybdenum',
-            // Macronutrient Components
-            'fiber': 'fiber',
-            'sugar': 'sugar',
-            'omega3': 'omega3',
-            'omega6': 'omega6',
-            'starch': 'starch',
-            'alcohol': 'alcohol',
-            'transFat': 'transFat',
-            'addedSugar': 'addedSugar',
-            'cholesterol': 'cholesterol',
-            'saturatedFat': 'saturatedFat',
-            'solubleFiber': 'solubleFiber',
-            'insolubleFiber': 'insolubleFiber',
-            'monounsaturatedFat': 'monounsaturatedFat',
-            'polyunsaturatedFat': 'polyunsaturatedFat'
-          };
-          
-          return mapping[nutrientName] || nutrientName;
         };
         
         const rda = calculateRDA();
