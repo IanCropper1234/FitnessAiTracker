@@ -170,7 +170,7 @@ export default function Auth({ onSuccess }: AuthProps) {
             {t("welcome") || "AI-Powered Fitness Platform"}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-5 pl-[0px] pr-[0px] pt-[0px] pb-[0px]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
               <TabsTrigger 
