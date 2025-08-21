@@ -30,15 +30,21 @@ export function RecentActivity({ userId }: RecentActivityProps) {
     queryKey: ['/api/activities', userId],
     queryFn: async () => {
       const response = await fetch(`/api/activities?limit=5`);
-      return response.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch activities');
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     }
   });
 
-  // Convert timestamp strings to Date objects
-  const formattedActivities: ActivityItem[] = activities.map((activity: any) => ({
-    ...activity,
-    timestamp: new Date(activity.timestamp)
-  }));
+  // Convert timestamp strings to Date objects - ensure activities is an array
+  const formattedActivities: ActivityItem[] = Array.isArray(activities) 
+    ? activities.map((activity: any) => ({
+        ...activity,
+        timestamp: new Date(activity.timestamp)
+      }))
+    : [];
 
   // Show only 3 activities by default, 5 when expanded
   const displayedActivities = isExpanded 
