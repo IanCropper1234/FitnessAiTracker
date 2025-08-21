@@ -15,68 +15,18 @@
   --chart-tooltip-border: #4b5563;
 }
 
-/* Remove all border radius globally - Must be after @tailwind utilities */
+/* UI utilities for enhanced design flexibility */
 @layer utilities {
-  *,
-  *::before,
-  *::after,
-  button,
-  .btn,
-  .card,
-  .rounded,
-  .rounded-sm,
-  .rounded-md,
-  .rounded-lg,
-  .rounded-xl,
-  .rounded-2xl,
-  .rounded-3xl,
-  .rounded-full,
-  .rounded-t,
-  .rounded-r,
-  .rounded-b,
-  .rounded-l,
-  .rounded-tl,
-  .rounded-tr,
-  .rounded-br,
-  .rounded-bl,
-  [data-radix-collection-item],
-  [role="button"],
-  [class*="rounded"]:not([role="tablist"]):not([data-state]),
-  div[class*="bg-"]:not([role="tablist"]):not([data-state]),
-  div[class*="border"]:not([role="tablist"]):not([data-state]) {
-    border-radius: 0 !important;
-  }
-
-  /* Allow tabs to maintain their design system appearance */
+  /* Tabs can maintain their design system appearance */
   [role="tablist"],
   [role="tablist"] *,
   [data-state="active"],
   [data-state="inactive"] {
-    border-radius: revert !important;
     border: none !important;
     box-shadow: none !important;
   }
 
-  /* Exception for circular timer FAB - force circular shape with highest specificity */
-  .timer-fab-circle[style*="border-radius"],
-  .timer-fab-circle,
-  button.timer-fab-circle {
-    border-radius: 50% !important;
-    border-top-left-radius: 9999px !important;
-    border-top-right-radius: 9999px !important;
-    border-bottom-left-radius: 9999px !important;
-    border-bottom-right-radius: 9999px !important;
-  }
-  
-  .timer-fab-circle *,
-  .timer-fab-circle *:before,
-  .timer-fab-circle *:after,
-  div.timer-fab-circle,
-  div.timer-fab-circle *,
-  div.timer-fab-circle::before,
-  div.timer-fab-circle::after {
-    border-radius: 50% !important;
-  }
+
 }
 
 /* Hide scrollbars for better mobile UX */
