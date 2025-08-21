@@ -37,7 +37,8 @@ import {
   MapPin,
   Zap,
   Brain,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
@@ -127,6 +128,36 @@ function WorkoutSessionsWithBulkActions({
   const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useIOSNotifications();
+
+  // Fetch feedback status for completed sessions
+  const completedSessionIds = sessions.filter(s => s.isCompleted).map(s => s.id);
+  const { data: feedbackStatuses = {} } = useQuery({
+    queryKey: ["/api/training/feedback-status", completedSessionIds],
+    queryFn: async () => {
+      if (completedSessionIds.length === 0) return {};
+      
+      // Fetch feedback status for all completed sessions
+      const feedbackMap: Record<number, boolean> = {};
+      
+      await Promise.all(completedSessionIds.map(async (sessionId) => {
+        try {
+          const response = await fetch(`/api/training/auto-regulation-feedback/${sessionId}`);
+          if (response.ok) {
+            const feedback = await response.json();
+            feedbackMap[sessionId] = !!feedback && feedback.sessionId === sessionId;
+          } else {
+            feedbackMap[sessionId] = false;
+          }
+        } catch (error) {
+          console.error(`Error checking feedback for session ${sessionId}:`, error);
+          feedbackMap[sessionId] = false;
+        }
+      }));
+      
+      return feedbackMap;
+    },
+    enabled: completedSessionIds.length > 0
+  });
 
   // Edit session mutation
   const editSessionMutation = useMutation({
@@ -279,6 +310,7 @@ function WorkoutSessionsWithBulkActions({
             showCheckbox={bulkDeleteMode}
             isSelected={selectedSessions.includes(session.id)}
             onSelect={() => handleSessionSelect(session.id)}
+            hasFeedback={session.isCompleted ? feedbackStatuses[session.id] === true : true}
           />
         ))}
       </div>
@@ -300,6 +332,7 @@ interface WorkoutSessionCardProps {
   showCheckbox?: boolean;
   isSelected?: boolean;
   onSelect?: () => void;
+  hasFeedback?: boolean;
 }
 
 function WorkoutSessionCard({ 
@@ -314,9 +347,11 @@ function WorkoutSessionCard({
   onSaveAsTemplate,
   showCheckbox = false,
   isSelected = false,
-  onSelect
+  onSelect,
+  hasFeedback = true
 }: WorkoutSessionCardProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [, setLocation] = useLocation();
   const { showSuccess } = useIOSNotifications();
 
   const editForm = useForm<EditSessionForm>({
@@ -435,15 +470,28 @@ function WorkoutSessionCard({
           Continue Workout
         </Button>
       ) : (
-        <Button 
-          variant="outline" 
-          className="w-full h-8 text-xs"
-          size="sm"
-          onClick={onView}
-        >
-          <BarChart3 className="h-3 w-3 mr-1.5" />
-          View Details
-        </Button>
+        <div className="space-y-1">
+          <Button 
+            variant="outline" 
+            className="w-full h-8 text-xs"
+            size="sm"
+            onClick={onView}
+          >
+            <BarChart3 className="h-3 w-3 mr-1.5" />
+            View Details
+          </Button>
+          {!hasFeedback && (
+            <Button 
+              variant="secondary" 
+              className="w-full h-8 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900/50"
+              size="sm"
+              onClick={() => setLocation(`/workout-feedback/${session.id}`)}
+            >
+              <MessageSquare className="h-3 w-3 mr-1.5" />
+              Add Feedback
+            </Button>
+          )}
+        </div>
       )}
       {/* Edit Session Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -668,6 +716,8 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
       return Array.isArray(data) ? data : [];
     }
   });
+
+
 
   // Create mesocycle lookup map for session cards
   const mesocycleLookup = mesocycles.reduce((acc, mesocycle) => {

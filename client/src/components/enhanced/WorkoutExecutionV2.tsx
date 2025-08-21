@@ -472,9 +472,31 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             description: "Great job! Redirecting to feedback...",
           });
           
-          // Delay redirect to show success animation
-          setTimeout(() => {
-            setLocation(`/workout-feedback/${sessionId}`);
+          // Check if feedback already exists before redirecting
+          setTimeout(async () => {
+            try {
+              const response = await fetch(`/api/training/auto-regulation-feedback/${sessionId}`);
+              if (response.ok) {
+                const existingFeedback = await response.json();
+                if (existingFeedback && existingFeedback.sessionId === sessionId) {
+                  // Feedback already exists, just go back to training dashboard
+                  showInfo("Workout Complete", "Feedback already exists for this session", {
+                    icon: "✅",
+                    autoHideDelay: 2000,
+                  });
+                  setTimeout(() => {
+                    setLocation('/training');
+                  }, 1000);
+                  return;
+                }
+              }
+              // No existing feedback, proceed to feedback page
+              setLocation(`/workout-feedback/${sessionId}`);
+            } catch (error) {
+              console.error('Error checking existing feedback:', error);
+              // On error, proceed to feedback page to be safe
+              setLocation(`/workout-feedback/${sessionId}`);
+            }
           }, 1500);
         } else {
           // Just saving progress
