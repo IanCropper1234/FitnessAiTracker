@@ -32,6 +32,7 @@ import NutritionFactsPage from "./pages/nutrition-facts";
 import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
 import WorkoutSettings from "./pages/WorkoutSettings";
 import EmailVerification from "./pages/email-verification";
+import EmailVerificationSuccess from "./pages/email-verification-success";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
 
@@ -56,7 +57,7 @@ interface User {
   id: number;
   email: string;
   name: string;
-  emailVerified: boolean;
+  emailVerified?: boolean;
 }
 
 
@@ -152,7 +153,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           <AnimatedPage>
             {user && !user.emailVerified ? (
               <EmailVerification 
-                user={user}
+                user={user as any}
                 onVerificationSuccess={() => {
                   // Refresh user data to get updated verification status
                   window.location.reload();
@@ -163,8 +164,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
                 }}
               />
             ) : (
-              <Auth onSuccess={(user) => setUser({ ...user, emailVerified: user.emailVerified ?? true })} />
+              <Auth onSuccess={(user: any) => setUser({ ...user, emailVerified: user.emailVerified ?? true })} />
             )}
+          </AnimatedPage>
+        </Route>
+        
+        <Route path="/email-verification-success">
+          <AnimatedPage>
+            <EmailVerificationSuccess />
           </AnimatedPage>
         </Route>
         

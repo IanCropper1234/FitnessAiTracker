@@ -734,11 +734,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await verifyEmailToken(token);
       
       if (result.success) {
-        // Redirect to success page or login with verification success
-        res.redirect('/?verified=true&message=Email%20verified%20successfully');
+        // Redirect to dedicated verification success page
+        res.redirect('/email-verification-success');
       } else {
-        // Redirect to error page with error message
-        res.redirect(`/?verification-error=${encodeURIComponent(result.error || 'Verification failed')}`);
+        // Redirect to auth page with error message
+        res.redirect(`/auth?verification-error=${encodeURIComponent(result.error || 'Verification failed')}`);
       }
     } catch (error) {
       console.error('Email verification error:', error);
