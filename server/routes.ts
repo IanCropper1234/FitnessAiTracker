@@ -3097,7 +3097,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/training/auto-regulation-feedback", requireAuth, async (req, res) => {
     try {
       console.log('Received feedback data:', JSON.stringify(req.body, null, 2));
-      const feedbackData = req.body;
+      const feedbackData = {
+        ...req.body,
+        userId: req.userId // Ensure userId is always included from auth middleware
+      };
+      console.log('Feedback data with userId:', JSON.stringify(feedbackData, null, 2));
       const feedback = await storage.createAutoRegulationFeedback(feedbackData);
       
       // Update Volume Landmarks using RP methodology based on session feedback
