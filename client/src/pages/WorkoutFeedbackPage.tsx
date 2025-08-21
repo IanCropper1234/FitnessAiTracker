@@ -78,7 +78,16 @@ export default function WorkoutFeedbackPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/training/fatigue-analysis'] });
       queryClient.invalidateQueries({ queryKey: ['/api/training/volume-recommendations'] });
       queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycle-recommendations'] });
-      setLocation('/training');
+      // Invalidate feedback status queries to update the UI
+      queryClient.invalidateQueries({ queryKey: ['/api/training/feedback-status'] });
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/training/feedback-status'
+      });
+      
+      // Show success notification and navigate back
+      setTimeout(() => {
+        setLocation('/training?feedbackSubmitted=true');
+      }, 100);
     },
   });
 

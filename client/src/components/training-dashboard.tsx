@@ -455,8 +455,28 @@ function WorkoutSessionCard({
           <span>•</span>
           <span>{session.totalVolume || 0}kg</span>
         </div>
-        <div className="text-xs font-medium">
-          {session.isCompleted ? "Completed" : "In Progress"}
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-medium">
+            {session.isCompleted ? "Completed" : "In Progress"}
+          </div>
+          {session.isCompleted && (
+            <div className="flex items-center gap-1">
+              <div className={`w-2 h-2 rounded-full ${
+                hasFeedback 
+                  ? 'bg-green-500 dark:bg-green-400' 
+                  : 'bg-orange-500 dark:bg-orange-400'
+              }`} 
+              title={hasFeedback ? 'Feedback submitted' : 'Feedback pending'}
+              />
+              <span className={`text-xs ${
+                hasFeedback 
+                  ? 'text-green-600 dark:text-green-400' 
+                  : 'text-orange-600 dark:text-orange-400'
+              }`}>
+                {hasFeedback ? 'Feedback ✓' : 'Feedback pending'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
       {/* Compact Action Button */}
@@ -480,16 +500,21 @@ function WorkoutSessionCard({
             <BarChart3 className="h-3 w-3 mr-1.5" />
             View Details
           </Button>
-          {!hasFeedback && (
+          {!hasFeedback ? (
             <Button 
               variant="secondary" 
-              className="w-full h-8 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900/50"
+              className="w-full h-8 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-900/50 border border-orange-300 dark:border-orange-700"
               size="sm"
               onClick={() => setLocation(`/workout-feedback/${session.id}`)}
             >
               <MessageSquare className="h-3 w-3 mr-1.5" />
               Add Feedback
             </Button>
+          ) : (
+            <div className="w-full h-8 text-xs flex items-center justify-center text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-md">
+              <CheckCircle2 className="h-3 w-3 mr-1.5" />
+              Feedback Complete
+            </div>
           )}
         </div>
       )}
@@ -536,6 +561,22 @@ interface TrainingDashboardProps {
 
 export function TrainingDashboard({ userId, activeTab = "dashboard", onViewStateChange }: TrainingDashboardProps) {
   const [, setLocation] = useLocation();
+  
+  // Check for feedback submission success
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('feedbackSubmitted') === 'true') {
+      // Clear the URL parameter
+      const url = new URL(window.location.href);
+      url.searchParams.delete('feedbackSubmitted');
+      window.history.replaceState({}, '', url.toString());
+      
+      // Show success notification
+      setTimeout(() => {
+        showSuccess("Feedback Submitted", "Your workout feedback has been successfully submitted and will help optimize future training recommendations");
+      }, 500);
+    }
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("all");
   const [selectedPrimaryMuscle, setSelectedPrimaryMuscle] = useState<string>("all");
@@ -549,6 +590,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
   const [viewingSessionId, setViewingSessionId] = useState<number | null>(null);
+  const { showSuccess } = useIOSNotifications();
 
   // Notify parent when view state changes
   useEffect(() => {
