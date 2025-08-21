@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 
 interface FeedbackData {
@@ -146,7 +146,7 @@ export default function WorkoutFeedbackPage() {
         <CheckCircle2 className="h-8 w-8 text-green-500 ml-auto" />
       </div>
 
-      <Card>
+      <Card className="relative">
         <CardHeader>
           <CardTitle>Auto-Regulation Feedback</CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -154,6 +154,15 @@ export default function WorkoutFeedbackPage() {
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Loading Overlay */}
+          {submitFeedbackMutation.isPending && (
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+              <div className="flex flex-col items-center space-y-3">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">Submitting your feedback...</p>
+              </div>
+            </div>
+          )}
           {/* Exercise RPE Summary - Only show if we have data */}
           {exerciseRpeData.length > 0 && (
             <div className="space-y-3">
@@ -192,6 +201,7 @@ export default function WorkoutFeedbackPage() {
                 min={1}
                 step={1}
                 className="w-full"
+                disabled={submitFeedbackMutation.isPending}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>Poor (1)</span>
@@ -212,6 +222,7 @@ export default function WorkoutFeedbackPage() {
                 min={1}
                 step={1}
                 className="w-full"
+                disabled={submitFeedbackMutation.isPending}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>No soreness (1)</span>
@@ -232,6 +243,7 @@ export default function WorkoutFeedbackPage() {
                 min={1}
                 step={1}
                 className="w-full"
+                disabled={submitFeedbackMutation.isPending}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>Very easy (1)</span>
@@ -252,6 +264,7 @@ export default function WorkoutFeedbackPage() {
                 min={1}
                 step={1}
                 className="w-full"
+                disabled={submitFeedbackMutation.isPending}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>Exhausted (1)</span>
@@ -272,6 +285,7 @@ export default function WorkoutFeedbackPage() {
                 min={1}
                 step={1}
                 className="w-full"
+                disabled={submitFeedbackMutation.isPending}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>Poor sleep (1)</span>
@@ -290,6 +304,7 @@ export default function WorkoutFeedbackPage() {
               onChange={(e) => updateFeedback('notes', e.target.value)}
               rows={4}
               className="resize-none"
+              disabled={submitFeedbackMutation.isPending}
             />
           </div>
 
@@ -298,6 +313,7 @@ export default function WorkoutFeedbackPage() {
             <Button 
               variant="outline" 
               onClick={handleSkip}
+              disabled={submitFeedbackMutation.isPending}
               className="flex-1"
             >
               Skip Feedback
@@ -307,7 +323,14 @@ export default function WorkoutFeedbackPage() {
               disabled={submitFeedbackMutation.isPending}
               className="flex-1"
             >
-              {submitFeedbackMutation.isPending ? "Submitting..." : "Submit Feedback"}
+              {submitFeedbackMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Feedback"
+              )}
             </Button>
           </div>
         </CardContent>
