@@ -1148,9 +1148,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user.emailVerified === false) {
         console.log('User email not verified (new account):', email);
         return res.status(403).json({ 
-          message: "Email verification required",
+          message: "Please verify your email address to complete your account setup. Check your inbox for a verification link.",
           emailVerified: false,
-          userId: user.id 
+          userId: user.id,
+          userFriendlyMessage: "Email verification required before you can sign in"
         });
       }
 

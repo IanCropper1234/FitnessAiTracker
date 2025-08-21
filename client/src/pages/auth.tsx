@@ -76,7 +76,12 @@ export default function Auth({ onSuccess }: AuthProps) {
           // Email verification required
           const result = await response.json();
           console.log('Email verification required:', result);
-          throw { status: 403, message: result.message, emailVerified: false };
+          throw { 
+            status: 403, 
+            message: result.message, 
+            emailVerified: result.emailVerified || false,
+            userFriendlyMessage: result.userFriendlyMessage 
+          };
         }
         
         if (!response.ok) {
@@ -114,13 +119,16 @@ export default function Auth({ onSuccess }: AuthProps) {
       console.error('Sign in error:', error);
       
       if (error?.status === 403 && error?.emailVerified === false) {
-        // Email verification required
+        // Email verification required - use server message if available, otherwise fallback
+        const userMessage = error?.userFriendlyMessage || "Email verification required before you can sign in";
+        const description = error?.message || "We've sent you a verification link. Please check your email (including spam folder) and click the link to activate your account before signing in.";
+        
         toast({
-          title: "Email Verification Required",
-          description: "Please check your email and click the verification link before signing in.",
-          variant: "destructive"
+          title: "📧 Please Verify Your Email",
+          description: description,
+          variant: "default", // Use default instead of destructive for friendlier appearance
+          duration: 8000 // Show longer for user to read
         });
-        // Navigate to email verification page or show verification message
         return;
       }
       
