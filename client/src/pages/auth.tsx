@@ -87,7 +87,17 @@ export default function Auth({ onSuccess }: AuthProps) {
         
         if (!response.ok) {
           const errorResult = await response.json().catch(() => ({}));
-          throw new Error(errorResult.message || `Server error: ${response.status}`);
+          console.log('Error response from server:', { status: response.status, data: errorResult });
+          
+          // Create a comprehensive error object
+          const error = {
+            status: response.status,
+            message: errorResult.message || `Server error: ${response.status}`,
+            userFriendlyMessage: errorResult.userFriendlyMessage,
+            emailVerified: errorResult.emailVerified
+          };
+          
+          throw error;
         }
         
         const result = await response.json();
@@ -119,23 +129,48 @@ export default function Auth({ onSuccess }: AuthProps) {
     onError: (error: any) => {
       console.error('Sign in error:', error);
       
-      if (error?.status === 403 && error?.emailVerified === false) {
-        // Email verification required - use server message if available, otherwise fallback
-        const userMessage = error?.userFriendlyMessage || "Email verification required before you can sign in";
-        const description = error?.message || "We've sent you a verification link. Please check your email (including spam folder) and click the link to activate your account before signing in.";
+      // Check if it's an email verification error (status 403 or specific message patterns)
+      if (error?.status === 403 || 
+          (error?.message && error.message.includes("verify your email")) ||
+          (error?.message && error.message.includes("Email verification required"))) {
         
         toast({
-          title: "📧 Please Verify Your Email",
-          description: description,
-          variant: "default", // Use default instead of destructive for friendlier appearance
-          duration: 8000 // Show longer for user to read
+          title: "📧 Email Verification Required",
+          description: "Please check your email and click the verification link to activate your account. Check your spam folder if you don't see it in your inbox.",
+          variant: "default",
+          duration: 10000 // Show longer for user to read
+        });
+        
+        // Show a more helpful message in the UI
+        console.log('Email verification required. User should check email for verification link.');
+        return;
+      }
+      
+      // Check for account lockout
+      if (error?.status === 429) {
+        toast({
+          title: "Account Temporarily Locked",
+          description: error?.message || "Too many failed attempts. Please try again later.",
+          variant: "destructive",
+          duration: 8000
         });
         return;
       }
       
+      // Check for invalid credentials
+      if (error?.message && (error.message.includes("invalid credentials") || error.message.includes("Invalid credentials"))) {
+        toast({
+          title: "Sign In Failed",
+          description: "The email or password you entered is incorrect. Please check your credentials and try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Default error handling
       toast({
-        title: "Error",
-        description: error?.message || "Sign in failed",
+        title: "Sign In Failed",
+        description: error?.message || "Unable to sign in. Please try again.",
         variant: "destructive"
       });
     }
