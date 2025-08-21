@@ -15,9 +15,55 @@
   --chart-tooltip-border: #4b5563;
 }
 
-/* UI utilities for enhanced design flexibility */
+/* Force rounded corners globally - comprehensive approach */
 @layer utilities {
-  /* Tabs can maintain their design system appearance */
+  /* Apply rounded corners to ALL UI elements */
+  *:not(html):not(body):not(svg):not(path):not(circle):not(rect):not(line) {
+    border-radius: 0.5rem !important;
+  }
+
+  /* Specific overrides for different element types */
+  button,
+  .btn,
+  [role="button"],
+  input,
+  textarea,
+  select,
+  .card,
+  .progress,
+  .progress-bar,
+  [data-radix-collection-item] {
+    border-radius: 0.5rem !important;
+  }
+
+  /* Smaller radius for small elements */
+  .badge,
+  .chip,
+  .tag,
+  span[class*="bg-"],
+  small[class*="bg-"] {
+    border-radius: 0.25rem !important;
+  }
+
+  /* Large radius for containers */
+  .modal,
+  .dialog,
+  .popover,
+  .sheet,
+  [role="dialog"],
+  [data-state="open"] {
+    border-radius: 1rem !important;
+  }
+
+  /* Progress bars and similar elements */
+  .progress,
+  .progress-bar,
+  [class*="progress"],
+  [role="progressbar"] {
+    border-radius: 0.5rem !important;
+  }
+
+  /* Tabs maintain design system appearance */
   [role="tablist"],
   [role="tablist"] *,
   [data-state="active"],
@@ -25,8 +71,6 @@
     border: none !important;
     box-shadow: none !important;
   }
-
-
 }
 
 /* Hide scrollbars for better mobile UX */
