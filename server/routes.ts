@@ -3144,8 +3144,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const sessionId = parseInt(req.params.sessionId);
       const feedback = await storage.getAutoRegulationFeedback(sessionId);
+      
+      // Return null if no feedback exists, otherwise return the feedback object
+      if (!feedback) {
+        return res.json(null);
+      }
+      
       res.json(feedback);
     } catch (error: any) {
+      console.error(`Error fetching feedback for session ${req.params.sessionId}:`, error);
       res.status(400).json({ message: error.message });
     }
   });
