@@ -7,14 +7,14 @@ export default {
     extend: {
       borderRadius: {
         none: "0",
-        sm: "0",
-        DEFAULT: "0",
-        md: "0",
-        lg: "0",
-        xl: "0",
-        "2xl": "0",
-        "3xl": "0",
-        full: "0",
+        sm: "0.125rem",
+        DEFAULT: "0.25rem",
+        md: "0.375rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+        full: "9999px",
       },
       colors: {
         background: "var(--background)",
