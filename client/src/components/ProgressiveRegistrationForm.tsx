@@ -226,7 +226,7 @@ export function ProgressiveRegistrationForm({ onSuccess, onSwitchToSignIn }: {
           Join TrainPro for AI-powered fitness coaching
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-5 pt-2 pl-[5px] pr-[5px]">
         <StepIndicator />
 
         {errors.general && (
