@@ -15,7 +15,7 @@ interface LoadProgressionRecommendation {
   exerciseName: string;
   currentWeight: number;
   recommendedWeight: number;
-  recommendedReps: string;
+  recommendedReps: number; // Changed from string to number to fix NaN issue
   progressionType: 'weight' | 'reps' | 'volume';
   confidence: number; // 0-1 scale
   reasoning: string[];
@@ -64,10 +64,16 @@ export class LoadProgression {
       .limit(5);
 
     let recommendedWeight = currentWeight;
-    let recommendedReps = `${currentReps}`;
+    let recommendedReps = currentReps || 8; // Default to 8 reps if currentReps is undefined/NaN
     let progressionType: 'weight' | 'reps' | 'volume' = 'weight';
     let confidence = 0.8;
     const reasoning: string[] = [];
+    
+    // Ensure we have valid numeric values
+    if (isNaN(currentReps) || currentReps === 0) {
+      recommendedReps = 8; // Default rep range for strength training
+      reasoning.push("Using default rep range due to missing data");
+    }
 
     // RP Auto-regulation Load Progression Algorithm
     
@@ -95,7 +101,7 @@ export class LoadProgression {
       // Reduce weight or focus on rep progression
       if (currentReps < 12) {
         // Focus on rep progression instead of weight
-        recommendedReps = `${currentReps + 1}-${currentReps + 3}`;
+        recommendedReps = Math.max(currentReps + 2, 8); // Add 2 reps, minimum 8
         progressionType = 'reps';
         reasoning.push(`Load too heavy (RPE: ${averageRpe}, RIR: ${averageRir}) - focus on rep progression`);
       } else {
@@ -111,14 +117,14 @@ export class LoadProgression {
     else {
       if (currentReps < 15) {
         // Add reps first
-        recommendedReps = `${currentReps + 1}-${currentReps + 2}`;
+        recommendedReps = currentReps + 2; // Add 2 reps
         progressionType = 'reps';
         reasoning.push(`In progression zone - add reps before increasing weight`);
       } else {
         // Increase weight and reset reps
         const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight);
         recommendedWeight = currentWeight + weightIncrease;
-        recommendedReps = `${Math.max(8, currentReps - 3)}-${currentReps}`;
+        recommendedReps = Math.max(8, currentReps - 3); // Reset to lower rep range
         progressionType = 'weight';
         reasoning.push(`High rep range reached - increase weight and reset reps`);
       }
@@ -488,7 +494,7 @@ export class LoadProgression {
           exerciseName,
           currentWeight,
           recommendedWeight: currentWeight, // Already adjusted by Advance Week
-          recommendedReps: targetReps,
+          recommendedReps: parseInt(targetReps) || 8, // Convert to number, default to 8
           progressionType: 'weight',
           confidence: 0.9, // High confidence since it's from mesocycle progression
           reasoning: [
