@@ -71,9 +71,19 @@ export default function Auth({ onSuccess }: AuthProps) {
       try {
         console.log('Making signin request...');
         const response = await apiRequest("POST", "/api/auth/signin", data);
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
+        
+        if (response.status === 403) {
+          // Email verification required
+          const result = await response.json();
+          console.log('Email verification required:', result);
+          throw { status: 403, message: result.message, emailVerified: false };
         }
+        
+        if (!response.ok) {
+          const errorResult = await response.json().catch(() => ({}));
+          throw new Error(errorResult.message || `Server error: ${response.status}`);
+        }
+        
         const result = await response.json();
         console.log('Signin response received:', result);
         return result;
@@ -102,6 +112,18 @@ export default function Auth({ onSuccess }: AuthProps) {
     },
     onError: (error: any) => {
       console.error('Sign in error:', error);
+      
+      if (error?.status === 403 && error?.emailVerified === false) {
+        // Email verification required
+        toast({
+          title: "Email Verification Required",
+          description: "Please check your email and click the verification link before signing in.",
+          variant: "destructive"
+        });
+        // Navigate to email verification page or show verification message
+        return;
+      }
+      
       toast({
         title: "Error",
         description: error?.message || "Sign in failed",

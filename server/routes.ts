@@ -1143,6 +1143,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      // Check email verification status
+      if (!user.emailVerified) {
+        console.log('User email not verified:', email);
+        return res.status(403).json({ 
+          message: "Email verification required",
+          emailVerified: false,
+          userId: user.id 
+        });
+      }
+
       // Successful login - clear any failed attempts
       loginAttempts.delete(attemptKey);
       
@@ -1178,7 +1188,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             user: { 
               id: user.id, 
               email: user.email, 
-              name: user.name 
+              name: user.name,
+              emailVerified: user.emailVerified || false
             },
             sessionInfo: {
               loginTime: now,
