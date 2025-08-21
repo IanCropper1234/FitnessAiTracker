@@ -332,22 +332,65 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     }
   });
 
-  // Signout mutation
+  // Enhanced signout mutation with complete session cleanup
   const signoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/auth/signout', { method: 'POST' });
+      const response = await fetch('/api/auth/signout', { 
+        method: 'POST',
+        credentials: 'include', // Include cookies for session cleanup
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       if (!response.ok) throw new Error('Failed to sign out');
       return response.json();
     },
     onSuccess: () => {
+      // Clear all client-side data
+      console.log('Starting client-side session cleanup...');
+      
+      // Clear React Query cache completely
+      queryClient.clear();
+      
+      // Clear localStorage data
+      if (typeof window !== 'undefined') {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (
+            key.includes('trainpro') ||
+            key.includes('fitness') ||
+            key.includes('workout') ||
+            key.includes('nutrition') ||
+            key.includes('auth')
+          )) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log('Cleared localStorage keys:', keysToRemove);
+      }
+      
+      // Clear sessionStorage data
+      if (typeof window !== 'undefined') {
+        sessionStorage.clear();
+      }
+      
+      // Call parent signout handler
       if (onSignOut) onSignOut();
+      
+      // Navigate to auth page
       setLocation('/auth');
+      
       toast({
-        title: "Signed Out",
-        description: "You have been successfully signed out.",
+        title: "Signed Out Successfully",
+        description: "All session data has been cleared. You have been securely logged out.",
       });
+      
+      console.log('Client-side session cleanup completed');
     },
     onError: (error: any) => {
+      console.error('Sign out error:', error);
       toast({
         title: "Sign Out Failed",
         description: error?.message || "Failed to sign out. Please try again.",

@@ -1229,14 +1229,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/signout", async (req, res) => {
     try {
+      const sessionId = req.sessionID;
+      const userId = (req.session as any).userId;
+      
+      console.log(`Starting logout process for user ${userId} with session ${sessionId}`);
+      
+      // Clear any cached login attempts for this user's email if available
+      if (userId) {
+        try {
+          const user = await storage.getUser(userId);
+          if (user && user.email) {
+            const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+            const attemptKey = `${user.email}_${clientIP}`;
+            if (loginAttempts.has(attemptKey)) {
+              loginAttempts.delete(attemptKey);
+              console.log(`Cleared login attempts cache for ${user.email}`);
+            }
+          }
+        } catch (error) {
+          console.log('Could not clear login attempts cache:', error);
+          // Continue with logout even if this fails
+        }
+      }
+      
+      // Clear session cookie and destroy session data
       req.session.destroy((err) => {
         if (err) {
+          console.error('Session destruction error:', err);
           return res.status(500).json({ message: "Failed to sign out" });
         }
-        res.json({ message: "Signed out successfully" });
+        
+        // Clear the session cookie on client side
+        res.clearCookie('connect.sid', {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax'
+        });
+        
+        console.log(`Logout completed successfully for session ${sessionId}`);
+        res.json({ 
+          message: "Signed out successfully",
+          sessionCleared: true
+        });
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error('Signout error:', error);
+      res.status(500).json({ message: "Logout failed" });
     }
   });
 
