@@ -163,7 +163,7 @@ export default function Auth({ onSuccess }: AuthProps) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 pl-[10px] pr-[10px]">
+      <Card className="border-2 text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 pl-[10px] pr-[10px]">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-black dark:text-white">TrainPro</CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-400">
