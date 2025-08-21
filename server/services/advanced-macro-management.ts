@@ -505,7 +505,7 @@ export class AdvancedMacroManagementService {
         previousWeekWeight: previousWeekWeight[0]
       });
 
-      // Calculate weight change and trend analysis with unit conversion
+      // Enhanced weight change calculation using linear regression (matches frontend algorithm)
       let weightChange = 0;
       let weightTrend = 'stable';
       let currentWeight = null;
@@ -513,40 +513,128 @@ export class AdvancedMacroManagementService {
       let currentWeightUnit = 'metric';
       let previousWeightUnit = 'metric';
 
-      if (currentWeekWeight.length > 0 && currentWeekWeight[0].weight) {
+      // Get comprehensive weight data for the past 14 days for linear regression
+      const fourteenDaysAgo = new Date(weekStart.getTime() - 14 * 24 * 60 * 60 * 1000);
+      const allRecentWeights = await db.select()
+        .from(bodyMetrics)
+        .where(and(
+          eq(bodyMetrics.userId, userId),
+          gte(bodyMetrics.date, fourteenDaysAgo),
+          lte(bodyMetrics.date, weekEnd)
+        ))
+        .orderBy(desc(bodyMetrics.date));
+
+      console.log('🔍 Weight Data for Linear Regression:', {
+        fourteenDaysAgo: fourteenDaysAgo.toISOString(),
+        weekEnd: weekEnd.toISOString(),
+        totalDataPoints: allRecentWeights.length
+      });
+
+      // Initialize validWeights outside the conditional block
+      let validWeights = [];
+      
+      if (allRecentWeights.length >= 3) {
+        // Filter out obvious data entry errors (>5kg change per day) and convert to kg
+        for (let i = 0; i < allRecentWeights.length; i++) {
+          const current = allRecentWeights[i];
+          const weight = parseFloat(current.weight);
+          
+          if (isNaN(weight) || weight <= 0) continue;
+          
+          const convertedWeight = UnitConverter.convertWeight(weight, current.unit || 'metric');
+          
+          if (i === 0) {
+            // Always include the most recent
+            validWeights.push({
+              date: current.date,
+              weightKg: convertedWeight.kg,
+              dayIndex: 0
+            });
+            currentWeight = weight;
+            currentWeightUnit = current.unit || 'metric';
+          } else {
+            // Check for unrealistic daily changes
+            const previousConverted = UnitConverter.convertWeight(parseFloat(allRecentWeights[i-1].weight), allRecentWeights[i-1].unit || 'metric');
+            const daysDiff = Math.abs(new Date(allRecentWeights[i-1].date).getTime() - new Date(current.date).getTime()) / (1000 * 60 * 60 * 24);
+            const dailyChange = Math.abs(convertedWeight.kg - previousConverted.kg) / Math.max(1, daysDiff);
+            
+            if (dailyChange <= 5) { // Max 5kg change per day
+              validWeights.push({
+                date: current.date,
+                weightKg: convertedWeight.kg,
+                dayIndex: validWeights.length
+              });
+            }
+          }
+        }
+
+        console.log('🧮 Valid Weight Data Points:', {
+          total: validWeights.length,
+          weights: validWeights.map(w => ({ date: w.date.toISOString().split('T')[0], weight: w.weightKg }))
+        });
+
+        if (validWeights.length >= 3) {
+          // Use linear regression for stable trend calculation (matches frontend algorithm)
+          const n = validWeights.length;
+          const sumX = validWeights.reduce((sum, point) => sum + point.dayIndex, 0);
+          const sumY = validWeights.reduce((sum, point) => sum + point.weightKg, 0);
+          const sumXY = validWeights.reduce((sum, point) => sum + point.dayIndex * point.weightKg, 0);
+          const sumXX = validWeights.reduce((sum, point) => sum + point.dayIndex * point.dayIndex, 0);
+          
+          const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+          const weeklyTrendKg = slope * 7; // Convert daily slope to weekly rate
+          
+          weightChange = weeklyTrendKg;
+          previousWeight = validWeights[validWeights.length - 1].weightKg; // Oldest weight for reference
+          previousWeightUnit = 'metric'; // Converted to kg
+          
+          console.log('📈 Linear Regression Weight Analysis:', {
+            dataPoints: n,
+            dailySlope: slope.toFixed(4),
+            weeklyTrendKg: weeklyTrendKg.toFixed(2),
+            currentWeightKg: validWeights[0].weightKg.toFixed(1),
+            oldestWeightKg: validWeights[validWeights.length - 1].weightKg.toFixed(1)
+          });
+          
+          // RP weight change classification (using kg thresholds)
+          if (Math.abs(weightChange) < 0.1) { // ~0.2 lbs
+            weightTrend = 'stable';
+          } else if (weightChange > 0.1) {
+            weightTrend = 'gaining';
+          } else {
+            weightTrend = 'losing';
+          }
+        }
+      }
+
+      // Fallback to simple two-point comparison if insufficient data for regression
+      if (validWeights.length < 3 && currentWeekWeight.length > 0 && previousWeekWeight.length > 0) {
         currentWeight = parseFloat(currentWeekWeight[0].weight);
         currentWeightUnit = currentWeekWeight[0].unit || 'metric';
-      }
-
-      if (previousWeekWeight.length > 0 && previousWeekWeight[0].weight) {
         previousWeight = parseFloat(previousWeekWeight[0].weight);
         previousWeightUnit = previousWeekWeight[0].unit || 'metric';
-      }
 
-      if (currentWeight && previousWeight) {
-        // Convert weights to common unit for accurate comparison
-        const currentConverted = UnitConverter.convertWeight(currentWeight, currentWeightUnit);
-        const previousConverted = UnitConverter.convertWeight(previousWeight, previousWeightUnit);
-        
-        console.log('⚖️ Weight Conversion Debug:', {
-          currentWeight,
-          currentWeightUnit,
-          previousWeight,
-          previousWeightUnit,
-          currentConverted,
-          previousConverted
-        });
-        
-        // Calculate weight change in kg for consistent RP analysis
-        weightChange = currentConverted.kg - previousConverted.kg;
-        
-        // RP weight change classification (using kg thresholds)
-        if (Math.abs(weightChange) < 0.1) { // ~0.2 lbs
-          weightTrend = 'stable';
-        } else if (weightChange > 0.1) {
-          weightTrend = 'gaining';
-        } else {
-          weightTrend = 'losing';
+        if (currentWeight && previousWeight) {
+          const currentConverted = UnitConverter.convertWeight(currentWeight, currentWeightUnit);
+          const previousConverted = UnitConverter.convertWeight(previousWeight, previousWeightUnit);
+          
+          weightChange = currentConverted.kg - previousConverted.kg;
+          
+          console.log('⚖️ Fallback Two-Point Comparison:', {
+            currentWeight,
+            currentWeightUnit,
+            previousWeight,
+            previousWeightUnit,
+            weightChangeKg: weightChange.toFixed(2)
+          });
+          
+          if (Math.abs(weightChange) < 0.1) {
+            weightTrend = 'stable';
+          } else if (weightChange > 0.1) {
+            weightTrend = 'gaining';
+          } else {
+            weightTrend = 'losing';
+          }
         }
       }
 
