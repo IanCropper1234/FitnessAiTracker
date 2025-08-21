@@ -8,6 +8,7 @@ import {
   mesocycles
 } from "@shared/schema";
 import { eq, and, desc, gte, sql } from "drizzle-orm";
+import { convertRPEtoRIR, validateRPEAccuracy } from "@shared/utils/rpe-rir-conversion";
 
 interface LoadProgressionRecommendation {
   exerciseId: number;
@@ -445,7 +446,17 @@ export class LoadProgression {
           const repsArray = performance.actualReps?.split(',').map(r => parseInt(r)).filter(r => !isNaN(r)) || [];
           const avgReps = repsArray.length > 0 ? repsArray.reduce((sum, r) => sum + r, 0) / repsArray.length : 10;
           const rpe = performance.rpe && !isNaN(performance.rpe) ? performance.rpe : 7;
-          const rir = performance.rir !== null && performance.rir !== undefined && !isNaN(performance.rir) ? performance.rir : 2;
+          
+          // Convert RPE to RIR using scientific methodology
+          let rir: number;
+          if (performance.rir !== null && performance.rir !== undefined && !isNaN(performance.rir)) {
+            // Use existing RIR if available
+            rir = performance.rir;
+          } else {
+            // Convert RPE to RIR using scientific conversion
+            rir = convertRPEtoRIR(rpe);
+            console.log(`Converted RPE ${rpe} to RIR ${rir} for exercise ${exerciseId}`);
+          }
 
           // Calculate progression based on past performance
           const recommendation = await this.calculateLoadProgression(

@@ -2,6 +2,7 @@ import { db } from "./db";
 import { eq, and, desc, gte } from "drizzle-orm";
 import { autoRegulationFeedback, workoutSessions, volumeLandmarks, exerciseMuscleMapping, workoutExercises, muscleGroups } from "../shared/schema";
 import { SciAlgorithmCore } from "./services/scientific-algorithm-core";
+import { convertRPEtoRIR, RP_TRAINING_GUIDELINES } from "../shared/utils/rpe-rir-conversion";
 
 interface VolumeRecommendation {
   muscleGroupId: number;

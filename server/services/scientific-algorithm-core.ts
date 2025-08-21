@@ -7,6 +7,7 @@ import {
   muscleGroups,
   workoutExercises
 } from "@shared/schema";
+import { convertRPEtoRIR, convertRIRtoRPE, validateRPEAccuracy } from "@shared/utils/rpe-rir-conversion";
 
 /**
  * Core Scientific Algorithm Service

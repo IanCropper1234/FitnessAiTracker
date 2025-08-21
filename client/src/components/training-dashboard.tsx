@@ -38,11 +38,13 @@ import {
   Zap,
   Brain,
   Sparkles,
-  MessageSquare
+  MessageSquare,
+  Calculator
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseManagement, CreateExerciseButton } from "./exercise-management";
 import { WorkoutExecutionWrapper } from "./WorkoutExecutionWrapper";
+import { RPERIRConverter } from "./RPERIRConverter";
 import { WorkoutDetails } from "./workout-details";
 import { VolumeLandmarks } from "./volume-landmarks";
 import { AutoRegulationDashboard } from "./auto-regulation-dashboard";
@@ -1711,6 +1713,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
         <AnimatedTabsContent value="progression" className="space-y-4" >
           <LoadProgressionTracker userId={userId} />
+        </AnimatedTabsContent>
+        
+        <AnimatedTabsContent value="rpe-converter" className="space-y-4" >
+          <RPERIRConverter />
         </AnimatedTabsContent>
       </AnimatedTabs>
       {/* Workout Execution Modal */}

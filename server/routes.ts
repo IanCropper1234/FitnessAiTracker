@@ -3194,6 +3194,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // RPE/RIR conversion utility endpoint
+  app.post("/api/training/rpe-rir-conversion", requireAuth, async (req, res) => {
+    try {
+      const { rpe, rir, reps } = req.body;
+      
+      // Import conversion functions dynamically
+      const conversionModule = await import("../shared/utils/rpe-rir-conversion");
+      const { convertRPEtoRIR, convertRIRtoRPE, validateRPEAccuracy, getTrainingRecommendations } = conversionModule;
+      
+      const result: any = {};
+      
+      if (rpe !== undefined) {
+        result.convertedRIR = convertRPEtoRIR(rpe);
+        result.trainingRecommendations = getTrainingRecommendations(rpe);
+        
+        if (reps) {
+          result.accuracy = validateRPEAccuracy(reps, rpe);
+        }
+      }
+      
+      if (rir !== undefined) {
+        result.convertedRPE = convertRIRtoRPE(rir);
+      }
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("RPE/RIR conversion error:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Get weekly volume tracking
   app.get("/api/training/weekly-volume", requireAuth, async (req, res) => {
     try {
