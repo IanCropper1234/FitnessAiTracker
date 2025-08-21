@@ -144,15 +144,19 @@ export class LoadProgression {
       }
     }
 
+    // Ensure no NaN values in final recommendation
+    const safeRecommendedWeight = isNaN(recommendedWeight) ? currentWeight : recommendedWeight;
+    const safeConfidence = isNaN(confidence) ? 0.5 : confidence;
+    
     return {
       exerciseId,
       exerciseName,
       currentWeight,
-      recommendedWeight: Math.round(recommendedWeight * 4) / 4, // Round to nearest 0.25kg
+      recommendedWeight: Math.round(safeRecommendedWeight * 4) / 4, // Round to nearest 0.25kg
       recommendedReps,
       progressionType,
-      confidence,
-      reasoning
+      confidence: safeConfidence,
+      reasoning: isNaN(recommendedWeight) ? [...reasoning, "Error in calculation - maintaining current weight"] : reasoning
     };
   }
 
@@ -161,6 +165,11 @@ export class LoadProgression {
    * Now supports metric conversion
    */
   private static getWeightIncrement(exerciseName: string, currentWeight: number, unit: 'kg' | 'lbs' = 'kg'): number {
+    // Ensure currentWeight is valid
+    if (isNaN(currentWeight) || currentWeight < 0) {
+      return unit === 'kg' ? 1.25 : 2.5; // Return safe default
+    }
+    
     // Standard weight increment logic for different exercise types
     const baseIncrement = unit === 'kg' ? 1.25 : 2.5; // 1.25kg or 2.5lbs
     
@@ -430,12 +439,13 @@ export class LoadProgression {
         if (recentPerformance.length > 0) {
           const performance = recentPerformance[0];
           currentWeight = parseFloat(performance.weight || '0');
+          if (isNaN(currentWeight)) currentWeight = 0;
           targetReps = performance.targetReps || '8-12';
           
-          const repsArray = performance.actualReps?.split(',').map(r => parseInt(r)) || [];
+          const repsArray = performance.actualReps?.split(',').map(r => parseInt(r)).filter(r => !isNaN(r)) || [];
           const avgReps = repsArray.length > 0 ? repsArray.reduce((sum, r) => sum + r, 0) / repsArray.length : 10;
-          const rpe = performance.rpe || 7;
-          const rir = performance.rir || 2;
+          const rpe = performance.rpe && !isNaN(performance.rpe) ? performance.rpe : 7;
+          const rir = performance.rir !== null && performance.rir !== undefined && !isNaN(performance.rir) ? performance.rir : 2;
 
           // Calculate progression based on past performance
           const recommendation = await this.calculateLoadProgression(
