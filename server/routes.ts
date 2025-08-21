@@ -421,11 +421,31 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
     const storedClientIP = session.clientIP;
     const loginTime = session.loginTime;
     
-    // Check for session hijacking indicators
+    // Check for session hijacking indicators with relaxed device switching support
     if (storedUserAgent && storedUserAgent !== userAgent) {
       console.log(`Security Warning: User-Agent mismatch for user ${sessionUserId}. Expected: ${storedUserAgent}, Got: ${userAgent}`);
-      req.session.destroy(() => {});
-      return res.status(401).json({ message: "Session security violation detected" });
+      
+      // Allow legitimate device switching between common user devices
+      const isLegitimateDeviceSwitch = (stored: string, current: string) => {
+        const isMobileToDesktop = stored.includes('Mobile') && !current.includes('Mobile');
+        const isDesktopToMobile = !stored.includes('Mobile') && current.includes('Mobile');
+        const isSameBrowserFamily = (
+          (stored.includes('Safari') && current.includes('Safari')) ||
+          (stored.includes('Chrome') && current.includes('Chrome')) ||
+          (stored.includes('Firefox') && current.includes('Firefox'))
+        );
+        
+        return (isMobileToDesktop || isDesktopToMobile) && isSameBrowserFamily;
+      };
+      
+      if (!isLegitimateDeviceSwitch(storedUserAgent, userAgent)) {
+        req.session.destroy(() => {});
+        return res.status(401).json({ message: "Session security violation detected" });
+      }
+      
+      // Update User-Agent for legitimate device switches
+      req.session.userAgent = userAgent;
+      console.log(`Security Notice: Allowed legitimate device switch for user ${sessionUserId}`);
     }
     
     // Check for suspicious IP changes (optional - can be disabled for mobile users)
