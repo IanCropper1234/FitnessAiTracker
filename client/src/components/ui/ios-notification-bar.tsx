@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Check, X, AlertTriangle, Info, Zap, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
 
 const notificationVariants = cva(
   "relative w-full rounded-lg border transition-all duration-300 touch-manipulation shadow-lg backdrop-blur-sm",
@@ -155,41 +156,51 @@ const IOSNotificationBar = React.forwardRef<
     setIsDragging(false)
   }
 
-  if (!isShowing) {
-    return null
-  }
-
   return (
-    <div
-      ref={ref}
-      className={cn(
-        notificationVariants({ variant, size, position }),
-        // Animation classes
-        "transform transition-all duration-300 ease-out",
-        isShowing 
-          ? "translate-y-0 opacity-100" 
-          : position === "top" 
-            ? "-translate-y-full opacity-0" 
-            : "translate-y-full opacity-0",
-        // Dragging styles
-        isDragging && "transition-none",
-        className
-      )}
-      style={{
-        transform: `translateX(${dragOffset}px) ${
-          isShowing 
-            ? "translateY(0)" 
-            : position === "top" 
-              ? "translateY(-100%)" 
-              : "translateY(100%)"
-        }`,
-        opacity: Math.max(0.3, 1 - dragOffset / 200), // Fade out while dragging
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      {...props}
-    >
+    <AnimatePresence mode="wait">
+      {isShowing && (
+        <motion.div
+          ref={ref}
+          initial={{ 
+            opacity: 0, 
+            y: position === "top" ? -60 : 60,
+            scale: 0.95 
+          }}
+          animate={{ 
+            opacity: 1, 
+            y: 0,
+            scale: 1,
+            x: dragOffset 
+          }}
+          exit={{ 
+            opacity: 0, 
+            y: position === "top" ? -60 : 60,
+            scale: 0.95,
+            transition: { 
+              duration: 0.3, 
+              ease: "easeOut" 
+            }
+          }}
+          transition={{
+            duration: 0.4,
+            ease: "easeOut",
+            type: "spring",
+            stiffness: 300,
+            damping: 30
+          }}
+          style={{
+            opacity: Math.max(0.3, 1 - dragOffset / 200), // Fade out while dragging
+          }}
+          className={cn(
+            notificationVariants({ variant, size, position }),
+            isDragging && "transition-none",
+            className
+          )}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          {...props}
+        >
       {/* Background blur effect */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/5" />
       
@@ -243,7 +254,9 @@ const IOSNotificationBar = React.forwardRef<
           <ChevronDown className="h-3 w-3 rotate-90" />
         </div>
       )}
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 })
 
