@@ -73,7 +73,7 @@ export default function WorkoutFeedbackPage() {
 
   const submitFeedbackMutation = useMutation({
     mutationFn: (data: FeedbackData) =>
-      apiRequest('POST', '/api/auto-regulation/feedback', data),
+      apiRequest('POST', '/api/training/auto-regulation-feedback', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/training/fatigue-analysis'] });
       queryClient.invalidateQueries({ queryKey: ['/api/training/volume-recommendations'] });

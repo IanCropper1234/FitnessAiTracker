@@ -144,9 +144,25 @@ function WorkoutSessionsWithBulkActions({
           const response = await fetch(`/api/training/auto-regulation-feedback/${sessionId}`);
           if (response.ok) {
             const feedback = await response.json();
-            feedbackMap[sessionId] = !!feedback && feedback.sessionId === sessionId;
+            // Check if feedback exists and has valid data
+            // API may return null/undefined when no feedback exists, or an object when feedback exists
+            const hasFeedback = feedback && 
+              typeof feedback === 'object' && 
+              feedback !== null &&
+              (feedback.sessionId === sessionId || 
+               feedback.id !== undefined);
+            
+            feedbackMap[sessionId] = !!hasFeedback;
+            console.log(`Session ${sessionId} feedback check:`, { 
+              feedback, 
+              hasFeedback: !!hasFeedback, 
+              feedbackType: typeof feedback,
+              feedbackIsNull: feedback === null,
+              feedbackIsUndefined: feedback === undefined
+            });
           } else {
             feedbackMap[sessionId] = false;
+            console.log(`Session ${sessionId} feedback: API error (${response.status})`);
           }
         } catch (error) {
           console.error(`Error checking feedback for session ${sessionId}:`, error);
