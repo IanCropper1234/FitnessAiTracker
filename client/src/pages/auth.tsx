@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, Mail, Lock, Smartphone } from "lucide-react";
 import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface User {
   id: number;
@@ -202,24 +203,31 @@ export default function Auth({ onSuccess }: AuthProps) {
         </CardHeader>
         <CardContent className="p-5 pt-2 pl-[0px] pr-[0px]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800 relative overflow-hidden transition-all duration-300 ease-in-out p-1 rounded-lg">
               <TabsTrigger 
                 value="signin" 
-                className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white"
+                className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white transition-all duration-300 ease-in-out transform data-[state=active]:scale-[1.02] data-[state=active]:shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-black dark:hover:text-white relative z-10 rounded-md"
               >
                 {t("sign_in") || "Sign In"}
               </TabsTrigger>
               <TabsTrigger 
                 value="signup"
-                className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white"
+                className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white transition-all duration-300 ease-in-out transform data-[state=active]:scale-[1.02] data-[state=active]:shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-black dark:hover:text-white relative z-10 rounded-md"
               >
                 {t("sign_up") || "Sign Up"}
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin" className="space-y-4">
-              {/* Replit Auth Section - Supports Google, Apple, Email, GitHub */}
-              <div className="space-y-3">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="space-y-4"
+              >
+                {/* Replit Auth Section - Supports Google, Apple, Email, GitHub */}
+                <div className="space-y-3">
                 <Button 
                   onClick={handleReplitAuth}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
@@ -281,11 +289,19 @@ export default function Auth({ onSuccess }: AuthProps) {
                   {signInMutation.isPending ? (t("loading") || "Loading...") : (t("sign_in") || "Sign In")}
                 </Button>
               </form>
+              </motion.div>
             </TabsContent>
             
             <TabsContent value="signup" className="space-y-4">
-              {/* Enhanced Registration with Replit Auth Options */}
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="space-y-4"
+              >
+                {/* Enhanced Registration with Replit Auth Options */}
+                <div className="space-y-4">
                 {/* Replit Auth Section */}
                 <div className="space-y-3">
                   <Button 
@@ -317,7 +333,8 @@ export default function Auth({ onSuccess }: AuthProps) {
                   onSuccess={onSuccess} 
                   onSwitchToSignIn={() => setActiveTab("signin")}
                 />
-              </div>
+                </div>
+              </motion.div>
             </TabsContent>
           </Tabs>
         </CardContent>
