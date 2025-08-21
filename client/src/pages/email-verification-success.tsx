@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight, Clock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function EmailVerificationSuccess() {
   const [, setLocation] = useLocation();
   const [countdown, setCountdown] = useState(5);
   const [progress, setProgress] = useState(100);
+  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -36,12 +38,38 @@ export default function EmailVerificationSuccess() {
   }, [setLocation]);
 
   const handleSignInNow = () => {
-    setLocation("/auth");
+    setIsExiting(true);
+    setTimeout(() => setLocation("/auth"), 300);
+  };
+
+  const handleGoToDashboard = () => {
+    setIsExiting(true);
+    setTimeout(() => setLocation("/"), 300);
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+      <AnimatePresence mode="wait">
+        {!isExiting && (
+          <motion.div
+            key="success-notification"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ 
+              opacity: 0, 
+              scale: 0.95, 
+              y: -10,
+              transition: { duration: 0.3, ease: "easeOut" }
+            }}
+            transition={{ 
+              duration: 0.4, 
+              ease: "easeOut",
+              type: "spring",
+              stiffness: 400,
+              damping: 25
+            }}
+          >
+            <Card className="w-full max-w-md bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
@@ -84,20 +112,32 @@ export default function EmailVerificationSuccess() {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button
-              onClick={handleSignInNow}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
             >
-              <ArrowRight className="w-4 h-4 mr-2" />
-              Sign In Now
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setLocation("/")}
-              className="w-full"
+              <Button
+                onClick={handleSignInNow}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Sign In Now
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
             >
-              Go to Dashboard
-            </Button>
+              <Button
+                variant="outline"
+                onClick={handleGoToDashboard}
+                className="w-full"
+              >
+                Go to Dashboard
+              </Button>
+            </motion.div>
           </div>
 
           <div className="text-center">
@@ -107,6 +147,9 @@ export default function EmailVerificationSuccess() {
           </div>
         </CardContent>
       </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

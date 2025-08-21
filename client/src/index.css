@@ -148,6 +148,44 @@
   -webkit-transform: translateZ(0);
 }
 
+/* Enhanced success notification animations */
+@keyframes notification-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-2px) scale(1.02);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes notification-exit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.95);
+  }
+}
+
+.notification-entrance {
+  animation: notification-entrance 0.4s ease-out forwards;
+}
+
+.notification-exit {
+  animation: notification-exit 0.3s ease-out forwards;
+}
+
 /* iOS Notification Bar Animations */
 @keyframes ios-notification-slide-in-top {
   0% {
