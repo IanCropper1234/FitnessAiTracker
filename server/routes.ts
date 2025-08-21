@@ -1143,9 +1143,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Check email verification status
-      if (!user.emailVerified) {
-        console.log('User email not verified:', email);
+      // Check email verification status - only for accounts created after email verification system was implemented
+      // Skip verification check for legacy accounts (accounts without emailVerified field set)
+      if (user.emailVerified === false) {
+        console.log('User email not verified (new account):', email);
         return res.status(403).json({ 
           message: "Email verification required",
           emailVerified: false,
