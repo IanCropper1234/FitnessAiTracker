@@ -271,7 +271,7 @@ export function AddFood({ user }: AddFoodProps) {
     console.log("Portion weight:", portionWeight);
     console.log("Portion unit:", portionUnit);
     
-    // Clear previous analysis results
+    // Clear previous analysis results and portion information
     setBaseAIResult(null);
     setDynamicMacros(null);
     setPortionWeight('');
@@ -280,7 +280,6 @@ export function AddFood({ user }: AddFoodProps) {
     const hasFoodName = foodName.trim();
     const hasDescription = foodQuery.trim();
     const hasImage = capturedImages.length > 0;
-    const hasPortion = portionWeight && portionUnit;
     
     if (!hasFoodName) {
       console.log("No food name provided");
@@ -292,13 +291,13 @@ export function AddFood({ user }: AddFoodProps) {
       return;
     }
     
-    console.log("Calling AI mutation...");
+    console.log("Calling AI mutation without portion info to get fresh AI-generated values...");
+    // Don't send portion information for new analyses - let AI generate fresh values
     aiAnalyzeMutation.mutate({
       foodName: hasFoodName ? foodName : undefined,
       description: hasDescription ? foodQuery : undefined,
-      images: hasImage ? capturedImages : undefined,
-      portionWeight: hasPortion ? portionWeight : undefined,
-      portionUnit: hasPortion ? portionUnit : undefined
+      images: hasImage ? capturedImages : undefined
+      // portionWeight and portionUnit intentionally omitted to get fresh AI values
     });
   };
 
