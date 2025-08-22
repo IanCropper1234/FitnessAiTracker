@@ -66,26 +66,35 @@ export async function initializeVolumeLandmarks() {
     const existingMappings = await db.select().from(exerciseMuscleMapping);
     
     if (existingMappings.length === 0) {
-      console.log("Creating exercise muscle mappings...");
+      console.log("Creating exercise muscle mappings from exercise data...");
       
       const allExercises = await db.select().from(exercises);
       const allMuscleGroups = await db.select().from(muscleGroups);
       
-      for (const mapping of exerciseMapping) {
-        const exercise = allExercises.find(ex => ex.name === mapping.exerciseName);
-        const muscleGroup = allMuscleGroups.find(mg => mg.name === mapping.muscleGroup);
-        
-        if (exercise && muscleGroup) {
-          await db.insert(exerciseMuscleMapping).values({
-            exerciseId: exercise.id,
-            muscleGroupId: muscleGroup.id,
-            contributionPercentage: mapping.contribution,
-            role: mapping.role
-          });
+      let mappingCount = 0;
+      
+      for (const exercise of allExercises) {
+        if (exercise.muscleGroups && exercise.muscleGroups.length > 0) {
+          // Parse muscle groups from the exercise data
+          const muscleGroupNames = exercise.muscleGroups;
+          
+          for (const muscleGroupName of muscleGroupNames) {
+            const muscleGroup = allMuscleGroups.find(mg => mg.name === muscleGroupName);
+            
+            if (muscleGroup) {
+              await db.insert(exerciseMuscleMapping).values({
+                exerciseId: exercise.id,
+                muscleGroupId: muscleGroup.id,
+                contributionPercentage: 70, // Default primary contribution
+                role: 'primary' as const
+              });
+              mappingCount++;
+            }
+          }
         }
       }
       
-      console.log(`Created ${exerciseMapping.length} exercise muscle mappings`);
+      console.log(`Created ${mappingCount} exercise muscle mappings from ${allExercises.length} exercises`);
     } else {
       console.log("Exercise muscle mappings already exist");
     }
