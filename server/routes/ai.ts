@@ -86,13 +86,14 @@ router.post('/exercise-recommendations', async (req, res) => {
     }`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      max_completion_tokens: 2000
+      temperature: 0.7,
+      max_tokens: 2000
     });
 
     const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
@@ -305,14 +306,14 @@ router.post('/nutrition-analysis', async (req, res) => {
     }`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-
-      max_completion_tokens: 2500
+      temperature: 0.6,
+      max_tokens: 2500
     });
 
     const responseContent = response.choices[0].message.content;
@@ -378,7 +379,7 @@ router.post('/food-analysis', async (req, res) => {
     }`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
         {
@@ -395,7 +396,8 @@ router.post('/food-analysis', async (req, res) => {
         }
       ],
       response_format: { type: "json_object" },
-      max_completion_tokens: 1500
+      temperature: 0.5,
+      max_tokens: 1500
     });
 
     const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
@@ -405,106 +407,6 @@ router.post('/food-analysis', async (req, res) => {
     console.error('Error analyzing food image:', error);
     res.status(500).json({ 
       message: 'Failed to analyze food image',
-      error: error.message 
-    });
-  }
-});
-
-// AI Weekly Workout Plan
-router.post('/weekly-workout-plan', async (req, res) => {
-  try {
-    const { goals, muscleGroupFocus, experienceLevel, equipment, sessionDuration, sessionsPerWeek, specialMethodPercentage, injuryRestrictions, customRequirements } = req.body;
-
-    const { generateWeeklyWorkoutPlan } = await import('../services/openai');
-    
-    const weeklyPlan = await generateWeeklyWorkoutPlan(
-      goals || [],
-      muscleGroupFocus || [], 
-      experienceLevel || 'intermediate',
-      equipment || [],
-      sessionDuration || 60,
-      sessionsPerWeek || 4,
-      specialMethodPercentage || 20,
-      injuryRestrictions || '',
-      customRequirements || ''
-    );
-
-    res.json(weeklyPlan);
-  } catch (error: any) {
-    console.error('Error generating weekly workout plan:', error);
-    res.status(500).json({ 
-      message: 'Failed to generate weekly workout plan',
-      error: error.message 
-    });
-  }
-});
-
-// Save AI Weekly Workout Plan as Templates
-router.post('/weekly-workout-plan/save', async (req, res) => {
-  try {
-    const { weeklyPlan, templateNamePrefix } = req.body;
-    const userId = Number(req.userId);
-    
-    if (!weeklyPlan || !weeklyPlan.sessions) {
-      return res.status(400).json({ message: 'Invalid weekly plan data' });
-    }
-
-    const { db } = await import('../db');
-    const { savedWorkoutTemplates } = await import('../../shared/schema');
-    
-    const savedTemplates = [];
-
-    // Save each session as a separate template
-    for (const session of weeklyPlan.sessions) {
-      const templateName = `${templateNamePrefix || 'AI Generated Workout'} - ${session.name}`;
-      
-      // Transform exercises to template format
-      const exerciseTemplates = session.exercises.map((exercise: any, index: number) => ({
-        exerciseId: exercise.exerciseId || null,
-        exerciseName: exercise.exerciseName,
-        orderIndex: index,
-        sets: exercise.sets,
-        targetReps: exercise.reps,
-        restPeriod: exercise.restPeriod,
-        notes: `${exercise.reasoning} | Special Method: ${exercise.specialMethod || 'Standard'}`,
-        specialMethod: exercise.specialMethod,
-        specialConfig: exercise.specialConfig
-      }));
-      
-      // Insert saved workout template
-      const templateResult = await db
-        .insert(savedWorkoutTemplates)
-        .values({
-          userId,
-          name: templateName,
-          description: `AI-generated training session: ${session.muscleGroupFocus?.join(', ') || 'Multi-muscle'}`,
-          exerciseTemplates: exerciseTemplates,
-          tags: [],
-          estimatedDuration: session.sessionDuration || 60,
-          difficulty: 'intermediate',
-          usageCount: 0
-        })
-        .returning({ id: savedWorkoutTemplates.id });
-
-      const templateId = templateResult[0].id;
-
-      savedTemplates.push({
-        id: templateId,
-        name: templateName,
-        exercises: session.exercises.length
-      });
-    }
-
-    res.json({
-      success: true,
-      message: `Successfully saved ${savedTemplates.length} training templates`,
-      templates: savedTemplates
-    });
-
-  } catch (error: any) {
-    console.error('Error saving weekly workout plan:', error);
-    res.status(500).json({ 
-      message: 'Failed to save weekly workout plan',
       error: error.message 
     });
   }
@@ -536,14 +438,14 @@ router.post('/program-optimization', async (req, res) => {
     }`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-
-      max_completion_tokens: 1500
+      temperature: 0.6,
+      max_tokens: 1500
     });
 
     const aiResponse = JSON.parse(response.choices[0].message.content || '{}');

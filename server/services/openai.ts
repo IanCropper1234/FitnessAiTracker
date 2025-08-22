@@ -100,11 +100,6 @@ export async function analyzeNutritionMultiImage(
     const hasImages = images && images.length > 0;
     const imageCount = hasImages ? images.length : 0;
 
-    // Validate input - either images OR sufficient text description
-    if (!hasImages && !foodName) {
-      throw new Error("Please provide either food images or a food name for nutrition analysis.");
-    }
-
     if (hasImages) {
       // Multi-image analysis mode
       const imageText = imageCount === 1 ? "image" : `${imageCount} images`;
@@ -241,41 +236,98 @@ Return only valid JSON with all required fields.`
       }
       
       const primaryInput = foodName || foodDescription;
+      prompt = `Analyze nutrition for "${primaryInput}"${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
       
-      // Create a comprehensive text prompt for better gpt-5-mini results
-      const contextInfo = foodDescription ? ` (${foodDescription})` : '';
-      const portionInfo = portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`;
-      
-      prompt = `Please provide comprehensive nutritional analysis for: ${primaryInput}${contextInfo}${portionInfo}.
+      messageContent = [
+        {
+          type: "text",
+          text: prompt + `
 
-I need complete nutritional data including calories, protein, carbohydrates, fat, and extensive micronutrients. Base your analysis on standard nutritional databases and typical preparation methods.`;
-      
-      // Simple text message for gpt-5-mini
-      messageContent = `${prompt}
+**Task:** Provide comprehensive nutritional analysis for the specified food with enhanced ingredient breakdown and optimal unit selection.
 
-Please return a JSON object with the following exact fields:
-- calories (number)
-- protein (number)  
-- carbs (number)
-- fat (number)
-- confidence (number between 0-1)
-- category (string: "protein", "carb", "fat", or "mixed")
-- mealSuitability (array of strings)
-- assumptions (string)
-- servingDetails (string)
-- portionWeight (number)
-- portionUnit (string)
-- ingredientBreakdown (array)
-- micronutrients (object with vitamin and mineral data)
-- nutritionValidation (string)
+**ENHANCED ANALYSIS REQUIREMENTS:**
 
-Base your analysis on standard nutritional databases and provide comprehensive micronutrient data.`;
+1. **FOOD DECOMPOSITION & INGREDIENT ANALYSIS:**
+   - For complex foods/dishes: BREAK DOWN into individual components (e.g., "chicken sandwich" → bread, chicken, lettuce, mayo, etc.)
+   - Analyze each ingredient separately and combine for total nutrition
+   - For processed foods: Consider both listed ingredients and preparation methods
+   - For beverages: Analyze liquid base + any added ingredients (milk, sugar, flavoring, etc.)
+   - Example: "Chocolate protein smoothie" → protein powder + milk + banana + cocoa powder, etc.
+
+2. **INTELLIGENT UNIT SELECTION:**
+   - Choose the MOST APPROPRIATE unit for the specific food type:
+   - **Liquids**: ml, L, cups, fl oz (milk, juice, smoothies, soup)
+   - **Solids by weight**: g, kg, oz, lbs (meat, vegetables, fruits)
+   - **Volume foods**: cups, tbsp, tsp (rice, cereal, nuts, flour)
+   - **Countable items**: pieces, slices, servings (bread, eggs, cookies)
+   - **Prepared dishes**: servings, portions, bowls (pasta, salad, casserole)
+   - **Small items**: pieces, units (vitamins, pills, individual snacks)
+
+3. **CONTEXTUAL PORTION ANALYSIS:**
+   - Food: "${primaryInput}"${foodDescription && foodName !== foodDescription ? ` with context: "${foodDescription}"` : ''}
+   - Determine realistic serving sizes based on food type and common consumption patterns
+   - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
+
+4. **COMPREHENSIVE MICRONUTRIENT EXTRACTION (CRITICAL REQUIREMENT):**
+   - Extract EVERY vitamin and mineral naturally present in the food, even in small amounts
+   - Use comprehensive nutritional databases (USDA FoodData Central, etc.) for complete micronutrient profiles
+   - Include ALL vitamins: A, D, E, K, B1-B12, C, folate, biotin, pantothenic acid, choline
+   - Include ALL minerals: calcium, iron, magnesium, phosphorus, potassium, sodium, zinc, copper, manganese, selenium, iodine, fluoride, chromium, molybdenum
+   - For processed foods: Include fortified vitamins/minerals commonly added (especially B vitamins, iron, calcium)
+   - For fresh foods: Include natural micronutrients based on scientific nutritional composition
+   - For supplements: Extract ALL active compounds and ingredients beyond basic vitamins/minerals
+   - NEVER leave micronutrient sections empty - every food contains multiple vitamins and minerals
+
+5. **NUTRITION VALIDATION & REASONABLENESS CHECK:**
+   - Verify macronutrient ratios make sense for the food type
+   - Check that micronutrient levels are realistic and not excessive
+   - Ensure portion sizes align with typical consumption patterns
+   - Flag any unusual or potentially incorrect values
+
+**OUTPUT REQUIREMENTS - JSON format with these EXACT fields:**
+- calories: total calories (number)
+- protein: protein in grams (number) 
+- carbs: carbohydrates in grams (number)
+- fat: fat in grams (number)
+- confidence: confidence level 0-1 (number, 0.8-0.9 for known foods)
+- category: primary macro category (string: "protein", "carb", "fat", or "mixed")
+- mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
+- assumptions: key assumptions about preparation, variety, and ingredient composition (string)
+- servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "150g portion", "2 medium pieces")
+- portionWeight: standardized portion weight as number (choose appropriate: 100, 150, 200, 240, 250, 300, etc.)
+- portionUnit: OPTIMAL unit for this food type (string: "g", "ml", "cups", "pieces", "servings", "tbsp", etc.)
+- ingredientBreakdown: array of food components analyzed (e.g., ["whole wheat bread: 80g", "grilled chicken: 100g", "lettuce: 20g"])
+- micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Water-Soluble Vitamins: vitaminB1/thiamine (mg), vitaminB2/riboflavin (mg), vitaminB3/niacin (mg), vitaminB5/pantothenic acid (mg), vitaminB6/pyridoxine (mg), vitaminB7/biotin (mcg), vitaminB9/folate (mcg), vitaminB12/cobalamin (mcg), vitaminC/ascorbic acid (mg), choline (mg)
+  * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg), sulfur (mg)
+  * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg), boron (mg), cobalt (mcg), nickel (mcg), silicon (mg), vanadium (mcg)
+  * Macronutrient Components: sugar (g), addedSugar (g), fiber (g), solubleFiber (g), insolubleFiber (g), starch (g), saturatedFat (g), monounsaturatedFat (g), polyunsaturatedFat (g), transFat (g), cholesterol (mg), omega3 (g), omega6 (g), omega9 (g), alcohol (g)
+  * Amino Acids (for protein foods): leucine (mg), isoleucine (mg), valine (mg), lysine (mg), methionine (mg), phenylalanine (mg), threonine (mg), tryptophan (mg), histidine (mg), arginine (mg), alanine (mg), aspartic acid (mg), cysteine (mg), glutamic acid (mg), glycine (mg), proline (mg), serine (mg), tyrosine (mg)
+  * Antioxidants & Phytonutrients: betaCarotene (mcg), lycopene (mcg), lutein (mcg), zeaxanthin (mcg), anthocyanins (mg), flavonoids (mg), polyphenols (mg), carotenoids (mcg)
+  * Supplement Compounds (if applicable): coq10 (mg), glucosamine (mg), chondroitin (mg), probiotics (CFU), collagen (g), creatine (g), bcaa (g), hmb (mg), carnitine (mg), taurine (mg), etc.
+- nutritionValidation: brief assessment of result reasonableness (string: e.g., "Values consistent with typical chicken breast nutrition")
+
+**CRITICAL INSTRUCTIONS:**
+- ALWAYS break down complex foods into components
+- ALWAYS choose the most logical unit for the food type
+- ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
+- Use scientific nutritional databases to ensure completeness (USDA FoodData Central standards)
+- NEVER provide empty or minimal micronutrient data - include ALL naturally occurring nutrients
+- For fruits/vegetables: Include vitamin C, folate, potassium, antioxidants, phytonutrients
+- For grains: Include B vitamins, iron, magnesium, zinc, selenium
+- For dairy: Include calcium, vitamin D, B12, riboflavin, phosphorus
+- For meat/fish: Include iron, zinc, B vitamins, selenium, phosphorus
+- For nuts/seeds: Include vitamin E, magnesium, zinc, healthy fats
+- ALWAYS validate that your nutritional values make sense
+
+Return only valid JSON with all required fields.`
+        }
+      ];
     }
 
-    console.log(`Making OpenAI API call with ${hasImages ? 'image+text' : 'text-only'} content...`);
-    if (hasImages) {
-      console.log('Content types:', messageContent.map((item: any) => ({ type: item.type, hasUrl: !!item.image_url })));
-    }
+    console.log(`Making OpenAI API call with ${messageContent.length} content items...`);
+    console.log('Content types:', messageContent.map((item: any) => ({ type: item.type, hasUrl: !!item.image_url })));
     
     // Validate image URLs before API call
     if (hasImages) {
@@ -286,20 +338,29 @@ Base your analysis on standard nutritional databases and provide comprehensive m
       });
     }
 
-    // Make the API call with gpt-5-mini model
+    // Make the API call with enhanced vision model  
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
           role: "system",
-          content: "You are a nutrition expert with access to comprehensive nutritional databases. Always respond with valid JSON containing complete nutritional data including calories, protein, carbs, fat, and extensive micronutrients. For text-only analysis, base your estimates on standard nutritional composition data and typical serving sizes."
+          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
         },
         {
           role: "user",
-          content: hasImages ? messageContent : messageContent
+          content: messageContent
+        },
+        {
+          role: "assistant",
+          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
+        },
+        {
+          role: "user", 
+          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
         }
       ],
-      max_completion_tokens: 1500,
+      max_tokens: 1500, // Increased for detailed micronutrient response
+      temperature: 0.1, // Very low temperature for consistent JSON output
       response_format: { type: "json_object" }
     });
 
@@ -308,14 +369,7 @@ Base your analysis on standard nutritional databases and provide comprehensive m
     
     if (!result || result.trim() === '') {
       console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
-      console.log("Request details:", { hasImages, imageCount, foodName, foodDescription });
-      
-      // If no images were provided and we got empty response, try a simpler approach
-      if (!hasImages) {
-        throw new Error("Unable to analyze nutrition - the AI model may be experiencing issues. Please try again or contact support.");
-      } else {
-        throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions. Please try with a clearer image or provide additional food details.");
-      }
+      throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
     }
 
     let parsed;
@@ -611,7 +665,7 @@ Return only valid JSON with all required fields.`
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
           role: "system",
@@ -655,7 +709,7 @@ Goal: Deliver the most comprehensive, accurate nutritional analysis possible, wi
         }
       ],
       response_format: { type: "json_object" },
-// Temperature not specified - uses default value (1) for gpt-5-mini
+      temperature: 0.1 // Low temperature for consistent nutritional data
     });
 
     const responseContent = response.choices[0].message.content;
@@ -861,10 +915,11 @@ export async function generateWeeklyWorkoutPlan(
 - Scientific exercise selection and ordering`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
-      max_completion_tokens: 4000,
+      temperature: 0.7,
+      max_tokens: 4000,
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
