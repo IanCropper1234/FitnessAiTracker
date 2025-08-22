@@ -271,11 +271,13 @@ export function AddFood({ user }: AddFoodProps) {
     console.log("Portion weight:", portionWeight);
     console.log("Portion unit:", portionUnit);
     
-    // Clear previous analysis results and portion information
+    // Clear previous analysis results and all portion information
     setBaseAIResult(null);
     setDynamicMacros(null);
     setPortionWeight('');
     setPortionUnit('g');
+    setQuantity('1');
+    setUnit('serving');
     
     const hasFoodName = foodName.trim();
     const hasDescription = foodQuery.trim();
