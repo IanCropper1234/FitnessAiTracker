@@ -340,7 +340,7 @@ Return only valid JSON with all required fields.`
 
     // Make the API call with enhanced vision model  
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
       messages: [
         {
           role: "system",
@@ -665,7 +665,7 @@ Return only valid JSON with all required fields.`
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
       messages: [
         {
           role: "system",
@@ -915,7 +915,7 @@ export async function generateWeeklyWorkoutPlan(
 - Scientific exercise selection and ordering`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.7,
