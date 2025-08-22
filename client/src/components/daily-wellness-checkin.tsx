@@ -10,6 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Heart, Battery, Moon, Zap, AlertTriangle } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
+import { useLocation } from "wouter";
 
 interface DailyWellnessCheckin {
   id: number;
@@ -34,6 +35,7 @@ interface DailyWellnessCheckinProps {
 export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWellnessCheckinProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   
   // Always use current date to ensure synchronization with dashboard
   const currentDateString = TimezoneUtils.getCurrentDate();
@@ -104,6 +106,11 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       queryClient.invalidateQueries({ queryKey: ['/api/weekly-wellness-summary'] });
       // Also invalidate all wellness-related queries to be safe
       queryClient.invalidateQueries({ queryKey: ['/api/daily-wellness-checkins'] });
+      
+      // Redirect to dashboard after successful submission
+      setTimeout(() => {
+        setLocation('/');
+      }, 1500); // 1.5 second delay to show the success message
     },
     onError: () => {
       toast({
