@@ -319,14 +319,15 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       {/* Expanded timer modal */}
       {isExpanded && (
         <div 
-          className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-300" 
+          className="fixed inset-0 bg-black/20 z-50 flex items-start justify-center pt-16 p-4 animate-in fade-in-0 duration-300" 
           onClick={() => setIsExpanded(false)}
         >
           <div 
             className="bg-background border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-all duration-300 ease-out animate-in zoom-in-95 fade-in-0 scale-100 opacity-100"
             onClick={(e) => e.stopPropagation()}
             style={{
-              animation: 'slideUpFadeIn 0.3s ease-out forwards'
+              animation: 'slideUpFadeIn 0.3s ease-out forwards',
+              marginBottom: '120px' // Ensure space above FAB button
             }}
           >
             {showCustomTime ? (
