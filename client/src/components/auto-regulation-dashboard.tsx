@@ -83,7 +83,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
 
   if (recommendationsLoading || fatigueLoading) {
     return (
-      <div className="space-y-6 p-6 max-w-4xl mx-auto">
+      <div className="space-y-4 px-2 max-w-4xl mx-auto">
         <div className="animate-pulse space-y-4">
           <div className="h-32 bg-muted "></div>
           <div className="h-48 bg-muted "></div>
@@ -94,7 +94,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
+    <div className="space-y-4 px-2 max-w-4xl mx-auto">
       {/* Header */}
       <Card>
         <CardHeader>
