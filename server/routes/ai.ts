@@ -244,6 +244,12 @@ router.post('/nutrition-analysis', async (req, res) => {
     
     const dataCompletenessScore = (dataQualityMetrics.recordsWithCompleteMicronutrients / dataQualityMetrics.totalRecords) * 100;
 
+    // Select appropriate model for user (with A/B testing support)
+    const modelConfig = selectModelForUser('nutritionAnalysis', userId.toString());
+    const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
+      (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
+      undefined;
+
     const systemPrompt = `You are an expert nutrition scientist and registered dietitian specializing in comprehensive nutritional analysis. You provide detailed micronutrient analysis, RDA comparisons, and personalized nutrition recommendations based on individual health profiles and dietary intake data.
 
     Your expertise includes:
@@ -328,30 +334,36 @@ router.post('/nutrition-analysis', async (req, res) => {
       "nextSteps": ["string"]
     }`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.6,
-      max_tokens: 2500
+    // Monitor AI call performance
+    const result = await monitorAICall({
+      service: 'nutrition-analysis',
+      model: modelConfig.name,
+      userId: userId.toString(),
+      abTestGroup,
+      inputTokens: Math.ceil((systemPrompt + userPrompt).length / 4), // Rough estimate
+      costPerInputToken: modelConfig.costPerToken.input,
+      costPerOutputToken: modelConfig.costPerToken.output
+    }, async () => {
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
+      });
+
+      const responseContent = response.choices[0].message.content;
+      if (!responseContent) {
+        throw new Error('Empty response from AI');
+      }
+
+      return JSON.parse(responseContent);
     });
 
-    const responseContent = response.choices[0].message.content;
-    if (!responseContent) {
-      throw new Error('Empty response from AI');
-    }
-
-    try {
-      const aiResponse = JSON.parse(responseContent);
-      res.json(aiResponse);
-    } catch (parseError) {
-      console.error('JSON parsing error:', parseError);
-      console.error('Raw AI response:', responseContent);
-      throw new Error('The AI response did not match the expected JSON pattern. Please try again.');
-    }
+    res.json(result);
 
   } catch (error: any) {
     console.error('Error analyzing nutrition:', error);
@@ -366,6 +378,13 @@ router.post('/nutrition-analysis', async (req, res) => {
 router.post('/food-analysis', async (req, res) => {
   try {
     const { image, context } = req.body;
+    const userId = req.userId;
+
+    // Select appropriate model for user (with A/B testing support)
+    const modelConfig = selectModelForUser('foodAnalysis', userId);
+    const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
+      (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
+      undefined;
 
     const systemPrompt = `You are an expert food recognition and nutrition analysis AI. You can identify foods from images and provide detailed nutritional information. Analyze food images with high accuracy and provide comprehensive nutrition data.`;
 
@@ -401,30 +420,42 @@ router.post('/food-analysis', async (req, res) => {
       "suggestions": ["string"]
     }`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: userPrompt },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${image}`
+    // Monitor AI call performance
+    const result = await monitorAICall({
+      service: 'food-analysis',
+      model: modelConfig.name,
+      userId,
+      abTestGroup,
+      inputTokens: Math.ceil((systemPrompt + userPrompt).length / 4), // Rough estimate
+      costPerInputToken: modelConfig.costPerToken.input,
+      costPerOutputToken: modelConfig.costPerToken.output
+    }, async () => {
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: userPrompt },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${image}`
+                }
               }
-            }
-          ]
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.5,
-      max_tokens: 1500
+            ]
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
+      });
+
+      return JSON.parse(response.choices[0].message.content || '{}');
     });
 
-    const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
-    res.json(aiResponse);
+    res.json(result);
 
   } catch (error: any) {
     console.error('Error analyzing food image:', error);
@@ -439,6 +470,13 @@ router.post('/food-analysis', async (req, res) => {
 router.post('/program-optimization', async (req, res) => {
   try {
     const { currentProgram, userGoals, performanceData } = req.body;
+    const userId = req.userId;
+
+    // Select appropriate model for user (with A/B testing support)
+    const modelConfig = selectModelForUser('programOptimization', userId);
+    const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
+      (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
+      undefined;
 
     const systemPrompt = `You are an expert evidence-based fitness analyst. Analyze training programs for optimization opportunities based on:
     1. Volume distribution across muscle groups
@@ -460,19 +498,31 @@ router.post('/program-optimization', async (req, res) => {
       "scientificAdjustments": ["string array - Evidence-based methodology adjustments"]
     }`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.6,
-      max_tokens: 1500
+    // Monitor AI call performance
+    const result = await monitorAICall({
+      service: 'program-optimization',
+      model: modelConfig.name,
+      userId,
+      abTestGroup,
+      inputTokens: Math.ceil((systemPrompt + userPrompt).length / 4), // Rough estimate
+      costPerInputToken: modelConfig.costPerToken.input,
+      costPerOutputToken: modelConfig.costPerToken.output
+    }, async () => {
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
+      });
+
+      return JSON.parse(response.choices[0].message.content || '{}');
     });
 
-    const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
-    res.json(aiResponse);
+    res.json(result);
 
   } catch (error: any) {
     console.error('Error analyzing program:', error);
