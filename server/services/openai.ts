@@ -100,6 +100,11 @@ export async function analyzeNutritionMultiImage(
     const hasImages = images && images.length > 0;
     const imageCount = hasImages ? images.length : 0;
 
+    // If no images provided, provide a helpful error message
+    if (!hasImages && (!foodName || !foodDescription)) {
+      throw new Error("For accurate nutrition analysis, please provide either food images or a detailed food description. Current request has no images and insufficient text description.");
+    }
+
     if (hasImages) {
       // Multi-image analysis mode
       const imageText = imageCount === 1 ? "image" : `${imageCount} images`;
@@ -236,7 +241,13 @@ Return only valid JSON with all required fields.`
       }
       
       const primaryInput = foodName || foodDescription;
-      prompt = `Analyze nutrition for "${primaryInput}"${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
+      
+      // Enhanced text prompt for better gpt-5-mini results
+      if (!foodDescription || foodDescription.trim().length < 5) {
+        prompt = `Analyze nutrition for "${primaryInput}" - provide detailed nutritional breakdown based on standard serving sizes and typical preparation methods${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
+      } else {
+        prompt = `Analyze nutrition for "${primaryInput}" with context: "${foodDescription}"${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
+      }
       
       messageContent = [
         {
@@ -369,7 +380,14 @@ Return only valid JSON with all required fields.`
     
     if (!result || result.trim() === '') {
       console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
-      throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
+      console.log("Request details:", { hasImages, imageCount, foodName, foodDescription });
+      
+      // If no images were provided and we got empty response, provide helpful guidance
+      if (!hasImages) {
+        throw new Error("Unable to analyze nutrition without images. Please upload a photo of the food item or nutrition label for accurate analysis.");
+      } else {
+        throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions. Please try with a clearer image or provide additional food details.");
+      }
     }
 
     let parsed;
