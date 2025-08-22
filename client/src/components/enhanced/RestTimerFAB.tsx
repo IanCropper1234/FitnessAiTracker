@@ -34,6 +34,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [hasDragged, setHasDragged] = useState(false);
   const [fabPosition, setFabPosition] = useState<{ x: number; y: number } | null>(null);
+  const [userManuallyClosed, setUserManuallyClosed] = useState(false);
 
   // Format time to mm:ss
   const formatTime = (seconds: number) => {
@@ -84,8 +85,9 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
   }, [isActive, timeRemaining, isExpanded]);
 
   // Auto-expand panel when timer starts (for 3 seconds, then auto-collapse)
+  // Only auto-expand if user hasn't manually closed the timer
   React.useEffect(() => {
-    if (isActive && timeRemaining > 0 && !isExpanded) {
+    if (isActive && timeRemaining > 0 && !isExpanded && !userManuallyClosed) {
       // Auto-expand to show timer started
       setIsExpanded(true);
       
@@ -98,6 +100,13 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       }, 3000);
       
       return () => clearTimeout(autoCollapseTimer);
+    }
+  }, [isActive, timeRemaining, userManuallyClosed]);
+  
+  // Reset userManuallyClosed when a new timer starts
+  React.useEffect(() => {
+    if (isActive && timeRemaining > 0) {
+      setUserManuallyClosed(false);
     }
   }, [isActive, timeRemaining]);
 
@@ -320,7 +329,10 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
       {isExpanded && (
         <div 
           className="fixed inset-0 bg-black/20 z-50 flex items-start justify-center pt-16 p-4 animate-in fade-in-0 duration-300" 
-          onClick={() => setIsExpanded(false)}
+          onClick={() => {
+            setIsExpanded(false);
+            setUserManuallyClosed(true);
+          }}
         >
           <div 
             className="bg-background border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-all duration-300 ease-out animate-in zoom-in-95 fade-in-0 scale-100 opacity-100"
@@ -343,6 +355,8 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                       e.preventDefault();
                       e.stopPropagation();
                       setShowCustomTime(false);
+                      setIsExpanded(false);
+                      setUserManuallyClosed(true);
                     }}
                     className="ios-button touch-target flex items-center justify-center  hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
@@ -405,6 +419,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                       e.preventDefault();
                       e.stopPropagation();
                       setIsExpanded(false);
+                      setUserManuallyClosed(true);
                     }}
                     className="ios-button touch-target flex items-center justify-center  hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
