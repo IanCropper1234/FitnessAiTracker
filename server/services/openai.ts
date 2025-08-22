@@ -359,7 +359,7 @@ Return only valid JSON with all required fields.`
           content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
         }
       ],
-      max_tokens: 1500, // Increased for detailed micronutrient response
+      max_completion_tokens: 1500, // Increased for detailed micronutrient response
       temperature: 0.1, // Very low temperature for consistent JSON output
       response_format: { type: "json_object" }
     });
@@ -919,7 +919,7 @@ export async function generateWeeklyWorkoutPlan(
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 4000,
+      max_completion_tokens: 4000,
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");

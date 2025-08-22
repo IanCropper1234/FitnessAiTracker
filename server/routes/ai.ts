@@ -93,7 +93,7 @@ router.post('/exercise-recommendations', async (req, res) => {
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 2000
+      max_completion_tokens: 2000
     });
 
     const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
@@ -313,7 +313,7 @@ router.post('/nutrition-analysis', async (req, res) => {
       ],
       response_format: { type: "json_object" },
       temperature: 0.6,
-      max_tokens: 2500
+      max_completion_tokens: 2500
     });
 
     const responseContent = response.choices[0].message.content;
@@ -397,7 +397,7 @@ router.post('/food-analysis', async (req, res) => {
       ],
       response_format: { type: "json_object" },
       temperature: 0.5,
-      max_tokens: 1500
+      max_completion_tokens: 1500
     });
 
     const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
@@ -545,7 +545,7 @@ router.post('/program-optimization', async (req, res) => {
       ],
       response_format: { type: "json_object" },
       temperature: 0.6,
-      max_tokens: 1500
+      max_completion_tokens: 1500
     });
 
     const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
