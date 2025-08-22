@@ -44,6 +44,88 @@ export interface ScienceVolumeRecommendation {
 export class SciAlgorithmCore {
   
   /**
+   * Calculate muscle group volume from recent workouts
+   * @param muscleGroupId - Target muscle group ID
+   * @param userId - User ID
+   * @param days - Number of days to look back (default 7 for weekly volume)
+   */
+  static async calculateMuscleGroupVolume(
+    muscleGroupId: number, 
+    userId: number, 
+    days: number = 7
+  ): Promise<number> {
+    try {
+      // Import at runtime to avoid circular dependencies
+      const { workoutSessions, workoutExercises, exerciseMuscleMapping } = await import('@shared/schema');
+      const { eq, and, gte } = await import('drizzle-orm');
+      
+      // Calculate date range
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      // Get completed sessions in date range
+      const sessions = await db
+        .select()
+        .from(workoutSessions)
+        .where(
+          and(
+            eq(workoutSessions.userId, userId),
+            gte(workoutSessions.date, startDate),
+            eq(workoutSessions.isCompleted, true)
+          )
+        );
+
+      let totalSets = 0;
+
+      for (const session of sessions) {
+        // Get workout exercises for this session
+        const exercises = await db.select().from(workoutExercises).where(eq(workoutExercises.sessionId, session.id));
+        
+        for (const exercise of exercises) {
+          if (!exercise.isCompleted) continue;
+          
+          // Check if exercise targets this muscle group
+          const mapping = await db
+            .select()
+            .from(exerciseMuscleMapping)
+            .where(
+              and(
+                eq(exerciseMuscleMapping.exerciseId, exercise.exerciseId),
+                eq(exerciseMuscleMapping.muscleGroupId, muscleGroupId)
+              )
+            );
+
+          if (mapping.length > 0) {
+            // Count actual completed sets from setsData
+            if (exercise.setsData) {
+              try {
+                // setsData is already parsed as JSONB from database
+                const setsData = exercise.setsData;
+                
+                if (Array.isArray(setsData)) {
+                  const completedSets = setsData.filter((set: any) => set && set.completed === true).length;
+                  totalSets += completedSets;
+                } else {
+                  totalSets += exercise.sets || 0;
+                }
+              } catch (error) {
+                totalSets += exercise.sets || 0;
+              }
+            } else {
+              totalSets += exercise.sets || 0;
+            }
+          }
+        }
+      }
+
+      return totalSets;
+    } catch (error) {
+      console.error('Error calculating muscle group volume:', error);
+      return 0;
+    }
+  }
+  
+  /**
    * Core scientific feedback scoring algorithm
    * Used by both auto-regulation and mesocycle systems
    */
@@ -296,6 +378,13 @@ export class SciAlgorithmCore {
       .where(eq(volumeLandmarks.userId, userId));
     
     for (const landmark of landmarks) {
+      // Calculate actual current volume from recent workouts (last 7 days)
+      const actualCurrentVolume = await this.calculateMuscleGroupVolume(
+        landmark.muscleGroupId, 
+        userId, 
+        7 // 7 days for weekly volume
+      );
+      
       let recommendation: ScienceVolumeRecommendation["recommendation"] = "maintain";
       let adjustmentPercentage = 0;
       let reason = "Maintaining current volume";
@@ -304,10 +393,10 @@ export class SciAlgorithmCore {
       if (feedbackData) {
         const scores = this.calculateFeedbackScores(feedbackData);
         
-        // RP Auto-regulation Logic
+        // RP Auto-regulation Logic using actual current volume
         if (scores.overallReadiness >= 8) {
           // High readiness - can increase volume
-          if (landmark.currentVolume < landmark.mav) {
+          if (actualCurrentVolume < landmark.mav) {
             recommendation = "increase";
             adjustmentPercentage = 10;
             reason = "High readiness indicates capacity for volume increase";
@@ -319,7 +408,7 @@ export class SciAlgorithmCore {
           }
         } else if (scores.overallReadiness <= 4) {
           // Low readiness - reduce volume or deload
-          if (landmark.currentVolume > landmark.mev) {
+          if (actualCurrentVolume > landmark.mev) {
             recommendation = "decrease";
             adjustmentPercentage = -15;
             reason = "Low readiness indicates need for volume reduction";
@@ -332,7 +421,7 @@ export class SciAlgorithmCore {
           }
         } else if (scores.overallReadiness <= 6) {
           // Moderate readiness - slight adjustments
-          if (landmark.currentVolume > landmark.mav * 0.9) {
+          if (actualCurrentVolume > landmark.mav * 0.9) {
             recommendation = "decrease";
             adjustmentPercentage = -5;
             reason = "Moderate fatigue with high volume - slight reduction recommended";
@@ -344,7 +433,7 @@ export class SciAlgorithmCore {
           }
         } else {
           // Good readiness (6-8) - maintain or slight increase
-          if (landmark.currentVolume < landmark.mav * 0.8) {
+          if (actualCurrentVolume < landmark.mav * 0.8) {
             recommendation = "increase";
             adjustmentPercentage = 5;
             reason = "Good recovery with room for volume increase";
@@ -360,7 +449,7 @@ export class SciAlgorithmCore {
       recommendations.push({
         muscleGroupId: landmark.muscleGroupId,
         muscleGroupName: landmark.muscleGroupName,
-        currentVolume: landmark.currentVolume,
+        currentVolume: actualCurrentVolume, // Use actual calculated volume
         recommendedAdjustment: adjustmentPercentage,
         recommendation,
         confidenceLevel: confidence,
