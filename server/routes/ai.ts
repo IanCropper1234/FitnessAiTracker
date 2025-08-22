@@ -1,5 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import OpenAI from 'openai';
+import { selectModelForUser } from '../config/ai-config';
+import { monitorAICall, aiPerformanceMonitor } from '../services/ai-performance-monitor';
+import { promptRegistry } from '../services/ai-prompt-registry';
 
 const router = Router();
 
@@ -14,6 +17,13 @@ const openai = new OpenAI({
 router.post('/exercise-recommendations', async (req, res) => {
   try {
     const { userGoals, currentExercises, trainingHistory, muscleGroupFocus, experienceLevel, availableEquipment, timeConstraints, injuryRestrictions } = req.body;
+    const userId = req.userId;
+
+    // Select appropriate model for user (with A/B testing support)
+    const modelConfig = selectModelForUser('exerciseRecommendations', userId);
+    const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
+      (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
+      undefined;
 
     const systemPrompt = `You are an expert evidence-based fitness coach specializing in scientific exercise selection and program design. Your expertise includes:
 
@@ -85,25 +95,38 @@ router.post('/exercise-recommendations', async (req, res) => {
       "progressionPlan": "string - how to integrate over time"
     }`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-      max_tokens: 2000
+    // Monitor AI call performance
+    const result = await monitorAICall({
+      service: 'exercise-recommendations',
+      model: modelConfig.name,
+      userId,
+      abTestGroup,
+      inputTokens: Math.ceil((systemPrompt + userPrompt).length / 4), // Rough estimate
+      costPerInputToken: modelConfig.costPerToken.input,
+      costPerOutputToken: modelConfig.costPerToken.output
+    }, async () => {
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
+      });
+
+      const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
+      
+      return {
+        recommendations: aiResponse.recommendations || [],
+        reasoning: aiResponse.reasoning || '',
+        rpConsiderations: aiResponse.rpConsiderations || '',
+        progressionPlan: aiResponse.progressionPlan || ''
+      };
     });
 
-    const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
-    
-    res.json({
-      recommendations: aiResponse.recommendations || [],
-      reasoning: aiResponse.reasoning || '',
-      rpConsiderations: aiResponse.rpConsiderations || '',
-      progressionPlan: aiResponse.progressionPlan || ''
-    });
+    res.json(result);
 
   } catch (error: any) {
     console.error('Error getting AI exercise recommendations:', error);

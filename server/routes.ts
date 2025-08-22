@@ -19,6 +19,7 @@ import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
 import analyticsRoutes from "./routes/analytics-simple.js";
 import aiRoutes from "./routes/ai.js";
+import aiMonitoringRoutes from "./routes/ai-monitoring.js";
 import { validateAndCleanupTemplates } from "./validate-templates";
 import { workoutExercises, workoutSessions, exercises, mesocycles, userProfiles, users, nutritionLogs, nutritionGoals, weeklyNutritionGoals, bodyMetrics, weightLogs, volumeLandmarks, autoRegulationFeedback, loadProgressionTracking, trainingPrograms, trainingTemplates, dietGoals, dietPhases, muscleGroups, savedWorkoutTemplates, emailVerificationTokens, registrationAttempts } from "@shared/schema";
 import { 
@@ -3969,6 +3970,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // AI routes - apply auth middleware
   app.use('/api/ai', requireAuth, aiRoutes);
+  
+  // AI Monitoring routes - apply auth middleware (for baseline metrics and A/B testing)
+  app.use('/api/ai-monitoring', requireAuth, aiMonitoringRoutes);
 
   // Nutrition Progression
   app.get("/api/nutrition/progression", requireAuth, async (req, res) => {
