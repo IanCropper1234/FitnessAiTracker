@@ -165,8 +165,8 @@ export async function analyzeNutritionMultiImage(
    - Include micronutrients from all identified ingredients
 
 5. **PORTION UNIT OPTIMIZATION:**
-   - Select most appropriate unit for the specific food type shown
-   - Liquids: ml, cups, L | Solids: g, oz | Countable: pieces, slices | Prepared: servings, bowls
+   - Select the most natural unit based on how this food is typically measured and consumed
+   - Consider cultural context, practical measurement, and user-friendly units
 
 **CRITICAL - Enhanced Serving Details for Actual Food:**
 - Provide detailed breakdown of visible components
@@ -193,8 +193,8 @@ ${foodDescription ? `
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions about ingredients, preparation, and cooking methods (string)
 - servingDetails: description with OPTIMAL UNIT for this food type${imageCount > 1 ? ' analyzed across all images' : ''} (string)
-- portionWeight: appropriate portion weight as number (choose based on food type: small items 50-100g, medium portions 100-200g, large portions 200-400g)
-- portionUnit: OPTIMAL unit for this specific food type (string: "g", "ml", "cups", "pieces", "servings", "tbsp", etc.)
+- portionWeight: most appropriate portion weight as number based on nutritional science and typical serving practices for this food type
+- portionUnit: most natural and intuitive unit for this specific food type (determine based on how this food is commonly measured and consumed)
 - ingredientBreakdown: array of identified food components (e.g., ["grilled chicken: 120g", "brown rice: 150g", "broccoli: 80g"])
 - micronutrients: comprehensive vitamin and mineral data from ALL components (object with fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
@@ -297,8 +297,8 @@ Return only valid JSON with all required fields.`
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions about preparation, variety, and ingredient composition (string)
 - servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "1 medium portion", "3 pieces (80g)")
-- portionWeight: standardized portion weight as number (choose based on food type: fruits/vegetables 80-120g, proteins 100-150g, liquids 200-250ml)
-- portionUnit: OPTIMAL unit for this food type (string: "g", "ml", "cups", "pieces", "servings", "tbsp", etc.)
+- portionWeight: realistic portion weight as number determined by nutritional guidelines and common consumption patterns
+- portionUnit: most appropriate unit for this food type based on how it's naturally measured and served
 - ingredientBreakdown: array of food components analyzed (e.g., ["whole wheat bread: 80g", "grilled chicken: 100g", "lettuce: 20g"])
 - micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
