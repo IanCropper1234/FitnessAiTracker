@@ -222,13 +222,22 @@ async function calculateMuscleGroupVolume(
           // Count actual completed sets from setsData instead of just the sets field
           if (exercise.setsData) {
             try {
-              const setsData = JSON.parse(exercise.setsData as string);
-              const completedSets = setsData.filter((set: any) => set.completed === true).length;
-              totalSets += completedSets;
-              console.log(`Exercise ${exercise.exerciseId}: ${completedSets} completed sets for muscle group ${muscleGroupId}`);
-            } catch (parseError) {
-              console.error('Error parsing setsData:', parseError);
-              // Fallback to sets field if setsData parsing fails
+              // setsData is already parsed as JSONB from database - no need to JSON.parse
+              const setsData = exercise.setsData;
+              
+              // Validate that setsData is an array and has the expected structure
+              if (Array.isArray(setsData)) {
+                const completedSets = setsData.filter((set: any) => set && set.completed === true).length;
+                totalSets += completedSets;
+                console.log(`Exercise ${exercise.exerciseId}: ${completedSets} completed sets for muscle group ${muscleGroupId}`);
+              } else {
+                console.warn(`Invalid setsData format for exercise ${exercise.exerciseId}:`, typeof setsData);
+                // Fallback to sets field if setsData is not an array
+                totalSets += exercise.sets || 0;
+              }
+            } catch (error) {
+              console.error('Error processing setsData for exercise', exercise.exerciseId, ':', error);
+              // Fallback to sets field if setsData processing fails
               totalSets += exercise.sets || 0;
             }
           } else {
