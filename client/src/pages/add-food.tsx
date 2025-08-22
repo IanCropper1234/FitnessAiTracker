@@ -179,22 +179,41 @@ export function AddFood({ user }: AddFoodProps) {
     onSuccess: (data: any) => {
       console.log("AI Analysis successful:", data);
       console.log("AI serving details:", data.servingDetails);
+      console.log("AI portion data:", data.portionWeight, data.portionUnit);
       
       // Store the base AI result for volume calculations
       setBaseAIResult(data);
       setDynamicMacros(data);
       
-      // Use AI's standardized portion information instead of hardcoded values
-      if (data.portionWeight && data.portionUnit) {
+      // Use AI's standardized portion information - check for both numeric and null values
+      if (data.portionWeight !== null && data.portionWeight !== undefined && 
+          data.portionUnit !== null && data.portionUnit !== undefined) {
         console.log("Using AI standardized portion:", data.portionWeight, data.portionUnit);
         setPortionWeight(data.portionWeight.toString());
         setPortionUnit(data.portionUnit);
         setQuantity(data.portionWeight.toString());
         setUnit(data.portionUnit);
       } else {
-        // If AI didn't provide specific portion info, keep 1 serving as baseline
-        setQuantity('1');
-        setUnit('serving');
+        // Fallback: Try to extract portion info from servingDetails if available
+        if (data.servingDetails) {
+          const match = data.servingDetails.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z]+)/);
+          if (match) {
+            const [, weight, unit] = match;
+            console.log("Extracted portion from servingDetails:", weight, unit);
+            setPortionWeight(weight);
+            setPortionUnit(unit);
+            setQuantity(weight);
+            setUnit(unit);
+          } else {
+            // Final fallback to defaults
+            setQuantity('1');
+            setUnit('serving');
+          }
+        } else {
+          // Final fallback to defaults
+          setQuantity('1');
+          setUnit('serving');
+        }
       }
       
       toast({
