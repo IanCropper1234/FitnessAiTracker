@@ -482,9 +482,9 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
             setIsExpanded(true);
           }
         }}
-        className={`fixed z-50 transition-all duration-300 ${
+        className={`fixed transition-all duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
+        } ${isExpanded ? 'z-40' : 'z-50'} relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
         style={{
           ...getSafePosition(),
           borderRadius: '50%',
