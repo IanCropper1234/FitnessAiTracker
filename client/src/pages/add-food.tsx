@@ -115,7 +115,7 @@ export function AddFood({ user }: AddFoodProps) {
   
   // Enhanced portion input states
   const [portionWeight, setPortionWeight] = useState('');
-  const [portionUnit, setPortionUnit] = useState('g');
+  const [portionUnit, setPortionUnit] = useState('serving'); // Let AI decide the appropriate unit
   
   // Nutrient details modal states
   const [showNutrientModal, setShowNutrientModal] = useState(false);
@@ -275,7 +275,7 @@ export function AddFood({ user }: AddFoodProps) {
     setBaseAIResult(null);
     setDynamicMacros(null);
     setPortionWeight('');
-    setPortionUnit('g');
+    setPortionUnit('serving'); // Don't hardcode 'g', let AI decide
     setQuantity('1');
     setUnit('serving');
     
