@@ -473,25 +473,26 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
         </div>
       )}
       
-      {/* Floating Action Button - Perfect Circle Design */}
-      <button
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onClick={(e) => {
-          e.preventDefault();
-          if (!hasDragged && !isDragging) {
-            setIsExpanded(true);
-          }
-        }}
-        className={`fixed z-50 transition-all duration-300 ${
-          isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
-        style={{
-          ...getSafePosition(),
-          borderRadius: '50%',
-          overflow: 'hidden'
-        }}
-      >
+      {/* Floating Action Button - Perfect Circle Design - Hide when expanded */}
+      {!isExpanded && (
+        <button
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onClick={(e) => {
+            e.preventDefault();
+            if (!hasDragged && !isDragging) {
+              setIsExpanded(true);
+            }
+          }}
+          className={`fixed z-50 transition-all duration-300 ${
+            isDragging ? 'cursor-grabbing' : 'cursor-grab'
+          } relative flex items-center justify-center w-16 h-16 timer-fab-circle shadow-lg hover:scale-105 active:scale-95 group fab-touch select-none`}
+          style={{
+            ...getSafePosition(),
+            borderRadius: '50%',
+            overflow: 'hidden'
+          }}
+        >
         {/* Enhanced pulsing ring when active with animation states */}
         {timeRemaining > 0 && (
           <>
@@ -586,6 +587,7 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
           style={{ borderRadius: '50%' }}
         />
       </button>
+      )}
     </>
   );
 
