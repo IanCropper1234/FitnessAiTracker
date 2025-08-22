@@ -100,9 +100,9 @@ export async function analyzeNutritionMultiImage(
     const hasImages = images && images.length > 0;
     const imageCount = hasImages ? images.length : 0;
 
-    // If no images provided, provide a helpful error message
-    if (!hasImages && (!foodName || !foodDescription)) {
-      throw new Error("For accurate nutrition analysis, please provide either food images or a detailed food description. Current request has no images and insufficient text description.");
+    // Validate input - either images OR sufficient text description
+    if (!hasImages && !foodName) {
+      throw new Error("Please provide either food images or a food name for nutrition analysis.");
     }
 
     if (hasImages) {
@@ -242,12 +242,13 @@ Return only valid JSON with all required fields.`
       
       const primaryInput = foodName || foodDescription;
       
-      // Enhanced text prompt for better gpt-5-mini results
-      if (!foodDescription || foodDescription.trim().length < 5) {
-        prompt = `Analyze nutrition for "${primaryInput}" - provide detailed nutritional breakdown based on standard serving sizes and typical preparation methods${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
-      } else {
-        prompt = `Analyze nutrition for "${primaryInput}" with context: "${foodDescription}"${portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`}.`;
-      }
+      // Create a comprehensive text prompt for better gpt-5-mini results
+      const contextInfo = foodDescription ? ` (${foodDescription})` : '';
+      const portionInfo = portionWeight && portionUnit ? ` for ${portionWeight}${portionUnit}` : ` for ${quantity} ${unit}(s)`;
+      
+      prompt = `Please provide comprehensive nutritional analysis for: ${primaryInput}${contextInfo}${portionInfo}.
+
+I need complete nutritional data including calories, protein, carbohydrates, fat, and extensive micronutrients. Base your analysis on standard nutritional databases and typical preparation methods.`;
       
       messageContent = [
         {
@@ -349,29 +350,20 @@ Return only valid JSON with all required fields.`
       });
     }
 
-    // Make the API call with enhanced vision model  
+    // Make the API call with gpt-5-mini model
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
+      model: "gpt-5-mini",
       messages: [
         {
           role: "system",
-          content: "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score."
+          content: "You are a nutrition expert with access to comprehensive nutritional databases. Always respond with valid JSON containing complete nutritional data including calories, protein, carbs, fat, and extensive micronutrients. For text-only analysis, base your estimates on standard nutritional composition data and typical serving sizes."
         },
         {
           role: "user",
           content: messageContent
-        },
-        {
-          role: "assistant",
-          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
-        },
-        {
-          role: "user", 
-          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
         }
       ],
-      max_completion_tokens: 1500, // Increased for detailed micronutrient response
-// Temperature not specified - uses default value (1) for gpt-5-mini
+      max_completion_tokens: 1500,
       response_format: { type: "json_object" }
     });
 
@@ -382,9 +374,9 @@ Return only valid JSON with all required fields.`
       console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
       console.log("Request details:", { hasImages, imageCount, foodName, foodDescription });
       
-      // If no images were provided and we got empty response, provide helpful guidance
+      // If no images were provided and we got empty response, try a simpler approach
       if (!hasImages) {
-        throw new Error("Unable to analyze nutrition without images. Please upload a photo of the food item or nutrition label for accurate analysis.");
+        throw new Error("Unable to analyze nutrition - the AI model may be experiencing issues. Please try again or contact support.");
       } else {
         throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions. Please try with a clearer image or provide additional food details.");
       }
