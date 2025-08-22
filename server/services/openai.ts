@@ -360,7 +360,7 @@ Return only valid JSON with all required fields.`
         }
       ],
       max_completion_tokens: 1500, // Increased for detailed micronutrient response
-      temperature: 0.1, // Very low temperature for consistent JSON output
+// Temperature not specified - uses default value (1) for gpt-5-mini
       response_format: { type: "json_object" }
     });
 
@@ -709,7 +709,7 @@ Goal: Deliver the most comprehensive, accurate nutritional analysis possible, wi
         }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.1 // Low temperature for consistent nutritional data
+// Temperature not specified - uses default value (1) for gpt-5-mini
     });
 
     const responseContent = response.choices[0].message.content;
@@ -918,7 +918,6 @@ export async function generateWeeklyWorkoutPlan(
       model: "gpt-5-mini", // Updated to gpt-5-mini as requested by user
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
-      temperature: 0.7,
       max_completion_tokens: 4000,
     });
 

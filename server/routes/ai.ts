@@ -92,7 +92,6 @@ router.post('/exercise-recommendations', async (req, res) => {
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.7,
       max_completion_tokens: 2000
     });
 
@@ -312,7 +311,7 @@ router.post('/nutrition-analysis', async (req, res) => {
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.6,
+
       max_completion_tokens: 2500
     });
 
@@ -396,7 +395,6 @@ router.post('/food-analysis', async (req, res) => {
         }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.5,
       max_completion_tokens: 1500
     });
 
@@ -544,7 +542,7 @@ router.post('/program-optimization', async (req, res) => {
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.6,
+
       max_completion_tokens: 1500
     });
 
