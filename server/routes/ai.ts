@@ -245,7 +245,7 @@ router.post('/nutrition-analysis', async (req, res) => {
     const dataCompletenessScore = (dataQualityMetrics.recordsWithCompleteMicronutrients / dataQualityMetrics.totalRecords) * 100;
 
     // Select appropriate model for user (with A/B testing support)
-    const modelConfig = selectModelForUser('nutritionAnalysis', userId.toString());
+    const modelConfig = selectModelForUser('nutritionAnalysis', userId ? userId.toString() : '1');
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
       undefined;
@@ -338,7 +338,7 @@ router.post('/nutrition-analysis', async (req, res) => {
     const result = await monitorAICall({
       service: 'nutrition-analysis',
       model: modelConfig.name,
-      userId: userId.toString(),
+      userId: userId ? userId.toString() : '1',
       abTestGroup,
       inputTokens: Math.ceil((systemPrompt + userPrompt).length / 4), // Rough estimate
       costPerInputToken: modelConfig.costPerToken.input,

@@ -1838,7 +1838,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         portionWeight ? parseFloat(portionWeight) : undefined,
         portionUnit,
         analysisType || 'nutrition_label', // Default to nutrition label analysis
-        req.userId.toString()
+        req.userId ? req.userId.toString() : undefined
       );
       
       console.log("AI Analysis successful:", {
