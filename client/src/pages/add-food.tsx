@@ -439,31 +439,7 @@ export function AddFood({ user }: AddFoodProps) {
     }
   }, [baseAIResult, quantity, unit, portionWeight, portionUnit]);
 
-  // Auto-sync portion values to quantity/unit after AI analysis
-  React.useEffect(() => {
-    if (aiAnalyzeMutation.data) {
-      // AI provides nutrition for the analyzed quantity, set form to match AI result
-      console.log("AI analysis complete, using AI standardized portion");
-      
-      // Set base AI result for calculations
-      setBaseAIResult(aiAnalyzeMutation.data);
-      setDynamicMacros(aiAnalyzeMutation.data);
-      
-      // Use AI-provided standardized portion if available
-      if (aiAnalyzeMutation.data.portionWeight && aiAnalyzeMutation.data.portionUnit) {
-        // Set both portion fields AND quantity/unit from AI data
-        setPortionWeight(aiAnalyzeMutation.data.portionWeight.toString());
-        setPortionUnit(aiAnalyzeMutation.data.portionUnit);
-        setQuantity(aiAnalyzeMutation.data.portionWeight.toString());
-        setUnit(aiAnalyzeMutation.data.portionUnit);
-        console.log(`Setting initial portion: ${aiAnalyzeMutation.data.portionWeight} ${aiAnalyzeMutation.data.portionUnit}`);
-      } else {
-        // Fallback to AI serving details or default
-        setQuantity('1');
-        setUnit('serving');
-      }
-    }
-  }, [aiAnalyzeMutation.data]);
+  // Remove duplicate useEffect - portion setting is handled in onSuccess callback
 
   // Recalculate macros when quantity, unit, or portion data changes
   React.useEffect(() => {
