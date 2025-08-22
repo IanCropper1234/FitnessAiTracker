@@ -419,34 +419,134 @@ export class MemStorage implements IStorage {
   }
 
   async createExercise(exercise: InsertExercise): Promise<Exercise> {
-    const newExercise: Exercise = { 
-      ...exercise, 
-      id: this.currentExerciseId++,
+    // Import database access at runtime to avoid circular dependencies
+    const { db } = await import('./db');
+    const { exercises, exerciseMuscleMapping, muscleGroups } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    
+    // Check for duplicate exercise names in database
+    const existingExercise = await db.select().from(exercises).where(eq(exercises.name, exercise.name)).limit(1);
+    if (existingExercise.length > 0) {
+      throw new Error(`Exercise with name "${exercise.name}" already exists`);
+    }
+    
+    // Create the exercise in the database
+    const [newExercise] = await db.insert(exercises).values({
+      ...exercise,
       createdAt: new Date(),
       muscleGroups: exercise.muscleGroups || null,
       equipment: exercise.equipment || null,
       movementPattern: exercise.movementPattern || null,
-      difficulty: exercise.difficulty || null,
+      difficulty: exercise.difficulty || 'intermediate',
       instructions: exercise.instructions || null,
       videoUrl: exercise.videoUrl || null,
       translations: exercise.translations || {},
-      isBodyWeight: exercise.isBodyWeight || null
-    };
+      isBodyWeight: exercise.isBodyWeight || false
+    }).returning();
+    
+    // Create muscle group mappings if muscleGroups are provided
+    if (exercise.muscleGroups && exercise.muscleGroups.length > 0) {
+      console.log(`Creating muscle group mappings for custom exercise: ${exercise.name}`);
+      
+      // Get all muscle groups from database
+      const allMuscleGroups = await db.select().from(muscleGroups);
+      
+      // Create mappings for each muscle group
+      const mappingsToCreate = [];
+      for (const muscleGroupName of exercise.muscleGroups) {
+        const muscleGroup = allMuscleGroups.find(mg => mg.name === muscleGroupName);
+        
+        if (muscleGroup) {
+          mappingsToCreate.push({
+            exerciseId: newExercise.id,
+            muscleGroupId: muscleGroup.id,
+            contributionPercentage: 70, // Default primary contribution
+            role: 'primary' as const
+          });
+        } else {
+          console.warn(`Muscle group "${muscleGroupName}" not found in database`);
+        }
+      }
+      
+      if (mappingsToCreate.length > 0) {
+        await db.insert(exerciseMuscleMapping).values(mappingsToCreate);
+        console.log(`Created ${mappingsToCreate.length} muscle group mappings for exercise "${exercise.name}"`);
+      }
+    }
+    
+    // Also update in-memory cache for consistency
     this.exercises.set(newExercise.id, newExercise);
     return newExercise;
   }
 
   async updateExercise(id: number, exercise: Partial<InsertExercise>): Promise<Exercise | undefined> {
-    const existingExercise = this.exercises.get(id);
-    if (!existingExercise) return undefined;
+    // Import database access at runtime to avoid circular dependencies
+    const { db } = await import('./db');
+    const { exercises, exerciseMuscleMapping, muscleGroups } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
     
-    const updatedExercise = { ...existingExercise, ...exercise };
+    // Update in database first
+    const [updatedExercise] = await db.update(exercises)
+      .set(exercise)
+      .where(eq(exercises.id, id))
+      .returning();
+    
+    if (!updatedExercise) return undefined;
+    
+    // If muscle groups are being updated, update the mappings too
+    if (exercise.muscleGroups !== undefined) {
+      console.log(`Updating muscle group mappings for exercise: ${updatedExercise.name}`);
+      
+      // Delete existing mappings
+      await db.delete(exerciseMuscleMapping).where(eq(exerciseMuscleMapping.exerciseId, id));
+      
+      // Create new mappings if muscle groups are provided
+      if (exercise.muscleGroups && exercise.muscleGroups.length > 0) {
+        const allMuscleGroups = await db.select().from(muscleGroups);
+        
+        const mappingsToCreate = [];
+        for (const muscleGroupName of exercise.muscleGroups) {
+          const muscleGroup = allMuscleGroups.find(mg => mg.name === muscleGroupName);
+          
+          if (muscleGroup) {
+            mappingsToCreate.push({
+              exerciseId: id,
+              muscleGroupId: muscleGroup.id,
+              contributionPercentage: 70, // Default primary contribution
+              role: 'primary' as const
+            });
+          }
+        }
+        
+        if (mappingsToCreate.length > 0) {
+          await db.insert(exerciseMuscleMapping).values(mappingsToCreate);
+          console.log(`Updated ${mappingsToCreate.length} muscle group mappings for exercise "${updatedExercise.name}"`);
+        }
+      }
+    }
+    
+    // Update in-memory cache for consistency
     this.exercises.set(id, updatedExercise);
     return updatedExercise;
   }
 
   async deleteExercise(id: number): Promise<boolean> {
-    return this.exercises.delete(id);
+    // Import database access at runtime to avoid circular dependencies
+    const { db } = await import('./db');
+    const { exercises, exerciseMuscleMapping } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    
+    // Delete muscle group mappings first (foreign key constraint)
+    await db.delete(exerciseMuscleMapping).where(eq(exerciseMuscleMapping.exerciseId, id));
+    
+    // Delete the exercise from database
+    const deletedRows = await db.delete(exercises).where(eq(exercises.id, id));
+    
+    // Remove from in-memory cache
+    const wasDeleted = this.exercises.delete(id);
+    
+    // Return true if database deletion was successful
+    return deletedRows.length > 0 || wasDeleted;
   }
 
   // Workout Sessions
