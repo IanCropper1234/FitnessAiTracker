@@ -66,32 +66,13 @@ All core API routes are protected by authentication.
 ### Service Layer Architecture
 Core services include `NutritionService`, `TrainingService`, `AnalyticsService`, `LoadProgression`, `MesocyclePeriodization`, `TemplateEngine`, `SessionCustomization`, `WorkoutDataProcessor`, `ShoppingListGenerator`, and `SciAlgorithmCore` (unified scientific algorithm service for fatigue analysis, volume calculations, and auto-regulation logic).
 
+### AI Model Integration
+- **Current Model**: GPT-4o (deployed across all AI features)
+- **Integration Points**: Exercise Recommendations, Nutrition Analysis, Food Image Recognition, Multi-Image Nutrition Analysis, Program Optimization.
+- **Next Phase**: Migration to GPT-5-mini for improved response times and reduced costs while maintaining functional parity and JSON output consistency.
+
 ### Key Features & Implementations
-
-### **Enhanced Registration System (2025 Enterprise Standards)**
-**Complete Authentication Security Overhaul**:
-- **Multi-Step Progressive Registration**: Email validation → Password creation → Account review → Verification
-- **Real-time Password Strength Validation**: NIST-compliant scoring system (0-100), common password detection, entropy analysis
-- **Advanced Security Features**: Account lockout (5 attempts/15min), bcrypt salt rounds 12, IP tracking, User-Agent fingerprinting
-- **Rate Limiting Protection**: Email-based (5 attempts) and IP-based (10 attempts) rate limiting per 15-minute window
-- **Email Verification System**: Secure token generation, 15-minute expiry, attempt tracking, progressive account activation
-- **Enhanced Password Requirements**: 12-128 character length, variety scoring, pattern detection, real-time feedback
-- **Registration Analytics**: Comprehensive attempt tracking with success/failure rates and security insights
-- **Progressive Account Activation**: Users can access basic features before email verification, encouraging engagement
-
-**Frontend UX Enhancements**:
-- **Multi-Step Registration Form**: Clean, guided experience with step indicators and validation feedback
-- **Real-time Email Validation**: Instant availability checking and format validation with normalized email handling
-- **Interactive Password Strength Indicator**: Visual progress bar, detailed requirements checklist, and helpful suggestions
-- **Enhanced Error Handling**: User-friendly messages with specific guidance and retry mechanisms
-- **Responsive Design**: Mobile-optimized forms with proper touch targets and smooth transitions
-
-**Backend API Architecture**:
-- **Comprehensive Validation Endpoints**: `/api/auth/validate-email`, `/api/auth/validate-password`, `/api/auth/verify-email`
-- **Enhanced Security Logging**: Detailed registration attempts, failure reasons, and IP tracking for analytics
-- **Secure Token Management**: Cryptographically secure token generation with proper expiry and cleanup
-- **Database Schema Extensions**: New tables for email verification tokens and registration attempt tracking
-
+- **Enhanced Registration System**: Multi-step progressive registration, real-time password strength validation, advanced security features (account lockout, rate limiting), email verification, and enhanced password requirements.
 - **iOS-style Notification System**: Comprehensive system with features like drag-to-dismiss, auto-hide, action buttons, and native animations.
 - **Enhanced Workout Execution System**: Features enhanced rest timer animations, dedicated auto-regulation feedback, progress save indicator, and automatic set completion saving.
 - **User-Controlled Settings System**: Comprehensive workout settings interface allowing users to control scientific auto-regulation feedback and other workout features.
@@ -109,13 +90,13 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Unit Conversion Toggle**: Added kg/lbs conversion toggle button to Recent Entries section in nutrition progression component for weight data.
 - **Training Dashboard Cards Redesign**: Redesigned training statistics cards with clean color-coded layout, displaying authentic training data only: Total Sessions, Total Volume, Average Session Time.
 
-### iOS App Development Strategy - Expo Approach
-TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. **Complete Expo configuration exists** in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, **eliminating the need for macOS/Xcode**.
+### iOS App Development Strategy
+TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Complete Expo configuration exists in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, eliminating the need for macOS/Xcode.
 
 ## External Dependencies
 
 - **Database**: Neon PostgreSQL serverless database
-- **AI Services**: OpenAI API for nutrition analysis and training recommendations
+- **AI Services**: OpenAI API (Current: GPT-4o, Planned: GPT-5-mini migration)
 - **UI Components**: Radix UI primitives
 - **Charts**: Recharts
 - **Validation**: Zod
