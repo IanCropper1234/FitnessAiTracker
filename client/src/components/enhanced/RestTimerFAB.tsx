@@ -103,12 +103,15 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     }
   }, [isActive, timeRemaining, userManuallyClosed]);
   
-  // Reset userManuallyClosed when a new timer starts
+  // Reset userManuallyClosed when a new timer starts (only when timer transitions from inactive to active)
+  const prevIsActive = React.useRef(isActive);
   React.useEffect(() => {
-    if (isActive && timeRemaining > 0) {
+    if (isActive && !prevIsActive.current) {
+      // Timer just started, reset manual close flag
       setUserManuallyClosed(false);
     }
-  }, [isActive, timeRemaining]);
+    prevIsActive.current = isActive;
+  }, [isActive]);
 
   // Handle custom time setting
   const handleCustomTimeSet = () => {
