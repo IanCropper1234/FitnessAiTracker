@@ -64,13 +64,24 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     }
   }, [isActive, timeRemaining]);
   
-  // Trigger completion animation
+  // Trigger completion animation and auto-close expanded panel
   React.useEffect(() => {
     if (progress >= 100 && isActive) {
       setCompletionAnimation(true);
       setTimeout(() => setCompletionAnimation(false), 1000);
     }
   }, [progress, isActive]);
+
+  // Auto-close expanded panel when timer completes
+  React.useEffect(() => {
+    if (!isActive && timeRemaining === 0 && isExpanded) {
+      // Add a small delay to let the completion animation finish
+      setTimeout(() => {
+        setIsExpanded(false);
+        setShowCustomTime(false);
+      }, 1200); // 1.2 second delay to allow completion animation to finish
+    }
+  }, [isActive, timeRemaining, isExpanded]);
 
   // Handle custom time setting
   const handleCustomTimeSet = () => {
