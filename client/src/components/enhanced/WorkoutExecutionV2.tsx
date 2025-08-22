@@ -756,10 +756,22 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         }
       }
       
-      // Start rest timer
+      // Start rest timer and auto-open expanded panel for better UX
       const restPeriod = currentExercise?.restPeriod || 120;
       setRestTimeRemaining(restPeriod);
       setIsRestTimerActive(true);
+      
+      // Auto-open timer controls briefly to show it started
+      if (restTimerFABEnabled) {
+        // The timer FAB will handle auto-expansion based on isActive state
+        showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
+          autoHideDelay: 2000,
+          action: {
+            label: "Continue Resting",
+            onClick: () => console.log("Rest timer notification acknowledged")
+          }
+        });
+      }
       
     } catch (error) {
       console.error('Error completing set:', error);

@@ -83,6 +83,24 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     }
   }, [isActive, timeRemaining, isExpanded]);
 
+  // Auto-expand panel when timer starts (for 3 seconds, then auto-collapse)
+  React.useEffect(() => {
+    if (isActive && timeRemaining > 0 && !isExpanded) {
+      // Auto-expand to show timer started
+      setIsExpanded(true);
+      
+      // Auto-collapse after 3 seconds to reduce screen clutter
+      const autoCollapseTimer = setTimeout(() => {
+        if (isExpanded) {
+          setIsExpanded(false);
+          setShowCustomTime(false);
+        }
+      }, 3000);
+      
+      return () => clearTimeout(autoCollapseTimer);
+    }
+  }, [isActive, timeRemaining]);
+
   // Handle custom time setting
   const handleCustomTimeSet = () => {
     const totalCustomSeconds = customMinutes * 60 + customSeconds;
@@ -300,10 +318,16 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
     <>
       {/* Expanded timer modal */}
       {isExpanded && (
-        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={() => setIsExpanded(false)}>
+        <div 
+          className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-300" 
+          onClick={() => setIsExpanded(false)}
+        >
           <div 
-            className="bg-background border border-border -2xl shadow-2xl p-6 w-full max-w-sm animate-in zoom-in-95 fade-in-0 duration-200"
+            className="bg-background border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-all duration-300 ease-out animate-in zoom-in-95 fade-in-0 scale-100 opacity-100"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              animation: 'slideUpFadeIn 0.3s ease-out forwards'
+            }}
           >
             {showCustomTime ? (
               // Custom time setting view

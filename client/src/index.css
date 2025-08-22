@@ -2199,3 +2199,35 @@ button, .ios-button {
     transform: rotate(360deg);
   }
 }
+
+/* Rest Timer FAB smooth transition animations */
+@keyframes slideUpFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideDownFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+}
+
+/* Enhanced rest timer FAB transitions */
+.timer-fab-panel-enter {
+  animation: slideUpFadeIn 0.3s ease-out forwards;
+}
+
+.timer-fab-panel-exit {
+  animation: slideDownFadeOut 0.2s ease-in forwards;
+}
