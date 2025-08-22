@@ -128,6 +128,17 @@
   }
 }
 
+/* Smooth tab transition class */
+.tab-content-smooth {
+  animation: tab-fade-slide 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+
+/* Tab trigger smooth transitions */
+.tab-trigger-smooth {
+  transition: all 0.15s ease-out;
+}
+
 .tab-content-animated {
   animation: tab-fade-slide 120ms ease-out forwards;
   will-change: transform, opacity;
