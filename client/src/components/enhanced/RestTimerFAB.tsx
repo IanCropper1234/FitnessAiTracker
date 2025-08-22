@@ -339,7 +339,11 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                     <h3 className="font-medium text-base text-foreground">Custom Rest Time</h3>
                   </div>
                   <button
-                    onClick={() => setShowCustomTime(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowCustomTime(false);
+                    }}
                     className="ios-button touch-target flex items-center justify-center  hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -397,7 +401,11 @@ const RestTimerFAB: React.FC<RestTimerFABProps> = ({
                     <h3 className="font-medium text-base text-foreground">Rest Timer</h3>
                   </div>
                   <button
-                    onClick={() => setIsExpanded(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsExpanded(false);
+                    }}
                     className="ios-button touch-target flex items-center justify-center  hover:bg-accent text-foreground/60 hover:text-foreground transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
