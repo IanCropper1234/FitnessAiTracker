@@ -716,21 +716,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           const pairedExerciseIndexInSession = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
           const isCompletingSecondExercise = currentExerciseIndex > pairedExerciseIndexInSession;
           
-          console.log('🔍 Superset Rest Timer Check:', {
-            currentExercise: currentExercise.exercise.name,
-            currentExerciseIndex,
-            pairedExerciseIndexInSession,
-            isCompletingSecondExercise,
-            shouldStartRestTimer: isCompletingSecondExercise
-          });
-          
           if (isCompletingSecondExercise && restTimerFABEnabled) {
             // Start rest timer when completing the "second" exercise
             const restPeriod = currentExercise?.restPeriod || 120;
             setRestTimeRemaining(restPeriod);
             setIsRestTimerActive(true);
-            
-            console.log('✅ Superset rest timer started!', { restPeriod });
             
             showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
               autoHideDelay: 2000,

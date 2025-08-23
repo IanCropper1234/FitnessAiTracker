@@ -439,7 +439,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
                     totalTargetReps: parseInt(e.target.value) || 40,
-                    miniSetReps: specialConfig?.miniSetReps || 5,
+                    totalMiniSets: specialConfig?.totalMiniSets || 8,
                     restSeconds: specialConfig?.restSeconds || 10
                   })}
                   min="40"
@@ -448,15 +448,17 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 />
               </div>
               <div>
-                <label className="text-xs text-orange-300">Mini-Set Reps</label>
+                <label className="text-xs text-orange-300">Total Mini-Sets</label>
                 <Input
                   type="number"
-                  value={specialConfig?.miniSetReps ?? 5}
+                  value={specialConfig?.totalMiniSets ?? 8}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
-                    miniSetReps: parseInt(e.target.value) || 5
+                    totalMiniSets: parseInt(e.target.value) || 8,
+                    totalTargetReps: specialConfig?.totalTargetReps || 40,
+                    restSeconds: specialConfig?.restSeconds || 10
                   })}
-                  min="3"
+                  min="4"
                   max="15"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
@@ -464,7 +466,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-xs text-orange-300/70">
-                Target: {specialConfig?.totalTargetReps ?? 40} reps in {Math.ceil((specialConfig?.totalTargetReps ?? 40) / (specialConfig?.miniSetReps ?? 5))} mini-sets
+                Target: {specialConfig?.totalTargetReps ?? 40} reps in {specialConfig?.totalMiniSets ?? 8} mini-sets
               </div>
               <div className="flex gap-1">
                 <Button

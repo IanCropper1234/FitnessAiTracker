@@ -453,7 +453,7 @@ export default function EditTemplatePage() {
       case 'myorep_no_match':
         return { targetReps: 15, miniSets: 3, restSeconds: 20 };
       case 'giant_set':
-        return { totalTargetReps: 40, miniSetReps: 5, restSeconds: 10 };
+        return { totalTargetReps: 40, totalMiniSets: 8, restSeconds: 10 };
       case 'superset':
         return { supersetExercises: [], restBetween: 30 };
       default:
@@ -471,7 +471,7 @@ export default function EditTemplatePage() {
       case 'myorep_no_match':
         return `${config.targetReps || 15} target reps, ${config.miniSets || 3} mini sets`;
       case 'giant_set':
-        return `${config.totalTargetReps || 40} total reps, ${config.miniSetReps || 5} per mini set`;
+        return `${config.totalTargetReps || 40} total reps in ${config.totalMiniSets || 8} mini-sets`;
       case 'superset':
         const pairedName = config.pairedExerciseName || 'Unknown Exercise';
         return config.isSecondaryExercise 
@@ -628,18 +628,18 @@ export default function EditTemplatePage() {
                 onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'totalTargetReps', parseInt(e.target.value))}
                 className="h-6 text-xs"
                 min="20"
-                max="60"
+                max="100"
               />
             </div>
             <div>
-              <Label className="text-xs">Mini Set Reps</Label>
+              <Label className="text-xs">Total Mini-Sets</Label>
               <Input
                 type="number"
-                value={config.miniSetReps || 5}
-                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'miniSetReps', parseInt(e.target.value))}
+                value={config.totalMiniSets || 8}
+                onChange={(e) => handleUpdateMethodConfig(exerciseIndex, 'totalMiniSets', parseInt(e.target.value))}
                 className="h-6 text-xs"
-                min="3"
-                max="10"
+                min="4"
+                max="15"
               />
             </div>
             <div>
