@@ -695,15 +695,11 @@ export interface DropSetConfig {
 }
 
 export interface GiantSetConfig {
-  totalMiniSets?: number; // Total number of mini sets to perform (5-12 sets)
-  repsPerMiniSet?: number | string; // 3-8 reps per mini-set, can be string for dynamic
+  totalTargetReps?: number; // At least 30-60 reps
+  miniSetReps?: number | string; // 5-15 reps per mini-set, can be string for dynamic
   restSeconds?: number; // 5-15s between mini-sets
   giantRestSeconds?: number; // Alternative field name
   miniSets?: WorkoutSet[]; // Optional, for execution tracking
-  
-  // Legacy fields for backward compatibility
-  totalTargetReps?: number; // Deprecated: use totalMiniSets instead
-  miniSetReps?: number | string; // Deprecated: use repsPerMiniSet instead
 }
 
 export interface SupersetConfig {
@@ -727,13 +723,9 @@ export interface SpecialConfig {
   dropsetWeight?: string; // For execution phase
   
   // Giant set fields
-  totalMiniSets?: number;
-  repsPerMiniSet?: number | string;
-  giantRestSeconds?: number;
-  
-  // Legacy giant set fields for backward compatibility
   totalTargetReps?: number;
   miniSetReps?: number | string;
+  giantRestSeconds?: number;
   
   // Superset fields
   pairedExerciseId?: number;

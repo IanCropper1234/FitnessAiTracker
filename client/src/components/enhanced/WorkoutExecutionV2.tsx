@@ -287,18 +287,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           }
           
           if (finalMethod === 'giant_set') {
-            // For Giant Set, handle different config formats with new field names
-            // Support legacy totalTargetReps for backward compatibility
-            uiConfig.totalMiniSets = specialConfig.totalMiniSets || 
-                                   (specialConfig.totalTargetReps ? Math.ceil((specialConfig.totalTargetReps || 40) / (specialConfig.miniSetReps || 5)) : 8);
+            // For Giant Set, handle different config formats
+            uiConfig.totalTargetReps = specialConfig.totalTargetReps || 40;
             
-            // Handle both numeric and string formats for repsPerMiniSet
-            if (typeof specialConfig.repsPerMiniSet === 'string') {
-              uiConfig.repsPerMiniSet = specialConfig.repsPerMiniSet;
-            } else if (typeof specialConfig.miniSetReps === 'string') {
-              uiConfig.repsPerMiniSet = specialConfig.miniSetReps; // Legacy support
+            // Handle both numeric and string formats for miniSetReps
+            if (typeof specialConfig.miniSetReps === 'string') {
+              uiConfig.miniSetReps = specialConfig.miniSetReps;
             } else {
-              uiConfig.repsPerMiniSet = specialConfig.repsPerMiniSet || specialConfig.miniSetReps || 5;
+              uiConfig.miniSetReps = specialConfig.miniSetReps || 5;
             }
             
             // Handle different rest field names
@@ -720,11 +716,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           const pairedExerciseIndexInSession = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
           const isCompletingSecondExercise = currentExerciseIndex > pairedExerciseIndexInSession;
           
+          console.log('🔍 Superset Rest Timer Check:', {
+            currentExercise: currentExercise.exercise.name,
+            currentExerciseIndex,
+            pairedExerciseIndexInSession,
+            isCompletingSecondExercise,
+            shouldStartRestTimer: isCompletingSecondExercise
+          });
+          
           if (isCompletingSecondExercise && restTimerFABEnabled) {
             // Start rest timer when completing the "second" exercise
             const restPeriod = currentExercise?.restPeriod || 120;
             setRestTimeRemaining(restPeriod);
             setIsRestTimerActive(true);
+            
+            console.log('✅ Superset rest timer started!', { restPeriod });
             
             showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
               autoHideDelay: 2000,
@@ -933,8 +939,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       setSpecialConfigs(prev => ({
         ...prev,
         [exerciseId]: method === 'giant_set' ? {
-          totalMiniSets: 8,
-          repsPerMiniSet: 5,
+          totalTargetReps: 40,
+          miniSetReps: 5,
           restSeconds: 10
         } : {}
       }));
@@ -1584,12 +1590,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   {specialMethods[currentExercise.id] === 'giant_set' && specialConfigs[currentExercise.id] && (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Total Mini Sets:</span>
-                        <span className="font-medium">{specialConfigs[currentExercise.id].totalMiniSets || (specialConfigs[currentExercise.id].totalTargetReps ? Math.ceil((specialConfigs[currentExercise.id].totalTargetReps || 40) / (specialConfigs[currentExercise.id].miniSetReps || 5)) : 8)}</span>
+                        <span className="text-muted-foreground">Target Reps:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].totalTargetReps || 40}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Reps Per Set:</span>
-                        <span className="font-medium">{specialConfigs[currentExercise.id].repsPerMiniSet || specialConfigs[currentExercise.id].miniSetReps || 5}</span>
+                        <span className="text-muted-foreground">Per Mini-Set:</span>
+                        <span className="font-medium">{specialConfigs[currentExercise.id].miniSetReps || 5}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Rest:</span>
@@ -1788,9 +1794,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                                 
                                 {/* Mini-Set Reps Display */}
                                 {(specialMethods[currentExercise.id] === 'myorep_match' || specialMethods[currentExercise.id] === 'drop_set') && 
-                                 (specialConfigs[currentExercise.id]?.repsPerMiniSet || specialConfigs[currentExercise.id]?.miniSetReps) && (
+                                 specialConfigs[currentExercise.id]?.miniSetReps && (
                                   <div className="text-xs text-muted-foreground">
-                                    Reps: {specialConfigs[currentExercise.id].repsPerMiniSet || specialConfigs[currentExercise.id].miniSetReps}
+                                    Reps: {specialConfigs[currentExercise.id].miniSetReps}
                                   </div>
                                 )}
                                 
@@ -1806,8 +1812,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                                 {specialMethods[currentExercise.id] === 'giant_set' && 
                                  specialConfigs[currentExercise.id] && (
                                   <div className="text-xs text-muted-foreground">
-                                    Target: {specialConfigs[currentExercise.id].totalMiniSets || (specialConfigs[currentExercise.id].totalTargetReps ? Math.ceil((specialConfigs[currentExercise.id].totalTargetReps || 40) / (specialConfigs[currentExercise.id].miniSetReps || 5)) : 8)} mini sets, 
-                                    {specialConfigs[currentExercise.id].repsPerMiniSet || specialConfigs[currentExercise.id].miniSetReps || 5} reps per set
+                                    Target: {specialConfigs[currentExercise.id].totalTargetReps || 40} reps, 
+                                    {specialConfigs[currentExercise.id].miniSetReps || 5} per mini-set
                                   </div>
                                 )}
                               </div>

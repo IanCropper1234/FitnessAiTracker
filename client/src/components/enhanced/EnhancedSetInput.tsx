@@ -409,7 +409,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                 <SelectItem value="giant_set">
                   <div className="flex items-center gap-2">
                     <Timer className="h-3 w-3" />
-                    Giant Set (5-12 sets)
+                    Giant Set (40+ reps)
                   </div>
                 </SelectItem>
                 <SelectItem value="superset">
@@ -432,29 +432,29 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs text-orange-300">Total Mini Sets</label>
+                <label className="text-xs text-orange-300">Target Total Reps</label>
                 <Input
                   type="number"
-                  value={specialConfig?.totalMiniSets ?? 8}
+                  value={specialConfig?.totalTargetReps ?? 40}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
-                    totalMiniSets: parseInt(e.target.value) || 8,
-                    repsPerMiniSet: specialConfig?.repsPerMiniSet || 5,
+                    totalTargetReps: parseInt(e.target.value) || 40,
+                    miniSetReps: specialConfig?.miniSetReps || 5,
                     restSeconds: specialConfig?.restSeconds || 10
                   })}
-                  min="5"
-                  max="12"
+                  min="40"
+                  max="100"
                   className="h-7 text-xs bg-background border border-border/50 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 />
               </div>
               <div>
-                <label className="text-xs text-orange-300">Reps Per Set</label>
+                <label className="text-xs text-orange-300">Mini-Set Reps</label>
                 <Input
                   type="number"
-                  value={specialConfig?.repsPerMiniSet ?? 5}
+                  value={specialConfig?.miniSetReps ?? 5}
                   onChange={(e) => onSpecialConfigChange?.({
                     ...specialConfig,
-                    repsPerMiniSet: parseInt(e.target.value) || 5
+                    miniSetReps: parseInt(e.target.value) || 5
                   })}
                   min="3"
                   max="15"
@@ -464,7 +464,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             </div>
             <div className="flex items-center justify-between">
               <div className="text-xs text-orange-300/70">
-                Target: {specialConfig?.totalMiniSets ?? 8} mini sets with {specialConfig?.repsPerMiniSet ?? 5} reps per set
+                Target: {specialConfig?.totalTargetReps ?? 40} reps in {Math.ceil((specialConfig?.totalTargetReps ?? 40) / (specialConfig?.miniSetReps ?? 5))} mini-sets
               </div>
               <div className="flex gap-1">
                 <Button
@@ -472,7 +472,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   variant="outline"
                   onClick={() => onSpecialConfigChange?.({
                     ...specialConfig,
-                    totalMiniSets: Math.max(5, (specialConfig?.totalMiniSets ?? 8) - 1)
+                    totalTargetReps: Math.max(20, (specialConfig?.totalTargetReps ?? 40) - 10)
                   })}
                   className="h-6 w-6 p-0 border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20"
                 >
@@ -483,7 +483,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                   variant="outline"
                   onClick={() => onSpecialConfigChange?.({
                     ...specialConfig,
-                    totalMiniSets: Math.min(12, (specialConfig?.totalMiniSets ?? 8) + 1)
+                    totalTargetReps: Math.min(100, (specialConfig?.totalTargetReps ?? 40) + 10)
                   })}
                   className="h-6 w-6 p-0 border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20"
                 >
