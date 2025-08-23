@@ -470,8 +470,15 @@ export function AddFood({ user }: AddFoodProps) {
     }
   }, [quantity, unit, portionWeight, portionUnit, recalculateMacrosFromVolume]);
 
-  // Removed problematic useEffect that was causing circular dependency
-  // The onSuccess handler in aiAnalyzeMutation already handles setting quantity/unit from AI data
+  // Sync portionWeight/portionUnit changes to quantity/unit for Current Portion display
+  React.useEffect(() => {
+    // Only sync when in AI dynamic mode and user manually adjusts portion information
+    if (dynamicMacros && portionWeight && portionUnit) {
+      console.log(`Syncing portion adjustment to current portion: ${portionWeight} ${portionUnit}`);
+      setQuantity(portionWeight);
+      setUnit(portionUnit);
+    }
+  }, [portionWeight, portionUnit, dynamicMacros]);
 
   // Dynamic calculations managed for AI-only mode
 
