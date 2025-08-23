@@ -428,11 +428,11 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                               <div className="grid grid-cols-3 gap-2">
                                 <div>
                                   <span className="text-muted-foreground">Target Total:</span>
-                                  <span className="font-medium ml-1">{specialConfig?.totalTargetReps || '45'}</span>
+                                  <span className="font-medium ml-1">{specialConfig?.totalTargetReps || '40'}</span>
                                 </div>
                                 <div>
-                                  <span className="text-muted-foreground">Per Mini-Set:</span>
-                                  <span className="font-medium ml-1">{specialConfig?.miniSetReps || '5'}</span>
+                                  <span className="text-muted-foreground">Mini-Sets:</span>
+                                  <span className="font-medium ml-1">{specialConfig?.totalMiniSets || '8'}</span>
                                 </div>
                                 <div>
                                   <span className="text-muted-foreground">Rest:</span>
@@ -440,7 +440,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                                 </div>
                               </div>
                               <div className="text-muted-foreground text-xs">
-                                {Math.ceil((specialConfig?.totalTargetReps || 45) / (specialConfig?.miniSetReps || 5))} mini-sets total
+                                {specialConfig?.totalTargetReps || '40'} reps across {specialConfig?.totalMiniSets || '8'} mini-sets
                               </div>
                             </div>
                           )}
