@@ -672,13 +672,42 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         const pairedExerciseIndex = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
         
         if (pairedExerciseIndex !== -1) {
-          // Navigate to the paired exercise for superset continuation
-          setCurrentExerciseIndex(pairedExerciseIndex);
-          setCurrentSetIndex(0); // Start from first set of paired exercise
+          // Get sets data for the paired exercise
+          const pairedSets = workoutData[pairedExercise.id] || [];
           
-          showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} for superset completion`, {
+          // Find the next uncompleted set in the paired exercise
+          const nextUncompletedSetIndex = pairedSets.findIndex(set => !set.completed);
+          const targetSetIndex = nextUncompletedSetIndex !== -1 ? nextUncompletedSetIndex : 0;
+          
+          // Get the just-completed set data for prefilling
+          const completedSet = workoutData[currentExercise.id]?.[currentSetIndex];
+          
+          if (completedSet && targetSetIndex < pairedSets.length) {
+            // Prefill the target set with values from the completed set
+            const targetSet = pairedSets[targetSetIndex];
+            const updatedTargetSet = {
+              ...targetSet,
+              weight: completedSet.weight || 0,
+              actualReps: completedSet.actualReps || 0,
+              rpe: completedSet.rpe || 8
+            };
+            
+            // Update the workout data with prefilled values for the paired exercise
+            setWorkoutData(prev => ({
+              ...prev,
+              [pairedExercise.id]: prev[pairedExercise.id]?.map((set, i) => 
+                i === targetSetIndex ? updatedTargetSet : set
+              ) || []
+            }));
+          }
+          
+          // Navigate to the paired exercise
+          setCurrentExerciseIndex(pairedExerciseIndex);
+          setCurrentSetIndex(targetSetIndex);
+          
+          showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} - Set ${targetSetIndex + 1} (Auto-prefilled)`, {
             icon: "💪",
-            autoHideDelay: 2000,
+            autoHideDelay: 2500,
           });
           
           return; // Exit early - don't advance to next set
