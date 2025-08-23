@@ -710,6 +710,37 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           setCurrentExerciseIndex(pairedExerciseIndex);
           setCurrentSetIndex(targetSetIndex);
           
+          // Check if we should start rest timer for superset
+          // Only start rest timer when switching from "second" exercise to "first" exercise
+          const currentExerciseIndex = session.exercises.findIndex(ex => ex.id === currentExercise.id);
+          const pairedExerciseIndexInSession = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
+          const isCompletingSecondExercise = currentExerciseIndex > pairedExerciseIndexInSession;
+          
+          console.log('🔍 Superset Rest Timer Check:', {
+            currentExercise: currentExercise.exercise.name,
+            currentExerciseIndex,
+            pairedExerciseIndexInSession,
+            isCompletingSecondExercise,
+            shouldStartRestTimer: isCompletingSecondExercise
+          });
+          
+          if (isCompletingSecondExercise && restTimerFABEnabled) {
+            // Start rest timer when completing the "second" exercise
+            const restPeriod = currentExercise?.restPeriod || 120;
+            setRestTimeRemaining(restPeriod);
+            setIsRestTimerActive(true);
+            
+            console.log('✅ Superset rest timer started!', { restPeriod });
+            
+            showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
+              autoHideDelay: 2000,
+              action: {
+                label: "Continue Resting",
+                onClick: () => console.log("Rest timer notification acknowledged")
+              }
+            });
+          }
+          
           showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} - Set ${targetSetIndex + 1}`, {
             icon: "💪",
             autoHideDelay: 2500,
@@ -790,67 +821,21 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         }
       }
       
-      // Start rest timer logic - modified for superset handling
-      const shouldStartRestTimer = (() => {
-        const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
-        
-        if (!isCurrentSuperset) {
-          // For non-superset exercises, always start rest timer
-          return true;
-        }
-        
-        // For superset exercises, only start rest timer if we're NOT switching to paired exercise
-        // (meaning we just completed the "second" exercise in the superset pair)
-        const pairedExercise = findSupersetPair(currentExercise.id);
-        if (!pairedExercise) {
-          return true; // No paired exercise found, treat as normal
-        }
-        
-        // In superset, determine if current exercise is the "second" exercise in the pair
-        // The "second" exercise is the one that comes later in the session order
-        const currentExerciseIndex = session.exercises.findIndex(ex => ex.id === currentExercise.id);
-        const pairedExerciseIndex = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
-        
-        console.log('🔍 Superset Rest Timer Debug:', {
-          currentExercise: currentExercise.exercise.name,
-          currentExerciseId: currentExercise.id,
-          currentExerciseIndex,
-          pairedExercise: pairedExercise.exercise.name, 
-          pairedExerciseId: pairedExercise.exerciseId,
-          pairedExerciseIndex,
-          sessionExercises: session.exercises.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, name: ex.exercise.name }))
+      // For non-superset exercises, start rest timer normally
+      const restPeriod = currentExercise?.restPeriod || 120;
+      setRestTimeRemaining(restPeriod);
+      setIsRestTimerActive(true);
+      
+      // Auto-open timer controls briefly to show it started
+      if (restTimerFABEnabled) {
+        // The timer FAB will handle auto-expansion based on isActive state
+        showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
+          autoHideDelay: 2000,
+          action: {
+            label: "Continue Resting",
+            onClick: () => console.log("Rest timer notification acknowledged")
+          }
         });
-        
-        // If current exercise comes after the paired exercise, it's the "second" exercise
-        // Only start rest timer when completing sets on the "second" exercise
-        const isSecondExerciseInPair = currentExerciseIndex > pairedExerciseIndex;
-        
-        console.log('🔍 Should start rest timer?', isSecondExerciseInPair);
-        
-        return isSecondExerciseInPair;
-      })();
-      
-      console.log('🔍 Final rest timer decision:', { shouldStartRestTimer, restTimerFABEnabled });
-      
-      if (shouldStartRestTimer) {
-        // Start rest timer and auto-open expanded panel for better UX
-        const restPeriod = currentExercise?.restPeriod || 120;
-        setRestTimeRemaining(restPeriod);
-        setIsRestTimerActive(true);
-        
-        console.log('✅ Rest timer started!', { restPeriod, restTimerFABEnabled });
-        
-        // Auto-open timer controls briefly to show it started
-        if (restTimerFABEnabled) {
-          // The timer FAB will handle auto-expansion based on isActive state
-          showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
-            autoHideDelay: 2000,
-            action: {
-              label: "Continue Resting",
-              onClick: () => console.log("Rest timer notification acknowledged")
-            }
-          });
-        }
       }
       
     } catch (error) {
