@@ -806,13 +806,16 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           return true; // No paired exercise found, treat as normal
         }
         
-        // Check if we have uncompleted sets in the paired exercise
-        const pairedSets = workoutData[pairedExercise.id] || [];
-        const hasUncompletedPairedSets = pairedSets.some(set => !set.completed);
+        // In superset, determine if current exercise is the "second" exercise in the pair
+        // The "second" exercise is the one that comes later in the session order
+        const currentExerciseIndex = session.exercises.findIndex(ex => ex.id === currentExercise.id);
+        const pairedExerciseIndex = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
         
-        // If paired exercise has uncompleted sets, we'll switch to it (no rest timer)
-        // If paired exercise has no uncompleted sets, we stay here (start rest timer)
-        return !hasUncompletedPairedSets;
+        // If current exercise comes after the paired exercise, it's the "second" exercise
+        // Only start rest timer when completing sets on the "second" exercise
+        const isSecondExerciseInPair = currentExerciseIndex > pairedExerciseIndex;
+        
+        return isSecondExerciseInPair;
       })();
       
       if (shouldStartRestTimer) {
