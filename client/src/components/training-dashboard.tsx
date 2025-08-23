@@ -603,6 +603,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const exercisesPerPage = 24;
+  
+  // Session pagination state
+  const [currentSessionPage, setCurrentSessionPage] = useState(1);
+  const sessionsPerPage = 12;
 
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [executingSessionId, setExecutingSessionId] = useState<number | null>(null);
@@ -641,6 +645,11 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Reset session page when filter changes
+  useEffect(() => {
+    setCurrentSessionPage(1);
+  }, [sessionFilter]);
 
   // Reset page when any filter changes
   useEffect(() => {
@@ -1315,6 +1324,13 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                     return a.isCompleted ? 1 : -1; // Active sessions first
                   }) : [];
 
+                  // Calculate pagination for sessions
+                  const sessionTotalPages = Math.ceil(filteredSessions.length / sessionsPerPage);
+                  const paginatedSessions = filteredSessions.slice(
+                    (currentSessionPage - 1) * sessionsPerPage,
+                    currentSessionPage * sessionsPerPage
+                  );
+
                   if (filteredSessions.length === 0) {
                     return (
                       <div className="text-center py-6">
@@ -1339,13 +1355,88 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   }
 
                   return (
-                    <WorkoutSessionsWithBulkActions
-                      sessions={filteredSessions}
-                      mesocycleLookup={mesocycleLookup}
-                      onStartSession={(sessionId) => setExecutingSessionId(sessionId)}
-                      onViewSession={(sessionId) => setViewingSessionId(sessionId)}
-                      userId={userId}
-                    />
+                    <div className="space-y-4">
+                      {/* Session Count and Pagination Info */}
+                      {filteredSessions.length > 0 && (
+                        <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
+                          <span className="font-medium">
+                            {filteredSessions.length} session{filteredSessions.length !== 1 ? 's' : ''} found
+                            {sessionTotalPages > 1 && (
+                              <span className="ml-2 text-xs opacity-75">
+                                (Page {currentSessionPage} of {sessionTotalPages})
+                              </span>
+                            )}
+                          </span>
+                          {sessionTotalPages > 1 && (
+                            <span className="text-xs opacity-75">
+                              Showing {Math.min((currentSessionPage - 1) * sessionsPerPage + 1, filteredSessions.length)}-{Math.min(currentSessionPage * sessionsPerPage, filteredSessions.length)} of {filteredSessions.length}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      <WorkoutSessionsWithBulkActions
+                        sessions={paginatedSessions}
+                        mesocycleLookup={mesocycleLookup}
+                        onStartSession={(sessionId) => setExecutingSessionId(sessionId)}
+                        onViewSession={(sessionId) => setViewingSessionId(sessionId)}
+                        userId={userId}
+                      />
+
+                      {/* Session Pagination Controls */}
+                      {sessionTotalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 mt-6 mb-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentSessionPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentSessionPage === 1}
+                            className="h-8 px-3"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                          </Button>
+                          
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: Math.min(5, sessionTotalPages) }, (_, i) => {
+                              let pageNum;
+                              if (sessionTotalPages <= 5) {
+                                pageNum = i + 1;
+                              } else if (currentSessionPage <= 3) {
+                                pageNum = i + 1;
+                              } else if (currentSessionPage >= sessionTotalPages - 2) {
+                                pageNum = sessionTotalPages - 4 + i;
+                              } else {
+                                pageNum = currentSessionPage - 2 + i;
+                              }
+                              
+                              return (
+                                <Button
+                                  key={pageNum}
+                                  variant={currentSessionPage === pageNum ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setCurrentSessionPage(pageNum)}
+                                  className="h-8 w-8 p-0 text-xs"
+                                >
+                                  {pageNum}
+                                </Button>
+                              );
+                            })}
+                          </div>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentSessionPage(prev => Math.min(sessionTotalPages, prev + 1))}
+                            disabled={currentSessionPage === sessionTotalPages}
+                            className="h-8 px-3"
+                          >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   );
                 })()}
               </div>
