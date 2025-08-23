@@ -104,7 +104,6 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     },
     enabled: !!exerciseId && !!userId && !!set.setNumber
   });
-  const [useBodyWeight, setUseBodyWeight] = useState(false);
 
   // Fetch user's latest body weight (always fetch to check availability)
   const { data: bodyMetrics = [] } = useQuery<any[]>({
@@ -135,27 +134,25 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   };
 
   const handleWeightChange = (value: number) => {
-    if (!useBodyWeight) {
-      onUpdateSet('weight', value);
-    }
+    onUpdateSet('weight', value);
   };
 
-  // Handle body weight toggle
-  const handleBodyWeightToggle = (enabled: boolean) => {
-    setUseBodyWeight(enabled);
-    
-    if (enabled && bodyWeightValue > 0) {
+  // Handle body weight button - just fill in the weight without disabling input
+  const handleFillBodyWeight = () => {
+    if (bodyWeightValue > 0) {
       // Convert body weight to current exercise weight unit if needed
       const convertedWeight = convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit);
       onUpdateSet('weight', Math.round(convertedWeight * 100) / 100);
+      
+      // Also update the weight unit to match body weight unit if needed
+      if (onWeightUnitChange && bodyWeightUnit !== weightUnit) {
+        onWeightUnitChange(bodyWeightUnit);
+      }
     }
   };
 
   // Calculate effective weight to display
   const getEffectiveWeight = (): number => {
-    if (useBodyWeight && bodyWeightValue > 0) {
-      return Math.round(convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit) * 100) / 100;
-    }
     return set.weight;
   };
 
@@ -192,11 +189,8 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     const activeRecommendation = setRecommendation || (recommendation?.sets?.[0]);
     
     if (activeRecommendation) {
-      // Only update weight if body weight toggle is not enabled
-      if (!useBodyWeight) {
-        const convertedWeight = convertWeight(activeRecommendation.recommendedWeight, 'kg', weightUnit);
-        onUpdateSet('weight', convertedWeight);
-      }
+      const convertedWeight = convertWeight(activeRecommendation.recommendedWeight, 'kg', weightUnit);
+      onUpdateSet('weight', convertedWeight);
       
       onUpdateSet('actualReps', activeRecommendation.recommendedReps);
       onUpdateSet('rpe', activeRecommendation.recommendedRpe);
@@ -207,12 +201,10 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
   const handleUseHistoricalData = (historicalSet: HistoricalSetData) => {
     console.log('Applying historical data:', historicalSet);
     
-    if (!useBodyWeight) {
-      const weight = typeof historicalSet.weight === 'string' ? parseFloat(historicalSet.weight) : historicalSet.weight;
-      const convertedWeight = convertWeight(weight, 'kg', weightUnit);
-      console.log('Setting weight:', convertedWeight);
-      onUpdateSet('weight', convertedWeight);
-    }
+    const weight = typeof historicalSet.weight === 'string' ? parseFloat(historicalSet.weight) : historicalSet.weight;
+    const convertedWeight = convertWeight(weight, 'kg', weightUnit);
+    console.log('Setting weight:', convertedWeight);
+    onUpdateSet('weight', convertedWeight);
     
     const reps = typeof historicalSet.reps === 'string' ? parseInt(historicalSet.reps) : historicalSet.reps;
     const rpe = typeof historicalSet.rpe === 'string' ? parseFloat(historicalSet.rpe) : historicalSet.rpe;
@@ -895,7 +887,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
         {!set.completed && isActive ? (
           <div className="space-y-1">
             {/* Body Weight Info - Shows only when active */}
-            {useBodyWeight && bodyWeightValue > 0 && (
+            {false && ( // Removed bodyweight info display
               <div className="bg-blue-500/10 border border-blue-500/20  p-1">
                 <div className="flex items-center gap-1 text-xs text-blue-400">
                   <Scale className="h-2.5 w-2.5" />
@@ -910,13 +902,16 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-foreground">Weight</label>
-                  {isBodyWeightExercise && (
-                    <Switch
-                      checked={useBodyWeight}
-                      onCheckedChange={handleBodyWeightToggle}
-                      disabled={!bodyWeightValue}
-                      className="scale-75"
-                    />
+                  {isBodyWeightExercise && bodyWeightValue > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleFillBodyWeight}
+                      className="h-6 px-2 text-xs"
+                    >
+                      <Scale className="h-3 w-3 mr-1" />
+                      {Math.round(convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit) * 100) / 100}{bodyWeightUnit}
+                    </Button>
                   )}
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -930,9 +925,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                       step="0.5"
                       min="0"
                       max="1000"
-                      className={`workout-input h-9 text-sm border border-border/50 bg-background text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ios-touch-feedback ${useBodyWeight ? 'bg-muted cursor-not-allowed' : ''}`}
-                      disabled={useBodyWeight}
-                      readOnly={useBodyWeight}
+                      className="workout-input h-9 text-sm border border-border/50 bg-background text-center touch-target [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ios-touch-feedback"
                       inputMode="decimal"
                     />
                   </div>
