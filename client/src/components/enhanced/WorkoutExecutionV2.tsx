@@ -679,17 +679,22 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           const nextUncompletedSetIndex = pairedSets.findIndex(set => !set.completed);
           const targetSetIndex = nextUncompletedSetIndex !== -1 ? nextUncompletedSetIndex : 0;
           
-          // Get the just-completed set data for prefilling
-          const completedSet = workoutData[currentExercise.id]?.[currentSetIndex];
-          
-          if (completedSet && targetSetIndex < pairedSets.length) {
-            // Prefill the target set with values from the completed set
+          // Prefill the target set with values from the paired exercise's own previous sets
+          if (targetSetIndex < pairedSets.length) {
             const targetSet = pairedSets[targetSetIndex];
+            
+            // Find the most recent completed set in the paired exercise for prefilling
+            const pairedCompletedSets = pairedSets.filter(set => set.completed);
+            const mostRecentPairedSet = pairedCompletedSets.length > 0 
+              ? pairedCompletedSets[pairedCompletedSets.length - 1] 
+              : null;
+            
+            // Use the paired exercise's own data for prefilling, or default values
             const updatedTargetSet = {
               ...targetSet,
-              weight: completedSet.weight || 0,
-              actualReps: completedSet.actualReps || 0,
-              rpe: completedSet.rpe || 8
+              weight: mostRecentPairedSet?.weight || targetSet.weight || 0,
+              actualReps: mostRecentPairedSet?.actualReps || targetSet.actualReps || 0,
+              rpe: mostRecentPairedSet?.rpe || targetSet.rpe || 8
             };
             
             // Update the workout data with prefilled values for the paired exercise
@@ -705,7 +710,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           setCurrentExerciseIndex(pairedExerciseIndex);
           setCurrentSetIndex(targetSetIndex);
           
-          showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} - Set ${targetSetIndex + 1} (Auto-prefilled)`, {
+          showInfo("Superset Switch", `Switching to ${pairedExercise.exercise.name} - Set ${targetSetIndex + 1}`, {
             icon: "💪",
             autoHideDelay: 2500,
           });
