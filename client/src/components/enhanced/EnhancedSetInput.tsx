@@ -910,7 +910,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                       className="h-6 px-2 text-xs"
                     >
                       <Scale className="h-3 w-3 mr-1" />
-                      {Math.round(convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit) * 100) / 100}{bodyWeightUnit}
+                      {Math.round(convertWeight(bodyWeightValue, bodyWeightUnit, weightUnit) * 100) / 100}{weightUnit}
                     </Button>
                   )}
                 </div>
