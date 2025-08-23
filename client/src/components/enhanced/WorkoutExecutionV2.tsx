@@ -790,21 +790,48 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         }
       }
       
-      // Start rest timer and auto-open expanded panel for better UX
-      const restPeriod = currentExercise?.restPeriod || 120;
-      setRestTimeRemaining(restPeriod);
-      setIsRestTimerActive(true);
+      // Start rest timer logic - modified for superset handling
+      const shouldStartRestTimer = (() => {
+        const isCurrentSuperset = specialMethods[currentExercise.id] === 'superset';
+        
+        if (!isCurrentSuperset) {
+          // For non-superset exercises, always start rest timer
+          return true;
+        }
+        
+        // For superset exercises, only start rest timer if we're NOT switching to paired exercise
+        // (meaning we just completed the "second" exercise in the superset pair)
+        const pairedExercise = findSupersetPair(currentExercise.id);
+        if (!pairedExercise) {
+          return true; // No paired exercise found, treat as normal
+        }
+        
+        // Check if we have uncompleted sets in the paired exercise
+        const pairedSets = workoutData[pairedExercise.id] || [];
+        const hasUncompletedPairedSets = pairedSets.some(set => !set.completed);
+        
+        // If paired exercise has uncompleted sets, we'll switch to it (no rest timer)
+        // If paired exercise has no uncompleted sets, we stay here (start rest timer)
+        return !hasUncompletedPairedSets;
+      })();
       
-      // Auto-open timer controls briefly to show it started
-      if (restTimerFABEnabled) {
-        // The timer FAB will handle auto-expansion based on isActive state
-        showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
-          autoHideDelay: 2000,
-          action: {
-            label: "Continue Resting",
-            onClick: () => console.log("Rest timer notification acknowledged")
-          }
-        });
+      if (shouldStartRestTimer) {
+        // Start rest timer and auto-open expanded panel for better UX
+        const restPeriod = currentExercise?.restPeriod || 120;
+        setRestTimeRemaining(restPeriod);
+        setIsRestTimerActive(true);
+        
+        // Auto-open timer controls briefly to show it started
+        if (restTimerFABEnabled) {
+          // The timer FAB will handle auto-expansion based on isActive state
+          showSuccess("Rest Timer Started!", `Rest for ${Math.floor(restPeriod / 60)}:${(restPeriod % 60).toString().padStart(2, '0')}`, {
+            autoHideDelay: 2000,
+            action: {
+              label: "Continue Resting",
+              onClick: () => console.log("Rest timer notification acknowledged")
+            }
+          });
+        }
       }
       
     } catch (error) {
