@@ -811,18 +811,34 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         const currentExerciseIndex = session.exercises.findIndex(ex => ex.id === currentExercise.id);
         const pairedExerciseIndex = session.exercises.findIndex(ex => ex.exerciseId === pairedExercise.exerciseId);
         
+        console.log('🔍 Superset Rest Timer Debug:', {
+          currentExercise: currentExercise.exercise.name,
+          currentExerciseId: currentExercise.id,
+          currentExerciseIndex,
+          pairedExercise: pairedExercise.exercise.name, 
+          pairedExerciseId: pairedExercise.exerciseId,
+          pairedExerciseIndex,
+          sessionExercises: session.exercises.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, name: ex.exercise.name }))
+        });
+        
         // If current exercise comes after the paired exercise, it's the "second" exercise
         // Only start rest timer when completing sets on the "second" exercise
         const isSecondExerciseInPair = currentExerciseIndex > pairedExerciseIndex;
         
+        console.log('🔍 Should start rest timer?', isSecondExerciseInPair);
+        
         return isSecondExerciseInPair;
       })();
+      
+      console.log('🔍 Final rest timer decision:', { shouldStartRestTimer, restTimerFABEnabled });
       
       if (shouldStartRestTimer) {
         // Start rest timer and auto-open expanded panel for better UX
         const restPeriod = currentExercise?.restPeriod || 120;
         setRestTimeRemaining(restPeriod);
         setIsRestTimerActive(true);
+        
+        console.log('✅ Rest timer started!', { restPeriod, restTimerFABEnabled });
         
         // Auto-open timer controls briefly to show it started
         if (restTimerFABEnabled) {
