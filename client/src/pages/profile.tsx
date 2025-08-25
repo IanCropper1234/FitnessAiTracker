@@ -433,78 +433,79 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         <Card className="ios-smooth-transform">
           <CardContent className="p-4">
             <div className="space-y-4">
-              {/* User Info Row with Profile Picture */}
-              <div className="flex items-center gap-3">
-                <div className="relative flex-shrink-0">
-                  {user.profileImageUrl ? (
-                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 flex-shrink-0">
-                      <img 
-                        src={user.profileImageUrl} 
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                        data-testid="profile-image"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-gray-200 dark:border-gray-700">
-                      <UserIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                    </div>
-                  )}
-                  
-                  {/* Profile picture upload/delete actions */}
-                  <div className="absolute -bottom-2 -right-2">
+              {/* User Info Section - Redesigned Layout */}
+              <div className="space-y-3">
+                {/* Profile Picture and Basic Info */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0">
                     {user.profileImageUrl ? (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleDeleteProfilePicture}
-                        disabled={deleteProfilePictureMutation.isPending}
-                        className="h-6 w-6 p-0 rounded-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        data-testid="button-delete-profile-picture"
-                      >
-                        <Trash2 className="w-3 h-3 text-red-600 dark:text-red-400" />
-                      </Button>
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700">
+                        <img 
+                          src={user.profileImageUrl} 
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                          data-testid="profile-image"
+                        />
+                      </div>
                     ) : (
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-200 dark:border-gray-700">
+                        <UserIcon className="w-8 h-8 text-gray-600 dark:text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-black dark:text-white truncate">{user.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
+                    {uploadProfilePictureMutation.isPending && (
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">Uploading profile picture...</p>
+                    )}
+                    {deleteProfilePictureMutation.isPending && (
+                      <p className="text-xs text-red-600 dark:text-red-400 mt-1">Removing profile picture...</p>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Profile Picture Actions - Separate Row */}
+                <div className="flex gap-2">
+                  {user.profileImageUrl ? (
+                    <>
                       <ObjectUploader
                         maxNumberOfFiles={1}
                         maxFileSize={5242880} // 5MB
                         onGetUploadParameters={handleGetUploadParameters}
                         onComplete={handleUploadComplete}
-                        buttonClassName="h-6 w-6 p-0 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        buttonClassName="flex-1 justify-center text-xs h-8"
                       >
-                        <Camera className="w-3 h-3 text-gray-600 dark:text-gray-400" data-testid="button-upload-profile-picture" />
+                        <Camera className="w-3 h-3 mr-2" />
+                        Update Picture
                       </ObjectUploader>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-semibold text-black dark:text-white truncate">{user.name}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
-                  {uploadProfilePictureMutation.isPending && (
-                    <p className="text-xs text-blue-600 dark:text-blue-400">Uploading profile picture...</p>
-                  )}
-                  {deleteProfilePictureMutation.isPending && (
-                    <p className="text-xs text-red-600 dark:text-red-400">Removing profile picture...</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleDeleteProfilePicture}
+                        disabled={deleteProfilePictureMutation.isPending}
+                        className="px-3 h-8 text-xs border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        data-testid="button-delete-profile-picture"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Remove
+                      </Button>
+                    </>
+                  ) : (
+                    <ObjectUploader
+                      maxNumberOfFiles={1}
+                      maxFileSize={5242880} // 5MB
+                      onGetUploadParameters={handleGetUploadParameters}
+                      onComplete={handleUploadComplete}
+                      buttonClassName="w-full justify-center text-xs h-8"
+                    >
+                      <Camera className="w-3 h-3 mr-2" />
+                      Add Profile Picture
+                    </ObjectUploader>
                   )}
                 </div>
               </div>
-              
-              {/* Profile Picture Update Option for existing pictures */}
-              {user.profileImageUrl && (
-                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <ObjectUploader
-                    maxNumberOfFiles={1}
-                    maxFileSize={5242880} // 5MB
-                    onGetUploadParameters={handleGetUploadParameters}
-                    onComplete={handleUploadComplete}
-                    buttonClassName="w-full justify-center text-xs"
-                  >
-                    <Camera className="w-3 h-3 mr-2" />
-                    Update Profile Picture
-                  </ObjectUploader>
-                </div>
-              )}
               
               {/* Sign Out Button - Full Width on Mobile */}
               <Button
