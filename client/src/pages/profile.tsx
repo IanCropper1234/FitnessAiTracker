@@ -282,11 +282,28 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
 
   const handleUploadComplete = async (file: File) => {
     try {
-      // Get the signed URL again to get the final upload URL
-      const { url } = await handleGetUploadParameters();
-      uploadProfilePictureMutation.mutate(url);
+      // Create a new upload URL for the update API
+      const uploadResponse = await fetch('/api/objects/upload', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to get update URL');
+      }
+      
+      const data = await uploadResponse.json();
+      uploadProfilePictureMutation.mutate(data.uploadURL);
     } catch (error) {
       console.error('Error handling upload completion:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to complete profile picture update. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
