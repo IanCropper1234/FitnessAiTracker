@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 interface ObjectUploaderProps {
   maxNumberOfFiles?: number;
@@ -76,16 +77,17 @@ export function ObjectUploader({
         type="file"
         accept="image/*"
         onChange={handleFileSelect}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
         disabled={isUploading}
       />
-      <button
+      <Button
         type="button"
-        className={`${buttonClassName || ''} ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        variant="outline"
+        className={`${buttonClassName || ''} ios-button touch-target transition-all duration-200 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
         disabled={isUploading}
       >
         {isUploading ? 'Uploading...' : children}
-      </button>
+      </Button>
     </div>
   );
 }
