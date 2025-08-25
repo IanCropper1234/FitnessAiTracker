@@ -452,7 +452,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                   )}
                   
                   {/* Profile picture upload/delete actions */}
-                  <div className="absolute -bottom-1 -right-1">
+                  <div className="absolute -bottom-2 -right-2">
                     {user.profileImageUrl ? (
                       <Button
                         size="sm"
