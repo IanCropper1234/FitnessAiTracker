@@ -79,7 +79,13 @@ export async function initializeVolumeLandmarks() {
           const muscleGroupNames = exercise.muscleGroups;
           
           for (const muscleGroupName of muscleGroupNames) {
-            const muscleGroup = allMuscleGroups.find(mg => mg.name === muscleGroupName);
+            // Map front_delts and side_delts to 'shoulders' muscle group
+            let targetMuscleGroupName = muscleGroupName;
+            if (muscleGroupName === 'front_delts' || muscleGroupName === 'side_delts') {
+              targetMuscleGroupName = 'shoulders';
+            }
+            
+            const muscleGroup = allMuscleGroups.find(mg => mg.name === targetMuscleGroupName);
             
             if (muscleGroup) {
               await db.insert(exerciseMuscleMapping).values({
