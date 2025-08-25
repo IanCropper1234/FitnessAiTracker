@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useIOSNotifications } from '@/components/ui/ios-notification-manager';
-import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw } from 'lucide-react';
+import { Target, ArrowLeft, ArrowRight, ListOrdered, Timer, Save, CheckCircle, Plus, Minus, RotateCcw, Edit2, Trash, Settings } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useWorkoutSetting } from '@/hooks/useSettings';
 import { UnitConverter } from '@shared/utils/unit-conversion';
@@ -24,6 +24,13 @@ import { AutoRegulationFeedback } from './AutoRegulationFeedback';
 import { ProgressSaveIndicator } from './ProgressSaveIndicator';
 import { SpecialMethodHistoryButton } from '../SpecialMethodHistoryButton';
 import { useWorkoutExecution } from '@/contexts/WorkoutExecutionContext';
+
+// Import components for editing functionality  
+import { ExerciseLibrarySelector } from '../exercise-library-selector';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 // Import legacy component for fallback
 import WorkoutExecution from '../workout-execution';
@@ -127,6 +134,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [headerExpanded, setHeaderExpanded] = useState(false);
   
+  // Edit mode state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedSession, setEditedSession] = useState<WorkoutSession | null>(null);
+  const [showAddExerciseDialog, setShowAddExerciseDialog] = useState(false);
+  const [exerciseToEdit, setExerciseToEdit] = useState<number | null>(null);
+  const [exerciseEditConfig, setExerciseEditConfig] = useState({
+    sets: 3,
+    targetReps: "8-12",
+    restPeriod: 60,
+    specialMethod: '',
+    specialConfig: {}
+  });
+  
   // Progress save state
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [saveMessage, setSaveMessage] = useState<string>('');
@@ -176,6 +196,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     queryKey: ["/api/training/exercise-recommendations", sessionId],
     enabled: !!sessionId,
   });
+
+  // Initialize edit mode when session changes
+  useEffect(() => {
+    if (session && !editedSession) {
+      setEditedSession(JSON.parse(JSON.stringify(session))); // Deep copy
+    }
+  }, [session, editedSession]);
 
   // Initialize workout data from session
   useEffect(() => {
@@ -538,6 +565,69 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     },
   });
 
+  // Edit mode mutations
+  const updateSessionMutation = useMutation({
+    mutationFn: async (updatedSession: WorkoutSession) => {
+      const response = await apiRequest("PUT", `/api/training/sessions/${sessionId}`, {
+        name: updatedSession.name,
+        exercises: updatedSession.exercises.map(ex => ({
+          id: ex.id,
+          exerciseId: ex.exerciseId,
+          orderIndex: ex.orderIndex,
+          sets: ex.sets,
+          targetReps: ex.targetReps,
+          restPeriod: ex.restPeriod,
+          specialMethod: ex.specialMethod || ex.specialTrainingMethod,
+          specialConfig: ex.specialConfig || ex.specialMethodConfig
+        }))
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      showSuccess("Session Updated", "Your workout session has been updated successfully");
+      setIsEditMode(false);
+    },
+    onError: (error: any) => {
+      showError("Update Failed", error?.message || "Failed to update session");
+    }
+  });
+
+  const addExerciseToSessionMutation = useMutation({
+    mutationFn: async ({ exerciseId, config }: { exerciseId: number; config: any }) => {
+      const response = await apiRequest("POST", `/api/training/sessions/${sessionId}/exercises`, {
+        exerciseId,
+        sets: config.sets,
+        targetReps: config.targetReps,
+        restPeriod: config.restPeriod,
+        orderIndex: editedSession?.exercises.length || 0
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      showSuccess("Exercise Added", "Exercise has been added to your workout");
+      setShowAddExerciseDialog(false);
+    },
+    onError: (error: any) => {
+      showError("Add Failed", error?.message || "Failed to add exercise");
+    }
+  });
+
+  const deleteExerciseFromSessionMutation = useMutation({
+    mutationFn: async (exerciseId: number) => {
+      const response = await apiRequest("DELETE", `/api/training/sessions/${sessionId}/exercises/${exerciseId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/training/session", sessionId] });
+      showSuccess("Exercise Removed", "Exercise has been removed from your workout");
+    },
+    onError: (error: any) => {
+      showError("Delete Failed", error?.message || "Failed to remove exercise");
+    }
+  });
+
   if (isLoading || !session) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -553,12 +643,58 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     );
   }
 
-  const currentExercise = session.exercises[currentExerciseIndex];
+  const currentExercise = isEditMode && editedSession ? editedSession.exercises[currentExerciseIndex] : session.exercises[currentExerciseIndex];
   const currentSets = workoutData[currentExercise?.id] || [];
   const currentSet = currentSets[currentSetIndex];
   
   // Calculate set validation for global context
   const isSetValid = currentSet && currentSet.weight > 0 && currentSet.actualReps > 0 && currentSet.rpe >= 1 && currentSet.rpe <= 10;
+
+  // Helper functions for editing mode
+  const handleExerciseUpdate = (exerciseIndex: number, field: string, value: any) => {
+    if (!editedSession) return;
+    
+    const updatedExercises = [...editedSession.exercises];
+    updatedExercises[exerciseIndex] = {
+      ...updatedExercises[exerciseIndex],
+      [field]: value
+    };
+    
+    setEditedSession({
+      ...editedSession,
+      exercises: updatedExercises
+    });
+  };
+
+  const handleDeleteExercise = (exerciseIndex: number) => {
+    if (!editedSession) return;
+    
+    const updatedExercises = editedSession.exercises.filter((_, index) => index !== exerciseIndex);
+    setEditedSession({
+      ...editedSession,
+      exercises: updatedExercises
+    });
+    
+    // Adjust current exercise index if needed
+    if (currentExerciseIndex >= updatedExercises.length) {
+      setCurrentExerciseIndex(Math.max(0, updatedExercises.length - 1));
+    }
+  };
+
+  const handleSaveEdits = () => {
+    if (editedSession) {
+      updateSessionMutation.mutate(editedSession);
+    }
+  };
+
+  const handleCancelEdits = () => {
+    setEditedSession(JSON.parse(JSON.stringify(session))); // Reset to original
+    setIsEditMode(false);
+  };
+
+  const handleAddExercise = (exercise: any, config: any) => {
+    addExerciseToSessionMutation.mutate({ exerciseId: exercise.id, config });
+  };
 
   // Update workout execution context
   useEffect(() => {
@@ -1373,11 +1509,26 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             )}
           </div>
           
-          {/* Expand/Collapse Chevron */}
+          {/* Edit Mode Toggle and Actions */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">
               {completedSets}/{totalSets}
             </span>
+            
+            {/* Edit Mode Toggle */}
+            <Button
+              variant={isEditMode ? "default" : "outline"}
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditMode(!isEditMode);
+              }}
+            >
+              <Edit2 className="h-3 w-3 mr-1" />
+              {isEditMode ? "Exit" : "Edit"}
+            </Button>
+            
             <div className="chevron-rotate" data-state={headerExpanded ? 'open' : 'closed'}>
               <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -1616,6 +1767,111 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           )}
         </div>
       </div>
+      
+      {/* Edit Mode Interface */}
+      {isEditMode && (
+        <div className="ios-card space-y-4">
+          {/* Edit Mode Header with Save/Cancel */}
+          <div className="flex items-center justify-between border-b border-border/50 pb-3">
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold text-sm">Edit Workout Session</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancelEdits}
+                className="h-7 px-3 text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleSaveEdits}
+                className="h-7 px-3 text-xs"
+                disabled={updateSessionMutation.isPending}
+              >
+                {updateSessionMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+
+          {/* Current Exercise Editing */}
+          {currentExercise && editedSession && (
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm text-foreground">
+                Edit: {currentExercise.exercise.name}
+              </h4>
+              
+              <div className="grid grid-cols-3 gap-3">
+                {/* Sets */}
+                <div className="space-y-1">
+                  <Label className="text-xs">Sets</Label>
+                  <Input
+                    type="number"
+                    value={currentExercise.sets}
+                    onChange={(e) => handleExerciseUpdate(currentExerciseIndex, 'sets', parseInt(e.target.value) || 1)}
+                    className="h-8 text-xs"
+                    min="1"
+                    max="10"
+                  />
+                </div>
+                
+                {/* Target Reps */}
+                <div className="space-y-1">
+                  <Label className="text-xs">Target Reps</Label>
+                  <Input
+                    value={currentExercise.targetReps}
+                    onChange={(e) => handleExerciseUpdate(currentExerciseIndex, 'targetReps', e.target.value)}
+                    className="h-8 text-xs"
+                    placeholder="8-12"
+                  />
+                </div>
+                
+                {/* Rest Period */}
+                <div className="space-y-1">
+                  <Label className="text-xs">Rest (sec)</Label>
+                  <Input
+                    type="number"
+                    value={currentExercise.restPeriod}
+                    onChange={(e) => handleExerciseUpdate(currentExerciseIndex, 'restPeriod', parseInt(e.target.value) || 60)}
+                    className="h-8 text-xs"
+                    min="30"
+                    max="300"
+                  />
+                </div>
+              </div>
+
+              {/* Exercise Actions */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddExerciseDialog(true)}
+                  className="h-7 px-3 text-xs"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add Exercise
+                </Button>
+                
+                {editedSession.exercises.length > 1 && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteExercise(currentExerciseIndex)}
+                    className="h-7 px-3 text-xs"
+                  >
+                    <Trash className="h-3 w-3 mr-1" />
+                    Remove Exercise
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Enhanced Tabs Interface */}
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList className="grid w-full grid-cols-3">
@@ -1893,11 +2149,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         {/* Exercise Management Tab */}
         <TabsContent value="exercises" className="space-y-2 mt-2">
           <DraggableExerciseList
-            exercises={session.exercises}
+            exercises={session.exercises as any}
             sessionId={sessionId}
             currentExerciseIndex={currentExerciseIndex}
             onExerciseSelect={setCurrentExerciseIndex}
-            onExercisesReorder={handleExercisesReorder}
+            onExercisesReorder={(newOrder: any) => handleExercisesReorder(newOrder)}
             workoutData={workoutData}
           />
         </TabsContent>
@@ -2039,6 +2295,39 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           </div>
         </div>
       )}
+
+      {/* Add Exercise Dialog */}
+      <Dialog open={showAddExerciseDialog} onOpenChange={setShowAddExerciseDialog}>
+        <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Add Exercise to Workout</DialogTitle>
+            <DialogDescription>
+              Select an exercise from the library to add to your current workout session.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-auto">
+            <ExerciseLibrarySelector
+              onAddExercise={(exerciseConfig) => {
+                // Convert exercise config to the format needed by the mutation
+                handleAddExercise(exerciseConfig, {
+                  sets: exerciseConfig.sets,
+                  targetReps: exerciseConfig.repsRange,
+                  restPeriod: exerciseConfig.restPeriod
+                });
+              }}
+              selectedExercises={[]}
+              onRemoveExercise={() => {}}
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddExerciseDialog(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
