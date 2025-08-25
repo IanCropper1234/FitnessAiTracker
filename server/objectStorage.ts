@@ -184,26 +184,47 @@ export class ObjectStorageService {
   normalizeObjectEntityPath(
     rawPath: string,
   ): string {
+    console.log('🔍 Normalizing path:', rawPath);
+    
     if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+      console.log('❌ Not a GCS URL, returning as-is');
       return rawPath;
     }
   
     // Extract the path from the URL by removing query parameters and domain
     const url = new URL(rawPath);
     const rawObjectPath = url.pathname;
+    console.log('📂 Raw object path:', rawObjectPath);
   
     let objectEntityDir = this.getPrivateObjectDir();
+    console.log('📁 Private object dir:', objectEntityDir);
+    
     if (!objectEntityDir.endsWith("/")) {
       objectEntityDir = `${objectEntityDir}/`;
     }
   
-    if (!rawObjectPath.startsWith(objectEntityDir)) {
+    // The rawObjectPath starts with /bucket-name/object-path
+    // We need to extract just the object path part
+    const pathParts = rawObjectPath.split('/');
+    if (pathParts.length < 3) {
+      console.log('❌ Invalid path structure');
+      return rawObjectPath;
+    }
+    
+    // Remove the first empty part and bucket name to get the object path
+    const objectPath = '/' + pathParts.slice(2).join('/');
+    console.log('🗂️ Object path:', objectPath);
+    
+    if (!objectPath.startsWith(objectEntityDir)) {
+      console.log('❌ Object path does not start with entity dir');
       return rawObjectPath;
     }
   
     // Extract the entity ID from the path
-    const entityId = rawObjectPath.slice(objectEntityDir.length);
-    return `/objects/${entityId}`;
+    const entityId = objectPath.slice(objectEntityDir.length);
+    const normalizedPath = `/objects/${entityId}`;
+    console.log('✅ Normalized path:', normalizedPath);
+    return normalizedPath;
   }
 
   // Tries to set the ACL policy for the object entity and return the normalized path.

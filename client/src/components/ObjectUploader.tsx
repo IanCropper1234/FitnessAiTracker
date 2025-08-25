@@ -8,7 +8,7 @@ interface ObjectUploaderProps {
     method: "PUT";
     url: string;
   }>;
-  onComplete?: (file: File) => void;
+  onComplete?: (file: File, uploadURL?: string) => void;
   buttonClassName?: string;
   children: ReactNode;
 }
@@ -58,7 +58,8 @@ export function ObjectUploader({
         throw new Error('Upload failed');
       }
 
-      onComplete?.(file);
+      // Pass the upload URL to the completion handler
+      onComplete?.(file, url);
     } catch (error) {
       console.error('Upload error:', error);
       alert('Upload failed. Please try again.');

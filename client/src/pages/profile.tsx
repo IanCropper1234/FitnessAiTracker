@@ -280,23 +280,14 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     };
   };
 
-  const handleUploadComplete = async (file: File) => {
+  const handleUploadComplete = async (file: File, uploadURL?: string) => {
     try {
-      // Create a new upload URL for the update API
-      const uploadResponse = await fetch('/api/objects/upload', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to get update URL');
+      if (uploadURL) {
+        // Use the actual upload URL that was used for the upload
+        uploadProfilePictureMutation.mutate(uploadURL);
+      } else {
+        throw new Error('No upload URL provided');
       }
-      
-      const data = await uploadResponse.json();
-      uploadProfilePictureMutation.mutate(data.uploadURL);
     } catch (error) {
       console.error('Error handling upload completion:', error);
       toast({
