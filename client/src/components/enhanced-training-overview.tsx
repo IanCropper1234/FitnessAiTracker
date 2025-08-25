@@ -396,19 +396,32 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
               );
             })}
             
-            {/* Load More Button */}
-            {volumeLandmarks && displayedMuscleGroups < volumeLandmarks.length && (
+            {/* Load More / Show Less Button */}
+            {volumeLandmarks && volumeLandmarks.length > 5 && (
               <div className="flex justify-center pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setDisplayedMuscleGroups(prev => Math.min(prev + 5, volumeLandmarks.length))}
-                  className="text-xs flex items-center gap-2"
-                  data-testid="button-load-more-muscle-groups"
-                >
-                  <ChevronDown className="h-3 w-3" />
-                  Load More ({Math.min(5, volumeLandmarks.length - displayedMuscleGroups)} more)
-                </Button>
+                {displayedMuscleGroups < volumeLandmarks.length ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDisplayedMuscleGroups(prev => Math.min(prev + 5, volumeLandmarks.length))}
+                    className="text-xs flex items-center gap-2"
+                    data-testid="button-load-more-muscle-groups"
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                    Load More ({Math.min(5, volumeLandmarks.length - displayedMuscleGroups)} more)
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDisplayedMuscleGroups(5)}
+                    className="text-xs flex items-center gap-2"
+                    data-testid="button-show-less-muscle-groups"
+                  >
+                    <ChevronDown className="h-3 w-3 rotate-180" />
+                    Show Less
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
