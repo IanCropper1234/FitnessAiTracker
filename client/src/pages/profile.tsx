@@ -435,14 +435,16 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             <div className="space-y-4">
               {/* User Info Row with Profile Picture */}
               <div className="flex items-center gap-3">
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   {user.profileImageUrl ? (
-                    <img 
-                      src={user.profileImageUrl} 
-                      alt="Profile"
-                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
-                      data-testid="profile-image"
-                    />
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 flex-shrink-0">
+                      <img 
+                        src={user.profileImageUrl} 
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                        data-testid="profile-image"
+                      />
+                    </div>
                   ) : (
                     <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-gray-200 dark:border-gray-700">
                       <UserIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
