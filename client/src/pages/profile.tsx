@@ -1,10 +1,11 @@
 import UserProfile from "@/components/user-profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save, Camera, Trash2 } from "lucide-react";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save, Camera, Trash2, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
@@ -205,6 +206,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const [, setLocation] = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
+  const [showImagePreview, setShowImagePreview] = useState(false);
   
   // Auto-reset language to English if ZH-TW is selected (since it's not complete)
   useEffect(() => {
@@ -439,14 +441,18 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                 <div className="flex items-center gap-3">
                   <div className="flex-shrink-0">
                     {user.profileImageUrl ? (
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700">
+                      <button
+                        onClick={() => setShowImagePreview(true)}
+                        className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer group"
+                        data-testid="button-preview-profile-image"
+                      >
                         <img 
                           src={user.profileImageUrl} 
                           alt="Profile"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           data-testid="profile-image"
                         />
-                      </div>
+                      </button>
                     ) : (
                       <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-200 dark:border-gray-700">
                         <UserIcon className="w-8 h-8 text-gray-600 dark:text-gray-400" />
@@ -653,6 +659,29 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         {/* Profile Component */}
         <UserProfile />
       </div>
+      
+      {/* Profile Picture Preview Modal */}
+      <Dialog open={showImagePreview} onOpenChange={setShowImagePreview}>
+        <DialogContent className="max-w-md mx-auto p-0">
+          <div className="relative">
+            <button
+              onClick={() => setShowImagePreview(false)}
+              className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm flex items-center justify-center transition-all duration-200"
+              data-testid="button-close-preview"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+            {user.profileImageUrl && (
+              <img 
+                src={user.profileImageUrl} 
+                alt="Profile Preview"
+                className="w-full max-h-[80vh] object-contain rounded-lg"
+                data-testid="profile-image-preview"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
