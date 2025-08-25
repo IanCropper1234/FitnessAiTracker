@@ -443,8 +443,17 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
               <ResponsiveContainer width="100%" height={120}>
                 <LineChart data={weeklyData}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis dataKey="week" className="text-xs" />
-                  <YAxis className="text-xs" />
+                  <XAxis 
+                    dataKey="week" 
+                    tick={{ fontSize: 10, fill: 'currentColor' }}
+                    tickLine={{ stroke: 'currentColor' }}
+                    axisLine={{ stroke: 'currentColor' }}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 10, fill: 'currentColor' }}
+                    tickLine={{ stroke: 'currentColor' }}
+                    axisLine={{ stroke: 'currentColor' }}
+                  />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.95)', 
