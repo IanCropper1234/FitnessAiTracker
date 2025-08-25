@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { LoadingState } from "@/components/ui/loading";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -13,11 +13,13 @@ import {
   Heart,
   Moon,
   BarChart3,
-  Gauge
+  Gauge,
+  ChevronDown
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 
 // Enhanced interfaces for scientific training data
 interface VolumeLandmark {
@@ -75,6 +77,7 @@ interface EnhancedTrainingOverviewProps {
 
 export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [displayedMuscleGroups, setDisplayedMuscleGroups] = useState(5);
 
   // Fetch enhanced training analytics
   const { data: volumeLandmarks, isLoading: landmarksLoading } = useQuery({
@@ -350,7 +353,7 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {volumeLandmarks.slice(0, 5).map((landmark: any) => {
+            {volumeLandmarks.slice(0, displayedMuscleGroups).map((landmark: any) => {
               // Only show landmarks with actual training volume data
               const hasVolumeData = landmark.currentVolume > 0 || landmark.mev > 0;
               if (!hasVolumeData) return null;
@@ -392,6 +395,22 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
                 </div>
               );
             })}
+            
+            {/* Load More Button */}
+            {volumeLandmarks && displayedMuscleGroups < volumeLandmarks.length && (
+              <div className="flex justify-center pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDisplayedMuscleGroups(prev => Math.min(prev + 5, volumeLandmarks.length))}
+                  className="text-xs flex items-center gap-2"
+                  data-testid="button-load-more-muscle-groups"
+                >
+                  <ChevronDown className="h-3 w-3" />
+                  Load More ({Math.min(5, volumeLandmarks.length - displayedMuscleGroups)} more)
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
