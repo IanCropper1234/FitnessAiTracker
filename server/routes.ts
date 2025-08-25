@@ -1260,7 +1260,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(500).json({ message: "Failed to sign out" });
         }
         
-        // Clear the session cookie on client side
+        // Clear the session cookie on client side with comprehensive options
+        res.clearCookie('trainpro.session', {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax'
+        });
+        
+        // Also clear any potential legacy session cookies for complete cleanup
         res.clearCookie('connect.sid', {
           path: '/',
           httpOnly: true,
@@ -1268,10 +1276,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sameSite: 'lax'
         });
         
+        // Add security headers to prevent caching of logout response
+        res.set({
+          'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        });
+        
         console.log(`Logout completed successfully for session ${sessionId}`);
         res.json({ 
           message: "Signed out successfully",
-          sessionCleared: true
+          sessionCleared: true,
+          timestamp: new Date().toISOString()
         });
       });
     } catch (error: any) {

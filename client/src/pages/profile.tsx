@@ -302,10 +302,8 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   });
 
   const handleSignOut = () => {
-    if (onSignOut) {
-      onSignOut();
-    }
-    setLocation("/auth");
+    // Use the secure signout mutation instead of just client-side navigation
+    signoutMutation.mutate();
   };
   return (
     <div className="min-h-screen bg-background text-foreground ios-pwa-container ml-[8px] mr-[8px] pl-[5px] pr-[5px]">
@@ -354,11 +352,12 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
               {/* Sign Out Button - Full Width on Mobile */}
               <Button
                 onClick={handleSignOut}
+                disabled={signoutMutation.isPending}
                 variant="outline"
                 className="w-full border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 ios-button touch-target"
               >
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                {signoutMutation.isPending ? "Signing Out..." : "Sign Out"}
               </Button>
             </div>
           </CardContent>
