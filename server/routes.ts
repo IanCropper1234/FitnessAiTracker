@@ -3276,56 +3276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }));
       
-      // Debug: Log all enhanced landmarks
-      console.log('📊 All enhanced landmarks:', enhancedLandmarks.map(l => `${l.muscleGroupName}: ${l.currentVolume} sets`));
-      
-      // Aggregate shoulder-related muscle groups into unified 'shoulders'
-      const processedLandmarks = [];
-      
-      // Find shoulder-related groups (shoulders and rear_delts based on actual DB structure)
-      const shoulderGroups = enhancedLandmarks.filter(l => 
-        l.muscleGroupName === 'shoulders' || 
-        l.muscleGroupName === 'rear_delts'
-      );
-      
-      const nonShoulderGroups = enhancedLandmarks.filter(l => 
-        l.muscleGroupName !== 'shoulders' && 
-        l.muscleGroupName !== 'rear_delts'
-      );
-      
-      console.log('💪 Found shoulder-related groups:', shoulderGroups.map(d => `${d.muscleGroupName}: ${d.currentVolume} sets`));
-      
-      // If we have shoulder groups, combine them into unified shoulders
-      if (shoulderGroups.length > 0) {
-        const totalCurrentVolume = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.currentVolume || 0), 0);
-        const totalMev = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.mev || 0), 0);
-        const totalMav = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.mav || 0), 0);
-        const totalMrv = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.mrv || 0), 0);
-        const avgRecoveryLevel = Math.round(shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.recoveryLevel || 5), 0) / shoulderGroups.length);
-        const avgAdaptationLevel = Math.round(shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.adaptationLevel || 5), 0) / shoulderGroups.length);
-        
-        console.log(`🏗️ Creating unified shoulders landmark: ${totalCurrentVolume}/${totalMav} sets (MEV: ${totalMev}, MRV: ${totalMrv})`);
-        
-        // Use the first shoulder group as base and modify it to represent unified shoulders
-        const shouldersLandmark = {
-          ...shoulderGroups[0],
-          muscleGroupName: 'shoulders',
-          currentVolume: totalCurrentVolume,
-          mev: totalMev,
-          mav: totalMav,
-          mrv: totalMrv,
-          recoveryLevel: avgRecoveryLevel,
-          adaptationLevel: avgAdaptationLevel,
-          targetVolume: totalCurrentVolume // Set target to current for aggregated group
-        };
-        
-        processedLandmarks.push(shouldersLandmark);
-      }
-      
-      // Add all non-shoulder groups
-      processedLandmarks.push(...nonShoulderGroups);
-      
-      res.json(processedLandmarks);
+      res.json(enhancedLandmarks);
     } catch (error: any) {
       console.error('Volume landmarks error:', error);
       res.status(400).json({ message: error.message });
