@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +23,7 @@ export function ObjectUploader({
   children,
 }: ObjectUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -71,19 +72,27 @@ export function ObjectUploader({
     }
   };
 
+  const handleButtonClick = () => {
+    if (!isUploading && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
-    <div className="relative group">
+    <div className="relative">
       <input
+        ref={fileInputRef}
         type="file"
         accept="image/*"
         onChange={handleFileSelect}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+        className="hidden"
         disabled={isUploading}
       />
       <Button
         type="button"
         variant="outline"
-        className={`${buttonClassName || ''} ios-button touch-target transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-lg group-active:scale-[0.98] ${isUploading ? 'opacity-50 cursor-not-allowed group-hover:scale-100 group-hover:shadow-sm' : ''}`}
+        onClick={handleButtonClick}
+        className={`${buttonClassName || ''} ios-button touch-target transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${isUploading ? 'opacity-50 cursor-not-allowed hover:scale-100 hover:shadow-sm' : ''}`}
         disabled={isUploading}
       >
         {isUploading ? 'Uploading...' : children}
