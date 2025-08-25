@@ -223,7 +223,10 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
       });
     },
     onSuccess: () => {
+      // Force immediate cache invalidation and refetch
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
+      queryClient.refetchQueries({ queryKey: ['/api/user/profile'] });
+      
       toast({
         title: "Profile Picture Updated",
         description: "Your profile picture has been updated successfully.",
@@ -244,7 +247,10 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
       return apiRequest('DELETE', '/api/user/profile-picture');
     },
     onSuccess: () => {
+      // Force immediate cache invalidation and refetch
       queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
+      queryClient.refetchQueries({ queryKey: ['/api/user/profile'] });
+      
       toast({
         title: "Profile Picture Removed",
         description: "Your profile picture has been removed successfully.",
