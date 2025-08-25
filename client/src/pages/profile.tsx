@@ -25,14 +25,6 @@ interface ProfilePageProps {
   onSignOut?: () => void;
 }
 
-interface DietGoals {
-  goal: string;
-  targetCalories: string;
-  targetProtein: string;
-  targetCarbs: string;
-  targetFat: string;
-  weeklyWeightTarget: string;
-}
 
 // Activity & Goals Card Component
 function ActivityGoalsCard() {
@@ -206,108 +198,6 @@ function ActivityGoalsCard() {
   );
 }
 
-function DietGoalsCard() {
-  const { data: dietGoals, isLoading } = useQuery<DietGoals>({
-    queryKey: ['/api/diet-goals'],
-    queryFn: async () => {
-      const response = await fetch('/api/diet-goals');
-      return response.json();
-    }
-  });
-
-  const { data: userProfile } = useQuery({
-    queryKey: ['/api/user/profile'],
-    queryFn: async () => {
-      const response = await fetch('/api/user/profile');
-      return response.json();
-    }
-  });
-
-  if (isLoading) return null;
-
-  const getGoalDescription = (goal: string) => {
-    switch (goal) {
-      case "bulk": return "Muscle Gain (Calorie Surplus)";
-      case "cut": return "Weight Loss (Calorie Deficit)";
-      case "maintain": return "Weight Maintenance";
-      default: return "Maintenance";
-    }
-  };
-
-  const getGoalColor = (goal: string) => {
-    switch (goal) {
-      case "bulk": return "text-green-600 dark:text-green-400";
-      case "cut": return "text-red-600 dark:text-red-400";
-      case "maintain": return "text-blue-600 dark:text-blue-400";
-      default: return "text-gray-600 dark:text-gray-400";
-    }
-  };
-
-  const fitnessGoal = userProfile?.profile?.fitnessGoal || "Not Set";
-  const weeklyTarget = parseFloat(dietGoals?.weeklyWeightTarget || "0");
-
-  return (
-    <Card className="ios-smooth-transform">
-      <CardContent className="p-4 space-y-3">
-        {/* Compact Header */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30  flex items-center justify-center flex-shrink-0">
-            <Target className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <h3 className="text-sm font-semibold text-black dark:text-white">Diet Goals</h3>
-        </div>
-
-        {/* Compact Info Banner */}
-        <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 ">
-          <Info className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-          <p className="text-xs text-blue-800 dark:text-blue-200">
-            Auto-set for <strong>{fitnessGoal}</strong> goal
-          </p>
-        </div>
-
-        {dietGoals && (
-          <div className="space-y-3">
-            {/* Goal Summary - Compact Row */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Goal</label>
-                <p className={`text-sm font-semibold ${getGoalColor(dietGoals.goal)}`}>
-                  {getGoalDescription(dietGoals.goal)}
-                </p>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Weekly Target</label>
-                <p className="text-sm font-semibold text-black dark:text-white">
-                  {weeklyTarget > 0 ? `+${weeklyTarget}kg` : weeklyTarget < 0 ? `${weeklyTarget}kg` : '0kg'}
-                </p>
-              </div>
-            </div>
-            
-            {/* Macro Grid - Compact Design */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gray-50 dark:bg-gray-800/50  p-2.5 text-center">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Calories</p>
-                <p className="text-sm font-bold text-black dark:text-white">{Math.round(Number(dietGoals.targetCalories))}</p>
-              </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20  p-2.5 text-center">
-                <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Protein</p>
-                <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{Math.round(Number(dietGoals.targetProtein))}g</p>
-              </div>
-              <div className="bg-orange-50 dark:bg-orange-900/20  p-2.5 text-center">
-                <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Carbs</p>
-                <p className="text-sm font-bold text-orange-600 dark:text-orange-400">{Math.round(Number(dietGoals.targetCarbs))}g</p>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900/20  p-2.5 text-center">
-                <p className="text-xs font-medium text-green-600 dark:text-green-400">Fat</p>
-                <p className="text-sm font-bold text-green-600 dark:text-green-400">{Math.round(Number(dietGoals.targetFat))}g</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const [, setLocation] = useLocation();
@@ -602,8 +492,6 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         {/* Activity & Goals Card - Moved Above Diet Goals */}
         <ActivityGoalsCard />
 
-        {/* Diet Goals Card */}
-        <DietGoalsCard />
 
         {/* Profile Component */}
         <UserProfile />
