@@ -429,6 +429,15 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   checked={showTrainingOverview}
                   onCheckedChange={setShowTrainingOverview}
                   className="scale-90"
+                  style={{
+                    // Set the background color based on the toggle state
+                    backgroundColor: showTrainingOverview 
+                      ? '#3B82F6'  // Blue for Training mode
+                      : '#10B981', // Green for Nutrition mode
+                    borderColor: showTrainingOverview 
+                      ? '#2563EB'  // Darker blue border for Training
+                      : '#059669'  // Darker green border for Nutrition
+                  }}
                 />
                 <Label htmlFor="overview-toggle" className="text-caption text-gray-600 dark:text-gray-400">
                   Training
