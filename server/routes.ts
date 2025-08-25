@@ -3276,32 +3276,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }));
       
-      // Aggregate deltoid muscle groups into 'shoulders'
+      // Debug: Log all enhanced landmarks
+      console.log('📊 All enhanced landmarks:', enhancedLandmarks.map(l => `${l.muscleGroupName}: ${l.currentVolume} sets`));
+      
+      // Aggregate shoulder-related muscle groups into unified 'shoulders'
       const processedLandmarks = [];
-      const deltoidGroups = enhancedLandmarks.filter(l => 
-        l.muscleGroupName === 'front_delts' || 
-        l.muscleGroupName === 'side_delts' || 
+      
+      // Find shoulder-related groups (shoulders and rear_delts based on actual DB structure)
+      const shoulderGroups = enhancedLandmarks.filter(l => 
+        l.muscleGroupName === 'shoulders' || 
         l.muscleGroupName === 'rear_delts'
       );
       
-      const nonDeltoidGroups = enhancedLandmarks.filter(l => 
-        l.muscleGroupName !== 'front_delts' && 
-        l.muscleGroupName !== 'side_delts' && 
+      const nonShoulderGroups = enhancedLandmarks.filter(l => 
+        l.muscleGroupName !== 'shoulders' && 
         l.muscleGroupName !== 'rear_delts'
       );
       
-      // If we have deltoid groups, combine them into shoulders
-      if (deltoidGroups.length > 0) {
-        const totalCurrentVolume = deltoidGroups.reduce((sum, delt) => sum + (delt.currentVolume || 0), 0);
-        const totalMev = deltoidGroups.reduce((sum, delt) => sum + (delt.mev || 0), 0);
-        const totalMav = deltoidGroups.reduce((sum, delt) => sum + (delt.mav || 0), 0);
-        const totalMrv = deltoidGroups.reduce((sum, delt) => sum + (delt.mrv || 0), 0);
-        const avgRecoveryLevel = Math.round(deltoidGroups.reduce((sum, delt) => sum + (delt.recoveryLevel || 5), 0) / deltoidGroups.length);
-        const avgAdaptationLevel = Math.round(deltoidGroups.reduce((sum, delt) => sum + (delt.adaptationLevel || 5), 0) / deltoidGroups.length);
+      console.log('💪 Found shoulder-related groups:', shoulderGroups.map(d => `${d.muscleGroupName}: ${d.currentVolume} sets`));
+      
+      // If we have shoulder groups, combine them into unified shoulders
+      if (shoulderGroups.length > 0) {
+        const totalCurrentVolume = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.currentVolume || 0), 0);
+        const totalMev = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.mev || 0), 0);
+        const totalMav = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.mav || 0), 0);
+        const totalMrv = shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.mrv || 0), 0);
+        const avgRecoveryLevel = Math.round(shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.recoveryLevel || 5), 0) / shoulderGroups.length);
+        const avgAdaptationLevel = Math.round(shoulderGroups.reduce((sum, shoulder) => sum + (shoulder.adaptationLevel || 5), 0) / shoulderGroups.length);
         
-        // Use the first deltoid group as base and modify it to represent shoulders
+        console.log(`🏗️ Creating unified shoulders landmark: ${totalCurrentVolume}/${totalMav} sets (MEV: ${totalMev}, MRV: ${totalMrv})`);
+        
+        // Use the first shoulder group as base and modify it to represent unified shoulders
         const shouldersLandmark = {
-          ...deltoidGroups[0],
+          ...shoulderGroups[0],
           muscleGroupName: 'shoulders',
           currentVolume: totalCurrentVolume,
           mev: totalMev,
@@ -3315,8 +3322,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         processedLandmarks.push(shouldersLandmark);
       }
       
-      // Add all non-deltoid groups
-      processedLandmarks.push(...nonDeltoidGroups);
+      // Add all non-shoulder groups
+      processedLandmarks.push(...nonShoulderGroups);
       
       res.json(processedLandmarks);
     } catch (error: any) {
