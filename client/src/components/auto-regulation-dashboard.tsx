@@ -9,6 +9,16 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { TrendingUp, TrendingDown, Target, AlertTriangle, Activity, Zap, Info, ChevronDown, ChevronRight } from "lucide-react";
 import { AutoRegulationExplanation } from "./auto-regulation-explanation";
 
+// Utility function to format muscle group names for display
+const formatMuscleGroupName = (name: string): string => {
+  if (!name) return '';
+  
+  // Convert underscores to spaces and capitalize first letter
+  return name
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase());
+};
+
 interface VolumeRecommendation {
   muscleGroupId: number;
   muscleGroupName: string;
@@ -196,7 +206,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
                     <div key={mg.muscleGroupId} className="flex items-center justify-between p-3  border">
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium">{mg.muscleGroupName}</span>
+                          <span className="font-medium">{formatMuscleGroupName(mg.muscleGroupName)}</span>
                           <span className={`text-sm font-medium ${getFatigueColor(mg.fatigueLevel || 0)}`}>
                             {(mg.fatigueLevel || 0).toFixed(1)}/10
                           </span>
@@ -237,7 +247,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Icon className="h-4 w-4" />
-                            <h4 className="font-medium">{rec.muscleGroupName}</h4>
+                            <h4 className="font-medium">{formatMuscleGroupName(rec.muscleGroupName)}</h4>
                             <Badge variant="outline" className="text-xs">
                               {rec.recommendation.charAt(0).toUpperCase() + rec.recommendation.slice(1)} Volume
                             </Badge>

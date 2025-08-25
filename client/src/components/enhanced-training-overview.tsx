@@ -21,6 +21,16 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 
+// Utility function to format muscle group names for display
+const formatMuscleGroupName = (name: string): string => {
+  if (!name) return '';
+  
+  // Convert underscores to spaces and capitalize first letter
+  return name
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase());
+};
+
 // Enhanced interfaces for scientific training data
 interface VolumeLandmark {
   muscleGroupId: number;
@@ -222,7 +232,7 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
   // Volume distribution data for pie chart - only use real data
   const volumeDistribution = hasVolumeData && volumeLandmarks.some((lg: any) => lg.currentVolume > 0)
     ? volumeLandmarks.filter((lg: any) => lg.currentVolume > 0).slice(0, 6).map((lg: any, index: number) => ({
-        name: lg.muscleGroupName || `Muscle Group ${lg.muscleGroupId}`,
+        name: formatMuscleGroupName(lg.muscleGroupName) || `Muscle Group ${lg.muscleGroupId}`,
         value: lg.currentVolume,
         color: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'][index % 6]
       }))
@@ -373,7 +383,7 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
                 <div key={landmark.muscleGroupId} className="space-y-1">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">
-                      {landmark.muscleGroupName || `Muscle Group ${landmark.muscleGroupId}`}
+                      {formatMuscleGroupName(landmark.muscleGroupName) || `Muscle Group ${landmark.muscleGroupId}`}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-600 dark:text-gray-400">
