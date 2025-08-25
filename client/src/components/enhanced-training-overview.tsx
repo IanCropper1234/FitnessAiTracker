@@ -531,27 +531,23 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
           <CardContent className="space-y-2">
             {/* Only show recommendations based on real data */}
             {fatigueScore !== null && fatigueScore >= 7 && (
-              <div className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
-                <AlertTriangle className="h-4 w-4" />
-                <span>High fatigue detected - Consider deload week</span>
+              <div className="text-center text-sm text-red-700 dark:text-red-300">
+                High fatigue detected - Consider deload week
               </div>
             )}
             {hasVolumeData && muscleGroupsAtMRV > 0 && (
-              <div className="flex items-center gap-2 text-sm text-orange-700 dark:text-orange-300">
-                <AlertTriangle className="h-4 w-4" />
-                <span>{muscleGroupsAtMRV} muscle group(s) at MRV - Reduce volume</span>
+              <div className="text-center text-sm text-orange-700 dark:text-orange-300">
+                {muscleGroupsAtMRV} muscle group(s) at MRV - Reduce volume
               </div>
             )}
             {recoveryScore !== null && recoveryScore >= 8 && currentPhase === 'Accumulation' && (
-              <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300">
-                <CheckCircle className="h-4 w-4" />
-                <span>Excellent recovery - Can increase training volume</span>
+              <div className="text-center text-sm text-green-700 dark:text-green-300">
+                Excellent recovery - Can increase training volume
               </div>
             )}
             {trainingReadiness !== null && trainingReadiness <= 4 && (
-              <div className="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-300">
-                <Moon className="h-4 w-4" />
-                <span>Low readiness - Focus on sleep and recovery</span>
+              <div className="text-center text-sm text-yellow-700 dark:text-yellow-300">
+                Low readiness - Focus on sleep and recovery
               </div>
             )}
             {/* Default message when there's data but no specific recommendations */}
@@ -560,16 +556,14 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
              !(hasVolumeData && muscleGroupsAtMRV > 0) && 
              !(recoveryScore !== null && recoveryScore >= 8 && currentPhase === 'Accumulation') && 
              !(trainingReadiness !== null && trainingReadiness <= 4) && (
-              <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
-                <CheckCircle className="h-4 w-4" />
-                <span>Training progressing well - Continue current plan</span>
+              <div className="text-center text-sm text-blue-700 dark:text-blue-300">
+                Training progressing well - Continue current plan
               </div>
             )}
             {/* Message when no data is available */}
             {!hasVolumeData && !hasFeedbackData && !hasTrainingData && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Activity className="h-4 w-4" />
-                <span>Complete workouts and log feedback to receive personalized recommendations</span>
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                Complete workouts and log feedback to receive personalized recommendations
               </div>
             )}
           </CardContent>
