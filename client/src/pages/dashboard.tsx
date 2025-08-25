@@ -424,21 +424,21 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                 <Label htmlFor="overview-toggle" className="text-caption text-gray-600 dark:text-gray-400">
                   Nutrition
                 </Label>
-                <Switch
-                  id="overview-toggle"
-                  checked={showTrainingOverview}
-                  onCheckedChange={setShowTrainingOverview}
-                  className="scale-90"
+                <div 
+                  className="relative inline-flex h-6 w-11 scale-90 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
                   style={{
-                    // Set the background color based on the toggle state
                     backgroundColor: showTrainingOverview 
                       ? '#3B82F6'  // Blue for Training mode
                       : '#10B981', // Green for Nutrition mode
-                    borderColor: showTrainingOverview 
-                      ? '#2563EB'  // Darker blue border for Training
-                      : '#059669'  // Darker green border for Nutrition
                   }}
-                />
+                  onClick={() => setShowTrainingOverview(!showTrainingOverview)}
+                >
+                  <span
+                    className={`${
+                      showTrainingOverview ? 'translate-x-5' : 'translate-x-0'
+                    } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                  />
+                </div>
                 <Label htmlFor="overview-toggle" className="text-caption text-gray-600 dark:text-gray-400">
                   Training
                 </Label>
