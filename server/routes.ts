@@ -3276,7 +3276,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }));
       
-      res.json(enhancedLandmarks);
+      // Aggregate deltoid muscle groups into 'shoulders'
+      const processedLandmarks = [];
+      const deltoidGroups = enhancedLandmarks.filter(l => 
+        l.muscleGroupName === 'front_delts' || 
+        l.muscleGroupName === 'side_delts' || 
+        l.muscleGroupName === 'rear_delts'
+      );
+      
+      const nonDeltoidGroups = enhancedLandmarks.filter(l => 
+        l.muscleGroupName !== 'front_delts' && 
+        l.muscleGroupName !== 'side_delts' && 
+        l.muscleGroupName !== 'rear_delts'
+      );
+      
+      // If we have deltoid groups, combine them into shoulders
+      if (deltoidGroups.length > 0) {
+        const totalCurrentVolume = deltoidGroups.reduce((sum, delt) => sum + (delt.currentVolume || 0), 0);
+        const totalMev = deltoidGroups.reduce((sum, delt) => sum + (delt.mev || 0), 0);
+        const totalMav = deltoidGroups.reduce((sum, delt) => sum + (delt.mav || 0), 0);
+        const totalMrv = deltoidGroups.reduce((sum, delt) => sum + (delt.mrv || 0), 0);
+        const avgRecoveryLevel = Math.round(deltoidGroups.reduce((sum, delt) => sum + (delt.recoveryLevel || 5), 0) / deltoidGroups.length);
+        const avgAdaptationLevel = Math.round(deltoidGroups.reduce((sum, delt) => sum + (delt.adaptationLevel || 5), 0) / deltoidGroups.length);
+        
+        // Use the first deltoid group as base and modify it to represent shoulders
+        const shouldersLandmark = {
+          ...deltoidGroups[0],
+          muscleGroupName: 'shoulders',
+          currentVolume: totalCurrentVolume,
+          mev: totalMev,
+          mav: totalMav,
+          mrv: totalMrv,
+          recoveryLevel: avgRecoveryLevel,
+          adaptationLevel: avgAdaptationLevel,
+          targetVolume: totalCurrentVolume // Set target to current for aggregated group
+        };
+        
+        processedLandmarks.push(shouldersLandmark);
+      }
+      
+      // Add all non-deltoid groups
+      processedLandmarks.push(...nonDeltoidGroups);
+      
+      res.json(processedLandmarks);
     } catch (error: any) {
       console.error('Volume landmarks error:', error);
       res.status(400).json({ message: error.message });
