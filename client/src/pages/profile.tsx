@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save } from "lucide-react";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save, Camera, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
@@ -12,12 +12,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 
 interface User {
   id: number;
   email: string;
   name: string;
   showDeveloperFeatures?: boolean;
+  profileImageUrl?: string;
 }
 
 interface ProfilePageProps {
@@ -213,6 +216,86 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // Profile picture upload mutation
+  const uploadProfilePictureMutation = useMutation({
+    mutationFn: async (profileImageURL: string) => {
+      return apiRequest('PUT', '/api/user/profile-picture', {
+        profileImageURL
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
+      toast({
+        title: "Profile Picture Updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Upload Failed",
+        description: error?.message || "Failed to update profile picture. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Profile picture delete mutation
+  const deleteProfilePictureMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest('DELETE', '/api/user/profile-picture');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user/profile'] });
+      toast({
+        title: "Profile Picture Removed",
+        description: "Your profile picture has been removed successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error?.message || "Failed to remove profile picture. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Profile picture upload handlers
+  const handleGetUploadParameters = async () => {
+    const response = await fetch('/api/objects/upload', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to get upload URL');
+    }
+    
+    const data = await response.json();
+    return {
+      method: 'PUT' as const,
+      url: data.uploadURL,
+    };
+  };
+
+  const handleUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    if (result.successful && result.successful.length > 0) {
+      const uploadedFile = result.successful[0];
+      const uploadURL = uploadedFile.uploadURL;
+      
+      if (uploadURL) {
+        uploadProfilePictureMutation.mutate(uploadURL);
+      }
+    }
+  };
+
+  const handleDeleteProfilePicture = () => {
+    deleteProfilePictureMutation.mutate();
+  };
+
   // Fetch complete user data including developer settings
   const { data: userData } = useQuery({
     queryKey: ['/api/user/profile'],
@@ -338,16 +421,76 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         <Card className="ios-smooth-transform">
           <CardContent className="p-4">
             <div className="space-y-4">
-              {/* User Info Row */}
+              {/* User Info Row with Profile Picture */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800  flex items-center justify-center flex-shrink-0">
-                  <UserIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <div className="relative">
+                  {user.profileImageUrl ? (
+                    <img 
+                      src={user.profileImageUrl} 
+                      alt="Profile"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
+                      data-testid="profile-image"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-gray-200 dark:border-gray-700">
+                      <UserIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                    </div>
+                  )}
+                  
+                  {/* Profile picture upload/delete actions */}
+                  <div className="absolute -bottom-1 -right-1">
+                    {user.profileImageUrl ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleDeleteProfilePicture}
+                        disabled={deleteProfilePictureMutation.isPending}
+                        className="h-6 w-6 p-0 rounded-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        data-testid="button-delete-profile-picture"
+                      >
+                        <Trash2 className="w-3 h-3 text-red-600 dark:text-red-400" />
+                      </Button>
+                    ) : (
+                      <ObjectUploader
+                        maxNumberOfFiles={1}
+                        maxFileSize={5242880} // 5MB
+                        onGetUploadParameters={handleGetUploadParameters}
+                        onComplete={handleUploadComplete}
+                        buttonClassName="h-6 w-6 p-0 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        <Camera className="w-3 h-3 text-gray-600 dark:text-gray-400" data-testid="button-upload-profile-picture" />
+                      </ObjectUploader>
+                    )}
+                  </div>
                 </div>
+                
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold text-black dark:text-white truncate">{user.name}</h3>
                   <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
+                  {uploadProfilePictureMutation.isPending && (
+                    <p className="text-xs text-blue-600 dark:text-blue-400">Uploading profile picture...</p>
+                  )}
+                  {deleteProfilePictureMutation.isPending && (
+                    <p className="text-xs text-red-600 dark:text-red-400">Removing profile picture...</p>
+                  )}
                 </div>
               </div>
+              
+              {/* Profile Picture Update Option for existing pictures */}
+              {user.profileImageUrl && (
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <ObjectUploader
+                    maxNumberOfFiles={1}
+                    maxFileSize={5242880} // 5MB
+                    onGetUploadParameters={handleGetUploadParameters}
+                    onComplete={handleUploadComplete}
+                    buttonClassName="w-full justify-center text-xs"
+                  >
+                    <Camera className="w-3 h-3 mr-2" />
+                    Update Profile Picture
+                  </ObjectUploader>
+                </div>
+              )}
               
               {/* Sign Out Button - Full Width on Mobile */}
               <Button

@@ -111,6 +111,8 @@ async function getAutoProgressedValues(exerciseId: number, userId: number, previ
 }
 
 import { GoalSynchronizationService } from './services/goal-synchronization-service';
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { ObjectPermission } from "./objectAcl";
 
 // Auto-sync diet goals with fitness goal changes
 async function syncDietGoalsWithFitnessGoal(userId: number, fitnessGoal: string, profileData: any) {
@@ -1404,6 +1406,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(profile);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Object Storage Routes for Profile Pictures
+  
+  // Serve private objects (profile pictures)
+  app.get("/objects/:objectPath(*)", requireAuth, async (req, res) => {
+    const userId = req.userId;
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(
+        req.path,
+      );
+      const canAccess = await objectStorageService.canAccessObjectEntity({
+        objectFile,
+        userId: userId,
+        requestedPermission: ObjectPermission.READ,
+      });
+      if (!canAccess) {
+        return res.sendStatus(401);
+      }
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error checking object access:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  // Get upload URL for profile picture
+  app.post("/api/objects/upload", requireAuth, async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    res.json({ uploadURL });
+  });
+
+  // Update user profile picture
+  app.put("/api/user/profile-picture", requireAuth, async (req, res) => {
+    if (!req.body.profileImageURL) {
+      return res.status(400).json({ error: "profileImageURL is required" });
+    }
+
+    const userId = req.userId;
+
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        req.body.profileImageURL,
+        {
+          owner: userId,
+          visibility: "public", // Profile pictures are public
+        },
+      );
+
+      // Update user's profile image URL in database
+      const updatedUser = await storage.updateUser(userId, {
+        profileImageUrl: objectPath
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.status(200).json({
+        objectPath: objectPath,
+        message: "Profile picture updated successfully"
+      });
+    } catch (error) {
+      console.error("Error setting profile picture:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Delete user profile picture
+  app.delete("/api/user/profile-picture", requireAuth, async (req, res) => {
+    const userId = req.userId;
+
+    try {
+      // Remove profile image URL from database
+      const updatedUser = await storage.updateUser(userId, {
+        profileImageUrl: null
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.status(200).json({
+        message: "Profile picture removed successfully"
+      });
+    } catch (error) {
+      console.error("Error removing profile picture:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
