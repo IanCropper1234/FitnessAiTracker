@@ -72,7 +72,7 @@ export function ObjectUploader({
   };
 
   return (
-    <div className="relative">
+    <div className="relative group">
       <input
         type="file"
         accept="image/*"
@@ -83,7 +83,7 @@ export function ObjectUploader({
       <Button
         type="button"
         variant="outline"
-        className={`${buttonClassName || ''} ios-button touch-target transition-all duration-200 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`${buttonClassName || ''} ios-button touch-target transition-all duration-200 group-hover:scale-[1.02] group-hover:shadow-lg group-active:scale-[0.98] ${isUploading ? 'opacity-50 cursor-not-allowed group-hover:scale-100 group-hover:shadow-sm' : ''}`}
         disabled={isUploading}
       >
         {isUploading ? 'Uploading...' : children}
