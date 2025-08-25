@@ -229,17 +229,17 @@ export class ObjectStorageService {
         return rawObjectPath;
       }
       
-      // Remove the first empty part and bucket name to get the object path
-      const objectPath = '/' + pathParts.slice(2).join('/');
-      console.log('Extracted object path:', objectPath);
+      // The full object path includes the bucket name
+      const fullObjectPath = rawObjectPath; // This is the full path including bucket
+      console.log('Full object path:', fullObjectPath);
       
-      if (!objectPath.startsWith(objectEntityDir)) {
-        console.log('Object path does not start with entity dir, returning raw path');
+      if (!fullObjectPath.startsWith(objectEntityDir)) {
+        console.log('Full object path does not start with entity dir, returning raw path');
         return rawObjectPath;
       }
   
-      // Extract the entity ID from the path
-      const entityId = objectPath.slice(objectEntityDir.length);
+      // Extract the entity ID from the path (everything after the private dir)
+      const entityId = fullObjectPath.slice(objectEntityDir.length);
       const normalizedPath = `/objects/${entityId}`;
       console.log('Final normalized path:', normalizedPath);
       return normalizedPath;
