@@ -428,54 +428,53 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
         </Card>
       )}
 
-      {/* Weekly Progress Chart & Volume Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        
-        {/* Weekly Progress Trend */}
-        {weeklyData.length > 0 && (
-          <Card className="training-metric-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-black dark:text-white">
-                4-Week Progress Trend
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={120}>
-                <LineChart data={weeklyData}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis 
-                    dataKey="week" 
-                    tick={{ fontSize: 10, fill: 'currentColor' }}
-                    tickLine={{ stroke: 'currentColor' }}
-                    axisLine={{ stroke: 'currentColor' }}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 10, fill: 'currentColor' }}
-                    tickLine={{ stroke: 'currentColor' }}
-                    axisLine={{ stroke: 'currentColor' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      color: '#374151'
-                    }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="volume" 
-                    stroke="#3B82F6" 
-                    strokeWidth={2} 
-                    dot={{ fill: '#3B82F6', strokeWidth: 2 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        )}
+      {/* Weekly Progress Chart */}
+      {weeklyData.length > 0 && (
+        <Card className="training-metric-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold text-black dark:text-white">
+              4-Week Progress Trend
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={120}>
+              <LineChart data={weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <XAxis 
+                  dataKey="week" 
+                  tick={{ fontSize: 10, fill: 'currentColor' }}
+                  tickLine={{ stroke: 'currentColor' }}
+                  axisLine={{ stroke: 'currentColor' }}
+                />
+                <YAxis 
+                  tick={{ fontSize: 10, fill: 'currentColor' }}
+                  tickLine={{ stroke: 'currentColor' }}
+                  axisLine={{ stroke: 'currentColor' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: '#374151'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="volume" 
+                  stroke="#3B82F6" 
+                  strokeWidth={2} 
+                  dot={{ fill: '#3B82F6', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
+      {/* Volume Distribution & Scientific Recommendations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Volume Distribution */}
         {volumeDistribution.length > 0 && (
           <Card className="training-metric-card">
@@ -514,62 +513,62 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
             </CardContent>
           </Card>
         )}
-      </div>
 
-      {/* Scientific Recommendations */}
-      <Card className="training-metric-card bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200 dark:border-indigo-800">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            RP-Based Recommendations
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {/* Only show recommendations based on real data */}
-          {fatigueScore !== null && fatigueScore >= 7 && (
-            <div className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
-              <AlertTriangle className="h-4 w-4" />
-              <span>High fatigue detected - Consider deload week</span>
-            </div>
-          )}
-          {hasVolumeData && muscleGroupsAtMRV > 0 && (
-            <div className="flex items-center gap-2 text-sm text-orange-700 dark:text-orange-300">
-              <AlertTriangle className="h-4 w-4" />
-              <span>{muscleGroupsAtMRV} muscle group(s) at MRV - Reduce volume</span>
-            </div>
-          )}
-          {recoveryScore !== null && recoveryScore >= 8 && currentPhase === 'Accumulation' && (
-            <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300">
-              <CheckCircle className="h-4 w-4" />
-              <span>Excellent recovery - Can increase training volume</span>
-            </div>
-          )}
-          {trainingReadiness !== null && trainingReadiness <= 4 && (
-            <div className="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-300">
-              <Moon className="h-4 w-4" />
-              <span>Low readiness - Focus on sleep and recovery</span>
-            </div>
-          )}
-          {/* Default message when there's data but no specific recommendations */}
-          {(hasVolumeData || hasFeedbackData || hasTrainingData) && 
-           !(fatigueScore !== null && fatigueScore >= 7) && 
-           !(hasVolumeData && muscleGroupsAtMRV > 0) && 
-           !(recoveryScore !== null && recoveryScore >= 8 && currentPhase === 'Accumulation') && 
-           !(trainingReadiness !== null && trainingReadiness <= 4) && (
-            <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
-              <CheckCircle className="h-4 w-4" />
-              <span>Training progressing well - Continue current plan</span>
-            </div>
-          )}
-          {/* Message when no data is available */}
-          {!hasVolumeData && !hasFeedbackData && !hasTrainingData && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        {/* Scientific-based Recommendations */}
+        <Card className="training-metric-card bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200 dark:border-indigo-800">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              <span>Complete workouts and log feedback to receive personalized recommendations</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              Scientific-based Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {/* Only show recommendations based on real data */}
+            {fatigueScore !== null && fatigueScore >= 7 && (
+              <div className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
+                <AlertTriangle className="h-4 w-4" />
+                <span>High fatigue detected - Consider deload week</span>
+              </div>
+            )}
+            {hasVolumeData && muscleGroupsAtMRV > 0 && (
+              <div className="flex items-center gap-2 text-sm text-orange-700 dark:text-orange-300">
+                <AlertTriangle className="h-4 w-4" />
+                <span>{muscleGroupsAtMRV} muscle group(s) at MRV - Reduce volume</span>
+              </div>
+            )}
+            {recoveryScore !== null && recoveryScore >= 8 && currentPhase === 'Accumulation' && (
+              <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300">
+                <CheckCircle className="h-4 w-4" />
+                <span>Excellent recovery - Can increase training volume</span>
+              </div>
+            )}
+            {trainingReadiness !== null && trainingReadiness <= 4 && (
+              <div className="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-300">
+                <Moon className="h-4 w-4" />
+                <span>Low readiness - Focus on sleep and recovery</span>
+              </div>
+            )}
+            {/* Default message when there's data but no specific recommendations */}
+            {(hasVolumeData || hasFeedbackData || hasTrainingData) && 
+             !(fatigueScore !== null && fatigueScore >= 7) && 
+             !(hasVolumeData && muscleGroupsAtMRV > 0) && 
+             !(recoveryScore !== null && recoveryScore >= 8 && currentPhase === 'Accumulation') && 
+             !(trainingReadiness !== null && trainingReadiness <= 4) && (
+              <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+                <CheckCircle className="h-4 w-4" />
+                <span>Training progressing well - Continue current plan</span>
+              </div>
+            )}
+            {/* Message when no data is available */}
+            {!hasVolumeData && !hasFeedbackData && !hasTrainingData && (
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Activity className="h-4 w-4" />
+                <span>Complete workouts and log feedback to receive personalized recommendations</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
