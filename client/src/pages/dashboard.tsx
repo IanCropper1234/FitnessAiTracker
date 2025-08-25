@@ -425,7 +425,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   Nutrition
                 </Label>
                 <div 
-                  className="relative inline-flex h-6 w-11 scale-90 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className="relative inline-flex h-6 w-11 scale-90 cursor-pointer rounded-full p-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
                   style={{
                     backgroundColor: showTrainingOverview 
                       ? '#3B82F6'  // Blue for Training mode
@@ -436,7 +436,10 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
                   <span
                     className={`${
                       showTrainingOverview ? 'translate-x-5' : 'translate-x-0'
-                    } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                    } pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out`}
+                    style={{
+                      transform: showTrainingOverview ? 'translateX(24px)' : 'translateX(0px)'
+                    }}
                   />
                 </div>
                 <Label htmlFor="overview-toggle" className="text-caption text-gray-600 dark:text-gray-400">
