@@ -177,10 +177,16 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
   const recoveryScore = hasFeedbackData ? (feedbackAnalytics.summary.recoveryScore ?? null) : null;
   const fatigueScore = recoveryScore !== null ? (10 - recoveryScore) : null;
   
-  // Training readiness calculation using real data only
+  // Training readiness calculation using scientific methodology
   const trainingConsistency = hasComprehensiveData ? comprehensiveAnalytics.overview.trainingConsistency : null;
-  const trainingReadiness = (recoveryScore !== null && trainingConsistency !== null) 
-    ? Math.max(1, Math.min(10, recoveryScore + (trainingConsistency / 10)))
+  
+  // CORRECTED: Use recovery score as primary indicator (90%) with consistency as minor modifier (10%)
+  // This prevents score inflation and maintains scientific accuracy
+  const trainingReadiness = recoveryScore !== null 
+    ? Math.max(1, Math.min(10, 
+        recoveryScore * 0.9 + 
+        (trainingConsistency !== null ? (trainingConsistency / 100) * 1.0 : 0.5)
+      ))
     : null;
   
   // Volume landmarks summary using real data only
