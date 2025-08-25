@@ -13,7 +13,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "@/components/ObjectUploader";
-import type { UploadResult } from "@uppy/core";
 
 interface User {
   id: number;
@@ -281,14 +280,13 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     };
   };
 
-  const handleUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
-    if (result.successful && result.successful.length > 0) {
-      const uploadedFile = result.successful[0];
-      const uploadURL = uploadedFile.uploadURL;
-      
-      if (uploadURL) {
-        uploadProfilePictureMutation.mutate(uploadURL);
-      }
+  const handleUploadComplete = async (file: File) => {
+    try {
+      // Get the signed URL again to get the final upload URL
+      const { url } = await handleGetUploadParameters();
+      uploadProfilePictureMutation.mutate(url);
+    } catch (error) {
+      console.error('Error handling upload completion:', error);
     }
   };
 
