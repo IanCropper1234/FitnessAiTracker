@@ -217,6 +217,19 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // Fetch latest user data from server (instead of using prop)
+  const { data: userResponse, isLoading: userLoading } = useQuery({
+    queryKey: ['/api/user/profile'],
+    queryFn: async () => {
+      const response = await fetch('/api/user/profile');
+      if (!response.ok) throw new Error('Failed to fetch user profile');
+      return response.json();
+    }
+  });
+
+  // Use fetched user data or fallback to prop
+  const currentUser = userResponse?.user || user;
+
   // Profile picture upload mutation
   const uploadProfilePictureMutation = useMutation({
     mutationFn: async (profileImageURL: string) => {
@@ -440,14 +453,14 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                 {/* Profile Picture and Basic Info */}
                 <div className="flex items-center gap-3">
                   <div className="flex-shrink-0">
-                    {user.profileImageUrl ? (
+                    {currentUser.profileImageUrl ? (
                       <button
                         onClick={() => setShowImagePreview(true)}
                         className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer group"
                         data-testid="button-preview-profile-image"
                       >
                         <img 
-                          src={user.profileImageUrl} 
+                          src={currentUser.profileImageUrl} 
                           alt="Profile"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           data-testid="profile-image"
@@ -461,8 +474,8 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-black dark:text-white truncate">{user.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
+                    <h3 className="text-lg font-semibold text-black dark:text-white truncate">{currentUser.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{currentUser.email}</p>
                     {uploadProfilePictureMutation.isPending && (
                       <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">Uploading profile picture...</p>
                     )}
@@ -474,7 +487,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                 
                 {/* Profile Picture Actions - Separate Row */}
                 <div className="flex gap-2">
-                  {user.profileImageUrl ? (
+                  {currentUser.profileImageUrl ? (
                     <>
                       <ObjectUploader
                         maxNumberOfFiles={1}
@@ -671,9 +684,9 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
             >
               <X className="w-4 h-4 text-white" />
             </button>
-            {user.profileImageUrl && (
+            {currentUser.profileImageUrl && (
               <img 
-                src={user.profileImageUrl} 
+                src={currentUser.profileImageUrl} 
                 alt="Profile Preview"
                 className="w-full max-h-[80vh] object-contain rounded-lg"
                 data-testid="profile-image-preview"
