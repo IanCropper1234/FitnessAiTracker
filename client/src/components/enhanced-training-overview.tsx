@@ -474,7 +474,7 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
       )}
 
       {/* Volume Distribution & Scientific Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {/* Volume Distribution */}
         {volumeDistribution.length > 0 && (
           <Card className="training-metric-card">
