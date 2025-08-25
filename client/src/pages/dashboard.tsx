@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MacroChart } from "@/components/macro-chart";
-import { TrainingOverview } from "@/components/training-overview";
+import { EnhancedTrainingOverview } from "@/components/enhanced-training-overview";
 import { AnimatedPage } from "@/components/page-transition";
 import { AnimatedDashboardCard, useStaggeredAnimation } from "@/components/ui/dashboard-animations";
 
@@ -452,7 +452,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
               </div>
                 </div>
               ) : (
-                <TrainingOverview userId={user.id} date={currentDate} />
+                <EnhancedTrainingOverview userId={user.id} date={currentDate} />
               )
             ) : (
               nutritionLoading ? (
