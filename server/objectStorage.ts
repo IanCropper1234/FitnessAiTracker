@@ -174,8 +174,24 @@ export class ObjectStorageService {
     const { bucketName, objectName } = parseObjectPath(objectEntityPath);
     const bucket = objectStorageClient.bucket(bucketName);
     const objectFile = bucket.file(objectName);
-    const [exists] = await objectFile.exists();
+    
+    // Retry mechanism for eventual consistency
+    let retries = 5;
+    let exists = false;
+    
+    while (retries > 0 && !exists) {
+      [exists] = await objectFile.exists();
+      if (!exists) {
+        retries--;
+        if (retries > 0) {
+          // Wait 500ms before retrying
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+    }
+    
     if (!exists) {
+      console.error(`Object not found after retries: ${objectEntityPath}`);
       throw new ObjectNotFoundError();
     }
     return objectFile;
@@ -184,37 +200,53 @@ export class ObjectStorageService {
   normalizeObjectEntityPath(
     rawPath: string,
   ): string {
+    console.log('Normalizing object path:', rawPath);
+    
     if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+      console.log('Path does not start with googleapis.com, returning as-is');
       return rawPath;
     }
   
-    // Extract the path from the URL by removing query parameters and domain
-    const url = new URL(rawPath);
-    const rawObjectPath = url.pathname;
+    try {
+      // Extract the path from the URL by removing query parameters and domain
+      const url = new URL(rawPath);
+      const rawObjectPath = url.pathname;
+      console.log('Extracted pathname:', rawObjectPath);
   
-    let objectEntityDir = this.getPrivateObjectDir();
-    if (!objectEntityDir.endsWith("/")) {
-      objectEntityDir = `${objectEntityDir}/`;
-    }
+      let objectEntityDir = this.getPrivateObjectDir();
+      if (!objectEntityDir.endsWith("/")) {
+        objectEntityDir = `${objectEntityDir}/`;
+      }
+      console.log('Private object dir:', objectEntityDir);
   
-    // The rawObjectPath starts with /bucket-name/object-path
-    // We need to extract just the object path part
-    const pathParts = rawObjectPath.split('/');
-    if (pathParts.length < 3) {
-      return rawObjectPath;
-    }
-    
-    // Remove the first empty part and bucket name to get the object path
-    const objectPath = '/' + pathParts.slice(2).join('/');
-    
-    if (!objectPath.startsWith(objectEntityDir)) {
-      return rawObjectPath;
-    }
+      // The rawObjectPath starts with /bucket-name/object-path
+      // We need to extract just the object path part
+      const pathParts = rawObjectPath.split('/');
+      console.log('Path parts:', pathParts);
+      
+      if (pathParts.length < 3) {
+        console.log('Not enough path parts, returning raw path');
+        return rawObjectPath;
+      }
+      
+      // Remove the first empty part and bucket name to get the object path
+      const objectPath = '/' + pathParts.slice(2).join('/');
+      console.log('Extracted object path:', objectPath);
+      
+      if (!objectPath.startsWith(objectEntityDir)) {
+        console.log('Object path does not start with entity dir, returning raw path');
+        return rawObjectPath;
+      }
   
-    // Extract the entity ID from the path
-    const entityId = objectPath.slice(objectEntityDir.length);
-    const normalizedPath = `/objects/${entityId}`;
-    return normalizedPath;
+      // Extract the entity ID from the path
+      const entityId = objectPath.slice(objectEntityDir.length);
+      const normalizedPath = `/objects/${entityId}`;
+      console.log('Final normalized path:', normalizedPath);
+      return normalizedPath;
+    } catch (error) {
+      console.error('Error normalizing path:', error);
+      return rawPath;
+    }
   }
 
   // Tries to set the ACL policy for the object entity and return the normalized path.
