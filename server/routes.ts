@@ -17,6 +17,7 @@ import { MesocyclePeriodization } from "./services/mesocycle-periodization";
 import { TemplateEngine } from "./services/template-engine";
 import { LoadProgression } from "./services/load-progression";
 import { AnalyticsService } from "./services/analytics-service";
+import { SciAlgorithmCore } from "./services/scientific-algorithm-core";
 import analyticsRoutes from "./routes/analytics-simple.js";
 import aiRoutes from "./routes/ai.js";
 import aiMonitoringRoutes from "./routes/ai-monitoring.js";
@@ -3228,12 +3229,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get volume landmarks for user
+  // Get volume landmarks for user with real-time current volume calculation
   app.get("/api/training/volume-landmarks", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
+      
+      // Get base landmarks from storage
       const landmarks = await storage.getVolumeLandmarks(userId);
-      res.json(landmarks);
+      
+      // Calculate real-time current volume for each muscle group from actual completed workouts
+      const enhancedLandmarks = await Promise.all(landmarks.map(async (landmark) => {
+        try {
+          // Calculate actual current volume from recent sessions (last 7 days)
+          const actualCurrentVolume = await SciAlgorithmCore.calculateMuscleGroupVolume(
+            landmark.muscleGroupId,
+            userId,
+            7 // last 7 days
+          );
+          
+          return {
+            ...landmark,
+            currentVolume: actualCurrentVolume, // Use real-time calculated volume
+            storedCurrentVolume: landmark.currentVolume // Keep original for comparison
+          };
+        } catch (error) {
+          console.error(`Error calculating volume for muscle group ${landmark.muscleGroupId}:`, error);
+          return landmark; // Fallback to original data
+        }
+      }));
+      
+      res.json(enhancedLandmarks);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
