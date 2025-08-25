@@ -459,7 +459,8 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
                       backgroundColor: 'rgba(255, 255, 255, 0.95)', 
                       border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      fontSize: '12px'
+                      fontSize: '12px',
+                      color: '#374151'
                     }}
                   />
                   <Line 
@@ -504,7 +505,8 @@ export function EnhancedTrainingOverview({ userId, date }: EnhancedTrainingOverv
                       backgroundColor: 'rgba(255, 255, 255, 0.95)', 
                       border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      fontSize: '12px'
+                      fontSize: '12px',
+                      color: '#374151'
                     }}
                   />
                 </PieChart>
