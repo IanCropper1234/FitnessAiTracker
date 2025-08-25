@@ -3234,16 +3234,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.userId;
       
-      // Get base landmarks from storage
-      const landmarks = await storage.getVolumeLandmarks(userId);
+      // Get landmarks with muscle group names using proper database join
+      const landmarksWithNames = await db
+        .select({
+          id: volumeLandmarks.id,
+          userId: volumeLandmarks.userId,
+          muscleGroupId: volumeLandmarks.muscleGroupId,
+          muscleGroupName: muscleGroups.name, // Get actual muscle group name
+          mev: volumeLandmarks.mev,
+          mav: volumeLandmarks.mav,
+          mrv: volumeLandmarks.mrv,
+          currentVolume: volumeLandmarks.currentVolume,
+          targetVolume: volumeLandmarks.targetVolume,
+          recoveryLevel: volumeLandmarks.recoveryLevel,
+          adaptationLevel: volumeLandmarks.adaptationLevel,
+          lastUpdated: volumeLandmarks.lastUpdated,
+          createdAt: volumeLandmarks.createdAt
+        })
+        .from(volumeLandmarks)
+        .innerJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
+        .where(eq(volumeLandmarks.userId, parseInt(userId)));
       
       // Calculate real-time current volume for each muscle group from actual completed workouts
-      const enhancedLandmarks = await Promise.all(landmarks.map(async (landmark) => {
+      const enhancedLandmarks = await Promise.all(landmarksWithNames.map(async (landmark) => {
         try {
           // Calculate actual current volume from recent sessions (last 7 days)
           const actualCurrentVolume = await SciAlgorithmCore.calculateMuscleGroupVolume(
             landmark.muscleGroupId,
-            userId,
+            parseInt(userId),
             7 // last 7 days
           );
           
@@ -3260,6 +3278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(enhancedLandmarks);
     } catch (error: any) {
+      console.error('Volume landmarks error:', error);
       res.status(400).json({ message: error.message });
     }
   });
