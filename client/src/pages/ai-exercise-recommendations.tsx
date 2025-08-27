@@ -785,10 +785,10 @@ export default function CreateAIWorkoutSession() {
                             onClick={() => handleSaveAllExercisesToTemplate()}
                             variant="default"
                             size="sm"
-                            className="text-xs"
+                            className="text-xs whitespace-nowrap"
                           >
-                            <Save className="h-3 w-3 mr-2" />
-                            Save All as Template
+                            <Save className="h-3 w-3 mr-1" />
+                            Save All
                           </Button>
                         )}
                       </div>
