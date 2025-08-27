@@ -65,7 +65,7 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
     provider: 'openai', 
     version: '2024-07-18',
     maxTokens: 2000,
-    temperature: 0.7, // Standard temperature for gpt-5-mini
+    temperature: 1, // gpt-5-mini only supports default temperature (1)
     capabilities: {
       vision: true,
       jsonMode: true,

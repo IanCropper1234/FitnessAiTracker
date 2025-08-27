@@ -344,7 +344,7 @@ Return only valid JSON with all required fields.`
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = userId ? 
       selectModelForUser('multiImageNutrition', userId) : 
-      { name: 'gpt-5-mini', temperature: 0.7, maxTokens: 1500, costPerToken: { input: 0.00000025, output: 0.000002 } };
+      { name: 'gpt-5-mini', temperature: 1, maxTokens: 1500, costPerToken: { input: 0.00000025, output: 0.000002 } };
     
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' && userId ? 
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
@@ -390,7 +390,7 @@ Return only valid JSON with all required fields.`
             }
           ],
           max_completion_tokens: modelConfig.maxTokens,
-          temperature: modelConfig.temperature,
+          // temperature: modelConfig.temperature, // gpt-5-mini only supports default temperature
           response_format: { type: "json_object" }
         });
 
@@ -424,7 +424,7 @@ Return only valid JSON with all required fields.`
           }
         ],
         max_completion_tokens: modelConfig.maxTokens,
-        temperature: modelConfig.temperature,
+        // temperature: modelConfig.temperature, // gpt-5-mini only supports default temperature
         response_format: { type: "json_object" }
       });
 
@@ -773,7 +773,7 @@ Goal: Deliver the most comprehensive, accurate nutritional analysis possible, wi
         }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.1 // Low temperature for consistent nutritional data
+      // temperature: 0.1, // gpt-5-mini only supports default temperature
     });
 
     const responseContent = response.choices[0].message.content;
@@ -982,7 +982,7 @@ export async function generateWeeklyWorkoutPlan(
       model: "gpt-5-mini", // Using gpt-5-mini for optimal cost efficiency
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
-      temperature: 0.7,
+      // temperature: 0.7, // gpt-5-mini only supports default temperature
       max_completion_tokens: 4000,
     });
 
