@@ -336,6 +336,19 @@ Return only valid JSON with all required fields.`
     console.log(`Making OpenAI API call with ${messageContent.length} content items...`);
     console.log('Content types:', messageContent.map((item: any) => ({ type: item.type, hasUrl: !!item.image_url })));
     
+    // Debug: Log the actual prompt being sent to AI
+    if (!hasImages && messageContent[0]?.text) {
+      const promptText = messageContent[0].text;
+      const contextMatch = promptText.match(/with context: "([^"]+)"/);
+      console.log('🔍 AI Prompt Debug:', {
+        hasDescription: !!foodDescription,
+        descriptionValue: foodDescription || '(empty)',
+        contextInPrompt: contextMatch ? contextMatch[1] : '(no context found)',
+        primaryInput: foodName || foodDescription,
+        promptSnippet: promptText.substring(0, 200) + '...'
+      });
+    }
+    
     // Validate image URLs before API call
     if (hasImages) {
       images.forEach((image, index) => {
