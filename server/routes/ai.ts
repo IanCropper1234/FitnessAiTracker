@@ -19,6 +19,16 @@ router.post('/exercise-recommendations', async (req, res) => {
     const { userGoals, currentExercises, trainingHistory, muscleGroupFocus, experienceLevel, availableEquipment, timeConstraints, injuryRestrictions } = req.body;
     const userId = req.userId;
 
+    // Debug logging
+    console.log('AI Exercise Recommendations Request:');
+    console.log('- User Goals:', userGoals);
+    console.log('- Muscle Group Focus:', muscleGroupFocus);
+    console.log('- Experience Level:', experienceLevel);
+    console.log('- Available Equipment:', availableEquipment);
+    console.log('- Current Exercises count:', currentExercises?.length || 0);
+    console.log('- Current Exercises sample:', currentExercises?.slice(0, 3)?.map((ex: any) => ({ name: ex.name, category: ex.category })) || 'None');
+    console.log('- Training History count:', trainingHistory?.length || 0);
+
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = selectModelForUser('exerciseRecommendations', userId);
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
@@ -48,7 +58,9 @@ router.post('/exercise-recommendations', async (req, res) => {
     **Available Equipment**: ${availableEquipment?.join(', ') || 'Full gym'}
     
     **CRITICAL CONSTRAINT: You MUST only recommend exercises from the following available exercise library. Do NOT create new exercise names - only select from this exact list:**
-    ${currentExercises?.map((ex: any) => `- "${ex.name}" (ID: ${ex.id}, Category: ${ex.category}, Targets: ${ex.muscleGroups?.join(', ') || ex.primaryMuscle})`).join('\n') || 'No exercises available'}
+    ${currentExercises?.length > 0 ? 
+      currentExercises.map((ex: any) => `- "${ex.name}" (ID: ${ex.id}, Category: ${ex.category}, Targets: ${ex.muscleGroups?.join(', ') || ex.primaryMuscle})`).join('\n') : 
+      'No exercises available - this is likely an error, please use basic compound movements like Squats, Deadlifts, Bench Press, Pull-ups, Rows'}
     
     **IMPORTANT**: Use the EXACT exercise names as listed above. Do not modify, abbreviate, or create variations of these names.
     
