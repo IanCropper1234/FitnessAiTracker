@@ -616,7 +616,7 @@ export function CreateWorkoutSession() {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="space-y-4">
+                <CardContent className="p-5 space-y-4 pl-[5px] pr-[5px] pt-[5px] pb-[5px]">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label>Sets</Label>
