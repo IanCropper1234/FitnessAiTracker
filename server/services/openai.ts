@@ -425,7 +425,7 @@ Return only valid JSON with all required fields.`
             content: `Analyze nutrition for chicken breast for 1 serving. Return JSON with: calories (number), protein (number), carbs (number), fat (number), confidence (0-1), category (string), mealSuitability (array), assumptions (string), servingDetails (string), portionWeight (number), portionUnit (string), ingredientBreakdown (array), micronutrients (object), nutritionValidation (string).`
           }
         ],
-        max_completion_tokens: modelConfig.maxTokens,
+        max_completion_tokens: 4000, // Increase tokens for reasoning model
         // temperature: 0.7, // gpt-5-mini may not support custom temperature
         response_format: { type: "json_object" }
       });
