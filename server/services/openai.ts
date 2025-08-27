@@ -414,32 +414,19 @@ Return only valid JSON with all required fields.`
       // Direct call for unauthenticated users or legacy usage
       console.log("Making OpenAI API call with model:", modelConfig.name);
       
-      // Temporarily use a known working model for testing
-      const testModel = "gpt-4o-mini";
-      console.log("Using test model:", testModel);
+      // Test gpt-5-mini specifically
+      console.log("Testing gpt-5-mini directly...");
       
       const response = await openai.chat.completions.create({
-        model: testModel,
+        model: "gpt-5-mini",
         messages: [
           {
-            role: "system",
-            content: systemPrompt
-          },
-          {
             role: "user",
-            content: messageContent
-          },
-          {
-            role: "assistant",
-            content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
-          },
-          {
-            role: "user", 
-            content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+            content: `Analyze nutrition for chicken breast for 1 serving. Return JSON with: calories (number), protein (number), carbs (number), fat (number), confidence (0-1), category (string), mealSuitability (array), assumptions (string), servingDetails (string), portionWeight (number), portionUnit (string), ingredientBreakdown (array), micronutrients (object), nutritionValidation (string).`
           }
         ],
         max_completion_tokens: modelConfig.maxTokens,
-        temperature: 0.7, // Use a reasonable temperature for testing
+        // temperature: 0.7, // gpt-5-mini may not support custom temperature
         response_format: { type: "json_object" }
       });
 
