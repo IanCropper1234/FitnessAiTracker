@@ -44,6 +44,22 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
       output: 0.000015, // $15 per 1M output tokens
     }
   },
+  'gpt-4o-mini': {
+    name: 'gpt-4o-mini',
+    provider: 'openai',
+    version: '2024-07-18',
+    maxTokens: 2000,
+    temperature: 0.7,
+    capabilities: {
+      vision: true,
+      jsonMode: true,
+      functionCalling: true,
+    },
+    costPerToken: {
+      input: 0.00000015, // $0.15 per 1M input tokens
+      output: 0.0000006, // $0.6 per 1M output tokens
+    }
+  },
   'gpt-5-mini': {
     name: 'gpt-5-mini',
     provider: 'openai', 
@@ -62,21 +78,21 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
   }
 };
 
-// Environment-based configuration with GPT-5-mini as default
+// Environment-based configuration with GPT-4o-mini as default
 export const getAIConfig = (): AIServiceConfig => {
   // Allow per-service model override via environment variables
-  const exerciseModel = process.env.AI_MODEL_EXERCISE || process.env.AI_MODEL || 'gpt-5-mini';
-  const nutritionModel = process.env.AI_MODEL_NUTRITION || process.env.AI_MODEL || 'gpt-5-mini';
-  const foodAnalysisModel = process.env.AI_MODEL_FOOD || process.env.AI_MODEL || 'gpt-5-mini';
-  const programOptimizationModel = process.env.AI_MODEL_PROGRAM || process.env.AI_MODEL || 'gpt-5-mini';
-  const multiImageModel = process.env.AI_MODEL_MULTI_IMAGE || process.env.AI_MODEL || 'gpt-5-mini';
+  const exerciseModel = process.env.AI_MODEL_EXERCISE || process.env.AI_MODEL || 'gpt-4o-mini';
+  const nutritionModel = process.env.AI_MODEL_NUTRITION || process.env.AI_MODEL || 'gpt-4o-mini';
+  const foodAnalysisModel = process.env.AI_MODEL_FOOD || process.env.AI_MODEL || 'gpt-4o-mini';
+  const programOptimizationModel = process.env.AI_MODEL_PROGRAM || process.env.AI_MODEL || 'gpt-4o-mini';
+  const multiImageModel = process.env.AI_MODEL_MULTI_IMAGE || process.env.AI_MODEL || 'gpt-4o-mini';
 
   return {
-    exerciseRecommendations: AI_MODELS[exerciseModel] || AI_MODELS['gpt-5-mini'],
-    nutritionAnalysis: AI_MODELS[nutritionModel] || AI_MODELS['gpt-5-mini'],
-    foodAnalysis: AI_MODELS[foodAnalysisModel] || AI_MODELS['gpt-5-mini'],
-    programOptimization: AI_MODELS[programOptimizationModel] || AI_MODELS['gpt-5-mini'],
-    multiImageNutrition: AI_MODELS[multiImageModel] || AI_MODELS['gpt-5-mini'],
+    exerciseRecommendations: AI_MODELS[exerciseModel] || AI_MODELS['gpt-4o-mini'],
+    nutritionAnalysis: AI_MODELS[nutritionModel] || AI_MODELS['gpt-4o-mini'],
+    foodAnalysis: AI_MODELS[foodAnalysisModel] || AI_MODELS['gpt-4o-mini'],
+    programOptimization: AI_MODELS[programOptimizationModel] || AI_MODELS['gpt-4o-mini'],
+    multiImageNutrition: AI_MODELS[multiImageModel] || AI_MODELS['gpt-4o-mini'],
   };
 };
 
@@ -98,8 +114,8 @@ export const getABTestConfig = (): ABTestConfig => {
   return {
     enabled,
     testName,
-    controlModel: process.env.AI_AB_CONTROL_MODEL || 'gpt-4o',
-    testModel: process.env.AI_AB_TEST_MODEL || 'gpt-5-mini',
+    controlModel: process.env.AI_AB_CONTROL_MODEL || 'gpt-4o-mini',
+    testModel: process.env.AI_AB_TEST_MODEL || 'gpt-4o-mini',
     trafficSplit: Math.max(0, Math.min(1, trafficSplit)),
     excludeUserIds: process.env.AI_AB_EXCLUDE_USERS ? 
       process.env.AI_AB_EXCLUDE_USERS.split(',') : []
