@@ -35,86 +35,52 @@ router.post('/exercise-recommendations', async (req, res) => {
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
       undefined;
 
-    const systemPrompt = `You are an expert evidence-based fitness coach specializing in scientific exercise selection and program design. Your expertise includes:
+    const systemPrompt = `You are an expert fitness coach. You MUST always respond with valid JSON containing a recommendations array with at least 4 exercises.
 
-    1. **Volume Landmarks**: Understanding MV, MEV, MAV, and MRV for all muscle groups
-    2. **Fatigue Management**: Balancing stimulus and recovery based on RPE and fatigue indicators
-    3. **Exercise Selection Principles**: Choosing exercises based on:
-       - Muscle length-tension relationships
-       - Training specificity to goals
-       - Individual biomechanics and limitations
-       - Progressive overload potential
-       - Fatigue cost vs. stimulus ratio
-    4. **Special Training Methods**: When and how to implement MyoReps, Drop Sets, Giant Sets
-    5. **Periodization**: Structuring volume progression throughout mesocycles
-
-    Always provide evidence-based recommendations with clear reasoning rooted in scientific methodology.`;
-
-    const userPrompt = `Based on the following user data, provide intelligent exercise recommendations following evidence-based scientific methodology:
-
-    **User Goals**: ${userGoals?.join(', ') || 'General fitness'}
-    **Experience Level**: ${experienceLevel || 'intermediate'}
-    **Muscle Group Focus**: ${muscleGroupFocus?.join(', ') || 'Full body'}
-    **Available Equipment**: ${availableEquipment?.join(', ') || 'Full gym'}
-    
-    **CRITICAL CONSTRAINT: You MUST only recommend exercises from the following available exercise library. Do NOT create new exercise names - only select from this exact list:**
-    ${currentExercises?.length > 0 ? 
-      currentExercises.map((ex: any) => `- "${ex.name}" (ID: ${ex.id}, Category: ${ex.category}, Targets: ${ex.muscleGroups?.join(', ') || ex.primaryMuscle})`).join('\n') : 
-      'No exercises available - this is likely an error, please use basic compound movements like Squats, Deadlifts, Bench Press, Pull-ups, Rows'}
-    
-    **IMPORTANT**: Use the EXACT exercise names as listed above. Do not modify, abbreviate, or create variations of these names.
-    
-    **Training History & Performance**:
-    ${trainingHistory?.map((hist: any) => 
-      `- ${hist.exerciseName}: Last ${hist.lastWeight}kg x ${hist.lastReps} reps, Progress: ${hist.progressRate}%/week, Fatigue: ${hist.fatigueLevel}/10`
-    ).join('\n') || 'No training history provided'}
-    
-    ${timeConstraints ? `**Time Constraints**: ${timeConstraints.sessionDuration} min sessions, ${timeConstraints.sessionsPerWeek}x per week` : ''}
-    ${injuryRestrictions ? `**Injury Restrictions**: ${Array.isArray(injuryRestrictions) ? injuryRestrictions.join(', ') : injuryRestrictions}` : ''}
-
-    Please analyze this data and provide:
-    1. **MANDATORY**: You MUST provide exactly 4-6 specific exercise recommendations SELECTED ONLY from the exercise library above
-    2. **MUSCLE GROUP COVERAGE**: Ensure exercises target ALL requested muscle groups: ${muscleGroupFocus?.join(', ') || 'Full body'}
-    3. Science-based reasoning for each recommendation explaining muscle group targeting
-    4. Optimal set/rep ranges based on scientific guidelines
-    5. Special training method suggestions where appropriate
-    6. Volume progression considerations
-
-    **CRITICAL REQUIREMENTS**:
-    - You MUST include at least 4 exercises in your recommendations array
-    - You MUST provide exercises that target ALL the requested muscle groups: ${muscleGroupFocus?.join(', ') || 'Full body'}
-    - Distribute exercises across all requested muscle groups (aim for 1-2 exercises per muscle group)
-    - Only use exercise names that appear EXACTLY in the exercise library list above
-    - Do not create new exercises or modify existing names
-    - If you cannot find suitable exercises, select the closest matches and explain in reasoning
-
-    **RESPONSE FORMAT**: You MUST respond with valid JSON in exactly this structure. The recommendations array MUST contain at least 4 exercises:
+    Your response MUST follow this exact format:
     {
       "recommendations": [
         {
-          "exerciseName": "string (MUST match exactly from the exercise library)",
-          "category": "string",
-          "primaryMuscle": "string", 
-          "muscleGroups": ["string"],
-          "equipment": "string",
-          "difficulty": "beginner|intermediate|advanced",
-          "sets": number,
-          "reps": "string (e.g., '6-8', '8-12')",
-          "restPeriod": number,
-          "reasoning": "string - Science-based explanation",
-          "progressionNotes": "string - how to progress this exercise",
-          "specialMethod": "myorepMatch|myorepNoMatch|dropSet|giant_set|null",
-          "specialConfig": object or null,
-          "rpIntensity": number (1-10 RPE scale),
-          "volumeContribution": number (sets contributing to muscle group MEV)
+          "exerciseName": "exact name from exercise library",
+          "category": "push/pull/legs",
+          "primaryMuscle": "muscle name",
+          "muscleGroups": ["muscle1", "muscle2"],
+          "equipment": "equipment type",
+          "difficulty": "beginner/intermediate/advanced",
+          "sets": 3,
+          "reps": "8-12",
+          "restPeriod": 90,
+          "reasoning": "scientific explanation",
+          "progressionNotes": "how to progress",
+          "specialMethod": null,
+          "specialConfig": null,
+          "rpIntensity": 8,
+          "volumeContribution": 3
         }
       ],
-      "reasoning": "string - overall program logic explaining exercise selection",
-      "rpConsiderations": "string - RP-specific insights and methodology",
-      "progressionPlan": "string - how to integrate and progress over time"
-    }
+      "reasoning": "overall analysis",
+      "rpConsiderations": "evidence-based insights", 
+      "progressionPlan": "progression strategy"
+    }`;
 
-    **FINAL CHECK**: Before responding, ensure your recommendations array contains at least 4 exercises that exactly match names from the exercise library.`;
+    const userPrompt = `RESPOND WITH VALID JSON ONLY.
+
+    User Request:
+    - Goals: ${userGoals?.join(', ') || 'Muscle Hypertrophy'}
+    - Muscle Focus: ${muscleGroupFocus?.join(', ') || 'Full body'}
+    - Experience: ${experienceLevel || 'intermediate'}
+    - Equipment: ${availableEquipment?.join(', ') || 'Full gym'}
+
+    Exercise Library (MUST use exact names):
+    ${currentExercises?.slice(0, 50).map((ex: any) => `"${ex.name}"`).join(', ') || 'Bench Press, Squats, Deadlifts, Pull-ups, Rows'}
+
+    Requirements:
+    1. MUST return JSON with "recommendations" array containing exactly 4-5 exercises
+    2. MUST use exact exercise names from library above
+    3. MUST target muscle groups: ${muscleGroupFocus?.join(', ') || 'all'}
+    4. Each exercise needs: exerciseName, category, primaryMuscle, muscleGroups, equipment, difficulty, sets, reps, restPeriod, reasoning, progressionNotes, specialMethod, specialConfig, rpIntensity, volumeContribution
+
+    Respond with JSON only - no other text.`;
 
     // Monitor AI call performance
     const result = await monitorAICall({
@@ -142,8 +108,23 @@ router.post('/exercise-recommendations', async (req, res) => {
       }
 
       const response = await openai.chat.completions.create(params);
-
-      const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
+      
+      console.log('Raw AI response content:', response.choices[0].message.content);
+      
+      let aiResponse;
+      try {
+        aiResponse = JSON.parse(response.choices[0].message.content || '{}');
+      } catch (parseError) {
+        console.error('JSON parsing error:', parseError);
+        console.error('Raw content that failed to parse:', response.choices[0].message.content);
+        // Return a fallback response
+        aiResponse = {
+          recommendations: [],
+          reasoning: "Failed to parse AI response",
+          rpConsiderations: "Error in AI processing",
+          progressionPlan: "Please try again"
+        };
+      }
       
       // Validate and ensure we have recommendations
       const recommendations = aiResponse.recommendations || [];
