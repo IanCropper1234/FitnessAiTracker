@@ -207,19 +207,28 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   // Initialize workout data from session
   useEffect(() => {
     if (session?.exercises) {
-      // Removed excessive logging for better performance
+      // CRITICAL: Preserve existing completed sets during session updates (like reordering)
+      console.log('🔄 Session update detected, preserving existing workout data...');
       
       const initialData: Record<number, WorkoutSet[]> = {};
       const initialSpecialMethods: Record<number, string | null> = {};
       const initialSpecialConfigs: Record<number, any> = {};
       
       session.exercises.forEach(exercise => {
-        if (exercise.setsData && exercise.setsData.length > 0) {
+        // CRITICAL: Check if we already have workout data for this exercise
+        const existingWorkoutData = workoutData[exercise.id];
+        const hasCompletedSets = existingWorkoutData?.some(set => set.completed);
+        
+        if (hasCompletedSets) {
+          // PRESERVE existing workout data if there are completed sets
+          console.log(`💾 Preserving completed sets for exercise ${exercise.id}:`, existingWorkoutData);
+          initialData[exercise.id] = existingWorkoutData;
+        } else if (exercise.setsData && exercise.setsData.length > 0) {
           // Restore from saved sets data
           // Restoring saved sets data
           initialData[exercise.id] = exercise.setsData;
         } else {
-          // Create default sets
+          // Create default sets only if no existing data
           const targetRepsNum = parseInt(exercise.targetReps.split('-')[0]) || 8;
           const defaultSets: WorkoutSet[] = [];
           
@@ -336,11 +345,23 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       
       // Workout data initialization complete
       
-      setWorkoutData(initialData);
-      setSpecialMethods(initialSpecialMethods);
-      setSpecialConfigs(initialSpecialConfigs);
+      // Only update if there are actual changes to prevent unnecessary re-renders
+      const hasChanges = session.exercises.some(exercise => {
+        const existingData = workoutData[exercise.id];
+        const newData = initialData[exercise.id];
+        return !existingData || JSON.stringify(existingData) !== JSON.stringify(newData);
+      });
+      
+      if (hasChanges) {
+        console.log('📝 Updating workout data with changes preserved');
+        setWorkoutData(initialData);
+        setSpecialMethods(initialSpecialMethods);
+        setSpecialConfigs(initialSpecialConfigs);
+      } else {
+        console.log('✅ No changes detected, keeping existing workout data');
+      }
     }
-  }, [session]);
+  }, [session, Object.keys(workoutData).length]); // Only depend on the number of exercises, not their content
 
   // Initialize weightUnit from user profile and body metrics
   const { data: userProfile } = useQuery({
@@ -1312,19 +1333,25 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleExercisesReorder = (newOrder: WorkoutExercise[]) => {
-    console.log('WorkoutExecutionV2 handleExercisesReorder called');
+    console.log('🔄 WorkoutExecutionV2 handleExercisesReorder called');
     console.log('Current exercises before reorder:', session?.exercises?.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
     console.log('New order received:', newOrder.map(ex => ({ id: ex.id, exerciseId: ex.exerciseId, orderIndex: ex.orderIndex })));
+    console.log('🔍 Current workoutData before reorder:', workoutData);
     
     // Set reordering flag to prevent automatic refetch
     setIsReordering(true);
+    
+    // CRITICAL: Backup and preserve workoutData during reordering
+    // Even though exercise IDs don't change, we want to ensure data integrity
+    const workoutDataBackup = { ...workoutData };
+    console.log('💾 Backup created for workoutData:', workoutDataBackup);
     
     // Update the current exercise index to match the reordered list
     const currentExerciseId = currentExercise?.id;
     if (currentExerciseId) {
       const newIndex = newOrder.findIndex(ex => ex.id === currentExerciseId);
       if (newIndex !== -1 && newIndex !== currentExerciseIndex) {
-        console.log(`Updating current exercise index from ${currentExerciseIndex} to ${newIndex}`);
+        console.log(`🎯 Updating current exercise index from ${currentExerciseIndex} to ${newIndex}`);
         setCurrentExerciseIndex(newIndex);
       }
     }
@@ -1339,11 +1366,41 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       };
     });
     
-    // Clear reordering flag after a delay to allow manual refetch if needed
+    // Verify workoutData integrity after reorder
     setTimeout(() => {
+      console.log('✅ Verifying workoutData integrity after reorder...');
+      console.log('Current workoutData:', workoutData);
+      
+      // Check if any completed sets were lost
+      let dataLoss = false;
+      Object.keys(workoutDataBackup).forEach(exerciseId => {
+        const backupSets = workoutDataBackup[exerciseId];
+        const currentSets = workoutData[exerciseId];
+        
+        if (backupSets && currentSets) {
+          const backupCompletedSets = backupSets.filter(set => set.completed);
+          const currentCompletedSets = currentSets.filter(set => set.completed);
+          
+          if (backupCompletedSets.length !== currentCompletedSets.length) {
+            console.error(`❌ Data loss detected for exercise ${exerciseId}:`, {
+              before: backupCompletedSets.length,
+              after: currentCompletedSets.length
+            });
+            dataLoss = true;
+          }
+        }
+      });
+      
+      if (dataLoss) {
+        console.log('🚨 Restoring workoutData from backup...');
+        setWorkoutData(workoutDataBackup);
+      } else {
+        console.log('✅ No data loss detected. WorkoutData preserved successfully.');
+      }
+      
       setIsReordering(false);
       console.log('Reordering flag cleared, automatic queries re-enabled');
-    }, 5000); // 5 second delay to ensure reorder operation is stable
+    }, 1000); // Reduced delay and added verification
     
     console.log('Local exercises state and cache updated');
   };
