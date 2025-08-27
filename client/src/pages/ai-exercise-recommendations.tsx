@@ -698,7 +698,7 @@ export default function CreateAIWorkoutSession() {
                 <div className="p-4 bg-green-500/10 border border-green-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <Target className="h-4 w-4 text-green-400" />
-                      <span className="text-sm font-medium text-green-400">RP Methodology Insights</span>
+                      <span className="text-sm font-medium text-green-400">Science Based Methodology Insights</span>
                     </div>
                     <p className="text-xs text-green-300">{recommendationMutation.data.rpConsiderations}</p>
                 </div>
