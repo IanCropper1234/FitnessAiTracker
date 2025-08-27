@@ -3,7 +3,6 @@ import OpenAI from 'openai';
 import { selectModelForUser } from '../config/ai-config';
 import { monitorAICall, aiPerformanceMonitor } from '../services/ai-performance-monitor';
 import { promptRegistry } from '../services/ai-prompt-registry';
-import { GPT5Adapter } from '../services/gpt5-adapter';
 
 const router = Router();
 
@@ -13,9 +12,6 @@ const router = Router();
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// Initialize GPT5 Adapter
-const gpt5Adapter = new GPT5Adapter(openai);
 
 // AI Exercise Recommendations
 router.post('/exercise-recommendations', async (req, res) => {
@@ -109,14 +105,18 @@ router.post('/exercise-recommendations', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await gpt5Adapter.createCompletion({
-        model: modelConfig,
-        systemPrompt,
-        userPrompt,
-        responseFormat: { type: "json_object" }
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
       });
 
-      const aiResponse = JSON.parse(response.content || '{}');
+      const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
       
       return {
         recommendations: aiResponse.recommendations || [],
@@ -292,13 +292,47 @@ router.post('/nutrition-analysis', async (req, res) => {
     4. Include data quality warnings in your insights when appropriate
     5. Adjust your overall rating to reflect data quality (lower scores for incomplete data)
 
-    Provide a comprehensive nutrition analysis including:
-    1. Overall Rating (1-10 scale)
-    2. Macronutrient Status (protein, carbs, fats)
-    3. Key Micronutrient Findings
-    4. RDA Comparison Summary
-    5. Personalized Insights and Recommendations
-    6. Next Steps for Improvement`;
+    Provide a comprehensive analysis in JSON format:
+    {
+      "overallRating": number (1-10 scale, adjusted based on data quality),
+      "dataQuality": {
+        "completenessScore": number (0-100),
+        "reliabilityNote": "string - explanation of data limitations",
+        "recommendedActions": ["string - suggestions for improving data quality"]
+      },
+      "macronutrientAnalysis": {
+        "proteinStatus": "string",
+        "carbStatus": "string", 
+        "fatStatus": "string"
+      },
+      "micronutrientAnalysis": [
+        {
+          "nutrient": "string",
+          "currentIntake": number,
+          "recommendedIntake": number,
+          "unit": "string",
+          "status": "deficient|adequate|excessive",
+          "healthImpact": "string",
+          "foodSources": ["string"],
+          "supplementRecommendation": "string or null"
+        }
+      ],
+      "rdaComparison": {
+        "meetsRDA": ["string"],
+        "belowRDA": ["string"],
+        "exceedsRDA": ["string"]
+      },
+      "personalizedInsights": [
+        {
+          "category": "string",
+          "insight": "string",
+          "actionItems": ["string"],
+          "priority": "low|medium|high"
+        }
+      ],
+      "supplementationAdvice": ["string"],
+      "nextSteps": ["string"]
+    }`;
 
     // Monitor AI call performance
     const result = await monitorAICall({
@@ -310,50 +344,23 @@ router.post('/nutrition-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      // Temporarily remove JSON format requirement for GPT-5-mini testing
-      const responseFormat = modelConfig.name.includes('gpt-5') ? undefined : { type: "json_object" };
-      
-      const response = await gpt5Adapter.createCompletion({
-        model: modelConfig,
-        systemPrompt,
-        userPrompt,
-        responseFormat
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
       });
 
-      console.log(`Nutrition Analysis Response - Model: ${modelConfig.name}, Content length: ${response.content?.length || 0}`);
-
-      if (!response.content || response.content.trim() === '') {
-        throw new Error(`Empty response from AI (${modelConfig.name}). This might be a model configuration issue.`);
+      const responseContent = response.choices[0].message.content;
+      if (!responseContent) {
+        throw new Error('Empty response from AI');
       }
 
-      // For GPT-5-mini, return text response as a simple object
-      if (modelConfig.name.includes('gpt-5')) {
-        return {
-          overallRating: 7,
-          textAnalysis: response.content,
-          macronutrientAnalysis: {
-            proteinStatus: "Analysis provided in text format",
-            carbStatus: "Analysis provided in text format",
-            fatStatus: "Analysis provided in text format"
-          },
-          personalizedInsights: [
-            {
-              category: "AI Analysis",
-              insight: response.content,
-              actionItems: ["Review the detailed analysis above"],
-              priority: "medium"
-            }
-          ],
-          nextSteps: ["Review the comprehensive analysis provided"]
-        };
-      }
-
-      try {
-        return JSON.parse(response.content);
-      } catch (parseError) {
-        console.error('Failed to parse JSON response:', response.content.substring(0, 500));
-        throw new Error(`Invalid JSON response from AI: ${parseError.message}`);
-      }
+      return JSON.parse(responseContent);
     });
 
     res.json(result);
@@ -423,31 +430,29 @@ router.post('/food-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const messages = [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: userPrompt },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${image}`
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: userPrompt },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${image}`
+                }
               }
-            }
-          ]
-        }
-      ];
-
-      const response = await gpt5Adapter.createCompletion({
-        model: modelConfig,
-        systemPrompt,
-        userPrompt,
-        messages,
-        responseFormat: { type: "json_object" }
+            ]
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
       });
 
-      return JSON.parse(response.content || '{}');
+      return JSON.parse(response.choices[0].message.content || '{}');
     });
 
     res.json(result);
@@ -503,14 +508,18 @@ router.post('/program-optimization', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await gpt5Adapter.createCompletion({
-        model: modelConfig,
-        systemPrompt,
-        userPrompt,
-        responseFormat: { type: "json_object" }
+      const response = await openai.chat.completions.create({
+        model: modelConfig.name,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: modelConfig.temperature,
+        max_tokens: modelConfig.maxTokens
       });
 
-      return JSON.parse(response.content || '{}');
+      return JSON.parse(response.choices[0].message.content || '{}');
     });
 
     res.json(result);
@@ -519,37 +528,6 @@ router.post('/program-optimization', async (req, res) => {
     console.error('Error analyzing program:', error);
     res.status(500).json({ 
       message: 'Failed to analyze program',
-      error: error.message 
-    });
-  }
-});
-
-// Test endpoint for GPT-5-mini
-router.post('/test-gpt5', async (req, res) => {
-  try {
-    const gpt5Adapter = new GPT5Adapter();
-    const modelConfig = AI_MODELS['gpt-5-mini'];
-    
-    const response = await gpt5Adapter.createCompletion({
-      model: modelConfig,
-      systemPrompt: "You are a helpful assistant.",
-      userPrompt: "Say hello and explain what you are in 1-2 sentences.",
-      responseFormat: undefined
-    });
-
-    console.log(`GPT-5-mini test - Content length: ${response.content?.length || 0}`);
-    console.log(`GPT-5-mini test - Content: ${response.content}`);
-
-    res.json({ 
-      success: true, 
-      content: response.content,
-      contentLength: response.content?.length || 0
-    });
-
-  } catch (error: any) {
-    console.error('GPT-5-mini test error:', error);
-    res.status(500).json({ 
-      success: false,
       error: error.message 
     });
   }
