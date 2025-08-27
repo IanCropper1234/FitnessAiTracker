@@ -101,6 +101,15 @@ export async function analyzeNutritionMultiImage(
     let messageContent: any = [];
 
     const hasImages = images && images.length > 0;
+    
+    console.log("Multi-image analysis parameters:", {
+      imagesProvided: !!images,
+      imageCount: images ? images.length : 0,
+      hasImages,
+      analysisType,
+      foodName,
+      hasDescription: !!foodDescription
+    });
     const imageCount = hasImages ? images.length : 0;
 
     if (hasImages) {
