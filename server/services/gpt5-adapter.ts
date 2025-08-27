@@ -81,15 +81,20 @@ export class GPT5Adapter {
       messages: messages || [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
-      ],
-      temperature: model.temperature
+      ]
     };
 
     // Use max_completion_tokens for GPT-5-mini and newer models
     if (model.name.includes('gpt-5') || model.name.includes('o1')) {
       params.max_completion_tokens = model.maxTokens;
+      // GPT-5-mini only supports temperature = 1.0 (default)
+      if (model.temperature !== 1.0) {
+        console.warn(`GPT-5-mini only supports temperature=1.0, ignoring temperature=${model.temperature}`);
+      }
+      // Don't set temperature parameter for GPT-5-mini (uses default 1.0)
     } else {
       params.max_tokens = model.maxTokens;
+      params.temperature = model.temperature;
     }
 
     if (responseFormat) {

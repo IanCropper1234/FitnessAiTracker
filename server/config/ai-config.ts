@@ -56,7 +56,7 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
     provider: 'openai', 
     version: '2024-12-17',
     maxTokens: 2000,
-    temperature: 0.7,
+    temperature: 1.0,
     reasoning: {
       effort: 'medium'
     },
