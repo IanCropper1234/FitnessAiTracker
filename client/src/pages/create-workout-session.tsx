@@ -457,7 +457,7 @@ export function CreateWorkoutSession() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-5 space-y-4 pl-[10px] pr-[10px] pt-[5px] pb-[5px]">
+          <CardContent className="p-5 space-y-4 pt-[5px] pb-[5px] pl-[5px] pr-[5px]">
             {/* Exercise Library */}
             {showExerciseLibrary && (
               <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm border-dashed pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
