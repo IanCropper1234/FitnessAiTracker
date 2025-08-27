@@ -420,7 +420,7 @@ export function CreateWorkoutSession() {
           Back to Training
         </Button>
       </div>
-      <div className="space-y-6">
+      <div className="space-y-6 pl-[5px] pr-[5px]">
         {/* Session Name */}
         <Card>
           <CardHeader>
