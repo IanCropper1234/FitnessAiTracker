@@ -101,15 +101,6 @@ export async function analyzeNutritionMultiImage(
     let messageContent: any = [];
 
     const hasImages = images && images.length > 0;
-    
-    console.log("Multi-image analysis parameters:", {
-      imagesProvided: !!images,
-      imageCount: images ? images.length : 0,
-      hasImages,
-      analysisType,
-      foodName,
-      hasDescription: !!foodDescription
-    });
     const imageCount = hasImages ? images.length : 0;
 
     if (hasImages) {
@@ -353,7 +344,7 @@ Return only valid JSON with all required fields.`
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = userId ? 
       selectModelForUser('multiImageNutrition', userId) : 
-      { name: 'gpt-5-mini', temperature: 1, maxTokens: 1500, costPerToken: { input: 0.00000025, output: 0.000002 } };
+      { name: 'gpt-4o', temperature: 0.1, maxTokens: 1500, costPerToken: { input: 0.000005, output: 0.000015 } };
     
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' && userId ? 
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
@@ -398,8 +389,8 @@ Return only valid JSON with all required fields.`
               content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
             }
           ],
-          max_completion_tokens: modelConfig.maxTokens,
-          // temperature: modelConfig.temperature, // gpt-5-mini only supports default temperature
+          max_tokens: modelConfig.maxTokens,
+          temperature: modelConfig.temperature,
           response_format: { type: "json_object" }
         });
 
@@ -412,43 +403,36 @@ Return only valid JSON with all required fields.`
       });
     } else {
       // Direct call for unauthenticated users or legacy usage
-      console.log("Making OpenAI API call with model:", modelConfig.name);
-      
-      // Test gpt-5-mini specifically
-      console.log("Testing gpt-5-mini directly...");
-      
       const response = await openai.chat.completions.create({
-        model: "gpt-5-mini",
+        model: modelConfig.name,
         messages: [
           {
+            role: "system",
+            content: systemPrompt
+          },
+          {
             role: "user",
-            content: `Analyze nutrition for chicken breast for 1 serving. Return JSON with: calories (number), protein (number), carbs (number), fat (number), confidence (0-1), category (string), mealSuitability (array), assumptions (string), servingDetails (string), portionWeight (number), portionUnit (string), ingredientBreakdown (array), micronutrients (object), nutritionValidation (string).`
+            content: messageContent
+          },
+          {
+            role: "assistant",
+            content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
+          },
+          {
+            role: "user", 
+            content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
           }
         ],
-        max_completion_tokens: 4000, // Increase tokens for reasoning model
-        // temperature: 0.7, // gpt-5-mini may not support custom temperature
+        max_tokens: modelConfig.maxTokens,
+        temperature: modelConfig.temperature,
         response_format: { type: "json_object" }
       });
 
-      console.log("Full OpenAI response:", {
-        choices: response.choices?.length || 0,
-        firstChoice: response.choices?.[0] ? {
-          message: {
-            role: response.choices[0].message?.role,
-            contentLength: response.choices[0].message?.content?.length || 0,
-            hasContent: !!response.choices[0].message?.content
-          }
-        } : null,
-        usage: response.usage,
-        model: response.model
-      });
-
-      const content = response.choices?.[0]?.message?.content;
+      const content = response.choices[0].message.content;
       console.log("OpenAI response received (length):", content?.length || 0);
       
       if (!content || content.trim() === '') {
         console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
-        console.error("Full response object:", JSON.stringify(response, null, 2));
         throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
       }
 
@@ -745,7 +729,7 @@ Return only valid JSON with all required fields.`
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini", // Using gpt-5-mini for optimal cost efficiency
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
           role: "system",
@@ -789,7 +773,7 @@ Goal: Deliver the most comprehensive, accurate nutritional analysis possible, wi
         }
       ],
       response_format: { type: "json_object" },
-      // temperature: 0.1, // gpt-5-mini only supports default temperature
+      temperature: 0.1 // Low temperature for consistent nutritional data
     });
 
     const responseContent = response.choices[0].message.content;
@@ -995,11 +979,11 @@ export async function generateWeeklyWorkoutPlan(
 - Scientific exercise selection and ordering`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5-mini", // Using gpt-5-mini for optimal cost efficiency
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
-      // temperature: 0.7, // gpt-5-mini only supports default temperature
-      max_completion_tokens: 4000,
+      temperature: 0.7,
+      max_tokens: 4000,
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");

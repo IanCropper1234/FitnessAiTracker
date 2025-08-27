@@ -1951,7 +1951,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imageArray,
         portionWeight ? parseFloat(portionWeight) : undefined,
         portionUnit,
-        analysisType || 'actual_food', // Default to actual food analysis for text-only requests
+        analysisType || 'nutrition_label', // Default to nutrition label analysis
         req.userId ? req.userId.toString() : undefined
       );
       

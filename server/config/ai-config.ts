@@ -44,36 +44,20 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
       output: 0.000015, // $15 per 1M output tokens
     }
   },
-  'gpt-4o-mini': {
-    name: 'gpt-4o-mini',
-    provider: 'openai',
-    version: '2024-07-18',
-    maxTokens: 2000,
-    temperature: 0.1, // Low temperature for consistent results
-    capabilities: {
-      vision: true,
-      jsonMode: true,
-      functionCalling: true,
-    },
-    costPerToken: {
-      input: 0.00000015, // $0.15 per 1M input tokens
-      output: 0.0000006, // $0.6 per 1M output tokens
-    }
-  },
   'gpt-5-mini': {
     name: 'gpt-5-mini',
     provider: 'openai', 
     version: '2024-07-18',
     maxTokens: 2000,
-    temperature: 1, // gpt-5-mini only supports default temperature (1)
+    temperature: 0.7,
     capabilities: {
       vision: true,
       jsonMode: true,
       functionCalling: true,
     },
     costPerToken: {
-      input: 0.00000025, // $0.25 per 1M input tokens (actual price)
-      output: 0.000002, // $2.00 per 1M output tokens (actual price)
+      input: 0.0000015, // $1.5 per 1M input tokens (estimated)
+      output: 0.000006, // $6 per 1M output tokens (estimated)
     }
   }
 };
@@ -114,7 +98,7 @@ export const getABTestConfig = (): ABTestConfig => {
   return {
     enabled,
     testName,
-    controlModel: process.env.AI_AB_CONTROL_MODEL || 'gpt-5-mini',
+    controlModel: process.env.AI_AB_CONTROL_MODEL || 'gpt-4o',
     testModel: process.env.AI_AB_TEST_MODEL || 'gpt-5-mini',
     trafficSplit: Math.max(0, Math.min(1, trafficSplit)),
     excludeUserIds: process.env.AI_AB_EXCLUDE_USERS ? 
