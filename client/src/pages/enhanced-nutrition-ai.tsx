@@ -140,25 +140,26 @@ export default function EnhancedNutritionAI() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 space-y-6">
+    <div className="min-h-screen bg-background p-2 sm:p-4 space-y-4 sm:space-y-6 max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-2 sm:gap-3 max-w-full">
         <Button
           variant="ghost" 
           size="sm"
           onClick={() => setLocation('/nutrition')}
+          className="flex-shrink-0"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
-          <h1 className="font-bold flex items-center gap-2 text-[16px] text-left pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
-            <Brain className="h-6 w-6 text-purple-500" />
+        <div className="min-w-0 flex-1">
+          <h1 className="font-bold flex items-center gap-2 text-sm sm:text-base break-words leading-tight">
+            <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-purple-500 flex-shrink-0" />
             Enhanced Nutrition AI Analysis
           </h1>
-          <p className="text-muted-foreground text-[12px] ml-[25px] mr-[25px]">Comprehensive micronutrient analysis & personalized RDA insights</p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-1 break-words leading-tight">Comprehensive micronutrient analysis & personalized RDA insights</p>
         </div>
       </div>
-      <div className="grid lg:grid-cols-2 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start max-w-full">
         {/* Configuration Panel */}
         <div className="space-y-6">
           {/* Analysis Settings */}
@@ -170,7 +171,7 @@ export default function EnhancedNutritionAI() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Time Range</label>
                   <Select value={timeRange} onValueChange={setTimeRange}>
@@ -299,7 +300,7 @@ export default function EnhancedNutritionAI() {
                       <TrendingUp className="h-4 w-4" />
                       Macronutrient Status
                     </h4>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div className="p-3 bg-blue-500/10 border border-blue-500/20">
                         <div className="text-xs text-blue-300 mb-1">Protein</div>
                         <div className="text-sm font-medium text-blue-400">
@@ -336,15 +337,14 @@ export default function EnhancedNutritionAI() {
                               {nutrient.status}
                             </Badge>
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            Current: {nutrient.currentIntake}{nutrient.unit} | 
-                            RDA: {nutrient.recommendedIntake}{nutrient.unit}
+                          <div className="text-xs text-muted-foreground break-words">
+                            Current: {nutrient.currentIntake}{nutrient.unit} | RDA: {nutrient.recommendedIntake}{nutrient.unit}
                           </div>
                           <p className="text-xs mt-1">{nutrient.healthImpact}</p>
                           {nutrient.foodSources && (
                             <div className="mt-2">
                               <span className="text-xs font-medium">Food Sources: </span>
-                              <span className="text-xs text-green-400">
+                              <span className="text-xs text-green-400 break-words">
                                 {nutrient.foodSources.join(', ')}
                               </span>
                             </div>
@@ -360,7 +360,7 @@ export default function EnhancedNutritionAI() {
                       <Target className="h-4 w-4" />
                       RDA Comparison
                     </h4>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                       <div className="text-center p-3 bg-green-500/10 border border-green-500/20">
                         <div className="text-sm font-bold text-green-400">
                           {analysisMutation.data.rdaComparison.meetsRDA?.length || 0}
