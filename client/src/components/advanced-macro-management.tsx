@@ -1154,7 +1154,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
               {/* Show auto-adjustment status when enabled */}
               {autoAdjustmentEnabled && selectedWeek && weeklyGoals && weeklyGoals.length > 0 && (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3">
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 pl-[12px] pr-[12px] ml-[-10px] mr-[-10px] mt-[12px] mb-[12px] pt-[12px] pb-[12px]">
                   <div className="flex items-center gap-2 mb-2">
                     <RotateCcw className="w-4 h-4 text-green-600 dark:text-green-400" />
                     <h4 className="font-medium text-green-800 dark:text-green-200">Auto-Adjustment Active</h4>
