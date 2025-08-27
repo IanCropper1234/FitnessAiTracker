@@ -71,8 +71,8 @@ export class GPT5Adapter {
     const params: any = {
       model: model.name,
       input,
-      reasoning: model.reasoning || { effort: 'medium' },
-      text: model.text || { verbosity: 'medium' }
+      reasoning: model.reasoning || { effort: 'low' }, // Default to low for speed
+      text: model.text || { verbosity: 'low' } // Default to low for speed
     };
 
     // Add response format if specified (GPT-5 uses text.format with correct object structure)

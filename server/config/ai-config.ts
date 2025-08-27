@@ -58,10 +58,10 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
     maxTokens: 4000, // Increased for comprehensive nutrition analysis
     temperature: 0.7,
     reasoning: {
-      effort: 'medium' // Good balance for nutrition analysis
+      effort: 'low' // Faster responses for nutrition analysis - reduced from medium
     },
     text: {
-      verbosity: 'medium' // Detailed but not overly verbose
+      verbosity: 'low' // More concise responses for faster processing
     },
     capabilities: {
       vision: true,
