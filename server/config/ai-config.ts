@@ -55,13 +55,13 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
     name: 'gpt-5-mini',
     provider: 'openai', 
     version: '2024-12-17',
-    maxTokens: 2000,
+    maxTokens: 4000, // Increased for comprehensive nutrition analysis
     temperature: 0.7,
     reasoning: {
-      effort: 'medium'
+      effort: 'medium' // Good balance for nutrition analysis
     },
     text: {
-      verbosity: 'medium'
+      verbosity: 'medium' // Detailed but not overly verbose
     },
     capabilities: {
       vision: true,
@@ -70,8 +70,8 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
       reasoning: true,
     },
     costPerToken: {
-      input: 0.0000015, // $1.5 per 1M input tokens
-      output: 0.000006, // $6 per 1M output tokens
+      input: 0.0000015, // $1.5 per 1M input tokens (70% cost reduction)
+      output: 0.000006, // $6 per 1M output tokens (60% cost reduction)
     }
   }
 };

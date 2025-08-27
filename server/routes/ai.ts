@@ -334,7 +334,10 @@ router.post('/nutrition-analysis', async (req, res) => {
       "nextSteps": ["string"]
     }`;
 
-    // Monitor AI call performance
+    // Monitor AI call performance using GPT-5 Adapter
+    const { GPT5Adapter } = await import('../services/gpt5-adapter');
+    const gpt5Adapter = new GPT5Adapter();
+
     const result = await monitorAICall({
       service: 'nutrition-analysis',
       model: modelConfig.name,
@@ -344,18 +347,14 @@ router.post('/nutrition-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
-      });
+      const response = await gpt5Adapter.createCompletion(
+        modelConfig,
+        systemPrompt,
+        userPrompt,
+        { type: "json_object" }
+      );
 
-      const responseContent = response.choices[0].message.content;
+      const responseContent = response.content;
       if (!responseContent) {
         throw new Error('Empty response from AI');
       }
@@ -420,7 +419,10 @@ router.post('/food-analysis', async (req, res) => {
       "suggestions": ["string"]
     }`;
 
-    // Monitor AI call performance
+    // Monitor AI call performance using GPT-5 Adapter
+    const { GPT5Adapter } = await import('../services/gpt5-adapter');
+    const gpt5Adapter = new GPT5Adapter();
+
     const result = await monitorAICall({
       service: 'food-analysis',
       model: modelConfig.name,
@@ -430,29 +432,21 @@ router.post('/food-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
-          { role: "system", content: systemPrompt },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: userPrompt },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${image}`
-                }
-              }
-            ]
-          }
-        ],
-        response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
-      });
+      // For image analysis, we need to use the vision capabilities
+      const response = await gpt5Adapter.createVisionCompletion(
+        modelConfig,
+        systemPrompt,
+        userPrompt,
+        image,
+        { type: "json_object" }
+      );
 
-      return JSON.parse(response.choices[0].message.content || '{}');
+      const responseContent = response.content;
+      if (!responseContent) {
+        throw new Error('Empty response from AI');
+      }
+
+      return JSON.parse(responseContent);
     });
 
     res.json(result);

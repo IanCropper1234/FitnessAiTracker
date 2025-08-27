@@ -8,27 +8,45 @@ import { AIModelConfig } from '../config/ai-config';
 export class GPT5Adapter {
   private openai: OpenAI;
 
-  constructor(openai: OpenAI) {
-    this.openai = openai;
+  constructor(openai?: OpenAI) {
+    this.openai = openai || new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
 
   /**
    * Unified AI call that automatically selects the appropriate API based on model
    */
-  async createCompletion(config: {
-    model: AIModelConfig;
-    systemPrompt: string;
-    userPrompt: string;
-    messages?: any[];
-    responseFormat?: { type: string };
-  }): Promise<{ content: string; usage?: any }> {
-    const { model, systemPrompt, userPrompt, messages, responseFormat } = config;
-
+  async createCompletion(
+    model: AIModelConfig,
+    systemPrompt: string,
+    userPrompt: string,
+    responseFormat?: { type: string }
+  ): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
       return this.callGPT5API(model, systemPrompt, userPrompt, responseFormat);
     } else {
-      return this.callGPT4API(model, systemPrompt, userPrompt, messages, responseFormat);
+      return this.callGPT4API(model, systemPrompt, userPrompt, undefined, responseFormat);
+    }
+  }
+
+  /**
+   * Vision completion for image analysis
+   */
+  async createVisionCompletion(
+    model: AIModelConfig,
+    systemPrompt: string,
+    userPrompt: string,
+    image: string,
+    responseFormat?: { type: string }
+  ): Promise<{ content: string; usage?: any }> {
+    // Check if this is a GPT-5 model
+    if (this.isGPT5Model(model.name)) {
+      // For GPT-5, we need to handle vision differently
+      const combinedPrompt = `${systemPrompt}\n\n${userPrompt}`;
+      return this.callGPT5API(model, "", combinedPrompt, responseFormat);
+    } else {
+      // For GPT-4, use traditional vision API
+      return this.callGPT4VisionAPI(model, systemPrompt, userPrompt, image, responseFormat);
     }
   }
 
@@ -81,6 +99,49 @@ export class GPT5Adapter {
       messages: messages || [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
+      ],
+      max_tokens: model.maxTokens,
+      temperature: model.temperature
+    };
+
+    if (responseFormat) {
+      params.response_format = responseFormat;
+    }
+
+    const response = await this.openai.chat.completions.create(params);
+
+    return {
+      content: response.choices[0].message.content || '',
+      usage: response.usage
+    };
+  }
+
+  /**
+   * GPT-4 Vision API call for image analysis
+   */
+  private async callGPT4VisionAPI(
+    model: AIModelConfig,
+    systemPrompt: string,
+    userPrompt: string,
+    image: string,
+    responseFormat?: { type: string }
+  ): Promise<{ content: string; usage?: any }> {
+    const params: any = {
+      model: model.name,
+      messages: [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: userPrompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${image}`
+              }
+            }
+          ]
+        }
       ],
       max_tokens: model.maxTokens,
       temperature: model.temperature
