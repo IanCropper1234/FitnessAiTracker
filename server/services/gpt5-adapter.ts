@@ -72,7 +72,7 @@ export class GPT5Adapter {
     if (responseFormat?.type === 'json_object') {
       params.text = {
         ...params.text,
-        format: 'json_object'
+        format: 'json'
       };
     }
 
