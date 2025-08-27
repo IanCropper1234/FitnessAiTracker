@@ -50,9 +50,12 @@ export class GPT5Adapter {
       text: model.text || { verbosity: 'medium' }
     };
 
-    // Add response format if specified
-    if (responseFormat) {
-      params.response_format = responseFormat;
+    // Add response format if specified (GPT-5 uses text.format with correct value)
+    if (responseFormat?.type === 'json_object') {
+      params.text = {
+        ...params.text,
+        format: 'json_object'
+      };
     }
 
     const response = await this.openai.responses.create(params);

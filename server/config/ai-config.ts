@@ -105,9 +105,10 @@ export interface ABTestConfig {
 }
 
 export const getABTestConfig = (): ABTestConfig => {
-  const enabled = process.env.AI_AB_TEST_ENABLED === 'true';
-  const testName = process.env.AI_AB_TEST_NAME || 'gpt5-mini-migration';
-  const trafficSplit = parseFloat(process.env.AI_AB_TEST_SPLIT || '0.1'); // 10% default
+  // Direct migration: Disable A/B testing for full GPT-5-mini deployment
+  const enabled = process.env.AI_AB_TEST_ENABLED === 'true' ? false : false; // Force disable
+  const testName = process.env.AI_AB_TEST_NAME || 'gpt5-mini-migration-complete';
+  const trafficSplit = parseFloat(process.env.AI_AB_TEST_SPLIT || '1.0'); // 100% to new model
 
   return {
     enabled,
