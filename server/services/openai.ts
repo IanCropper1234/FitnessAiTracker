@@ -163,20 +163,25 @@ export async function analyzeNutritionMultiImage(
    - Choose appropriate unit: liquids→ml/cups, solids→g, countable→pieces, prepared dishes→servings
    - Cross-reference with typical serving sizes for validation
 
-4. **INGREDIENT-LEVEL NUTRITION CALCULATION:**
-   - Calculate nutrition for each identified component
-   - Sum components for total meal nutrition
+4. **MATHEMATICAL INGREDIENT-LEVEL NUTRITION CALCULATION:**
+   - Calculate nutrition for each identified component with DETAILED breakdown
+   - Apply cooking method adjustments (roasting/frying adds oil calories, skin adds fat)
+   - Sum components for total meal nutrition: Base Food + Cooking Additions + Visible Extras
+   - **STEP-BY-STEP CALCULATION**: Show math for each component
    - Include micronutrients from all identified ingredients
+   - **VERIFICATION**: Ensure final calories > raw/plain version if cooking/preparation is visible
 
 5. **PORTION UNIT OPTIMIZATION:**
    - Select the most natural unit based on how this food is typically measured and consumed
    - Consider cultural context, practical measurement, and user-friendly units
 
 **CRITICAL - Enhanced Serving Details for Actual Food:**
-- Provide detailed breakdown of visible components
+- Provide MATHEMATICAL breakdown of visible components with calories per component
 - Estimate portion size with reasoning and confidence level
 - Choose optimal unit for the food type
-- Include ingredient assumptions and cooking method considerations`;
+- Include ingredient assumptions and cooking method considerations
+- **COOKING ANALYSIS**: If food appears cooked/prepared, identify method and add appropriate calories
+- **VISUAL VERIFICATION**: Final nutrition should reflect what's actually visible (oils, skin, browning, etc.)`;
 
       messageContent = [
         {
