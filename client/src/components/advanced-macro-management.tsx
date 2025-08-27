@@ -1064,7 +1064,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-3 ml-[-10px] mr-[-10px]">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-black dark:text-white">Weekly Changes</h4>
                       <div className="flex items-center gap-2">
