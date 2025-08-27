@@ -679,7 +679,7 @@ export function CreateWorkoutSession() {
 
                   {/* Special Method Configuration */}
                   {template.specialMethod && template.specialConfig && (
-                    <div className="p-4 border bg-muted/50 space-y-3">
+                    <div className="p-4 border bg-muted/50 space-y-3 pl-[5px] pr-[5px] pt-[5px] pb-[5px]">
                       <h4 className="font-medium text-sm">
                         {template.specialMethod === 'myorep_match' && 'Myorep Match Configuration'}
                         {template.specialMethod === 'myorep_no_match' && 'Myorep No Match Configuration'}
