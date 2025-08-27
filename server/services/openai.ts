@@ -1035,8 +1035,8 @@ export async function generateWeeklyWorkoutPlan(
       version: '2024-12-17',
       temperature: 0.7,
       maxTokens: 4000,
-      reasoning: { effort: 'high' },
-      text: { verbosity: 'high' },
+      reasoning: { effort: 'high' as const },
+      text: { verbosity: 'high' as const },
       capabilities: {
         vision: false,
         jsonMode: true,

@@ -347,12 +347,12 @@ router.post('/nutrition-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await gpt5Adapter.createCompletion(
-        modelConfig,
+      const response = await gpt5Adapter.createCompletion({
+        model: modelConfig,
         systemPrompt,
         userPrompt,
-        { type: "json_object" }
-      );
+        responseFormat: { type: "json_object" }
+      });
 
       const responseContent = response.content;
       if (!responseContent) {

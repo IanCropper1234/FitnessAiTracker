@@ -15,17 +15,24 @@ export class GPT5Adapter {
   /**
    * Unified AI call that automatically selects the appropriate API based on model
    */
-  async createCompletion(
-    model: AIModelConfig,
-    systemPrompt: string,
-    userPrompt: string,
-    responseFormat?: { type: string }
-  ): Promise<{ content: string; usage?: any }> {
+  async createCompletion({
+    model,
+    systemPrompt,
+    userPrompt,
+    messages,
+    responseFormat
+  }: {
+    model: AIModelConfig;
+    systemPrompt: string;
+    userPrompt: string;
+    messages?: any[];
+    responseFormat?: { type: string };
+  }): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
       return this.callGPT5API(model, systemPrompt, userPrompt, responseFormat);
     } else {
-      return this.callGPT4API(model, systemPrompt, userPrompt, undefined, responseFormat);
+      return this.callGPT4API(model, systemPrompt, userPrompt, messages, responseFormat);
     }
   }
 
