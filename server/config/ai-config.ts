@@ -51,40 +51,33 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
       output: 0.000015, // $15 per 1M output tokens
     }
   },
-  'gpt-5-mini': {
-    name: 'gpt-5-mini',
+  'gpt-4o-mini': {
+    name: 'gpt-4o-mini',
     provider: 'openai', 
-    version: '2024-12-17',
+    version: '2024-07-18',
     maxTokens: 2000,
-    temperature: 1.0,
-    reasoning: {
-      effort: 'medium'
-    },
-    text: {
-      verbosity: 'medium'
-    },
+    temperature: 0.7,
     capabilities: {
       vision: true,
       jsonMode: true,
       functionCalling: true,
-      reasoning: true,
     },
     costPerToken: {
-      input: 0.0000015, // $1.5 per 1M input tokens
-      output: 0.000006, // $6 per 1M output tokens
+      input: 0.00000015, // $0.15 per 1M input tokens
+      output: 0.0000006, // $0.6 per 1M output tokens
     }
   }
 };
 
-// Environment-based configuration with GPT-5-mini as default
+// Environment-based configuration with GPT-4o-mini as default
 export const getAIConfig = (): AIServiceConfig => {
-  // Force all services to use GPT-5-mini
+  // Force all services to use GPT-4o-mini
   return {
-    exerciseRecommendations: AI_MODELS['gpt-5-mini'],
-    nutritionAnalysis: AI_MODELS['gpt-5-mini'],
-    foodAnalysis: AI_MODELS['gpt-5-mini'],
-    programOptimization: AI_MODELS['gpt-5-mini'],
-    multiImageNutrition: AI_MODELS['gpt-5-mini'],
+    exerciseRecommendations: AI_MODELS['gpt-4o-mini'],
+    nutritionAnalysis: AI_MODELS['gpt-4o-mini'],
+    foodAnalysis: AI_MODELS['gpt-4o-mini'],
+    programOptimization: AI_MODELS['gpt-4o-mini'],
+    multiImageNutrition: AI_MODELS['gpt-4o-mini'],
   };
 };
 
@@ -99,12 +92,12 @@ export interface ABTestConfig {
 }
 
 export const getABTestConfig = (): ABTestConfig => {
-  // Force disable A/B testing - all users use GPT-5-mini
+  // Force disable A/B testing - all users use GPT-4o-mini
   return {
     enabled: false,
-    testName: 'gpt5-mini-full-deployment',
-    controlModel: 'gpt-5-mini',
-    testModel: 'gpt-5-mini',
+    testName: 'gpt4o-mini-full-deployment',
+    controlModel: 'gpt-4o-mini',
+    testModel: 'gpt-4o-mini',
     trafficSplit: 1.0,
     excludeUserIds: []
   };

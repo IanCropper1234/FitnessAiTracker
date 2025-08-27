@@ -524,4 +524,35 @@ router.post('/program-optimization', async (req, res) => {
   }
 });
 
+// Test endpoint for GPT-5-mini
+router.post('/test-gpt5', async (req, res) => {
+  try {
+    const gpt5Adapter = new GPT5Adapter();
+    const modelConfig = AI_MODELS['gpt-5-mini'];
+    
+    const response = await gpt5Adapter.createCompletion({
+      model: modelConfig,
+      systemPrompt: "You are a helpful assistant.",
+      userPrompt: "Say hello and explain what you are in 1-2 sentences.",
+      responseFormat: undefined
+    });
+
+    console.log(`GPT-5-mini test - Content length: ${response.content?.length || 0}`);
+    console.log(`GPT-5-mini test - Content: ${response.content}`);
+
+    res.json({ 
+      success: true, 
+      content: response.content,
+      contentLength: response.content?.length || 0
+    });
+
+  } catch (error: any) {
+    console.error('GPT-5-mini test error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message 
+    });
+  }
+});
+
 export default router;
