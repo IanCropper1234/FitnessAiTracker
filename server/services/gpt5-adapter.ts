@@ -103,8 +103,15 @@ export class GPT5Adapter {
 
     const response = await this.openai.chat.completions.create(params);
 
+    const content = response.choices[0].message.content || '';
+    
+    // Debug logging for GPT-5-mini
+    if (model.name.includes('gpt-5')) {
+      console.log(`GPT-5-mini Response - Content length: ${content.length}, First 200 chars:`, content.substring(0, 200));
+    }
+
     return {
-      content: response.choices[0].message.content || '',
+      content,
       usage: response.usage
     };
   }

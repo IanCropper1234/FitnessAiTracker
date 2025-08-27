@@ -351,11 +351,18 @@ router.post('/nutrition-analysis', async (req, res) => {
         responseFormat: { type: "json_object" }
       });
 
-      if (!response.content) {
-        throw new Error('Empty response from AI');
+      console.log(`Nutrition Analysis Response - Model: ${modelConfig.name}, Content length: ${response.content?.length || 0}`);
+
+      if (!response.content || response.content.trim() === '') {
+        throw new Error(`Empty response from AI (${modelConfig.name}). This might be a model configuration issue.`);
       }
 
-      return JSON.parse(response.content);
+      try {
+        return JSON.parse(response.content);
+      } catch (parseError) {
+        console.error('Failed to parse JSON response:', response.content.substring(0, 500));
+        throw new Error(`Invalid JSON response from AI: ${parseError.message}`);
+      }
     });
 
     res.json(result);
