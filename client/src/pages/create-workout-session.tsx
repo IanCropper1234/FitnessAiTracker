@@ -460,7 +460,7 @@ export function CreateWorkoutSession() {
           <CardContent className="p-5 space-y-4 pt-[5px] pb-[5px] pl-[5px] pr-[5px]">
             {/* Exercise Library */}
             {showExerciseLibrary && (
-              <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm border-dashed pl-[0px] pr-[0px] ml-[-10px] mr-[-10px]">
+              <Card className="border-2 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 border-border/60 backdrop-blur-sm border-dashed pl-[0px] pr-[0px] ml-[0px] mr-[0px]">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
                     <Search className="h-4 w-4" />
