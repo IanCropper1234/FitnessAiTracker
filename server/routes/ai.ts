@@ -102,17 +102,8 @@ router.post('/exercise-recommendations', async (req, res) => {
         max_completion_tokens: modelConfig.maxTokens
       };
 
-      // Add GPT-5 specific parameters
-      if (modelConfig.name.startsWith('gpt-5')) {
-        if (modelConfig.reasoning) {
-          params.reasoning = modelConfig.reasoning;
-        }
-        if (modelConfig.text) {
-          params.text = modelConfig.text;
-        }
-      } else {
-        params.temperature = modelConfig.temperature;
-      }
+      // Add temperature for all models (GPT-5 supports it)
+      params.temperature = modelConfig.temperature;
 
       const response = await openai.chat.completions.create(params);
       
