@@ -283,11 +283,11 @@ export default function EnhancedNutritionAI() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">Nutrition Quality Score</p>
                     {analysisMutation.data.dataQuality && (
-                      <div className="mt-3 p-2 bg-orange-500/10 border border-orange-500/20">
-                        <div className="text-xs text-orange-300 mb-1">
+                      <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/20">
+                        <div className="text-xs text-orange-300 mb-2 font-medium">
                           Data Quality: {Math.round(analysisMutation.data.dataQuality.completenessScore)}%
                         </div>
-                        <p className="text-xs text-orange-400">
+                        <p className="text-xs text-orange-400 leading-relaxed break-words whitespace-pre-wrap">
                           {analysisMutation.data.dataQuality.reliabilityNote}
                         </p>
                       </div>
@@ -340,7 +340,7 @@ export default function EnhancedNutritionAI() {
                           <div className="text-xs text-muted-foreground break-words">
                             Current: {nutrient.currentIntake}{nutrient.unit} | RDA: {nutrient.recommendedIntake}{nutrient.unit}
                           </div>
-                          <p className="text-xs mt-1">{nutrient.healthImpact}</p>
+                          <p className="text-xs mt-1 leading-relaxed break-words whitespace-pre-wrap">{nutrient.healthImpact}</p>
                           {nutrient.foodSources && (
                             <div className="mt-2">
                               <span className="text-xs font-medium">Food Sources: </span>
@@ -399,10 +399,10 @@ export default function EnhancedNutritionAI() {
                             {insight.priority}
                           </Badge>
                         </div>
-                        <p className="text-xs mb-2">{insight.insight}</p>
+                        <p className="text-xs mb-2 leading-relaxed break-words whitespace-pre-wrap">{insight.insight}</p>
                         <div className="space-y-1">
                           {insight.actionItems?.map((action, actionIndex) => (
-                            <div key={actionIndex} className="text-xs text-purple-400">
+                            <div key={actionIndex} className="text-xs text-purple-400 leading-relaxed break-words">
                               • {action}
                             </div>
                           ))}
@@ -421,7 +421,7 @@ export default function EnhancedNutritionAI() {
                       <div className="space-y-2">
                         {analysisMutation.data.supplementationAdvice.map((advice: string, index: number) => (
                           <div key={index} className="p-3 bg-blue-500/10 border border-blue-500/20">
-                            <p className="text-xs text-blue-300">{advice}</p>
+                            <p className="text-xs text-blue-300 leading-relaxed break-words whitespace-pre-wrap">{advice}</p>
                           </div>
                         ))}
                       </div>
