@@ -160,7 +160,7 @@ export async function analyzeNutritionMultiImage(
 
 3. **INTELLIGENT PORTION ESTIMATION:**
    - Estimate portion size using visual references (plates, utensils, hands, common objects)
-   - Choose appropriate unit: liquids→ml/cups, solids→g, countable→pieces, prepared dishes→servings
+   - Choose appropriate unit: liquids→ml/cups, most foods→g (preferred for accuracy), very small countable items→pieces, prepared dishes→servings
    - Cross-reference with typical serving sizes for validation
 
 4. **MATHEMATICAL INGREDIENT-LEVEL NUTRITION CALCULATION:**
@@ -172,8 +172,10 @@ export async function analyzeNutritionMultiImage(
    - **VERIFICATION**: Ensure final calories > raw/plain version if cooking/preparation is visible
 
 5. **PORTION UNIT OPTIMIZATION:**
-   - Select the most natural unit based on how this food is typically measured and consumed
-   - Consider cultural context, practical measurement, and user-friendly units
+   - PRIORITIZE ACCURACY: Use grams (g) for most solid foods including baked goods, snacks, donuts, cookies, etc.
+   - Select weight-based units for better nutritional precision and tracking accuracy
+   - Only use "pieces" for very small, uniform items like individual nuts, small candies, or pills
+   - For donuts, cookies, bread, and similar items: ALWAYS prefer grams over pieces
 
 **CRITICAL - Enhanced Serving Details for Actual Food:**
 - Provide MATHEMATICAL breakdown of visible components with calories per component
@@ -203,7 +205,7 @@ ${foodDescription ? `
 - assumptions: key assumptions about ingredients, preparation, and cooking methods (string)
 - servingDetails: description with OPTIMAL UNIT for this food type${imageCount > 1 ? ' analyzed across all images' : ''} (string)
 - portionWeight: most appropriate portion weight as number based on nutritional science and typical serving practices for this food type
-- portionUnit: most natural and intuitive unit for this specific food type (determine based on how this food is commonly measured and consumed)
+- portionUnit: most accurate unit for nutrition tracking - prefer grams (g) for solid foods like donuts, cookies, bread for precision; only use pieces for very small uniform items
 - ingredientBreakdown: array of identified food components (e.g., ["grilled chicken: 120g", "brown rice: 150g", "broccoli: 80g"])
 - micronutrients: comprehensive vitamin and mineral data from ALL components (object with fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
@@ -267,13 +269,13 @@ Return only valid JSON with all required fields.`
    - Example: "Chocolate protein smoothie" → protein powder + milk + banana + cocoa powder, etc.
 
 2. **INTELLIGENT UNIT SELECTION:**
-   - Choose the MOST APPROPRIATE unit for the specific food type:
+   - Choose the MOST APPROPRIATE unit for the specific food type, prioritizing accuracy:
    - **Liquids**: ml, L, cups, fl oz (milk, juice, smoothies, soup)
-   - **Solids by weight**: g, kg, oz, lbs (meat, vegetables, fruits)
-   - **Volume foods**: cups, tbsp, tsp (rice, cereal, nuts, flour)
-   - **Countable items**: pieces, slices, servings (bread, eggs, cookies)
+   - **Most solid foods**: g, kg, oz (preferred for accurate nutrition - meat, vegetables, fruits, baked goods, snacks)
+   - **Volume foods**: cups, tbsp, tsp (rice, cereal, flour) - but convert to grams when possible
+   - **Only very small countable items**: pieces (for tiny items like individual nuts, small candies, pills)
    - **Prepared dishes**: servings, portions, bowls (pasta, salad, casserole)
-   - **Small items**: pieces, units (vitamins, pills, individual snacks)
+   - **DEFAULT PREFERENCE**: Use grams (g) for most food items including donuts, cookies, bread, etc. as it provides the most accurate nutritional tracking
 
 3. **CONTEXTUAL PORTION ANALYSIS:**
    - Food: "${primaryInput}"${foodDescription && foodDescription.trim() ? ` with context: "${foodDescription}"` : ''}
