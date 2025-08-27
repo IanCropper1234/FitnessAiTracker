@@ -73,15 +73,20 @@ router.post('/exercise-recommendations', async (req, res) => {
     ${injuryRestrictions ? `**Injury Restrictions**: ${Array.isArray(injuryRestrictions) ? injuryRestrictions.join(', ') : injuryRestrictions}` : ''}
 
     Please analyze this data and provide:
-    1. 3-5 specific exercise recommendations SELECTED ONLY from the exercise library above
+    1. **MANDATORY**: You MUST provide exactly 4-6 specific exercise recommendations SELECTED ONLY from the exercise library above
     2. Science-based reasoning for each recommendation
     3. Optimal set/rep ranges based on scientific guidelines
     4. Special training method suggestions where appropriate
     5. Volume progression considerations
 
-    **MANDATORY**: Only use exercise names that appear EXACTLY in the exercise library list above. Do not create new exercises or modify existing names.
+    **CRITICAL REQUIREMENTS**:
+    - You MUST include at least 4 exercises in your recommendations array
+    - Only use exercise names that appear EXACTLY in the exercise library list above
+    - Do not create new exercises or modify existing names
+    - If you cannot find suitable exercises, select the closest matches and explain in reasoning
+    - Focus on the requested muscle groups: ${muscleGroupFocus?.join(', ') || 'Full body'}
 
-    Format your response as JSON with the following structure:
+    **RESPONSE FORMAT**: You MUST respond with valid JSON in exactly this structure. The recommendations array MUST contain at least 4 exercises:
     {
       "recommendations": [
         {
@@ -102,10 +107,12 @@ router.post('/exercise-recommendations', async (req, res) => {
           "volumeContribution": number (sets contributing to muscle group MEV)
         }
       ],
-      "reasoning": "string - overall program logic",
-      "rpConsiderations": "string - RP-specific insights",
-      "progressionPlan": "string - how to integrate over time"
-    }`;
+      "reasoning": "string - overall program logic explaining exercise selection",
+      "rpConsiderations": "string - RP-specific insights and methodology",
+      "progressionPlan": "string - how to integrate and progress over time"
+    }
+
+    **FINAL CHECK**: Before responding, ensure your recommendations array contains at least 4 exercises that exactly match names from the exercise library.`;
 
     // Monitor AI call performance
     const result = await monitorAICall({
@@ -136,11 +143,23 @@ router.post('/exercise-recommendations', async (req, res) => {
 
       const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
       
+      // Validate and ensure we have recommendations
+      const recommendations = aiResponse.recommendations || [];
+      console.log('AI Response validation:');
+      console.log('- Recommendations count:', recommendations.length);
+      console.log('- First 2 recommendations:', recommendations.slice(0, 2).map((r: any) => ({ name: r.exerciseName, muscle: r.primaryMuscle })));
+      
+      if (recommendations.length === 0) {
+        console.warn('AI returned no recommendations - this should not happen');
+        // Log the full AI response for debugging
+        console.log('Full AI response:', JSON.stringify(aiResponse, null, 2));
+      }
+      
       return {
-        recommendations: aiResponse.recommendations || [],
-        reasoning: aiResponse.reasoning || '',
-        rpConsiderations: aiResponse.rpConsiderations || '',
-        progressionPlan: aiResponse.progressionPlan || ''
+        recommendations: recommendations,
+        reasoning: aiResponse.reasoning || 'AI analysis completed successfully.',
+        rpConsiderations: aiResponse.rpConsiderations || 'Applied evidence-based training principles.',
+        progressionPlan: aiResponse.progressionPlan || 'Progress gradually with consistent training.'
       };
     });
 
