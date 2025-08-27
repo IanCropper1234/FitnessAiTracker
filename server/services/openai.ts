@@ -273,12 +273,23 @@ Return only valid JSON with all required fields.`
 3. **CONTEXTUAL PORTION ANALYSIS:**
    - Food: "${primaryInput}"${foodDescription && foodDescription.trim() ? ` with context: "${foodDescription}"` : ''}
    ${foodDescription && foodDescription.trim() ? `
-   - **CRITICAL**: The description "${foodDescription}" contains important preparation details that SIGNIFICANTLY affect nutritional content:
-     * Cooking methods (roasted, fried, grilled) can add 20-50% more calories from added oils/fats
-     * "With skin" adds substantial fat content (typically +50-100% fat compared to skinless)
-     * Added oils/butter must be calculated separately and added to base nutrition
-     * Example: "roasted with olive oil" = base food + 1-2 tbsp olive oil (120-240 extra calories)
-   - ADJUST your calculations to reflect these preparation modifications accurately` : ''}
+   - **CRITICAL PREPARATION ANALYSIS**: The description "${foodDescription}" contains cooking/preparation details that MUST be mathematically added to base nutrition:
+     
+     **STEP-BY-STEP CALCULATION REQUIRED:**
+     1. Start with BASE skinless food nutrition (e.g., skinless chicken breast: ~165 cal/100g)
+     2. Add skin impact: +30-40 calories per 100g (+15-20g fat)
+     3. Add cooking oil: Estimate 1-2 tbsp olive oil = +120-240 calories (+14-28g fat)
+     4. Total = Base + Skin + Oil additions
+     
+     **COOKING METHOD IMPACT:**
+     * "Roasted/grilled with oil" = base + oil calories (typically +120-200 cal)
+     * "Fried" = base + significant oil absorption (+200-300 cal)
+     * "With skin" = base + skin fat content (+30-50 cal per 100g)
+     * "Butter/oil" mentioned = add 100-120 cal per tbsp used
+     
+     **VERIFICATION RULE**: Final calories for prepared food MUST be higher than plain/raw version
+     Example: Plain chicken breast (165 cal) → Roasted with skin + oil (280-320 cal)
+   - ALWAYS show ingredient breakdown with separate calorie contributions` : ''}
    - Determine realistic serving sizes based on food type and common consumption patterns
    - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
 
@@ -296,6 +307,11 @@ Return only valid JSON with all required fields.`
    - Verify macronutrient ratios make sense for the food type
    - Check that micronutrient levels are realistic and not excessive
    - Ensure portion sizes align with typical consumption patterns
+   - **PREPARATION LOGIC CHECK**: If description mentions cooking methods/additions:
+     * Verify final calories > base food calories (cooked/prepared should be higher)
+     * Check fat content increased appropriately with oils/skin
+     * Ensure ingredient breakdown adds up to total nutrition
+     * Flag if prepared food has LOWER calories than plain version (likely error)
    - Flag any unusual or potentially incorrect values
 
 **OUTPUT REQUIREMENTS - JSON format with these EXACT fields:**
@@ -310,7 +326,7 @@ Return only valid JSON with all required fields.`
 - servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "1 medium portion", "3 pieces (80g)")
 - portionWeight: realistic portion weight as number determined by nutritional guidelines and common consumption patterns
 - portionUnit: most appropriate unit for this food type based on how it's naturally measured and served
-- ingredientBreakdown: array of food components analyzed (e.g., ["whole wheat bread: 80g", "grilled chicken: 100g", "lettuce: 20g"])
+- ingredientBreakdown: array of food components with DETAILED calorie breakdown (e.g., ["chicken breast (base): 165 cal", "chicken skin: +35 cal", "olive oil (1 tbsp): +120 cal", "Total: 320 cal"])
 - micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
   * Water-Soluble Vitamins: vitaminB1/thiamine (mg), vitaminB2/riboflavin (mg), vitaminB3/niacin (mg), vitaminB5/pantothenic acid (mg), vitaminB6/pyridoxine (mg), vitaminB7/biotin (mcg), vitaminB9/folate (mcg), vitaminB12/cobalamin (mcg), vitaminC/ascorbic acid (mg), choline (mg)
@@ -320,7 +336,7 @@ Return only valid JSON with all required fields.`
   * Amino Acids (for protein foods): leucine (mg), isoleucine (mg), valine (mg), lysine (mg), methionine (mg), phenylalanine (mg), threonine (mg), tryptophan (mg), histidine (mg), arginine (mg), alanine (mg), aspartic acid (mg), cysteine (mg), glutamic acid (mg), glycine (mg), proline (mg), serine (mg), tyrosine (mg)
   * Antioxidants & Phytonutrients: betaCarotene (mcg), lycopene (mcg), lutein (mcg), zeaxanthin (mcg), anthocyanins (mg), flavonoids (mg), polyphenols (mg), carotenoids (mcg)
   * Supplement Compounds (if applicable): coq10 (mg), glucosamine (mg), chondroitin (mg), probiotics (CFU), collagen (g), creatine (g), bcaa (g), hmb (mg), carnitine (mg), taurine (mg), etc.
-- nutritionValidation: brief assessment of result reasonableness (string: e.g., "Values consistent with typical chicken breast nutrition")
+- nutritionValidation: MANDATORY validation of calculation logic and reasonableness (string: e.g., "Base chicken breast 165 cal + skin 35 cal + olive oil 120 cal = 320 cal total. Values consistent and preparation additions verified.")
 
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
