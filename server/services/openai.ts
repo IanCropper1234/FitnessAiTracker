@@ -412,8 +412,14 @@ Return only valid JSON with all required fields.`
       });
     } else {
       // Direct call for unauthenticated users or legacy usage
+      console.log("Making OpenAI API call with model:", modelConfig.name);
+      
+      // Temporarily use a known working model for testing
+      const testModel = "gpt-4o-mini";
+      console.log("Using test model:", testModel);
+      
       const response = await openai.chat.completions.create({
-        model: modelConfig.name,
+        model: testModel,
         messages: [
           {
             role: "system",
@@ -433,15 +439,29 @@ Return only valid JSON with all required fields.`
           }
         ],
         max_completion_tokens: modelConfig.maxTokens,
-        // temperature: modelConfig.temperature, // gpt-5-mini only supports default temperature
+        temperature: 0.7, // Use a reasonable temperature for testing
         response_format: { type: "json_object" }
       });
 
-      const content = response.choices[0].message.content;
+      console.log("Full OpenAI response:", {
+        choices: response.choices?.length || 0,
+        firstChoice: response.choices?.[0] ? {
+          message: {
+            role: response.choices[0].message?.role,
+            contentLength: response.choices[0].message?.content?.length || 0,
+            hasContent: !!response.choices[0].message?.content
+          }
+        } : null,
+        usage: response.usage,
+        model: response.model
+      });
+
+      const content = response.choices?.[0]?.message?.content;
       console.log("OpenAI response received (length):", content?.length || 0);
       
       if (!content || content.trim() === '') {
         console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
+        console.error("Full response object:", JSON.stringify(response, null, 2));
         throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
       }
 
