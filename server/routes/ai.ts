@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { selectModelForUser } from '../config/ai-config';
 import { monitorAICall, aiPerformanceMonitor } from '../services/ai-performance-monitor';
 import { promptRegistry } from '../services/ai-prompt-registry';
+import { GPT5Adapter } from '../services/gpt5-adapter';
 
 const router = Router();
 
@@ -12,6 +13,9 @@ const router = Router();
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// Initialize GPT5 Adapter
+const gpt5Adapter = new GPT5Adapter(openai);
 
 // AI Exercise Recommendations
 router.post('/exercise-recommendations', async (req, res) => {
@@ -105,18 +109,14 @@ router.post('/exercise-recommendations', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
+      const response = await gpt5Adapter.createCompletion({
+        model: modelConfig,
+        systemPrompt,
+        userPrompt,
+        responseFormat: { type: "json_object" }
       });
 
-      const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
+      const aiResponse = JSON.parse(response.content || '{}');
       
       return {
         recommendations: aiResponse.recommendations || [],
@@ -344,23 +344,18 @@ router.post('/nutrition-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
+      const response = await gpt5Adapter.createCompletion({
+        model: modelConfig,
+        systemPrompt,
+        userPrompt,
+        responseFormat: { type: "json_object" }
       });
 
-      const responseContent = response.choices[0].message.content;
-      if (!responseContent) {
+      if (!response.content) {
         throw new Error('Empty response from AI');
       }
 
-      return JSON.parse(responseContent);
+      return JSON.parse(response.content);
     });
 
     res.json(result);
@@ -430,29 +425,31 @@ router.post('/food-analysis', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
-          { role: "system", content: systemPrompt },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: userPrompt },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${image}`
-                }
+      const messages = [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: userPrompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${image}`
               }
-            ]
-          }
-        ],
-        response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
+            }
+          ]
+        }
+      ];
+
+      const response = await gpt5Adapter.createCompletion({
+        model: modelConfig,
+        systemPrompt,
+        userPrompt,
+        messages,
+        responseFormat: { type: "json_object" }
       });
 
-      return JSON.parse(response.choices[0].message.content || '{}');
+      return JSON.parse(response.content || '{}');
     });
 
     res.json(result);
@@ -508,18 +505,14 @@ router.post('/program-optimization', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
+      const response = await gpt5Adapter.createCompletion({
+        model: modelConfig,
+        systemPrompt,
+        userPrompt,
+        responseFormat: { type: "json_object" }
       });
 
-      return JSON.parse(response.choices[0].message.content || '{}');
+      return JSON.parse(response.content || '{}');
     });
 
     res.json(result);
