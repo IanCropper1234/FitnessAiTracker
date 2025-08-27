@@ -74,17 +74,19 @@ router.post('/exercise-recommendations', async (req, res) => {
 
     Please analyze this data and provide:
     1. **MANDATORY**: You MUST provide exactly 4-6 specific exercise recommendations SELECTED ONLY from the exercise library above
-    2. Science-based reasoning for each recommendation
-    3. Optimal set/rep ranges based on scientific guidelines
-    4. Special training method suggestions where appropriate
-    5. Volume progression considerations
+    2. **MUSCLE GROUP COVERAGE**: Ensure exercises target ALL requested muscle groups: ${muscleGroupFocus?.join(', ') || 'Full body'}
+    3. Science-based reasoning for each recommendation explaining muscle group targeting
+    4. Optimal set/rep ranges based on scientific guidelines
+    5. Special training method suggestions where appropriate
+    6. Volume progression considerations
 
     **CRITICAL REQUIREMENTS**:
     - You MUST include at least 4 exercises in your recommendations array
+    - You MUST provide exercises that target ALL the requested muscle groups: ${muscleGroupFocus?.join(', ') || 'Full body'}
+    - Distribute exercises across all requested muscle groups (aim for 1-2 exercises per muscle group)
     - Only use exercise names that appear EXACTLY in the exercise library list above
     - Do not create new exercises or modify existing names
     - If you cannot find suitable exercises, select the closest matches and explain in reasoning
-    - Focus on the requested muscle groups: ${muscleGroupFocus?.join(', ') || 'Full body'}
 
     **RESPONSE FORMAT**: You MUST respond with valid JSON in exactly this structure. The recommendations array MUST contain at least 4 exercises:
     {
@@ -147,7 +149,22 @@ router.post('/exercise-recommendations', async (req, res) => {
       const recommendations = aiResponse.recommendations || [];
       console.log('AI Response validation:');
       console.log('- Recommendations count:', recommendations.length);
-      console.log('- First 2 recommendations:', recommendations.slice(0, 2).map((r: any) => ({ name: r.exerciseName, muscle: r.primaryMuscle })));
+      console.log('- Requested muscle groups:', muscleGroupFocus);
+      console.log('- Recommended exercises with muscles:', recommendations.map((r: any) => ({ 
+        name: r.exerciseName, 
+        primary: r.primaryMuscle, 
+        groups: r.muscleGroups 
+      })));
+      
+      // Check muscle group coverage
+      const targetedMuscles = new Set();
+      recommendations.forEach((rec: any) => {
+        if (rec.primaryMuscle) targetedMuscles.add(rec.primaryMuscle);
+        if (rec.muscleGroups && Array.isArray(rec.muscleGroups)) {
+          rec.muscleGroups.forEach((muscle: string) => targetedMuscles.add(muscle));
+        }
+      });
+      console.log('- Muscle groups covered:', Array.from(targetedMuscles));
       
       if (recommendations.length === 0) {
         console.warn('AI returned no recommendations - this should not happen');
