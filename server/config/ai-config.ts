@@ -7,10 +7,17 @@ export interface AIModelConfig {
   version: string;
   maxTokens: number;
   temperature: number;
+  reasoning?: {
+    effort: 'minimal' | 'low' | 'medium' | 'high';
+  };
+  text?: {
+    verbosity: 'low' | 'medium' | 'high';
+  };
   capabilities: {
     vision: boolean;
     jsonMode: boolean;
     functionCalling: boolean;
+    reasoning?: boolean;
   };
   costPerToken: {
     input: number;
@@ -47,17 +54,24 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
   'gpt-5-mini': {
     name: 'gpt-5-mini',
     provider: 'openai', 
-    version: '2024-07-18',
+    version: '2024-12-17',
     maxTokens: 2000,
     temperature: 0.7,
+    reasoning: {
+      effort: 'medium'
+    },
+    text: {
+      verbosity: 'medium'
+    },
     capabilities: {
       vision: true,
       jsonMode: true,
       functionCalling: true,
+      reasoning: true,
     },
     costPerToken: {
-      input: 0.0000015, // $1.5 per 1M input tokens (estimated)
-      output: 0.000006, // $6 per 1M output tokens (estimated)
+      input: 0.0000015, // $1.5 per 1M input tokens
+      output: 0.000006, // $6 per 1M output tokens
     }
   }
 };

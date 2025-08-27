@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { selectModelForUser } from '../config/ai-config';
 import { monitorAICall } from './ai-performance-monitor';
+import { GPT5Adapter } from './gpt5-adapter';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY environment variable is required");
@@ -83,6 +84,9 @@ export interface NutritionAnalysis {
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
 });
+
+// Initialize GPT-5 adapter
+const gpt5Adapter = new GPT5Adapter(openai);
 
 export async function analyzeNutritionMultiImage(
   foodName?: string,
@@ -344,7 +348,19 @@ Return only valid JSON with all required fields.`
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = userId ? 
       selectModelForUser('multiImageNutrition', userId) : 
-      { name: 'gpt-4o', temperature: 0.1, maxTokens: 1500, costPerToken: { input: 0.000005, output: 0.000015 } };
+      {
+        name: 'gpt-4o',
+        provider: 'openai' as const,
+        version: '2024-05-13',
+        temperature: 0.1,
+        maxTokens: 1500,
+        capabilities: {
+          vision: true,
+          jsonMode: true,
+          functionCalling: true,
+        },
+        costPerToken: { input: 0.000005, output: 0.000015 }
+      };
     
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' && userId ? 
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
@@ -369,43 +385,8 @@ Return only valid JSON with all required fields.`
         costPerInputToken: modelConfig.costPerToken.input,
         costPerOutputToken: modelConfig.costPerToken.output
       }, async () => {
-        const response = await openai.chat.completions.create({
-          model: modelConfig.name,
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt
-            },
-            {
-              role: "user",
-              content: messageContent
-            },
-            {
-              role: "assistant",
-              content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
-            },
-            {
-              role: "user", 
-              content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
-            }
-          ],
-          max_tokens: modelConfig.maxTokens,
-          temperature: modelConfig.temperature,
-          response_format: { type: "json_object" }
-        });
-
-        const content = response.choices[0].message.content;
-        if (!content || content.trim() === '') {
-          throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
-        }
-
-        return JSON.parse(content);
-      });
-    } else {
-      // Direct call for unauthenticated users or legacy usage
-      const response = await openai.chat.completions.create({
-        model: modelConfig.name,
-        messages: [
+        // Use the GPT-5 adapter for unified API handling
+        const messages = [
           {
             role: "system",
             content: systemPrompt
@@ -422,13 +403,53 @@ Return only valid JSON with all required fields.`
             role: "user", 
             content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
           }
-        ],
-        max_tokens: modelConfig.maxTokens,
-        temperature: modelConfig.temperature,
-        response_format: { type: "json_object" }
+        ];
+
+        const response = await gpt5Adapter.createCompletion({
+          model: modelConfig,
+          systemPrompt,
+          userPrompt: userPromptText,
+          messages,
+          responseFormat: { type: "json_object" }
+        });
+
+        const content = response.content;
+        if (!content || content.trim() === '') {
+          throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
+        }
+
+        return JSON.parse(content);
+      });
+    } else {
+      // Direct call for unauthenticated users or legacy usage using adapter
+      const messages = [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: messageContent
+        },
+        {
+          role: "assistant",
+          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
+        },
+        {
+          role: "user", 
+          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+        }
+      ];
+
+      const response = await gpt5Adapter.createCompletion({
+        model: modelConfig,
+        systemPrompt,
+        userPrompt: userPromptText,
+        messages,
+        responseFormat: { type: "json_object" }
       });
 
-      const content = response.choices[0].message.content;
+      const content = response.content;
       console.log("OpenAI response received (length):", content?.length || 0);
       
       if (!content || content.trim() === '') {
@@ -978,15 +999,32 @@ export async function generateWeeklyWorkoutPlan(
 - Use RP intensity zones (RPE 6-9)
 - Scientific exercise selection and ordering`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
+    // Use GPT-5 adapter for model selection and API routing
+    const modelConfig = {
+      name: 'gpt-5-mini',
+      provider: 'openai' as const,
+      version: '2024-12-17',
       temperature: 0.7,
-      max_tokens: 4000,
+      maxTokens: 4000,
+      reasoning: { effort: 'high' },
+      text: { verbosity: 'high' },
+      capabilities: {
+        vision: false,
+        jsonMode: true,
+        functionCalling: true,
+        reasoning: true,
+      },
+      costPerToken: { input: 0.0000015, output: 0.000006 }
+    };
+
+    const response = await gpt5Adapter.createCompletion({
+      model: modelConfig,
+      systemPrompt: "You are an expert exercise scientist and program designer. Generate comprehensive workout plans using scientific principles.",
+      userPrompt: prompt,
+      responseFormat: { type: "json_object" }
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    const result = JSON.parse(response.content || "{}");
     
     // Calculate totals and validate
     let totalWeeklyVolume = 0;
