@@ -1070,7 +1070,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   Choose how you want to set your daily nutrition goals
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="p-5 space-y-6 pl-[5px] pr-[5px] pt-[5px] pb-[5px]">
                 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1215,7 +1215,7 @@ export function DietBuilder({ userId }: DietBuilderProps) {
                   </TabsList>
                 </Tabs>
               </div>
-              <CardContent className="space-y-6">
+              <CardContent className="p-5 space-y-6 pl-[5px] pr-[5px] pt-[5px] pb-[5px]">
                 {/* Content based on selected tab */}
                 {goalSubTab === 'recommended' && goalSelectionMode === 'recommended' && (
                   // Recommended Goals Content
