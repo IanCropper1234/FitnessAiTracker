@@ -158,15 +158,28 @@ export async function analyzeNutritionMultiImage(
    - Look for ingredients not immediately obvious (sauces, seasonings, cooking oils, etc.)
    - Consider cooking methods that affect nutrition (fried vs grilled, added fats, etc.)
 
-3. **INTELLIGENT PORTION ESTIMATION WITH REALISM CHECK:**
-   - Estimate portion size using visual references (plates, utensils, hands, common objects)
-   - Choose appropriate unit: liquids→ml/cups, most foods→g (preferred for accuracy), very small countable items→pieces, prepared dishes→servings
-   - Cross-reference with typical serving sizes for validation
-   - **CRITICAL PORTION REALITY CHECK**: For snack foods like egg waffles (雞蛋仔), typical single servings are:
-     * Small portion (6-8 pieces): 150-250 calories
-     * Medium portion (10-12 pieces): 250-350 calories  
-     * Large portion (15-20 pieces): 350-500 calories
-   - **AVOID OVERSIZING**: Do not assume large quantities unless clearly visible - prefer conservative realistic portions
+3. **INTELLIGENT PORTION ESTIMATION WITH ACCURATE VOLUME ANALYSIS:**
+   - **MANDATORY VISUAL CALIBRATION**: Use visible reference objects for size estimation:
+     * Standard dinner plate (≈25cm diameter) = reference for meal portions
+     * Coffee cup (≈240ml) = reference for liquid volumes
+     * Adult hand/palm (≈100g protein portions) = reference for protein sizing
+     * Smartphone (≈14cm length) = reference for length measurements
+     * Coins, utensils, napkins = additional size references
+   
+   - **SYSTEMATIC PORTION ANALYSIS PROCESS**:
+     1. **Identify Reference Objects**: Look for plates, cups, utensils, hands, or other known-size items
+     2. **Calculate Relative Proportions**: Compare food size to reference objects
+     3. **Estimate Physical Dimensions**: Length, width, height, or volume of food items
+     4. **Apply Food Density Knowledge**: Convert visual volume to weight using food-specific density
+     5. **Reality Check Against Typical Portions**: Verify estimate against standard serving sizes
+   
+   - **PORTION SIZE ACCURACY RULES**:
+     * Small snacks (cookies, small pastries): typically 20-80g each = 80-350 calories
+     * Medium portions (single servings): typically 100-200g = 200-600 calories
+     * Large single portions: typically 200-400g = 400-1000 calories
+     * Be especially careful with fried/baked items - they often appear larger than actual weight
+   
+   - **CONSERVATIVE ESTIMATION PRINCIPLE**: When in doubt, choose smaller realistic portions over oversized estimates
 
 4. **MATHEMATICAL INGREDIENT-LEVEL NUTRITION CALCULATION:**
    - Calculate nutrition for each identified component with DETAILED breakdown
@@ -207,8 +220,8 @@ ${foodDescription ? `
 - confidence: confidence level 0-1 (number, ${analysisType === 'nutrition_label' ? '0.9-1.0 for clear labels' : '0.6-0.8 for food estimation'})
 - category: primary macro category (string: "protein", "carb", "fat", or "mixed")
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
-- assumptions: key assumptions about ingredients, preparation, and cooking methods (string)
-- servingDetails: description with OPTIMAL UNIT for this food type${imageCount > 1 ? ' analyzed across all images' : ''} (string)
+- assumptions: key assumptions about ingredients, preparation, cooking methods, AND portion size estimation methodology with reference objects used (string)
+- servingDetails: detailed description including portion size estimation methodology, reference objects used for scaling, and OPTIMAL UNIT for this food type${imageCount > 1 ? ' analyzed across all images' : ''} (string)
 - portionWeight: most appropriate portion weight as number based on nutritional science and typical serving practices for this food type
 - portionUnit: most accurate unit for nutrition tracking - prefer grams (g) for solid foods like donuts, cookies, bread for precision; only use pieces for very small uniform items
 - ingredientBreakdown: array of identified food components (e.g., ["grilled chicken: 120g", "brown rice: 150g", "broccoli: 80g"])
