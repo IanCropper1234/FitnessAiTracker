@@ -271,7 +271,7 @@ Return only valid JSON with all required fields.`
    - **Small items**: pieces, units (vitamins, pills, individual snacks)
 
 3. **CONTEXTUAL PORTION ANALYSIS:**
-   - Food: "${primaryInput}"${foodDescription && foodName !== foodDescription ? ` with context: "${foodDescription}"` : ''}
+   - Food: "${primaryInput}"${foodDescription && foodDescription.trim() ? ` with context: "${foodDescription}"` : ''}
    - Determine realistic serving sizes based on food type and common consumption patterns
    - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
 
