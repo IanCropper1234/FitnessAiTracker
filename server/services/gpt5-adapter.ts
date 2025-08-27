@@ -82,9 +82,15 @@ export class GPT5Adapter {
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      max_tokens: model.maxTokens,
       temperature: model.temperature
     };
+
+    // Use max_completion_tokens for GPT-5-mini and newer models
+    if (model.name.includes('gpt-5') || model.name.includes('o1')) {
+      params.max_completion_tokens = model.maxTokens;
+    } else {
+      params.max_tokens = model.maxTokens;
+    }
 
     if (responseFormat) {
       params.response_format = responseFormat;
@@ -99,10 +105,13 @@ export class GPT5Adapter {
   }
 
   /**
-   * Check if the model is a GPT-5 model
+   * Check if the model is a GPT-5 model that uses the responses API
+   * Note: GPT-5-mini still uses chat.completions API
    */
   private isGPT5Model(modelName: string): boolean {
-    return modelName.startsWith('gpt-5');
+    // Currently no models use the responses API in production
+    // GPT-5-mini uses chat.completions with max_completion_tokens
+    return false;
   }
 
   /**
