@@ -714,7 +714,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleAddExercise = (exercise: any, config: any) => {
-    addExerciseToSessionMutation.mutate({ exerciseId: exercise.id, config });
+    console.log('🔍 DEBUG handleAddExercise called with:', { exercise, config });
+    console.log('🔍 DEBUG exercise.id:', exercise.id);
+    console.log('🔍 DEBUG exercise.exerciseId:', exercise.exerciseId);
+    
+    // Use exerciseId if available, otherwise use id
+    const exerciseId = exercise.exerciseId || exercise.id;
+    
+    if (!exerciseId) {
+      console.error('❌ No exerciseId found in exercise object:', exercise);
+      return;
+    }
+    
+    addExerciseToSessionMutation.mutate({ exerciseId, config });
   };
 
   // Update workout execution context
