@@ -158,10 +158,15 @@ export async function analyzeNutritionMultiImage(
    - Look for ingredients not immediately obvious (sauces, seasonings, cooking oils, etc.)
    - Consider cooking methods that affect nutrition (fried vs grilled, added fats, etc.)
 
-3. **INTELLIGENT PORTION ESTIMATION:**
+3. **INTELLIGENT PORTION ESTIMATION WITH REALISM CHECK:**
    - Estimate portion size using visual references (plates, utensils, hands, common objects)
    - Choose appropriate unit: liquids→ml/cups, most foods→g (preferred for accuracy), very small countable items→pieces, prepared dishes→servings
    - Cross-reference with typical serving sizes for validation
+   - **CRITICAL PORTION REALITY CHECK**: For snack foods like egg waffles (雞蛋仔), typical single servings are:
+     * Small portion (6-8 pieces): 150-250 calories
+     * Medium portion (10-12 pieces): 250-350 calories  
+     * Large portion (15-20 pieces): 350-500 calories
+   - **AVOID OVERSIZING**: Do not assume large quantities unless clearly visible - prefer conservative realistic portions
 
 4. **MATHEMATICAL INGREDIENT-LEVEL NUTRITION CALCULATION:**
    - Calculate nutrition for each identified component with DETAILED breakdown
@@ -314,6 +319,8 @@ Return only valid JSON with all required fields.`
    - Verify macronutrient ratios make sense for the food type
    - Check that micronutrient levels are realistic and not excessive
    - Ensure portion sizes align with typical consumption patterns
+   - For snack items like egg waffles, cookies, donuts: typical single servings are 150-400 calories
+   - Be conservative with portion estimates - prefer smaller realistic portions over oversized estimates
    - **PREPARATION LOGIC CHECK**: If description mentions cooking methods/additions:
      * Verify final calories > base food calories (cooked/prepared should be higher)
      * Check fat content increased appropriately with oils/skin
@@ -518,7 +525,7 @@ Return only valid JSON with all required fields.`
     const totalCaloriesFromMacros = (validatedResult.protein * 4) + (validatedResult.carbs * 4) + (validatedResult.fat * 9);
     const calorieDiscrepancy = Math.abs(validatedResult.calories - totalCaloriesFromMacros);
     
-    // Special validation for nutrition labels - flag potential scaling errors
+    // Enhanced validation for both nutrition labels and actual food analysis
     if (analysisType === 'nutrition_label' && validatedResult.calories > 400) {
       console.warn(`WARNING: High calorie count (${validatedResult.calories}) for nutrition label analysis - possible scaling error. Expected range for single serving typically 50-300 calories.`);
       
@@ -531,6 +538,16 @@ Return only valid JSON with all required fields.`
         validatedResult.fat = 6;       // Known correct value from label
         console.log(`Applied scaling correction: ${validatedResult.calories} calories, ${validatedResult.protein}g protein, ${validatedResult.carbs}g carbs, ${validatedResult.fat}g fat`);
       }
+    }
+    
+    // Enhanced validation for actual food analysis - flag unrealistic portions
+    if (analysisType === 'actual_food' && validatedResult.calories > 800) {
+      console.warn(`WARNING: Very high calorie count (${validatedResult.calories}) for actual food analysis. This may indicate AI misinterpretation of portion size.`);
+      console.warn(`Food: ${foodName || 'Unknown'}, Serving: ${validatedResult.servingDetails || 'Unknown'}`);
+      console.warn(`Consider re-analyzing with more specific portion descriptions or clearer images.`);
+      
+      // Flag for potential review but don't auto-correct as actual food portions can vary widely
+      validatedResult.confidence = Math.max(0.3, validatedResult.confidence - 0.2); // Reduce confidence for extremely high calorie counts
     }
     
     // Count total micronutrients across all categories
