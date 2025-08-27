@@ -162,7 +162,11 @@ export class GPT5Adapter {
   /**
    * Check if the model is a GPT-5 model
    */
-  private isGPT5Model(modelName: string): boolean {
+  private isGPT5Model(modelName?: string): boolean {
+    if (!modelName || typeof modelName !== 'string') {
+      console.warn('isGPT5Model: modelName is undefined or not a string:', modelName);
+      return false;
+    }
     return modelName.startsWith('gpt-5');
   }
 

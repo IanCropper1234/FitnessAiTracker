@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { selectModelForUser } from '../config/ai-config';
+import { selectModelForUser, AI_MODELS } from '../config/ai-config';
 import { monitorAICall } from './ai-performance-monitor';
 import { GPT5Adapter } from './gpt5-adapter';
 
@@ -389,19 +389,7 @@ Return only valid JSON with all required fields.`
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = userId ? 
       selectModelForUser('multiImageNutrition', userId) : 
-      {
-        name: 'gpt-4o',
-        provider: 'openai' as const,
-        version: '2024-05-13',
-        temperature: 0.1,
-        maxTokens: 1500,
-        capabilities: {
-          vision: true,
-          jsonMode: true,
-          functionCalling: true,
-        },
-        costPerToken: { input: 0.000005, output: 0.000015 }
-      };
+      AI_MODELS['gpt-5-mini'];
     
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' && userId ? 
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
