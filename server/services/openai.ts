@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { selectModelForUser } from '../config/ai-config';
+import { selectModelForUser, AIModelConfig } from '../config/ai-config';
 import { monitorAICall } from './ai-performance-monitor';
 import { GPT5Adapter } from './gpt5-adapter';
 
@@ -1041,14 +1041,14 @@ export async function generateWeeklyWorkoutPlan(
 - Scientific exercise selection and ordering`;
 
     // Use GPT-5 adapter for model selection and API routing
-    const modelConfig = {
+    const modelConfig: AIModelConfig = {
       name: 'gpt-5-mini',
       provider: 'openai' as const,
       version: '2024-12-17',
       temperature: 0.7,
       maxTokens: 4000,
-      reasoning: { effort: 'high' },
-      text: { verbosity: 'high' },
+      reasoning: { effort: 'high' as const },
+      text: { verbosity: 'high' as const },
       capabilities: {
         vision: false,
         jsonMode: true,
