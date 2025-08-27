@@ -53,7 +53,7 @@ export default function RPCoachPage({ userId }: RPCoachPageProps) {
               </CardHeader>
             </CollapsibleTrigger>
             <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-              <CardContent className="pt-0 space-y-6">
+              <CardContent className="p-5 space-y-6 pl-[5px] pr-[5px] pt-[0px] pb-[0px]">
                 <DailyWellnessCheckin userId={userId} />
               </CardContent>
             </CollapsibleContent>
