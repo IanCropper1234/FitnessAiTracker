@@ -272,6 +272,13 @@ Return only valid JSON with all required fields.`
 
 3. **CONTEXTUAL PORTION ANALYSIS:**
    - Food: "${primaryInput}"${foodDescription && foodDescription.trim() ? ` with context: "${foodDescription}"` : ''}
+   ${foodDescription && foodDescription.trim() ? `
+   - **CRITICAL**: The description "${foodDescription}" contains important preparation details that SIGNIFICANTLY affect nutritional content:
+     * Cooking methods (roasted, fried, grilled) can add 20-50% more calories from added oils/fats
+     * "With skin" adds substantial fat content (typically +50-100% fat compared to skinless)
+     * Added oils/butter must be calculated separately and added to base nutrition
+     * Example: "roasted with olive oil" = base food + 1-2 tbsp olive oil (120-240 extra calories)
+   - ADJUST your calculations to reflect these preparation modifications accurately` : ''}
    - Determine realistic serving sizes based on food type and common consumption patterns
    - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
 
