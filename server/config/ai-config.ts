@@ -79,7 +79,7 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
 // Environment-based configuration with GPT-5-mini as default
 export const getAIConfig = (): AIServiceConfig => {
   // Allow per-service model override via environment variables
-  const exerciseModel = process.env.AI_MODEL_EXERCISE || process.env.AI_MODEL || 'gpt-4o';
+  const exerciseModel = process.env.AI_MODEL_EXERCISE || process.env.AI_MODEL || 'gpt-5-mini';
   const nutritionModel = process.env.AI_MODEL_NUTRITION || process.env.AI_MODEL || 'gpt-5-mini';
   const foodAnalysisModel = process.env.AI_MODEL_FOOD || process.env.AI_MODEL || 'gpt-5-mini';
   const programOptimizationModel = process.env.AI_MODEL_PROGRAM || process.env.AI_MODEL || 'gpt-5-mini';

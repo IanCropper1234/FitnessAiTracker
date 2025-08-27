@@ -102,8 +102,15 @@ router.post('/exercise-recommendations', async (req, res) => {
         max_completion_tokens: modelConfig.maxTokens
       };
 
-      // Only add temperature for non-GPT-5 models
-      if (!modelConfig.name.startsWith('gpt-5')) {
+      // Add GPT-5 specific parameters
+      if (modelConfig.name.startsWith('gpt-5')) {
+        if (modelConfig.reasoning) {
+          params.reasoning = modelConfig.reasoning;
+        }
+        if (modelConfig.text) {
+          params.text = modelConfig.text;
+        }
+      } else {
         params.temperature = modelConfig.temperature;
       }
 
