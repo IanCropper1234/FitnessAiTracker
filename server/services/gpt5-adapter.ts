@@ -107,7 +107,7 @@ export class GPT5Adapter {
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      max_tokens: model.maxTokens,
+      max_completion_tokens: model.maxTokens,
       temperature: model.temperature
     };
 
@@ -150,7 +150,7 @@ export class GPT5Adapter {
           ]
         }
       ],
-      max_tokens: model.maxTokens,
+      max_completion_tokens: model.maxTokens,
       temperature: model.temperature
     };
 

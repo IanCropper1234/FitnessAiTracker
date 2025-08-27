@@ -113,7 +113,7 @@ router.post('/exercise-recommendations', async (req, res) => {
         ],
         response_format: { type: "json_object" },
         temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
+        max_completion_tokens: modelConfig.maxTokens
       });
 
       const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
@@ -510,7 +510,7 @@ router.post('/program-optimization', async (req, res) => {
         ],
         response_format: { type: "json_object" },
         temperature: modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens
+        max_completion_tokens: modelConfig.maxTokens
       });
 
       return JSON.parse(response.choices[0].message.content || '{}');
