@@ -974,7 +974,7 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
 
               {weeklyGoals && weeklyGoals.length > 0 && (
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-3">
+                  <div className="space-y-3 ml-[-10px] mr-[-10px]">
                     <h4 className="font-medium text-black dark:text-white">Progress Metrics</h4>
                     <div className="space-y-2">
                       <div className="flex justify-between">
@@ -1193,7 +1193,6 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
           <RPRecommendations userId={userId} />
         </TabsContent>
       </Tabs>
-
       {/* Disable Auto-Adjustment Confirmation Dialog */}
       <AlertDialog open={showDisableConfirmation} onOpenChange={setShowDisableConfirmation}>
         <AlertDialogContent>
