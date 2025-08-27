@@ -344,7 +344,7 @@ Return only valid JSON with all required fields.`
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = userId ? 
       selectModelForUser('multiImageNutrition', userId) : 
-      { name: 'gpt-4o-mini', temperature: 0.1, maxTokens: 1500, costPerToken: { input: 0.00000015, output: 0.0000006 } };
+      { name: 'gpt-5-mini', temperature: 0.1, maxTokens: 1500, costPerToken: { input: 0.0000015, output: 0.000006 } };
     
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' && userId ? 
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
@@ -729,7 +729,7 @@ Return only valid JSON with all required fields.`
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Updated to use gpt-4o-mini for cost efficiency
+      model: "gpt-5-mini", // Using gpt-5-mini for optimal cost efficiency
       messages: [
         {
           role: "system",
@@ -979,7 +979,7 @@ export async function generateWeeklyWorkoutPlan(
 - Scientific exercise selection and ordering`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Updated to use gpt-4o-mini for cost efficiency
+      model: "gpt-5-mini", // Using gpt-5-mini for optimal cost efficiency
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.7,
