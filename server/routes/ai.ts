@@ -279,6 +279,44 @@ router.post('/nutrition-analysis', async (req, res) => {
     
     const dataCompletenessScore = (dataQualityMetrics.recordsWithCompleteMicronutrients / dataQualityMetrics.totalRecords) * 100;
 
+    // Calculate macronutrient totals for better AI analysis
+    const macronutrientTotals = nutrition.reduce((totals: any, log: any) => {
+      return {
+        totalCalories: totals.totalCalories + (parseFloat(log.calories) || 0),
+        totalProtein: totals.totalProtein + (parseFloat(log.protein) || 0),
+        totalCarbs: totals.totalCarbs + (parseFloat(log.carbs) || 0),
+        totalFat: totals.totalFat + (parseFloat(log.fat) || 0),
+        recordsCount: totals.recordsCount + 1
+      };
+    }, {
+      totalCalories: 0,
+      totalProtein: 0, 
+      totalCarbs: 0,
+      totalFat: 0,
+      recordsCount: 0
+    });
+
+    // Calculate daily averages
+    const daysInPeriod = timeRange === 'Last 7 Days' || timeRange === '7days' ? 7 :
+                        timeRange === '14days' ? 14 :
+                        timeRange === '30days' ? 30 :
+                        timeRange === '90days' ? 90 : 7;
+    
+    const dailyAverages = {
+      avgCaloriesPerDay: macronutrientTotals.totalCalories / daysInPeriod,
+      avgProteinPerDay: macronutrientTotals.totalProtein / daysInPeriod,
+      avgCarbsPerDay: macronutrientTotals.totalCarbs / daysInPeriod,
+      avgFatPerDay: macronutrientTotals.totalFat / daysInPeriod
+    };
+
+    console.log('🔍 Macronutrient Analysis Data:', {
+      totalRecords: nutrition.length,
+      timeRange,
+      daysInPeriod,
+      macronutrientTotals,
+      dailyAverages
+    });
+
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = selectModelForUser('nutritionAnalysis', userId ? userId.toString() : '1');
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
@@ -309,9 +347,19 @@ router.post('/nutrition-analysis', async (req, res) => {
     
     **IMPORTANT**: When user profile data is incomplete (marked above), use general population averages for RDA calculations but clearly note this limitation in your analysis.
 
-    **Analysis Period**: ${timeRange || '7 days'} (${nutrition?.length || 0} total records analyzed)
+    **Analysis Period**: ${timeRange || '7 days'} (${nutrition?.length || 0} total records analyzed over ${daysInPeriod} days)
     **Data Quality Notice**: Some nutrition entries may lack complete micronutrient data. Analysis confidence varies based on data completeness.
-    **Nutrition Data Sample**: ${JSON.stringify(nutrition?.slice(0, 15) || [], null, 2)}
+    
+    **MACRONUTRIENT TOTALS & DAILY AVERAGES**:
+    - Total Period: ${daysInPeriod} days
+    - Total Calories: ${macronutrientTotals.totalCalories.toFixed(1)} cal (avg: ${dailyAverages.avgCaloriesPerDay.toFixed(1)} cal/day)
+    - Total Protein: ${macronutrientTotals.totalProtein.toFixed(1)}g (avg: ${dailyAverages.avgProteinPerDay.toFixed(1)}g/day)
+    - Total Carbs: ${macronutrientTotals.totalCarbs.toFixed(1)}g (avg: ${dailyAverages.avgCarbsPerDay.toFixed(1)}g/day)
+    - Total Fat: ${macronutrientTotals.totalFat.toFixed(1)}g (avg: ${dailyAverages.avgFatPerDay.toFixed(1)}g/day)
+    
+    **IMPORTANT**: Use the totals and daily averages above for your macronutrient analysis. The protein daily average of ${dailyAverages.avgProteinPerDay.toFixed(1)}g should be used as the "currentIntake" for protein analysis.
+    
+    **Nutrition Data Sample**: ${JSON.stringify(nutrition?.slice(0, 10) || [], null, 2)}
     
     **DATA QUALITY ASSESSMENT**:
     - Total nutrition records analyzed: ${dataQualityMetrics.totalRecords}
