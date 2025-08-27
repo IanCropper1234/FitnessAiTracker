@@ -105,16 +105,22 @@ router.post('/exercise-recommendations', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
+      const params: any = {
         model: modelConfig.name,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
         response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
         max_completion_tokens: modelConfig.maxTokens
-      });
+      };
+
+      // Only add temperature for non-GPT-5 models
+      if (!modelConfig.name.startsWith('gpt-5')) {
+        params.temperature = modelConfig.temperature;
+      }
+
+      const response = await openai.chat.completions.create(params);
 
       const aiResponse = JSON.parse(response.choices[0].message.content || '{}');
       
@@ -502,16 +508,22 @@ router.post('/program-optimization', async (req, res) => {
       costPerInputToken: modelConfig.costPerToken.input,
       costPerOutputToken: modelConfig.costPerToken.output
     }, async () => {
-      const response = await openai.chat.completions.create({
+      const params: any = {
         model: modelConfig.name,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
         response_format: { type: "json_object" },
-        temperature: modelConfig.temperature,
         max_completion_tokens: modelConfig.maxTokens
-      });
+      };
+
+      // Only add temperature for non-GPT-5 models
+      if (!modelConfig.name.startsWith('gpt-5')) {
+        params.temperature = modelConfig.temperature;
+      }
+
+      const response = await openai.chat.completions.create(params);
 
       return JSON.parse(response.choices[0].message.content || '{}');
     });

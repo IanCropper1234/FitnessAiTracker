@@ -107,9 +107,13 @@ export class GPT5Adapter {
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      max_completion_tokens: model.maxTokens,
-      temperature: model.temperature
+      max_completion_tokens: model.maxTokens
     };
+
+    // Only add temperature for non-GPT-5 models
+    if (!this.isGPT5Model(model.name)) {
+      params.temperature = model.temperature;
+    }
 
     if (responseFormat) {
       params.response_format = responseFormat;
@@ -150,9 +154,13 @@ export class GPT5Adapter {
           ]
         }
       ],
-      max_completion_tokens: model.maxTokens,
-      temperature: model.temperature
+      max_completion_tokens: model.maxTokens
     };
+
+    // Only add temperature for non-GPT-5 models
+    if (!this.isGPT5Model(model.name)) {
+      params.temperature = model.temperature;
+    }
 
     if (responseFormat) {
       params.response_format = responseFormat;
