@@ -645,7 +645,8 @@ export default function CreateAIWorkoutSession() {
                           templateNamePrefix 
                         })}
                         disabled={saveWeeklyPlanMutation.isPending}
-                        className="w-full bg-green-600 hover:bg-green-700"
+                        variant="default"
+                        className="w-full"
                       >
                         {saveWeeklyPlanMutation.isPending ? (
                           <>
@@ -671,12 +672,12 @@ export default function CreateAIWorkoutSession() {
 
                 {/* Weekly Plan Summary (for weekly mode) */}
                 {viewMode === 'weekly' && recommendationMutation.data.sessions && (
-                    <div className="p-4 bg-purple-500/10 border border-purple-500/20">
+                    <div className="p-4 bg-muted/50 border border-border/50">
                       <div className="flex items-center gap-2 mb-2">
-                        <Calendar className="h-4 w-4 text-purple-400" />
-                        <span className="text-sm font-medium text-purple-400">Weekly Plan Summary</span>
+                        <Calendar className="h-4 w-4 text-foreground" />
+                        <span className="text-sm font-medium text-foreground">Weekly Plan Summary</span>
                       </div>
-                      <div className="text-xs text-purple-300 space-y-1">
+                      <div className="text-xs text-muted-foreground space-y-1">
                         <p><span className="font-medium">Sessions:</span> {recommendationMutation.data.sessions.length} days</p>
                         <p><span className="font-medium">Total Exercises:</span> {recommendationMutation.data.sessions.reduce((total: number, session: any) => total + session.exercises.length, 0)}</p>
                         <p><span className="font-medium">Special Methods:</span> {recommendationMutation.data.specialMethodsUsage?.percentage || 0}% distribution</p>
@@ -686,21 +687,21 @@ export default function CreateAIWorkoutSession() {
                 )}
 
                 {/* Overall Analysis */}
-                <div className="p-4 bg-blue-500/10 border border-blue-500/20">
+                <div className="p-4 bg-muted/50 border border-border/50">
                     <div className="flex items-center gap-2 mb-2">
-                      <Info className="h-4 w-4 text-blue-400" />
-                      <span className="text-sm font-medium text-blue-400">AI Analysis</span>
+                      <Info className="h-4 w-4 text-foreground" />
+                      <span className="text-sm font-medium text-foreground">AI Analysis</span>
                     </div>
-                    <p className="text-xs text-blue-300">{recommendationMutation.data.reasoning}</p>
+                    <p className="text-xs text-muted-foreground">{recommendationMutation.data.reasoning}</p>
                 </div>
 
                 {/* RP Considerations */}
-                <div className="p-4 bg-green-500/10 border border-green-500/20">
+                <div className="p-4 bg-muted/50 border border-border/50">
                     <div className="flex items-center gap-2 mb-2">
-                      <Target className="h-4 w-4 text-green-400" />
-                      <span className="text-sm font-medium text-green-400">Science Based Methodology Insights</span>
+                      <Target className="h-4 w-4 text-foreground" />
+                      <span className="text-sm font-medium text-foreground">Science Based Methodology Insights</span>
                     </div>
-                    <p className="text-xs text-green-300">{recommendationMutation.data.rpConsiderations}</p>
+                    <p className="text-xs text-muted-foreground">{recommendationMutation.data.rpConsiderations}</p>
                 </div>
 
                 {/* Exercise Recommendations - Different display for weekly vs single mode */}
@@ -713,7 +714,7 @@ export default function CreateAIWorkoutSession() {
                       </h4>
                       <div className="space-y-3 max-h-[60vh] overflow-y-auto">
                         {recommendationMutation.data.sessions.map((session: WorkoutSession, sessionIndex: number) => (
-                          <Card key={sessionIndex} className="border-l-4 border-l-purple-500">
+                          <Card key={sessionIndex} className="border-l-4 border-l-primary/50">
                             <CardHeader className="pb-2">
                               <div className="flex items-center justify-between">
                                 <div>
@@ -731,7 +732,7 @@ export default function CreateAIWorkoutSession() {
                                   <div key={exerciseIndex} className="p-2 bg-muted/30 border border-muted">
                                     <div className="flex items-center justify-between mb-1">
                                       <h6 className="font-medium text-xs">{exercise.exerciseName}</h6>
-                                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 py-0.5 text-xs font-bold">
+                                      <div className="bg-primary text-primary-foreground px-2 py-0.5 text-xs font-bold shadow-sm">
                                         {exercise.sets} × {exercise.reps}
                                       </div>
                                     </div>
@@ -742,7 +743,7 @@ export default function CreateAIWorkoutSession() {
                                       <Badge variant="secondary" className="text-xs h-4 px-1">
                                         {exercise.equipment}
                                       </Badge>
-                                      <Badge variant={exercise.specialMethod && exercise.specialMethod !== 'null' ? "destructive" : "secondary"} className="text-xs h-4 px-1">
+                                      <Badge variant={exercise.specialMethod && exercise.specialMethod !== 'null' ? "default" : "secondary"} className="text-xs h-4 px-1">
                                         {exercise.specialMethod && exercise.specialMethod !== 'null' ? exercise.specialMethod : 'Standard'}
                                       </Badge>
                                     </div>
@@ -782,8 +783,9 @@ export default function CreateAIWorkoutSession() {
                         {recommendationMutation.data.recommendations && recommendationMutation.data.recommendations.length > 0 && (
                           <Button 
                             onClick={() => handleSaveAllExercisesToTemplate()}
-                            className="bg-purple-600 hover:bg-purple-700 text-xs"
+                            variant="default"
                             size="sm"
+                            className="text-xs"
                           >
                             <Save className="h-3 w-3 mr-2" />
                             Save All as Template
@@ -791,7 +793,7 @@ export default function CreateAIWorkoutSession() {
                         )}
                       </div>
                       {recommendationMutation.data.recommendations?.map((rec: ExerciseRecommendation, index: number) => (
-                      <Card key={index} className="border-l-4 border-l-blue-500">
+                      <Card key={index} className="border-l-4 border-l-primary/50">
                         <CardContent className="p-4">
                           <div className="space-y-3">
                             <div className="flex items-center justify-between">
@@ -816,7 +818,7 @@ export default function CreateAIWorkoutSession() {
                             
                             {/* Sets and Reps in separate row */}
                             <div className="flex items-center justify-between">
-                              <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 text-lg font-bold">
+                              <div className="bg-primary text-primary-foreground px-4 py-2 text-lg font-bold shadow-sm">
                                 {rec.sets} × {rec.reps}
                               </div>
                               <div className="text-sm text-muted-foreground">{rec.restPeriod}s rest</div>
@@ -846,15 +848,15 @@ export default function CreateAIWorkoutSession() {
 
                             <div>
                               <div className="text-xs text-muted-foreground mb-1">Progression Notes:</div>
-                              <p className="text-xs text-green-400">{rec.progressionNotes}</p>
+                              <p className="text-xs text-foreground">{rec.progressionNotes}</p>
                             </div>
 
-                            <div className={`p-3 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-gray-500/10 border border-gray-500/20'}`}>
-                              <div className={`text-xs font-medium mb-2 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'text-orange-400' : 'text-gray-400'}`}>
+                            <div className={`p-3 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'bg-muted border border-border' : 'bg-muted/50 border border-border/50'}`}>
+                              <div className={`text-xs font-medium mb-2 ${rec.specialMethod && rec.specialMethod !== 'null' ? 'text-foreground' : 'text-muted-foreground'}`}>
                                 Special Method: {rec.specialMethod && rec.specialMethod !== 'null' ? rec.specialMethod : 'Standard'}
                               </div>
                               {rec.specialConfig && rec.specialMethod && rec.specialMethod !== 'null' && (
-                                <div className="text-xs text-gray-300 space-y-1">
+                                <div className="text-xs text-muted-foreground space-y-1">
                                   {rec.specialMethod === 'myorep_match' && (
                                     <div>Target: {rec.specialConfig.targetReps || 15} reps, Mini-sets: {rec.specialConfig.miniSets || 3}, Rest: {rec.specialConfig.restSeconds || 15}s</div>
                                   )}
@@ -875,7 +877,7 @@ export default function CreateAIWorkoutSession() {
                             <div className="flex justify-end pt-2 border-t border-muted/20">
                               <button 
                                 onClick={() => handleSaveExerciseToTemplate(rec)}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium transition-colors"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium transition-colors shadow-sm hover:shadow-md"
                               >
                                 <span>💾</span>
                                 Save to Templates
@@ -889,12 +891,12 @@ export default function CreateAIWorkoutSession() {
                 )}
 
                 {/* Progression Plan */}
-                <div className="p-4 bg-purple-500/10 border border-purple-500/20">
+                <div className="p-4 bg-muted/50 border border-border/50">
                     <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-purple-400" />
-                      <span className="text-sm font-medium text-purple-400">Progression Plan</span>
+                      <TrendingUp className="h-4 w-4 text-foreground" />
+                      <span className="text-sm font-medium text-foreground">Progression Plan</span>
                     </div>
-                  <p className="text-xs text-purple-300">{recommendationMutation.data.progressionPlan}</p>
+                  <p className="text-xs text-muted-foreground">{recommendationMutation.data.progressionPlan}</p>
                 </div>
               </div>
             )}
