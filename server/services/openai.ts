@@ -372,7 +372,11 @@ Return only valid JSON with all required fields.`
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
 - SUPPLEMENT NAME IDENTIFICATION: For supplements, read the EXACT product name from the label/bottle, including specific compound names (e.g., "Vitamin K Complex with K1, K2-MK4, K2-MK7", "Super K Multi-Form Vitamin K", "CoQ10 Ubiquinol 100mg")
-- DYNAMIC UNIT DETECTION: Read the exact units from the label and use the {value: number, unit: string} format when the label unit differs from the default expected unit (e.g., if label shows "Vitamin K: 100mg" use {value: 100, unit: "mg"}, if label shows "2600mcg" use {value: 2600, unit: "mcg"})
+- DYNAMIC UNIT DETECTION: CRITICAL - Always read the exact units from the label and use the {value: number, unit: string} format. For vitamin supplements: 
+  * If label shows "Vitamin K: 2600mcg" → return vitaminK: {value: 2600, unit: "mcg"}
+  * If label shows "Vitamin D: 25mcg" → return vitaminD: {value: 25, unit: "mcg"}  
+  * If label shows "Vitamin C: 10mg" → return vitaminC: {value: 10, unit: "mg"}
+  * NEVER assume default units - always check the label first
 - ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: carefully read the label and use EXACT form - "softgel", "capsule", "tablet", "pill", "gummy", "drop" - NEVER use "g" or "ml" for pills/tablets/capsules)
 - SUPPLEMENT FORM DETECTION: Look at the bottle label, product description, and supplement facts panel to identify the exact form (softgel vs tablet vs capsule vs gummy)
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
