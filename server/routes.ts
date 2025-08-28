@@ -1833,8 +1833,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fat: (parseFloat(currentLog.fat) * multiplier).toFixed(2)
         };
         
-        // Include recalculated macros in updates
+        // Recalculate micronutrients proportionally if they exist
+        let recalculatedMicronutrients: any = null;
+        if (currentLog.micronutrients) {
+          const scaleMicronutrient = (value: any): any => {
+            if (typeof value === 'number') {
+              return Math.round((value * multiplier) * 100) / 100;
+            } else if (typeof value === 'object' && value !== null) {
+              const scaledObject: any = {};
+              for (const [key, val] of Object.entries(value)) {
+                scaledObject[key] = scaleMicronutrient(val);
+              }
+              return scaledObject;
+            } else {
+              return value;
+            }
+          };
+          
+          recalculatedMicronutrients = scaleMicronutrient(currentLog.micronutrients);
+        }
+        
+        // Include recalculated macros and micronutrients in updates
         Object.assign(updates, recalculatedMacros);
+        if (recalculatedMicronutrients) {
+          updates.micronutrients = recalculatedMicronutrients;
+        }
         
         console.log(`Recalculating macros for log ${id}: ${oldQuantity} → ${newQuantity} (${multiplier.toFixed(2)}x)`);
         console.log('Updated macros:', recalculatedMacros);
