@@ -1630,10 +1630,16 @@ export function IntegratedNutritionOverview({
                                 )}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
-                                    const retinolTotal = (variantTotals.retinol || 0) + 
-                                                        (variantTotals.retinolequivalents || 0);
-                                    const betaCaroteneTotal = (variantTotals.betacarotene || 0) + 
-                                                             (variantTotals.vitaminabetacarotene || 0);
+                                    // Dynamic detection for Vitamin A variants
+                                    const retinolKeys = Object.keys(variantTotals).filter(key => 
+                                      key.includes('retinol') && !key.includes('beta')
+                                    );
+                                    const retinolTotal = retinolKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                    
+                                    const betaCaroteneKeys = Object.keys(variantTotals).filter(key => 
+                                      key.includes('betacarotene') || key.includes('beta')
+                                    );
+                                    const betaCaroteneTotal = betaCaroteneKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
                                     
                                     const variants = [];
                                     if (retinolTotal > 0) {
@@ -1667,10 +1673,16 @@ export function IntegratedNutritionOverview({
                                 )}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
-                                    const d2Total = (variantTotals.vitamind2 || 0) + 
-                                                    (variantTotals.ergocalciferol || 0);
-                                    const d3Total = (variantTotals.vitamind3 || 0) + 
-                                                    (variantTotals.cholecalciferol || 0);
+                                    // Dynamic detection for Vitamin D variants
+                                    const d2Keys = Object.keys(variantTotals).filter(key => 
+                                      (key.includes('vitamind2') || key.includes('ergocalciferol')) && !key.includes('d3')
+                                    );
+                                    const d2Total = d2Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                    
+                                    const d3Keys = Object.keys(variantTotals).filter(key => 
+                                      (key.includes('vitamind3') || key.includes('cholecalciferol')) && !key.includes('d2')
+                                    );
+                                    const d3Total = d3Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
                                     
                                     const variants = [];
                                     if (d2Total > 0) {
@@ -1704,10 +1716,22 @@ export function IntegratedNutritionOverview({
                                 )}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
-                                    const alphaTocopherolTotal = (variantTotals.alphatocopherol || 0) + 
-                                                                 (variantTotals.tocopherol || 0);
-                                    const gammaTocopherolTotal = variantTotals.gammatocopherol || 0;
-                                    const tocotrienolTotal = variantTotals.tocotrienol || 0;
+                                    // Dynamic detection for Vitamin E variants
+                                    const alphaTocopherolKeys = Object.keys(variantTotals).filter(key => 
+                                      (key.includes('alphatocopherol') || key.includes('tocopherol')) && 
+                                      !key.includes('gamma') && !key.includes('delta')
+                                    );
+                                    const alphaTocopherolTotal = alphaTocopherolKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                    
+                                    const gammaTocopherolKeys = Object.keys(variantTotals).filter(key => 
+                                      key.includes('gammatocopherol')
+                                    );
+                                    const gammaTocopherolTotal = gammaTocopherolKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                    
+                                    const tocotrienolKeys = Object.keys(variantTotals).filter(key => 
+                                      key.includes('tocotrienol')
+                                    );
+                                    const tocotrienolTotal = tocotrienolKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
                                     
                                     const variants = [];
                                     if (alphaTocopherolTotal > 0) {
@@ -1750,40 +1774,19 @@ export function IntegratedNutritionOverview({
                                 {/* Show individual K variants if they exist */}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
-                                    // Debug: Log variant totals for K vitamins
-                                    console.log('🔍 Vitamin K Variant Debug:', Object.keys(variantTotals).filter(k => k.includes('vitamin') && k.includes('k')));
-                                    console.log('🔍 All variant totals with K:', Object.fromEntries(
-                                      Object.entries(variantTotals).filter(([k, v]) => k.includes('k') && v > 0)
-                                    ));
-                                    
-                                    // Calculate K1 variants (phyloquinone) - using ALL possible K1 variant keys
+                                    // Calculate K1 variants (phyloquinone) - dynamic detection
                                     const allK1Keys = Object.keys(variantTotals).filter(key => 
                                       (key.includes('vitamink1') || key.includes('phyloquinone') || key.includes('vitaminkspecies')) &&
                                       !key.includes('k2') && !key.includes('menaquinone')
                                     );
                                     const k1Total = allK1Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
                                     
-                                    console.log('🔍 Found K1 keys:', allK1Keys);
-                                    
-                                    // Debug: Show individual K variant values
-                                    console.log('🔍 K1 components:', {
-                                      vitamink1phyloquinone: variantTotals.vitamink1phyloquinone,
-                                      vitaminkspecies: variantTotals.vitaminkspecies,
-                                      phyloquinone: variantTotals.phyloquinone
-                                    });
-                                    console.log('🔍 K2 components:', {
-                                      vitamink2menaquinone4mk4: variantTotals.vitamink2menaquinone4mk4,
-                                      vitamink2menaquinone7mk7: variantTotals.vitamink2menaquinone7mk7
-                                    });
-                                    
-                                    // Calculate K2 variants (menaquinone types) - using actual variant names from debug
-                                    const k2Total = (variantTotals.vitamink2menaquinone4mk4 || 0) + 
-                                                   (variantTotals.vitamink2menaquinone7mk7 || 0) + 
-                                                   (variantTotals.menaquinone || 0) + 
-                                                   (variantTotals.menaquinone4 || 0) + 
-                                                   (variantTotals.menaquinone7 || 0);
-                                    
-                                    console.log(`🔍 K1 Total: ${k1Total}, K2 Total: ${k2Total}`);
+                                    // Calculate K2 variants (menaquinone types) - dynamic detection
+                                    const allK2Keys = Object.keys(variantTotals).filter(key => 
+                                      (key.includes('vitamink2') || key.includes('menaquinone')) &&
+                                      !key.includes('k1')
+                                    );
+                                    const k2Total = allK2Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
                                     
                                     const variants = [];
                                     if (k1Total > 0) {
