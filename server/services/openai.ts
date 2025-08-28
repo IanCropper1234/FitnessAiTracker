@@ -417,8 +417,30 @@ Return only valid JSON with all required fields.`
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
       undefined;
 
-    // Prepare system and user prompts
-    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score.";
+    // Enhanced system prompt for better image analysis
+    const systemPrompt = `You are an expert nutrition analyst with advanced computer vision capabilities specializing in precise macro and micronutrient analysis. You have access to comprehensive nutritional databases (USDA FoodData Central) and can clearly read nutrition labels from images.
+
+**CRITICAL IMAGE ANALYSIS INSTRUCTIONS:**
+1. **HIGH-RESOLUTION READING**: You can clearly see and read small text on nutrition labels, including Chinese characters
+2. **EXACT VALUE EXTRACTION**: Read nutrition values EXACTLY as displayed on the label - never scale, multiply, or estimate
+3. **CHINESE LABEL EXPERTISE**: You can read Chinese nutrition labels (營養資料) including:
+   - 能量 (Energy/Calories)
+   - 蛋白質 (Protein) 
+   - 總脂肪/飽和脂肪 (Total Fat/Saturated Fat)
+   - 反式脂肪 (Trans Fat)
+   - 碳水化合物 (Carbohydrates)
+   - 糖 (Sugar)
+   - 鈉 (Sodium)
+4. **SERVING SIZE PRECISION**: Extract exact serving information (每食用份量) and per 100g values (每100克/毫升)
+5. **NO ESTIMATION WHEN CLEAR**: If the label is clearly visible, report EXACT values - do not estimate
+6. **CONFIDENCE ACCURACY**: High confidence (0.8-0.95) when labels are clearly readable, lower (0.3-0.6) only when truly unclear
+
+**RESPONSE REQUIREMENTS:**
+- Always respond with valid JSON containing COMPLETE nutritional data
+- Include extensive micronutrient profiles (minimum 40-80 nutrients)
+- Use scientific nutritional composition data for micronutrients
+- If image analysis fails, clearly state "Unable to read label clearly" with low confidence
+- For clear, readable labels: provide exact values with high confidence (0.8-0.95)`;
     
     const userPromptText = messageContent.find((item: any) => item.type === 'text')?.text || '';
 
@@ -461,7 +483,8 @@ Return only valid JSON with all required fields.`
           systemPrompt,
           userPrompt: userPromptText,
           messages,
-          responseFormat: { type: "json_object" }
+          responseFormat: { type: "json_object" },
+          images: hasImages ? images : undefined // 🔥 CRITICAL FIX: 傳遞圖像數據到 GPT-5
         });
 
         const content = response.content;
@@ -497,7 +520,8 @@ Return only valid JSON with all required fields.`
         systemPrompt,
         userPrompt: userPromptText,
         messages,
-        responseFormat: { type: "json_object" }
+        responseFormat: { type: "json_object" },
+        images: hasImages ? images : undefined // 🔥 CRITICAL FIX: 傳遞圖像數據到 GPT-5
       });
 
       const content = response.content;

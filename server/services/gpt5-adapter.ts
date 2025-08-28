@@ -20,19 +20,43 @@ export class GPT5Adapter {
     systemPrompt,
     userPrompt,
     messages,
-    responseFormat
+    responseFormat,
+    images
   }: {
     model: AIModelConfig;
     systemPrompt: string;
     userPrompt: string;
     messages?: any[];
     responseFormat?: { type: string };
+    images?: string[];
   }): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
-      return this.callGPT5API(model, systemPrompt, userPrompt, responseFormat);
+      return this.callGPT5API(model, systemPrompt, userPrompt, responseFormat, images);
     } else {
-      return this.callGPT4API(model, systemPrompt, userPrompt, messages, responseFormat);
+      // For GPT-4, handle images through messages or vision API
+      if (images && images.length > 0) {
+        // Use enhanced messages with image content
+        const enhancedMessages = messages || [
+          { role: "system", content: systemPrompt },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: userPrompt },
+              ...images.map(image => ({
+                type: "image_url",
+                image_url: {
+                  url: image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}`,
+                  detail: "high"
+                }
+              }))
+            ]
+          }
+        ];
+        return this.callGPT4API(model, systemPrompt, userPrompt, enhancedMessages, responseFormat);
+      } else {
+        return this.callGPT4API(model, systemPrompt, userPrompt, messages, responseFormat);
+      }
     }
   }
 
@@ -58,37 +82,81 @@ export class GPT5Adapter {
   }
 
   /**
-   * GPT-5 API call using the new /responses endpoint
+   * GPT-5 API call using the new /responses endpoint with image support
    */
   private async callGPT5API(
     model: AIModelConfig,
     systemPrompt: string,
     userPrompt: string,
-    responseFormat?: { type: string }
+    responseFormat?: { type: string },
+    images?: string[]
   ): Promise<{ content: string; usage?: any }> {
-    const input = `${systemPrompt}\n\nUser Request: ${userPrompt}`;
+    // Handle multi-modal input for GPT-5
+    let input: any;
+    
+    if (images && images.length > 0) {
+      // For image analysis, use the chat.completions endpoint even for GPT-5
+      // because GPT-5 /responses endpoint may not support multi-modal inputs yet
+      const messages = [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user", 
+          content: [
+            { type: "text", text: userPrompt },
+            ...images.map(image => ({
+              type: "image_url",
+              image_url: {
+                url: image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}`,
+                detail: "high" // Use high detail for nutrition label analysis
+              }
+            }))
+          ]
+        }
+      ];
 
-    const params: any = {
-      model: model.name,
-      input,
-      reasoning: model.reasoning || { effort: 'low' }, // Default to low for speed
-      text: model.text || { verbosity: 'low' } // Default to low for speed
-    };
+      const params: any = {
+        model: model.name,
+        messages,
+        max_completion_tokens: model.maxTokens
+      };
 
-    // Add response format if specified (GPT-5 uses text.format with correct object structure)
-    if (responseFormat?.type === 'json_object') {
-      params.text = {
-        ...params.text,
-        format: { type: 'json_object' }
+      // Add response format for JSON output
+      if (responseFormat?.type === 'json_object') {
+        params.response_format = responseFormat;
+      }
+
+      const response = await this.openai.chat.completions.create(params);
+      
+      return {
+        content: response.choices[0].message.content || '',
+        usage: response.usage
+      };
+    } else {
+      // Text-only analysis using /responses endpoint
+      input = `${systemPrompt}\n\nUser Request: ${userPrompt}`;
+
+      const params: any = {
+        model: model.name,
+        input,
+        reasoning: model.reasoning || { effort: 'medium' }, // Increase reasoning for better accuracy
+        text: model.text || { verbosity: 'medium' } // Increase verbosity for comprehensive analysis
+      };
+
+      // Add response format if specified (GPT-5 uses text.format)
+      if (responseFormat?.type === 'json_object') {
+        params.text = {
+          ...params.text,
+          format: { type: 'json_object' }
+        };
+      }
+
+      const response = await this.openai.responses.create(params);
+
+      return {
+        content: response.output_text,
+        usage: response.usage
       };
     }
-
-    const response = await this.openai.responses.create(params);
-
-    return {
-      content: response.output_text,
-      usage: response.usage
-    };
   }
 
   /**
