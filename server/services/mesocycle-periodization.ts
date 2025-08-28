@@ -869,6 +869,7 @@ export class MesocyclePeriodization {
           restPeriod: exercise.restPeriod,
           specialMethod: exercise.specialMethod,
           specialConfig: adjustedSpecialConfig,
+          weightUnit: exercise.weightUnit || 'kg', // CRITICAL FIX: Preserve weight unit during advance week
           notes: adjustedNotes
         };
       });

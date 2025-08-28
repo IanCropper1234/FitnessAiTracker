@@ -5244,7 +5244,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const historicalExercises = await db
         .select({
           setsData: workoutExercises.setsData,
-          date: workoutSessions.date
+          date: workoutSessions.date,
+          weightUnit: workoutExercises.weightUnit
         })
         .from(workoutExercises)
         .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
@@ -5275,7 +5276,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 reps: set.actualReps,
                 rpe: set.rpe,
                 setNumber: set.setNumber,
-                date: exercise.date
+                date: exercise.date,
+                weightUnit: exercise.weightUnit || 'kg' // CRITICAL FIX: Include weight unit in historical data
               });
             }
           }

@@ -40,7 +40,8 @@ export class LoadProgression {
     currentWeight: number,
     currentReps: number,
     averageRpe: number,
-    averageRir: number
+    averageRir: number,
+    weightUnit: 'kg' | 'lbs' = 'kg'
   ): Promise<LoadProgressionRecommendation> {
     
     // Get exercise details
@@ -80,7 +81,7 @@ export class LoadProgression {
     // Perfect RPE/RIR scenario: RPE 8-8.5, RIR 1-2
     if (averageRpe >= 8 && averageRpe <= 8.5 && averageRir >= 1 && averageRir <= 2) {
       // Increase weight by 2.5-5kg for compounds, 1-2.5kg for isolation
-      const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight);
+      const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight, weightUnit);
       recommendedWeight = currentWeight + weightIncrease;
       progressionType = 'weight';
       reasoning.push(`Perfect RPE/RIR range (${averageRpe}/${averageRir}) - ready for load increase`);
@@ -89,7 +90,7 @@ export class LoadProgression {
     
     // Too easy: RPE < 7 or RIR > 3
     else if (averageRpe < 7 || averageRir > 3) {
-      const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight) * 1.5;
+      const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight, weightUnit) * 1.5;
       recommendedWeight = currentWeight + weightIncrease;
       progressionType = 'weight';
       reasoning.push(`Load too light (RPE: ${averageRpe}, RIR: ${averageRir}) - significant increase needed`);
@@ -122,7 +123,7 @@ export class LoadProgression {
         reasoning.push(`In progression zone - add reps before increasing weight`);
       } else {
         // Increase weight and reset reps
-        const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight);
+        const weightIncrease = this.getWeightIncrement(exerciseName, currentWeight, weightUnit);
         recommendedWeight = currentWeight + weightIncrease;
         recommendedReps = Math.max(8, currentReps - 3); // Reset to lower rep range
         progressionType = 'weight';
@@ -138,7 +139,7 @@ export class LoadProgression {
       if (progressionTrend === 'plateauing') {
         // More conservative progression
         if (progressionType === 'weight') {
-          recommendedWeight = currentWeight + (this.getWeightIncrement(exerciseName, currentWeight) * 0.5);
+          recommendedWeight = currentWeight + (this.getWeightIncrement(exerciseName, currentWeight, weightUnit) * 0.5);
         }
         reasoning.push("Recent plateau detected - conservative progression applied");
         confidence *= 0.8;
@@ -403,7 +404,8 @@ export class LoadProgression {
           .select({
             weight: workoutExercises.weight,
             targetReps: workoutExercises.targetReps,
-            sessionDate: workoutSessions.date
+            sessionDate: workoutSessions.date,
+            weightUnit: workoutExercises.weightUnit
           })
           .from(workoutExercises)
           .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
@@ -431,7 +433,8 @@ export class LoadProgression {
             actualReps: workoutExercises.actualReps,
             rpe: workoutExercises.rpe,
             rir: workoutExercises.rir,
-            targetReps: workoutExercises.targetReps
+            targetReps: workoutExercises.targetReps,
+            weightUnit: workoutExercises.weightUnit
           })
           .from(workoutExercises)
           .innerJoin(workoutSessions, eq(workoutExercises.sessionId, workoutSessions.id))
@@ -465,13 +468,15 @@ export class LoadProgression {
           }
 
           // Calculate progression based on past performance
+          const exerciseWeightUnit = performance.weightUnit || 'kg'; // Get weight unit from exercise data
           const recommendation = await this.calculateLoadProgression(
             userId,
             exerciseId,
             currentWeight,
             avgReps,
             rpe,
-            rir
+            rir,
+            exerciseWeightUnit
           );
           
           recommendations.push(recommendation);
