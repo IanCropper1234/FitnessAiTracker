@@ -64,15 +64,12 @@ export class GPT5Adapter {
         role: "user",
         content: [
           {
-            type: "text",
+            type: "input_text",
             text: userPrompt
           },
           {
-            type: "image_url",
-            image_url: {
-              url: `data:image/jpeg;base64,${image}`,
-              detail: "high"
-            }
+            type: "input_image",
+            image_url: `data:image/jpeg;base64,${image}`
           }
         ]
       });
@@ -145,13 +142,13 @@ export class GPT5Adapter {
           for (const item of message.content) {
             if (item.type === 'text') {
               content.push({
-                type: "text",
+                type: "input_text",
                 text: item.text
               });
             } else if (item.type === 'image_url') {
               content.push({
-                type: "image_url",
-                image_url: item.image_url
+                type: "input_image",
+                image_url: item.image_url.url
               });
             }
           }
