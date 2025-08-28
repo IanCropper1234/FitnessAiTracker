@@ -1963,20 +1963,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imageCount: imageArray ? imageArray.length : 0
       });
       
-      // Debug micronutrients structure
-      if (analysis.micronutrients) {
-        console.log('Micronutrients structure keys:', Object.keys(analysis.micronutrients));
-        console.log('Sample micronutrients data:', JSON.stringify(analysis.micronutrients).substring(0, 500) + '...');
-        
-        // Check if it's grouped or flat structure
-        const micronutrientsObj = analysis.micronutrients as any;
-        const isGrouped = micronutrientsObj['Fat-Soluble Vitamins'] || 
-                         micronutrientsObj['Water-Soluble Vitamins'] || 
-                         micronutrientsObj['Major Minerals'];
-        console.log('Micronutrients structure type:', isGrouped ? 'grouped' : 'flat');
-      } else {
-        console.log('No micronutrients data in analysis result');
-      }
       
       res.json(analysis);
     } catch (error: any) {

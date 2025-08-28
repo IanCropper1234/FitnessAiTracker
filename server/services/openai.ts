@@ -544,22 +544,6 @@ This is a HIGH-STAKES nutrition label reading task. Accuracy is CRITICAL for use
       const content = response.content;
       console.log("OpenAI response received (length):", content?.length || 0);
       
-      // Debug: Log the raw AI response to check micronutrients
-      console.log('Raw AI response sample:', content?.substring(0, 1000) + '...');
-      
-      // Try to parse and check for micronutrients in the raw response
-      try {
-        const rawResult = JSON.parse(content || '{}');
-        if (rawResult.micronutrients) {
-          console.log('Raw micronutrients found in AI response:', Object.keys(rawResult.micronutrients));
-          console.log('Raw micronutrients sample:', JSON.stringify(rawResult.micronutrients).substring(0, 300) + '...');
-        } else {
-          console.log('❌ NO micronutrients data in AI response!');
-        }
-      } catch (e) {
-        console.log('Could not parse raw response for micronutrients check:', e);
-      }
-      
       if (!content || content.trim() === '') {
         console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
         throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
