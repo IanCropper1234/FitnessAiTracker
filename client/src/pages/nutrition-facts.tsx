@@ -342,15 +342,6 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                   </Badge>
                 </div>
                 
-                {/* Debug: Show actual micronutrient data structure */}
-                {process.env.NODE_ENV === 'development' && (
-                  <details className="mb-3">
-                    <summary className="text-xs text-gray-500 cursor-pointer">Debug: Show raw micronutrient data</summary>
-                    <pre className="text-xs bg-gray-100 dark:bg-gray-800 p-2 mt-2 overflow-auto max-h-40">
-                      {JSON.stringify(selectedNutritionItem.micronutrients, null, 2)}
-                    </pre>
-                  </details>
-                )}
                 
                 {/* Dynamic micronutrient rendering - handle any structure */}
                 {selectedNutritionItem.micronutrients && Object.keys(selectedNutritionItem.micronutrients).length > 0 && (
@@ -377,11 +368,6 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                                 </span>
                                 <span className="font-medium">
                                   {formatNutrientValue(value)}{getNutrientUnit(nutrientName, value)}
-                                  {process.env.NODE_ENV === 'development' && typeof value === 'object' && value !== null && (
-                                    <span className="text-xs text-blue-500 ml-1">
-                                      (Dynamic: {JSON.stringify(value)})
-                                    </span>
-                                  )}
                                 </span>
                               </div>
                             ))}
