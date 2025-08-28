@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import type { AutoRegulationFeedback } from "../shared/schema";
+import type { AutoRegulationFeedback } from "@shared/schema";
 import { 
   ArrowLeft, 
   Clock, 
@@ -24,6 +24,7 @@ interface WorkoutSet {
   actualReps: number;
   rpe: number;
   completed: boolean;
+  weightUnit?: string;
 }
 
 interface WorkoutExercise {
@@ -38,6 +39,7 @@ interface WorkoutExercise {
   restPeriod?: number;
   actualReps?: string;
   weight?: string;
+  weightUnit?: string;
   rpe?: number;
   isCompleted?: boolean;
   setsData?: WorkoutSet[];

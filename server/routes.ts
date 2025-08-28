@@ -2670,6 +2670,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             setsData: we.setsData, // Include saved sets data
             specialMethod: we.specialMethod, // Include special training method
             specialConfig: we.specialConfig, // Include special training configuration
+            weightUnit: we.weightUnit, // CRITICAL FIX: Include weight unit for correct display
             exercise: exercise
           };
         })
