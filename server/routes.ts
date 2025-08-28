@@ -5795,13 +5795,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/training/sessions/:sessionId/exercises", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
+      const { exerciseId, insertPosition, orderIndex } = req.body;
       
-      // Debug: Log the entire request body to identify the issue
-      console.log('🔍 DEBUG: Add exercise request body:', JSON.stringify(req.body, null, 2));
-      console.log('🔍 DEBUG: req.body.exerciseId:', req.body.exerciseId);
-      console.log('🔍 DEBUG: typeof exerciseId:', typeof req.body.exerciseId);
-      
-      const { exerciseId, insertPosition } = req.body;
+      // Use orderIndex if insertPosition is not provided (for backward compatibility)
+      const position = insertPosition !== undefined ? insertPosition : orderIndex;
       
       // Validate exerciseId
       if (!exerciseId || exerciseId === undefined || exerciseId === null) {
@@ -5815,7 +5812,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newExercise = await SessionCustomization.addExerciseToSession(
         sessionId, 
         exerciseId, 
-        insertPosition
+        position
       );
       
       res.json({ 

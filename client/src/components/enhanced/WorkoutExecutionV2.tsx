@@ -714,10 +714,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleAddExercise = (exercise: any, config: any) => {
-    console.log('🔍 DEBUG handleAddExercise called with:', { exercise, config });
-    console.log('🔍 DEBUG exercise.id:', exercise.id);
-    console.log('🔍 DEBUG exercise.exerciseId:', exercise.exerciseId);
-    
     // Use exerciseId if available, otherwise use id
     const exerciseId = exercise.exerciseId || exercise.id;
     

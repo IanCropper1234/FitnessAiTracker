@@ -277,9 +277,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="text-xs text-emerald-300 truncate">
                   {setRecommendation ? (
-                    `${setRecommendation.recommendedWeight}kg • ${setRecommendation.recommendedReps}r • RPE ${setRecommendation.recommendedRpe}`
+                    `${convertWeight(setRecommendation.recommendedWeight, 'kg', weightUnit)}${weightUnit} • ${setRecommendation.recommendedReps}r • RPE ${setRecommendation.recommendedRpe}`
                   ) : recommendation?.sets?.[0] ? (
-                    `${recommendation.sets[0].recommendedWeight}kg • ${recommendation.sets[0].recommendedReps}r • RPE ${recommendation.sets[0].recommendedRpe}`
+                    `${convertWeight(recommendation.sets[0].recommendedWeight, 'kg', weightUnit)}${weightUnit} • ${recommendation.sets[0].recommendedReps}r • RPE ${recommendation.sets[0].recommendedRpe}`
                   ) : (
                     "No recommendations"
                   )}
@@ -307,7 +307,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="text-xs text-blue-300 truncate">
-                    Set {set.setNumber} Last: {typeof latestHistoricalData.weight === 'string' ? parseFloat(latestHistoricalData.weight) : latestHistoricalData.weight}kg • {typeof latestHistoricalData.reps === 'string' ? parseInt(latestHistoricalData.reps) : latestHistoricalData.reps}r • RPE {typeof latestHistoricalData.rpe === 'string' ? parseFloat(latestHistoricalData.rpe) : latestHistoricalData.rpe}
+                    Set {set.setNumber} Last: {convertWeight(typeof latestHistoricalData.weight === 'string' ? parseFloat(latestHistoricalData.weight) : latestHistoricalData.weight, 'kg', weightUnit)}{weightUnit} • {typeof latestHistoricalData.reps === 'string' ? parseInt(latestHistoricalData.reps) : latestHistoricalData.reps}r • RPE {typeof latestHistoricalData.rpe === 'string' ? parseFloat(latestHistoricalData.rpe) : latestHistoricalData.rpe}
                     <span className="text-blue-300/70 ml-1">
                       ({new Date(latestHistoricalData.date).toLocaleDateString()})
                     </span>
@@ -330,7 +330,7 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
                     <div key={index} className="flex items-center justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs text-blue-300/60 truncate">
-                          Set {set.setNumber}: {typeof histData.weight === 'string' ? parseFloat(histData.weight) : histData.weight}kg • {typeof histData.reps === 'string' ? parseInt(histData.reps) : histData.reps}r • RPE {typeof histData.rpe === 'string' ? parseFloat(histData.rpe) : histData.rpe}
+                          Set {set.setNumber}: {convertWeight(typeof histData.weight === 'string' ? parseFloat(histData.weight) : histData.weight, 'kg', weightUnit)}{weightUnit} • {typeof histData.reps === 'string' ? parseInt(histData.reps) : histData.reps}r • RPE {typeof histData.rpe === 'string' ? parseFloat(histData.rpe) : histData.rpe}
                           <span className="text-blue-300/40 ml-1">
                             ({new Date(histData.date).toLocaleDateString()})
                           </span>
