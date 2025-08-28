@@ -1250,17 +1250,32 @@ export function IntegratedNutritionOverview({
             'b12cobalamin': 'vitaminB12',
             'pantothenicAcid': 'vitaminB5',
             'ascorbicAcid': 'vitaminC',
-            // Complex naming variations
+            // Complex naming variations from AI analysis
             'vitaminb1thiamine': 'vitaminB1',
             'vitaminb2riboflavin': 'vitaminB2',
             'vitaminb3niacin': 'vitaminB3',
             'vitaminb5pantothenicacid': 'vitaminB5',
+            'vitaminb5pantothenate': 'vitaminB5',
             'vitaminb6pyridoxine': 'vitaminB6',
             'vitaminb7biotin': 'vitaminB7',
             'vitaminb9folate': 'vitaminB9',
             'vitaminb12cobalamin': 'vitaminB12',
-            'vitaminb5pantothenate': 'vitaminB5',
             'ascorbicacid': 'vitaminC',
+            // AI output specific formats (from your images)
+            'vitaminb3_niacin': 'vitaminB3',
+            'vitaminb7_biotin': 'vitaminB7',
+            'vitaminb9_folate': 'vitaminB9',
+            'vitaminb1_thiamine': 'vitaminB1',
+            'vitaminb2_riboflavin': 'vitaminB2',
+            'vitaminb6_pyridoxine': 'vitaminB6',
+            'vitaminb5_pantothenic_acid': 'vitaminB5',
+            'vitamin_b3_niacin': 'vitaminB3',
+            'vitamin_b7_biotin': 'vitaminB7',
+            'vitamin_b9_folate': 'vitaminB9',
+            'vitamin_b1_thiamine': 'vitaminB1',
+            'vitamin_b2_riboflavin': 'vitaminB2',
+            'vitamin_b6_pyridoxine': 'vitaminB6',
+            'vitamin_b5_pantothenic_acid': 'vitaminB5',
             // Major Minerals
             'sodium': 'sodium',
             'calcium': 'calcium',
@@ -1358,6 +1373,7 @@ export function IntegratedNutritionOverview({
             
             if (hasNestedStructure) {
               // Handle nested structure (supplements and some advanced foods)
+              console.log('🔍 Processing nested micronutrients structure:', Object.keys(micronutrients));
               Object.keys(micronutrients).forEach(category => {
                 const categoryData = micronutrients[category];
                 if (categoryData && typeof categoryData === 'object' && !Array.isArray(categoryData)) {
@@ -1382,6 +1398,8 @@ export function IntegratedNutritionOverview({
               });
             } else {
               // Handle flat structure (regular foods)
+              console.log('🔍 Processing flat micronutrients structure:', Object.keys(micronutrients));
+              console.log('🔍 Sample nutrients:', Object.keys(micronutrients).slice(0, 10));
               Object.keys(micronutrients).forEach(nutrient => {
                 let value: number;
                 const rawValue = micronutrients[nutrient];
@@ -1394,7 +1412,9 @@ export function IntegratedNutritionOverview({
                 }
                 
                 if (typeof value === 'number' && !isNaN(value) && value > 0) {
-                  totals[nutrient] = (totals[nutrient] || 0) + value;
+                  const mappedNutrient = getNutrientFlatName(nutrient);
+                  console.log(`🔍 Mapping "${nutrient}" → "${mappedNutrient}" (${value})`);
+                  totals[mappedNutrient] = (totals[mappedNutrient] || 0) + value;
                 }
               });
             }
