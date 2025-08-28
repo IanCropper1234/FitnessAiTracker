@@ -131,7 +131,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
   const [customRestTime, setCustomRestTime] = useState<number | null>(null);
   const [sessionStartTime] = useState(Date.now());
-  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg'); // Will be updated from user preference
   const [headerExpanded, setHeaderExpanded] = useState(false);
   
   // Edit mode state
