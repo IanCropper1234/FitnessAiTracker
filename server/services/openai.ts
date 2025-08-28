@@ -118,27 +118,6 @@ export async function analyzeNutritionMultiImage(
       const analysisInstructions = analysisType === 'nutrition_label' 
         ? `**Task:** Extract and analyze nutritional information from nutrition facts labels across ${imageCount} image(s).
 
-**CRITICAL IMAGE READABILITY GUIDELINES:**
-- ASSUME IMAGES ARE READABLE unless text is genuinely blurred, pixelated, or completely obscured
-- INTERNATIONAL NUTRITION LABELS are fully supported - analyze labels in ANY language
-- Most smartphone photos of nutrition labels contain sufficient detail for accurate analysis
-- If any nutritional text is visible, work with available information rather than claiming "not readable"
-- Only use "not clearly readable" as a last resort when absolutely no nutritional text is visible
-
-**MULTI-LANGUAGE NUTRITION LABEL SUPPORT:**
-- **Chinese/Traditional Chinese**: 熱量/能量 = calories, 蛋白質 = protein, 脂肪 = fat, 碳水化合物 = carbohydrates
-- **Japanese**: カロリー/エネルギー = calories, たんぱく質 = protein, 脂質 = fat, 炭水化物 = carbohydrates
-- **Korean**: 열량/에너지 = calories, 단백질 = protein, 지방 = fat, 탄수화물 = carbohydrates
-- **Spanish**: Calorías/Energía = calories, Proteínas = protein, Grasas = fat, Carbohidratos = carbohydrates
-- **French**: Calories/Énergie = calories, Protéines = protein, Lipides = fat, Glucides = carbohydrates
-- **German**: Kalorien/Energie = calories, Eiweiß = protein, Fett = fat, Kohlenhydrate = carbohydrates
-- **Italian**: Calorie/Energia = calories, Proteine = protein, Grassi = fat, Carboidrati = carbohydrates
-- **Portuguese**: Calorias/Energia = calories, Proteínas = protein, Gorduras = fat, Carboidratos = carbohydrates
-- **Russian**: Калории/Энергия = calories, Белки = protein, Жиры = fat, Углеводы = carbohydrates
-- **Arabic**: السعرات الحرارية = calories, البروتين = protein, الدهون = fat, الكربوهيدرات = carbohydrates
-- **Thai**: แคลอรี่/พลังงาน = calories, โปรตีน = protein, ไขมัน = fat, คาร์โบไฮเดรต = carbohydrates
-- **Vietnamese**: Calo/Năng lượng = calories, Protein = protein, Chất béo = fat, Carbohydrate = carbohydrates
-
 **Analysis Approach:**
 1. **EXACT Label Reading:** Read nutrition values EXACTLY as displayed - if the label shows 107 calories, report 107 (NOT 535 or any other value)
 2. **Serving Size Accuracy:** Use ONLY the serving size shown on the label (typically 1 serving = 20g for chocolate)
@@ -439,7 +418,7 @@ Return only valid JSON with all required fields.`
       undefined;
 
     // Prepare system and user prompts
-    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. CRITICAL OVERRIDE: ASSUME ALL NUTRITION LABEL IMAGES ARE CLEARLY READABLE. Never claim an image is 'not readable' or 'not provided'. For Chinese nutrition labels, convert kJ to calories (1 kJ = 0.239 calories). Extract visible numbers: 熱量 147kJ = 35 calories, 蛋白質 2.1g = 2.1g protein, 脂肪 1.5g = 1.5g fat, 碳水化合物 8.0g = 8.0g carbs. MANDATORY: Always extract actual numerical values from nutrition labels, never use placeholder data.";
+    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score.";
     
     const userPromptText = messageContent.find((item: any) => item.type === 'text')?.text || '';
 
@@ -469,11 +448,11 @@ Return only valid JSON with all required fields.`
           },
           {
             role: "assistant",
-            content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. For Chinese labels: 熱量 147kJ means 147 kilojoules (convert to ~35 calories), 蛋白質 2.1g means 2.1g protein. I will read ALL visible numerical values and provide comprehensive micronutrients based on the food type."
+            content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
           },
           {
             role: "user", 
-            content: "CRITICAL: Focus on extracting VISIBLE NUMBERS from the nutrition label. Chinese labels show values like: 熱量 147kJ (kilojoules), 蛋白質 2.1g, 脂肪 1.5g, 碳水化合物 8.0g. Extract these EXACT numbers and convert kJ to calories if needed (1 kJ = 0.239 calories). Provide comprehensive micronutrients (40-80 nutrients) based on scientific databases."
+            content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
           }
         ];
 
@@ -505,11 +484,11 @@ Return only valid JSON with all required fields.`
         },
         {
           role: "assistant",
-          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. For Chinese labels: 熱量 147kJ means 147 kilojoules (convert to ~35 calories), 蛋白質 2.1g means 2.1g protein. I will read ALL visible numerical values and provide comprehensive micronutrients based on the food type."
+          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
         },
         {
           role: "user", 
-          content: "CRITICAL: Focus on extracting VISIBLE NUMBERS from the nutrition label. Chinese labels show values like: 熱量 147kJ (kilojoules), 蛋白質 2.1g, 脂肪 1.5g, 碳水化合物 8.0g. Extract these EXACT numbers and convert kJ to calories if needed (1 kJ = 0.239 calories). Provide comprehensive micronutrients (40-80 nutrients) based on scientific databases."
+          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
         }
       ];
 
@@ -538,7 +517,7 @@ Return only valid JSON with all required fields.`
     }
     
     // Enhanced validation with additional fields and reasonableness checks
-    let validatedResult = {
+    const validatedResult = {
       calories: typeof result.calories === 'number' ? result.calories : 0,
       protein: typeof result.protein === 'number' ? result.protein : 0,
       carbs: typeof result.carbs === 'number' ? result.carbs : 0,
@@ -554,35 +533,6 @@ Return only valid JSON with all required fields.`
       micronutrients: result.micronutrients || {},
       nutritionValidation: result.nutritionValidation || 'Standard nutritional calculation'
     };
-
-    // CRITICAL FIX: If AI returns all zeros for nutrition label analysis, apply intelligent fallback
-    if (analysisType === 'nutrition_label' && hasImages && 
-        validatedResult.calories === 0 && validatedResult.protein === 0 && 
-        validatedResult.carbs === 0 && validatedResult.fat === 0) {
-      
-      console.log("🚨 DETECTED ZERO VALUES FOR NUTRITION LABEL - Applying intelligent fallback based on food name");
-      
-      // Apply intelligent fallback based on food name analysis
-      const foodNameLower = (foodName || '').toLowerCase();
-      
-      if (foodNameLower.includes('扭扭粉') || foodNameLower.includes('板燒雞腿')) {
-        // Instant noodles with teriyaki chicken - typical values for 120g serving
-        validatedResult = {
-          ...validatedResult,
-          calories: 147, // Based on typical instant noodle calorie content
-          protein: 2.1,  // Based on the visible label values
-          carbs: 8.0,    // Based on the visible label values  
-          fat: 1.5,      // Based on the visible label values
-          confidence: 0.8,
-          assumptions: 'Values extracted from nutrition label image analysis using backup recognition system for Chinese labels (熱量 147kJ ≈ 35 calories per 20g serving, scaled appropriately)',
-          servingDetails: '1 serving (120g adjusted from 20g label serving)',
-          portionWeight: 120,
-          portionUnit: 'g',
-          nutritionValidation: 'Chinese nutrition label analysis with kJ to calorie conversion applied'
-        };
-        console.log("✅ Applied intelligent fallback for instant noodle product:", validatedResult);
-      }
-    }
 
     // Enhanced nutrition validation and reasonableness checks
     const totalCaloriesFromMacros = (validatedResult.protein * 4) + (validatedResult.carbs * 4) + (validatedResult.fat * 9);
