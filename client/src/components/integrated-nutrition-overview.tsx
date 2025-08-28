@@ -1406,7 +1406,8 @@ export function IntegratedNutritionOverview({
         };
         
         // Calculate daily micronutrient totals with support for both flat and nested structures
-        const dailyTotals = micronutrientLogs.reduce((totals: any, log: any) => {
+        // Also track individual variants for detailed breakdown display
+        const { dailyTotals, variantTotals } = micronutrientLogs.reduce((acc: any, log: any) => {
           const micronutrients = log.micronutrients;
           if (micronutrients && typeof micronutrients === 'object') {
             
@@ -1437,7 +1438,11 @@ export function IntegratedNutritionOverview({
                     if (typeof value === 'number' && !isNaN(value) && value > 0) {
                       // Map nested nutrient names to flat names for consistency
                       const flatNutrientName = getNutrientFlatName(nutrient);
-                      totals[flatNutrientName] = (totals[flatNutrientName] || 0) + value;
+                      acc.dailyTotals[flatNutrientName] = (acc.dailyTotals[flatNutrientName] || 0) + value;
+                      
+                      // Track variants for detailed breakdown
+                      const originalNutrient = nutrient.toLowerCase().replace(/[^a-z0-9]/g, '');
+                      acc.variantTotals[originalNutrient] = (acc.variantTotals[originalNutrient] || 0) + value;
                     }
                   });
                 }
@@ -1457,13 +1462,17 @@ export function IntegratedNutritionOverview({
                 
                 if (typeof value === 'number' && !isNaN(value) && value > 0) {
                   const mappedNutrient = getNutrientFlatName(nutrient);
-                  totals[mappedNutrient] = (totals[mappedNutrient] || 0) + value;
+                  acc.dailyTotals[mappedNutrient] = (acc.dailyTotals[mappedNutrient] || 0) + value;
+                  
+                  // Track variants for detailed breakdown
+                  const originalNutrient = nutrient.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  acc.variantTotals[originalNutrient] = (acc.variantTotals[originalNutrient] || 0) + value;
                 }
               });
             }
           }
-          return totals;
-        }, {});
+          return acc;
+        }, { dailyTotals: {}, variantTotals: {} });
 
 
         
@@ -1611,29 +1620,170 @@ export function IntegratedNutritionOverview({
                         <div>
                           <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-1.5">Fat-Soluble Vitamins</h5>
                           <div className="space-y-2">
-                            {dailyTotals.vitaminA > 0 && renderNutrientWithProgress(
-                              "Vitamin A", 
-                              Math.round(dailyTotals.vitaminA * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminA, rda.vitaminA)
+                            {dailyTotals.vitaminA > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "Vitamin A (Total)", 
+                                  Math.round(dailyTotals.vitaminA * 10) / 10, 
+                                  "μg", 
+                                  getAdequacy(dailyTotals.vitaminA, rda.vitaminA)
+                                )}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    const retinolTotal = (variantTotals.retinol || 0) + 
+                                                        (variantTotals.retinolequivalents || 0);
+                                    const betaCaroteneTotal = (variantTotals.betacarotene || 0) + 
+                                                             (variantTotals.vitaminabetacarotene || 0);
+                                    
+                                    const variants = [];
+                                    if (retinolTotal > 0) {
+                                      variants.push(
+                                        <div key="retinol" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• Retinol:</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(retinolTotal * 10) / 10}μg</span>
+                                        </div>
+                                      );
+                                    }
+                                    if (betaCaroteneTotal > 0) {
+                                      variants.push(
+                                        <div key="betacarotene" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• Beta-Carotene:</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(betaCaroteneTotal * 10) / 10}μg</span>
+                                        </div>
+                                      );
+                                    }
+                                    return variants;
+                                  })()}
+                                </div>
+                              </div>
                             )}
-                            {dailyTotals.vitaminD > 0 && renderNutrientWithProgress(
-                              "Vitamin D", 
-                              Math.round(dailyTotals.vitaminD * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminD, rda.vitaminD)
+                            {dailyTotals.vitaminD > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "Vitamin D (Total)", 
+                                  Math.round(dailyTotals.vitaminD * 10) / 10, 
+                                  "μg", 
+                                  getAdequacy(dailyTotals.vitaminD, rda.vitaminD)
+                                )}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    const d2Total = (variantTotals.vitamind2 || 0) + 
+                                                    (variantTotals.ergocalciferol || 0);
+                                    const d3Total = (variantTotals.vitamind3 || 0) + 
+                                                    (variantTotals.cholecalciferol || 0);
+                                    
+                                    const variants = [];
+                                    if (d2Total > 0) {
+                                      variants.push(
+                                        <div key="d2" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• D2 (Ergocalciferol):</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(d2Total * 10) / 10}μg</span>
+                                        </div>
+                                      );
+                                    }
+                                    if (d3Total > 0) {
+                                      variants.push(
+                                        <div key="d3" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• D3 (Cholecalciferol):</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(d3Total * 10) / 10}μg</span>
+                                        </div>
+                                      );
+                                    }
+                                    return variants;
+                                  })()} 
+                                </div>
+                              </div>
                             )}
-                            {dailyTotals.vitaminE > 0 && renderNutrientWithProgress(
-                              "Vitamin E", 
-                              Math.round(dailyTotals.vitaminE * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminE, rda.vitaminE)
+                            {dailyTotals.vitaminE > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "Vitamin E (Total)", 
+                                  Math.round(dailyTotals.vitaminE * 10) / 10, 
+                                  "mg", 
+                                  getAdequacy(dailyTotals.vitaminE, rda.vitaminE)
+                                )}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    const alphaTocopherolTotal = (variantTotals.alphatocopherol || 0) + 
+                                                                 (variantTotals.tocopherol || 0);
+                                    const gammaTocopherolTotal = variantTotals.gammatocopherol || 0;
+                                    const tocotrienolTotal = variantTotals.tocotrienol || 0;
+                                    
+                                    const variants = [];
+                                    if (alphaTocopherolTotal > 0) {
+                                      variants.push(
+                                        <div key="alpha" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• α-Tocopherol:</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(alphaTocopherolTotal * 10) / 10}mg</span>
+                                        </div>
+                                      );
+                                    }
+                                    if (gammaTocopherolTotal > 0) {
+                                      variants.push(
+                                        <div key="gamma" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• γ-Tocopherol:</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(gammaTocopherolTotal * 10) / 10}mg</span>
+                                        </div>
+                                      );
+                                    }
+                                    if (tocotrienolTotal > 0) {
+                                      variants.push(
+                                        <div key="tocotrienol" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• Tocotrienol:</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(tocotrienolTotal * 10) / 10}mg</span>
+                                        </div>
+                                      );
+                                    }
+                                    return variants;
+                                  })()} 
+                                </div>
+                              </div>
                             )}
-                            {dailyTotals.vitaminK > 0 && renderNutrientWithProgress(
-                              "Vitamin K", 
-                              Math.round(dailyTotals.vitaminK * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminK, rda.vitaminK)
+                            {dailyTotals.vitaminK > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "Vitamin K (Total)", 
+                                  Math.round(dailyTotals.vitaminK * 10) / 10, 
+                                  "μg", 
+                                  getAdequacy(dailyTotals.vitaminK, rda.vitaminK)
+                                )}
+                                {/* Show individual K variants if they exist */}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    const k1Total = (variantTotals.vitamink1 || 0) + 
+                                                   (variantTotals.vitamink1phyloquinone || 0) + 
+                                                   (variantTotals.phyloquinone || 0);
+                                    const k2Total = (variantTotals.vitamink2 || 0) + 
+                                                   (variantTotals.vitamink2menaquinone || 0) + 
+                                                   (variantTotals.vitamink2menaquinone4 || 0) + 
+                                                   (variantTotals.vitamink2menaquinone7 || 0) + 
+                                                   (variantTotals.menaquinone || 0) + 
+                                                   (variantTotals.menaquinone4 || 0) + 
+                                                   (variantTotals.menaquinone7 || 0) + 
+                                                   (variantTotals.mk4 || 0) + 
+                                                   (variantTotals.mk7 || 0);
+                                    
+                                    const variants = [];
+                                    if (k1Total > 0) {
+                                      variants.push(
+                                        <div key="k1" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• K1 (Phyloquinone):</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(k1Total * 10) / 10}μg</span>
+                                        </div>
+                                      );
+                                    }
+                                    if (k2Total > 0) {
+                                      variants.push(
+                                        <div key="k2" className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 dark:text-gray-400">• K2 (Menaquinone):</span>
+                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(k2Total * 10) / 10}μg</span>
+                                        </div>
+                                      );
+                                    }
+                                    return variants;
+                                  })()}
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>

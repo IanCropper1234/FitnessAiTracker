@@ -522,7 +522,6 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       'zeaxanthin': 'Antioxidants & Phytonutrients',
                       'carotenoids': 'Antioxidants & Phytonutrients',
                       'polyphenols': 'Antioxidants & Phytonutrients',
-                      'betacarotene': 'Antioxidants & Phytonutrients',
                       'betaCarotene': 'Antioxidants & Phytonutrients',
                       // Supplement Compounds
                       'bcaa': 'Supplement Compounds',
