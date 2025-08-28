@@ -169,7 +169,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
     const gramsNutrients = ['fiber', 'sugar', 'addedsugar', 'omega3', 'omega6', 'saturatedfat', 'monounsaturatedfat', 'polyunsaturatedfat', 'transfat', 'starch', 'alcohol'];
     
     // Nutrients that should be in micrograms
-    const microgramNutrients = ['vitamina', 'vitamind', 'vitaminb7', 'vitaminb9', 'vitaminb12', 'folate', 'iodine', 'selenium', 'chromium', 'molybdenum', 'biotin'];
+    const microgramNutrients = ['vitamina', 'vitamind', 'vitaminb7', 'vitaminb9', 'vitaminb12', 'vitaminK', 'folate', 'iodine', 'selenium', 'chromium', 'molybdenum', 'biotin'];
     
     // Special cases based on AI interface definitions
     if (cleanName === 'cholesterol') return 'mg'; // cholesterol is mg according to AI interface
