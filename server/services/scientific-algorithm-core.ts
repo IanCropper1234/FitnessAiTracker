@@ -297,7 +297,8 @@ export class SciAlgorithmCore {
   }
   
   /**
-   * Calculate volume progression using RP methodology
+   * Calculate volume progression using RP methodology with Periodization Reset Strategy
+   * 方案2: 週期性重設策略 - 前半週期組數漸進，後半週期強度導向
    */
   static calculateVolumeProgression(
     currentWeek: number,
@@ -314,43 +315,95 @@ export class SciAlgorithmCore {
     let targetSets = landmark.mev; // Start at MEV
     let phase: 'accumulation' | 'intensification' | 'deload' = 'accumulation';
     
-    // RP Volume Progression Algorithm
-    if (currentWeek <= totalWeeks - 2) {
-      // Accumulation phase: Progressive volume increase
-      const progressionRate = (landmark.mav - landmark.mev) / (totalWeeks - 2);
+    // 計算週期分割點 (前半期 vs 後半期)
+    const midPoint = Math.ceil(totalWeeks / 2);
+    
+    // 週期性重設策略：分為兩個階段
+    if (currentWeek <= midPoint) {
+      // 階段1：累積期 - 組數漸進 (週1-3)
+      // 從 MEV 逐步增加，但有合理上限
+      const maxAccumulationSets = Math.min(landmark.mav, landmark.mev + 3); // 最多增加3組
+      const progressionRate = (maxAccumulationSets - landmark.mev) / midPoint;
       targetSets = Math.round(landmark.mev + (progressionRate * (currentWeek - 1)));
       
-      // Apply auto-regulation adjustments
+      // 自動調節：恢復狀態影響組數增長
       if (landmark.recoveryLevel !== null && landmark.recoveryLevel !== undefined && landmark.recoveryLevel < 4) {
-        // Poor recovery: reduce volume by 10-20%
+        // 恢復不佳：減少組數增長 20%
         targetSets = Math.round(targetSets * 0.8);
-      } else if (landmark.recoveryLevel !== null && landmark.recoveryLevel !== undefined && landmark.recoveryLevel > 7 && 
-                 landmark.adaptationLevel !== null && landmark.adaptationLevel !== undefined && landmark.adaptationLevel > 6) {
-        // Good recovery and adaptation: can push closer to MAV
-        targetSets = Math.min(Math.round(targetSets * 1.1), landmark.mav);
+      } else if (landmark.recoveryLevel !== null && landmark.recoveryLevel !== undefined && landmark.recoveryLevel > 7) {
+        // 恢復良好：可以稍微增加組數
+        targetSets = Math.min(Math.round(targetSets * 1.1), maxAccumulationSets);
       }
       
-      // Safety check: don't exceed MAV in accumulation
-      targetSets = Math.min(targetSets, landmark.mav);
+      // 安全限制：不超過累積期上限
+      targetSets = Math.min(targetSets, maxAccumulationSets);
       phase = 'accumulation';
       
-    } else if (currentWeek === totalWeeks - 1) {
-      // Intensification phase: Push to MAV/MRV
-      targetSets = (landmark.recoveryLevel !== null && landmark.recoveryLevel !== undefined && landmark.recoveryLevel >= 6) 
-        ? landmark.mav 
-        : Math.round(landmark.mav * 0.9);
+    } else if (currentWeek < totalWeeks) {
+      // 階段2：強化期 - 組數穩定，強度導向 (週4-5)
+      // 維持合理組數，透過 RIR 降低來增加強度
+      const stableSetCount = Math.min(landmark.mav, landmark.mev + 3);
+      targetSets = stableSetCount;
+      
+      // 恢復狀態決定是否維持高組數
+      if (landmark.recoveryLevel !== null && landmark.recoveryLevel !== undefined && landmark.recoveryLevel < 5) {
+        // 恢復不佳：略微降低組數以配合高強度
+        targetSets = Math.round(stableSetCount * 0.9);
+      }
+      
       phase = 'intensification';
       
     } else {
-      // Deload week: Drop to MEV or below
-      targetSets = Math.round(landmark.mev * 0.7);
+      // 階段3：減載期 - 恢復期 (週6)
+      targetSets = Math.round(landmark.mev * 0.6); // 降到 MEV 的 60%
       phase = 'deload';
     }
     
+    // 最終安全檢查：確保組數在合理範圍內
+    const minSets = phase === 'deload' ? Math.round(landmark.mev * 0.5) : landmark.mev;
+    const maxSets = Math.min(landmark.mav, landmark.mev + 4); // 絕對上限：MEV + 4組
+    
     return {
-      targetSets: Math.max(targetSets, Math.round(landmark.mev * 0.5)), // Never go too low except intentional deload
+      targetSets: Math.max(Math.min(targetSets, maxSets), minSets),
       phase
     };
+  }
+  
+  /**
+   * Calculate intensity progression for evidence-based training
+   * 配合方案2: 當組數穩定時，透過強度調整來持續漸進
+   */
+  static calculateIntensityProgression(
+    currentWeek: number,
+    totalWeeks: number,
+    baseRir: number = 3
+  ): {
+    targetRir: number;
+    intensityNote: string;
+  } {
+    const midPoint = Math.ceil(totalWeeks / 2);
+    
+    if (currentWeek <= midPoint) {
+      // 累積期：維持適中 RIR，專注於組數增長
+      return {
+        targetRir: baseRir,
+        intensityNote: `累積期：維持 RIR ${baseRir}，專注組數建立適應`
+      };
+    } else if (currentWeek < totalWeeks) {
+      // 強化期：降低 RIR，增加強度
+      const intensityWeek = currentWeek - midPoint + 1;
+      const targetRir = Math.max(1, baseRir - intensityWeek);
+      return {
+        targetRir,
+        intensityNote: `強化期：RIR 降至 ${targetRir}，組數穩定但強度提升`
+      };
+    } else {
+      // 減載期：回復較高 RIR
+      return {
+        targetRir: baseRir + 1,
+        intensityNote: `減載期：RIR 提升至 ${baseRir + 1}，促進恢復`
+      };
+    }
   }
   
   /**

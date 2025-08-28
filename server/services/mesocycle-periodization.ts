@@ -832,17 +832,35 @@ export class MesocyclePeriodization {
         let newSets = exercise.sets;
         let newTargetReps = exercise.targetReps;
         
-        // Apply basic volume adjustments
-        if (volumeChange === 'increase' && newSets < 5) {
+        // Apply evidence-based volume adjustments with smart caps
+        // 方案2: 週期性重設策略 - 配合科學算法的組數限制
+        const MAX_SETS_PER_EXERCISE = 5; // 基於研究的單一動作最佳上限
+        
+        if (volumeChange === 'increase' && newSets < MAX_SETS_PER_EXERCISE) {
           newSets += 1;
         } else if (volumeChange === 'decrease' && newSets > 1) {
           newSets -= 1;
+        }
+        
+        // 確保不超過科學證據支持的上限
+        newSets = Math.min(newSets, MAX_SETS_PER_EXERCISE);
+        
+        // 添加訓練註記說明週期性重設策略的應用
+        const midPoint = Math.ceil(6 / 2); // 假設大多數 mesocycle 為 6 週
+        let progressionNote = '';
+        
+        if (week <= midPoint) {
+          progressionNote = `累積期第${week}週：組數導向漸進`;
+        } else if (week < 6) {
+          progressionNote = `強化期第${week}週：組數穩定，建議降低RIR增加強度`;
+        } else {
+          progressionNote = `減載期第${week}週：恢復期，降低訓練量`;
         }
 
         // Apply special training method progressions if present
         let adjustedSpecialConfig = exercise.specialConfig;
         let adjustedTargetReps = newTargetReps;
-        let adjustedNotes = `Week ${week} progression applied`;
+        let adjustedNotes = progressionNote;
         
         if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
           const volumeChange = this.determineVolumeChange(exercise.exerciseId, progressions);
