@@ -469,11 +469,11 @@ Return only valid JSON with all required fields.`
           },
           {
             role: "assistant",
-            content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
+            content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. For Chinese labels: 熱量 147kJ means 147 kilojoules (convert to ~35 calories), 蛋白質 2.1g means 2.1g protein. I will read ALL visible numerical values and provide comprehensive micronutrients based on the food type."
           },
           {
             role: "user", 
-            content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+            content: "CRITICAL: Focus on extracting VISIBLE NUMBERS from the nutrition label. Chinese labels show values like: 熱量 147kJ (kilojoules), 蛋白質 2.1g, 脂肪 1.5g, 碳水化合物 8.0g. Extract these EXACT numbers and convert kJ to calories if needed (1 kJ = 0.239 calories). Provide comprehensive micronutrients (40-80 nutrients) based on scientific databases."
           }
         ];
 
@@ -505,11 +505,11 @@ Return only valid JSON with all required fields.`
         },
         {
           role: "assistant",
-          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
+          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. For Chinese labels: 熱量 147kJ means 147 kilojoules (convert to ~35 calories), 蛋白質 2.1g means 2.1g protein. I will read ALL visible numerical values and provide comprehensive micronutrients based on the food type."
         },
         {
           role: "user", 
-          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+          content: "CRITICAL: Focus on extracting VISIBLE NUMBERS from the nutrition label. Chinese labels show values like: 熱量 147kJ (kilojoules), 蛋白質 2.1g, 脂肪 1.5g, 碳水化合物 8.0g. Extract these EXACT numbers and convert kJ to calories if needed (1 kJ = 0.239 calories). Provide comprehensive micronutrients (40-80 nutrients) based on scientific databases."
         }
       ];
 
