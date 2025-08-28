@@ -258,6 +258,11 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
             const primaryMuscle = exerciseDetails?.primaryMuscle || 'Unknown muscle';
             const muscleGroups = exerciseDetails?.muscleGroups || [];
             
+            // Get the weight unit for this exercise (critical fix for unit display)
+            const exerciseWeightUnit = setsData.length > 0 
+              ? setsData[0]?.weightUnit || workoutExercise.weightUnit || 'kg'
+              : workoutExercise.weightUnit || 'kg';
+            
             // Get special training method information
             const specialMethod = workoutExercise.specialMethod || workoutExercise.special_method;
             const specialConfig = workoutExercise.specialConfig || workoutExercise.special_config;
@@ -289,7 +294,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{exerciseVolume.toFixed(1)} kg volume</p>
+                    <p className="text-sm font-medium">{exerciseVolume.toFixed(1)} {exerciseWeightUnit} volume</p>
                     <p className="text-xs text-muted-foreground">
                       {exerciseCompletedSets}/{exerciseSets} sets
                     </p>
@@ -310,7 +315,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                       <div className="flex items-center justify-between p-3 border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50">
                         <span className="text-sm font-medium">Set {setIndex + 1}</span>
                         <div className="flex items-center gap-4 text-sm">
-                          <span>{setData.weight} kg × {setData.actualReps} reps</span>
+                          <span>{setData.weight} {setData.weightUnit || exerciseWeightUnit} × {setData.actualReps} reps</span>
                           {setData.rpe > 0 && (
                             <span className="text-muted-foreground">RPE {setData.rpe}</span>
                           )}
@@ -399,7 +404,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                                 <div>
                                   <span className="text-muted-foreground">Weights:</span>
                                   <span className="font-medium ml-1">
-                                    {specialConfig.dropSetWeights.map((weight: number) => `${weight}kg`).join(' → ')}
+                                    {specialConfig.dropSetWeights.map((weight: number) => `${weight}${exerciseWeightUnit}`).join(' → ')}
                                   </span>
                                 </div>
                               )}
