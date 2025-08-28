@@ -343,40 +343,149 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                 </div>
                 
                 
-                {/* Dynamic micronutrient rendering - handle any structure */}
-                {selectedNutritionItem.micronutrients && Object.keys(selectedNutritionItem.micronutrients).length > 0 && (
-                  <div className="space-y-3">
-                    {Object.entries(selectedNutritionItem.micronutrients).map(([category, nutrients]) => {
-                      if (!nutrients || typeof nutrients !== 'object') return null;
-                      
-                      const validNutrients = Object.entries(nutrients as Record<string, any>)
-                        .filter(([_, value]) => hasValidValue(value))
-                        .slice(0, 20); // Limit to first 20 for readability
-                      
-                      if (validNutrients.length === 0) return null;
-                      
-                      return (
-                        <div key={category} className="mb-3">
-                          <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2 capitalize">
-                            {category.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                          </h5>
-                          <div className="grid grid-cols-1 gap-1 text-xs">
-                            {validNutrients.map(([nutrientName, value]) => (
-                              <div key={nutrientName} className="flex justify-between">
-                                <span className="text-gray-600 dark:text-gray-400">
-                                  {formatNutrientDisplayName(nutrientName)}
-                                </span>
-                                <span className="font-medium">
-                                  {formatNutrientValue(value)}{getNutrientUnit(nutrientName, value)}
-                                </span>
-                              </div>
-                            ))}
+                {/* Unified micronutrient rendering - convert all structures to grouped format */}
+                {selectedNutritionItem.micronutrients && Object.keys(selectedNutritionItem.micronutrients).length > 0 && (() => {
+                  // Helper function to normalize micronutrients to grouped structure
+                  const normalizeToGroupedStructure = (micronutrients: any) => {
+                    // Check if already grouped
+                    const hasGroupedStructure = Object.keys(micronutrients).some(key => 
+                      typeof micronutrients[key] === 'object' && 
+                      micronutrients[key] !== null &&
+                      !Array.isArray(micronutrients[key]) &&
+                      ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Supplement Compounds'].includes(key)
+                    );
+                    
+                    if (hasGroupedStructure) {
+                      return micronutrients; // Already grouped
+                    }
+                    
+                    // Convert flat structure to grouped
+                    const grouped: any = {
+                      'Fat-Soluble Vitamins': {},
+                      'Water-Soluble Vitamins': {},
+                      'Major Minerals': {},
+                      'Trace Minerals': {},
+                      'Macronutrient Components': {},
+                      'Supplement Compounds': {}
+                    };
+                    
+                    // Nutrient classification mapping
+                    const classifications = {
+                      'vitaminA': 'Fat-Soluble Vitamins',
+                      'vitaminD': 'Fat-Soluble Vitamins', 
+                      'vitaminE': 'Fat-Soluble Vitamins',
+                      'vitaminK': 'Fat-Soluble Vitamins',
+                      'vitaminC': 'Water-Soluble Vitamins',
+                      'vitaminB1': 'Water-Soluble Vitamins',
+                      'vitaminB2': 'Water-Soluble Vitamins',
+                      'vitaminB3': 'Water-Soluble Vitamins',
+                      'vitaminB5': 'Water-Soluble Vitamins',
+                      'vitaminB6': 'Water-Soluble Vitamins',
+                      'vitaminB7': 'Water-Soluble Vitamins',
+                      'vitaminB9': 'Water-Soluble Vitamins',
+                      'vitaminB12': 'Water-Soluble Vitamins',
+                      'folate': 'Water-Soluble Vitamins',
+                      'thiamine': 'Water-Soluble Vitamins',
+                      'riboflavin': 'Water-Soluble Vitamins',
+                      'niacin': 'Water-Soluble Vitamins',
+                      'pantothenicAcid': 'Water-Soluble Vitamins',
+                      'pyridoxine': 'Water-Soluble Vitamins',
+                      'biotin': 'Water-Soluble Vitamins',
+                      'cobalamin': 'Water-Soluble Vitamins',
+                      'ascorbicAcid': 'Water-Soluble Vitamins',
+                      'choline': 'Water-Soluble Vitamins',
+                      'calcium': 'Major Minerals',
+                      'chloride': 'Major Minerals',
+                      'magnesium': 'Major Minerals',
+                      'phosphorus': 'Major Minerals',
+                      'potassium': 'Major Minerals',
+                      'sodium': 'Major Minerals',
+                      'sulfur': 'Major Minerals',
+                      'iron': 'Trace Minerals',
+                      'zinc': 'Trace Minerals',
+                      'copper': 'Trace Minerals',
+                      'manganese': 'Trace Minerals',
+                      'iodine': 'Trace Minerals',
+                      'selenium': 'Trace Minerals',
+                      'chromium': 'Trace Minerals',
+                      'molybdenum': 'Trace Minerals',
+                      'fluoride': 'Trace Minerals',
+                      'boron': 'Trace Minerals',
+                      'cobalt': 'Trace Minerals',
+                      'nickel': 'Trace Minerals',
+                      'silicon': 'Trace Minerals',
+                      'vanadium': 'Trace Minerals',
+                      'fiber': 'Macronutrient Components',
+                      'sugar': 'Macronutrient Components',
+                      'addedSugar': 'Macronutrient Components',
+                      'starch': 'Macronutrient Components',
+                      'cholesterol': 'Macronutrient Components',
+                      'saturatedFat': 'Macronutrient Components',
+                      'monounsaturatedFat': 'Macronutrient Components',
+                      'polyunsaturatedFat': 'Macronutrient Components',
+                      'transFat': 'Macronutrient Components',
+                      'omega3': 'Macronutrient Components',
+                      'omega6': 'Macronutrient Components',
+                      'omega9': 'Macronutrient Components',
+                      'solubleFiber': 'Macronutrient Components',
+                      'insolubleFiber': 'Macronutrient Components',
+                      'alcohol': 'Macronutrient Components'
+                    };
+                    
+                    // Classify each nutrient
+                    Object.entries(micronutrients).forEach(([nutrientName, value]) => {
+                      if (hasValidValue(value)) {
+                        const category = classifications[nutrientName as keyof typeof classifications] || 'Supplement Compounds';
+                        grouped[category][nutrientName] = value;
+                      }
+                    });
+                    
+                    // Remove empty categories
+                    Object.keys(grouped).forEach(category => {
+                      if (Object.keys(grouped[category]).length === 0) {
+                        delete grouped[category];
+                      }
+                    });
+                    
+                    return grouped;
+                  };
+                  
+                  const groupedMicronutrients = normalizeToGroupedStructure(selectedNutritionItem.micronutrients);
+                  
+                  return (
+                    <div className="space-y-3">
+                      {Object.entries(groupedMicronutrients).map(([category, nutrients]) => {
+                        if (!nutrients || typeof nutrients !== 'object') return null;
+                        
+                        const validNutrients = Object.entries(nutrients as Record<string, any>)
+                          .filter(([_, value]) => hasValidValue(value))
+                          .slice(0, 20); // Limit to first 20 for readability
+                        
+                        if (validNutrients.length === 0) return null;
+                        
+                        return (
+                          <div key={category} className="mb-3">
+                            <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2 capitalize">
+                              {category}
+                            </h5>
+                            <div className="grid grid-cols-1 gap-1 text-xs">
+                              {validNutrients.map(([nutrientName, value]) => (
+                                <div key={nutrientName} className="flex justify-between">
+                                  <span className="text-gray-600 dark:text-gray-400">
+                                    {formatNutrientDisplayName(nutrientName)}
+                                  </span>
+                                  <span className="font-medium">
+                                    {formatNutrientValue(value)}{getNutrientUnit(nutrientName, value)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
                 
                 {/* Legacy static vitamin display - kept as fallback */}
                 {!selectedNutritionItem.micronutrients || Object.keys(selectedNutritionItem.micronutrients).length === 0 ? (
