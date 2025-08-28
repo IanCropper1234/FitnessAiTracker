@@ -118,6 +118,14 @@ export async function analyzeNutritionMultiImage(
       const analysisInstructions = analysisType === 'nutrition_label' 
         ? `**Task:** Extract and analyze nutritional information from nutrition facts labels across ${imageCount} image(s).
 
+**CRITICAL IMAGE READABILITY GUIDELINES:**
+- ASSUME IMAGES ARE READABLE unless text is genuinely blurred, pixelated, or completely obscured
+- Chinese/Traditional Chinese nutrition labels are PERFECTLY VALID and should be analyzed normally
+- Most smartphone photos of nutrition labels contain sufficient detail for accurate analysis
+- If any nutritional text is visible, work with available information rather than claiming "not readable"
+- Only use "not clearly readable" as a last resort when absolutely no nutritional text is visible
+- Language examples: 熱量/能量 = calories, 蛋白質 = protein, 脂肪 = fat, 碳水化合物 = carbohydrates
+
 **Analysis Approach:**
 1. **EXACT Label Reading:** Read nutrition values EXACTLY as displayed - if the label shows 107 calories, report 107 (NOT 535 or any other value)
 2. **Serving Size Accuracy:** Use ONLY the serving size shown on the label (typically 1 serving = 20g for chocolate)
@@ -418,7 +426,7 @@ Return only valid JSON with all required fields.`
       undefined;
 
     // Prepare system and user prompts
-    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score.";
+    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. IMPORTANT: Most nutrition label images are readable - only claim 'not clearly readable' if text is genuinely blurred, too small, or obscured. Chinese nutrition labels are just as valid as English labels.";
     
     const userPromptText = messageContent.find((item: any) => item.type === 'text')?.text || '';
 
