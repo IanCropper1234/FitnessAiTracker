@@ -1208,9 +1208,40 @@ export function IntegratedNutritionOverview({
             'vitamine': 'vitaminE',
             'vitamink': 'vitaminK',
             'vitaminA': 'vitaminA',
-            'vitaminD': 'vitaminD', 
+            // Vitamin A variants
+            'retinol': 'vitaminA',
+            'betacarotene': 'vitaminA',
+            'vitaminabetacarotene': 'vitaminA',
+            'retinolequivalents': 'vitaminA',
+            'vitaminD': 'vitaminD',
+            // Vitamin D variants (D2, D3)
+            'vitamind2': 'vitaminD',
+            'vitamind3': 'vitaminD',
+            'cholecalciferol': 'vitaminD',
+            'ergocalciferol': 'vitaminD',
+            'calciferol': 'vitaminD', 
             'vitaminE': 'vitaminE',
+            // Vitamin E variants (tocopherols)
+            'alphatocopherol': 'vitaminE',
+            'gammatocopherol': 'vitaminE',
+            'deltatocopherol': 'vitaminE',
+            'tocopherol': 'vitaminE',
+            'tocotrienol': 'vitaminE',
             'vitaminK': 'vitaminK',
+            // Vitamin K variants (K1, K2 subtypes)
+            'vitamink1': 'vitaminK',
+            'vitamink2': 'vitaminK',
+            'vitamink1phyloquinone': 'vitaminK',
+            'vitamink2menaquinone': 'vitaminK',
+            'vitamink2menaquinone4': 'vitaminK',
+            'vitamink2menaquinone7': 'vitaminK',
+            'vitaminkspecies': 'vitaminK',
+            'phyloquinone': 'vitaminK',
+            'menaquinone': 'vitaminK',
+            'menaquinone4': 'vitaminK',
+            'menaquinone7': 'vitaminK',
+            'mk4': 'vitaminK',
+            'mk7': 'vitaminK',
             // Water-Soluble Vitamins
             'vitaminc': 'vitaminC',
             'vitaminb1': 'vitaminB1',
@@ -1276,6 +1307,23 @@ export function IntegratedNutritionOverview({
             'vitamin_b2_riboflavin': 'vitaminB2',
             'vitamin_b6_pyridoxine': 'vitaminB6',
             'vitamin_b5_pantothenic_acid': 'vitaminB5',
+            // Vitamin K variants with underscores
+            'vitamin_k': 'vitaminK',
+            'vitamin_k1': 'vitaminK',
+            'vitamin_k2': 'vitaminK',
+            'vitamin_k1_phyloquinone': 'vitaminK',
+            'vitamin_k2_menaquinone': 'vitaminK',
+            'vitamin_k2_menaquinone_4': 'vitaminK',
+            'vitamin_k2_menaquinone_7': 'vitaminK',
+            'vitamin_k_species': 'vitaminK',
+            // Vitamin D variants with underscores
+            'vitamin_d2': 'vitaminD',
+            'vitamin_d3': 'vitaminD',
+            // Vitamin E variants with underscores
+            'vitamin_e_alpha_tocopherol': 'vitaminE',
+            'vitamin_e_gamma_tocopherol': 'vitaminE',
+            // Vitamin A variants with underscores
+            'vitamin_a_beta_carotene': 'vitaminA',
             // Major Minerals
             'sodium': 'sodium',
             'calcium': 'calcium',
@@ -1345,7 +1393,6 @@ export function IntegratedNutritionOverview({
             'zeaxanthin': 'zeaxanthin',
             'carotenoids': 'carotenoids',
             'polyphenols': 'polyphenols',
-            'betacarotene': 'betaCarotene',
             'betaCarotene': 'betaCarotene',
             // Supplement Compounds
             'bcaa': 'bcaa',
