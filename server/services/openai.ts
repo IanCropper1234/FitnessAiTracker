@@ -371,6 +371,7 @@ Return only valid JSON with all required fields.`
 
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
+- SUPPLEMENT NAME IDENTIFICATION: For supplements, read the EXACT product name from the label/bottle, including specific compound names (e.g., "Vitamin K Complex with K1, K2-MK4, K2-MK7", "Super K Multi-Form Vitamin K", "CoQ10 Ubiquinol 100mg")
 - ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: carefully read the label and use EXACT form - "softgel", "capsule", "tablet", "pill", "gummy", "drop" - NEVER use "g" or "ml" for pills/tablets/capsules)
 - SUPPLEMENT FORM DETECTION: Look at the bottle label, product description, and supplement facts panel to identify the exact form (softgel vs tablet vs capsule vs gummy)
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
