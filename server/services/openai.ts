@@ -597,6 +597,33 @@ Return only valid JSON with all required fields.`
       console.warn(`WARNING: Insufficient micronutrient data (${totalMicronutrientCount} nutrients). Expected 40-80 nutrients for comprehensive analysis.`);
     }
     
+    // Post-processing: Detect supplements and fix unit if needed
+    const isLikelySupplement = (
+      validatedResult.calories === 0 && 
+      validatedResult.protein === 0 && 
+      validatedResult.carbs === 0 && 
+      validatedResult.fat === 0
+    ) || (
+      foodName && (
+        foodName.toLowerCase().includes('vitamin') ||
+        foodName.toLowerCase().includes('supplement') ||
+        foodName.toLowerCase().includes('softgel') ||
+        foodName.toLowerCase().includes('capsule') ||
+        foodName.toLowerCase().includes('tablet') ||
+        foodName.toLowerCase().includes('pill')
+      )
+    );
+
+    // Auto-correct supplement units if AI incorrectly used 'g'
+    if (isLikelySupplement && validatedResult.portionUnit === 'g') {
+      console.log("Detected supplement with incorrect unit 'g', correcting to 'softgel'");
+      validatedResult.portionUnit = 'softgel';
+      validatedResult.servingDetails = validatedResult.servingDetails.replace(/1g?/, '1 softgel');
+      if (validatedResult.portionWeight === 1) {
+        validatedResult.portionWeight = 1; // Keep as 1 for supplements
+      }
+    }
+
     // Validate that we have meaningful nutritional data
     // Allow supplements with zero macros but micronutrients
     const hasMacros = validatedResult.calories > 0 || validatedResult.protein > 0 || 
