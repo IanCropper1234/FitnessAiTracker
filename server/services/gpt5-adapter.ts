@@ -48,24 +48,40 @@ export class GPT5Adapter {
   ): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
-      // For GPT-5, create proper messages array with image
-      const messages = [
-        { role: "system", content: systemPrompt },
+      // For GPT-5, create proper input array with image for Responses API
+      const inputContent = [
         {
-          role: "user",
-          content: [
-            { type: "text", text: userPrompt },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${image}`,
-                detail: "high"
-              }
-            }
-          ]
+          type: "input_text",
+          text: `${systemPrompt}\n\n${userPrompt}`
+        },
+        {
+          type: "input_image",
+          data: image,
+          mime_type: "image/jpeg"
         }
       ];
-      return this.callGPT5API(model, systemPrompt, userPrompt, messages, responseFormat);
+      
+      const params: any = {
+        model: model.name,
+        input: inputContent,
+        reasoning: model.reasoning || { effort: 'medium' },
+        text: model.text || { verbosity: 'medium' }
+      };
+
+      if (responseFormat?.type === 'json_object') {
+        params.text = {
+          ...params.text,
+          format: { type: 'json_object' }
+        };
+      }
+
+      console.log(`[GPT-5] Vision API using Responses format`);
+      const response = await this.openai.responses.create(params);
+      
+      return {
+        content: response.output_text,
+        usage: response.usage
+      };
     } else {
       // For GPT-4, use traditional vision API
       return this.callGPT4VisionAPI(model, systemPrompt, userPrompt, image, responseFormat);
@@ -92,9 +108,57 @@ export class GPT5Adapter {
       // GPT-5 Responses API with multimodal content
       console.log(`[GPT-5] Processing multimodal content with ${messages.length} message(s)`);
       
+      // Transform messages to Responses API input format
+      const inputContent: any[] = [];
+      
+      // Add system prompt as input_text
+      if (systemPrompt) {
+        inputContent.push({
+          type: "input_text",
+          text: systemPrompt
+        });
+      }
+      
+      // Process messages to extract text and images
+      for (const message of messages) {
+        if (message.role === 'user' && Array.isArray(message.content)) {
+          for (const item of message.content) {
+            if (item.type === 'text') {
+              inputContent.push({
+                type: "input_text",
+                text: item.text
+              });
+            } else if (item.type === 'image_url') {
+              // Extract base64 data from data URL
+              const imageUrl = item.image_url.url;
+              if (imageUrl.startsWith('data:image/')) {
+                const [header, base64Data] = imageUrl.split(',');
+                const mimeType = header.match(/data:(.*?);/)?.[1] || 'image/jpeg';
+                
+                inputContent.push({
+                  type: "input_image",
+                  data: base64Data,
+                  mime_type: mimeType
+                });
+              } else {
+                inputContent.push({
+                  type: "input_image",
+                  image_url: imageUrl
+                });
+              }
+            }
+          }
+        } else if (message.role === 'user' && typeof message.content === 'string') {
+          inputContent.push({
+            type: "input_text",
+            text: message.content
+          });
+        }
+      }
+      
       const params: any = {
         model: model.name,
-        messages, // Pass the complete messages array with images
+        input: inputContent, // Use input array instead of messages
         reasoning: model.reasoning || { effort: 'medium' }, // Use medium for image analysis
         text: model.text || { verbosity: 'medium' } // More detailed for analysis
       };
@@ -107,6 +171,7 @@ export class GPT5Adapter {
         };
       }
 
+      console.log(`[GPT-5] Responses API input:`, JSON.stringify(params.input, null, 2));
       const response = await this.openai.responses.create(params);
 
       return {
