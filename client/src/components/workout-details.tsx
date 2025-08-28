@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import type { AutoRegulationFeedback } from "../shared/schema";
+import type { AutoRegulationFeedback } from "../../shared/schema";
 import { 
   ArrowLeft, 
   Clock, 
@@ -18,6 +18,38 @@ import {
 } from "lucide-react";
 import { SpecialMethodBadge } from "@/components/ui/special-method-badge";
 import { getSpecialMethodStyle } from "@/lib/specialMethodUtils";
+// Weight conversion utility functions
+const convertWeight = (weight: number, fromUnit: string, toUnit: string): number => {
+  if (!weight || fromUnit === toUnit) return weight;
+  
+  const KG_TO_LBS = 2.20462262185;
+  const LBS_TO_KG = 0.45359237;
+  
+  if (fromUnit === 'kg' && toUnit === 'lbs') {
+    return Math.round(weight * KG_TO_LBS * 10) / 10;
+  } else if (fromUnit === 'lbs' && toUnit === 'kg') {
+    return Math.round(weight * LBS_TO_KG * 10) / 10;
+  }
+  return weight;
+};
+
+const getUserWeightUnit = (userProfile?: any, bodyMetrics?: any[]): 'kg' | 'lbs' => {
+  // Check user profile first
+  if (userProfile?.user?.weightUnit) {
+    if (userProfile.user.weightUnit === 'imperial') return 'lbs';
+    if (userProfile.user.weightUnit === 'metric') return 'kg';
+  }
+  
+  // Fallback: Check latest body metric for legacy preference
+  if (bodyMetrics && bodyMetrics.length > 0) {
+    const latestMetric = bodyMetrics[0];
+    if (latestMetric.unit === 'imperial') return 'lbs';
+    if (latestMetric.unit === 'metric') return 'kg';
+  }
+
+  // Default to kg if no preference found
+  return 'kg';
+};
 
 interface WorkoutSet {
   weight: number;
@@ -41,6 +73,7 @@ interface WorkoutExercise {
   rpe?: number;
   isCompleted?: boolean;
   setsData?: WorkoutSet[];
+  weightUnit?: string; // Add weight unit field
   exercise?: {
     name: string;
     primaryMuscle: string;
@@ -71,6 +104,19 @@ interface WorkoutDetailsProps {
 }
 
 export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
+  // Fetch user profile for weight unit preference
+  const { data: userProfile } = useQuery({
+    queryKey: ["/api/user/profile"],
+  });
+
+  // Fetch body metrics for unit preference fallback
+  const { data: bodyMetrics } = useQuery({
+    queryKey: ["/api/body-metrics"],
+  });
+
+  // Get user's preferred weight unit
+  const preferredUnit = getUserWeightUnit(userProfile, bodyMetrics);
+
   // Fetch workout session details
   const { data: session, isLoading } = useQuery<WorkoutSessionDetails>({
     queryKey: ["/api/training/session", sessionId],
@@ -159,7 +205,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
             </div>
             <div className="text-center p-3 bg-muted ">
               <TrendingUp className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-              <p className="text-sm font-medium">{session.totalVolume} kg</p>
+              <p className="text-sm font-medium">{convertWeight(session.totalVolume, 'kg', preferredUnit).toFixed(1)} {preferredUnit}</p>
               <p className="text-xs text-muted-foreground">Total Volume</p>
             </div>
             <div className="text-center p-3 bg-muted ">
@@ -239,6 +285,9 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
               ? setsData.map(set => set.actualReps) 
               : (workoutExercise.actualReps ? workoutExercise.actualReps.split(',').map((r: string) => parseInt(r)) : []);
             
+            // Get stored weight unit (defaults to 'kg' if not set)
+            const storedWeightUnit = workoutExercise.weightUnit || 'kg';
+            
             const exerciseWeight = setsData.length > 0 
               ? setsData[0]?.weight || 0 
               : parseFloat(workoutExercise.weight || '0');
@@ -247,8 +296,15 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
               : workoutExercise.rpe || 0;
             const exerciseSets = setsData.length || parseInt(workoutExercise.sets?.toString() || '0');
             
-            // Calculate volume from stored data
-            const exerciseVolume = actualRepsArray.reduce((sum: number, reps: number) => sum + (exerciseWeight * reps), 0);
+            // Convert weight for display if needed
+            const convertWeightForDisplay = (weight: number): number => {
+              if (!weight || storedWeightUnit === preferredUnit) return weight;
+              return convertWeight(weight, storedWeightUnit, preferredUnit);
+            };
+            
+            // Calculate volume in user's preferred unit
+            const displayWeight = convertWeightForDisplay(exerciseWeight);
+            const exerciseVolume = actualRepsArray.reduce((sum: number, reps: number) => sum + (displayWeight * reps), 0);
             const exerciseCompletedSets = workoutExercise.isCompleted ? actualRepsArray.length : 0;
             const exerciseProgress = exerciseSets > 0 ? (exerciseCompletedSets / exerciseSets) * 100 : 0;
             
@@ -289,7 +345,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{exerciseVolume.toFixed(1)} kg volume</p>
+                    <p className="text-sm font-medium">{exerciseVolume.toFixed(1)} {preferredUnit} volume</p>
                     <p className="text-xs text-muted-foreground">
                       {exerciseCompletedSets}/{exerciseSets} sets
                     </p>
@@ -305,12 +361,16 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                     weight: exerciseWeight,
                     rpe: exerciseRpe,
                     completed: true
-                  }))).map((setData: any, setIndex: number) => (
+                  }))).map((setData: any, setIndex: number) => {
+                    // Convert weight for this set
+                    const setDisplayWeight = convertWeightForDisplay(setData.weight || 0);
+                    
+                    return (
                     <div key={setIndex} className="space-y-2">
                       <div className="flex items-center justify-between p-3 border bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/50">
                         <span className="text-sm font-medium">Set {setIndex + 1}</span>
                         <div className="flex items-center gap-4 text-sm">
-                          <span>{setData.weight} kg × {setData.actualReps} reps</span>
+                          <span>{setDisplayWeight.toFixed(1)} {preferredUnit} × {setData.actualReps} reps</span>
                           {setData.rpe > 0 && (
                             <span className="text-muted-foreground">RPE {setData.rpe}</span>
                           )}
@@ -399,7 +459,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                                 <div>
                                   <span className="text-muted-foreground">Weights:</span>
                                   <span className="font-medium ml-1">
-                                    {specialConfig.dropSetWeights.map((weight: number) => `${weight}kg`).join(' → ')}
+                                    {specialConfig.dropSetWeights.map((weight: number) => `${convertWeightForDisplay(weight).toFixed(1)}${preferredUnit}`).join(' → ')}
                                   </span>
                                 </div>
                               )}
@@ -468,7 +528,8 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
                         </div>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
 
                 </div>
                 
