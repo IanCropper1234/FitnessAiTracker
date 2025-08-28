@@ -48,22 +48,38 @@ export class GPT5Adapter {
   ): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
-      // For GPT-5, create proper input array with image for Responses API
-      const inputContent = [
-        {
-          type: "input_text",
-          text: `${systemPrompt}\n\n${userPrompt}`
-        },
-        {
-          type: "input_image",
-          data: image,
-          mime_type: "image/jpeg"
-        }
-      ];
+      // For GPT-5, create proper messages for Responses API
+      const inputMessages = [];
+      
+      if (systemPrompt) {
+        inputMessages.push({
+          type: "message",
+          role: "system",
+          content: systemPrompt
+        });
+      }
+      
+      inputMessages.push({
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: userPrompt
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${image}`,
+              detail: "high"
+            }
+          }
+        ]
+      });
       
       const params: any = {
         model: model.name,
-        input: inputContent,
+        input: inputMessages,
         reasoning: model.reasoning || { effort: 'medium' },
         text: model.text || { verbosity: 'medium' }
       };
@@ -108,57 +124,61 @@ export class GPT5Adapter {
       // GPT-5 Responses API with multimodal content
       console.log(`[GPT-5] Processing multimodal content with ${messages.length} message(s)`);
       
-      // Transform messages to Responses API input format
-      const inputContent: any[] = [];
+      // Transform messages to Responses API format
+      const inputMessages: any[] = [];
       
-      // Add system prompt as input_text
+      // Add system prompt as system message
       if (systemPrompt) {
-        inputContent.push({
-          type: "input_text",
-          text: systemPrompt
+        inputMessages.push({
+          type: "message",
+          role: "system",
+          content: systemPrompt
         });
       }
       
-      // Process messages to extract text and images
+      // Process messages and convert to proper format
       for (const message of messages) {
         if (message.role === 'user' && Array.isArray(message.content)) {
+          // Handle multimodal content (text + images)
+          const content: any[] = [];
+          
           for (const item of message.content) {
             if (item.type === 'text') {
-              inputContent.push({
-                type: "input_text",
+              content.push({
+                type: "text",
                 text: item.text
               });
             } else if (item.type === 'image_url') {
-              // Extract base64 data from data URL
-              const imageUrl = item.image_url.url;
-              if (imageUrl.startsWith('data:image/')) {
-                const [header, base64Data] = imageUrl.split(',');
-                const mimeType = header.match(/data:(.*?);/)?.[1] || 'image/jpeg';
-                
-                inputContent.push({
-                  type: "input_image",
-                  data: base64Data,
-                  mime_type: mimeType
-                });
-              } else {
-                inputContent.push({
-                  type: "input_image",
-                  image_url: imageUrl
-                });
-              }
+              content.push({
+                type: "image_url",
+                image_url: item.image_url
+              });
             }
           }
+          
+          inputMessages.push({
+            type: "message",
+            role: "user",
+            content: content
+          });
         } else if (message.role === 'user' && typeof message.content === 'string') {
-          inputContent.push({
-            type: "input_text",
-            text: message.content
+          inputMessages.push({
+            type: "message",
+            role: "user",
+            content: message.content
+          });
+        } else if (message.role === 'system') {
+          inputMessages.push({
+            type: "message",
+            role: "system",
+            content: message.content
           });
         }
       }
       
       const params: any = {
         model: model.name,
-        input: inputContent, // Use input array instead of messages
+        input: inputMessages, // Use message format
         reasoning: model.reasoning || { effort: 'medium' }, // Use medium for image analysis
         text: model.text || { verbosity: 'medium' } // More detailed for analysis
       };
