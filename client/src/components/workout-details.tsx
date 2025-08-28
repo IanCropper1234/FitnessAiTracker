@@ -118,6 +118,44 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
     .filter(ex => ex.isCompleted && ex.rpe && ex.rpe > 0)
     .reduce((sum, ex) => sum + (ex.rpe || 0), 0) / session.exercises.filter(ex => ex.isCompleted && ex.rpe && ex.rpe > 0).length || 0;
 
+  // Calculate total volume with proper unit handling
+  const calculateTotalVolume = () => {
+    let totalKgVolume = 0;
+    let totalLbsVolume = 0;
+    
+    session.exercises.forEach(workoutExercise => {
+      const setsData = workoutExercise.setsData || [];
+      const actualRepsArray = setsData.length > 0 
+        ? setsData.map(set => set.actualReps) 
+        : (workoutExercise.actualReps ? workoutExercise.actualReps.split(',').map((r: string) => parseInt(r)) : []);
+      
+      const exerciseWeight = setsData.length > 0 
+        ? setsData[0]?.weight || 0 
+        : parseFloat(workoutExercise.weight || '0');
+        
+      const exerciseWeightUnit = setsData.length > 0 
+        ? setsData[0]?.weightUnit || workoutExercise.weightUnit || 'kg'
+        : workoutExercise.weightUnit || 'kg';
+      
+      const exerciseVolume = actualRepsArray.reduce((sum: number, reps: number) => sum + (exerciseWeight * reps), 0);
+      
+      if (exerciseWeightUnit === 'lbs') {
+        totalLbsVolume += exerciseVolume;
+      } else {
+        totalKgVolume += exerciseVolume;
+      }
+    });
+    
+    // Return display string based on what volumes exist
+    if (totalKgVolume > 0 && totalLbsVolume > 0) {
+      return `${totalKgVolume.toFixed(1)} kg + ${totalLbsVolume.toFixed(1)} lbs`;
+    } else if (totalLbsVolume > 0) {
+      return `${totalLbsVolume.toFixed(1)} lbs`;
+    } else {
+      return `${totalKgVolume.toFixed(1)} kg`;
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Back Button */}
@@ -161,7 +199,7 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
             </div>
             <div className="text-center p-3 bg-muted ">
               <TrendingUp className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-              <p className="text-sm font-medium">{session.totalVolume} kg</p>
+              <p className="text-sm font-medium">{calculateTotalVolume()}</p>
               <p className="text-xs text-muted-foreground">Total Volume</p>
             </div>
             <div className="text-center p-3 bg-muted ">
