@@ -91,6 +91,80 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
     }
   };
 
+  // Format nutrient names for display (remove _mg, _mcg, _g suffixes and format properly)
+  const formatNutrientDisplayName = (nutrientName: string): string => {
+    // Remove common suffixes
+    let cleanName = nutrientName
+      .replace(/_mg$|_mcg$|_g$/, '')
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+    
+    // Handle special cases
+    const nameMap: Record<string, string> = {
+      'Vitamin A': 'Vitamin A',
+      'Vitamin D': 'Vitamin D',
+      'Vitamin E': 'Vitamin E',
+      'Vitamin K': 'Vitamin K',
+      'Vitamin C': 'Vitamin C',
+      'Vitamin B1': 'Vitamin B1',
+      'Vitamin B2': 'Vitamin B2',
+      'Vitamin B3': 'Vitamin B3',
+      'Vitamin B5': 'Vitamin B5',
+      'Vitamin B6': 'Vitamin B6',
+      'Vitamin B7': 'Vitamin B7',
+      'Vitamin B9': 'Vitamin B9',
+      'Vitamin B12': 'Vitamin B12',
+      'Folate': 'Folate',
+      'Potassium': 'Potassium',
+      'Phosphorus': 'Phosphorus',
+      'Magnesium': 'Magnesium',
+      'Calcium': 'Calcium',
+      'Sodium': 'Sodium',
+      'Chloride': 'Chloride',
+      'Iron': 'Iron',
+      'Zinc': 'Zinc',
+      'Copper': 'Copper',
+      'Manganese': 'Manganese',
+      'Iodine': 'Iodine',
+      'Selenium': 'Selenium',
+      'Chromium': 'Chromium',
+      'Molybdenum': 'Molybdenum',
+      'Fluoride': 'Fluoride',
+      'Fiber': 'Fiber',
+      'Sugar': 'Sugar',
+      'Omega3': 'Omega-3',
+      'Omega6': 'Omega-6'
+    };
+    
+    return nameMap[cleanName] || cleanName;
+  };
+
+  // Get appropriate unit for nutrients based on their type
+  const getNutrientUnit = (nutrientName: string, value: any): string => {
+    // If value is an object with unit, use that
+    if (typeof value === 'object' && value.unit) {
+      return value.unit;
+    }
+    
+    // Clean the nutrient name for unit determination
+    const cleanName = nutrientName.replace(/_mg$|_mcg$|_g$/, '').toLowerCase();
+    
+    // Nutrients that should be in grams
+    const gramsNutrients = ['fiber', 'sugar', 'addedsugar', 'omega3', 'omega6', 'saturatedfat', 'monounsaturatedfat', 'polyunsaturatedfat', 'transfat'];
+    
+    // Nutrients that should be in micrograms
+    const microgramNutrients = ['vitamina', 'vitamind', 'vitaminb7', 'vitaminb9', 'vitaminb12', 'folate', 'iodine', 'selenium', 'chromium', 'molybdenum'];
+    
+    if (gramsNutrients.includes(cleanName)) {
+      return 'g';
+    } else if (microgramNutrients.includes(cleanName)) {
+      return 'mcg';
+    } else {
+      return 'mg'; // Default for most minerals and vitamins
+    }
+  };
+
   const handleGoBack = () => {
     // Clear stored item and go back to nutrition page
     localStorage.removeItem('selectedNutritionItem');
@@ -281,13 +355,11 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                           <div className="grid grid-cols-1 gap-1 text-xs">
                             {validNutrients.map(([nutrientName, value]) => (
                               <div key={nutrientName} className="flex justify-between">
-                                <span className="text-gray-600 dark:text-gray-400 capitalize">
-                                  {nutrientName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                <span className="text-gray-600 dark:text-gray-400">
+                                  {formatNutrientDisplayName(nutrientName)}
                                 </span>
                                 <span className="font-medium">
-                                  {formatNutrientValue(value)}
-                                  {typeof value === 'object' && value.unit ? value.unit : 
-                                   (nutrientName.includes('vitamin') || nutrientName.includes('folate') ? 'mcg' : 'mg')}
+                                  {formatNutrientValue(value)}{getNutrientUnit(nutrientName, value)}
                                 </span>
                               </div>
                             ))}
