@@ -1750,9 +1750,19 @@ export function IntegratedNutritionOverview({
                                 {/* Show individual K variants if they exist */}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
+                                    // Debug: Log variant totals for K vitamins
+                                    console.log('🔍 Vitamin K Variant Debug:', Object.keys(variantTotals).filter(k => k.includes('vitamin') && k.includes('k')));
+                                    console.log('🔍 All variant totals with K:', Object.fromEntries(
+                                      Object.entries(variantTotals).filter(([k, v]) => k.includes('k') && v > 0)
+                                    ));
+                                    
+                                    // Calculate K1 variants (phyloquinone)
                                     const k1Total = (variantTotals.vitamink1 || 0) + 
                                                    (variantTotals.vitamink1phyloquinone || 0) + 
-                                                   (variantTotals.phyloquinone || 0);
+                                                   (variantTotals.phyloquinone || 0) +
+                                                   (variantTotals.vitamink1_phyloquinone || 0);
+                                    
+                                    // Calculate K2 variants (menaquinone types)  
                                     const k2Total = (variantTotals.vitamink2 || 0) + 
                                                    (variantTotals.vitamink2menaquinone || 0) + 
                                                    (variantTotals.vitamink2menaquinone4 || 0) + 
@@ -1761,7 +1771,11 @@ export function IntegratedNutritionOverview({
                                                    (variantTotals.menaquinone4 || 0) + 
                                                    (variantTotals.menaquinone7 || 0) + 
                                                    (variantTotals.mk4 || 0) + 
-                                                   (variantTotals.mk7 || 0);
+                                                   (variantTotals.mk7 || 0) +
+                                                   (variantTotals.vitamink2_menaquinone_4_mk4 || 0) +
+                                                   (variantTotals.vitamink2_menaquinone_7_mk7 || 0);
+                                    
+                                    console.log(`🔍 K1 Total: ${k1Total}, K2 Total: ${k2Total}`);
                                     
                                     const variants = [];
                                     if (k1Total > 0) {
