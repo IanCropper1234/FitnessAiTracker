@@ -352,7 +352,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       typeof micronutrients[key] === 'object' && 
                       micronutrients[key] !== null &&
                       !Array.isArray(micronutrients[key]) &&
-                      ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Supplement Compounds'].includes(key)
+                      ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Amino Acids', 'Antioxidants & Phytonutrients', 'Supplement Compounds'].includes(key)
                     );
                     
                     if (hasGroupedStructure) {
@@ -366,6 +366,8 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       'Major Minerals': {},
                       'Trace Minerals': {},
                       'Macronutrient Components': {},
+                      'Amino Acids': {},
+                      'Antioxidants & Phytonutrients': {},
                       'Supplement Compounds': {}
                     };
                     
@@ -462,6 +464,35 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       'transFat': 'Macronutrient Components',
                       'solubleFiber': 'Macronutrient Components',
                       'insolubleFiber': 'Macronutrient Components',
+                      // Amino Acids
+                      'lysine': 'Amino Acids',
+                      'serine': 'Amino Acids',
+                      'valine': 'Amino Acids',
+                      'alanine': 'Amino Acids',
+                      'glycine': 'Amino Acids',
+                      'leucine': 'Amino Acids',
+                      'proline': 'Amino Acids',
+                      'arginine': 'Amino Acids',
+                      'cysteine': 'Amino Acids',
+                      'tyrosine': 'Amino Acids',
+                      'histidine': 'Amino Acids',
+                      'threonine': 'Amino Acids',
+                      'isoleucine': 'Amino Acids',
+                      'methionine': 'Amino Acids',
+                      'tryptophan': 'Amino Acids',
+                      'asparticacid': 'Amino Acids',
+                      'glutamicacid': 'Amino Acids',
+                      'phenylalanine': 'Amino Acids',
+                      'asparticAcid': 'Amino Acids',
+                      'glutamicAcid': 'Amino Acids',
+                      // Antioxidants & Phytonutrients
+                      'lutein': 'Antioxidants & Phytonutrients',
+                      'flavonoids': 'Antioxidants & Phytonutrients',
+                      'zeaxanthin': 'Antioxidants & Phytonutrients',
+                      'carotenoids': 'Antioxidants & Phytonutrients',
+                      'polyphenols': 'Antioxidants & Phytonutrients',
+                      'betacarotene': 'Antioxidants & Phytonutrients',
+                      'betaCarotene': 'Antioxidants & Phytonutrients',
                       // Supplement Compounds
                       'bcaa': 'Supplement Compounds',
                       'collagen': 'Supplement Compounds',

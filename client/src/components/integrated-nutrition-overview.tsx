@@ -1281,6 +1281,35 @@ export function IntegratedNutritionOverview({
             'insolubleFiber': 'insolubleFiber',
             'monounsaturatedFat': 'monounsaturatedFat',
             'polyunsaturatedFat': 'polyunsaturatedFat',
+            // Amino Acids
+            'lysine': 'lysine',
+            'serine': 'serine',
+            'valine': 'valine',
+            'alanine': 'alanine',
+            'glycine': 'glycine',
+            'leucine': 'leucine',
+            'proline': 'proline',
+            'arginine': 'arginine',
+            'cysteine': 'cysteine',
+            'tyrosine': 'tyrosine',
+            'histidine': 'histidine',
+            'threonine': 'threonine',
+            'isoleucine': 'isoleucine',
+            'methionine': 'methionine',
+            'tryptophan': 'tryptophan',
+            'asparticacid': 'asparticAcid',
+            'glutamicacid': 'glutamicAcid',
+            'phenylalanine': 'phenylalanine',
+            'asparticAcid': 'asparticAcid',
+            'glutamicAcid': 'glutamicAcid',
+            // Antioxidants & Phytonutrients
+            'lutein': 'lutein',
+            'flavonoids': 'flavonoids',
+            'zeaxanthin': 'zeaxanthin',
+            'carotenoids': 'carotenoids',
+            'polyphenols': 'polyphenols',
+            'betacarotene': 'betaCarotene',
+            'betaCarotene': 'betaCarotene',
             // Supplement Compounds
             'bcaa': 'bcaa',
             'collagen': 'collagen',
@@ -1302,7 +1331,7 @@ export function IntegratedNutritionOverview({
               typeof micronutrients[key] === 'object' && 
               micronutrients[key] !== null &&
               !Array.isArray(micronutrients[key]) &&
-              ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components'].includes(key)
+              ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Amino Acids', 'Antioxidants & Phytonutrients', 'Supplement Compounds'].includes(key)
             );
             
             if (hasNestedStructure) {
