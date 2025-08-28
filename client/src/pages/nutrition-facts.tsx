@@ -377,9 +377,9 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                                 </span>
                                 <span className="font-medium">
                                   {formatNutrientValue(value)}{getNutrientUnit(nutrientName, value)}
-                                  {process.env.NODE_ENV === 'development' && nutrientName.toLowerCase().includes('vitamink') && (
-                                    <span className="text-xs text-red-500 ml-1">
-                                      (Debug: {JSON.stringify(value)})
+                                  {process.env.NODE_ENV === 'development' && typeof value === 'object' && value !== null && (
+                                    <span className="text-xs text-blue-500 ml-1">
+                                      (Dynamic: {JSON.stringify(value)})
                                     </span>
                                   )}
                                 </span>

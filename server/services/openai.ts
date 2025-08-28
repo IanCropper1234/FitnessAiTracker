@@ -358,7 +358,7 @@ Return only valid JSON with all required fields.`
 - portionWeight: realistic portion weight as number determined by nutritional guidelines and common consumption patterns
 - portionUnit: most appropriate unit for this food type based on how it's naturally measured and served (CRITICAL: for supplements, read the label carefully and use the EXACT form mentioned - "softgel", "capsule", "tablet", "pill", "gummy", "drop", etc.; for food use "g", "ml", "oz", "cup", etc.)
 - ingredientBreakdown: array of food components with DETAILED calorie breakdown (e.g., ["chicken breast (base): 165 cal", "chicken skin: +35 cal", "olive oil (1 tbsp): +120 cal", "Total: 320 cal"])
-- micronutrients: COMPREHENSIVE vitamin and mineral data with DYNAMIC UNITS based on label values (object with ALL applicable fields, each nutrient can be either direct number OR {value: number, unit: string} format when unit differs from default):
+- micronutrients: COMPREHENSIVE vitamin and mineral data with DYNAMIC UNITS based on label values (object with ALL applicable fields, ALWAYS use {value: number, unit: string} format when label specifies units, otherwise use direct number with standard units):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (use exact unit from label: mcg or mg)
   * Water-Soluble Vitamins: vitaminB1/thiamine (mg), vitaminB2/riboflavin (mg), vitaminB3/niacin (mg), vitaminB5/pantothenic acid (mg), vitaminB6/pyridoxine (mg), vitaminB7/biotin (mcg), vitaminB9/folate (mcg), vitaminB12/cobalamin (mcg), vitaminC/ascorbic acid (mg), choline (mg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg), sulfur (mg)
@@ -372,11 +372,14 @@ Return only valid JSON with all required fields.`
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
 - SUPPLEMENT NAME IDENTIFICATION: For supplements, read the EXACT product name from the label/bottle, including specific compound names (e.g., "Vitamin K Complex with K1, K2-MK4, K2-MK7", "Super K Multi-Form Vitamin K", "CoQ10 Ubiquinol 100mg")
-- DYNAMIC UNIT DETECTION: CRITICAL - Always read the exact units from the label and use the {value: number, unit: string} format. For vitamin supplements: 
+- DYNAMIC UNIT DETECTION: CRITICAL - For ALL nutrients, always read the exact units from the label and use the {value: number, unit: string} format when the label unit is specified:
   * If label shows "Vitamin K: 2600mcg" → return vitaminK: {value: 2600, unit: "mcg"}
   * If label shows "Vitamin D: 25mcg" → return vitaminD: {value: 25, unit: "mcg"}  
   * If label shows "Vitamin C: 10mg" → return vitaminC: {value: 10, unit: "mg"}
-  * NEVER assume default units - always check the label first
+  * If label shows "Calcium: 500mg" → return calcium: {value: 500, unit: "mg"}
+  * If label shows "Iron: 18mg" → return iron: {value: 18, unit: "mg"}
+  * If label shows "Zinc: 15mg" → return zinc: {value: 15, unit: "mg"}
+  * NEVER assume default units - ALWAYS check the label first for EVERY nutrient
 - ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: carefully read the label and use EXACT form - "softgel", "capsule", "tablet", "pill", "gummy", "drop" - NEVER use "g" or "ml" for pills/tablets/capsules)
 - SUPPLEMENT FORM DETECTION: Look at the bottle label, product description, and supplement facts panel to identify the exact form (softgel vs tablet vs capsule vs gummy)
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
