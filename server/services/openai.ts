@@ -120,11 +120,24 @@ export async function analyzeNutritionMultiImage(
 
 **CRITICAL IMAGE READABILITY GUIDELINES:**
 - ASSUME IMAGES ARE READABLE unless text is genuinely blurred, pixelated, or completely obscured
-- Chinese/Traditional Chinese nutrition labels are PERFECTLY VALID and should be analyzed normally
+- INTERNATIONAL NUTRITION LABELS are fully supported - analyze labels in ANY language
 - Most smartphone photos of nutrition labels contain sufficient detail for accurate analysis
 - If any nutritional text is visible, work with available information rather than claiming "not readable"
 - Only use "not clearly readable" as a last resort when absolutely no nutritional text is visible
-- Language examples: 熱量/能量 = calories, 蛋白質 = protein, 脂肪 = fat, 碳水化合物 = carbohydrates
+
+**MULTI-LANGUAGE NUTRITION LABEL SUPPORT:**
+- **Chinese/Traditional Chinese**: 熱量/能量 = calories, 蛋白質 = protein, 脂肪 = fat, 碳水化合物 = carbohydrates
+- **Japanese**: カロリー/エネルギー = calories, たんぱく質 = protein, 脂質 = fat, 炭水化物 = carbohydrates
+- **Korean**: 열량/에너지 = calories, 단백질 = protein, 지방 = fat, 탄수화물 = carbohydrates
+- **Spanish**: Calorías/Energía = calories, Proteínas = protein, Grasas = fat, Carbohidratos = carbohydrates
+- **French**: Calories/Énergie = calories, Protéines = protein, Lipides = fat, Glucides = carbohydrates
+- **German**: Kalorien/Energie = calories, Eiweiß = protein, Fett = fat, Kohlenhydrate = carbohydrates
+- **Italian**: Calorie/Energia = calories, Proteine = protein, Grassi = fat, Carboidrati = carbohydrates
+- **Portuguese**: Calorias/Energia = calories, Proteínas = protein, Gorduras = fat, Carboidratos = carbohydrates
+- **Russian**: Калории/Энергия = calories, Белки = protein, Жиры = fat, Углеводы = carbohydrates
+- **Arabic**: السعرات الحرارية = calories, البروتين = protein, الدهون = fat, الكربوهيدرات = carbohydrates
+- **Thai**: แคลอรี่/พลังงาน = calories, โปรตีน = protein, ไขมัน = fat, คาร์โบไฮเดรต = carbohydrates
+- **Vietnamese**: Calo/Năng lượng = calories, Protein = protein, Chất béo = fat, Carbohydrate = carbohydrates
 
 **Analysis Approach:**
 1. **EXACT Label Reading:** Read nutrition values EXACTLY as displayed - if the label shows 107 calories, report 107 (NOT 535 or any other value)
@@ -426,7 +439,7 @@ Return only valid JSON with all required fields.`
       undefined;
 
     // Prepare system and user prompts
-    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. IMPORTANT: Most nutrition label images are readable - only claim 'not clearly readable' if text is genuinely blurred, too small, or obscured. Chinese nutrition labels are just as valid as English labels.";
+    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. IMPORTANT: Most nutrition label images are readable - only claim 'not clearly readable' if text is genuinely blurred, too small, or obscured. INTERNATIONAL LANGUAGE SUPPORT: Nutrition labels in ANY language (Chinese, Japanese, Korean, Spanish, French, German, Italian, Portuguese, Russian, Arabic, Thai, Vietnamese, etc.) are fully valid and should be analyzed with equal accuracy.";
     
     const userPromptText = messageContent.find((item: any) => item.type === 'text')?.text || '';
 
