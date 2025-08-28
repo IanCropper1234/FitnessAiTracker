@@ -138,13 +138,17 @@ export async function analyzeNutritionMultiImage(
 - VERIFICATION REQUIREMENT: Before submitting response, confirm your reported calories exactly match what is visible on the nutrition label
 - COMMON ERROR TO AVOID: Never multiply by package size (e.g., if package contains 5 servings, don't multiply single serving by 5)
 
-**SUPPLEMENTS AND VITAMINS:**
-- For supplements, vitamins, and pills with zero or minimal calories/macros, focus on micronutrients and supplement compounds
-- Extract all vitamin and mineral content even if calories/protein/carbs/fat are zero
+**SUPPLEMENTS AND VITAMINS - CRITICAL INSTRUCTIONS:**
+- For supplements, vitamins, and pills: EXTRACT ACTUAL VITAMIN/MINERAL AMOUNTS from the supplement facts panel
+- READ EXACT VALUES from "Amount per Serving" column (e.g., Vitamin D: 25mcg, Vitamin C: 500mg, Calcium: 200mg)
+- Convert percentage Daily Values to actual amounts: Vitamin C 100% DV = 90mg, Calcium 20% DV = 260mg, Iron 18% DV = 16mg
+- NEVER SET ALL VALUES TO ZERO - supplements contain measurable amounts of vitamins/minerals
 - Extract supplement compounds like CoQ10, glucosamine, probiotics, omega-3, etc. from ingredient lists
 - Use serving size from supplement facts panel (e.g., "1 capsule", "2 tablets", "1 softgel")
-- Set calories/protein/carbs/fat to 0 for pure supplements and focus on supplement compound extraction
-- Look for active ingredients beyond standard vitamins/minerals (CoQ10, curcumin, probiotics, etc.)`
+- Set calories/protein/carbs/fat to 0 ONLY if supplement facts shows 0 calories
+- CRITICAL: The micronutrients object should contain the ACTUAL MEASURED AMOUNTS from the supplement label
+- Look for active ingredients beyond standard vitamins/minerals (CoQ10, curcumin, probiotics, etc.)
+- Example: If label shows "Vitamin D: 25mcg (125% DV)", report vitaminD: 25, NOT vitaminD: 0`
         : `**Task:** Estimate nutritional content by analyzing actual food portions across ${imageCount} image(s) with enhanced ingredient decomposition.
 
 **ENHANCED ANALYSIS APPROACH:**
@@ -235,7 +239,7 @@ ${foodDescription ? `
   
   **CRITICAL REQUIREMENTS:**
   ${analysisType === 'nutrition_label' ? 
-    '- Read and report nutrition values EXACTLY as they appear on the label\n  - DO NOT multiply values by serving count or package size\n  - Extract ALL visible vitamins, minerals, and supplement compounds from labels\n  - Convert % Daily Values to actual amounts using standard references\n  - Include supplement-specific compounds beyond basic vitamins/minerals\n  - VERIFY: Reported calories must match label exactly (common mistake: incorrect scaling)\n  - PROVIDE COMPREHENSIVE MICRONUTRIENTS: Even if not visible on label, include scientifically-expected nutrients for the food type (chocolate contains iron, magnesium, copper, manganese, zinc, antioxidants)' : 
+    '- Read and report nutrition values EXACTLY as they appear on the label\n  - DO NOT multiply values by serving count or package size\n  - Extract ALL visible vitamins, minerals, and supplement compounds from labels\n  - Convert % Daily Values to actual amounts using standard references (Vitamin C 100% DV = 90mg, Vitamin D 100% DV = 20mcg, Calcium 100% DV = 1300mg, Iron 100% DV = 18mg)\n  - FOR SUPPLEMENTS: Extract ACTUAL VALUES from "Amount per Serving" column - DO NOT SET ALL MICRONUTRIENTS TO ZERO\n  - Include supplement-specific compounds beyond basic vitamins/minerals\n  - VERIFY: Reported calories must match label exactly (common mistake: incorrect scaling)\n  - VITAMIN SUPPLEMENT EXAMPLE: If label shows "Vitamin D: 25mcg (125% DV), Vitamin C: 500mg (556% DV)", report {vitaminD: 25, vitaminC: 500}\n  - PROVIDE COMPREHENSIVE MICRONUTRIENTS: Even if not visible on label, include scientifically-expected nutrients for the food type (chocolate contains iron, magnesium, copper, manganese, zinc, antioxidants)' : 
     '- Break down visible food into individual components\n  - Calculate micronutrients based on ALL identified ingredients\n  - Include nutrients from cooking methods (added oils, seasonings, etc.)\n  - Choose optimal unit type for the specific food category shown'}
 - nutritionValidation: brief reasonableness check and verification that values match label exactly (string)
 
@@ -484,11 +488,11 @@ Return only valid JSON with all required fields.`
         },
         {
           role: "assistant",
-          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type, even if not all are visible on the label."
+          content: "I will analyze this nutrition label carefully and report values EXACTLY as shown. I will not multiply, scale, or adjust any values. If the label shows 107 calories for a 20g serving, I will report exactly 107 calories. For supplements, I will extract ACTUAL vitamin/mineral amounts from the supplement facts panel (e.g., Vitamin D: 25mcg, Vitamin C: 500mg) and convert % Daily Values to real amounts. I will also provide comprehensive micronutrients (80+ nutrients) based on the food type."
         },
         {
           role: "user", 
-          content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+          content: "Correct. For vitamin supplements specifically: Extract the EXACT amounts from the 'Amount per Serving' column, not percentages. If you see 'Vitamin D: 25mcg (125% DV)', report 25 for vitaminD, not 0. Convert any % Daily Values to actual amounts using standard references. Proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients with ACTUAL MEASURED VALUES from supplement labels."
         }
       ];
 
