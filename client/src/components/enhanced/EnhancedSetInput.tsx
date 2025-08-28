@@ -189,8 +189,9 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     const activeRecommendation = setRecommendation || (recommendation?.sets?.[0]);
     
     if (activeRecommendation) {
-      const convertedWeight = convertWeight(activeRecommendation.recommendedWeight, 'kg', weightUnit);
-      onUpdateSet('weight', convertedWeight);
+      // CRITICAL FIX: Don't assume recommendations are in kg - use the actual stored weight as-is
+      // The backend should provide recommendations in the user's display unit preference
+      onUpdateSet('weight', activeRecommendation.recommendedWeight);
       
       onUpdateSet('actualReps', activeRecommendation.recommendedReps);
       onUpdateSet('rpe', activeRecommendation.recommendedRpe);
@@ -202,8 +203,13 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
     console.log('Applying historical data:', historicalSet);
     
     const weight = typeof historicalSet.weight === 'string' ? parseFloat(historicalSet.weight) : historicalSet.weight;
-    const convertedWeight = convertWeight(weight, 'kg', weightUnit);
-    console.log('Setting weight:', convertedWeight);
+    
+    // CRITICAL FIX: Check if historical data has weightUnit, if not default to stored format
+    // Don't assume all historical data is in kg - respect the stored unit
+    const historicalUnit = (historicalSet as any).weightUnit || 'kg'; // Default to kg for legacy data
+    const convertedWeight = convertWeight(weight, historicalUnit, weightUnit);
+    
+    console.log('Historical weight:', weight, 'Unit:', historicalUnit, 'Converted:', convertedWeight);
     onUpdateSet('weight', convertedWeight);
     
     const reps = typeof historicalSet.reps === 'string' ? parseInt(historicalSet.reps) : historicalSet.reps;

@@ -2826,6 +2826,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             updateData.weight = parseFloat(avgWeight.toFixed(2)); // Convert to number for decimal field
             updateData.rpe = avgRpe;
             updateData.isCompleted = completedSets.length === exerciseData.sets.length; // Mark exercise complete only if all sets done
+            
+            // CRITICAL FIX: Preserve the weight unit from the exercise data
+            // This ensures that 44lbs is stored as 44lbs, not assumed as 44kg
+            if (exerciseData.weightUnit) {
+              updateData.weightUnit = exerciseData.weightUnit;
+            }
           } else {
             // Even if no sets completed, still update the set count
             updateData.isCompleted = false;
@@ -5796,19 +5802,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const sessionId = parseInt(req.params.sessionId);
       
-      // Debug: Log the entire request body to identify the issue
-      console.log('🔍 DEBUG: Add exercise request body:', JSON.stringify(req.body, null, 2));
-      console.log('🔍 DEBUG: req.body.exerciseId:', req.body.exerciseId);
-      console.log('🔍 DEBUG: typeof exerciseId:', typeof req.body.exerciseId);
-      
       const { exerciseId, insertPosition } = req.body;
       
       // Validate exerciseId
       if (!exerciseId || exerciseId === undefined || exerciseId === null) {
         console.error('❌ Invalid exerciseId received:', exerciseId);
         return res.status(400).json({ 
-          error: "exerciseId is required and cannot be null or undefined",
-          received: req.body
+          error: "exerciseId is required and cannot be null or undefined"
         });
       }
       
