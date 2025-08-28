@@ -1969,9 +1969,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Sample micronutrients data:', JSON.stringify(analysis.micronutrients).substring(0, 500) + '...');
         
         // Check if it's grouped or flat structure
-        const isGrouped = analysis.micronutrients['Fat-Soluble Vitamins'] || 
-                         analysis.micronutrients['Water-Soluble Vitamins'] || 
-                         analysis.micronutrients['Major Minerals'];
+        const micronutrientsObj = analysis.micronutrients as any;
+        const isGrouped = micronutrientsObj['Fat-Soluble Vitamins'] || 
+                         micronutrientsObj['Water-Soluble Vitamins'] || 
+                         micronutrientsObj['Major Minerals'];
         console.log('Micronutrients structure type:', isGrouped ? 'grouped' : 'flat');
       } else {
         console.log('No micronutrients data in analysis result');
