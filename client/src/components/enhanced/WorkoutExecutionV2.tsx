@@ -132,6 +132,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [customRestTime, setCustomRestTime] = useState<number | null>(null);
   const [sessionStartTime] = useState(Date.now());
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [exerciseWeightUnits, setExerciseWeightUnits] = useState<Record<number, 'kg' | 'lbs'>>({});
   const [headerExpanded, setHeaderExpanded] = useState(false);
   
   // Edit mode state
@@ -213,6 +214,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       const initialData: Record<number, WorkoutSet[]> = {};
       const initialSpecialMethods: Record<number, string | null> = {};
       const initialSpecialConfigs: Record<number, any> = {};
+      const initialWeightUnits: Record<number, 'kg' | 'lbs'> = {};
       
       session.exercises.forEach(exercise => {
         // CRITICAL: Check if we already have workout data for this exercise
@@ -341,6 +343,9 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           // UI configuration finalized
           initialSpecialConfigs[exercise.id] = uiConfig;
         }
+        
+        // CRITICAL FIX: Restore weight unit for each exercise
+        initialWeightUnits[exercise.id] = (exercise as any).weightUnit || weightUnit;
       });
       
       // Workout data initialization complete
@@ -357,8 +362,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         setWorkoutData(initialData);
         setSpecialMethods(initialSpecialMethods);
         setSpecialConfigs(initialSpecialConfigs);
+        setExerciseWeightUnits(initialWeightUnits); // CRITICAL FIX: Restore weight units
       } else {
         console.log('✅ No changes detected, keeping existing workout data');
+        // Still update weight units even if no other changes
+        setExerciseWeightUnits(initialWeightUnits);
       }
     }
   }, [session, Object.keys(workoutData).length]); // Only depend on the number of exercises, not their content
@@ -1250,7 +1258,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           specialMethod: specialMethods[exercise.id] || null,
           specialConfig: specialConfigs[exercise.id] || null,
           orderIndex: exercise.orderIndex, // Include order index to preserve exercise order
-          weightUnit: weightUnit // CRITICAL FIX: Include weight unit to preserve 44lbs as 44lbs, not 44kg
+          weightUnit: exerciseWeightUnits[exercise.id] || weightUnit // CRITICAL FIX: Use exercise-specific weight unit
         }))
       };
 
@@ -1310,7 +1318,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           specialMethod: specialMethods[exercise.id] || null,
           specialConfig: specialConfigs[exercise.id] || null,
           orderIndex: exercise.orderIndex, // Include order index to preserve exercise order
-          weightUnit: weightUnit // CRITICAL FIX: Include weight unit for completed workouts too
+          weightUnit: exerciseWeightUnits[exercise.id] || weightUnit // CRITICAL FIX: Use exercise-specific weight unit for completed workouts
         }))
       };
 
@@ -1970,8 +1978,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   onUpdateSet={(field, value) => updateSet(currentExercise.id, currentSetIndex, field, value)}
                   onCompleteSet={completeSet}
                   isActive={true}
-                  weightUnit={weightUnit}
-                  onWeightUnitChange={setWeightUnit}
+                  weightUnit={exerciseWeightUnits[currentExercise.id] || weightUnit}
+                  onWeightUnitChange={(unit) => {
+                    setExerciseWeightUnits(prev => ({
+                      ...prev,
+                      [currentExercise.id]: unit
+                    }));
+                  }}
                   userId={session?.userId || 1}
                   exerciseId={currentExercise.exerciseId}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
