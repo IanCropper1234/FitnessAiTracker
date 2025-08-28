@@ -118,10 +118,9 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
     .filter(ex => ex.isCompleted && ex.rpe && ex.rpe > 0)
     .reduce((sum, ex) => sum + (ex.rpe || 0), 0) / session.exercises.filter(ex => ex.isCompleted && ex.rpe && ex.rpe > 0).length || 0;
 
-  // Calculate total volume with proper unit handling
+  // Calculate total volume with proper unit handling - convert all to kg
   const calculateTotalVolume = () => {
     let totalKgVolume = 0;
-    let totalLbsVolume = 0;
     
     session.exercises.forEach(workoutExercise => {
       const setsData = workoutExercise.setsData || [];
@@ -139,21 +138,15 @@ export function WorkoutDetails({ sessionId, onBack }: WorkoutDetailsProps) {
       
       const exerciseVolume = actualRepsArray.reduce((sum: number, reps: number) => sum + (exerciseWeight * reps), 0);
       
+      // Convert to kg if needed (lbs / 2.2 = kg)
       if (exerciseWeightUnit === 'lbs') {
-        totalLbsVolume += exerciseVolume;
+        totalKgVolume += exerciseVolume / 2.2;
       } else {
         totalKgVolume += exerciseVolume;
       }
     });
     
-    // Return display string based on what volumes exist
-    if (totalKgVolume > 0 && totalLbsVolume > 0) {
-      return `${totalKgVolume.toFixed(1)} kg + ${totalLbsVolume.toFixed(1)} lbs`;
-    } else if (totalLbsVolume > 0) {
-      return `${totalLbsVolume.toFixed(1)} lbs`;
-    } else {
-      return `${totalKgVolume.toFixed(1)} kg`;
-    }
+    return `${totalKgVolume.toFixed(1)} kg`;
   };
 
   return (
