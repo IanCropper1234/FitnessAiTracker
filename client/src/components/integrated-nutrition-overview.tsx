@@ -1756,10 +1756,14 @@ export function IntegratedNutritionOverview({
                                       Object.entries(variantTotals).filter(([k, v]) => k.includes('k') && v > 0)
                                     ));
                                     
-                                    // Calculate K1 variants (phyloquinone) - using exact variant names from debug
-                                    const k1Total = (variantTotals.vitamink1phyloquinone || 0) + 
-                                                   (variantTotals.vitaminkspecies || 0) + 
-                                                   (variantTotals.phyloquinone || 0);
+                                    // Calculate K1 variants (phyloquinone) - using ALL possible K1 variant keys
+                                    const allK1Keys = Object.keys(variantTotals).filter(key => 
+                                      (key.includes('vitamink1') || key.includes('phyloquinone') || key.includes('vitaminkspecies')) &&
+                                      !key.includes('k2') && !key.includes('menaquinone')
+                                    );
+                                    const k1Total = allK1Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                    
+                                    console.log('🔍 Found K1 keys:', allK1Keys);
                                     
                                     // Debug: Show individual K variant values
                                     console.log('🔍 K1 components:', {
