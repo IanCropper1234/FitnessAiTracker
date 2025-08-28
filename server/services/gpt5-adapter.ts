@@ -30,7 +30,7 @@ export class GPT5Adapter {
   }): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
-      return this.callGPT5API(model, systemPrompt, userPrompt, responseFormat);
+      return this.callGPT5API(model, systemPrompt, userPrompt, messages, responseFormat);
     } else {
       return this.callGPT4API(model, systemPrompt, userPrompt, messages, responseFormat);
     }
@@ -48,9 +48,24 @@ export class GPT5Adapter {
   ): Promise<{ content: string; usage?: any }> {
     // Check if this is a GPT-5 model
     if (this.isGPT5Model(model.name)) {
-      // For GPT-5, we need to handle vision differently
-      const combinedPrompt = `${systemPrompt}\n\n${userPrompt}`;
-      return this.callGPT5API(model, "", combinedPrompt, responseFormat);
+      // For GPT-5, create proper messages array with image
+      const messages = [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: userPrompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${image}`,
+                detail: "high"
+              }
+            }
+          ]
+        }
+      ];
+      return this.callGPT5API(model, systemPrompt, userPrompt, messages, responseFormat);
     } else {
       // For GPT-4, use traditional vision API
       return this.callGPT4VisionAPI(model, systemPrompt, userPrompt, image, responseFormat);
@@ -58,37 +73,73 @@ export class GPT5Adapter {
   }
 
   /**
-   * GPT-5 API call using the new /responses endpoint
+   * GPT-5 API call using the new /responses endpoint with multimodal support
    */
   private async callGPT5API(
     model: AIModelConfig,
     systemPrompt: string,
     userPrompt: string,
+    messages?: any[],
     responseFormat?: { type: string }
   ): Promise<{ content: string; usage?: any }> {
-    const input = `${systemPrompt}\n\nUser Request: ${userPrompt}`;
+    // Check if we have multimodal content (images)
+    const hasImages = messages?.some(msg => 
+      Array.isArray(msg.content) && 
+      msg.content.some((item: any) => item.type === 'image_url')
+    );
 
-    const params: any = {
-      model: model.name,
-      input,
-      reasoning: model.reasoning || { effort: 'low' }, // Default to low for speed
-      text: model.text || { verbosity: 'low' } // Default to low for speed
-    };
+    if (hasImages && messages) {
+      // GPT-5 Responses API with multimodal content
+      console.log(`[GPT-5] Processing multimodal content with ${messages.length} message(s)`);
+      
+      const params: any = {
+        model: model.name,
+        messages, // Pass the complete messages array with images
+        reasoning: model.reasoning || { effort: 'medium' }, // Use medium for image analysis
+        text: model.text || { verbosity: 'medium' } // More detailed for analysis
+      };
 
-    // Add response format if specified (GPT-5 uses text.format with correct object structure)
-    if (responseFormat?.type === 'json_object') {
-      params.text = {
-        ...params.text,
-        format: { type: 'json_object' }
+      // Add response format if specified (GPT-5 uses text.format with correct object structure)
+      if (responseFormat?.type === 'json_object') {
+        params.text = {
+          ...params.text,
+          format: { type: 'json_object' }
+        };
+      }
+
+      const response = await this.openai.responses.create(params);
+
+      return {
+        content: response.output_text,
+        usage: response.usage
+      };
+    } else {
+      // Pure text processing using input parameter
+      console.log(`[GPT-5] Processing text-only content`);
+      const input = `${systemPrompt}\n\nUser Request: ${userPrompt}`;
+
+      const params: any = {
+        model: model.name,
+        input,
+        reasoning: model.reasoning || { effort: 'low' }, // Default to low for speed
+        text: model.text || { verbosity: 'low' } // Default to low for speed
+      };
+
+      // Add response format if specified (GPT-5 uses text.format with correct object structure)
+      if (responseFormat?.type === 'json_object') {
+        params.text = {
+          ...params.text,
+          format: { type: 'json_object' }
+        };
+      }
+
+      const response = await this.openai.responses.create(params);
+
+      return {
+        content: response.output_text,
+        usage: response.usage
       };
     }
-
-    const response = await this.openai.responses.create(params);
-
-    return {
-      content: response.output_text,
-      usage: response.usage
-    };
   }
 
   /**
