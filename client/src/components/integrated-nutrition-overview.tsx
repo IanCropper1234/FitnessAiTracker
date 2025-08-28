@@ -1756,10 +1756,21 @@ export function IntegratedNutritionOverview({
                                       Object.entries(variantTotals).filter(([k, v]) => k.includes('k') && v > 0)
                                     ));
                                     
-                                    // Calculate K1 variants (phyloquinone) - using actual variant names from debug
+                                    // Calculate K1 variants (phyloquinone) - using exact variant names from debug
                                     const k1Total = (variantTotals.vitamink1phyloquinone || 0) + 
                                                    (variantTotals.vitaminkspecies || 0) + 
                                                    (variantTotals.phyloquinone || 0);
+                                    
+                                    // Debug: Show individual K variant values
+                                    console.log('🔍 K1 components:', {
+                                      vitamink1phyloquinone: variantTotals.vitamink1phyloquinone,
+                                      vitaminkspecies: variantTotals.vitaminkspecies,
+                                      phyloquinone: variantTotals.phyloquinone
+                                    });
+                                    console.log('🔍 K2 components:', {
+                                      vitamink2menaquinone4mk4: variantTotals.vitamink2menaquinone4mk4,
+                                      vitamink2menaquinone7mk7: variantTotals.vitamink2menaquinone7mk7
+                                    });
                                     
                                     // Calculate K2 variants (menaquinone types) - using actual variant names from debug
                                     const k2Total = (variantTotals.vitamink2menaquinone4mk4 || 0) + 
