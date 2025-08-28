@@ -61,13 +61,21 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
 
   // Helper function to get nutrient value from grouped micronutrients structure
   const getNutrientValue = (nutrientName: string): any => {
-    if (!selectedNutritionItem.micronutrients) return null;
+    if (!selectedNutritionItem.micronutrients) {
+      console.log('No micronutrients data available in selectedNutritionItem');
+      return null;
+    }
+    
+    // Debug: Log micronutrients structure
+    console.log('Micronutrients data structure:', selectedNutritionItem.micronutrients);
+    console.log('Looking for nutrient:', nutrientName);
     
     // Check if micronutrients is grouped by categories
     if (selectedNutritionItem.micronutrients['Fat-Soluble Vitamins'] || 
         selectedNutritionItem.micronutrients['Water-Soluble Vitamins'] || 
         selectedNutritionItem.micronutrients['Major Minerals']) {
       
+      console.log('Using grouped structure for micronutrients');
       // Grouped structure - search in all categories
       const categories = [
         'Fat-Soluble Vitamins',
@@ -81,13 +89,19 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
       for (const category of categories) {
         if (selectedNutritionItem.micronutrients[category] && 
             selectedNutritionItem.micronutrients[category][nutrientName] !== undefined) {
-          return selectedNutritionItem.micronutrients[category][nutrientName];
+          const value = selectedNutritionItem.micronutrients[category][nutrientName];
+          console.log(`Found ${nutrientName} in ${category}:`, value);
+          return value;
         }
       }
+      console.log(`Nutrient ${nutrientName} not found in any category`);
       return null;
     } else {
+      console.log('Using flat structure for micronutrients');
       // Flat structure - direct access
-      return selectedNutritionItem.micronutrients[nutrientName];
+      const value = selectedNutritionItem.micronutrients[nutrientName];
+      console.log(`Direct access result for ${nutrientName}:`, value);
+      return value;
     }
   };
 
