@@ -1765,12 +1765,30 @@ export function IntegratedNutritionOverview({
                             )}
                             {dailyTotals.vitaminK > 0 && (
                               <div className="space-y-1">
-                                {renderNutrientWithProgress(
-                                  "Vitamin K (Total)", 
-                                  Math.round(dailyTotals.vitaminK * 10) / 10, 
-                                  "μg", 
-                                  getAdequacy(dailyTotals.vitaminK, rda.vitaminK)
-                                )}
+                                {(() => {
+                                  // Calculate accurate K total from variants only
+                                  const allK1Keys = Object.keys(variantTotals).filter(key => 
+                                    (key.includes('vitamink1') || key.includes('phyloquinone') || key.includes('vitaminkspecies')) &&
+                                    !key.includes('k2') && !key.includes('menaquinone')
+                                  );
+                                  const k1Total = allK1Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                  
+                                  const allK2Keys = Object.keys(variantTotals).filter(key => 
+                                    (key.includes('vitamink2') || key.includes('menaquinone')) &&
+                                    !key.includes('k1')
+                                  );
+                                  const k2Total = allK2Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                                  
+                                  // Use accurate variant total instead of dailyTotals.vitaminK
+                                  const accurateVitaminKTotal = k1Total + k2Total;
+                                  
+                                  return renderNutrientWithProgress(
+                                    "Vitamin K (Total)", 
+                                    Math.round(accurateVitaminKTotal * 10) / 10, 
+                                    "μg", 
+                                    getAdequacy(accurateVitaminKTotal, rda.vitaminK)
+                                  );
+                                })()}
                                 {/* Show individual K variants if they exist */}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
