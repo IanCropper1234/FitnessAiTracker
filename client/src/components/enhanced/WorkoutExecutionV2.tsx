@@ -131,7 +131,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   const [restTimeRemaining, setRestTimeRemaining] = useState(0);
   const [customRestTime, setCustomRestTime] = useState<number | null>(null);
   const [sessionStartTime] = useState(Date.now());
-  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg'); // Will be updated from user preference
+  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [headerExpanded, setHeaderExpanded] = useState(false);
   
   // Edit mode state
@@ -714,6 +714,10 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleAddExercise = (exercise: any, config: any) => {
+    console.log('🔍 DEBUG handleAddExercise called with:', { exercise, config });
+    console.log('🔍 DEBUG exercise.id:', exercise.id);
+    console.log('🔍 DEBUG exercise.exerciseId:', exercise.exerciseId);
+    
     // Use exerciseId if available, otherwise use id
     const exerciseId = exercise.exerciseId || exercise.id;
     
@@ -788,8 +792,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             sets: newData[exercise.id] || [],
             specialMethod: specialMethods[exercise.id] || null,
             specialConfig: specialConfigs[exercise.id] || null,
-            orderIndex: exercise.orderIndex, // Include order index for auto-saves too
-            weightUnit: weightUnit // Include weight unit used during training
+            orderIndex: exercise.orderIndex // Include order index for auto-saves too
           }))
         };
         
@@ -1250,8 +1253,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           sets: workoutData[exercise.id] || [],
           specialMethod: specialMethods[exercise.id] || null,
           specialConfig: specialConfigs[exercise.id] || null,
-          orderIndex: exercise.orderIndex, // Include order index to preserve exercise order
-          weightUnit: weightUnit // Include weight unit used during training
+          orderIndex: exercise.orderIndex // Include order index to preserve exercise order
         }))
       };
 
@@ -1310,8 +1312,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           sets: workoutData[exercise.id] || [],
           specialMethod: specialMethods[exercise.id] || null,
           specialConfig: specialConfigs[exercise.id] || null,
-          orderIndex: exercise.orderIndex, // Include order index to preserve exercise order
-          weightUnit: weightUnit // Include weight unit used during training
+          orderIndex: exercise.orderIndex // Include order index to preserve exercise order
         }))
       };
 

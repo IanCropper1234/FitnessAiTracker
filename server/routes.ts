@@ -2720,8 +2720,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const currentSetCount = exerciseData.sets.length;
           const updateData: any = {
             sets: currentSetCount, // Update dynamic set count
-            setsData: exerciseData.sets, // Store individual set completion states
-            weightUnit: exerciseData.weightUnit || 'kg' // Store the weight unit used during training
+            setsData: exerciseData.sets // Store individual set completion states
           };
 
           // Update exercise order if provided
@@ -2890,9 +2889,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const currentSetCount = exerciseData.sets.length;
         const updateData: any = {
           sets: currentSetCount, // Update dynamic set count
-          isCompleted: true,
-          setsData: exerciseData.sets, // Store individual set completion states
-          weightUnit: exerciseData.weightUnit || 'kg' // Store the weight unit used during training
+          isCompleted: true
         };
         
         if (completedSets.length > 0) {
@@ -5798,10 +5795,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/training/sessions/:sessionId/exercises", requireAuth, async (req, res) => {
     try {
       const sessionId = parseInt(req.params.sessionId);
-      const { exerciseId, insertPosition, orderIndex } = req.body;
       
-      // Use orderIndex if insertPosition is not provided (for backward compatibility)
-      const position = insertPosition !== undefined ? insertPosition : orderIndex;
+      // Debug: Log the entire request body to identify the issue
+      console.log('🔍 DEBUG: Add exercise request body:', JSON.stringify(req.body, null, 2));
+      console.log('🔍 DEBUG: req.body.exerciseId:', req.body.exerciseId);
+      console.log('🔍 DEBUG: typeof exerciseId:', typeof req.body.exerciseId);
+      
+      const { exerciseId, insertPosition } = req.body;
       
       // Validate exerciseId
       if (!exerciseId || exerciseId === undefined || exerciseId === null) {
@@ -5815,7 +5815,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newExercise = await SessionCustomization.addExerciseToSession(
         sessionId, 
         exerciseId, 
-        position
+        insertPosition
       );
       
       res.json({ 
