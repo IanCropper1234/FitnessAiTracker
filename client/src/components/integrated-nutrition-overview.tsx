@@ -1266,7 +1266,16 @@ export function IntegratedNutritionOverview({
                 const categoryData = micronutrients[category];
                 if (categoryData && typeof categoryData === 'object' && !Array.isArray(categoryData)) {
                   Object.keys(categoryData).forEach(nutrient => {
-                    const value = parseFloat(categoryData[nutrient]);
+                    let value: number;
+                    const rawValue = categoryData[nutrient];
+                    
+                    // Handle dynamic unit format {value: number, unit: string}
+                    if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
+                      value = rawValue.value;
+                    } else {
+                      value = parseFloat(rawValue);
+                    }
+                    
                     if (typeof value === 'number' && !isNaN(value) && value > 0) {
                       // Map nested nutrient names to flat names for consistency
                       const flatNutrientName = getNutrientFlatName(nutrient);
@@ -1278,7 +1287,16 @@ export function IntegratedNutritionOverview({
             } else {
               // Handle flat structure (regular foods)
               Object.keys(micronutrients).forEach(nutrient => {
-                const value = parseFloat(micronutrients[nutrient]);
+                let value: number;
+                const rawValue = micronutrients[nutrient];
+                
+                // Handle dynamic unit format {value: number, unit: string}
+                if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
+                  value = rawValue.value;
+                } else {
+                  value = parseFloat(rawValue);
+                }
+                
                 if (typeof value === 'number' && !isNaN(value) && value > 0) {
                   totals[nutrient] = (totals[nutrient] || 0) + value;
                 }
