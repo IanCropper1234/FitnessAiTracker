@@ -1373,7 +1373,6 @@ export function IntegratedNutritionOverview({
             
             if (hasNestedStructure) {
               // Handle nested structure (supplements and some advanced foods)
-              console.log('🔍 Processing nested micronutrients structure:', Object.keys(micronutrients));
               Object.keys(micronutrients).forEach(category => {
                 const categoryData = micronutrients[category];
                 if (categoryData && typeof categoryData === 'object' && !Array.isArray(categoryData)) {
@@ -1398,8 +1397,6 @@ export function IntegratedNutritionOverview({
               });
             } else {
               // Handle flat structure (regular foods)
-              console.log('🔍 Processing flat micronutrients structure:', Object.keys(micronutrients));
-              console.log('🔍 Sample nutrients:', Object.keys(micronutrients).slice(0, 10));
               Object.keys(micronutrients).forEach(nutrient => {
                 let value: number;
                 const rawValue = micronutrients[nutrient];
@@ -1413,7 +1410,6 @@ export function IntegratedNutritionOverview({
                 
                 if (typeof value === 'number' && !isNaN(value) && value > 0) {
                   const mappedNutrient = getNutrientFlatName(nutrient);
-                  console.log(`🔍 Mapping "${nutrient}" → "${mappedNutrient}" (${value})`);
                   totals[mappedNutrient] = (totals[mappedNutrient] || 0) + value;
                 }
               });
