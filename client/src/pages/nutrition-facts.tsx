@@ -251,297 +251,63 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                   </Badge>
                 </div>
                 
-                {/* Fat-Soluble Vitamins */}
-                {hasValidValue(getNutrientValue('vitaminA')) || 
-                 hasValidValue(getNutrientValue('vitaminD')) || 
-                 hasValidValue(getNutrientValue('vitaminE')) || 
-                 hasValidValue(getNutrientValue('vitaminK')) ? (
-                  <div className="mb-3">
-                    <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Fat-Soluble Vitamins</h5>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(getNutrientValue('vitaminA')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Vitamin A</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminA'))}mcg</span>
+                {/* Debug: Show actual micronutrient data structure */}
+                {process.env.NODE_ENV === 'development' && (
+                  <details className="mb-3">
+                    <summary className="text-xs text-gray-500 cursor-pointer">Debug: Show raw micronutrient data</summary>
+                    <pre className="text-xs bg-gray-100 dark:bg-gray-800 p-2 mt-2 overflow-auto max-h-40">
+                      {JSON.stringify(selectedNutritionItem.micronutrients, null, 2)}
+                    </pre>
+                  </details>
+                )}
+                
+                {/* Dynamic micronutrient rendering - handle any structure */}
+                {selectedNutritionItem.micronutrients && Object.keys(selectedNutritionItem.micronutrients).length > 0 && (
+                  <div className="space-y-3">
+                    {Object.entries(selectedNutritionItem.micronutrients).map(([category, nutrients]) => {
+                      if (!nutrients || typeof nutrients !== 'object') return null;
+                      
+                      const validNutrients = Object.entries(nutrients as Record<string, any>)
+                        .filter(([_, value]) => hasValidValue(value))
+                        .slice(0, 20); // Limit to first 20 for readability
+                      
+                      if (validNutrients.length === 0) return null;
+                      
+                      return (
+                        <div key={category} className="mb-3">
+                          <h5 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2 capitalize">
+                            {category.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                          </h5>
+                          <div className="grid grid-cols-1 gap-1 text-xs">
+                            {validNutrients.map(([nutrientName, value]) => (
+                              <div key={nutrientName} className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400 capitalize">
+                                  {nutrientName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                </span>
+                                <span className="font-medium">
+                                  {formatNutrientValue(value)}
+                                  {typeof value === 'object' && value.unit ? value.unit : 
+                                   (nutrientName.includes('vitamin') || nutrientName.includes('folate') ? 'mcg' : 'mg')}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminD')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Vitamin D</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminD'))}mcg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminE')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Vitamin E</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminE'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminK')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Vitamin K</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminK'))}mcg</span>
-                        </div>
-                      )}
-                    </div>
+                      );
+                    })}
+                  </div>
+                )}
+                
+                {/* Legacy static vitamin display - kept as fallback */}
+                {!selectedNutritionItem.micronutrients || Object.keys(selectedNutritionItem.micronutrients).length === 0 ? (
+                  <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                    <p className="text-xs">No micronutrient data available</p>
                   </div>
                 ) : null}
 
-                {/* Water-Soluble Vitamins */}
-                {hasValidValue(getNutrientValue('vitaminC')) || 
-                 hasValidValue(getNutrientValue('vitaminB1')) || 
-                 hasValidValue(getNutrientValue('vitaminB2')) ||
-                 hasValidValue(getNutrientValue('vitaminB3')) ||
-                 hasValidValue(getNutrientValue('vitaminB5')) ||
-                 hasValidValue(getNutrientValue('vitaminB6')) ||
-                 hasValidValue(getNutrientValue('vitaminB7')) ||
-                 hasValidValue(getNutrientValue('vitaminB12')) ||
-                 hasValidValue(getNutrientValue('folate')) ? (
-                  <div className="mb-3">
-                    <h5 className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-2">Water-Soluble Vitamins</h5>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(getNutrientValue('vitaminC')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Vitamin C</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminC'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB1')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B1 (Thiamine)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB1'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB2')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B2 (Riboflavin)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB2'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB3')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B3 (Niacin)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB3'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB6')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B6 (Pyridoxine)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB6'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB12')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B12 (Cobalamin)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB12'))}mcg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('folate')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Folate</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('folate'))}mcg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB5')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B5 (Pantothenic Acid)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB5'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('vitaminB7')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">B7 (Biotin)</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('vitaminB7'))}mcg</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
 
-                {/* Major Minerals */}
-                {hasValidValue(getNutrientValue('calcium')) || 
-                 hasValidValue(getNutrientValue('magnesium')) || 
-                 hasValidValue(getNutrientValue('phosphorus')) ||
-                 hasValidValue(getNutrientValue('potassium')) ||
-                 hasValidValue(getNutrientValue('sodium')) ||
-                 hasValidValue(getNutrientValue('chloride')) ? (
-                  <div className="mb-3">
-                    <h5 className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Major Minerals</h5>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(getNutrientValue('calcium')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Calcium</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('calcium'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('magnesium')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Magnesium</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('magnesium'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('phosphorus')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Phosphorus</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('phosphorus'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('potassium')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Potassium</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('potassium'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('sodium')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Sodium</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('sodium'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('chloride')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Chloride</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('chloride'))}mg</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
 
-                {/* Trace Minerals */}
-                {hasValidValue(getNutrientValue('iron')) || 
-                 hasValidValue(getNutrientValue('zinc')) || 
-                 hasValidValue(getNutrientValue('copper')) ||
-                 hasValidValue(getNutrientValue('manganese')) ||
-                 hasValidValue(getNutrientValue('iodine')) ||
-                 hasValidValue(getNutrientValue('selenium')) ||
-                 hasValidValue(getNutrientValue('fluoride')) ? (
-                  <div>
-                    <h5 className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-2">Trace Minerals</h5>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(getNutrientValue('iron')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Iron</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('iron'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('zinc')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Zinc</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('zinc'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('copper')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Copper</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('copper'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('manganese')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Manganese</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('manganese'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('iodine')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Iodine</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('iodine'))}mcg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('selenium')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Selenium</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('selenium'))}mcg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('fluoride')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Fluoride</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('fluoride'))}mg</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
 
-                {/* Macronutrient Components */}
-                {hasValidValue(getNutrientValue('sugar')) || 
-                 hasValidValue(getNutrientValue('addedSugar')) || 
-                 hasValidValue(getNutrientValue('fiber')) || 
-                 hasValidValue(getNutrientValue('saturatedFat')) ||
-                 hasValidValue(getNutrientValue('transFat')) ||
-                 hasValidValue(getNutrientValue('cholesterol')) ||
-                 hasValidValue(getNutrientValue('monounsaturatedFat')) ||
-                 hasValidValue(getNutrientValue('polyunsaturatedFat')) ||
-                 hasValidValue(getNutrientValue('omega3')) ||
-                 hasValidValue(getNutrientValue('omega6')) ? (
-                  <div className="mt-[10px] mb-[10px]">
-                    <h5 className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-2">Macronutrient Components</h5>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {hasValidValue(getNutrientValue('sugar')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Total Sugar</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('sugar'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('fiber')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Dietary Fiber</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('fiber'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('saturatedFat')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Saturated Fat</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('saturatedFat'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('cholesterol')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Cholesterol</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('cholesterol'))}mg</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('monounsaturatedFat')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Monounsat. Fat</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('monounsaturatedFat'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('polyunsaturatedFat')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Polyunsat. Fat</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('polyunsaturatedFat'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('transFat')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Trans Fat</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('transFat'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('addedSugar')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Added Sugar</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('addedSugar'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('omega3')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Omega-3 FA</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('omega3'))}g</span>
-                        </div>
-                      )}
-                      {hasValidValue(getNutrientValue('omega6')) && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Omega-6 FA</span>
-                          <span className="font-medium">{formatNutrientValue(getNutrientValue('omega6'))}g</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : null}
               </div>
             )}
 
