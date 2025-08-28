@@ -356,7 +356,7 @@ Return only valid JSON with all required fields.`
 - assumptions: key assumptions about preparation, variety, and ingredient composition (string)
 - servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "1 medium portion", "3 pieces (80g)", "1 softgel", "2 tablets")
 - portionWeight: realistic portion weight as number determined by nutritional guidelines and common consumption patterns
-- portionUnit: most appropriate unit for this food type based on how it's naturally measured and served (for supplements use "softgel", "capsule", "tablet", "pill"; for food use "g", "ml", "oz", "cup", etc.)
+- portionUnit: most appropriate unit for this food type based on how it's naturally measured and served (CRITICAL: for supplements, read the label carefully and use the EXACT form mentioned - "softgel", "capsule", "tablet", "pill", "gummy", "drop", etc.; for food use "g", "ml", "oz", "cup", etc.)
 - ingredientBreakdown: array of food components with DETAILED calorie breakdown (e.g., ["chicken breast (base): 165 cal", "chicken skin: +35 cal", "olive oil (1 tbsp): +120 cal", "Total: 320 cal"])
 - micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
@@ -371,7 +371,8 @@ Return only valid JSON with all required fields.`
 
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
-- ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: use "softgel", "capsule", "tablet", "pill" NOT "g" or "ml")
+- ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: carefully read the label and use EXACT form - "softgel", "capsule", "tablet", "pill", "gummy", "drop" - NEVER use "g" or "ml" for pills/tablets/capsules)
+- SUPPLEMENT FORM DETECTION: Look at the bottle label, product description, and supplement facts panel to identify the exact form (softgel vs tablet vs capsule vs gummy)
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
 - Use scientific nutritional databases to ensure completeness (USDA FoodData Central standards)
 - NEVER provide empty or minimal micronutrient data - include ALL naturally occurring nutrients
@@ -616,9 +617,30 @@ Return only valid JSON with all required fields.`
 
     // Auto-correct supplement units if AI incorrectly used 'g'
     if (isLikelySupplement && validatedResult.portionUnit === 'g') {
-      console.log("Detected supplement with incorrect unit 'g', correcting to 'softgel'");
-      validatedResult.portionUnit = 'softgel';
-      validatedResult.servingDetails = validatedResult.servingDetails.replace(/1g?/, '1 softgel');
+      // Try to detect the actual supplement type from food name or serving details
+      let detectedUnit = 'softgel'; // Default fallback
+      
+      const nameAndServing = `${foodName || ''} ${validatedResult.servingDetails || ''}`.toLowerCase();
+      
+      if (nameAndServing.includes('tablet') || nameAndServing.includes('tab ')) {
+        detectedUnit = 'tablet';
+      } else if (nameAndServing.includes('capsule') || nameAndServing.includes('cap ')) {
+        detectedUnit = 'capsule';
+      } else if (nameAndServing.includes('pill')) {
+        detectedUnit = 'pill';
+      } else if (nameAndServing.includes('softgel') || nameAndServing.includes('soft gel')) {
+        detectedUnit = 'softgel';
+      } else if (nameAndServing.includes('gummies') || nameAndServing.includes('gummy')) {
+        detectedUnit = 'gummy';
+      } else if (nameAndServing.includes('injection') || nameAndServing.includes('syringe')) {
+        detectedUnit = 'injection';
+      } else if (nameAndServing.includes('drop') || nameAndServing.includes('liquid')) {
+        detectedUnit = 'drop';
+      }
+      
+      console.log(`Detected supplement with incorrect unit 'g', correcting to '${detectedUnit}' based on: ${nameAndServing}`);
+      validatedResult.portionUnit = detectedUnit;
+      validatedResult.servingDetails = validatedResult.servingDetails.replace(/1\s*g?\b/, `1 ${detectedUnit}`);
       if (validatedResult.portionWeight === 1) {
         validatedResult.portionWeight = 1; // Keep as 1 for supplements
       }
