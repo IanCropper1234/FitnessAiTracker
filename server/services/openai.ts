@@ -371,6 +371,7 @@ Return only valid JSON with all required fields.`
 
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
+- STRICT LABEL READING: Read ONLY the exact values shown on the nutrition label. NEVER estimate or assume values. If label shows "Fiber 1g", report exactly 1g for fiber, not 5g or any other estimated value.
 - SUPPLEMENT NAME IDENTIFICATION: For supplements, read the EXACT product name from the label/bottle, including specific compound names (e.g., "Vitamin K Complex with K1, K2-MK4, K2-MK7", "Super K Multi-Form Vitamin K", "CoQ10 Ubiquinol 100mg")
 - MANDATORY DYNAMIC UNIT FORMAT: For ALL nutrients with visible units on the label, you MUST use the {value: number, unit: string} format. This is not optional:
   * If label shows "Vitamin K: 2600mcg" → return vitaminK: {value: 2600, unit: "mcg"}
@@ -468,7 +469,7 @@ Return only valid JSON with all required fields.`
           },
           {
             role: "user", 
-            content: "Correct. CRITICAL: For all nutrients with visible units on the label, use the {value: number, unit: string} format. Example: vitaminK: {value: 2600, unit: \"mcg\"}, vitaminC: {value: 10, unit: \"mg\"}. This format is MANDATORY for correct display. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+            content: "Correct. CRITICAL: For all nutrients with visible units on the label, use the {value: number, unit: string} format. Example: vitaminK: {value: 2600, unit: \"mcg\"}, vitaminC: {value: 10, unit: \"mg\"}. This format is MANDATORY for correct display. STRICT RULE: Read ONLY the exact values shown on the nutrition label - if label shows 'Fiber 1g', report exactly 1g, NOT 5g or any estimated value. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
           }
         ];
 
@@ -504,7 +505,7 @@ Return only valid JSON with all required fields.`
         },
         {
           role: "user", 
-          content: "Correct. For vitamin supplements specifically: Extract the EXACT amounts from the 'Amount per Serving' column, not percentages. If you see 'Vitamin D: 25mcg (125% DV)', report 25 for vitaminD, not 0. Convert any % Daily Values to actual amounts using standard references. CRITICAL: For all nutrients with visible units on the label, use the {value: number, unit: string} format. Example: vitaminK: {value: 2600, unit: \"mcg\"}, vitaminC: {value: 10, unit: \"mg\"}. This format is MANDATORY for correct display. Proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients with ACTUAL MEASURED VALUES from supplement labels."
+          content: "Correct. For vitamin supplements specifically: Extract the EXACT amounts from the 'Amount per Serving' column, not percentages. If you see 'Vitamin D: 25mcg (125% DV)', report 25 for vitaminD, not 0. Convert any % Daily Values to actual amounts using standard references. CRITICAL: For all nutrients with visible units on the label, use the {value: number, unit: string} format. Example: vitaminK: {value: 2600, unit: \"mcg\"}, vitaminC: {value: 10, unit: \"mg\"}. This format is MANDATORY for correct display. STRICT RULE: Read ONLY the exact values shown on the nutrition label - if label shows 'Fiber 1g', report exactly 1g, NOT 5g or any estimated value. Proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients with ACTUAL MEASURED VALUES from supplement labels."
         }
       ];
 
