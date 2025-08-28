@@ -546,14 +546,46 @@ This is a HIGH-STAKES nutrition label reading task. Accuracy is CRITICAL for use
       
       if (!content || content.trim() === '') {
         console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
-        throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
-      }
+        console.log("Attempting fallback to GPT-4o for potential policy-sensitive content...");
+        
+        // Try fallback to GPT-4o for potentially sensitive content (supplements, medications)
+        try {
+          const fallbackResponse = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: `You are a nutrition analysis expert. Analyze the provided nutrition label or supplement facts panel and extract nutritional information. For supplement/vitamin labels, focus on nutritional content rather than medicinal claims. Format your response as JSON with: calories, protein, carbs, fat, confidence, category, micronutrients (if applicable), assumptions, servingDetails.`
+              },
+              {
+                role: "user",
+                content: messageContent
+              }
+            ],
+            response_format: { type: "json_object" },
+            max_tokens: 4000
+          });
 
-      try {
-        result = JSON.parse(content);
-      } catch (jsonError) {
-        console.error("Failed to parse OpenAI response as JSON:", content);
-        throw new Error("OpenAI returned invalid JSON - please try again or contact support");
+          const fallbackContent = fallbackResponse.choices[0].message.content;
+          console.log("GPT-4o fallback response received (length):", fallbackContent?.length || 0);
+          
+          if (fallbackContent && fallbackContent.trim() !== '') {
+            console.log("✅ Fallback successful - using GPT-4o response");
+            result = JSON.parse(fallbackContent);
+          } else {
+            throw new Error("Both GPT-5 and GPT-4o returned empty responses");
+          }
+        } catch (fallbackError) {
+          console.error("Fallback to GPT-4o also failed:", fallbackError);
+          throw new Error("Unable to analyze this image. This may be due to image quality, content restrictions, or processing limitations. Please try with a clearer image or different format.");
+        }
+      } else {
+        try {
+          result = JSON.parse(content);
+        } catch (jsonError) {
+          console.error("Failed to parse OpenAI response as JSON:", content);
+          throw new Error("AI returned invalid response format - please try again");
+        }
       }
     }
     
