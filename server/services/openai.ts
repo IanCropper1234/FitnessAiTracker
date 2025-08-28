@@ -417,47 +417,8 @@ Return only valid JSON with all required fields.`
       (modelConfig.name === process.env.AI_AB_TEST_MODEL ? 'test' : 'control') : 
       undefined;
 
-    // Ultra-enhanced system prompt for precise Chinese label reading
-    const systemPrompt = `You are an elite nutrition analyst with ADVANCED OCR capabilities specifically trained to read Chinese nutrition labels with PERFECT accuracy. You specialize in extracting EXACT numerical values from nutrition facts labels.
-
-**MANDATORY CHINESE LABEL READING PROTOCOL:**
-
-**STEP 1: PRECISE OCR SCANNING**
-- Examine the nutrition label table structure carefully
-- Look for the table with 3 columns: 營養資料 | 每食用份量 | 每100克/毫升
-- Focus INTENSELY on the exact numerical values in the middle column (每食用份量)
-
-**STEP 2: EXACT VALUE EXTRACTION (CRITICAL)**
-When you see Chinese nutrition labels, extract these EXACT values from the "每食用份量" column:
-- 能量: Look for pattern like "347千卡" → Extract 347 calories
-- 蛋白質: Look for pattern like "26.1克" → Extract 26.1g protein  
-- 總脂肪: Look for pattern like "7.4克" → Extract 7.4g fat
-- 碳水化合物: Look for pattern like "44.9克" → Extract 44.9g carbs
-- 糖: Look for pattern like "4.7克" → Extract 4.7g sugar
-- 鈉: Look for pattern like "1255毫克" → Extract 1255mg sodium
-
-**STEP 3: VERIFICATION PROTOCOL**
-- Double-check each numerical value against what you can see in the image
-- If you see "347千卡" in the label, you MUST report exactly 347 calories
-- If you see "26.1克" protein, you MUST report exactly 26.1g protein
-- NEVER estimate, NEVER approximate - use ONLY visible numbers
-
-**CRITICAL ACCURACY REQUIREMENTS:**
-- Confidence MUST be 0.85-0.95 when Chinese numbers are clearly visible
-- If you can read "347千卡" clearly, confidence should be 0.9+
-- Only use low confidence (0.3-0.6) if the image is genuinely blurry/unreadable
-
-**FORBIDDEN ACTIONS:**
-- NEVER estimate nutritional values when exact numbers are visible
-- NEVER use food composition databases to "guess" values
-- NEVER scale or multiply visible numbers
-- NEVER report low confidence when Chinese text is clearly readable
-
-**SUCCESS EXAMPLE:**
-If label shows: 能量 347千卡, 蛋白質 26.1克
-You MUST report: calories: 347, protein: 26.1, confidence: 0.9
-
-This is a HIGH-STAKES nutrition label reading task. Accuracy is CRITICAL for user health and dietary tracking.`;
+    // Prepare system and user prompts
+    const systemPrompt = "You are a nutrition expert specializing in precise macro and micronutrient analysis with access to comprehensive nutritional databases (USDA FoodData Central). For nutrition labels, read values EXACTLY as shown - do not scale, multiply, or adjust. A label showing 107 calories should be reported as 107 calories, not 535. Always respond with valid JSON containing COMPLETE nutritional data including extensive micronutrient profiles. Every food contains multiple vitamins and minerals - never provide minimal micronutrient data. Use scientific nutritional composition data to ensure thoroughness. If you cannot analyze the image clearly, provide your best estimate with a lower confidence score.";
     
     const userPromptText = messageContent.find((item: any) => item.type === 'text')?.text || '';
 
@@ -500,8 +461,7 @@ This is a HIGH-STAKES nutrition label reading task. Accuracy is CRITICAL for use
           systemPrompt,
           userPrompt: userPromptText,
           messages,
-          responseFormat: { type: "json_object" },
-          images: hasImages ? images : undefined // 🔥 CRITICAL FIX: 傳遞圖像數據到 GPT-5
+          responseFormat: { type: "json_object" }
         });
 
         const content = response.content;
@@ -537,8 +497,7 @@ This is a HIGH-STAKES nutrition label reading task. Accuracy is CRITICAL for use
         systemPrompt,
         userPrompt: userPromptText,
         messages,
-        responseFormat: { type: "json_object" },
-        images: hasImages ? images : undefined // 🔥 CRITICAL FIX: 傳遞圖像數據到 GPT-5
+        responseFormat: { type: "json_object" }
       });
 
       const content = response.content;
@@ -546,46 +505,14 @@ This is a HIGH-STAKES nutrition label reading task. Accuracy is CRITICAL for use
       
       if (!content || content.trim() === '') {
         console.error("Empty response from OpenAI - possible content policy violation or image processing issue");
-        console.log("Attempting fallback to GPT-4o for potential policy-sensitive content...");
-        
-        // Try fallback to GPT-4o for potentially sensitive content (supplements, medications)
-        try {
-          const fallbackResponse = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-              {
-                role: "system",
-                content: `You are a nutrition analysis expert. Analyze the provided nutrition label or supplement facts panel and extract nutritional information. For supplement/vitamin labels, focus on nutritional content rather than medicinal claims. Format your response as JSON with: calories, protein, carbs, fat, confidence, category, micronutrients (if applicable), assumptions, servingDetails.`
-              },
-              {
-                role: "user",
-                content: messageContent
-              }
-            ],
-            response_format: { type: "json_object" },
-            max_tokens: 4000
-          });
+        throw new Error("Empty response from OpenAI - this may be due to image processing issues or content policy restrictions");
+      }
 
-          const fallbackContent = fallbackResponse.choices[0].message.content;
-          console.log("GPT-4o fallback response received (length):", fallbackContent?.length || 0);
-          
-          if (fallbackContent && fallbackContent.trim() !== '') {
-            console.log("✅ Fallback successful - using GPT-4o response");
-            result = JSON.parse(fallbackContent);
-          } else {
-            throw new Error("Both GPT-5 and GPT-4o returned empty responses");
-          }
-        } catch (fallbackError) {
-          console.error("Fallback to GPT-4o also failed:", fallbackError);
-          throw new Error("Unable to analyze this image. This may be due to image quality, content restrictions, or processing limitations. Please try with a clearer image or different format.");
-        }
-      } else {
-        try {
-          result = JSON.parse(content);
-        } catch (jsonError) {
-          console.error("Failed to parse OpenAI response as JSON:", content);
-          throw new Error("AI returned invalid response format - please try again");
-        }
+      try {
+        result = JSON.parse(content);
+      } catch (jsonError) {
+        console.error("Failed to parse OpenAI response as JSON:", content);
+        throw new Error("OpenAI returned invalid JSON - please try again or contact support");
       }
     }
     

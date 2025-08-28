@@ -83,7 +83,7 @@ export const getAIConfig = (): AIServiceConfig => {
   const nutritionModel = process.env.AI_MODEL_NUTRITION || process.env.AI_MODEL || 'gpt-5-mini';
   const foodAnalysisModel = process.env.AI_MODEL_FOOD || process.env.AI_MODEL || 'gpt-5-mini';
   const programOptimizationModel = process.env.AI_MODEL_PROGRAM || process.env.AI_MODEL || 'gpt-5-mini';
-  const multiImageModel = process.env.AI_MODEL_MULTI_IMAGE || process.env.AI_MODEL || 'gpt-4o'; // 臨時回退到 GPT-4o 以改善中文營養標籤讀取精確度
+  const multiImageModel = process.env.AI_MODEL_MULTI_IMAGE || process.env.AI_MODEL || 'gpt-5-mini';
 
   return {
     exerciseRecommendations: AI_MODELS[exerciseModel] || AI_MODELS['gpt-5-mini'],

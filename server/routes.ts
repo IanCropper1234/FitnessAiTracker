@@ -1963,7 +1963,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imageCount: imageArray ? imageArray.length : 0
       });
       
-      
       res.json(analysis);
     } catch (error: any) {
       console.error("Nutrition analysis error:", error);
