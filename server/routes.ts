@@ -2720,7 +2720,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const currentSetCount = exerciseData.sets.length;
           const updateData: any = {
             sets: currentSetCount, // Update dynamic set count
-            setsData: exerciseData.sets // Store individual set completion states
+            setsData: exerciseData.sets, // Store individual set completion states
+            weightUnit: exerciseData.weightUnit || 'kg' // Store the weight unit used during training
           };
 
           // Update exercise order if provided
@@ -2889,7 +2890,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const currentSetCount = exerciseData.sets.length;
         const updateData: any = {
           sets: currentSetCount, // Update dynamic set count
-          isCompleted: true
+          isCompleted: true,
+          setsData: exerciseData.sets, // Store individual set completion states
+          weightUnit: exerciseData.weightUnit || 'kg' // Store the weight unit used during training
         };
         
         if (completedSets.length > 0) {

@@ -788,7 +788,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             sets: newData[exercise.id] || [],
             specialMethod: specialMethods[exercise.id] || null,
             specialConfig: specialConfigs[exercise.id] || null,
-            orderIndex: exercise.orderIndex // Include order index for auto-saves too
+            orderIndex: exercise.orderIndex, // Include order index for auto-saves too
+            weightUnit: weightUnit // Include weight unit used during training
           }))
         };
         
@@ -1249,7 +1250,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           sets: workoutData[exercise.id] || [],
           specialMethod: specialMethods[exercise.id] || null,
           specialConfig: specialConfigs[exercise.id] || null,
-          orderIndex: exercise.orderIndex // Include order index to preserve exercise order
+          orderIndex: exercise.orderIndex, // Include order index to preserve exercise order
+          weightUnit: weightUnit // Include weight unit used during training
         }))
       };
 
@@ -1308,7 +1310,8 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           sets: workoutData[exercise.id] || [],
           specialMethod: specialMethods[exercise.id] || null,
           specialConfig: specialConfigs[exercise.id] || null,
-          orderIndex: exercise.orderIndex // Include order index to preserve exercise order
+          orderIndex: exercise.orderIndex, // Include order index to preserve exercise order
+          weightUnit: weightUnit // Include weight unit used during training
         }))
       };
 
