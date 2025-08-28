@@ -230,7 +230,7 @@ ${foodDescription ? `
 - portionUnit: most accurate unit for nutrition tracking - prefer grams (g) for solid foods like donuts, cookies, bread for precision; only use pieces for very small uniform items
 - ingredientBreakdown: array of identified food components (e.g., ["grilled chicken: 120g", "brown rice: 150g", "broccoli: 80g"])
 - micronutrients: comprehensive vitamin and mineral data from ALL components (object with fields):
-  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (use exact unit from label: mcg or mg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
@@ -358,8 +358,8 @@ Return only valid JSON with all required fields.`
 - portionWeight: realistic portion weight as number determined by nutritional guidelines and common consumption patterns
 - portionUnit: most appropriate unit for this food type based on how it's naturally measured and served (CRITICAL: for supplements, read the label carefully and use the EXACT form mentioned - "softgel", "capsule", "tablet", "pill", "gummy", "drop", etc.; for food use "g", "ml", "oz", "cup", etc.)
 - ingredientBreakdown: array of food components with DETAILED calorie breakdown (e.g., ["chicken breast (base): 165 cal", "chicken skin: +35 cal", "olive oil (1 tbsp): +120 cal", "Total: 320 cal"])
-- micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
-  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+- micronutrients: COMPREHENSIVE vitamin and mineral data with DYNAMIC UNITS based on label values (object with ALL applicable fields, each nutrient can be either direct number OR {value: number, unit: string} format when unit differs from default):
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (use exact unit from label: mcg or mg)
   * Water-Soluble Vitamins: vitaminB1/thiamine (mg), vitaminB2/riboflavin (mg), vitaminB3/niacin (mg), vitaminB5/pantothenic acid (mg), vitaminB6/pyridoxine (mg), vitaminB7/biotin (mcg), vitaminB9/folate (mcg), vitaminB12/cobalamin (mcg), vitaminC/ascorbic acid (mg), choline (mg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg), sulfur (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg), boron (mg), cobalt (mcg), nickel (mcg), silicon (mg), vanadium (mcg)
@@ -372,6 +372,7 @@ Return only valid JSON with all required fields.`
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
 - SUPPLEMENT NAME IDENTIFICATION: For supplements, read the EXACT product name from the label/bottle, including specific compound names (e.g., "Vitamin K Complex with K1, K2-MK4, K2-MK7", "Super K Multi-Form Vitamin K", "CoQ10 Ubiquinol 100mg")
+- DYNAMIC UNIT DETECTION: Read the exact units from the label and use the {value: number, unit: string} format when the label unit differs from the default expected unit (e.g., if label shows "Vitamin K: 100mg" use {value: 100, unit: "mg"}, if label shows "2600mcg" use {value: 2600, unit: "mcg"})
 - ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: carefully read the label and use EXACT form - "softgel", "capsule", "tablet", "pill", "gummy", "drop" - NEVER use "g" or "ml" for pills/tablets/capsules)
 - SUPPLEMENT FORM DETECTION: Look at the bottle label, product description, and supplement facts panel to identify the exact form (softgel vs tablet vs capsule vs gummy)
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
@@ -742,7 +743,7 @@ export async function analyzeNutritionOriginal(
 - assumptions: any assumptions made if label is unclear (string)
 - servingDetails: clarification of portion analyzed from label (string)
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
-  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (use exact unit from label: mcg or mg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
@@ -788,7 +789,7 @@ Return only valid JSON with all required fields.`
 - assumptions: key assumptions about portions, preparation, ingredients (string)
 - servingDetails: description of estimated portion size and food components (string)
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
-  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (use exact unit from label: mcg or mg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
@@ -834,7 +835,7 @@ Return only valid JSON with all required fields.`
 - assumptions: key assumptions made (string)
 - servingDetails: clarification of portion analyzed (string)
 - micronutrients: comprehensive vitamin and mineral data (object with optional fields):
-  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
+  * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (use exact unit from label: mcg or mg)
   * Water-Soluble Vitamins: vitaminB1 (mg), vitaminB2 (mg), vitaminB3 (mg), vitaminB5 (mg), vitaminB6 (mg), vitaminB7 (mcg), vitaminB9 (mcg), vitaminB12 (mcg), vitaminC (mg), folate (mcg)
   * Major Minerals: calcium (mg), magnesium (mg), phosphorus (mg), potassium (mg), sodium (mg), chloride (mg)
   * Trace Minerals: iron (mg), zinc (mg), copper (mg), manganese (mg), iodine (mcg), selenium (mcg), chromium (mcg), molybdenum (mcg), fluoride (mg)
