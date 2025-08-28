@@ -1230,7 +1230,7 @@ export function IntegratedNutritionOverview({
             'vitaminB7': 'vitaminB7',
             'vitaminB9': 'vitaminB9',
             'vitaminB12': 'vitaminB12',
-            'folate': 'folate',
+            'folate': 'vitaminB9',
             'thiamine': 'vitaminB1',
             'riboflavin': 'vitaminB2',
             'niacin': 'vitaminB3',
@@ -1239,6 +1239,28 @@ export function IntegratedNutritionOverview({
             'biotin': 'vitaminB7',
             'cobalamin': 'vitaminB12',
             'choline': 'choline',
+            // Additional B-vitamin variations from supplements
+            'b1thiamine': 'vitaminB1',
+            'b2riboflavin': 'vitaminB2',
+            'b3niacin': 'vitaminB3',
+            'b5pantothenicacid': 'vitaminB5',
+            'b6pyridoxine': 'vitaminB6',
+            'b7biotin': 'vitaminB7',
+            'b9folate': 'vitaminB9',
+            'b12cobalamin': 'vitaminB12',
+            'pantothenicAcid': 'vitaminB5',
+            'ascorbicAcid': 'vitaminC',
+            // Complex naming variations
+            'vitaminb1thiamine': 'vitaminB1',
+            'vitaminb2riboflavin': 'vitaminB2',
+            'vitaminb3niacin': 'vitaminB3',
+            'vitaminb5pantothenicacid': 'vitaminB5',
+            'vitaminb6pyridoxine': 'vitaminB6',
+            'vitaminb7biotin': 'vitaminB7',
+            'vitaminb9folate': 'vitaminB9',
+            'vitaminb12cobalamin': 'vitaminB12',
+            'vitaminb5pantothenate': 'vitaminB5',
+            'ascorbicacid': 'vitaminC',
             // Major Minerals
             'sodium': 'sodium',
             'calcium': 'calcium',
@@ -1407,7 +1429,11 @@ export function IntegratedNutritionOverview({
             vitaminB2: (estimatedGender === 'male' ? 1.3 : 1.1) * activityMultiplier, // mg
             vitaminB3: (estimatedGender === 'male' ? 16 : 14) * (isHighlyActive ? 1.1 : 1.0), // mg
             vitaminB6: (age > 50 ? (estimatedGender === 'male' ? 1.7 : 1.5) : 1.3) * (isHighlyActive ? 1.1 : 1.0), // mg
+            vitaminB5: 5, // mg (Pantothenic Acid)
+            vitaminB7: 30, // μg (Biotin)  
+            vitaminB9: 400, // μg (Folate)
             vitaminB12: 2.4, // μg
+            choline: estimatedGender === 'male' ? 550 : 425, // mg
             calcium: age > 50 ? 1200 : 1000, // mg
             magnesium: (estimatedGender === 'male' ? (age <= 30 ? 400 : 420) : (age <= 30 ? 310 : 320)) * (isHighlyActive ? 1.15 : 1.0), // mg
             phosphorus: 700, // mg
@@ -1551,7 +1577,7 @@ export function IntegratedNutritionOverview({
                       )}
                       
                       {/* Water-Soluble Vitamins */}
-                      {(dailyTotals.vitaminC > 0 || dailyTotals.vitaminB1 > 0 || dailyTotals.vitaminB2 > 0 || dailyTotals.vitaminB3 > 0 || dailyTotals.vitaminB6 > 0 || dailyTotals.vitaminB12 > 0) && (
+                      {(dailyTotals.vitaminC > 0 || dailyTotals.vitaminB1 > 0 || dailyTotals.vitaminB2 > 0 || dailyTotals.vitaminB3 > 0 || dailyTotals.vitaminB5 > 0 || dailyTotals.vitaminB6 > 0 || dailyTotals.vitaminB7 > 0 || dailyTotals.vitaminB9 > 0 || dailyTotals.vitaminB12 > 0 || dailyTotals.choline > 0) && (
                         <div>
                           <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-1.5">Water-Soluble Vitamins</h5>
                           <div className="space-y-2">
@@ -1585,11 +1611,35 @@ export function IntegratedNutritionOverview({
                               "mg", 
                               getAdequacy(dailyTotals.vitaminB6, rda.vitaminB6)
                             )}
+                            {dailyTotals.vitaminB5 > 0 && renderNutrientWithProgress(
+                              "B5 (Pantothenic Acid)", 
+                              Math.round(dailyTotals.vitaminB5 * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.vitaminB5, rda.vitaminB5)
+                            )}
+                            {dailyTotals.vitaminB7 > 0 && renderNutrientWithProgress(
+                              "B7 (Biotin)", 
+                              Math.round(dailyTotals.vitaminB7 * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.vitaminB7, rda.vitaminB7)
+                            )}
+                            {dailyTotals.vitaminB9 > 0 && renderNutrientWithProgress(
+                              "B9 (Folate)", 
+                              Math.round(dailyTotals.vitaminB9 * 10) / 10, 
+                              "μg", 
+                              getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
+                            )}
                             {dailyTotals.vitaminB12 > 0 && renderNutrientWithProgress(
                               "B12 (Cobalamin)", 
                               Math.round(dailyTotals.vitaminB12 * 10) / 10, 
                               "μg", 
                               getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
+                            )}
+                            {dailyTotals.choline > 0 && renderNutrientWithProgress(
+                              "Choline", 
+                              Math.round(dailyTotals.choline * 10) / 10, 
+                              "mg", 
+                              getAdequacy(dailyTotals.choline, rda.choline)
                             )}
                           </div>
                         </div>
