@@ -32,10 +32,17 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
   };
 
   // Format numeric values for display - returns null for zero values to prevent display
-  const formatNutrientValue = (value: number | string | null | undefined): string | null => {
+  const formatNutrientValue = (value: any): string | null => {
     if (value === null || value === undefined || value === '') return null;
     
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    // Handle object format {value: number, unit?: string}
+    let numValue: number;
+    if (typeof value === 'object' && value !== null && 'value' in value) {
+      numValue = typeof value.value === 'string' ? parseFloat(value.value) : value.value;
+    } else {
+      numValue = typeof value === 'string' ? parseFloat(value) : value;
+    }
+    
     if (isNaN(numValue) || numValue === 0) return null;
     
     // For very small values (< 0.1), show 2 decimal places
@@ -55,7 +62,15 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
   // Helper function to check if a nutrient value is meaningful (> 0)
   const hasValidValue = (value: any): boolean => {
     if (value === null || value === undefined || value === '') return false;
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    
+    // Handle object format {value: number, unit?: string}
+    let numValue: number;
+    if (typeof value === 'object' && value !== null && 'value' in value) {
+      numValue = typeof value.value === 'string' ? parseFloat(value.value) : value.value;
+    } else {
+      numValue = typeof value === 'string' ? parseFloat(value) : value;
+    }
+    
     return !isNaN(numValue) && numValue > 0;
   };
 
@@ -142,8 +157,8 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
 
   // Get appropriate unit for nutrients based on their type
   const getNutrientUnit = (nutrientName: string, value: any): string => {
-    // If value is an object with unit, use that
-    if (typeof value === 'object' && value.unit) {
+    // If value is an object with unit, use that (highest priority)
+    if (typeof value === 'object' && value !== null && value.unit) {
       return value.unit;
     }
     
@@ -151,11 +166,13 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
     const cleanName = nutrientName.replace(/_mg$|_mcg$|_g$/, '').toLowerCase();
     
     // Nutrients that should be in grams
-    const gramsNutrients = ['fiber', 'sugar', 'addedsugar', 'omega3', 'omega6', 'saturatedfat', 'monounsaturatedfat', 'polyunsaturatedfat', 'transfat'];
+    const gramsNutrients = ['fiber', 'sugar', 'addedsugar', 'omega3', 'omega6', 'saturatedfat', 'monounsaturatedfat', 'polyunsaturatedfat', 'transfat', 'starch', 'alcohol'];
     
     // Nutrients that should be in micrograms
-    const microgramNutrients = ['vitamina', 'vitamind', 'vitaminb7', 'vitaminb9', 'vitaminb12', 'folate', 'iodine', 'selenium', 'chromium', 'molybdenum'];
+    const microgramNutrients = ['vitamina', 'vitamind', 'vitaminb7', 'vitaminb9', 'vitaminb12', 'folate', 'iodine', 'selenium', 'chromium', 'molybdenum', 'biotin'];
     
+    // Special cases based on AI interface definitions
+    if (cleanName === 'cholesterol') return 'mg'; // cholesterol is mg according to AI interface
     if (gramsNutrients.includes(cleanName)) {
       return 'g';
     } else if (microgramNutrients.includes(cleanName)) {
