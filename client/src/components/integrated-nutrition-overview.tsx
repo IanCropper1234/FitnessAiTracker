@@ -1193,13 +1193,34 @@ export function IntegratedNutritionOverview({
         
         // Helper function to map nested nutrient names to flat names
         const getNutrientFlatName = (nutrientName: string): string => {
+          // First, handle special cases with suffixes and alternative names
+          const cleanNutrientName = nutrientName
+            .toLowerCase()
+            .replace(/^vitamin\s+/, 'vitamin') // Normalize "Vitamin " to "vitamin"
+            .replace(/_.*$/, '') // Remove suffixes like "_niacin", "_biotin", "_thiamine", etc.
+            .replace(/\s.*$/, '') // Remove space-separated suffixes
+            .trim();
+            
           const mapping: { [key: string]: string } = {
             // Fat-Soluble Vitamins
+            'vitamina': 'vitaminA',
+            'vitamind': 'vitaminD', 
+            'vitamine': 'vitaminE',
+            'vitamink': 'vitaminK',
             'vitaminA': 'vitaminA',
             'vitaminD': 'vitaminD', 
             'vitaminE': 'vitaminE',
             'vitaminK': 'vitaminK',
             // Water-Soluble Vitamins
+            'vitaminc': 'vitaminC',
+            'vitaminb1': 'vitaminB1',
+            'vitaminb2': 'vitaminB2', 
+            'vitaminb3': 'vitaminB3',
+            'vitaminb5': 'vitaminB5',
+            'vitaminb6': 'vitaminB6',
+            'vitaminb7': 'vitaminB7',
+            'vitaminb9': 'vitaminB9',
+            'vitaminb12': 'vitaminB12',
             'vitaminC': 'vitaminC',
             'vitaminB1': 'vitaminB1',
             'vitaminB2': 'vitaminB2', 
@@ -1210,6 +1231,14 @@ export function IntegratedNutritionOverview({
             'vitaminB9': 'vitaminB9',
             'vitaminB12': 'vitaminB12',
             'folate': 'folate',
+            'thiamine': 'vitaminB1',
+            'riboflavin': 'vitaminB2',
+            'niacin': 'vitaminB3',
+            'pantothenicacid': 'vitaminB5',
+            'pyridoxine': 'vitaminB6',
+            'biotin': 'vitaminB7',
+            'cobalamin': 'vitaminB12',
+            'choline': 'choline',
             // Major Minerals
             'sodium': 'sodium',
             'calcium': 'calcium',
@@ -1217,6 +1246,7 @@ export function IntegratedNutritionOverview({
             'magnesium': 'magnesium',
             'potassium': 'potassium',
             'phosphorus': 'phosphorus',
+            'sulfur': 'sulfur',
             // Trace Minerals
             'iron': 'iron',
             'zinc': 'zinc',
@@ -1227,24 +1257,39 @@ export function IntegratedNutritionOverview({
             'selenium': 'selenium',
             'manganese': 'manganese',
             'molybdenum': 'molybdenum',
+            'boron': 'boron',
             // Macronutrient Components
             'fiber': 'fiber',
             'sugar': 'sugar',
             'omega3': 'omega3',
             'omega6': 'omega6',
+            'omega9': 'omega9',
             'starch': 'starch',
             'alcohol': 'alcohol',
+            'transfat': 'transFat',
+            'addedsugar': 'addedSugar',
+            'cholesterol': 'cholesterol',
+            'saturatedfat': 'saturatedFat',
+            'solublefiber': 'solubleFiber',
+            'insolublefiber': 'insolubleFiber',
+            'monounsaturatedfat': 'monounsaturatedFat',
+            'polyunsaturatedfat': 'polyunsaturatedFat',
             'transFat': 'transFat',
             'addedSugar': 'addedSugar',
-            'cholesterol': 'cholesterol',
             'saturatedFat': 'saturatedFat',
             'solubleFiber': 'solubleFiber',
             'insolubleFiber': 'insolubleFiber',
             'monounsaturatedFat': 'monounsaturatedFat',
-            'polyunsaturatedFat': 'polyunsaturatedFat'
+            'polyunsaturatedFat': 'polyunsaturatedFat',
+            // Supplement Compounds
+            'bcaa': 'bcaa',
+            'collagen': 'collagen',
+            'glutamine': 'glutamine',
+            'wheyprotein': 'wheyProtein',
+            'caseinprotein': 'caseinProtein'
           };
           
-          return mapping[nutrientName] || nutrientName;
+          return mapping[cleanNutrientName] || mapping[nutrientName] || nutrientName;
         };
         
         // Calculate daily micronutrient totals with support for both flat and nested structures

@@ -369,12 +369,35 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       'Supplement Compounds': {}
                     };
                     
+                    // Helper function to clean nutrient names and handle suffixes
+                    const cleanNutrientName = (nutrientName: string): string => {
+                      return nutrientName
+                        .toLowerCase()
+                        .replace(/^vitamin\s+/, 'vitamin') // Normalize "Vitamin " to "vitamin"
+                        .replace(/_.*$/, '') // Remove suffixes like "_niacin", "_biotin", "_thiamine", etc.
+                        .replace(/\s.*$/, '') // Remove space-separated suffixes
+                        .trim();
+                    };
+                    
                     // Nutrient classification mapping
-                    const classifications = {
+                    const classifications: { [key: string]: string } = {
+                      'vitamina': 'Fat-Soluble Vitamins',
+                      'vitamind': 'Fat-Soluble Vitamins', 
+                      'vitamine': 'Fat-Soluble Vitamins',
+                      'vitamink': 'Fat-Soluble Vitamins',
                       'vitaminA': 'Fat-Soluble Vitamins',
                       'vitaminD': 'Fat-Soluble Vitamins', 
                       'vitaminE': 'Fat-Soluble Vitamins',
                       'vitaminK': 'Fat-Soluble Vitamins',
+                      'vitaminc': 'Water-Soluble Vitamins',
+                      'vitaminb1': 'Water-Soluble Vitamins',
+                      'vitaminb2': 'Water-Soluble Vitamins',
+                      'vitaminb3': 'Water-Soluble Vitamins',
+                      'vitaminb5': 'Water-Soluble Vitamins',
+                      'vitaminb6': 'Water-Soluble Vitamins',
+                      'vitaminb7': 'Water-Soluble Vitamins',
+                      'vitaminb9': 'Water-Soluble Vitamins',
+                      'vitaminb12': 'Water-Soluble Vitamins',
                       'vitaminC': 'Water-Soluble Vitamins',
                       'vitaminB1': 'Water-Soluble Vitamins',
                       'vitaminB2': 'Water-Soluble Vitamins',
@@ -388,12 +411,14 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       'thiamine': 'Water-Soluble Vitamins',
                       'riboflavin': 'Water-Soluble Vitamins',
                       'niacin': 'Water-Soluble Vitamins',
-                      'pantothenicAcid': 'Water-Soluble Vitamins',
+                      'pantothenicacid': 'Water-Soluble Vitamins',
                       'pyridoxine': 'Water-Soluble Vitamins',
                       'biotin': 'Water-Soluble Vitamins',
                       'cobalamin': 'Water-Soluble Vitamins',
-                      'ascorbicAcid': 'Water-Soluble Vitamins',
+                      'ascorbicacid': 'Water-Soluble Vitamins',
                       'choline': 'Water-Soluble Vitamins',
+                      'pantothenicAcid': 'Water-Soluble Vitamins',
+                      'ascorbicAcid': 'Water-Soluble Vitamins',
                       'calcium': 'Major Minerals',
                       'chloride': 'Major Minerals',
                       'magnesium': 'Major Minerals',
@@ -417,25 +442,40 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       'vanadium': 'Trace Minerals',
                       'fiber': 'Macronutrient Components',
                       'sugar': 'Macronutrient Components',
-                      'addedSugar': 'Macronutrient Components',
+                      'addedsugar': 'Macronutrient Components',
                       'starch': 'Macronutrient Components',
                       'cholesterol': 'Macronutrient Components',
+                      'saturatedfat': 'Macronutrient Components',
+                      'monounsaturatedfat': 'Macronutrient Components',
+                      'polyunsaturatedfat': 'Macronutrient Components',
+                      'transfat': 'Macronutrient Components',
+                      'omega3': 'Macronutrient Components',
+                      'omega6': 'Macronutrient Components',
+                      'omega9': 'Macronutrient Components',
+                      'solublefiber': 'Macronutrient Components',
+                      'insolublefiber': 'Macronutrient Components',
+                      'alcohol': 'Macronutrient Components',
+                      'addedSugar': 'Macronutrient Components',
                       'saturatedFat': 'Macronutrient Components',
                       'monounsaturatedFat': 'Macronutrient Components',
                       'polyunsaturatedFat': 'Macronutrient Components',
                       'transFat': 'Macronutrient Components',
-                      'omega3': 'Macronutrient Components',
-                      'omega6': 'Macronutrient Components',
-                      'omega9': 'Macronutrient Components',
                       'solubleFiber': 'Macronutrient Components',
                       'insolubleFiber': 'Macronutrient Components',
-                      'alcohol': 'Macronutrient Components'
+                      // Supplement Compounds
+                      'bcaa': 'Supplement Compounds',
+                      'collagen': 'Supplement Compounds',
+                      'glutamine': 'Supplement Compounds',
+                      'wheyprotein': 'Supplement Compounds',
+                      'caseinprotein': 'Supplement Compounds'
                     };
                     
                     // Classify each nutrient
                     Object.entries(micronutrients).forEach(([nutrientName, value]) => {
                       if (hasValidValue(value)) {
-                        const category = classifications[nutrientName as keyof typeof classifications] || 'Supplement Compounds';
+                        // Try original name first, then cleaned name
+                        const cleanedName = cleanNutrientName(nutrientName);
+                        const category = classifications[nutrientName] || classifications[cleanedName] || 'Supplement Compounds';
                         grouped[category][nutrientName] = value;
                       }
                     });
