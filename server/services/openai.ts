@@ -354,9 +354,9 @@ Return only valid JSON with all required fields.`
 - category: primary macro category (string: "protein", "carb", "fat", or "mixed")
 - mealSuitability: suitable meal times (array of strings: "pre-workout", "post-workout", "regular", "snack")
 - assumptions: key assumptions about preparation, variety, and ingredient composition (string)
-- servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "1 medium portion", "3 pieces (80g)")
+- servingDetails: realistic serving size with optimal unit (string: e.g., "1 cup (240ml)", "1 medium portion", "3 pieces (80g)", "1 softgel", "2 tablets")
 - portionWeight: realistic portion weight as number determined by nutritional guidelines and common consumption patterns
-- portionUnit: most appropriate unit for this food type based on how it's naturally measured and served
+- portionUnit: most appropriate unit for this food type based on how it's naturally measured and served (for supplements use "softgel", "capsule", "tablet", "pill"; for food use "g", "ml", "oz", "cup", etc.)
 - ingredientBreakdown: array of food components with DETAILED calorie breakdown (e.g., ["chicken breast (base): 165 cal", "chicken skin: +35 cal", "olive oil (1 tbsp): +120 cal", "Total: 320 cal"])
 - micronutrients: COMPREHENSIVE vitamin and mineral data based on scientific nutritional databases (object with ALL applicable fields):
   * Fat-Soluble Vitamins: vitaminA (mcg RAE), vitaminD (mcg), vitaminE (mg), vitaminK (mcg)
@@ -371,7 +371,7 @@ Return only valid JSON with all required fields.`
 
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
-- ALWAYS choose the most logical unit for the food type
+- ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: use "softgel", "capsule", "tablet", "pill" NOT "g" or "ml")
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
 - Use scientific nutritional databases to ensure completeness (USDA FoodData Central standards)
 - NEVER provide empty or minimal micronutrient data - include ALL naturally occurring nutrients
