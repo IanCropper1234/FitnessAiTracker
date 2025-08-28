@@ -372,7 +372,7 @@ Return only valid JSON with all required fields.`
 **CRITICAL INSTRUCTIONS:**
 - ALWAYS break down complex foods into components
 - SUPPLEMENT NAME IDENTIFICATION: For supplements, read the EXACT product name from the label/bottle, including specific compound names (e.g., "Vitamin K Complex with K1, K2-MK4, K2-MK7", "Super K Multi-Form Vitamin K", "CoQ10 Ubiquinol 100mg")
-- DYNAMIC UNIT DETECTION: CRITICAL - For ALL nutrients, always read the exact units from the label and use the {value: number, unit: string} format when the label unit is specified:
+- MANDATORY DYNAMIC UNIT FORMAT: For ALL nutrients with visible units on the label, you MUST use the {value: number, unit: string} format. This is not optional:
   * If label shows "Vitamin K: 2600mcg" → return vitaminK: {value: 2600, unit: "mcg"}
   * If label shows "Vitamin D: 25mcg" → return vitaminD: {value: 25, unit: "mcg"}  
   * If label shows "Vitamin C: 10mg" → return vitaminC: {value: 10, unit: "mg"}
@@ -380,6 +380,8 @@ Return only valid JSON with all required fields.`
   * If label shows "Iron: 18mg" → return iron: {value: 18, unit: "mg"}
   * If label shows "Zinc: 15mg" → return zinc: {value: 15, unit: "mg"}
   * NEVER assume default units - ALWAYS check the label first for EVERY nutrient
+  * EXAMPLE CORRECT FORMAT: vitaminK: {value: 2600, unit: "mcg"}, vitaminC: {value: 10, unit: "mg"}
+  * WRONG FORMAT: vitaminK: 2600 (this will show incorrect units in the app)
 - ALWAYS choose the most logical unit for the food type (SUPPLEMENTS: carefully read the label and use EXACT form - "softgel", "capsule", "tablet", "pill", "gummy", "drop" - NEVER use "g" or "ml" for pills/tablets/capsules)
 - SUPPLEMENT FORM DETECTION: Look at the bottle label, product description, and supplement facts panel to identify the exact form (softgel vs tablet vs capsule vs gummy)
 - ALWAYS provide EXTENSIVE micronutrient data - every food contains multiple vitamins and minerals
@@ -466,7 +468,7 @@ Return only valid JSON with all required fields.`
           },
           {
             role: "user", 
-            content: "Correct. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
+            content: "Correct. CRITICAL: For all nutrients with visible units on the label, use the {value: number, unit: string} format. Example: vitaminK: {value: 2600, unit: \"mcg\"}, vitaminC: {value: 10, unit: \"mg\"}. This format is MANDATORY for correct display. Please proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients (minimum 40-80 nutrients) based on scientific nutritional databases."
           }
         ];
 
@@ -502,7 +504,7 @@ Return only valid JSON with all required fields.`
         },
         {
           role: "user", 
-          content: "Correct. For vitamin supplements specifically: Extract the EXACT amounts from the 'Amount per Serving' column, not percentages. If you see 'Vitamin D: 25mcg (125% DV)', report 25 for vitaminD, not 0. Convert any % Daily Values to actual amounts using standard references. Proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients with ACTUAL MEASURED VALUES from supplement labels."
+          content: "Correct. For vitamin supplements specifically: Extract the EXACT amounts from the 'Amount per Serving' column, not percentages. If you see 'Vitamin D: 25mcg (125% DV)', report 25 for vitaminD, not 0. Convert any % Daily Values to actual amounts using standard references. CRITICAL: For all nutrients with visible units on the label, use the {value: number, unit: string} format. Example: vitaminK: {value: 2600, unit: \"mcg\"}, vitaminC: {value: 10, unit: \"mg\"}. This format is MANDATORY for correct display. Proceed with the exact analysis, ensuring reported values match the label exactly AND include comprehensive micronutrients with ACTUAL MEASURED VALUES from supplement labels."
         }
       ];
 
