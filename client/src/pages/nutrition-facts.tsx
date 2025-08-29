@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 interface NutritionFactsPageProps {}
 
 const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
+  // All hooks must be called at the top level - this is a React rule
   const [, setLocation] = useLocation();
   const [isMicronutrientsExpanded, setIsMicronutrientsExpanded] = useState(false);
   
