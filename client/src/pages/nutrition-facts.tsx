@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -7,6 +8,7 @@ interface NutritionFactsPageProps {}
 
 const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
   const [, setLocation] = useLocation();
+  const [isMicronutrientsExpanded, setIsMicronutrientsExpanded] = useState(false);
   
   // Get nutrition item data from URL params or localStorage
   const getSelectedNutritionItem = () => {
@@ -334,17 +336,33 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
 
             {/* Micronutrients Section - Only show if data exists */}
             {selectedNutritionItem.micronutrients && (
-              <div className="bg-white dark:bg-gray-900  p-3 mt-4">
+              <div className="bg-white dark:bg-gray-900 p-3 mt-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-black dark:text-white text-sm">Micronutrients</h4>
+                  <button
+                    onClick={() => setIsMicronutrientsExpanded(!isMicronutrientsExpanded)}
+                    className="flex items-center gap-2 text-left w-full"
+                  >
+                    <h4 className="font-medium text-black dark:text-white text-sm">Micronutrients</h4>
+                    {isMicronutrientsExpanded ? (
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    )}
+                  </button>
                   <Badge variant="outline" className="text-xs">
                     AI Analysis
                   </Badge>
                 </div>
                 
                 
-                {/* Unified micronutrient rendering - convert all structures to grouped format */}
-                {selectedNutritionItem.micronutrients && Object.keys(selectedNutritionItem.micronutrients).length > 0 && (() => {
+                {/* Collapsible content */}
+                <div className={`collapsible-content overflow-hidden transition-all duration-300 ease-in-out ${
+                  isMicronutrientsExpanded 
+                    ? 'max-h-[2000px] opacity-100 animate-collapsible-down' 
+                    : 'max-h-0 opacity-0 animate-collapsible-up'
+                }`}>
+                  {/* Unified micronutrient rendering - convert all structures to grouped format */}
+                  {selectedNutritionItem.micronutrients && Object.keys(selectedNutritionItem.micronutrients).length > 0 && (() => {
                   // Helper function to normalize micronutrients to grouped structure
                   const normalizeToGroupedStructure = (micronutrients: any) => {
                     // Check if already grouped
@@ -588,16 +606,13 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                   );
                 })()}
                 
-                {/* Legacy static vitamin display - kept as fallback */}
-                {!selectedNutritionItem.micronutrients || Object.keys(selectedNutritionItem.micronutrients).length === 0 ? (
-                  <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                    <p className="text-xs">No micronutrient data available</p>
-                  </div>
-                ) : null}
-
-
-
-
+                  {/* Legacy static vitamin display - kept as fallback */}
+                  {!selectedNutritionItem.micronutrients || Object.keys(selectedNutritionItem.micronutrients).length === 0 ? (
+                    <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                      <p className="text-xs">No micronutrient data available</p>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             )}
 
