@@ -554,7 +554,9 @@ export class AdvancedMacroManagementService {
             currentWeightUnit = current.unit || 'metric';
           } else {
             // Check for unrealistic daily changes
-            const previousConverted = UnitConverter.convertWeight(parseFloat(allRecentWeights[i-1].weight), allRecentWeights[i-1].unit || 'metric');
+            const previousWeight = allRecentWeights[i-1].weight;
+            if (!previousWeight) continue;
+            const previousConverted = UnitConverter.convertWeight(parseFloat(previousWeight), allRecentWeights[i-1].unit || 'metric');
             const daysDiff = Math.abs(new Date(allRecentWeights[i-1].date).getTime() - new Date(current.date).getTime()) / (1000 * 60 * 60 * 24);
             const dailyChange = Math.abs(convertedWeight.kg - previousConverted.kg) / Math.max(1, daysDiff);
             
@@ -562,7 +564,7 @@ export class AdvancedMacroManagementService {
               validWeights.push({
                 date: current.date,
                 weightKg: convertedWeight.kg,
-                dayIndex: validWeights.length
+                dayIndex: validWeights.length  // This will be reversed later for correct trend direction
               });
             }
           }
@@ -575,11 +577,17 @@ export class AdvancedMacroManagementService {
 
         if (validWeights.length >= 3) {
           // Use linear regression for stable trend calculation (matches frontend algorithm)
-          const n = validWeights.length;
-          const sumX = validWeights.reduce((sum, point) => sum + point.dayIndex, 0);
-          const sumY = validWeights.reduce((sum, point) => sum + point.weightKg, 0);
-          const sumXY = validWeights.reduce((sum, point) => sum + point.dayIndex * point.weightKg, 0);
-          const sumXX = validWeights.reduce((sum, point) => sum + point.dayIndex * point.dayIndex, 0);
+          // Reverse dayIndex to match frontend logic (oldest = 0, newest = max)
+          const dataPoints = validWeights.map((point, index) => ({
+            ...point,
+            dayIndex: validWeights.length - 1 - index
+          }));
+          
+          const n = dataPoints.length;
+          const sumX = dataPoints.reduce((sum, point) => sum + point.dayIndex, 0);
+          const sumY = dataPoints.reduce((sum, point) => sum + point.weightKg, 0);
+          const sumXY = dataPoints.reduce((sum, point) => sum + point.dayIndex * point.weightKg, 0);
+          const sumXX = dataPoints.reduce((sum, point) => sum + point.dayIndex * point.dayIndex, 0);
           
           const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
           const weeklyTrendKg = slope * 7; // Convert daily slope to weekly rate
@@ -609,9 +617,13 @@ export class AdvancedMacroManagementService {
 
       // Fallback to simple two-point comparison if insufficient data for regression
       if (validWeights.length < 3 && currentWeekWeight.length > 0 && previousWeekWeight.length > 0) {
-        currentWeight = parseFloat(currentWeekWeight[0].weight);
+        const currentWeightStr = currentWeekWeight[0].weight;
+        const previousWeightStr = previousWeekWeight[0].weight;
+        if (!currentWeightStr || !previousWeightStr) return weeklyGoalData;
+        
+        currentWeight = parseFloat(currentWeightStr);
         currentWeightUnit = currentWeekWeight[0].unit || 'metric';
-        previousWeight = parseFloat(previousWeekWeight[0].weight);
+        previousWeight = parseFloat(previousWeightStr);
         previousWeightUnit = previousWeekWeight[0].unit || 'metric';
 
         if (currentWeight && previousWeight) {
