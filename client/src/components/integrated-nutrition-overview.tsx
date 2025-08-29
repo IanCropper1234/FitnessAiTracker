@@ -1405,6 +1405,146 @@ export function IntegratedNutritionOverview({
           return mapping[cleanNutrientName] || mapping[nutrientName] || nutrientName;
         };
         
+        // Generic function to render nutrient with food sources breakdown
+        const renderNutrientWithSources = (
+          nutrientKey: string,
+          displayName: string,
+          amount: number,
+          unit: string,
+          adequacy: any
+        ) => {
+          const [showSources, setShowSources] = useState(false);
+          
+          // Calculate nutrient contributions from each food using the same logic as dailyTotals
+          const sources = micronutrientLogs
+            .map((log: any) => {
+              let nutrientAmount = 0;
+              const micronutrients = log.micronutrients;
+              
+              if (micronutrients && typeof micronutrients === 'object') {
+                // Check if this is a nested structure
+                const hasNestedStructure = Object.keys(micronutrients).some(key => 
+                  typeof micronutrients[key] === 'object' && 
+                  micronutrients[key] !== null &&
+                  !Array.isArray(micronutrients[key]) &&
+                  ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Amino Acids', 'Antioxidants & Phytonutrients', 'Supplement Compounds'].includes(key)
+                );
+                
+                if (hasNestedStructure) {
+                  // Handle nested structure (supplements and some advanced foods)
+                  Object.keys(micronutrients).forEach(category => {
+                    const categoryData = micronutrients[category];
+                    if (categoryData && typeof categoryData === 'object' && !Array.isArray(categoryData)) {
+                      Object.keys(categoryData).forEach(nutrient => {
+                        // Check if this nutrient maps to our target nutrient
+                        const flatNutrientName = getNutrientFlatName(nutrient);
+                        if (flatNutrientName === nutrientKey) {
+                          let value: number;
+                          const rawValue = categoryData[nutrient];
+                          
+                          // Handle dynamic unit format {value: number, unit: string}
+                          if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
+                            value = rawValue.value;
+                          } else {
+                            value = parseFloat(rawValue);
+                          }
+                          
+                          if (typeof value === 'number' && !isNaN(value) && value > 0) {
+                            nutrientAmount += value;
+                          }
+                        }
+                      });
+                    }
+                  });
+                } else {
+                  // Handle flat structure (regular foods)
+                  Object.keys(micronutrients).forEach(nutrient => {
+                    const mappedNutrient = getNutrientFlatName(nutrient);
+                    if (mappedNutrient === nutrientKey) {
+                      let value: number;
+                      const rawValue = micronutrients[nutrient];
+                      
+                      // Handle dynamic unit format {value: number, unit: string}
+                      if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
+                        value = rawValue.value;
+                      } else {
+                        value = parseFloat(rawValue);
+                      }
+                      
+                      if (typeof value === 'number' && !isNaN(value) && value > 0) {
+                        nutrientAmount += value;
+                      }
+                    }
+                  });
+                }
+              }
+              
+              if (nutrientAmount > 0) {
+                return {
+                  foodName: log.foodName || 'Unknown Food',
+                  amount: nutrientAmount,
+                  percentage: Math.round((nutrientAmount / amount) * 1000) / 10
+                };
+              }
+              return null;
+            })
+            .filter((source: any) => source !== null)
+            .sort((a: any, b: any) => b.amount - a.amount);
+          
+          return (
+            <div className="space-y-1">
+              {renderNutrientWithProgress(displayName, amount, unit, adequacy)}
+              {sources.length > 0 && (
+                <div className="ml-3">
+                  <button
+                    onClick={() => setShowSources(!showSources)}
+                    className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  >
+                    <span className={`transform transition-transform duration-200 ${showSources ? 'rotate-90' : ''}`}>
+                      ▶
+                    </span>
+                    Food Sources ({sources.length} items)
+                  </button>
+                  
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    showSources 
+                      ? 'max-h-[500px] opacity-100 mt-2' 
+                      : 'max-h-0 opacity-0'
+                  }`}>
+                    <div className="space-y-1 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+                      {sources.map((source: any, index: any) => (
+                        <div key={index} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600 dark:text-gray-400 truncate max-w-[140px]">
+                            • {source.foodName}:
+                          </span>
+                          <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
+                            {unit === 'μg' || unit === 'mg' ? 
+                              Math.round(source.amount * 10) / 10 : 
+                              Math.round(source.amount)
+                            }{unit} ({source.percentage}%)
+                          </span>
+                        </div>
+                      ))}
+                      {/* Total verification */}
+                      <div className="mt-2 pt-1 border-t border-gray-200 dark:border-gray-600">
+                        <div className="flex items-center justify-between text-xs font-medium">
+                          <span className="text-gray-700 dark:text-gray-300">Total:</span>
+                          <span className="text-gray-800 dark:text-gray-200 font-mono">
+                            {unit === 'μg' || unit === 'mg' ? 
+                              Math.round(sources.reduce((sum: any, source: any) => sum + source.amount, 0) * 10) / 10 : 
+                              Math.round(sources.reduce((sum: any, source: any) => sum + source.amount, 0))
+                            }{unit} (100%)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        };
+
         // Calculate daily micronutrient totals with support for both flat and nested structures
         // Also track individual variants for detailed breakdown display
         const { dailyTotals, variantTotals } = micronutrientLogs.reduce((acc: any, log: any) => {
@@ -1620,92 +1760,98 @@ export function IntegratedNutritionOverview({
                         <div>
                           <h5 className="font-medium text-purple-600 dark:text-purple-400 mb-1.5">Fat-Soluble Vitamins</h5>
                           <div className="space-y-2">
-                            {dailyTotals.vitaminA > 0 && (
-                              <div className="space-y-1">
-                                {renderNutrientWithProgress(
-                                  "Vitamin A (Total)", 
-                                  Math.round(dailyTotals.vitaminA * 10) / 10, 
-                                  "μg", 
-                                  getAdequacy(dailyTotals.vitaminA, rda.vitaminA)
-                                )}
-                                <div className="ml-3 space-y-1">
-                                  {(() => {
-                                    // Dynamic detection for Vitamin A variants
-                                    const retinolKeys = Object.keys(variantTotals).filter(key => 
-                                      key.includes('retinol') && !key.includes('beta')
-                                    );
-                                    const retinolTotal = retinolKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
-                                    
-                                    const betaCaroteneKeys = Object.keys(variantTotals).filter(key => 
-                                      key.includes('betacarotene') || key.includes('beta')
-                                    );
-                                    const betaCaroteneTotal = betaCaroteneKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
-                                    
-                                    const variants = [];
-                                    if (retinolTotal > 0) {
-                                      variants.push(
-                                        <div key="retinol" className="flex items-center justify-between text-xs">
-                                          <span className="text-gray-600 dark:text-gray-400">• Retinol:</span>
-                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(retinolTotal * 10) / 10}μg</span>
-                                        </div>
-                                      );
-                                    }
-                                    if (betaCaroteneTotal > 0) {
-                                      variants.push(
-                                        <div key="betacarotene" className="flex items-center justify-between text-xs">
-                                          <span className="text-gray-600 dark:text-gray-400">• Beta-Carotene:</span>
-                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(betaCaroteneTotal * 10) / 10}μg</span>
-                                        </div>
-                                      );
-                                    }
-                                    return variants;
-                                  })()}
+                            {dailyTotals.vitaminA > 0 && (() => {
+                              // Dynamic detection for Vitamin A variants
+                              const retinolKeys = Object.keys(variantTotals).filter(key => 
+                                key.includes('retinol') && !key.includes('beta')
+                              );
+                              const retinolTotal = retinolKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                              
+                              const betaCaroteneKeys = Object.keys(variantTotals).filter(key => 
+                                key.includes('betacarotene') || key.includes('beta')
+                              );
+                              const betaCaroteneTotal = betaCaroteneKeys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                              
+                              return (
+                                <div className="space-y-1">
+                                  {renderNutrientWithSources(
+                                    'vitaminA',
+                                    'Vitamin A (Total)',
+                                    Math.round(dailyTotals.vitaminA * 10) / 10,
+                                    'μg',
+                                    getAdequacy(dailyTotals.vitaminA, rda.vitaminA)
+                                  )}
+                                  <div className="ml-3 space-y-1">
+                                    {(() => {
+                                      const variants = [];
+                                      if (retinolTotal > 0) {
+                                        variants.push(
+                                          <div key="retinol" className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-600 dark:text-gray-400">• Retinol:</span>
+                                            <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(retinolTotal * 10) / 10}μg</span>
+                                          </div>
+                                        );
+                                      }
+                                      if (betaCaroteneTotal > 0) {
+                                        variants.push(
+                                          <div key="betacarotene" className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-600 dark:text-gray-400">• Beta-Carotene:</span>
+                                            <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(betaCaroteneTotal * 10) / 10}μg</span>
+                                          </div>
+                                        );
+                                      }
+                                      return variants;
+                                    })()}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                            {dailyTotals.vitaminD > 0 && (
-                              <div className="space-y-1">
-                                {renderNutrientWithProgress(
-                                  "Vitamin D (Total)", 
-                                  Math.round(dailyTotals.vitaminD * 10) / 10, 
-                                  "μg", 
-                                  getAdequacy(dailyTotals.vitaminD, rda.vitaminD)
-                                )}
-                                <div className="ml-3 space-y-1">
-                                  {(() => {
-                                    // Dynamic detection for Vitamin D variants
-                                    const d2Keys = Object.keys(variantTotals).filter(key => 
-                                      (key.includes('vitamind2') || key.includes('ergocalciferol')) && !key.includes('d3')
-                                    );
-                                    const d2Total = d2Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
-                                    
-                                    const d3Keys = Object.keys(variantTotals).filter(key => 
-                                      (key.includes('vitamind3') || key.includes('cholecalciferol')) && !key.includes('d2')
-                                    );
-                                    const d3Total = d3Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
-                                    
-                                    const variants = [];
-                                    if (d2Total > 0) {
-                                      variants.push(
-                                        <div key="d2" className="flex items-center justify-between text-xs">
-                                          <span className="text-gray-600 dark:text-gray-400">• D2 (Ergocalciferol):</span>
-                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(d2Total * 10) / 10}μg</span>
-                                        </div>
-                                      );
-                                    }
-                                    if (d3Total > 0) {
-                                      variants.push(
-                                        <div key="d3" className="flex items-center justify-between text-xs">
-                                          <span className="text-gray-600 dark:text-gray-400">• D3 (Cholecalciferol):</span>
-                                          <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(d3Total * 10) / 10}μg</span>
-                                        </div>
-                                      );
-                                    }
-                                    return variants;
-                                  })()} 
+                              );
+                            })()}
+                            {dailyTotals.vitaminD > 0 && (() => {
+                              // Dynamic detection for Vitamin D variants
+                              const d2Keys = Object.keys(variantTotals).filter(key => 
+                                (key.includes('vitamind2') || key.includes('ergocalciferol')) && !key.includes('d3')
+                              );
+                              const d2Total = d2Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                              
+                              const d3Keys = Object.keys(variantTotals).filter(key => 
+                                (key.includes('vitamind3') || key.includes('cholecalciferol')) && !key.includes('d2')
+                              );
+                              const d3Total = d3Keys.reduce((sum, key) => sum + (variantTotals[key] || 0), 0);
+                              
+                              return (
+                                <div className="space-y-1">
+                                  {renderNutrientWithSources(
+                                    'vitaminD',
+                                    'Vitamin D (Total)',
+                                    Math.round(dailyTotals.vitaminD * 10) / 10,
+                                    'μg',
+                                    getAdequacy(dailyTotals.vitaminD, rda.vitaminD)
+                                  )}
+                                  <div className="ml-3 space-y-1">
+                                    {(() => {
+                                      const variants = [];
+                                      if (d2Total > 0) {
+                                        variants.push(
+                                          <div key="d2" className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-600 dark:text-gray-400">• D2 (Ergocalciferol):</span>
+                                            <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(d2Total * 10) / 10}μg</span>
+                                          </div>
+                                        );
+                                      }
+                                      if (d3Total > 0) {
+                                        variants.push(
+                                          <div key="d3" className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-600 dark:text-gray-400">• D3 (Cholecalciferol):</span>
+                                            <span className="text-gray-700 dark:text-gray-300 font-mono">{Math.round(d3Total * 10) / 10}μg</span>
+                                          </div>
+                                        );
+                                      }
+                                      return variants;
+                                    })()}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              );
+                            })()}
                             {dailyTotals.vitaminE > 0 && (
                               <div className="space-y-1">
                                 {renderNutrientWithProgress(
@@ -1837,10 +1983,11 @@ export function IntegratedNutritionOverview({
                         <div>
                           <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-1.5">Water-Soluble Vitamins</h5>
                           <div className="space-y-2">
-                            {dailyTotals.vitaminC > 0 && renderNutrientWithProgress(
-                              "Vitamin C", 
-                              Math.round(dailyTotals.vitaminC * 10) / 10, 
-                              "mg", 
+                            {dailyTotals.vitaminC > 0 && renderNutrientWithSources(
+                              'vitaminC',
+                              'Vitamin C',
+                              Math.round(dailyTotals.vitaminC * 10) / 10,
+                              'mg',
                               getAdequacy(dailyTotals.vitaminC, rda.vitaminC)
                             )}
                             {dailyTotals.vitaminB1 > 0 && renderNutrientWithProgress(
@@ -1885,144 +2032,67 @@ export function IntegratedNutritionOverview({
                               "μg", 
                               getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
                             )}
-                            {dailyTotals.vitaminB12 > 0 && (
-                              <div className="space-y-1">
-                                {renderNutrientWithProgress(
-                                  "B12 (Cobalamin)", 
-                                  Math.round(dailyTotals.vitaminB12 * 10) / 10, 
-                                  "μg", 
-                                  getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
-                                )}
-                                {/* Collapsible B12 food sources breakdown */}
-                                {(() => {
-                                  const [showB12Sources, setShowB12Sources] = useState(false);
-                                  
-                                  // Calculate B12 contributions from each food using the same logic as dailyTotals
-                                  const b12Sources = micronutrientLogs
-                                    .map(log => {
-                                      let b12Amount = 0;
-                                      const micronutrients = log.micronutrients;
-                                      
-                                      if (micronutrients && typeof micronutrients === 'object') {
-                                        // Check if this is a nested structure
-                                        const hasNestedStructure = Object.keys(micronutrients).some(key => 
-                                          typeof micronutrients[key] === 'object' && 
-                                          micronutrients[key] !== null &&
-                                          !Array.isArray(micronutrients[key]) &&
-                                          ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Amino Acids', 'Antioxidants & Phytonutrients', 'Supplement Compounds'].includes(key)
-                                        );
-                                        
-                                        if (hasNestedStructure) {
-                                          // Handle nested structure (supplements and some advanced foods)
-                                          Object.keys(micronutrients).forEach(category => {
-                                            const categoryData = micronutrients[category];
-                                            if (categoryData && typeof categoryData === 'object' && !Array.isArray(categoryData)) {
-                                              Object.keys(categoryData).forEach(nutrient => {
-                                                // Check if this nutrient maps to vitaminB12
-                                                const flatNutrientName = getNutrientFlatName(nutrient);
-                                                if (flatNutrientName === 'vitaminB12') {
-                                                  let value: number;
-                                                  const rawValue = categoryData[nutrient];
-                                                  
-                                                  // Handle dynamic unit format {value: number, unit: string}
-                                                  if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
-                                                    value = rawValue.value;
-                                                  } else {
-                                                    value = parseFloat(rawValue);
-                                                  }
-                                                  
-                                                  if (typeof value === 'number' && !isNaN(value) && value > 0) {
-                                                    b12Amount += value;
-                                                  }
-                                                }
-                                              });
-                                            }
-                                          });
-                                        } else {
-                                          // Handle flat structure (regular foods)
-                                          Object.keys(micronutrients).forEach(nutrient => {
-                                            const mappedNutrient = getNutrientFlatName(nutrient);
-                                            if (mappedNutrient === 'vitaminB12') {
-                                              let value: number;
-                                              const rawValue = micronutrients[nutrient];
-                                              
-                                              // Handle dynamic unit format {value: number, unit: string}
-                                              if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
-                                                value = rawValue.value;
-                                              } else {
-                                                value = parseFloat(rawValue);
-                                              }
-                                              
-                                              if (typeof value === 'number' && !isNaN(value) && value > 0) {
-                                                b12Amount += value;
-                                              }
-                                            }
-                                          });
-                                        }
-                                      }
-                                      
-                                      if (b12Amount > 0) {
-                                        return {
-                                          foodName: log.foodName || 'Unknown Food',
-                                          amount: b12Amount,
-                                          percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 1000) / 10
-                                        };
-                                      }
-                                      return null;
-                                    })
-                                    .filter(source => source !== null)
-                                    .sort((a, b) => b.amount - a.amount);
-                                  
-                                  if (b12Sources.length === 0) return null;
-                                  
-                                  return (
-                                    <div className="ml-3">
-                                      <button
-                                        onClick={() => setShowB12Sources(!showB12Sources)}
-                                        className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                                      >
-                                        <span className={`transform transition-transform duration-200 ${showB12Sources ? 'rotate-90' : ''}`}>
-                                          ▶
-                                        </span>
-                                        Food Sources ({b12Sources.length} items)
-                                      </button>
-                                      
-                                      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                                        showB12Sources 
-                                          ? 'max-h-[500px] opacity-100 mt-2' 
-                                          : 'max-h-0 opacity-0'
-                                      }`}>
-                                        <div className="space-y-1 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
-                                          {b12Sources.map((source, index) => (
-                                            <div key={index} className="flex items-center justify-between text-xs">
-                                              <span className="text-gray-600 dark:text-gray-400 truncate max-w-[140px]">
-                                                • {source.foodName}:
-                                              </span>
-                                              <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
-                                                {Math.round(source.amount * 10) / 10}μg ({source.percentage}%)
-                                              </span>
-                                            </div>
-                                          ))}
-                                          {/* Total verification */}
-                                          <div className="mt-2 pt-1 border-t border-gray-200 dark:border-gray-600">
-                                            <div className="flex items-center justify-between text-xs font-medium">
-                                              <span className="text-gray-700 dark:text-gray-300">Total:</span>
-                                              <span className="text-gray-800 dark:text-gray-200 font-mono">
-                                                {Math.round(b12Sources.reduce((sum, source) => sum + source.amount, 0) * 10) / 10}μg (100%)
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })()}
-                              </div>
+                            {dailyTotals.vitaminB1 > 0 && renderNutrientWithSources(
+                              'vitaminB1',
+                              'B1 (Thiamine)',
+                              Math.round(dailyTotals.vitaminB1 * 10) / 10,
+                              'mg',
+                              getAdequacy(dailyTotals.vitaminB1, rda.vitaminB1)
                             )}
-                            {dailyTotals.choline > 0 && renderNutrientWithProgress(
-                              "Choline", 
-                              Math.round(dailyTotals.choline * 10) / 10, 
-                              "mg", 
+                            {dailyTotals.vitaminB2 > 0 && renderNutrientWithSources(
+                              'vitaminB2',
+                              'B2 (Riboflavin)',
+                              Math.round(dailyTotals.vitaminB2 * 10) / 10,
+                              'mg',
+                              getAdequacy(dailyTotals.vitaminB2, rda.vitaminB2)
+                            )}
+                            {dailyTotals.vitaminB3 > 0 && renderNutrientWithSources(
+                              'vitaminB3',
+                              'B3 (Niacin)',
+                              Math.round(dailyTotals.vitaminB3 * 10) / 10,
+                              'mg',
+                              getAdequacy(dailyTotals.vitaminB3, rda.vitaminB3)
+                            )}
+                            {dailyTotals.vitaminB6 > 0 && renderNutrientWithSources(
+                              'vitaminB6',
+                              'B6 (Pyridoxine)',
+                              Math.round(dailyTotals.vitaminB6 * 10) / 10,
+                              'mg',
+                              getAdequacy(dailyTotals.vitaminB6, rda.vitaminB6)
+                            )}
+                            {dailyTotals.vitaminB5 > 0 && renderNutrientWithSources(
+                              'vitaminB5',
+                              'B5 (Pantothenic Acid)',
+                              Math.round(dailyTotals.vitaminB5 * 10) / 10,
+                              'mg',
+                              getAdequacy(dailyTotals.vitaminB5, rda.vitaminB5)
+                            )}
+                            {dailyTotals.vitaminB7 > 0 && renderNutrientWithSources(
+                              'vitaminB7',
+                              'B7 (Biotin)',
+                              Math.round(dailyTotals.vitaminB7 * 10) / 10,
+                              'μg',
+                              getAdequacy(dailyTotals.vitaminB7, rda.vitaminB7)
+                            )}
+                            {dailyTotals.vitaminB9 > 0 && renderNutrientWithSources(
+                              'vitaminB9',
+                              'B9 (Folate)',
+                              Math.round(dailyTotals.vitaminB9 * 10) / 10,
+                              'μg',
+                              getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
+                            )}
+                            {dailyTotals.vitaminB12 > 0 && renderNutrientWithSources(
+                              'vitaminB12',
+                              'B12 (Cobalamin)',
+                              Math.round(dailyTotals.vitaminB12 * 10) / 10,
+                              'μg',
+                              getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
+                            )}
+                            {dailyTotals.choline > 0 && renderNutrientWithSources(
+                              'choline',
+                              'Choline',
+                              Math.round(dailyTotals.choline * 10) / 10,
+                              'mg',
                               getAdequacy(dailyTotals.choline, rda.choline)
                             )}
                           </div>
@@ -2034,28 +2104,32 @@ export function IntegratedNutritionOverview({
                         <div>
                           <h5 className="font-medium text-green-600 dark:text-green-400 mb-1.5">Major Minerals</h5>
                           <div className="space-y-2">
-                            {dailyTotals.calcium > 0 && renderNutrientWithProgress(
-                              "Calcium", 
-                              Math.round(dailyTotals.calcium), 
-                              "mg", 
+                            {dailyTotals.calcium > 0 && renderNutrientWithSources(
+                              'calcium',
+                              'Calcium',
+                              Math.round(dailyTotals.calcium),
+                              'mg',
                               getAdequacy(dailyTotals.calcium, rda.calcium)
                             )}
-                            {dailyTotals.magnesium > 0 && renderNutrientWithProgress(
-                              "Magnesium", 
-                              Math.round(dailyTotals.magnesium), 
-                              "mg", 
+                            {dailyTotals.magnesium > 0 && renderNutrientWithSources(
+                              'magnesium',
+                              'Magnesium',
+                              Math.round(dailyTotals.magnesium),
+                              'mg',
                               getAdequacy(dailyTotals.magnesium, rda.magnesium)
                             )}
-                            {dailyTotals.phosphorus > 0 && renderNutrientWithProgress(
-                              "Phosphorus", 
-                              Math.round(dailyTotals.phosphorus), 
-                              "mg", 
+                            {dailyTotals.phosphorus > 0 && renderNutrientWithSources(
+                              'phosphorus',
+                              'Phosphorus',
+                              Math.round(dailyTotals.phosphorus),
+                              'mg',
                               getAdequacy(dailyTotals.phosphorus, rda.phosphorus)
                             )}
-                            {dailyTotals.potassium > 0 && renderNutrientWithProgress(
-                              "Potassium", 
-                              Math.round(dailyTotals.potassium), 
-                              "mg", 
+                            {dailyTotals.potassium > 0 && renderNutrientWithSources(
+                              'potassium',
+                              'Potassium',
+                              Math.round(dailyTotals.potassium),
+                              'mg',
                               getAdequacy(dailyTotals.potassium, rda.potassium)
                             )}
                             {dailyTotals.sodium > 0 && (() => {
@@ -2066,7 +2140,7 @@ export function IntegratedNutritionOverview({
                                 percentage <= 150 ?
                                 { percentage, color: 'text-orange-600 dark:text-orange-400', description: 'High' } :
                                 { percentage, color: 'text-red-600 dark:text-red-400', description: 'Excess' };
-                              return renderNutrientWithProgress("Sodium", Math.round(dailyTotals.sodium), "mg", adequacy);
+                              return renderNutrientWithSources('sodium', 'Sodium', Math.round(dailyTotals.sodium), 'mg', adequacy);
                             })()}
                           </div>
                         </div>
@@ -2077,52 +2151,60 @@ export function IntegratedNutritionOverview({
                         <div>
                           <h5 className="font-medium text-orange-600 dark:text-orange-400 mb-1.5">Trace Minerals</h5>
                           <div className="space-y-2">
-                            {dailyTotals.iron > 0 && renderNutrientWithProgress(
-                              "Iron", 
-                              Math.round(dailyTotals.iron * 10) / 10, 
-                              "mg", 
+                            {dailyTotals.iron > 0 && renderNutrientWithSources(
+                              'iron',
+                              'Iron',
+                              Math.round(dailyTotals.iron * 10) / 10,
+                              'mg',
                               getAdequacy(dailyTotals.iron, rda.iron)
                             )}
-                            {dailyTotals.zinc > 0 && renderNutrientWithProgress(
-                              "Zinc", 
-                              Math.round(dailyTotals.zinc * 10) / 10, 
-                              "mg", 
+                            {dailyTotals.zinc > 0 && renderNutrientWithSources(
+                              'zinc',
+                              'Zinc',
+                              Math.round(dailyTotals.zinc * 10) / 10,
+                              'mg',
                               getAdequacy(dailyTotals.zinc, rda.zinc)
                             )}
-                            {dailyTotals.selenium > 0 && renderNutrientWithProgress(
-                              "Selenium", 
-                              Math.round(dailyTotals.selenium * 10) / 10, 
-                              "μg", 
+                            {dailyTotals.selenium > 0 && renderNutrientWithSources(
+                              'selenium',
+                              'Selenium',
+                              Math.round(dailyTotals.selenium * 10) / 10,
+                              'μg',
                               getAdequacy(dailyTotals.selenium, rda.selenium)
                             )}
-                            {dailyTotals.copper > 0 && renderNutrientWithProgress(
-                              "Copper", 
-                              Math.round(dailyTotals.copper * 10) / 10, 
-                              "mg", 
+                            {dailyTotals.copper > 0 && renderNutrientWithSources(
+                              'copper',
+                              'Copper',
+                              Math.round(dailyTotals.copper * 10) / 10,
+                              'mg',
                               getAdequacy(dailyTotals.copper, rda.copper)
                             )}
-                            {dailyTotals.manganese > 0 && renderNutrientWithProgress(
-                              "Manganese", 
-                              Math.round(dailyTotals.manganese * 10) / 10, 
-                              "mg", 
+                            {dailyTotals.manganese > 0 && renderNutrientWithSources(
+                              'manganese',
+                              'Manganese',
+                              Math.round(dailyTotals.manganese * 10) / 10,
+                              'mg',
                               getAdequacy(dailyTotals.manganese, rda.manganese)
                             )}
-                            {dailyTotals.iodine > 0 && renderNutrientWithProgress(
-                              "Iodine", 
-                              Math.round(dailyTotals.iodine * 10) / 10, 
-                              "μg", 
+                            {dailyTotals.iodine > 0 && renderNutrientWithSources(
+                              'iodine',
+                              'Iodine',
+                              Math.round(dailyTotals.iodine * 10) / 10,
+                              'μg',
                               getAdequacy(dailyTotals.iodine, rda.iodine)
                             )}
-                            {dailyTotals.chromium > 0 && renderNutrientWithProgress(
-                              "Chromium", 
-                              Math.round(dailyTotals.chromium * 10) / 10, 
-                              "μg", 
+                            {dailyTotals.chromium > 0 && renderNutrientWithSources(
+                              'chromium',
+                              'Chromium',
+                              Math.round(dailyTotals.chromium * 10) / 10,
+                              'μg',
                               getAdequacy(dailyTotals.chromium, rda.chromium)
                             )}
-                            {dailyTotals.molybdenum > 0 && renderNutrientWithProgress(
-                              "Molybdenum", 
-                              Math.round(dailyTotals.molybdenum * 10) / 10, 
-                              "μg", 
+                            {dailyTotals.molybdenum > 0 && renderNutrientWithSources(
+                              'molybdenum',
+                              'Molybdenum',
+                              Math.round(dailyTotals.molybdenum * 10) / 10,
+                              'μg',
                               getAdequacy(dailyTotals.molybdenum, rda.molybdenum)
                             )}
                           </div>
