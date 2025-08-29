@@ -1895,7 +1895,7 @@ export function IntegratedNutritionOverview({
                                 )}
                                 {/* Collapsible B12 food sources breakdown */}
                                 {(() => {
-                                  const [showB12Sources, setShowB12Sources] = React.useState(false);
+                                  const [showB12Sources, setShowB12Sources] = useState(false);
                                   
                                   // Calculate B12 contributions from each food
                                   const b12Sources = micronutrientLogs
