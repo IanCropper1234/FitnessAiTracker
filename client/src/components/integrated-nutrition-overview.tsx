@@ -1984,6 +1984,19 @@ export function IntegratedNutritionOverview({
                                       micronutrients: Object.keys(log.micronutrients || {})
                                     })));
                                     
+                                    // Debug: Check ALL logs for B12 in any field
+                                    console.log('🔍 Detailed B12 field check:', todayLogs.map(log => ({
+                                      foodName: log.foodName,
+                                      'micronutrients.vitaminB12': log.micronutrients?.vitaminB12,
+                                      'vitaminB12': log.vitaminB12,
+                                      'cobalamin': log.cobalamin,
+                                      'b12': log.b12,
+                                      'allNumericFields': Object.entries(log).filter(([key, value]) => 
+                                        typeof value === 'number' && value > 0 && 
+                                        (key.toLowerCase().includes('b12') || key.toLowerCase().includes('cobalamin'))
+                                      )
+                                    })));
+                                    
                                     // Calculate B12 contributions from ALL food logs (not just micronutrient logs)
                                     const b12Sources = todayLogs
                                       .map(log => {
