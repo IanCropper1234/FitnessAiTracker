@@ -1985,7 +1985,17 @@ export function IntegratedNutritionOverview({
                                       .filter(source => source !== null)
                                       .sort((a, b) => b.amount - a.amount); // Sort by amount descending
                                     
-                                    return b12Sources.map((source, index) => (
+                                    // Verification: Check if percentages add up to 100%
+                                    const totalPercentage = b12Sources.reduce((sum, source) => sum + source.percentage, 0);
+                                    const totalAmount = b12Sources.reduce((sum, source) => sum + source.amount, 0);
+                                    console.log('🔍 B12 Verification:', {
+                                      sourcesTotal: Math.round(totalAmount * 10) / 10,
+                                      dailyTotal: Math.round(dailyTotals.vitaminB12 * 10) / 10,
+                                      percentageSum: Math.round(totalPercentage * 10) / 10,
+                                      shouldBe100: totalPercentage
+                                    });
+                                    
+                                    const elements = b12Sources.map((source, index) => (
                                       <div key={index} className="flex items-center justify-between text-xs">
                                         <span className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
                                           • {source.foodName}:
@@ -1995,6 +2005,17 @@ export function IntegratedNutritionOverview({
                                         </span>
                                       </div>
                                     ));
+                                    
+                                    // Add total verification at the end if percentages don't add up to 100%
+                                    if (Math.abs(totalPercentage - 100) > 0.1) {
+                                      elements.push(
+                                        <div key="verification" className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                                          ⚠️ Total: {Math.round(totalPercentage * 10) / 10}% (Expected: 100%)
+                                        </div>
+                                      );
+                                    }
+                                    
+                                    return elements;
                                   })()}
                                 </div>
                               </div>
