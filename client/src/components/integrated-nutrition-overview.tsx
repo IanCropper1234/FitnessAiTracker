@@ -1897,10 +1897,70 @@ export function IntegratedNutritionOverview({
                                 {(() => {
                                   const [showB12Sources, setShowB12Sources] = useState(false);
                                   
-                                  // Calculate B12 contributions from each food
+                                  // Calculate B12 contributions from each food using the same logic as dailyTotals
                                   const b12Sources = micronutrientLogs
                                     .map(log => {
-                                      const b12Amount = log.micronutrients?.vitaminB12 || 0;
+                                      let b12Amount = 0;
+                                      const micronutrients = log.micronutrients;
+                                      
+                                      if (micronutrients && typeof micronutrients === 'object') {
+                                        // Check if this is a nested structure
+                                        const hasNestedStructure = Object.keys(micronutrients).some(key => 
+                                          typeof micronutrients[key] === 'object' && 
+                                          micronutrients[key] !== null &&
+                                          !Array.isArray(micronutrients[key]) &&
+                                          ['Major Minerals', 'Trace Minerals', 'Fat-Soluble Vitamins', 'Water-Soluble Vitamins', 'Macronutrient Components', 'Amino Acids', 'Antioxidants & Phytonutrients', 'Supplement Compounds'].includes(key)
+                                        );
+                                        
+                                        if (hasNestedStructure) {
+                                          // Handle nested structure (supplements and some advanced foods)
+                                          Object.keys(micronutrients).forEach(category => {
+                                            const categoryData = micronutrients[category];
+                                            if (categoryData && typeof categoryData === 'object' && !Array.isArray(categoryData)) {
+                                              Object.keys(categoryData).forEach(nutrient => {
+                                                // Check if this nutrient maps to vitaminB12
+                                                const flatNutrientName = getNutrientFlatName(nutrient);
+                                                if (flatNutrientName === 'vitaminB12') {
+                                                  let value: number;
+                                                  const rawValue = categoryData[nutrient];
+                                                  
+                                                  // Handle dynamic unit format {value: number, unit: string}
+                                                  if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
+                                                    value = rawValue.value;
+                                                  } else {
+                                                    value = parseFloat(rawValue);
+                                                  }
+                                                  
+                                                  if (typeof value === 'number' && !isNaN(value) && value > 0) {
+                                                    b12Amount += value;
+                                                  }
+                                                }
+                                              });
+                                            }
+                                          });
+                                        } else {
+                                          // Handle flat structure (regular foods)
+                                          Object.keys(micronutrients).forEach(nutrient => {
+                                            const mappedNutrient = getNutrientFlatName(nutrient);
+                                            if (mappedNutrient === 'vitaminB12') {
+                                              let value: number;
+                                              const rawValue = micronutrients[nutrient];
+                                              
+                                              // Handle dynamic unit format {value: number, unit: string}
+                                              if (typeof rawValue === 'object' && rawValue !== null && typeof rawValue.value === 'number') {
+                                                value = rawValue.value;
+                                              } else {
+                                                value = parseFloat(rawValue);
+                                              }
+                                              
+                                              if (typeof value === 'number' && !isNaN(value) && value > 0) {
+                                                b12Amount += value;
+                                              }
+                                            }
+                                          });
+                                        }
+                                      }
+                                      
                                       if (b12Amount > 0) {
                                         return {
                                           foodName: log.foodName || 'Unknown Food',
