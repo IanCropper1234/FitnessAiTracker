@@ -1190,12 +1190,18 @@ export function IntegratedNutritionOverview({
         const micronutrientLogs = todayLogs.filter((log: any) => log.micronutrients && Object.keys(log.micronutrients).length > 0);
         
         // Debug: Show ALL today's logs vs micronutrient logs
+        const logsWithoutMicronutrients = todayLogs.filter(log => !log.micronutrients || Object.keys(log.micronutrients).length === 0);
         console.log('🔍 Today\'s all logs vs micronutrient logs:', {
           totalTodayLogs: todayLogs.length,
           micronutrientLogs: micronutrientLogs.length,
           allTodayFoods: todayLogs.map(log => log.foodName),
           micronutrientFoods: micronutrientLogs.map(log => log.foodName),
-          missingMicronutrients: todayLogs.filter(log => !log.micronutrients || Object.keys(log.micronutrients).length === 0).map(log => log.foodName)
+          missingMicronutrients: logsWithoutMicronutrients.map(log => log.foodName),
+          missingMicronutrientsDetails: logsWithoutMicronutrients.map(log => ({
+            foodName: log.foodName,
+            hasB12InOtherFields: log.vitaminB12 || log.cobalamin || log.b12,
+            allFields: Object.keys(log)
+          }))
         });
         
         if (micronutrientLogs.length === 0) return null;
