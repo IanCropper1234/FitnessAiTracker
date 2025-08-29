@@ -84,19 +84,21 @@ export class SciAlgorithmCore {
         for (const exercise of exercises) {
           if (!exercise.isCompleted) continue;
           
-          // Check if exercise targets this muscle group
+          // Check if exercise targets this muscle group as PRIMARY muscle
           const mapping = await db
             .select()
             .from(exerciseMuscleMapping)
             .where(
               and(
                 eq(exerciseMuscleMapping.exerciseId, exercise.exerciseId),
-                eq(exerciseMuscleMapping.muscleGroupId, muscleGroupId)
+                eq(exerciseMuscleMapping.muscleGroupId, muscleGroupId),
+                eq(exerciseMuscleMapping.role, 'primary')
               )
             );
 
           if (mapping.length > 0) {
             // Count actual completed sets from setsData
+            let exerciseSets = 0;
             if (exercise.setsData) {
               try {
                 // setsData is already parsed as JSONB from database
@@ -104,16 +106,22 @@ export class SciAlgorithmCore {
                 
                 if (Array.isArray(setsData)) {
                   const completedSets = setsData.filter((set: any) => set && set.completed === true).length;
+                  exerciseSets = completedSets;
                   totalSets += completedSets;
                 } else {
+                  exerciseSets = exercise.sets || 0;
                   totalSets += exercise.sets || 0;
                 }
               } catch (error) {
+                exerciseSets = exercise.sets || 0;
                 totalSets += exercise.sets || 0;
               }
             } else {
+              exerciseSets = exercise.sets || 0;
               totalSets += exercise.sets || 0;
             }
+            
+            console.log(`PRIMARY Exercise ${exercise.exerciseId}: ${exerciseSets} completed sets for muscle group ${muscleGroupId}`);
           }
         }
       }
