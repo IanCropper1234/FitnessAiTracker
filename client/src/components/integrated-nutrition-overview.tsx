@@ -1885,11 +1885,46 @@ export function IntegratedNutritionOverview({
                               "μg", 
                               getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
                             )}
-                            {dailyTotals.vitaminB12 > 0 && renderNutrientWithProgress(
-                              "B12 (Cobalamin)", 
-                              Math.round(dailyTotals.vitaminB12 * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
+                            {dailyTotals.vitaminB12 > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "B12 (Cobalamin)", 
+                                  Math.round(dailyTotals.vitaminB12 * 10) / 10, 
+                                  "μg", 
+                                  getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
+                                )}
+                                {/* Show B12 food sources breakdown */}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    // Calculate B12 contributions from each food
+                                    const b12Sources = micronutrientLogs
+                                      .map(log => {
+                                        const b12Amount = log.micronutrients?.vitaminB12 || 0;
+                                        if (b12Amount > 0) {
+                                          return {
+                                            foodName: log.foodName || 'Unknown Food',
+                                            amount: b12Amount,
+                                            percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 100)
+                                          };
+                                        }
+                                        return null;
+                                      })
+                                      .filter(source => source !== null)
+                                      .sort((a, b) => b.amount - a.amount); // Sort by amount descending
+                                    
+                                    return b12Sources.slice(0, 5).map((source, index) => (
+                                      <div key={index} className="flex items-center justify-between text-xs">
+                                        <span className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+                                          • {source.foodName}:
+                                        </span>
+                                        <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
+                                          {Math.round(source.amount * 10) / 10}μg ({source.percentage}%)
+                                        </span>
+                                      </div>
+                                    ));
+                                  })()}
+                                </div>
+                              </div>
                             )}
                             {dailyTotals.choline > 0 && renderNutrientWithProgress(
                               "Choline", 
