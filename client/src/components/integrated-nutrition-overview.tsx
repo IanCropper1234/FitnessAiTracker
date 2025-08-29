@@ -1189,6 +1189,15 @@ export function IntegratedNutritionOverview({
         
         const micronutrientLogs = todayLogs.filter((log: any) => log.micronutrients && Object.keys(log.micronutrients).length > 0);
         
+        // Debug: Show ALL today's logs vs micronutrient logs
+        console.log('🔍 Today\'s all logs vs micronutrient logs:', {
+          totalTodayLogs: todayLogs.length,
+          micronutrientLogs: micronutrientLogs.length,
+          allTodayFoods: todayLogs.map(log => log.foodName),
+          micronutrientFoods: micronutrientLogs.map(log => log.foodName),
+          missingMicronutrients: todayLogs.filter(log => !log.micronutrients || Object.keys(log.micronutrients).length === 0).map(log => log.foodName)
+        });
+        
         if (micronutrientLogs.length === 0) return null;
         
         // Helper function to map nested nutrient names to flat names
