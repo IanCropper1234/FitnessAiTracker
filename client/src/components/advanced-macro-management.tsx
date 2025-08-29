@@ -372,8 +372,10 @@ export function AdvancedMacroManagement({ userId }: AdvancedMacroManagementProps
     }
     
     // Use linear regression for more stable trend calculation
+    // Note: validMetrics is sorted newest first, so we need to reverse the day index
+    // to get correct trend direction (older dates = lower day values)
     const dataPoints = validMetrics.map((metric: any, index: number) => ({
-      day: index,
+      day: validMetrics.length - 1 - index, // Reverse index so oldest = 0, newest = max
       weight: parseFloat(metric.weight)
     }));
     
