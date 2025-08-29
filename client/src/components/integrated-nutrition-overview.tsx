@@ -1893,37 +1893,70 @@ export function IntegratedNutritionOverview({
                                   "μg", 
                                   getAdequacy(dailyTotals.vitaminB12, rda.vitaminB12)
                                 )}
-                                {/* Show B12 food sources breakdown */}
-                                <div className="ml-3 space-y-1">
-                                  {(() => {
-                                    // Calculate B12 contributions from each food
-                                    const b12Sources = micronutrientLogs
-                                      .map(log => {
-                                        const b12Amount = log.micronutrients?.vitaminB12 || 0;
-                                        if (b12Amount > 0) {
-                                          return {
-                                            foodName: log.foodName || 'Unknown Food',
-                                            amount: b12Amount,
-                                            percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 1000) / 10 // Show one decimal place
-                                          };
-                                        }
-                                        return null;
-                                      })
-                                      .filter(source => source !== null)
-                                      .sort((a, b) => b.amount - a.amount); // Sort by amount descending
-                                    
-                                    return b12Sources.slice(0, 5).map((source, index) => (
-                                      <div key={index} className="flex items-center justify-between text-xs">
-                                        <span className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
-                                          • {source.foodName}:
+                                {/* Collapsible B12 food sources breakdown */}
+                                {(() => {
+                                  const [showB12Sources, setShowB12Sources] = React.useState(false);
+                                  
+                                  // Calculate B12 contributions from each food
+                                  const b12Sources = micronutrientLogs
+                                    .map(log => {
+                                      const b12Amount = log.micronutrients?.vitaminB12 || 0;
+                                      if (b12Amount > 0) {
+                                        return {
+                                          foodName: log.foodName || 'Unknown Food',
+                                          amount: b12Amount,
+                                          percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 1000) / 10
+                                        };
+                                      }
+                                      return null;
+                                    })
+                                    .filter(source => source !== null)
+                                    .sort((a, b) => b.amount - a.amount);
+                                  
+                                  if (b12Sources.length === 0) return null;
+                                  
+                                  return (
+                                    <div className="ml-3">
+                                      <button
+                                        onClick={() => setShowB12Sources(!showB12Sources)}
+                                        className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                                      >
+                                        <span className={`transform transition-transform duration-200 ${showB12Sources ? 'rotate-90' : ''}`}>
+                                          ▶
                                         </span>
-                                        <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
-                                          {Math.round(source.amount * 10) / 10}μg ({source.percentage}%)
-                                        </span>
+                                        Food Sources ({b12Sources.length} items)
+                                      </button>
+                                      
+                                      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                        showB12Sources 
+                                          ? 'max-h-[500px] opacity-100 mt-2' 
+                                          : 'max-h-0 opacity-0'
+                                      }`}>
+                                        <div className="space-y-1 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+                                          {b12Sources.map((source, index) => (
+                                            <div key={index} className="flex items-center justify-between text-xs">
+                                              <span className="text-gray-600 dark:text-gray-400 truncate max-w-[140px]">
+                                                • {source.foodName}:
+                                              </span>
+                                              <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
+                                                {Math.round(source.amount * 10) / 10}μg ({source.percentage}%)
+                                              </span>
+                                            </div>
+                                          ))}
+                                          {/* Total verification */}
+                                          <div className="mt-2 pt-1 border-t border-gray-200 dark:border-gray-600">
+                                            <div className="flex items-center justify-between text-xs font-medium">
+                                              <span className="text-gray-700 dark:text-gray-300">Total:</span>
+                                              <span className="text-gray-800 dark:text-gray-200 font-mono">
+                                                {Math.round(b12Sources.reduce((sum, source) => sum + source.amount, 0) * 10) / 10}μg (100%)
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
                                       </div>
-                                    ));
-                                  })()}
-                                </div>
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             )}
                             {dailyTotals.choline > 0 && renderNutrientWithProgress(
