@@ -47,7 +47,7 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "returnNull" }), // Changed to prevent authentication errors from throwing
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 10 * 60 * 1000, // 10 minutes - longer cache to prevent PWA reload issues
+      staleTime: 0, // Temporarily disable cache for testing primary muscle group calculation
       gcTime: 30 * 60 * 1000, // 30 minutes cache retention for better PWA experience
       retry: 1, // Limited retry to prevent hanging
       retryDelay: 1000, // 1 second delay between retries
