@@ -1904,7 +1904,7 @@ export function IntegratedNutritionOverview({
                                           return {
                                             foodName: log.foodName || 'Unknown Food',
                                             amount: b12Amount,
-                                            percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 100)
+                                            percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 1000) / 10 // Show one decimal place
                                           };
                                         }
                                         return null;
