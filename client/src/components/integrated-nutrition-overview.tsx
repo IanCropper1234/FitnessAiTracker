@@ -1837,11 +1837,44 @@ export function IntegratedNutritionOverview({
                         <div>
                           <h5 className="font-medium text-blue-600 dark:text-blue-400 mb-1.5">Water-Soluble Vitamins</h5>
                           <div className="space-y-2">
-                            {dailyTotals.vitaminC > 0 && renderNutrientWithProgress(
-                              "Vitamin C", 
-                              Math.round(dailyTotals.vitaminC * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminC, rda.vitaminC)
+                            {dailyTotals.vitaminC > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "Vitamin C", 
+                                  Math.round(dailyTotals.vitaminC * 10) / 10, 
+                                  "mg", 
+                                  getAdequacy(dailyTotals.vitaminC, rda.vitaminC)
+                                )}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    const vitaminCSources = micronutrientLogs
+                                      .map(log => {
+                                        const amount = log.micronutrients?.vitaminC || 0;
+                                        if (amount > 0) {
+                                          return {
+                                            foodName: log.foodName || 'Unknown Food',
+                                            amount: amount,
+                                            percentage: Math.round((amount / dailyTotals.vitaminC) * 1000) / 10
+                                          };
+                                        }
+                                        return null;
+                                      })
+                                      .filter(source => source !== null)
+                                      .sort((a, b) => b.amount - a.amount);
+                                    
+                                    return vitaminCSources.map((source, index) => (
+                                      <div key={index} className="flex items-center justify-between text-xs">
+                                        <span className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+                                          • {source.foodName}:
+                                        </span>
+                                        <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
+                                          {Math.round(source.amount * 10) / 10}mg ({source.percentage}%)
+                                        </span>
+                                      </div>
+                                    ));
+                                  })()} 
+                                </div>
+                              </div>
                             )}
                             {dailyTotals.vitaminB1 > 0 && renderNutrientWithProgress(
                               "B1 (Thiamine)", 
@@ -1879,11 +1912,44 @@ export function IntegratedNutritionOverview({
                               "μg", 
                               getAdequacy(dailyTotals.vitaminB7, rda.vitaminB7)
                             )}
-                            {dailyTotals.vitaminB9 > 0 && renderNutrientWithProgress(
-                              "B9 (Folate)", 
-                              Math.round(dailyTotals.vitaminB9 * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
+                            {dailyTotals.vitaminB9 > 0 && (
+                              <div className="space-y-1">
+                                {renderNutrientWithProgress(
+                                  "B9 (Folate)", 
+                                  Math.round(dailyTotals.vitaminB9 * 10) / 10, 
+                                  "μg", 
+                                  getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
+                                )}
+                                <div className="ml-3 space-y-1">
+                                  {(() => {
+                                    const folateSources = micronutrientLogs
+                                      .map(log => {
+                                        const amount = log.micronutrients?.vitaminB9 || 0;
+                                        if (amount > 0) {
+                                          return {
+                                            foodName: log.foodName || 'Unknown Food',
+                                            amount: amount,
+                                            percentage: Math.round((amount / dailyTotals.vitaminB9) * 1000) / 10
+                                          };
+                                        }
+                                        return null;
+                                      })
+                                      .filter(source => source !== null)
+                                      .sort((a, b) => b.amount - a.amount);
+                                    
+                                    return folateSources.map((source, index) => (
+                                      <div key={index} className="flex items-center justify-between text-xs">
+                                        <span className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
+                                          • {source.foodName}:
+                                        </span>
+                                        <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
+                                          {Math.round(source.amount * 10) / 10}μg ({source.percentage}%)
+                                        </span>
+                                      </div>
+                                    ));
+                                  })()} 
+                                </div>
+                              </div>
                             )}
                             {dailyTotals.vitaminB12 > 0 && (
                               <div className="space-y-1">
@@ -1896,6 +1962,13 @@ export function IntegratedNutritionOverview({
                                 {/* Show B12 food sources breakdown */}
                                 <div className="ml-3 space-y-1">
                                   {(() => {
+                                    // Debug: Log all micronutrient data
+                                    console.log('🔍 All micronutrient logs:', micronutrientLogs.map(log => ({
+                                      foodName: log.foodName,
+                                      b12: log.micronutrients?.vitaminB12,
+                                      micronutrients: Object.keys(log.micronutrients || {})
+                                    })));
+                                    
                                     // Calculate B12 contributions from each food
                                     const b12Sources = micronutrientLogs
                                       .map(log => {
@@ -1912,7 +1985,7 @@ export function IntegratedNutritionOverview({
                                       .filter(source => source !== null)
                                       .sort((a, b) => b.amount - a.amount); // Sort by amount descending
                                     
-                                    return b12Sources.slice(0, 5).map((source, index) => (
+                                    return b12Sources.map((source, index) => (
                                       <div key={index} className="flex items-center justify-between text-xs">
                                         <span className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]">
                                           • {source.foodName}:
