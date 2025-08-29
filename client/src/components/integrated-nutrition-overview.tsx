@@ -1984,15 +1984,21 @@ export function IntegratedNutritionOverview({
                                       micronutrients: Object.keys(log.micronutrients || {})
                                     })));
                                     
-                                    // Calculate B12 contributions from each food
-                                    const b12Sources = micronutrientLogs
+                                    // Calculate B12 contributions from ALL food logs (not just micronutrient logs)
+                                    const b12Sources = todayLogs
                                       .map(log => {
-                                        const b12Amount = log.micronutrients?.vitaminB12 || 0;
+                                        // Check multiple possible B12 fields
+                                        const b12Amount = log.micronutrients?.vitaminB12 || 
+                                                         log.vitaminB12 || 
+                                                         log.cobalamin || 
+                                                         log.b12 || 
+                                                         0;
                                         if (b12Amount > 0) {
                                           return {
                                             foodName: log.foodName || 'Unknown Food',
                                             amount: b12Amount,
-                                            percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 1000) / 10 // Show one decimal place
+                                            percentage: Math.round((b12Amount / dailyTotals.vitaminB12) * 1000) / 10,
+                                            source: log.micronutrients?.vitaminB12 ? 'micronutrients' : 'direct_field'
                                           };
                                         }
                                         return null;
@@ -2017,6 +2023,7 @@ export function IntegratedNutritionOverview({
                                         </span>
                                         <span className="text-gray-700 dark:text-gray-300 font-mono ml-2">
                                           {Math.round(source.amount * 10) / 10}μg ({source.percentage}%)
+                                          {source.source === 'direct_field' && <span className="text-blue-500 text-xs ml-1">*</span>}
                                         </span>
                                       </div>
                                     ));
