@@ -1854,10 +1854,11 @@ export function IntegratedNutritionOverview({
                             })()}
                             {dailyTotals.vitaminE > 0 && (
                               <div className="space-y-1">
-                                {renderNutrientWithProgress(
-                                  "Vitamin E (Total)", 
-                                  Math.round(dailyTotals.vitaminE * 10) / 10, 
-                                  "mg", 
+                                {renderNutrientWithSources(
+                                  'vitaminE',
+                                  'Vitamin E (Total)',
+                                  Math.round(dailyTotals.vitaminE * 10) / 10,
+                                  'mg',
                                   getAdequacy(dailyTotals.vitaminE, rda.vitaminE)
                                 )}
                                 <div className="ml-3 space-y-1">
@@ -1928,10 +1929,11 @@ export function IntegratedNutritionOverview({
                                   // Use accurate variant total instead of dailyTotals.vitaminK
                                   const accurateVitaminKTotal = k1Total + k2Total;
                                   
-                                  return renderNutrientWithProgress(
-                                    "Vitamin K (Total)", 
-                                    Math.round(accurateVitaminKTotal * 10) / 10, 
-                                    "μg", 
+                                  return renderNutrientWithSources(
+                                    'vitaminK',
+                                    'Vitamin K (Total)',
+                                    Math.round(accurateVitaminKTotal * 10) / 10,
+                                    'μg',
                                     getAdequacy(accurateVitaminKTotal, rda.vitaminK)
                                   );
                                 })()}
@@ -1989,48 +1991,6 @@ export function IntegratedNutritionOverview({
                               Math.round(dailyTotals.vitaminC * 10) / 10,
                               'mg',
                               getAdequacy(dailyTotals.vitaminC, rda.vitaminC)
-                            )}
-                            {dailyTotals.vitaminB1 > 0 && renderNutrientWithProgress(
-                              "B1 (Thiamine)", 
-                              Math.round(dailyTotals.vitaminB1 * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminB1, rda.vitaminB1)
-                            )}
-                            {dailyTotals.vitaminB2 > 0 && renderNutrientWithProgress(
-                              "B2 (Riboflavin)", 
-                              Math.round(dailyTotals.vitaminB2 * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminB2, rda.vitaminB2)
-                            )}
-                            {dailyTotals.vitaminB3 > 0 && renderNutrientWithProgress(
-                              "B3 (Niacin)", 
-                              Math.round(dailyTotals.vitaminB3 * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminB3, rda.vitaminB3)
-                            )}
-                            {dailyTotals.vitaminB6 > 0 && renderNutrientWithProgress(
-                              "B6 (Pyridoxine)", 
-                              Math.round(dailyTotals.vitaminB6 * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminB6, rda.vitaminB6)
-                            )}
-                            {dailyTotals.vitaminB5 > 0 && renderNutrientWithProgress(
-                              "B5 (Pantothenic Acid)", 
-                              Math.round(dailyTotals.vitaminB5 * 10) / 10, 
-                              "mg", 
-                              getAdequacy(dailyTotals.vitaminB5, rda.vitaminB5)
-                            )}
-                            {dailyTotals.vitaminB7 > 0 && renderNutrientWithProgress(
-                              "B7 (Biotin)", 
-                              Math.round(dailyTotals.vitaminB7 * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminB7, rda.vitaminB7)
-                            )}
-                            {dailyTotals.vitaminB9 > 0 && renderNutrientWithProgress(
-                              "B9 (Folate)", 
-                              Math.round(dailyTotals.vitaminB9 * 10) / 10, 
-                              "μg", 
-                              getAdequacy(dailyTotals.vitaminB9, rda.vitaminB9)
                             )}
                             {dailyTotals.vitaminB1 > 0 && renderNutrientWithSources(
                               'vitaminB1',
