@@ -250,30 +250,51 @@ router.post('/nutrition-analysis', async (req, res) => {
       recordsWithMicronutrients: nutrition.filter((n: any) => n.micronutrients && Object.keys(n.micronutrients).length > 0).length,
       recordsWithCompleteMicronutrients: nutrition.filter((n: any) => {
         const micro = n.micronutrients || {};
-        // Count meaningful micronutrient values (more realistic approach)
-        const meaningfulValues = Object.keys(micro).filter(key => {
+        // Count meaningful micronutrient values - handle both old and new nested formats
+        const meaningfulValues = Object.keys(micro).reduce((count, key) => {
           const value = micro[key];
-          return value !== null && 
-                 value !== undefined && 
-                 value !== 0 && 
-                 value !== '' &&
-                 typeof value === 'number' &&
-                 value > 0;
-        }).length;
+          
+          // Handle old format (direct key-value pairs)
+          if (typeof value === 'number' && value > 0) {
+            return count + 1;
+          }
+          
+          // Handle new format (nested objects like 'Major Minerals': { sodium: 165 })
+          if (typeof value === 'object' && value !== null) {
+            const nestedMeaningfulCount = Object.keys(value).filter(nestedKey => {
+              const nestedValue = value[nestedKey];
+              return typeof nestedValue === 'number' && nestedValue > 0;
+            }).length;
+            return count + nestedMeaningfulCount;
+          }
+          
+          return count;
+        }, 0);
         // Consider record complete if it has at least 2 meaningful micronutrients (more realistic standard)
         return meaningfulValues >= 2;
       }).length,
       avgMicronutrientsPerRecord: nutrition.reduce((acc: number, n: any) => {
         const micro = n.micronutrients || {};
-        return acc + Object.keys(micro).filter(key => {
+        const meaningfulCount = Object.keys(micro).reduce((count, key) => {
           const value = micro[key];
-          return value !== null && 
-                 value !== undefined && 
-                 value !== 0 && 
-                 value !== '' &&
-                 typeof value === 'number' &&
-                 value > 0;
-        }).length;
+          
+          // Handle old format (direct key-value pairs)
+          if (typeof value === 'number' && value > 0) {
+            return count + 1;
+          }
+          
+          // Handle new format (nested objects)
+          if (typeof value === 'object' && value !== null) {
+            const nestedMeaningfulCount = Object.keys(value).filter(nestedKey => {
+              const nestedValue = value[nestedKey];
+              return typeof nestedValue === 'number' && nestedValue > 0;
+            }).length;
+            return count + nestedMeaningfulCount;
+          }
+          
+          return count;
+        }, 0);
+        return acc + meaningfulCount;
       }, 0) / nutrition.length
     };
     
@@ -336,10 +357,25 @@ router.post('/nutrition-analysis', async (req, res) => {
     // Sample micronutrient data from first few records for debugging
     nutrition.slice(0, 3).forEach((record: any, index: number) => {
       const micro = record.micronutrients || {};
-      const meaningfulMicroCount = Object.keys(micro).filter(key => {
+      const meaningfulMicroCount = Object.keys(micro).reduce((count, key) => {
         const value = micro[key];
-        return value !== null && value !== undefined && value !== 0 && value !== '' && typeof value === 'number' && value > 0;
-      }).length;
+        
+        // Handle old format (direct key-value pairs)
+        if (typeof value === 'number' && value > 0) {
+          return count + 1;
+        }
+        
+        // Handle new format (nested objects)
+        if (typeof value === 'object' && value !== null) {
+          const nestedMeaningfulCount = Object.keys(value).filter(nestedKey => {
+            const nestedValue = value[nestedKey];
+            return typeof nestedValue === 'number' && nestedValue > 0;
+          }).length;
+          return count + nestedMeaningfulCount;
+        }
+        
+        return count;
+      }, 0);
       
       console.log(`📊 Sample Record ${index + 1}:`, {
         foodName: record.foodName || 'Unknown',
