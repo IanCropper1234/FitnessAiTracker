@@ -207,6 +207,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [showImagePreview, setShowImagePreview] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true);
   
   // Auto-reset language to English if ZH-TW is selected (since it's not complete)
   useEffect(() => {
@@ -214,6 +215,13 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
       setLanguage('en');
     }
   }, [language, setLanguage]);
+
+  // Reset image loading state when profile image URL changes
+  useEffect(() => {
+    if (currentUser.profileImageUrl) {
+      setIsImageLoading(true);
+    }
+  }, [currentUser.profileImageUrl]);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -456,14 +464,22 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                     {currentUser.profileImageUrl ? (
                       <button
                         onClick={() => setShowImagePreview(true)}
-                        className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer group"
+                        className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer group relative"
                         data-testid="button-preview-profile-image"
                       >
+                        {isImageLoading && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                            <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                          </div>
+                        )}
                         <img 
                           src={currentUser.profileImageUrl} 
                           alt="Profile"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           data-testid="profile-image"
+                          onLoad={() => setIsImageLoading(false)}
+                          onError={() => setIsImageLoading(false)}
+                          style={{ display: isImageLoading ? 'none' : 'block' }}
                         />
                       </button>
                     ) : (
