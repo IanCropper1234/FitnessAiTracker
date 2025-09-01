@@ -205,11 +205,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }
   }, [session, editedSession]);
 
-  // Force re-render when specialMethods change to ensure props propagate correctly
-  useEffect(() => {
-    console.log('🔄 specialMethods state changed:', specialMethods);
-  }, [specialMethods]);
-
   // Initialize workout data from session
   useEffect(() => {
     if (session?.exercises) {
@@ -1159,8 +1154,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             ...prev,
             [pairedExerciseId]: 'superset'
           };
-          console.log('🔄 Updated specialMethods state:', newState);
-          console.log('🔍 Debug pairing IDs:', { exerciseId, pairedExerciseId, pairedExerciseIdType: typeof pairedExerciseId });
           return newState;
         });
         
@@ -1174,7 +1167,6 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
               restSeconds: config.restSeconds || 60
             }
           };
-          console.log('🔄 Updated specialConfigs state:', newState);
           return newState;
         });
       }
@@ -2052,17 +2044,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   userId={session?.userId || 1}
                   exerciseId={currentExercise.exerciseId}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
-                  specialMethod={(() => {
-                    const method = specialMethods[currentExercise.id] as any;
-                    console.log(`🎯 Rendering specialMethod for exercise ${currentExercise.id}:`, { 
-                      method, 
-                      currentExercise, 
-                      allSpecialMethods: specialMethods,
-                      exerciseIdType: typeof currentExercise.id,
-                      keyExists: currentExercise.id in specialMethods
-                    });
-                    return method;
-                  })()}
+                  specialMethod={specialMethods[currentExercise.id] as any}
                   onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
                   specialConfig={specialConfigs[currentExercise.id]}
                   onSpecialConfigChange={(config) => handleSpecialConfigChange(currentExercise.id, config)}
