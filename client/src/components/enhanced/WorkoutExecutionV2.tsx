@@ -1149,10 +1149,14 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
         });
         
         // Set the paired exercise to also be a superset with reverse pairing
-        setSpecialMethods(prev => ({
-          ...prev,
-          [pairedExerciseId]: 'superset'
-        }));
+        setSpecialMethods(prev => {
+          const newState = {
+            ...prev,
+            [pairedExerciseId]: 'superset'
+          };
+          console.log('🔄 Updated specialMethods state:', newState);
+          return newState;
+        });
         
         setSpecialConfigs(prev => ({
           ...prev,
@@ -2038,7 +2042,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   userId={session?.userId || 1}
                   exerciseId={currentExercise.exerciseId}
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
-                  specialMethod={specialMethods[currentExercise.id] as any}
+                  specialMethod={(() => {
+                    const method = specialMethods[currentExercise.id] as any;
+                    console.log(`🎯 Rendering specialMethod for exercise ${currentExercise.id}:`, method);
+                    return method;
+                  })()}
                   onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
                   specialConfig={specialConfigs[currentExercise.id]}
                   onSpecialConfigChange={(config) => handleSpecialConfigChange(currentExercise.id, config)}
