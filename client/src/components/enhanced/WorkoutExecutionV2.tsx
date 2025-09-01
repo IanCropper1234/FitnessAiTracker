@@ -205,6 +205,11 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
     }
   }, [session, editedSession]);
 
+  // Force re-render when specialMethods change to ensure props propagate correctly
+  useEffect(() => {
+    console.log('🔄 specialMethods state changed:', specialMethods);
+  }, [specialMethods]);
+
   // Initialize workout data from session
   useEffect(() => {
     if (session?.exercises) {
@@ -2048,7 +2053,13 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
                   isBodyWeightExercise={isBodyWeightExercise(currentExercise.exercise)}
                   specialMethod={(() => {
                     const method = specialMethods[currentExercise.id] as any;
-                    console.log(`🎯 Rendering specialMethod for exercise ${currentExercise.id}:`, method);
+                    console.log(`🎯 Rendering specialMethod for exercise ${currentExercise.id}:`, { 
+                      method, 
+                      currentExercise, 
+                      allSpecialMethods: specialMethods,
+                      exerciseIdType: typeof currentExercise.id,
+                      keyExists: currentExercise.id in specialMethods
+                    });
                     return method;
                   })()}
                   onSpecialMethodChange={(method) => handleSpecialMethodChange(currentExercise.id, method)}
