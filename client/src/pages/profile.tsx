@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save, Camera, Trash2, X } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { LogOut, User as UserIcon, Globe, Sun, Moon, Settings, Code, Target, Info, ArrowLeft, Home, Activity, Loader2, Save, Camera, Trash2, X, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
@@ -208,6 +209,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
   const { language, setLanguage, t } = useLanguage();
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
   
   // Auto-reset language to English if ZH-TW is selected (since it's not complete)
   useEffect(() => {
@@ -645,33 +647,6 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                 </div>
               </div>
 
-              {/* Legal & Compliance */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center flex-shrink-0">
-                    <Info className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h3 className="text-xs font-semibold text-black dark:text-white">Legal</h3>
-                </div>
-
-                <div className="space-y-2">
-                  <Button
-                    onClick={() => setLocation('/privacy-policy')}
-                    variant="ghost"
-                    className="w-full justify-start h-9 text-xs ios-button touch-target"
-                  >
-                    Privacy Policy
-                  </Button>
-                  <Button
-                    onClick={() => setLocation('/terms-of-service')}
-                    variant="ghost"
-                    className="w-full justify-start h-9 text-xs ios-button touch-target"
-                  >
-                    Terms of Service
-                  </Button>
-                </div>
-              </div>
-
               {/* Developer Settings - Compact Design */}
               {userData?.email === 'c0109009@gmail.com' && (
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
@@ -715,6 +690,48 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
 
         {/* Profile Component */}
         <UserProfile />
+
+        {/* Legal & Compliance - Collapsible Section */}
+        <Card className="ios-smooth-transform">
+          <CardContent className="p-0">
+            <Collapsible open={isLegalOpen} onOpenChange={setIsLegalOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between h-12 px-4 ios-button touch-target"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center flex-shrink-0">
+                      <Info className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <span className="text-sm font-medium text-black dark:text-white">Legal</span>
+                  </div>
+                  <ChevronDown 
+                    className={`w-4 h-4 transition-transform duration-200 ${isLegalOpen ? 'rotate-180' : ''}`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-4 pb-4">
+                <div className="space-y-2 pt-2">
+                  <Button
+                    onClick={() => setLocation('/privacy-policy')}
+                    variant="ghost"
+                    className="w-full justify-start h-9 text-sm ios-button touch-target"
+                  >
+                    Privacy Policy
+                  </Button>
+                  <Button
+                    onClick={() => setLocation('/terms-of-service')}
+                    variant="ghost"
+                    className="w-full justify-start h-9 text-sm ios-button touch-target"
+                  >
+                    Terms of Service
+                  </Button>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
+        </Card>
       </div>
       
       {/* Profile Picture Preview Modal */}
