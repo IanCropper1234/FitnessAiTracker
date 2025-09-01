@@ -700,7 +700,7 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                   variant="ghost"
                   className={`w-full justify-between h-12 px-4 ios-button touch-target transition-all duration-300 ease-out ${
                     isLegalOpen 
-                      ? 'bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900/50' 
+                      ? 'bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-950/40' 
                       : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
                   }`}
                 >
