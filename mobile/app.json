@@ -6,6 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "description": "AI-powered fitness coaching with evidence-based periodization, nutrition tracking, and personalized workout plans for serious fitness enthusiasts.",
+    "keywords": ["fitness", "AI", "workout", "nutrition", "bodybuilding", "training", "health"],
+    "privacy": "public",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -22,14 +25,32 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "CFBundleDisplayName": "TrainPro",
+        "CFBundleName": "TrainPro",
+        "LSApplicationCategoryType": "public.app-category.healthcare-fitness",
+        "NSCameraUsageDescription": "TrainPro uses the camera to capture food images for AI-powered nutrition analysis and tracking.",
+        "NSPhotoLibraryUsageDescription": "TrainPro accesses your photo library to let you upload food images for nutrition analysis and set profile pictures.",
+        "NSHealthShareUsageDescription": "TrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
+        "NSHealthUpdateUsageDescription": "TrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.trainpro.app"
+      "package": "com.trainpro.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,6 +59,9 @@
       "eas": {
         "projectId": "TBD-will-be-generated"
       }
+    },
+    "hooks": {
+      "postPublish": []
     }
   }
 }

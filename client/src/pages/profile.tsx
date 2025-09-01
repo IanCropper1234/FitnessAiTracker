@@ -645,6 +645,33 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
                 </div>
               </div>
 
+              {/* Legal & Compliance */}
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center flex-shrink-0">
+                    <Info className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-black dark:text-white">Legal</h3>
+                </div>
+
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => setLocation('/privacy-policy')}
+                    variant="ghost"
+                    className="w-full justify-start h-9 text-xs ios-button touch-target"
+                  >
+                    Privacy Policy
+                  </Button>
+                  <Button
+                    onClick={() => setLocation('/terms-of-service')}
+                    variant="ghost"
+                    className="w-full justify-start h-9 text-xs ios-button touch-target"
+                  >
+                    Terms of Service
+                  </Button>
+                </div>
+              </div>
+
               {/* Developer Settings - Compact Design */}
               {userData?.email === 'c0109009@gmail.com' && (
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">

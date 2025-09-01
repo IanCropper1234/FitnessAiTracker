@@ -33,6 +33,8 @@ import WorkoutFeedbackPage from "./pages/WorkoutFeedbackPage";
 import WorkoutSettings from "./pages/WorkoutSettings";
 import EmailVerification from "./pages/email-verification";
 import EmailVerificationSuccess from "./pages/email-verification-success";
+import PrivacyPolicy from "./pages/privacy-policy";
+import TermsOfService from "./pages/terms-of-service";
 import { IOSNotificationDemo } from "./components/ui/ios-notification-demo";
 import { NotFound } from "./components/NotFound";
 
@@ -296,6 +298,16 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
         <Route path="/profile">
           <AnimatedPage>
             {user ? <ProfilePage user={user} onSignOut={() => setUser(null)} /> : <div className="animate-pulse">Loading...</div>}
+          </AnimatedPage>
+        </Route>
+        <Route path="/privacy-policy">
+          <AnimatedPage>
+            <PrivacyPolicy />
+          </AnimatedPage>
+        </Route>
+        <Route path="/terms-of-service">
+          <AnimatedPage>
+            <TermsOfService />
           </AnimatedPage>
         </Route>
         <Route path="/wellness-test">
