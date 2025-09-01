@@ -691,41 +691,55 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
         {/* Profile Component */}
         <UserProfile />
 
-        {/* Legal & Compliance - Collapsible Section */}
-        <Card className="ios-smooth-transform">
+        {/* Legal & Compliance - Enhanced Smooth Collapsible Section */}
+        <Card className="ios-smooth-transform overflow-hidden">
           <CardContent className="p-0">
             <Collapsible open={isLegalOpen} onOpenChange={setIsLegalOpen}>
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between h-12 px-4 ios-button touch-target"
+                  className={`w-full justify-between h-12 px-4 ios-button touch-target transition-all duration-300 ease-out ${
+                    isLegalOpen 
+                      ? 'bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900/50' 
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center flex-shrink-0">
-                      <Info className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    <div className={`w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center flex-shrink-0 transition-all duration-300 ease-out ${
+                      isLegalOpen ? 'scale-110 bg-blue-200 dark:bg-blue-800' : ''
+                    }`}>
+                      <Info className={`w-3 h-3 text-blue-600 dark:text-blue-400 transition-all duration-300 ease-out ${
+                        isLegalOpen ? 'scale-110' : ''
+                      }`} />
                     </div>
-                    <span className="text-sm font-medium text-black dark:text-white">Legal</span>
+                    <span className="text-sm font-medium text-black dark:text-white transition-colors duration-300">Legal</span>
                   </div>
                   <ChevronDown 
-                    className={`w-4 h-4 transition-transform duration-200 ${isLegalOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 transition-all duration-300 ease-out ${
+                      isLegalOpen ? 'rotate-180 text-blue-600 dark:text-blue-400 scale-110' : 'text-gray-400'
+                    }`}
                   />
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 pb-4">
-                <div className="space-y-2 pt-2">
+              <CollapsibleContent className="px-4 pb-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 overflow-hidden">
+                <div className="space-y-2 pt-3 animate-in fade-in-0 slide-in-from-top-1 duration-500 ease-out">
                   <Button
                     onClick={() => setLocation('/privacy-policy')}
                     variant="ghost"
-                    className="w-full justify-start h-9 text-sm ios-button touch-target"
+                    className="w-full justify-start h-9 text-sm ios-button touch-target transition-all duration-200 ease-out hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:translate-x-1 hover:shadow-sm group"
                   >
-                    Privacy Policy
+                    <span className="transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      Privacy Policy
+                    </span>
                   </Button>
                   <Button
                     onClick={() => setLocation('/terms-of-service')}
                     variant="ghost"
-                    className="w-full justify-start h-9 text-sm ios-button touch-target"
+                    className="w-full justify-start h-9 text-sm ios-button touch-target transition-all duration-200 ease-out hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:translate-x-1 hover:shadow-sm group"
                   >
-                    Terms of Service
+                    <span className="transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      Terms of Service
+                    </span>
                   </Button>
                 </div>
               </CollapsibleContent>
