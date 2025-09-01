@@ -333,7 +333,7 @@ router.post('/nutrition-analysis', async (req, res) => {
       finalCompletenessScore: dataCompletenessScore.toFixed(1) + '%'
     });
     
-    // Sample micronutrient data from first few records
+    // Sample micronutrient data from first few records for debugging
     nutrition.slice(0, 3).forEach((record: any, index: number) => {
       const micro = record.micronutrients || {};
       const meaningfulMicroCount = Object.keys(micro).filter(key => {
@@ -345,7 +345,10 @@ router.post('/nutrition-analysis', async (req, res) => {
         foodName: record.foodName || 'Unknown',
         totalMicronutrients: Object.keys(micro).length,
         meaningfulMicronutrients: meaningfulMicroCount,
-        sampleMicronutrients: Object.keys(micro).slice(0, 5),
+        sampleMicronutrients: Object.keys(micro).slice(0, 8),
+        actualMicroData: Object.fromEntries(
+          Object.entries(micro).slice(0, 8).map(([key, value]) => [key, value])
+        ),
         isConsideredComplete: meaningfulMicroCount >= 2
       });
     });
