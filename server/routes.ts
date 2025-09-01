@@ -439,7 +439,14 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
           (stored.includes('Firefox') && current.includes('Firefox'))
         );
         
-        return (isMobileToDesktop || isDesktopToMobile) && isSameBrowserFamily;
+        // Allow iOS device switching (iPad to iPhone, iPhone to iPad)
+        const isIOSDeviceSwitch = (
+          (stored.includes('iPad') && current.includes('iPhone')) ||
+          (stored.includes('iPhone') && current.includes('iPad')) ||
+          (stored.includes('iOS') && current.includes('iOS'))
+        ) && stored.includes('Safari') && current.includes('Safari');
+        
+        return (isMobileToDesktop || isDesktopToMobile) && isSameBrowserFamily || isIOSDeviceSwitch;
       };
       
       if (!isLegitimateDeviceSwitch(storedUserAgent, userAgent)) {
