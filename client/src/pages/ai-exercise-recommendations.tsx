@@ -701,7 +701,7 @@ export default function CreateAIWorkoutSession() {
                 )}
                 
                 <div className="text-center pt-1">
-                  <p className="text-xs text-blue-600 dark:text-blue-400">正在生成個人化運動計劃...</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">Generating personalized workout plan...</p>
                 </div>
               </div>
             )}
