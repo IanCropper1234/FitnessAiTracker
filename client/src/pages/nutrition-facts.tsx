@@ -223,7 +223,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
-      <div className="max-w-md mx-auto p-4">
+      <div className="max-w-md mx-auto p-4 pl-[5px] pr-[5px] ml-[5px] mr-[5px]">
         {/* Header with Back Button */}
         <div className="flex items-center gap-3 mb-6">
           <Button 
