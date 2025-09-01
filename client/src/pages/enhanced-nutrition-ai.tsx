@@ -59,6 +59,10 @@ export default function EnhancedNutritionAI() {
   const [timeRange, setTimeRange] = useState<string>("Last 7 Days");
   const [goals, setGoals] = useState<string[]>(['Muscle Gain']);
   const [healthConditions, setHealthConditions] = useState<string>('');
+  
+  // Enhanced UX states
+  const [analysisStep, setAnalysisStep] = useState('');
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
   // Available options
   const goalOptions = [
@@ -80,15 +84,23 @@ export default function EnhancedNutritionAI() {
     queryKey: ['/api/nutrition/logs', timeRange],
   });
 
-  // AI analysis mutation
+  // Enhanced AI analysis mutation with progressive loading
   const analysisMutation = useMutation({
     mutationFn: async () => {
+      // Progressive loading steps
+      setAnalysisStep('Preparing comprehensive analysis...');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setAnalysisStep('Analyzing nutrition patterns...');
+      await new Promise(resolve => setTimeout(resolve, 400));
+      
       const request = {
         timeRange,
         primaryGoal: goals[0] || 'health_optimization',
         healthConditions: healthConditions || undefined
       };
 
+      setAnalysisStep('Processing micronutrient data...');
       const response = await fetch('/api/ai/nutrition-analysis', {
         method: 'POST',
         headers: {
@@ -103,15 +115,30 @@ export default function EnhancedNutritionAI() {
         throw new Error(error.message || 'Failed to analyze nutrition data');
       }
 
+      setAnalysisStep('Generating personalized insights...');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setAnalysisStep('Finalizing recommendations...');
+      await new Promise(resolve => setTimeout(resolve, 200));
+
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Clear loading states
+      setShowSkeleton(false);
+      setAnalysisStep('');
+      
       toast({
-        title: "AI Analysis Complete",
-        description: "Your comprehensive nutrition analysis is ready!",
+        title: "Analysis Complete! ✨",
+        description: `Found ${data?.micronutrientAnalysis?.length || 0} micronutrient insights for your ${timeRange.toLowerCase()}`,
+        duration: 3000
       });
     },
     onError: (error: any) => {
+      // Clear loading states on error
+      setShowSkeleton(false);
+      setAnalysisStep('');
+      
       toast({
         title: "Analysis Failed",
         description: error.message || "Failed to analyze nutrition data. Please try again.",
@@ -119,6 +146,23 @@ export default function EnhancedNutritionAI() {
       });
     }
   });
+
+  // Enhanced analysis handler with immediate feedback
+  const handleAnalysis = () => {
+    // Enhanced UX: Show progressive loading states with immediate feedback
+    setShowSkeleton(true);
+    setAnalysisStep('Starting comprehensive analysis...');
+    
+    // Provide instant visual feedback
+    toast({
+      title: "Analysis Started",
+      description: "AI is analyzing your nutrition patterns...",
+      duration: 2000
+    });
+    
+    // Trigger the mutation
+    analysisMutation.mutate();
+  };
 
   
 
@@ -215,19 +259,23 @@ export default function EnhancedNutritionAI() {
               </div>
 
               <Button 
-                onClick={() => analysisMutation.mutate()}
+                onClick={handleAnalysis}
                 disabled={analysisMutation.isPending}
                 className="w-full"
               >
                 {analysisMutation.isPending ? (
-                  <>
-                    <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                  <div className="flex items-center gap-2">
+                    <div className="ios-loading-dots flex items-center gap-1">
                       <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
                       <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
                       <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
                     </div>
-                    Analyzing Nutrition...
-                  </>
+                    {analysisStep ? (
+                      <span className="text-xs text-white/90">{analysisStep}</span>
+                    ) : (
+                      <span>Analyzing Nutrition...</span>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
@@ -235,6 +283,48 @@ export default function EnhancedNutritionAI() {
                   </>
                 )}
               </Button>
+              
+              {/* Skeleton Loading Preview - Show while analysis is in progress */}
+              {showSkeleton && !analysisMutation.data && (
+                <div className="space-y-3 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-purple-300 dark:bg-purple-600 rounded"></div>
+                    <div className="h-4 bg-purple-300 dark:bg-purple-600 rounded w-40"></div>
+                  </div>
+                  
+                  {/* Overall Rating Skeleton */}
+                  <div className="text-center p-3 bg-white dark:bg-gray-800 rounded border">
+                    <div className="h-5 bg-yellow-300 rounded w-24 mx-auto mb-2"></div>
+                    <div className="h-8 bg-purple-400 rounded w-16 mx-auto"></div>
+                  </div>
+                  
+                  {/* Macronutrient Status Skeleton */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
+                      <div className="h-3 bg-blue-300 rounded mb-1"></div>
+                      <div className="h-4 bg-blue-400 rounded w-20"></div>
+                    </div>
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded">
+                      <div className="h-3 bg-green-300 rounded mb-1"></div>
+                      <div className="h-4 bg-green-400 rounded w-16"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Micronutrient Analysis Skeleton */}
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="p-2 bg-white dark:bg-gray-800 rounded border">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="h-3 bg-gray-300 rounded w-20"></div>
+                          <div className="h-4 bg-gray-400 rounded w-12"></div>
+                        </div>
+                        <div className="h-2 bg-gray-300 rounded w-full mb-1"></div>
+                        <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -264,8 +354,18 @@ export default function EnhancedNutritionAI() {
                   <div className="dot w-2 h-2 bg-purple-500 rounded-full"></div>
                   <div className="dot w-2 h-2 bg-purple-500 rounded-full"></div>
                 </div>
-                <p className="text-sm">AI is analyzing your nutrition data...</p>
+                <p className="text-sm">
+                  {analysisStep || 'AI is analyzing your nutrition data...'}
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">This comprehensive analysis may take a few moments</p>
+                
+                {/* Enhanced progress indicator */}
+                <div className="mt-4 w-full max-w-sm mx-auto">
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse" 
+                         style={{ width: '60%', transition: 'width 0.5s ease' }}></div>
+                  </div>
+                </div>
               </div>
             )}
 
