@@ -322,6 +322,34 @@ router.post('/nutrition-analysis', async (req, res) => {
       dailyAverages
     });
 
+    // Debug micronutrient data quality
+    console.log('🧪 Micronutrient Data Quality Debug:', {
+      totalRecords: dataQualityMetrics.totalRecords,
+      recordsWithMicronutrients: dataQualityMetrics.recordsWithMicronutrients,
+      recordsWithCompleteMicronutrients: dataQualityMetrics.recordsWithCompleteMicronutrients,
+      avgMicronutrientsPerRecord: dataQualityMetrics.avgMicronutrientsPerRecord.toFixed(1),
+      basicMicronutrientPresence: basicMicronutrientPresence.toFixed(1) + '%',
+      comprehensiveDataScore: comprehensiveDataScore.toFixed(1) + '%',
+      finalCompletenessScore: dataCompletenessScore.toFixed(1) + '%'
+    });
+    
+    // Sample micronutrient data from first few records
+    nutrition.slice(0, 3).forEach((record: any, index: number) => {
+      const micro = record.micronutrients || {};
+      const meaningfulMicroCount = Object.keys(micro).filter(key => {
+        const value = micro[key];
+        return value !== null && value !== undefined && value !== 0 && value !== '' && typeof value === 'number' && value > 0;
+      }).length;
+      
+      console.log(`📊 Sample Record ${index + 1}:`, {
+        foodName: record.foodName || 'Unknown',
+        totalMicronutrients: Object.keys(micro).length,
+        meaningfulMicronutrients: meaningfulMicroCount,
+        sampleMicronutrients: Object.keys(micro).slice(0, 5),
+        isConsideredComplete: meaningfulMicroCount >= 2
+      });
+    });
+
     // Select appropriate model for user (with A/B testing support)
     const modelConfig = selectModelForUser('nutritionAnalysis', userId ? userId.toString() : '1');
     const abTestGroup = process.env.AI_AB_TEST_ENABLED === 'true' ? 
