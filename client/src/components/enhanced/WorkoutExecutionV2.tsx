@@ -1111,6 +1111,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleSpecialConfigChange = (exerciseId: number, config: any) => {
+    console.log('🔄 Special config change:', { exerciseId, config, currentMethod: specialMethods[exerciseId] });
     const prevConfig = specialConfigs[exerciseId];
     
     setSpecialConfigs(prev => ({
@@ -1120,9 +1121,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
 
     // Handle bidirectional superset pairing
     if (specialMethods[exerciseId] === 'superset') {
+      console.log('🔗 Processing superset pairing for exercise:', exerciseId);
+      
       // Clear previous pairing if it existed
       if (prevConfig?.pairedExerciseId && prevConfig.pairedExerciseId !== config?.pairedExerciseId) {
         const oldPairedId = prevConfig.pairedExerciseId;
+        console.log('🗑️ Clearing old pairing:', oldPairedId);
         setSpecialMethods(prev => ({
           ...prev,
           [oldPairedId]: null
@@ -1137,6 +1141,12 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
       if (config?.pairedExerciseId) {
         const pairedExerciseId = config.pairedExerciseId;
         const currentExercise = session?.exercises.find(ex => ex.id === exerciseId);
+        
+        console.log('✅ Setting up bidirectional pairing:', { 
+          from: exerciseId, 
+          to: pairedExerciseId, 
+          exerciseName: currentExercise?.exercise?.name 
+        });
         
         // Set the paired exercise to also be a superset with reverse pairing
         setSpecialMethods(prev => ({
