@@ -93,6 +93,10 @@ export default function CreateAIWorkoutSession() {
   // Weekly plan state - default to single program as requested
   const [viewMode, setViewMode] = useState<'single' | 'weekly'>('single');
   const [templateNamePrefix, setTemplateNamePrefix] = useState<string>('AI Generated Workout');
+  
+  // Enhanced UX states for AI generation
+  const [analysisStep, setAnalysisStep] = useState('');
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
   // Available options
   const goalOptions = [
@@ -126,12 +130,19 @@ export default function CreateAIWorkoutSession() {
     queryKey: ['/api/analytics/training-history'],
   });
 
-  // AI recommendation mutation
+  // Enhanced AI recommendation mutation with progressive loading
   const recommendationMutation = useMutation({
     mutationFn: async () => {
       if (goals.length === 0 || muscleGroupFocus.length === 0 || equipment.length === 0) {
         throw new Error('Please fill in all required fields');
       }
+
+      // Progressive loading steps
+      setAnalysisStep('Analyzing your goals and preferences...');
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      setAnalysisStep('Processing muscle group focus and equipment...');
+      await new Promise(resolve => setTimeout(resolve, 400));
 
       const formData = {
         userGoals: goals,
@@ -152,8 +163,10 @@ export default function CreateAIWorkoutSession() {
       console.log('Current exercises count:', (currentExercises as any[])?.length || 0);
       
       if (viewMode === 'weekly') {
+        setAnalysisStep('Generating comprehensive weekly workout plan...');
         return await AIExerciseRecommendationService.getWeeklyWorkoutPlan(formData);
       } else {
+        setAnalysisStep('Creating personalized exercise recommendations...');
         return await AIExerciseRecommendationService.getRecommendations(formData);
       }
     },
@@ -163,17 +176,26 @@ export default function CreateAIWorkoutSession() {
         ? data.sessions?.reduce((total: number, session: WorkoutSession) => total + session.exercises.length, 0) || 0
         : data.recommendations?.length || 0;
       
+      // Clear loading states
+      setShowSkeleton(false);
+      setAnalysisStep('');
+      
       toast({
-        title: "AI Analysis Complete",
+        title: "Workout Generated! ✨",
         description: viewMode === 'weekly' 
-          ? `Generated complete ${sessionsPerWeek}-day workout program with ${exerciseCount} total exercises.`
-          : `Generated ${exerciseCount} exercise recommendations based on your goals.`,
+          ? `Created complete ${sessionsPerWeek}-day program with ${exerciseCount} exercises tailored to your goals`
+          : `Generated ${exerciseCount} personalized exercises based on your preferences`,
+        duration: 3000
       });
     },
     onError: (error: any) => {
+      // Clear loading states on error
+      setShowSkeleton(false);
+      setAnalysisStep('');
+      
       toast({
-        title: "Analysis Failed", 
-        description: error.message || "Failed to generate recommendations. Please try again.",
+        title: "Generation Failed", 
+        description: error.message || "Failed to generate workout recommendations. Please try again.",
         variant: "destructive"
       });
     }
@@ -201,6 +223,25 @@ export default function CreateAIWorkoutSession() {
       });
     },
   });
+
+  // Enhanced analysis handler with immediate feedback
+  const handleGenerateWorkout = () => {
+    // Enhanced UX: Show progressive loading states with immediate feedback
+    setShowSkeleton(true);
+    setAnalysisStep('Starting workout generation...');
+    
+    // Provide instant visual feedback
+    toast({
+      title: "Generation Started",
+      description: viewMode === 'weekly' 
+        ? "AI is creating your weekly workout plan..."
+        : "AI is generating personalized exercise recommendations...",
+      duration: 2000
+    });
+    
+    // Trigger the mutation
+    recommendationMutation.mutate();
+  };
 
   const handleGoalToggle = (goal: string) => {
     setGoals(prev => 
@@ -583,19 +624,23 @@ export default function CreateAIWorkoutSession() {
 
             {/* Generate Button */}
             <Button 
-              onClick={() => recommendationMutation.mutate()}
+              onClick={handleGenerateWorkout}
               disabled={recommendationMutation.isPending || goals.length === 0 || muscleGroupFocus.length === 0 || equipment.length === 0}
               className="w-full"
             >
               {recommendationMutation.isPending ? (
-                <>
-                  <div className="ios-loading-dots flex items-center gap-1 mr-2">
+                <div className="flex items-center gap-2">
+                  <div className="ios-loading-dots flex items-center gap-1">
                     <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
                     <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
                     <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
                   </div>
-                  {viewMode === 'weekly' ? 'Generating Weekly Plan...' : 'Analyzing with AI...'}
-                </>
+                  {analysisStep ? (
+                    <span className="text-xs text-white/90">{analysisStep}</span>
+                  ) : (
+                    <span>{viewMode === 'weekly' ? 'Generating Weekly Plan...' : 'Analyzing with AI...'}</span>
+                  )}
+                </div>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 mr-2" />
@@ -603,6 +648,59 @@ export default function CreateAIWorkoutSession() {
                 </>
               )}
             </Button>
+            
+            {/* Skeleton Loading Preview - Show while generation is in progress */}
+            {showSkeleton && !recommendationMutation.data && (
+              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 animate-pulse">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-blue-300 dark:bg-blue-600 rounded"></div>
+                  <div className="h-4 bg-blue-300 dark:bg-blue-600 rounded w-48"></div>
+                </div>
+                
+                {viewMode === 'weekly' ? (
+                  /* Weekly Plan Skeleton */
+                  <div className="space-y-3">
+                    <div className="p-3 bg-white dark:bg-gray-800 rounded border">
+                      <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
+                      <div className="h-3 bg-gray-300 rounded w-20 mb-2"></div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="h-3 bg-gray-300 rounded w-16"></div>
+                        <div className="h-3 bg-gray-300 rounded w-20"></div>
+                      </div>
+                    </div>
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="p-2 bg-white dark:bg-gray-800 rounded border">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="h-3 bg-gray-300 rounded w-24"></div>
+                          <div className="h-3 bg-blue-400 rounded w-12"></div>
+                        </div>
+                        <div className="h-2 bg-gray-300 rounded w-full mb-1"></div>
+                        <div className="h-2 bg-gray-300 rounded w-2/3"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  /* Single Session Skeleton */
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="p-3 bg-white dark:bg-gray-800 rounded border">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="h-4 bg-gray-300 rounded w-32"></div>
+                          <div className="h-3 bg-green-400 rounded w-16"></div>
+                        </div>
+                        <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
+                        <div className="h-3 bg-gray-300 rounded w-3/4 mb-2"></div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="h-3 bg-gray-300 rounded w-12"></div>
+                          <div className="h-3 bg-gray-300 rounded w-16"></div>
+                          <div className="h-3 bg-gray-300 rounded w-14"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -629,8 +727,23 @@ export default function CreateAIWorkoutSession() {
                   <div className="dot w-2 h-2 bg-blue-500 rounded-full"></div>
                   <div className="dot w-2 h-2 bg-blue-500 rounded-full"></div>
                 </div>
-                <p className="text-sm">AI is analyzing your data...</p>
-                <p className="text-xs text-muted-foreground mt-1">This may take a few moments</p>
+                <p className="text-sm">
+                  {analysisStep || 'AI is analyzing your data...'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {viewMode === 'weekly' 
+                    ? 'Creating a comprehensive weekly workout plan'
+                    : 'Generating personalized exercise recommendations'
+                  }
+                </p>
+                
+                {/* Enhanced progress indicator */}
+                <div className="mt-4 w-full max-w-sm mx-auto">
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-pulse" 
+                         style={{ width: '70%', transition: 'width 0.5s ease' }}></div>
+                  </div>
+                </div>
               </div>
             )}
 
