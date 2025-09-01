@@ -1111,10 +1111,50 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
   };
 
   const handleSpecialConfigChange = (exerciseId: number, config: any) => {
+    const prevConfig = specialConfigs[exerciseId];
+    
     setSpecialConfigs(prev => ({
       ...prev,
       [exerciseId]: config
     }));
+
+    // Handle bidirectional superset pairing
+    if (specialMethods[exerciseId] === 'superset') {
+      // Clear previous pairing if it existed
+      if (prevConfig?.pairedExerciseId && prevConfig.pairedExerciseId !== config?.pairedExerciseId) {
+        const oldPairedId = prevConfig.pairedExerciseId;
+        setSpecialMethods(prev => ({
+          ...prev,
+          [oldPairedId]: null
+        }));
+        setSpecialConfigs(prev => ({
+          ...prev,
+          [oldPairedId]: {}
+        }));
+      }
+      
+      // Set new pairing if specified
+      if (config?.pairedExerciseId) {
+        const pairedExerciseId = config.pairedExerciseId;
+        const currentExercise = session?.exercises.find(ex => ex.id === exerciseId);
+        
+        // Set the paired exercise to also be a superset with reverse pairing
+        setSpecialMethods(prev => ({
+          ...prev,
+          [pairedExerciseId]: 'superset'
+        }));
+        
+        setSpecialConfigs(prev => ({
+          ...prev,
+          [pairedExerciseId]: {
+            ...prev[pairedExerciseId],
+            pairedExerciseId: exerciseId,
+            pairedExerciseName: currentExercise?.exercise?.name || '',
+            restSeconds: config.restSeconds || 60
+          }
+        }));
+      }
+    }
   };
 
   // Helper function to find superset paired exercise
