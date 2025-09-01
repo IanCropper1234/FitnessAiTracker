@@ -163,10 +163,10 @@ export default function CreateAIWorkoutSession() {
       console.log('Current exercises count:', (currentExercises as any[])?.length || 0);
       
       if (viewMode === 'weekly') {
-        setAnalysisStep('Generating comprehensive weekly workout plan...');
+        setAnalysisStep('Generating...');
         return await AIExerciseRecommendationService.getWeeklyWorkoutPlan(formData);
       } else {
-        setAnalysisStep('Creating personalized exercise recommendations...');
+        setAnalysisStep('Generating...');
         return await AIExerciseRecommendationService.getRecommendations(formData);
       }
     },
