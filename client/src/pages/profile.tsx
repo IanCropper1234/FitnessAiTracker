@@ -216,12 +216,6 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
     }
   }, [language, setLanguage]);
 
-  // Reset image loading state when profile image URL changes
-  useEffect(() => {
-    if (currentUser?.profileImageUrl) {
-      setIsImageLoading(true);
-    }
-  }, [currentUser?.profileImageUrl]);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -237,6 +231,13 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
 
   // Use fetched user data or fallback to prop
   const currentUser = userResponse?.user || user;
+
+  // Reset image loading state when profile image URL changes
+  useEffect(() => {
+    if (currentUser?.profileImageUrl) {
+      setIsImageLoading(true);
+    }
+  }, [currentUser?.profileImageUrl]);
 
   // Profile picture upload mutation
   const uploadProfilePictureMutation = useMutation({
