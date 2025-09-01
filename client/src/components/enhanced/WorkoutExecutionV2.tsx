@@ -1158,15 +1158,19 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
           return newState;
         });
         
-        setSpecialConfigs(prev => ({
-          ...prev,
-          [pairedExerciseId]: {
-            ...prev[pairedExerciseId],
-            pairedExerciseId: exerciseId,
-            pairedExerciseName: currentExercise?.exercise?.name || '',
-            restSeconds: config.restSeconds || 60
-          }
-        }));
+        setSpecialConfigs(prev => {
+          const newState = {
+            ...prev,
+            [pairedExerciseId]: {
+              ...prev[pairedExerciseId],
+              pairedExerciseId: exerciseId,
+              pairedExerciseName: currentExercise?.exercise?.name || '',
+              restSeconds: config.restSeconds || 60
+            }
+          };
+          console.log('🔄 Updated specialConfigs state:', newState);
+          return newState;
+        });
       }
     }
   };
