@@ -854,18 +854,35 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
             <div className="space-y-2">
               <div>
                 <label className="text-xs text-purple-300">Paired Exercise</label>
-                <Input
-                  type="text"
-                  value={(() => {
-                    if (specialConfig?.pairedExerciseId && sessionExercises) {
-                      const pairedExercise = sessionExercises.find(ex => ex.exerciseId === specialConfig.pairedExerciseId);
-                      return pairedExercise?.exercise?.name || "Exercise not found";
-                    }
-                    return specialConfig?.pairedExerciseName || "Not configured";
-                  })()}
-                  disabled
-                  className="h-7 text-xs bg-background/50 border border-border/30 text-purple-300/70"
-                />
+                <Select
+                  value={specialConfig?.pairedExerciseId?.toString() || ""}
+                  onValueChange={(value) => {
+                    const exerciseId = parseInt(value);
+                    const pairedExercise = sessionExercises?.find(ex => ex.exerciseId === exerciseId);
+                    
+                    onSpecialConfigChange?.({
+                      ...specialConfig,
+                      pairedExerciseId: exerciseId,
+                      pairedExerciseName: pairedExercise?.exercise?.name || ""
+                    });
+                  }}
+                >
+                  <SelectTrigger className="h-7 text-xs bg-background border border-border/50 text-purple-300">
+                    <SelectValue placeholder="Select paired exercise..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sessionExercises
+                      ?.filter(sessionExercise => sessionExercise.exerciseId !== exerciseId) // Exclude current exercise
+                      ?.map((sessionExercise) => (
+                        <SelectItem 
+                          key={sessionExercise.exerciseId} 
+                          value={sessionExercise.exerciseId.toString()}
+                        >
+                          {sessionExercise.exercise?.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="text-xs text-purple-300">Rest Between Sets (seconds)</label>
