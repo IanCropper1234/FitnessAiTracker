@@ -1160,6 +1160,7 @@ export const WorkoutExecutionV2: React.FC<WorkoutExecutionV2Props> = ({
             [pairedExerciseId]: 'superset'
           };
           console.log('🔄 Updated specialMethods state:', newState);
+          console.log('🔍 Debug pairing IDs:', { exerciseId, pairedExerciseId, pairedExerciseIdType: typeof pairedExerciseId });
           return newState;
         });
         
