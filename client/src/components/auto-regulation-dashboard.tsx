@@ -104,7 +104,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
   }
 
   return (
-    <div className="space-y-4 px-2 max-w-4xl mx-auto">
+    <div className="space-y-4 px-2 max-w-4xl mx-auto pl-[5px] pr-[5px]">
       {/* Header */}
       <Card>
         <CardHeader>
