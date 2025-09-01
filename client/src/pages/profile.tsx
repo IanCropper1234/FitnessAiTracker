@@ -218,10 +218,10 @@ export function ProfilePage({ user, onSignOut }: ProfilePageProps) {
 
   // Reset image loading state when profile image URL changes
   useEffect(() => {
-    if (currentUser.profileImageUrl) {
+    if (currentUser?.profileImageUrl) {
       setIsImageLoading(true);
     }
-  }, [currentUser.profileImageUrl]);
+  }, [currentUser?.profileImageUrl]);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
