@@ -298,7 +298,7 @@ export function AutoRegulationDashboard({ userId }: AutoRegulationDashboardProps
             </CardHeader>
           </CollapsibleTrigger>
           <CollapsibleContent className="collapsible-content data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-            <CardContent>
+            <CardContent className="p-5 pl-[5px] pr-[5px] pt-[14px] pb-[14px]">
               <AutoRegulationExplanation />
             </CardContent>
           </CollapsibleContent>
