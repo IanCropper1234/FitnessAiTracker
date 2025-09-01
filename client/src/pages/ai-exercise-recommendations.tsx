@@ -638,7 +638,7 @@ export default function CreateAIWorkoutSession() {
                   {analysisStep ? (
                     <span className="text-xs text-white/90">{analysisStep}</span>
                   ) : (
-                    <span>{viewMode === 'weekly' ? 'Generating Weekly Plan...' : 'Analyzing with AI...'}</span>
+                    <span>{viewMode === 'weekly' ? 'Generating...' : 'Generating...'}</span>
                   )}
                 </div>
               ) : (
@@ -701,7 +701,7 @@ export default function CreateAIWorkoutSession() {
                 )}
                 
                 <div className="text-center pt-1">
-                  <p className="text-xs text-blue-600 dark:text-blue-400">Generating personalized workout plan...</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">Generating...</p>
                 </div>
               </div>
             )}
@@ -732,12 +732,12 @@ export default function CreateAIWorkoutSession() {
                   <div className="dot w-2 h-2 bg-blue-500 rounded-full"></div>
                 </div>
                 <p className="text-sm">
-                  {analysisStep || 'AI is analyzing your data...'}
+                  {analysisStep || 'Generating...'}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {viewMode === 'weekly' 
-                    ? 'Creating a comprehensive weekly workout plan'
-                    : 'Generating personalized exercise recommendations'
+                    ? 'Creating weekly plan'
+                    : 'Generating recommendations'
                   }
                 </p>
                 
