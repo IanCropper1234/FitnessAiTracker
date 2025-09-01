@@ -351,8 +351,8 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     )}
                   </button>
-                  <Badge variant="outline" className="text-xs">
-                    AI Analysis
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 h-auto">
+                    AI
                   </Badge>
                 </div>
                 
