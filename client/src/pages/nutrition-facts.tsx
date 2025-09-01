@@ -344,6 +344,7 @@ const NutritionFactsPage: React.FC<NutritionFactsPageProps> = () => {
                     className="flex items-center gap-2 text-left w-full"
                   >
                     <h4 className="font-medium text-black dark:text-white text-sm">Micronutrients</h4>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">View More</span>
                     {isMicronutrientsExpanded ? (
                       <ChevronDown className="w-4 h-4 text-gray-400" />
                     ) : (
