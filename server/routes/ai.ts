@@ -260,8 +260,8 @@ router.post('/nutrition-analysis', async (req, res) => {
                  typeof value === 'number' &&
                  value > 0;
         }).length;
-        // Consider record complete if it has at least 5 meaningful micronutrients
-        return meaningfulValues >= 5;
+        // Consider record complete if it has at least 2 meaningful micronutrients (more realistic standard)
+        return meaningfulValues >= 2;
       }).length,
       avgMicronutrientsPerRecord: nutrition.reduce((acc: number, n: any) => {
         const micro = n.micronutrients || {};
@@ -277,7 +277,12 @@ router.post('/nutrition-analysis', async (req, res) => {
       }, 0) / nutrition.length
     };
     
-    const dataCompletenessScore = (dataQualityMetrics.recordsWithCompleteMicronutrients / dataQualityMetrics.totalRecords) * 100;
+    // Enhanced completeness score that considers both presence and completeness of micronutrients
+    const basicMicronutrientPresence = (dataQualityMetrics.recordsWithMicronutrients / dataQualityMetrics.totalRecords) * 100;
+    const comprehensiveDataScore = (dataQualityMetrics.recordsWithCompleteMicronutrients / dataQualityMetrics.totalRecords) * 100;
+    
+    // Weighted score: 60% for having any micronutrients, 40% for comprehensive data
+    const dataCompletenessScore = (basicMicronutrientPresence * 0.6) + (comprehensiveDataScore * 0.4);
 
     // Calculate macronutrient totals for better AI analysis
     const macronutrientTotals = nutrition.reduce((totals: any, log: any) => {
