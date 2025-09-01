@@ -120,6 +120,10 @@ export function AddFood({ user }: AddFoodProps) {
   // Nutrient details modal states
   const [showNutrientModal, setShowNutrientModal] = useState(false);
   const [selectedItemForNutrients, setSelectedItemForNutrients] = useState<any>(null);
+  
+  // Enhanced loading states for better UX
+  const [analysisStep, setAnalysisStep] = useState('');
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
   // Reset history display limit when search query changes
   useEffect(() => {
@@ -136,6 +140,16 @@ export function AddFood({ user }: AddFoodProps) {
   const aiAnalyzeMutation = useMutation({
     mutationFn: async (data: { foodName?: string; description?: string; images?: string[]; portionWeight?: string; portionUnit?: string }) => {
       console.log("AI Analysis starting with data:", data);
+      
+      // Progressive loading steps
+      if (data.images && data.images.length > 0) {
+        setAnalysisStep('Processing images...');
+        // Short delay to show step
+        await new Promise(resolve => setTimeout(resolve, 400));
+      }
+      
+      setAnalysisStep('Analyzing nutrition data...');
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       const payload: any = {
         quantity: parseFloat(quantity),
@@ -161,15 +175,24 @@ export function AddFood({ user }: AddFoodProps) {
       }
       
       console.log("Sending payload to AI analysis:", payload);
+      setAnalysisStep('Calculating macros...');
       
       const response = await apiRequest("POST", "/api/nutrition/analyze", payload);
       const result = await response.json();
+      
+      setAnalysisStep('Finalizing results...');
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       console.log("AI Analysis result:", result);
       return result;
     },
     onError: (error: any) => {
       console.error("AI Analysis error:", error);
+      
+      // Clear loading states on error
+      setShowSkeleton(false);
+      setAnalysisStep('');
+      
       toast({
         title: "AI Analysis Failed",
         description: error.message || "Failed to analyze food with AI",
@@ -216,9 +239,15 @@ export function AddFood({ user }: AddFoodProps) {
         }
       }
       
+      // Clear loading states
+      setShowSkeleton(false);
+      setAnalysisStep('');
+      
+      // Success feedback with enhanced message
       toast({
-        title: "Success",
-        description: "Food analyzed successfully with AI!"
+        title: "Analysis Complete! ✨",
+        description: `Found nutrition data for ${data.servingDetails ? data.servingDetails : 'your food'}`,
+        duration: 3000
       });
     }
   });
@@ -311,6 +340,17 @@ export function AddFood({ user }: AddFoodProps) {
       });
       return;
     }
+    
+    // Enhanced UX: Show progressive loading states with immediate feedback
+    setShowSkeleton(true);
+    setAnalysisStep('Preparing analysis...');
+    
+    // Provide instant visual feedback
+    toast({
+      title: "Analysis Started",
+      description: "AI is analyzing your food...",
+      duration: 2000
+    });
     
     console.log("Calling AI mutation without portion info to get fresh AI-generated values...");
     // Don't send portion information for new analyses - let AI generate fresh values
@@ -964,16 +1004,54 @@ export function AddFood({ user }: AddFoodProps) {
                   className="w-full h-9 ios-button touch-target"
                 >
                   {isLoading ? (
-                    <div className="ios-loading-dots flex items-center gap-1 mr-2">
-                      <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
-                      <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
-                      <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="ios-loading-dots flex items-center gap-1">
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="dot w-1.5 h-1.5 bg-white rounded-full"></div>
+                      </div>
+                      {analysisStep && (
+                        <span className="text-xs text-white/90">{analysisStep}</span>
+                      )}
                     </div>
                   ) : (
-                    <Brain className="w-4 h-4 mr-2" />
+                    <>
+                      <Brain className="w-4 h-4 mr-2" />
+                      Analyze with AI
+                    </>
                   )}
-                  Analyze with AI
                 </Button>
+                
+                {/* Skeleton Loading Preview - Show while analysis is in progress */}
+                {showSkeleton && !dynamicMacros && (
+                  <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 animate-pulse">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-blue-300 dark:bg-blue-600 rounded"></div>
+                      <div className="h-4 bg-blue-300 dark:bg-blue-600 rounded w-32"></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded mb-1"></div>
+                        <div className="h-4 bg-gray-400 dark:bg-gray-500 rounded w-12 mx-auto"></div>
+                      </div>
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded mb-1"></div>
+                        <div className="h-4 bg-blue-400 rounded w-10 mx-auto"></div>
+                      </div>
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded mb-1"></div>
+                        <div className="h-4 bg-orange-400 rounded w-8 mx-auto"></div>
+                      </div>
+                      <div className="text-center p-2 bg-white dark:bg-gray-800 rounded">
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded mb-1"></div>
+                        <div className="h-4 bg-green-400 rounded w-6 mx-auto"></div>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="h-3 bg-blue-300 dark:bg-blue-600 rounded w-48 mx-auto"></div>
+                    </div>
+                  </div>
+                )}
 
                 {/* AI Analysis Results - Dynamic Volume-Based Display */}
                 {dynamicMacros && (
