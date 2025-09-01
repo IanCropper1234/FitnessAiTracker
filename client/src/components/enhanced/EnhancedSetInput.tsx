@@ -386,7 +386,11 @@ export const EnhancedSetInput: React.FC<EnhancedSetInputProps> = ({
               )}
             </div>
             <Select
-              value={specialMethod || "standard"}
+              value={(() => {
+                const value = specialMethod || "standard";
+                console.log(`🎯 EnhancedSetInput Select value for exercise ${exerciseId}:`, { specialMethod, value });
+                return value;
+              })()}
               onValueChange={(value) => onSpecialMethodChange?.(value === "standard" ? null : value)}
             >
               <SelectTrigger className="h-8 text-xs border border-border/50 bg-background touch-target ios-touch-feedback">
