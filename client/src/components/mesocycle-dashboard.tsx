@@ -453,10 +453,25 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       {/* Recommendations */}
       {recommendations && (
         <Tabs defaultValue="volume" className="w-full">
-          <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800  p-1">
-            <TabsTrigger value="volume" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Volume Progression</TabsTrigger>
-            <TabsTrigger value="fatigue" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Fatigue Analysis</TabsTrigger>
-            <TabsTrigger value="phase" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Phase Management</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 p-1 relative rounded-lg shadow-inner">
+            <TabsTrigger 
+              value="volume" 
+              className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
+            >
+              <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Volume Progression</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="fatigue" 
+              className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
+            >
+              <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Fatigue Analysis</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="phase" 
+              className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
+            >
+              <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Phase Management</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="volume" className="space-y-4">
