@@ -442,14 +442,14 @@ export default function CreateAIWorkoutSession() {
       </div>
       <div className="grid lg:grid-cols-2 gap-6 min-h-0 max-h-[calc(100vh-120px)]">
         {/* Configuration Form */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
               Training Configuration
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 max-h-[85vh] overflow-y-auto pr-2">
             {/* Generation Mode Selector */}
             <div>
               <label className="text-sm font-medium mb-3 block">Generation Mode</label>
@@ -651,28 +651,28 @@ export default function CreateAIWorkoutSession() {
             
             {/* Skeleton Loading Preview - Show while generation is in progress */}
             {showSkeleton && !recommendationMutation.data && (
-              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 animate-pulse">
+              <div className="space-y-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 animate-pulse rounded-lg overflow-hidden">
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-blue-300 dark:bg-blue-600 rounded"></div>
-                  <div className="h-4 bg-blue-300 dark:bg-blue-600 rounded w-48"></div>
+                  <div className="w-4 h-4 bg-blue-300 dark:bg-blue-600 rounded flex-shrink-0"></div>
+                  <div className="h-3 bg-blue-300 dark:bg-blue-600 rounded flex-1 max-w-48"></div>
                 </div>
                 
                 {viewMode === 'weekly' ? (
                   /* Weekly Plan Skeleton */
-                  <div className="space-y-3">
-                    <div className="p-3 bg-white dark:bg-gray-800 rounded border">
-                      <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
-                      <div className="h-3 bg-gray-300 rounded w-20 mb-2"></div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="h-3 bg-gray-300 rounded w-16"></div>
-                        <div className="h-3 bg-gray-300 rounded w-20"></div>
+                  <div className="space-y-2 max-h-32 overflow-hidden">
+                    <div className="p-2 bg-white dark:bg-gray-800 rounded border">
+                      <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+                      <div className="h-2 bg-gray-300 rounded w-16 mb-1"></div>
+                      <div className="grid grid-cols-2 gap-1">
+                        <div className="h-2 bg-gray-300 rounded w-12"></div>
+                        <div className="h-2 bg-gray-300 rounded w-16"></div>
                       </div>
                     </div>
-                    {[1, 2, 3].map((i) => (
+                    {[1, 2].map((i) => (
                       <div key={i} className="p-2 bg-white dark:bg-gray-800 rounded border">
                         <div className="flex items-center justify-between mb-1">
-                          <div className="h-3 bg-gray-300 rounded w-24"></div>
-                          <div className="h-3 bg-blue-400 rounded w-12"></div>
+                          <div className="h-2 bg-gray-300 rounded w-20"></div>
+                          <div className="h-2 bg-blue-400 rounded w-10"></div>
                         </div>
                         <div className="h-2 bg-gray-300 rounded w-full mb-1"></div>
                         <div className="h-2 bg-gray-300 rounded w-2/3"></div>
@@ -681,38 +681,42 @@ export default function CreateAIWorkoutSession() {
                   </div>
                 ) : (
                   /* Single Session Skeleton */
-                  <div className="space-y-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="p-3 bg-white dark:bg-gray-800 rounded border">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="h-4 bg-gray-300 rounded w-32"></div>
-                          <div className="h-3 bg-green-400 rounded w-16"></div>
+                  <div className="space-y-2 max-h-40 overflow-hidden">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="p-2 bg-white dark:bg-gray-800 rounded border">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="h-3 bg-gray-300 rounded w-24"></div>
+                          <div className="h-2 bg-green-400 rounded w-12"></div>
                         </div>
-                        <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
-                        <div className="h-3 bg-gray-300 rounded w-3/4 mb-2"></div>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div className="h-3 bg-gray-300 rounded w-12"></div>
-                          <div className="h-3 bg-gray-300 rounded w-16"></div>
-                          <div className="h-3 bg-gray-300 rounded w-14"></div>
+                        <div className="h-2 bg-gray-300 rounded w-full mb-1"></div>
+                        <div className="h-2 bg-gray-300 rounded w-3/4 mb-1"></div>
+                        <div className="grid grid-cols-3 gap-1">
+                          <div className="h-2 bg-gray-300 rounded w-10"></div>
+                          <div className="h-2 bg-gray-300 rounded w-12"></div>
+                          <div className="h-2 bg-gray-300 rounded w-10"></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
+                
+                <div className="text-center pt-1">
+                  <p className="text-xs text-blue-600 dark:text-blue-400">正在生成個人化運動計劃...</p>
+                </div>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Results */}
-        <Card className="flex flex-col max-h-[90vh]">
+        <Card className="flex flex-col max-h-[90vh] overflow-hidden">
           <CardHeader className="flex-shrink-0">
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5" />
               AI Recommendations
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 min-h-0 overflow-hidden">
+          <CardContent className="flex-1 min-h-0 overflow-hidden p-4">
             {!recommendationMutation.data && !recommendationMutation.isPending && (
               <div className="text-center py-12 text-muted-foreground">
                 <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
