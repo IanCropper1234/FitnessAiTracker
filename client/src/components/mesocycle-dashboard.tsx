@@ -320,29 +320,31 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       {activeMesocycle ? (
         <Card>
           <CardHeader className="flex flex-col space-y-3 p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  {activeMesocycle.isPaused ? (
-                    <PauseCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                  ) : (
-                    <PlayCircle className="h-5 w-5 text-blue-500 flex-shrink-0" />
-                  )}
-                  <CardTitle className="tracking-tight text-lg font-semibold">
-                    {activeMesocycle.name}
-                  </CardTitle>
-                  {activeMesocycle.isPaused && (
-                    <Badge variant="outline" className="text-orange-600 border-orange-600">
-                      Paused
-                    </Badge>
-                  )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {activeMesocycle.isPaused ? (
+                  <PauseCircle className="h-6 w-6 text-orange-500 flex-shrink-0" />
+                ) : (
+                  <PlayCircle className="h-6 w-6 text-blue-500 flex-shrink-0" />
+                )}
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <CardTitle className="tracking-tight text-lg font-semibold">
+                      {activeMesocycle.name}
+                    </CardTitle>
+                    {activeMesocycle.isPaused && (
+                      <Badge variant="outline" className="text-orange-600 border-orange-600">
+                        Paused
+                      </Badge>
+                    )}
+                  </div>
+                  <CardDescription>
+                    Week {activeMesocycle.currentWeek} of {activeMesocycle.totalWeeks}
+                    {activeMesocycle.isPaused && activeMesocycle.pauseReason && (
+                      <span className="text-orange-600 block mt-1">• {activeMesocycle.pauseReason}</span>
+                    )}
+                  </CardDescription>
                 </div>
-                <CardDescription className="ml-8">
-                  Week {activeMesocycle.currentWeek} of {activeMesocycle.totalWeeks}
-                  {activeMesocycle.isPaused && activeMesocycle.pauseReason && (
-                    <span className="text-orange-600 block mt-1">• {activeMesocycle.pauseReason}</span>
-                  )}
-                </CardDescription>
               </div>
               <Badge className={getPhaseColor(activeMesocycle.phase)}>
                 {activeMesocycle.phase.charAt(0).toUpperCase() + activeMesocycle.phase.slice(1)}
