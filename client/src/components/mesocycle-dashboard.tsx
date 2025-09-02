@@ -21,6 +21,7 @@ import {
   Edit3,
   Settings,
   Pause,
+  Play,
   RotateCcw,
   ChevronDown,
   ChevronUp
