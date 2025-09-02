@@ -330,7 +330,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                   {activeMesocycle.name}
                   {activeMesocycle.isPaused && (
                     <Badge variant="outline" className="text-orange-600 border-orange-600 ml-2">
-                      暫停中
+                      Paused
                     </Badge>
                   )}
                 </CardTitle>
@@ -427,7 +427,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                     className="flex items-center justify-center gap-1.5 text-xs text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 dark:text-green-400 dark:border-green-800 dark:hover:bg-green-950/30 dark:hover:text-green-300"
                   >
                     <Play className="h-3.5 w-3.5" />
-                    恢復
+                    Resume
                   </Button>
                 ) : (
                   <Button
@@ -438,7 +438,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                     className="flex items-center justify-center gap-1.5 text-xs"
                   >
                     <Pause className="h-3.5 w-3.5" />
-                    暫停
+                    Pause
                   </Button>
                 )}
 
