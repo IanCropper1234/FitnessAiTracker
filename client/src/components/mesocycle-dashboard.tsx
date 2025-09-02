@@ -193,13 +193,13 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   };
 
   const handlePauseMesocycle = (mesocycleId: number) => {
-    const pauseReason = window.prompt("暫停原因 (可選):", "");
+    const pauseReason = window.prompt("Pause reason (optional):", "");
     updateMesocycleMutation.mutate({
       id: mesocycleId,
       updateData: { 
         isPaused: true,
         pauseReason: pauseReason || null,
-        pausedAt: new Date().toISOString()
+        pausedAt: new Date()
       }
     });
   };
