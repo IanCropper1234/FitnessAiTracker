@@ -319,26 +319,28 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       {/* Current Mesocycle Overview */}
       {activeMesocycle ? (
         <Card>
-          <CardHeader className="flex flex-col space-y-1.5 p-6 pl-[23px] pr-[23px] pt-[0px] pb-[0px] mt-[6px] mb-[6px]">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="tracking-tight flex items-center gap-2 text-[18px] text-center font-semibold">
+          <CardHeader className="flex flex-col space-y-3 p-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
                   {activeMesocycle.isPaused ? (
-                    <PauseCircle className="h-5 w-5 text-orange-500" />
+                    <PauseCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
                   ) : (
-                    <PlayCircle className="h-5 w-5 text-blue-500" />
+                    <PlayCircle className="h-5 w-5 text-blue-500 flex-shrink-0" />
                   )}
-                  {activeMesocycle.name}
+                  <CardTitle className="tracking-tight text-lg font-semibold">
+                    {activeMesocycle.name}
+                  </CardTitle>
                   {activeMesocycle.isPaused && (
-                    <Badge variant="outline" className="text-orange-600 border-orange-600 ml-2">
+                    <Badge variant="outline" className="text-orange-600 border-orange-600">
                       Paused
                     </Badge>
                   )}
-                </CardTitle>
-                <CardDescription>
+                </div>
+                <CardDescription className="ml-8">
                   Week {activeMesocycle.currentWeek} of {activeMesocycle.totalWeeks}
                   {activeMesocycle.isPaused && activeMesocycle.pauseReason && (
-                    <span className="text-orange-600 ml-2">• {activeMesocycle.pauseReason}</span>
+                    <span className="text-orange-600 block mt-1">• {activeMesocycle.pauseReason}</span>
                   )}
                 </CardDescription>
               </div>
