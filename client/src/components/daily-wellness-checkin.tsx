@@ -4,13 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Heart, Battery, Moon, Zap, AlertTriangle, Shield, Activity, TrendingDown } from "lucide-react";
+import { Calendar, Heart, Battery, Moon, Zap, AlertTriangle } from "lucide-react";
 import { TimezoneUtils } from "@shared/utils/timezone";
 import { useLocation } from "wouter";
 
@@ -24,12 +22,6 @@ interface DailyWellnessCheckin {
   stressLevel?: number;
   cravingsIntensity?: number;
   adherencePerception?: number;
-  // Illness tracking fields
-  illnessStatus: boolean;
-  illnessSeverity?: number;
-  illnessType?: string;
-  recoveryReadiness?: number;
-  symptomNotes?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -57,13 +49,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
   const [cravingsIntensity, setCravingsIntensity] = useState([5]);
   const [adherencePerception, setAdherencePerception] = useState([7]);
   const [notes, setNotes] = useState("");
-  
-  // Illness tracking states
-  const [illnessStatus, setIllnessStatus] = useState(false);
-  const [illnessSeverity, setIllnessSeverity] = useState([1]);
-  const [illnessType, setIllnessType] = useState("general_illness");
-  const [recoveryReadiness, setRecoveryReadiness] = useState([5]);
-  const [symptomNotes, setSymptomNotes] = useState("");
 
   // Fetch existing checkin for the selected date
   const dateString = currentDateString;
@@ -97,13 +82,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       setCravingsIntensity([existingCheckin.cravingsIntensity || 5]);
       setAdherencePerception([existingCheckin.adherencePerception || 7]);
       setNotes(existingCheckin.notes || "");
-      
-      // Update illness tracking fields
-      setIllnessStatus(existingCheckin.illnessStatus || false);
-      setIllnessSeverity([existingCheckin.illnessSeverity || 1]);
-      setIllnessType(existingCheckin.illnessType || "general_illness");
-      setRecoveryReadiness([existingCheckin.recoveryReadiness || 5]);
-      setSymptomNotes(existingCheckin.symptomNotes || "");
     }
   }, [existingCheckin]);
 
@@ -156,13 +134,7 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
       stressLevel: stressLevel[0],
       cravingsIntensity: cravingsIntensity[0],
       adherencePerception: adherencePerception[0],
-      notes: notes.trim() || null,
-      // Include illness tracking data
-      illnessStatus,
-      illnessSeverity: illnessStatus ? illnessSeverity[0] : null,
-      illnessType: illnessStatus ? illnessType : null,
-      recoveryReadiness: illnessStatus ? recoveryReadiness[0] : null,
-      symptomNotes: illnessStatus ? (symptomNotes.trim() || null) : null
+      notes: notes.trim() || null
     };
 
     submitCheckinMutation.mutate(checkinData);
@@ -351,126 +323,6 @@ export default function DailyWellnessCheckin({ userId, selectedDate }: DailyWell
               step={1}
               className="w-full"
             />
-          </div>
-        </div>
-
-        {/* Illness Tracking Section */}
-        <div className="space-y-4">
-          <h4 className="font-medium text-black dark:text-white flex items-center gap-2">
-            <Shield className="w-4 h-4 text-red-500" />
-            Health & Recovery Status
-            <Badge variant="outline" className="text-xs">RP Methodology</Badge>
-          </h4>
-          
-          {/* Illness Status Toggle */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <div className="flex items-center gap-3">
-                <Activity className="w-4 h-4 text-blue-500" />
-                <div>
-                  <Label className="text-black dark:text-white font-medium">Feeling Under the Weather?</Label>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Enable illness tracking for personalized recovery adjustments</p>
-                </div>
-              </div>
-              <Switch
-                checked={illnessStatus}
-                onCheckedChange={setIllnessStatus}
-                data-testid="switch-illness-status"
-              />
-            </div>
-            
-            {/* Illness Details (shown when illness status is enabled) */}
-            {illnessStatus && (
-              <div className="space-y-4 p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
-                
-                {/* Illness Severity */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-black dark:text-white flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-red-500" />
-                      Illness Severity
-                    </Label>
-                    <span className="text-lg font-semibold text-black dark:text-white">{illnessSeverity[0]}/5</span>
-                  </div>
-                  <Slider
-                    value={illnessSeverity}
-                    onValueChange={setIllnessSeverity}
-                    max={5}
-                    min={1}
-                    step={1}
-                    className="w-full"
-                    data-testid="slider-illness-severity"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <span>Mild</span>
-                    <span>Severe</span>
-                  </div>
-                </div>
-
-                {/* Illness Type */}
-                <div className="space-y-2">
-                  <Label className="text-black dark:text-white">Type of Illness</Label>
-                  <Select value={illnessType} onValueChange={setIllnessType}>
-                    <SelectTrigger data-testid="select-illness-type">
-                      <SelectValue placeholder="Select illness type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="general_illness">General Illness</SelectItem>
-                      <SelectItem value="cold">Cold</SelectItem>
-                      <SelectItem value="flu">Flu</SelectItem>
-                      <SelectItem value="stress">Stress/Fatigue</SelectItem>
-                      <SelectItem value="fatigue">Chronic Fatigue</SelectItem>
-                      <SelectItem value="digestive">Digestive Issues</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Recovery Readiness */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-black dark:text-white">Recovery Readiness</Label>
-                    <span className="text-lg font-semibold text-black dark:text-white">{recoveryReadiness[0]}/10</span>
-                  </div>
-                  <Slider
-                    value={recoveryReadiness}
-                    onValueChange={setRecoveryReadiness}
-                    max={10}
-                    min={1}
-                    step={1}
-                    className="w-full"
-                    data-testid="slider-recovery-readiness"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <span>Not Ready</span>
-                    <span>Fully Ready</span>
-                  </div>
-                </div>
-
-                {/* Symptom Notes */}
-                <div className="space-y-2">
-                  <Label className="text-black dark:text-white">Symptom Details</Label>
-                  <Textarea
-                    value={symptomNotes}
-                    onChange={(e) => setSymptomNotes(e.target.value)}
-                    placeholder="Describe your symptoms, energy levels, or recovery progress..."
-                    className="min-h-[60px]"
-                    data-testid="textarea-symptom-notes"
-                  />
-                </div>
-
-                {/* RP Guidance */}
-                <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-md">
-                  <p className="text-xs text-blue-800 dark:text-blue-200">
-                    <strong>Renaissance Periodization Protocol:</strong> {illnessSeverity[0] >= 4 ? 
-                      "Complete rest recommended during acute illness. Training will be paused automatically." :
-                      illnessSeverity[0] >= 2 ?
-                      "Light activity with 50-70% volume reduction. Focus on recovery nutrition." :
-                      "Gradual return with 30% volume reduction. Monitor energy levels closely."
-                    }
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

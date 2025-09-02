@@ -3870,22 +3870,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/daily-wellness-checkins", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const { 
-        date, 
-        energyLevel, 
-        hungerLevel, 
-        sleepQuality, 
-        stressLevel, 
-        cravingsIntensity, 
-        adherencePerception, 
-        notes,
-        // Illness tracking fields
-        illnessStatus,
-        illnessSeverity,
-        illnessType,
-        recoveryReadiness,
-        symptomNotes
-      } = req.body;
+      const { date, energyLevel, hungerLevel, sleepQuality, stressLevel, cravingsIntensity, adherencePerception, notes } = req.body;
       
       console.log('💾 POST: Received date:', date);
       // Parse date consistently - if it's YYYY-MM-DD format, treat as UTC
@@ -3901,13 +3886,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stressLevel,
         cravingsIntensity,
         adherencePerception,
-        notes,
-        // Include illness tracking data
-        illnessStatus,
-        illnessSeverity,
-        illnessType,
-        recoveryReadiness,
-        symptomNotes
+        notes
       });
       
       console.log('💾 POST: Saved checkin:', `id:${checkin.id}, date:${checkin.date}`);
@@ -3946,112 +3925,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Error creating weekly wellness summary:', error);
       res.status(500).json({ error: 'Failed to create weekly wellness summary' });
-    }
-  });
-
-  // Illness Detection and Recovery API endpoints
-  const { IllnessDetectionService } = await import("./services/illness-detection-service");
-  const { NutritionRecoveryService } = await import("./services/nutrition-recovery-service");
-
-  // Get current illness detection status
-  app.get("/api/illness-detection/status", requireAuth, async (req, res) => {
-    try {
-      const userId = Number(req.userId);
-      const status = await IllnessDetectionService.getCurrentStatus(userId);
-      res.json(status);
-    } catch (error: any) {
-      console.error('Error fetching illness status:', error);
-      res.status(500).json({ error: 'Failed to fetch illness status' });
-    }
-  });
-
-  // Get recovery progress
-  app.get("/api/illness-detection/recovery-progress", requireAuth, async (req, res) => {
-    try {
-      const userId = Number(req.userId);
-      const progress = await IllnessDetectionService.getRecoveryProgress(userId);
-      res.json(progress);
-    } catch (error: any) {
-      console.error('Error fetching recovery progress:', error);
-      res.status(500).json({ error: 'Failed to fetch recovery progress' });
-    }
-  });
-
-  // Manual illness reporting
-  app.post("/api/illness-detection/report", requireAuth, async (req, res) => {
-    try {
-      const userId = Number(req.userId);
-      const { illnessType, severity, symptoms, notes } = req.body;
-      
-      const illnessData = await IllnessDetectionService.reportIllness(userId, {
-        illnessType,
-        severity,
-        symptoms,
-        notes
-      });
-      
-      res.json(illnessData);
-    } catch (error: any) {
-      console.error('Error reporting illness:', error);
-      res.status(500).json({ error: 'Failed to report illness' });
-    }
-  });
-
-  // Update recovery status
-  app.post("/api/illness-detection/update-recovery", requireAuth, async (req, res) => {
-    try {
-      const userId = Number(req.userId);
-      const { recoveryLevel, currentPhase, notes } = req.body;
-      
-      const recoveryData = await IllnessDetectionService.updateRecoveryStatus(userId, {
-        recoveryLevel,
-        currentPhase,
-        notes
-      });
-      
-      res.json(recoveryData);
-    } catch (error: any) {
-      console.error('Error updating recovery status:', error);
-      res.status(500).json({ error: 'Failed to update recovery status' });
-    }
-  });
-
-  // Get nutrition adjustments for recovery
-  app.get("/api/nutrition/recovery-adjustments", requireAuth, async (req, res) => {
-    try {
-      const userId = Number(req.userId);
-      const { illnessType, severity } = req.query;
-      
-      const adjustments = await NutritionRecoveryService.getRecoveryAdjustments(
-        userId,
-        illnessType as string,
-        Number(severity)
-      );
-      
-      res.json(adjustments);
-    } catch (error: any) {
-      console.error('Error fetching recovery adjustments:', error);
-      res.status(500).json({ error: 'Failed to fetch recovery adjustments' });
-    }
-  });
-
-  // Apply recovery nutrition plan
-  app.post("/api/nutrition/apply-recovery-plan", requireAuth, async (req, res) => {
-    try {
-      const userId = Number(req.userId);
-      const { illnessType, severity, duration } = req.body;
-      
-      const recoveryPlan = await NutritionRecoveryService.createRecoveryPlan(
-        userId,
-        illnessType,
-        severity,
-        duration
-      );
-      
-      res.json(recoveryPlan);
-    } catch (error: any) {
-      console.error('Error applying recovery plan:', error);
-      res.status(500).json({ error: 'Failed to apply recovery plan' });
     }
   });
 
@@ -4987,75 +4860,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error advancing mesocycle week:", error);
       res.status(500).json({ error: "Failed to advance week" });
-    }
-  });
-
-  // Illness adjustment endpoints for mesocycles
-  app.post("/api/training/mesocycles/:id/pause", requireAuth, async (req, res) => {
-    try {
-      const mesocycleId = parseInt(req.params.id);
-      const { reason, illnessType, severity } = req.body;
-      
-      const result = await MesocyclePeriodization.pauseForIllness(mesocycleId, {
-        reason: reason || "Illness recovery",
-        illnessType,
-        severity
-      });
-      
-      res.json(result);
-    } catch (error) {
-      console.error("Error pausing mesocycle for illness:", error);
-      res.status(500).json({ error: "Failed to pause mesocycle" });
-    }
-  });
-
-  app.post("/api/training/mesocycles/:id/smart-restart", requireAuth, async (req, res) => {
-    try {
-      const mesocycleId = parseInt(req.params.id);
-      const userId = Number(req.userId);
-      
-      const result = await MesocyclePeriodization.smartRestart(mesocycleId, userId);
-      
-      res.json(result);
-    } catch (error) {
-      console.error("Error performing smart restart:", error);
-      res.status(500).json({ error: "Failed to perform smart restart" });
-    }
-  });
-
-  app.post("/api/training/mesocycles/:id/apply-illness-adjustments", requireAuth, async (req, res) => {
-    try {
-      const mesocycleId = parseInt(req.params.id);
-      const { illnessType, severity, phase } = req.body;
-      
-      const result = await MesocyclePeriodization.applyIllnessAdjustments(mesocycleId, {
-        illnessType,
-        severity,
-        phase
-      });
-      
-      res.json(result);
-    } catch (error) {
-      console.error("Error applying illness adjustments:", error);
-      res.status(500).json({ error: "Failed to apply illness adjustments" });
-    }
-  });
-
-  app.get("/api/training/mesocycles/:id/illness-recommendations", requireAuth, async (req, res) => {
-    try {
-      const mesocycleId = parseInt(req.params.id);
-      const { illnessType, severity } = req.query;
-      
-      const recommendations = await MesocyclePeriodization.getIllnessRecommendations(
-        mesocycleId,
-        illnessType as string,
-        Number(severity)
-      );
-      
-      res.json(recommendations);
-    } catch (error) {
-      console.error("Error fetching illness recommendations:", error);
-      res.status(500).json({ error: "Failed to fetch illness recommendations" });
     }
   });
 

@@ -162,12 +162,6 @@ export const dailyWellnessCheckins = pgTable("daily_wellness_checkins", {
   stressLevel: integer("stress_level"), // 1-10 scale (optional)
   cravingsIntensity: integer("cravings_intensity"), // 1-10 scale (optional)
   adherencePerception: integer("adherence_perception"), // 1-10 how well user thinks they stuck to plan
-  // Illness tracking fields for training and nutrition adjustments
-  illnessStatus: boolean("illness_status").default(false).notNull(), // Is user experiencing illness symptoms
-  illnessSeverity: integer("illness_severity"), // 1-5 scale: 1=mild, 5=severe (only if illnessStatus is true)
-  illnessType: text("illness_type"), // cold, flu, fatigue, stress, injury, other
-  recoveryReadiness: integer("recovery_readiness"), // 1-10 scale: readiness to resume training
-  symptomNotes: text("symptom_notes"), // Specific illness symptoms or recovery notes
   notes: text("notes"), // Optional user notes
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -481,12 +475,6 @@ export const dietGoals = pgTable("diet_goals", {
   targetFat: decimal("target_fat", { precision: 6, scale: 2 }).notNull(),
   autoRegulation: boolean("auto_regulation").notNull().default(true),
   weeklyWeightTarget: decimal("weekly_weight_target", { precision: 4, scale: 2 }), // kg per week
-  // Recovery and illness adjustment fields
-  recoveryMode: boolean("recovery_mode").default(false).notNull(), // Is user in illness recovery mode
-  preIllnessTargets: jsonb("pre_illness_targets"), // Backup of normal macro targets before illness
-  illnessModifier: decimal("illness_modifier", { precision: 5, scale: 2 }).default("1.00"), // Adjustment multiplier for recovery
-  hydrationEmphasis: boolean("hydration_emphasis").default(false), // Enhanced hydration focus during illness
-  micronutrientFocus: boolean("micronutrient_focus").default(false), // Emphasize immune-supporting nutrients
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -519,13 +507,6 @@ export const mesocycles = pgTable("mesocycles", {
   totalWeeks: integer("total_weeks").notNull().default(6),
   phase: text("phase").notNull().default("accumulation"), // accumulation, intensification, deload
   isActive: boolean("is_active").default(true),
-  // Illness adjustment and pause functionality
-  isPaused: boolean("is_paused").default(false).notNull(), // Is mesocycle currently paused
-  pauseReason: text("pause_reason"), // illness, injury, vacation, personal
-  pausedAt: timestamp("paused_at"), // When mesocycle was paused
-  preIllnessWeek: integer("pre_illness_week"), // Week number to resume from after illness
-  illnessAdjustments: jsonb("illness_adjustments"), // JSON containing adjustment history and settings
-  recoveryTrackingStarted: timestamp("recovery_tracking_started"), // When recovery tracking began
   createdAt: timestamp("created_at").defaultNow(),
 });
 
