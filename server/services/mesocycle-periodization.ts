@@ -949,10 +949,20 @@ export class MesocyclePeriodization {
    * Update mesocycle (pause, restart, modify)
    */
   static async updateMesocycle(mesocycleId: number, updateData: any) {
+    // Clean up the data to ensure proper types
+    const cleanedData = { ...updateData };
+    
+    // Handle Date fields properly
+    if (cleanedData.pausedAt === null) {
+      cleanedData.pausedAt = null;
+    } else if (cleanedData.pausedAt && !(cleanedData.pausedAt instanceof Date)) {
+      cleanedData.pausedAt = new Date(cleanedData.pausedAt);
+    }
+    
     const result = await db
       .update(mesocycles)
       .set({
-        ...updateData,
+        ...cleanedData,
         updatedAt: new Date()
       })
       .where(eq(mesocycles.id, mesocycleId))
