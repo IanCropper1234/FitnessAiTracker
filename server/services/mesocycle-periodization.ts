@@ -8,11 +8,13 @@ import {
   workoutSessions,
   workoutExercises,
   loadProgressionTracking,
-  exerciseMuscleMapping
+  exerciseMuscleMapping,
+  dailyWellnessCheckins
 } from "@shared/schema";
 import { eq, and, gte, lte, sql, desc, isNotNull, inArray } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
 import { SciAlgorithmCore } from "./scientific-algorithm-core";
+import { IllnessDetectionService } from "./illness-detection-service";
 
 interface VolumeProgression {
   muscleGroupId: number;
@@ -1474,5 +1476,348 @@ export class MesocyclePeriodization {
     });
     
     return weeks;
+  }
+
+  // ======================== ILLNESS ADJUSTMENT METHODS ========================
+
+  /**
+   * Apply illness-based volume adjustments to mesocycle using RP methodology
+   * Supports different illness phases: acute, recovery, return
+   */
+  static async applyIllnessAdjustments(
+    userId: number,
+    illnessData: {
+      severity: number; // 1-5 scale
+      type: string;
+      phase: 'acute' | 'recovery' | 'return'; // Based on RP illness protocols
+    }
+  ): Promise<{
+    volumeAdjustments: VolumeProgression[];
+    phaseRecommendation: string;
+    returnWeek: number | null;
+  }> {
+
+    // Get current volume landmarks
+    const landmarks = await db
+      .select({
+        muscleGroupId: volumeLandmarks.muscleGroupId,
+        muscleGroupName: muscleGroups.name,
+        mev: volumeLandmarks.mev,
+        mav: volumeLandmarks.mav,
+        mrv: volumeLandmarks.mrv,
+        currentVolume: volumeLandmarks.currentVolume,
+        targetVolume: volumeLandmarks.targetVolume
+      })
+      .from(volumeLandmarks)
+      .innerJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
+      .where(eq(volumeLandmarks.userId, userId));
+
+    const adjustments: VolumeProgression[] = [];
+    let phaseRecommendation = "";
+    let returnWeek: number | null = null;
+
+    // RP Illness Adjustment Protocols
+    for (const landmark of landmarks) {
+      let adjustedVolume = landmark.currentVolume;
+      let phase: 'accumulation' | 'intensification' | 'deload' = 'deload';
+
+      switch (illnessData.phase) {
+        case 'acute':
+          // RP Protocol: Complete rest during acute illness
+          adjustedVolume = 0;
+          phaseRecommendation = "Complete rest recommended during acute illness phase";
+          break;
+
+        case 'recovery':
+          // RP Protocol: 50-70% volume reduction during recovery
+          const recoveryReduction = 0.3 + (illnessData.severity * 0.1); // 30-80% reduction
+          adjustedVolume = Math.max(0, Math.floor(landmark.mev * (1 - recoveryReduction)));
+          phaseRecommendation = `Light activity with ${Math.round(recoveryReduction * 100)}% volume reduction`;
+          break;
+
+        case 'return':
+          // RP Protocol: 30% volume reduction for return phase
+          adjustedVolume = Math.max(landmark.mev, Math.floor(landmark.currentVolume * 0.7));
+          phase = 'accumulation';
+          phaseRecommendation = "Gradual return with 30% volume reduction";
+          returnWeek = 1; // Start fresh progression
+          break;
+      }
+
+      adjustments.push({
+        muscleGroupId: landmark.muscleGroupId,
+        muscleGroupName: landmark.muscleGroupName,
+        week: 1,
+        targetSets: adjustedVolume,
+        phase
+      });
+    }
+
+    return {
+      volumeAdjustments: adjustments,
+      phaseRecommendation,
+      returnWeek
+    };
+  }
+
+  /**
+   * Calculate recovery progression timeline based on RP methodology
+   */
+  static async calculateRecoveryProgression(
+    userId: number,
+    daysInRecovery: number
+  ): Promise<{
+    currentPhase: 'acute' | 'recovery' | 'return';
+    progressionPlan: {
+      week: number;
+      volumePercentage: number;
+      recommendations: string[];
+    }[];
+    estimatedFullReturn: number; // days
+  }> {
+
+    // Get illness severity from recent wellness check-ins
+    const recentCheckin = await db
+      .select()
+      .from(dailyWellnessCheckins)
+      .where(and(
+        eq(dailyWellnessCheckins.userId, userId),
+        eq(dailyWellnessCheckins.illnessStatus, true)
+      ))
+      .orderBy(desc(dailyWellnessCheckins.date))
+      .limit(1);
+
+    const severity = recentCheckin[0]?.illnessSeverity || 3;
+
+    // RP Recovery Timeline Methodology
+    let currentPhase: 'acute' | 'recovery' | 'return';
+    let estimatedFullReturn: number;
+
+    if (daysInRecovery < 2) {
+      currentPhase = 'acute';
+      estimatedFullReturn = 7 + (severity * 2);
+    } else if (daysInRecovery < (5 + severity)) {
+      currentPhase = 'recovery';
+      estimatedFullReturn = 14 + (severity * 2);
+    } else {
+      currentPhase = 'return';
+      estimatedFullReturn = Math.max(0, 21 - daysInRecovery);
+    }
+
+    // Generate 4-week progression plan
+    const progressionPlan = [];
+    for (let week = 1; week <= 4; week++) {
+      let volumePercentage: number;
+      let recommendations: string[];
+
+      switch (currentPhase) {
+        case 'acute':
+          volumePercentage = 0;
+          recommendations = ["Complete rest", "Focus on hydration and sleep", "Monitor symptoms"];
+          break;
+        case 'recovery':
+          volumePercentage = 30 + (week * 10); // 30%, 40%, 50%, 60%
+          recommendations = [
+            "Light movement only",
+            "Listen to body signals",
+            "Avoid high intensity",
+            "Prioritize recovery practices"
+          ];
+          break;
+        case 'return':
+          volumePercentage = 50 + (week * 12.5); // 50%, 62.5%, 75%, 87.5%
+          recommendations = [
+            "Gradual volume increase",
+            "Monitor energy levels closely",
+            "Be ready to reduce if symptoms return",
+            week >= 3 ? "Can approach normal training" : "Still below normal volume"
+          ];
+          break;
+      }
+
+      progressionPlan.push({
+        week,
+        volumePercentage: Math.min(100, volumePercentage),
+        recommendations
+      });
+    }
+
+    return {
+      currentPhase,
+      progressionPlan,
+      estimatedFullReturn
+    };
+  }
+
+  /**
+   * Smart restart mesocycle after illness recovery using RP principles
+   */
+  static async smartRestart(
+    mesocycleId: number,
+    recoveryLevel: number // 1-10 scale
+  ): Promise<{
+    success: boolean;
+    restartStrategy: 'resume' | 'partial_restart' | 'full_restart';
+    adjustments: any;
+    newCurrentWeek: number;
+  }> {
+
+    // Get paused mesocycle
+    const mesocycle = await db
+      .select()
+      .from(mesocycles)
+      .where(eq(mesocycles.id, mesocycleId))
+      .limit(1);
+
+    if (mesocycle.length === 0 || !mesocycle[0].isPaused) {
+      throw new Error("No paused mesocycle found");
+    }
+
+    const mesocycleData = mesocycle[0];
+    const illnessAdjustments = mesocycleData.illnessAdjustments as any;
+    
+    // RP Smart Restart Decision Matrix
+    let restartStrategy: 'resume' | 'partial_restart' | 'full_restart';
+    let newCurrentWeek: number;
+    let adjustments: any = {};
+
+    if (recoveryLevel >= 8) {
+      // High recovery: Resume from where left off with slight volume reduction
+      restartStrategy = 'resume';
+      newCurrentWeek = mesocycleData.preIllnessWeek || mesocycleData.currentWeek;
+      adjustments = {
+        volumeReduction: 15, // 15% volume reduction for safety
+        intensityMaintained: true,
+        specialNote: "Full recovery - minimal adjustments needed"
+      };
+    } else if (recoveryLevel >= 6) {
+      // Moderate recovery: Partial restart from 1-2 weeks back
+      restartStrategy = 'partial_restart';
+      newCurrentWeek = Math.max(1, (mesocycleData.preIllnessWeek || mesocycleData.currentWeek) - 1);
+      adjustments = {
+        volumeReduction: 25, // 25% volume reduction
+        weeklyProgression: 'conservative',
+        specialNote: "Moderate recovery - conservative approach"
+      };
+    } else {
+      // Low recovery: Full restart with deload week
+      restartStrategy = 'full_restart';
+      newCurrentWeek = 1;
+      adjustments = {
+        volumeReduction: 40, // 40% volume reduction
+        startWithDeload: true,
+        extendedWarmup: true,
+        specialNote: "Low recovery - extended rehabilitation needed"
+      };
+    }
+
+    // Update mesocycle
+    await db
+      .update(mesocycles)
+      .set({
+        isPaused: false,
+        currentWeek: newCurrentWeek,
+        pauseReason: null,
+        pausedAt: null,
+        recoveryTrackingStarted: null,
+        illnessAdjustments: {
+          ...illnessAdjustments,
+          restartData: {
+            restartedAt: new Date().toISOString(),
+            restartStrategy,
+            recoveryLevel,
+            adjustments
+          }
+        }
+      })
+      .where(eq(mesocycles.id, mesocycleId));
+
+    return {
+      success: true,
+      restartStrategy,
+      adjustments,
+      newCurrentWeek
+    };
+  }
+
+  /**
+   * Monitor ongoing recovery and suggest mesocycle adjustments
+   */
+  static async monitorRecoveryProgress(userId: number): Promise<{
+    recoveryTrend: 'improving' | 'stable' | 'declining';
+    currentRecoveryLevel: number;
+    recommendations: string[];
+    shouldPauseMesocycle: boolean;
+  }> {
+
+    // Get recovery readiness data
+    const recoveryData = await IllnessDetectionService.evaluateRecoveryReadiness(userId);
+    
+    // Get recent wellness trends (last 5 days)
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+    
+    const recentCheckins = await db
+      .select()
+      .from(dailyWellnessCheckins)
+      .where(and(
+        eq(dailyWellnessCheckins.userId, userId),
+        gte(dailyWellnessCheckins.date, fiveDaysAgo)
+      ))
+      .orderBy(desc(dailyWellnessCheckins.date));
+
+    if (recentCheckins.length < 2) {
+      return {
+        recoveryTrend: 'stable',
+        currentRecoveryLevel: 5,
+        recommendations: ["Need more wellness data to assess recovery trend"],
+        shouldPauseMesocycle: false
+      };
+    }
+
+    // Calculate trend
+    const recentAvg = recentCheckins.slice(0, 2).reduce((sum, c) => sum + c.energyLevel, 0) / 2;
+    const olderAvg = recentCheckins.slice(-2).reduce((sum, c) => sum + c.energyLevel, 0) / 2;
+    
+    let recoveryTrend: 'improving' | 'stable' | 'declining';
+    if (recentAvg > olderAvg + 1) {
+      recoveryTrend = 'improving';
+    } else if (recentAvg < olderAvg - 1) {
+      recoveryTrend = 'declining';
+    } else {
+      recoveryTrend = 'stable';
+    }
+
+    // Calculate current recovery level
+    const currentRecoveryLevel = Math.round(recoveryData.recoveryPercentage / 10);
+
+    // Generate recommendations
+    const recommendations: string[] = [];
+    let shouldPauseMesocycle = false;
+
+    if (recoveryTrend === 'declining' && currentRecoveryLevel < 6) {
+      recommendations.push("Recovery appears to be declining - consider additional rest");
+      shouldPauseMesocycle = true;
+    } else if (recoveryTrend === 'improving' && currentRecoveryLevel >= 7) {
+      recommendations.push("Recovery progressing well - can continue current plan");
+    } else if (recoveryTrend === 'stable' && currentRecoveryLevel >= 6) {
+      recommendations.push("Stable recovery - maintain current training approach");
+    }
+
+    // Add RP-specific recommendations
+    if (currentRecoveryLevel < 5) {
+      recommendations.push("Focus on sleep, nutrition, and stress management");
+    }
+    if (recentCheckins.some(c => c.illnessStatus)) {
+      recommendations.push("Illness symptoms still present - prioritize complete recovery");
+      shouldPauseMesocycle = true;
+    }
+
+    return {
+      recoveryTrend,
+      currentRecoveryLevel,
+      recommendations,
+      shouldPauseMesocycle
+    };
   }
 }

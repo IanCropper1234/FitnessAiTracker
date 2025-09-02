@@ -23,7 +23,11 @@ import {
   Pause,
   RotateCcw,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Shield,
+  Activity,
+  Heart,
+  RefreshCw
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 // import MesocycleProgramBuilder from "./mesocycle-program-builder"; // Replaced with standalone page
@@ -40,6 +44,221 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
+// Health Monitoring Panel Component
+function HealthMonitoringPanel({ userId, activeMesocycle }: { userId: number; activeMesocycle?: Mesocycle }) {
+  const [, setLocation] = useLocation();
+  
+  // Fetch current wellness status
+  const { data: currentWellness } = useQuery({
+    queryKey: ['/api/daily-wellness-checkins', new Date().toISOString().split('T')[0]],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const response = await apiRequest('GET', `/api/daily-wellness-checkins?date=${today}`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
+  // Fetch illness detection status
+  const { data: illnessStatus } = useQuery({
+    queryKey: ['/api/illness-detection/status', userId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/illness-detection/status`);
+      if (!response.ok) return null;
+      return response.json();
+    }
+  });
+
+  // Fetch recovery progress if illness is detected
+  const { data: recoveryProgress } = useQuery({
+    queryKey: ['/api/illness-detection/recovery-progress', userId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/illness-detection/recovery-progress`);
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!illnessStatus?.isIll
+  });
+
+  const getHealthStatusColor = (isIll: boolean, severity?: number) => {
+    if (!isIll) return 'text-green-600';
+    if (severity && severity >= 4) return 'text-red-600';
+    if (severity && severity >= 2) return 'text-yellow-600';
+    return 'text-orange-600';
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Current Health Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Current Health Status
+          </CardTitle>
+          <CardDescription>
+            Real-time health monitoring based on daily wellness check-ins
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Health Status Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300">Health Status</p>
+                <p className={`text-xl font-bold ${getHealthStatusColor(illnessStatus?.isIll, illnessStatus?.severity)}`}>
+                  {illnessStatus?.isIll ? 'Under Weather' : 'Healthy'}
+                </p>
+                {illnessStatus?.isIll && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Severity: {illnessStatus.severity}/5
+                  </p>
+                )}
+              </div>
+              
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300">Energy Level</p>
+                <p className={`text-xl font-bold ${currentWellness?.energyLevel >= 7 ? 'text-green-600' : currentWellness?.energyLevel >= 4 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  {currentWellness?.energyLevel || '-'}/10
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Today</p>
+              </div>
+
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <p className="text-sm text-gray-600 dark:text-gray-300">Recovery Readiness</p>
+                <p className={`text-xl font-bold ${currentWellness?.recoveryReadiness >= 7 ? 'text-green-600' : currentWellness?.recoveryReadiness >= 4 ? 'text-yellow-600' : 'text-red-600'}`}>
+                  {currentWellness?.recoveryReadiness || '-'}/10
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {currentWellness?.illnessStatus ? 'Recovery Mode' : 'Normal'}
+                </p>
+              </div>
+            </div>
+
+            {/* Illness Alert */}
+            {illnessStatus?.isIll && (
+              <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                  <span className="font-medium text-red-800 dark:text-red-200">Illness Detected</span>
+                  <Badge variant="destructive">{illnessStatus.type}</Badge>
+                </div>
+                <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                  {illnessStatus.recommendations?.[0] || "Focus on recovery and consider training adjustments"}
+                </p>
+                
+                {/* Recovery Timeline */}
+                {recoveryProgress && (
+                  <div className="bg-white dark:bg-gray-900 p-3 rounded-md">
+                    <p className="text-xs font-medium mb-2">Recovery Progress</p>
+                    <div className="flex items-center justify-between text-xs">
+                      <span>Phase: {recoveryProgress.currentPhase}</span>
+                      <span>{recoveryProgress.currentRecoveryLevel}/10</span>
+                    </div>
+                    <div className="mt-2 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${recoveryProgress.currentRecoveryLevel * 10}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {/* Action buttons */}
+                <div className="flex gap-2 mt-3">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setLocation('/wellness-checkin')}
+                    data-testid="button-update-wellness"
+                  >
+                    <Activity className="h-3 w-3 mr-1" />
+                    Update Status
+                  </Button>
+                  {activeMesocycle && !activeMesocycle.isPaused && illnessStatus.severity >= 3 && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="text-yellow-700 border-yellow-300"
+                      data-testid="button-pause-for-illness"
+                    >
+                      <Pause className="h-3 w-3 mr-1" />
+                      Pause Training
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Healthy Status */}
+            {!illnessStatus?.isIll && (
+              <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-green-800 dark:text-green-200">Optimal Health Status</span>
+                </div>
+                <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                  No illness detected. Continue with your current training program.
+                </p>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => setLocation('/wellness-checkin')}
+                  data-testid="button-daily-checkin"
+                >
+                  <Heart className="h-3 w-3 mr-1" />
+                  Daily Check-in
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* RP Protocol Guidance */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Renaissance Periodization Protocol
+            <Badge variant="outline" className="text-xs">Evidence-Based</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="p-3 border rounded-lg">
+                <h4 className="font-medium text-sm mb-1">Acute Phase</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Severity 4-5: Complete rest, focus on recovery
+                </p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <h4 className="font-medium text-sm mb-1">Recovery Phase</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Severity 2-3: 50-70% volume reduction
+                </p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <h4 className="font-medium text-sm mb-1">Return Phase</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Severity 1: 30% volume reduction, gradual return
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-md">
+              <p className="text-xs text-blue-800 dark:text-blue-200">
+                <strong>TrainPro System:</strong> Automatic illness detection, evidence-based volume adjustments, 
+                and smart mesocycle pause/restart functionality based on Renaissance Periodization methodology.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 interface Mesocycle {
   id: number;
   name: string;
@@ -49,6 +268,13 @@ interface Mesocycle {
   totalWeeks: number;
   phase: 'accumulation' | 'intensification' | 'deload';
   isActive: boolean;
+  // Illness adjustment fields
+  isPaused?: boolean;
+  pauseReason?: string;
+  pausedAt?: string;
+  preIllnessWeek?: number;
+  recoveryTrackingStarted?: string;
+  illnessAdjustments?: any;
 }
 
 interface MesocycleRecommendation {
@@ -156,6 +382,29 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     },
   });
 
+  // Smart restart mutation for illness recovery
+  const smartRestartMutation = useMutation({
+    mutationFn: async (mesocycleId: number) => {
+      const response = await apiRequest('POST', `/api/training/mesocycles/${mesocycleId}/smart-restart`);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/training/mesocycles'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/training/sessions'] });
+      toast({
+        title: "Smart Restart Applied",
+        description: `${data.restartStrategy}: ${data.adjustments?.specialNote || "Recovery-based adjustments applied"}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Restart Failed",
+        description: "Unable to restart mesocycle. Please check your recovery status.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Ensure mesocycles is always an array and find active one
   const mesocycleArray = Array.isArray(mesocycles) ? mesocycles : [mesocycles].filter(Boolean);
   const activeMesocycle = mesocycleArray.find((m: Mesocycle) => m?.isActive === true);
@@ -172,6 +421,11 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
     
     // Return true only if all current week sessions are completed
     return currentWeekSessions.length > 0 && currentWeekSessions.every((session: any) => session.isCompleted);
+  };
+
+  // Handle smart restart for illness recovery
+  const handleSmartRestart = (mesocycleId: number) => {
+    smartRestartMutation.mutate(mesocycleId);
   };
 
   // Get current week session completion status
@@ -348,6 +602,50 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 </div>
               </div>
 
+              {/* Illness Status Display */}
+              {activeMesocycle.isPaused && (
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="h-4 w-4 text-yellow-600" />
+                    <span className="font-medium text-yellow-800 dark:text-yellow-200">Mesocycle Paused</span>
+                    <Badge variant="outline" className="text-yellow-700 border-yellow-300">
+                      Recovery Mode
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
+                    Reason: {activeMesocycle.pauseReason || "Illness recovery"}
+                  </p>
+                  {activeMesocycle.pausedAt && (
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                      Paused on: {new Date(activeMesocycle.pausedAt).toLocaleDateString()}
+                    </p>
+                  )}
+                  
+                  {/* Recovery Actions */}
+                  <div className="flex gap-2 mt-3">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-green-700 border-green-300 hover:bg-green-50"
+                      onClick={() => handleSmartRestart(activeMesocycle.id)}
+                      data-testid="button-smart-restart"
+                    >
+                      <RefreshCw className="h-3 w-3 mr-1" />
+                      Smart Restart
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => setLocation('/wellness-checkin')}
+                      data-testid="button-wellness-checkin"
+                    >
+                      <Heart className="h-3 w-3 mr-1" />
+                      Check Recovery
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {/* Week Completion Status */}
               {activeMesocycle && (
                 <div className="flex items-center justify-between p-3 dark:bg-gray-800  text-[17px] bg-[#3c81f6]">
@@ -471,6 +769,12 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
             >
               <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Phase Management</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="health" 
+              className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
+            >
+              <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Health Monitoring</span>
             </TabsTrigger>
           </TabsList>
 
@@ -605,6 +909,10 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="health" className="space-y-4">
+            <HealthMonitoringPanel userId={userId} activeMesocycle={activeMesocycle} />
           </TabsContent>
         </Tabs>
       )}
