@@ -49,6 +49,9 @@ interface Mesocycle {
   totalWeeks: number;
   phase: 'accumulation' | 'intensification' | 'deload';
   isActive: boolean;
+  isPaused?: boolean;
+  pauseReason?: string;
+  pausedAt?: string;
 }
 
 interface MesocycleRecommendation {
@@ -190,17 +193,26 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   };
 
   const handlePauseMesocycle = (mesocycleId: number) => {
+    const pauseReason = window.prompt("暫停原因 (可選):", "");
     updateMesocycleMutation.mutate({
       id: mesocycleId,
-      updateData: { isActive: false }
+      updateData: { 
+        isPaused: true,
+        pauseReason: pauseReason || null,
+        pausedAt: new Date().toISOString()
+      }
     });
   };
 
   const handleRestartMesocycle = (mesocycleId: number) => {
-    // Deactivate other mesocycles first, then activate this one
+    // Resume paused mesocycle
     updateMesocycleMutation.mutate({
       id: mesocycleId,
-      updateData: { isActive: true }
+      updateData: { 
+        isPaused: false,
+        pauseReason: null,
+        pausedAt: null
+      }
     });
   };
 
@@ -310,11 +322,23 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="tracking-tight flex items-center gap-2 text-[18px] text-center font-semibold">
-                  <PlayCircle className="h-5 w-5 text-blue-500" />
+                  {activeMesocycle.isPaused ? (
+                    <PauseCircle className="h-5 w-5 text-orange-500" />
+                  ) : (
+                    <PlayCircle className="h-5 w-5 text-blue-500" />
+                  )}
                   {activeMesocycle.name}
+                  {activeMesocycle.isPaused && (
+                    <Badge variant="outline" className="text-orange-600 border-orange-600 ml-2">
+                      暫停中
+                    </Badge>
+                  )}
                 </CardTitle>
                 <CardDescription>
                   Week {activeMesocycle.currentWeek} of {activeMesocycle.totalWeeks}
+                  {activeMesocycle.isPaused && activeMesocycle.pauseReason && (
+                    <span className="text-orange-600 ml-2">• {activeMesocycle.pauseReason}</span>
+                  )}
                 </CardDescription>
               </div>
               <Badge className={getPhaseColor(activeMesocycle.phase)}>
@@ -380,24 +404,43 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 <Button
                   size="sm"
                   onClick={() => handleAdvanceWeek(activeMesocycle.id)}
-                  disabled={advanceWeekMutation.isPending || !canAdvanceWeek(activeMesocycle)}
+                  disabled={advanceWeekMutation.isPending || !canAdvanceWeek(activeMesocycle) || activeMesocycle.isPaused}
                   className="flex items-center justify-center gap-1.5 text-xs"
-                  title={!canAdvanceWeek(activeMesocycle) ? "Complete all current week sessions to advance" : ""}
+                  title={
+                    activeMesocycle.isPaused 
+                      ? "Resume mesocycle to advance week" 
+                      : !canAdvanceWeek(activeMesocycle) 
+                        ? "Complete all current week sessions to advance" 
+                        : ""
+                  }
                 >
                   <TrendingUp className="h-3.5 w-3.5" />
                   {advanceWeekMutation.isPending ? "Advancing..." : "Advance"}
                 </Button>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePauseMesocycle(activeMesocycle.id)}
-                  disabled={updateMesocycleMutation.isPending}
-                  className="flex items-center justify-center gap-1.5 text-xs"
-                >
-                  <Pause className="h-3.5 w-3.5" />
-                  Pause
-                </Button>
+                {activeMesocycle.isPaused ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRestartMesocycle(activeMesocycle.id)}
+                    disabled={updateMesocycleMutation.isPending}
+                    className="flex items-center justify-center gap-1.5 text-xs text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 dark:text-green-400 dark:border-green-800 dark:hover:bg-green-950/30 dark:hover:text-green-300"
+                  >
+                    <Play className="h-3.5 w-3.5" />
+                    恢復
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePauseMesocycle(activeMesocycle.id)}
+                    disabled={updateMesocycleMutation.isPending}
+                    className="flex items-center justify-center gap-1.5 text-xs"
+                  >
+                    <Pause className="h-3.5 w-3.5" />
+                    暫停
+                  </Button>
+                )}
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

@@ -507,6 +507,9 @@ export const mesocycles = pgTable("mesocycles", {
   totalWeeks: integer("total_weeks").notNull().default(6),
   phase: text("phase").notNull().default("accumulation"), // accumulation, intensification, deload
   isActive: boolean("is_active").default(true),
+  isPaused: boolean("is_paused").default(false),
+  pauseReason: text("pause_reason"),
+  pausedAt: timestamp("paused_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
