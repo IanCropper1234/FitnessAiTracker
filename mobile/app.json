@@ -57,7 +57,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "TBD-will-be-generated"
+        "projectId": ""
       }
     },
     "hooks": {
