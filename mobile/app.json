@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TrainPro",
-    "slug": "trainpro",
+    "name": "MyTrainPro",
+    "slug": "mytrainpro",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,13 +27,13 @@
       "bundleIdentifier": "com.trainpro.app",
       "buildNumber": "1.0.0",
       "infoPlist": {
-        "CFBundleDisplayName": "TrainPro",
-        "CFBundleName": "TrainPro",
+        "CFBundleDisplayName": "MyTrainPro",
+        "CFBundleName": "MyTrainPro",
         "LSApplicationCategoryType": "public.app-category.healthcare-fitness",
-        "NSCameraUsageDescription": "TrainPro uses the camera to capture food images for AI-powered nutrition analysis and tracking.",
-        "NSPhotoLibraryUsageDescription": "TrainPro accesses your photo library to let you upload food images for nutrition analysis and set profile pictures.",
-        "NSHealthShareUsageDescription": "TrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
-        "NSHealthUpdateUsageDescription": "TrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
+        "NSCameraUsageDescription": "MyTrainPro uses the camera to capture food images for AI-powered nutrition analysis and tracking.",
+        "NSPhotoLibraryUsageDescription": "MyTrainPro accesses your photo library to let you upload food images for nutrition analysis and set profile pictures.",
+        "NSHealthShareUsageDescription": "MyTrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
+        "NSHealthUpdateUsageDescription": "MyTrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "config": {
