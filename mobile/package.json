@@ -21,7 +21,8 @@
     "react-native-webview": "13.8.6",
     "expo-constants": "~16.0.0",
     "expo-splash-screen": "~0.27.0",
-    "expo-modules-autolinking": "~1.11.0"
+    "expo-modules-autolinking": "~1.11.0",
+    "@expo/cli": "^0.18.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
