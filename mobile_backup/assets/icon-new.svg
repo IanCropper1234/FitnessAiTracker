@@ -1,0 +1,7 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" rx="180" fill="#1a1a1a"/>
+  <circle cx="512" cy="512" r="320" fill="#ffffff"/>
+  <text x="512" y="580" font-family="system-ui, -apple-system" font-size="240" font-weight="700" text-anchor="middle" fill="#1a1a1a">FS</text>
+  <rect x="312" y="380" width="80" height="20" rx="10" fill="#1a1a1a"/>
+  <rect x="632" y="380" width="80" height="20" rx="10" fill="#1a1a1a"/>
+</svg>

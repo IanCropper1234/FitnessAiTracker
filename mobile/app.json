@@ -7,29 +7,17 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "description": "AI-powered fitness coaching with evidence-based periodization, nutrition tracking, and personalized workout plans for serious fitness enthusiasts.",
-    "keywords": [
-      "fitness",
-      "AI",
-      "workout",
-      "nutrition",
-      "bodybuilding",
-      "training",
-      "health"
-    ],
+    "keywords": ["fitness", "AI", "workout", "nutrition", "bodybuilding", "training", "health"],
     "privacy": "public",
+    "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "updates": {
-      "enabled": true,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 5000
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
@@ -58,7 +46,8 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
-      ]
+      ],
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -67,9 +56,6 @@
       "eas": {
         "projectId": "b0fa7770-552d-4612-8f93-3b8944c63ef3"
       }
-    },
-    "hooks": {
-      "postPublish": []
     }
   }
 }
