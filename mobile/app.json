@@ -7,7 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "description": "AI-powered fitness coaching with evidence-based periodization, nutrition tracking, and personalized workout plans for serious fitness enthusiasts.",
-    "keywords": ["fitness", "AI", "workout", "nutrition", "bodybuilding", "training", "health"],
+    "keywords": [
+      "fitness",
+      "AI",
+      "workout",
+      "nutrition",
+      "bodybuilding",
+      "training",
+      "health"
+    ],
     "privacy": "public",
     "splash": {
       "image": "./assets/splash.png",
@@ -25,7 +33,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "1.0.0",
+      "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "MyTrainPro",
         "CFBundleName": "MyTrainPro",
@@ -57,7 +65,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "b0fa7770-552d-4612-8f93-3b8944c63ef3"
       }
     },
     "hooks": {
