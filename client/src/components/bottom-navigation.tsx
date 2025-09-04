@@ -36,7 +36,7 @@ export function BottomNavigation() {
         transition-transform duration-300 ease-out
         ${isVisible ? 'translate-y-0' : 'translate-y-full'}
       `}>
-        <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto pl-[15px] pr-[15px] pt-[0px] pb-[0px]">
+        <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto pt-[0px] pb-[0px] pl-[15px] pr-[15px]">
           {/* First two navigation items */}
           {navItems.slice(0, 2).map((item) => {
             const isActive = location === item.path;
