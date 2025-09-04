@@ -44,7 +44,7 @@ export default function WorkoutSettings() {
   };
 
   return (
-    <div className="container max-w-2xl mx-auto p-4 space-y-6 pl-[5px] pr-[5px]">
+    <div className="container max-w-2xl mx-auto p-4 space-y-6 pl-[15px] pr-[15px] pt-[5px] pb-[5px]">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button 
