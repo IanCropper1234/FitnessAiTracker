@@ -352,7 +352,7 @@ export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker,
 
   return (
     <AnimatedPage>
-      <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[5px] pr-[5px] ml-[-3px] mr-[-3px]">
+      <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container ml-[-3px] mr-[-3px] pl-[15px] pr-[15px] pt-[10px] pb-[10px]">
         <div className="content-container section-spacing !px-0 mt-[0px] mb-[0px]">
           {/* Enhanced Date Selector */}
           <div className="flex items-center justify-center py-1 mt-[-8px] mb-[-8px]">
