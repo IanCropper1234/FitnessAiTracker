@@ -34,7 +34,7 @@ export function FloatingNutritionMenu({ onTabSelect, activeTab }: FloatingNutrit
       transition-transform duration-300 ease-out
       ${isVisible ? 'translate-y-0' : 'translate-y-full'}
     `}>
-      <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto">
+      <div className="flex items-center justify-center px-1 py-1 max-w-sm mx-auto pl-[15px] pr-[15px]">
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
