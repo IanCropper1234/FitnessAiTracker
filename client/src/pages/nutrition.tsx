@@ -222,10 +222,10 @@ export function Nutrition({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pt-[0px] pb-[0px] ml-[0px] mr-[0px] pl-[20px] pr-[20px] mt-[-20px] mb-[-20px]">
-      <div className="w-full px-2 space-y-2 pl-[0px] pr-[0px] ml-[-4px] mr-[-4px]">
+    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
+      <div className="w-full max-w-none space-y-2">
         {/* Ultra-Compact iOS Header */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-2">
+        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-5 px-4 py-2 mb-2">
           <div className="flex items-center justify-between h-[44px]">
             {/* Left: Back Arrow Only */}
             <Button 

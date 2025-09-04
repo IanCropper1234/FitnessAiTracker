@@ -1853,10 +1853,13 @@ button, .ios-button {
   .ios-pwa-container {
     padding-top: max(env(safe-area-inset-top), 10px);
     padding-bottom: max(env(safe-area-inset-bottom), 20px);
-    padding-left: max(env(safe-area-inset-left), 5px);
-    padding-right: max(env(safe-area-inset-right), 5px);
+    padding-left: max(env(safe-area-inset-left), 20px);
+    padding-right: max(env(safe-area-inset-right), 20px);
     margin: 0 auto;
     max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   /* Sticky header with proper iOS support */
