@@ -107,17 +107,35 @@ export default function App() {
           box-sizing: border-box;
         }
         
-        /* Specific fixes for dashboard and other main content */
-        main, .page-container, .dashboard-container {
-          padding-top: max(1rem, var(--safe-area-inset-top, 0px)) !important;
-          padding-bottom: max(1rem, var(--safe-area-inset-bottom, 0px)) !important;
+        /* Main content area - prevent overlap with navigation */
+        main, .page-container, .dashboard-container, .content-area {
+          padding-top: max(60px, env(safe-area-inset-top, 44px)) !important;
+          padding-bottom: max(100px, calc(80px + env(safe-area-inset-bottom, 34px))) !important;
+          padding-left: max(16px, env(safe-area-inset-left)) !important;
+          padding-right: max(16px, env(safe-area-inset-right)) !important;
           box-sizing: border-box;
+          min-height: 100vh;
+          overflow-x: hidden;
         }
         
-        /* Bottom navigation safe area fix */
-        .fixed.bottom-0, .bottom-nav {
-          bottom: var(--safe-area-inset-bottom, 0px) !important;
-          padding-bottom: 0 !important;
+        /* Page content containers */
+        .min-h-screen > div, .ios-pwa-container > div {
+          padding-top: max(60px, env(safe-area-inset-top, 44px)) !important;
+          padding-bottom: max(100px, calc(80px + env(safe-area-inset-bottom, 34px))) !important;
+          padding-left: max(16px, env(safe-area-inset-left)) !important;
+          padding-right: max(16px, env(safe-area-inset-right)) !important;
+        }
+        
+        /* Bottom navigation - stick to very bottom */
+        .fixed.bottom-0, .bottom-nav, nav[class*="bottom"], [class*="bottom-nav"] {
+          position: fixed !important;
+          bottom: 0px !important;
+          left: 0 !important;
+          right: 0 !important;
+          z-index: 1000 !important;
+          padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+          background: rgba(0, 0, 0, 0.95) !important;
+          backdrop-filter: blur(10px) !important;
         }
         
         /* Ensure scrolling works smoothly */
@@ -155,25 +173,66 @@ export default function App() {
           if (banner) banner.remove();
         });
         
-        // Detect iPhone model and apply appropriate spacing
-        var isIPhoneX = /iPhone|iPad|iPod/.test(navigator.userAgent) && window.screen.height >= 812;
-        var safeAreaTop = isIPhoneX ? 'max(44px, env(safe-area-inset-top))' : '20px';
-        var safeAreaBottom = isIPhoneX ? 'max(34px, env(safe-area-inset-bottom))' : '0px';
+        // Detect device type and apply universal spacing
+        var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+        var isIPhoneX = isIOS && window.screen.height >= 812;
         
+        // Main app container
         var containers = document.querySelectorAll('.ios-pwa-container, .min-h-screen, #root, [data-reactroot]');
         containers.forEach(function(container) {
-          container.style.paddingTop = safeAreaTop;
-          container.style.paddingBottom = safeAreaBottom;
-          container.style.paddingLeft = 'env(safe-area-inset-left, 0px)';
-          container.style.paddingRight = 'env(safe-area-inset-right, 0px)';
-          container.style.boxSizing = 'border-box';
+          container.style.paddingTop = '0px';
+          container.style.paddingBottom = '0px';
+          container.style.paddingLeft = '0px';
+          container.style.paddingRight = '0px';
+          container.style.minHeight = '100vh';
+          container.style.background = '#000000';
         });
         
-        // Fix bottom navigation for all iPhone models
-        var bottomNav = document.querySelector('.fixed.bottom-0');
-        if (bottomNav) {
-          bottomNav.style.bottom = safeAreaBottom;
-        }
+        // Fix content areas to prevent overlap
+        var contentAreas = document.querySelectorAll('main, .page-container, .dashboard-container, .content-area');
+        contentAreas.forEach(function(area) {
+          if (isIPhoneX) {
+            area.style.paddingTop = 'max(60px, env(safe-area-inset-top, 44px))';
+            area.style.paddingBottom = 'max(100px, calc(80px + env(safe-area-inset-bottom, 34px)))';
+          } else {
+            area.style.paddingTop = '60px';
+            area.style.paddingBottom = '100px';
+          }
+          area.style.paddingLeft = 'max(16px, env(safe-area-inset-left, 0px))';
+          area.style.paddingRight = 'max(16px, env(safe-area-inset-right, 0px))';
+          area.style.boxSizing = 'border-box';
+        });
+        
+        // Fix all page content
+        var pageContent = document.querySelectorAll('.min-h-screen > div, .ios-pwa-container > div');
+        pageContent.forEach(function(content) {
+          if (isIPhoneX) {
+            content.style.paddingTop = 'max(60px, env(safe-area-inset-top, 44px))';
+            content.style.paddingBottom = 'max(100px, calc(80px + env(safe-area-inset-bottom, 34px)))';
+          } else {
+            content.style.paddingTop = '60px';
+            content.style.paddingBottom = '100px';
+          }
+          content.style.paddingLeft = 'max(16px, env(safe-area-inset-left, 0px))';
+          content.style.paddingRight = 'max(16px, env(safe-area-inset-right, 0px))';
+        });
+        
+        // Fix bottom navigation - stick to absolute bottom
+        var bottomNavs = document.querySelectorAll('.fixed.bottom-0, .bottom-nav, nav[class*=\"bottom\"], [class*=\"bottom-nav\"]');
+        bottomNavs.forEach(function(nav) {
+          nav.style.position = 'fixed';
+          nav.style.bottom = '0px';
+          nav.style.left = '0px';
+          nav.style.right = '0px';
+          nav.style.zIndex = '1000';
+          if (isIPhoneX) {
+            nav.style.paddingBottom = 'max(8px, env(safe-area-inset-bottom, 34px))';
+          } else {
+            nav.style.paddingBottom = '8px';
+          }
+          nav.style.background = 'rgba(0, 0, 0, 0.95)';
+          nav.style.backdropFilter = 'blur(10px)';
+        });
         
         // Ensure session persistence
         if (window.localStorage) {
