@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "16",
+      "buildNumber": "17",
       "icon": "./assets/icon.png",
       "infoPlist": {
         "CFBundleDisplayName": "MyTrainPro",

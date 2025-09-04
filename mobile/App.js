@@ -107,28 +107,25 @@ export default function App() {
           box-sizing: border-box;
         }
         
-        /* Reset excessive spacing - use minimal safe area */
-        main, .page-container, .dashboard-container, .content-area,
-        .min-h-screen > div, .ios-pwa-container > div {
-          padding-top: max(20px, env(safe-area-inset-top, 0px)) !important;
-          padding-bottom: max(80px, calc(60px + env(safe-area-inset-bottom, 0px))) !important;
-          padding-left: max(8px, env(safe-area-inset-left, 0px)) !important;
-          padding-right: max(8px, env(safe-area-inset-right, 0px)) !important;
+        /* Remove all custom padding - let the app handle its own spacing */
+        main, .page-container, .dashboard-container, .content-area {
+          padding-top: 0px !important;
+          padding-bottom: 70px !important;
+          padding-left: 0px !important;
+          padding-right: 0px !important;
           box-sizing: border-box;
           min-height: 100vh;
           overflow-x: hidden;
         }
         
-        /* Bottom navigation - minimal spacing */
-        .fixed.bottom-0, .bottom-nav, nav[class*="bottom"], [class*="bottom-nav"] {
+        /* Bottom navigation - stick to bottom with safe area */
+        .fixed.bottom-0, nav[class*="bottom"] {
           position: fixed !important;
           bottom: 0px !important;
           left: 0 !important;
           right: 0 !important;
           z-index: 1000 !important;
-          padding-bottom: max(4px, env(safe-area-inset-bottom, 0px)) !important;
-          background: rgba(0, 0, 0, 0.95) !important;
-          backdrop-filter: blur(10px) !important;
+          padding-bottom: env(safe-area-inset-bottom, 0px) !important;
         }
         
         /* Ensure scrolling works smoothly */
@@ -170,34 +167,24 @@ export default function App() {
         var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
         var isIPhoneX = isIOS && window.screen.height >= 812;
         
-        // Main app container
+        // Reset all containers to default
         var containers = document.querySelectorAll('.ios-pwa-container, .min-h-screen, #root, [data-reactroot]');
         containers.forEach(function(container) {
-          container.style.paddingTop = '0px';
-          container.style.paddingBottom = '0px';
-          container.style.paddingLeft = '0px';
-          container.style.paddingRight = '0px';
+          container.style.paddingTop = '';
+          container.style.paddingBottom = '';
+          container.style.paddingLeft = '';
+          container.style.paddingRight = '';
           container.style.minHeight = '100vh';
-          container.style.background = '#000000';
         });
         
-        // Apply minimal, precise spacing for all content
-        var allContent = document.querySelectorAll('main, .page-container, .dashboard-container, .content-area, .min-h-screen > div, .ios-pwa-container > div');
-        allContent.forEach(function(element) {
-          if (isIPhoneX) {
-            element.style.paddingTop = 'max(20px, env(safe-area-inset-top, 0px))';
-            element.style.paddingBottom = 'max(80px, calc(60px + env(safe-area-inset-bottom, 0px)))';
-          } else {
-            element.style.paddingTop = '20px';
-            element.style.paddingBottom = '80px';
-          }
-          element.style.paddingLeft = 'max(8px, env(safe-area-inset-left, 0px))';
-          element.style.paddingRight = 'max(8px, env(safe-area-inset-right, 0px))';
-          element.style.boxSizing = 'border-box';
+        // Only adjust main content area for bottom navigation
+        var mainContent = document.querySelectorAll('main, .page-container, .dashboard-container');
+        mainContent.forEach(function(element) {
+          element.style.paddingBottom = '70px';
         });
         
-        // Fix bottom navigation with minimal padding
-        var bottomNavs = document.querySelectorAll('.fixed.bottom-0, .bottom-nav, nav[class*=\"bottom\"], [class*=\"bottom-nav\"]');
+        // Fix bottom navigation
+        var bottomNavs = document.querySelectorAll('.fixed.bottom-0, nav[class*=\"bottom\"]');
         bottomNavs.forEach(function(nav) {
           nav.style.position = 'fixed';
           nav.style.bottom = '0px';
@@ -205,12 +192,8 @@ export default function App() {
           nav.style.right = '0px';
           nav.style.zIndex = '1000';
           if (isIPhoneX) {
-            nav.style.paddingBottom = 'max(4px, env(safe-area-inset-bottom, 0px))';
-          } else {
-            nav.style.paddingBottom = '4px';
+            nav.style.paddingBottom = 'env(safe-area-inset-bottom, 0px)';
           }
-          nav.style.background = 'rgba(0, 0, 0, 0.95)';
-          nav.style.backdropFilter = 'blur(10px)';
         });
         
         // Ensure session persistence
