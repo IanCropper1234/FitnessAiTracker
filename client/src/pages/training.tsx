@@ -33,7 +33,7 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
       <div className="w-full max-w-none space-y-4">
         {/* Ultra-Compact iOS Header - Hide when viewing workout details or in active workout */}
         {!hideHeader && (
-          <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-5 px-4 py-2 mb-6">
+          <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-4 px-4 py-2 mb-6">
             <div className="flex items-center justify-between h-[44px]">
               {/* Left: Back Arrow Only */}
               <Button 
