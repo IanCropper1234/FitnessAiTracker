@@ -50,27 +50,65 @@ export default function App() {
   const injectedJavaScript = `
     // Add mobile-specific optimizations
     (function() {
-      // Disable zoom
+      // Configure viewport for mobile with scroll support
       var meta = document.createElement('meta');
       meta.name = 'viewport';
-      meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover';
       document.getElementsByTagName('head')[0].appendChild(meta);
       
       // Add mobile class to body for mobile-specific CSS
       document.body.classList.add('mobile-app');
+      document.body.style.overflow = 'auto';
+      document.body.style.webkitOverflowScrolling = 'touch';
+      document.body.style.height = '100vh';
       
-      // Optimize touch events
+      // Fix safe area for different iPhone models
+      document.documentElement.style.setProperty('--safe-area-inset-top', 'env(safe-area-inset-top)');
+      document.documentElement.style.setProperty('--safe-area-inset-bottom', 'env(safe-area-inset-bottom)');
+      document.documentElement.style.setProperty('--safe-area-inset-left', 'env(safe-area-inset-left)');
+      document.documentElement.style.setProperty('--safe-area-inset-right', 'env(safe-area-inset-right)');
+      
+      // Add CSS for full screen support
+      var style = document.createElement('style');
+      style.textContent = \`
+        html, body {
+          margin: 0;
+          padding: 0;
+          background-color: #000000;
+          height: 100vh;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .ios-pwa-container, .min-h-screen {
+          min-height: 100vh;
+          background-color: #000000;
+        }
+        
+        /* Fix for notch and home indicator */
+        .safe-area-pt { padding-top: var(--safe-area-inset-top, 0px); }
+        .safe-area-pb { padding-bottom: var(--safe-area-inset-bottom, 0px); }
+        .safe-area-pl { padding-left: var(--safe-area-inset-left, 0px); }
+        .safe-area-pr { padding-right: var(--safe-area-inset-right, 0px); }
+        
+        /* Ensure scrolling works */
+        * {
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Fix for white borders */
+        #root, [data-reactroot] {
+          background-color: #000000;
+          min-height: 100vh;
+        }
+      \`;
+      document.head.appendChild(style);
+      
+      // Enable smooth scrolling
       document.addEventListener('touchstart', function() {}, { passive: true });
-      document.addEventListener('touchmove', function() {}, { passive: true });
-      
-      // Hide address bar on scroll (iOS Safari)
-      if (window.navigator.platform.includes('iPhone') || window.navigator.platform.includes('iPad')) {
-        window.addEventListener('scroll', function() {
-          if (window.pageYOffset > 0) {
-            window.scrollTo(0, 1);
-          }
-        });
-      }
+      document.addEventListener('touchmove', function(e) {
+        // Allow scrolling
+      }, { passive: true });
       
       // Send ready signal to React Native
       window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -114,8 +152,8 @@ export default function App() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
         <View style={styles.errorContainer}>
           <Text style={styles.errorTitle}>Connection Error</Text>
           <Text style={styles.errorMessage}>
@@ -132,13 +170,13 @@ export default function App() {
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
       
       {/* Loading overlay */}
       {isLoading && (
@@ -165,11 +203,13 @@ export default function App() {
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={false}
-        scalesPageToFit={false}
+        scalesPageToFit={true}
         scrollEnabled={true}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        bounces={false}
+        bounces={true}
+        decelerationRate="normal"
+        overScrollMode="always"
         
         // iOS specific
         allowsInlineMediaPlayback={true}
@@ -214,18 +254,18 @@ export default function App() {
           console.warn('HTTP Error:', nativeEvent.statusCode, nativeEvent.description);
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
   },
   webview: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
   },
   loadingOverlay: {
     position: 'absolute',
@@ -233,7 +273,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
@@ -252,14 +292,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000',
   },
   errorTitle: {
     fontSize: 24,
