@@ -20,7 +20,8 @@ export default function App() {
   const [error, setError] = useState(null);
   const webViewRef = useRef(null);
 
-  const serverUrl = 'https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev';
+  // Production URL without development preview banner
+  const serverUrl = 'https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev?_rdt=0';
 
   // Handle loading state
   const handleLoadStart = () => {
@@ -79,14 +80,25 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* Main app container - respect safe areas */
+        /* iPhone-specific safe area handling */
+        @supports (padding: max(0px)) {
+          .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
+            background-color: #000000;
+            min-height: 100vh;
+            padding-top: max(44px, env(safe-area-inset-top)) !important;
+            padding-bottom: max(34px, env(safe-area-inset-bottom)) !important;
+            padding-left: env(safe-area-inset-left) !important;
+            padding-right: env(safe-area-inset-right) !important;
+            box-sizing: border-box;
+          }
+        }
+        
+        /* Fallback for older devices */
         .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
           background-color: #000000;
           min-height: 100vh;
-          padding-top: var(--safe-area-inset-top, 0px) !important;
-          padding-bottom: var(--safe-area-inset-bottom, 0px) !important;
-          padding-left: var(--safe-area-inset-left, 0px) !important;
-          padding-right: var(--safe-area-inset-right, 0px) !important;
+          padding-top: 44px !important;
+          padding-bottom: 34px !important;
           box-sizing: border-box;
         }
         
@@ -119,30 +131,61 @@ export default function App() {
           padding-bottom: var(--safe-area-inset-bottom, 0px);
         }
         
-        /* Development banner fix - push down from notch */
-        .dev-banner, .preview-banner {
-          margin-top: var(--safe-area-inset-top, 0px) !important;
+        /* Hide development banners completely */
+        .dev-banner, .preview-banner, [data-preview], .replit-preview-notice {
+          display: none !important;
+          visibility: hidden !important;
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        /* Fix for Replit development preview */
+        body.mobile-app .replit-ui, body.mobile-app [class*="preview"], body.mobile-app [class*="banner"] {
+          display: none !important;
         }
       \`;
       document.head.appendChild(style);
       
-      // Apply safe area classes dynamically
+      // Apply device-specific safe area handling
       setTimeout(function() {
+        // Remove any development banners
+        var banners = document.querySelectorAll('.dev-banner, .preview-banner, [data-preview], .replit-preview-notice, .replit-ui');
+        banners.forEach(function(banner) {
+          if (banner) banner.remove();
+        });
+        
+        // Detect iPhone model and apply appropriate spacing
+        var isIPhoneX = /iPhone|iPad|iPod/.test(navigator.userAgent) && window.screen.height >= 812;
+        var safeAreaTop = isIPhoneX ? 'max(44px, env(safe-area-inset-top))' : '20px';
+        var safeAreaBottom = isIPhoneX ? 'max(34px, env(safe-area-inset-bottom))' : '0px';
+        
         var containers = document.querySelectorAll('.ios-pwa-container, .min-h-screen, #root, [data-reactroot]');
         containers.forEach(function(container) {
-          container.style.paddingTop = 'var(--safe-area-inset-top, 0px)';
-          container.style.paddingBottom = 'var(--safe-area-inset-bottom, 0px)';
-          container.style.paddingLeft = 'var(--safe-area-inset-left, 0px)';
-          container.style.paddingRight = 'var(--safe-area-inset-right, 0px)';
+          container.style.paddingTop = safeAreaTop;
+          container.style.paddingBottom = safeAreaBottom;
+          container.style.paddingLeft = 'env(safe-area-inset-left, 0px)';
+          container.style.paddingRight = 'env(safe-area-inset-right, 0px)';
           container.style.boxSizing = 'border-box';
         });
         
-        // Fix bottom navigation
+        // Fix bottom navigation for all iPhone models
         var bottomNav = document.querySelector('.fixed.bottom-0');
         if (bottomNav) {
-          bottomNav.style.bottom = 'var(--safe-area-inset-bottom, 0px)';
+          bottomNav.style.bottom = safeAreaBottom;
         }
-      }, 500);
+        
+        // Ensure session persistence
+        if (window.localStorage) {
+          var sessionData = window.localStorage.getItem('session_data');
+          if (sessionData && window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'SESSION_PERSIST',
+              data: sessionData
+            }));
+          }
+        }
+      }, 1000);
       
       // Enable smooth scrolling
       document.addEventListener('touchstart', function() {}, { passive: true });
@@ -259,7 +302,6 @@ export default function App() {
         
         // Android specific
         mixedContentMode="compatibility"
-        thirdPartyCookiesEnabled={true}
         
         // Security and performance
         allowsFullscreenVideo={true}
@@ -267,7 +309,11 @@ export default function App() {
         cacheEnabled={true}
         incognito={false}
         
-        // Handle different types of navigation
+        // Session persistence settings
+        sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
+        
+        // Handle different types of navigation with session persistence
         onShouldStartLoadWithRequest={(request) => {
           // Allow all navigation within the app domain
           if (request.url.includes('worf.replit.dev')) {
