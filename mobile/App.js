@@ -27,7 +27,7 @@ export default function App() {
     setLoading(true);
     
     try {
-      const response = await fetch('https://mytrainpro-workspace--5000.prod1a.defang.dev/api/auth/login', {
+      const response = await fetch('https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export default function App() {
     setLoading(true);
     
     try {
-      const response = await fetch('https://mytrainpro-workspace--5000.prod1a.defang.dev/api/auth/register', {
+      const response = await fetch('https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export default function App() {
   };
 
   const openWebApp = () => {
-    Linking.openURL('https://mytrainpro-workspace--5000.prod1a.defang.dev');
+    Linking.openURL('https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev');
   };
 
   if (user) {
