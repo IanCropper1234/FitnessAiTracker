@@ -9,14 +9,19 @@ import {
   SafeAreaView, 
   StatusBar,
   Alert,
-  Linking
+  Linking,
+  Dimensions
 } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('signin');
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -53,8 +58,8 @@ export default function App() {
   };
 
   const handleSignup = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+    if (!email || !password || !name) {
+      Alert.alert('Error', 'Please fill in all fields');
       return;
     }
     
@@ -66,7 +71,7 @@ export default function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name }),
         credentials: 'include'
       });
       
@@ -74,8 +79,10 @@ export default function App() {
       
       if (response.ok) {
         Alert.alert('Success', 'Account created! Please sign in.');
+        setActiveTab('signin');
         setEmail('');
         setPassword('');
+        setName('');
       } else {
         Alert.alert('Signup Failed', data.message || 'Failed to create account');
       }
@@ -91,6 +98,7 @@ export default function App() {
     setUser(null);
     setEmail('');
     setPassword('');
+    setName('');
     Alert.alert('Logged Out', 'You have been logged out successfully.');
   };
 
@@ -98,15 +106,16 @@ export default function App() {
     Linking.openURL('https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev');
   };
 
+  const handleReplitAuth = () => {
+    const authUrl = 'https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/api/login';
+    Linking.openURL(authUrl);
+  };
+
   if (user) {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
-        <View style={styles.header}>
-          <Text style={styles.logo}>MyTrainPro</Text>
-          <Text style={styles.subtitle}>AI-Powered Fitness Coaching</Text>
-        </View>
-
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        
         <ScrollView style={styles.content}>
           <View style={styles.welcomeCard}>
             <Text style={styles.welcomeTitle}>Welcome back!</Text>
@@ -135,15 +144,6 @@ export default function App() {
             </Text>
           </TouchableOpacity>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.cardTitle}>📱 Mobile App Status</Text>
-            <Text style={styles.infoText}>
-              This is the TestFlight preview of MyTrainPro. The full-featured web application 
-              contains all training templates, nutrition tracking, AI recommendations, 
-              and detailed analytics.
-            </Text>
-          </View>
-
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutButtonText}>Sign Out</Text>
           </TouchableOpacity>
@@ -154,81 +154,193 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
-      <View style={styles.header}>
-        <Text style={styles.logo}>MyTrainPro</Text>
-        <Text style={styles.subtitle}>AI-Powered Fitness Coaching</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <View style={styles.authCard}>
-          <Text style={styles.authTitle}>Welcome to MyTrainPro</Text>
-          <Text style={styles.authSubtitle}>
-            Sign in to access your personalized fitness journey
-          </Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#666"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#666"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>
-              {loading ? 'Signing In...' : 'Sign In'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.buttonSecondary, loading && styles.buttonDisabled]} 
-            onPress={handleSignup}
-            disabled={loading}
-          >
-            <Text style={styles.buttonSecondaryText}>
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </Text>
-          </TouchableOpacity>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        {/* Header matching web version */}
+        <View style={styles.header}>
+          <Text style={styles.logo}>TrainPro</Text>
+          <Text style={styles.subtitle}>AI-Powered Fitness Platform</Text>
         </View>
 
-        <TouchableOpacity style={styles.webButton} onPress={openWebApp}>
-          <Text style={styles.webButtonText}>
-            🌐 Try Web App (No Login Required)
-          </Text>
-          <Text style={styles.webButtonSubtext}>
-            Experience the full MyTrainPro platform
-          </Text>
-        </TouchableOpacity>
+        {/* Card Container - matching web version */}
+        <View style={styles.authCard}>
+          {/* Tabs - matching web version */}
+          <View style={styles.tabContainer}>
+            <TouchableOpacity 
+              style={[styles.tab, activeTab === 'signin' && styles.activeTab]}
+              onPress={() => setActiveTab('signin')}
+            >
+              <Text style={[styles.tabText, activeTab === 'signin' && styles.activeTabText]}>
+                Sign In
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.tab, activeTab === 'signup' && styles.activeTab]}
+              onPress={() => setActiveTab('signup')}
+            >
+              <Text style={[styles.tabText, activeTab === 'signup' && styles.activeTabText]}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.featuresCard}>
-          <Text style={styles.cardTitle}>✨ What's Inside</Text>
-          <View style={styles.featureList}>
-            <Text style={styles.featureItem}>🤖 AI Nutrition Analysis</Text>
-            <Text style={styles.featureItem}>🏋️ Smart Workout Planning</Text>
-            <Text style={styles.featureItem}>📊 Scientific Periodization</Text>
-            <Text style={styles.featureItem}>📈 Progress Analytics</Text>
-            <Text style={styles.featureItem}>🍎 Food Image Recognition</Text>
+          {/* Tab Content */}
+          <View style={styles.tabContent}>
+            {activeTab === 'signin' ? (
+              // Sign In Form
+              <View style={styles.formContainer}>
+                {/* Replit Auth Button - matching web version */}
+                <TouchableOpacity style={styles.replitButton} onPress={handleReplitAuth}>
+                  <Text style={styles.replitButtonIcon}>📱</Text>
+                  <Text style={styles.replitButtonText}>Sign in with Google • Apple • Email</Text>
+                </TouchableOpacity>
+                <Text style={styles.replitSubtext}>Choose from multiple secure login options</Text>
+                
+                {/* Separator */}
+                <View style={styles.separator}>
+                  <View style={styles.separatorLine} />
+                  <Text style={styles.separatorText}>Or use existing account</Text>
+                  <View style={styles.separatorLine} />
+                </View>
+
+                {/* Email Input */}
+                <View style={styles.inputContainer}>
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.inputIcon}>✉️</Text>
+                    <Text style={styles.inputLabel}>Email</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="your@email.com"
+                    placeholderTextColor="#666"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                {/* Password Input */}
+                <View style={styles.inputContainer}>
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.inputIcon}>🔒</Text>
+                    <Text style={styles.inputLabel}>Password</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    placeholderTextColor="#666"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                {/* Sign In Button */}
+                <TouchableOpacity 
+                  style={[styles.primaryButton, loading && styles.buttonDisabled]} 
+                  onPress={handleLogin}
+                  disabled={loading}
+                >
+                  <Text style={styles.primaryButtonText}>
+                    {loading ? 'Signing In...' : 'Sign In'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              // Sign Up Form
+              <View style={styles.formContainer}>
+                {/* Replit Auth Button */}
+                <TouchableOpacity style={styles.replitButton} onPress={handleReplitAuth}>
+                  <Text style={styles.replitButtonIcon}>📱</Text>
+                  <Text style={styles.replitButtonText}>Sign up with Google • Apple • Email</Text>
+                </TouchableOpacity>
+                <Text style={styles.replitSubtext}>Quick setup with your preferred account</Text>
+                
+                {/* Separator */}
+                <View style={styles.separator}>
+                  <View style={styles.separatorLine} />
+                  <Text style={styles.separatorText}>Or use enhanced manual registration</Text>
+                  <View style={styles.separatorLine} />
+                </View>
+
+                {/* Name Input */}
+                <View style={styles.inputContainer}>
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.inputIcon}>👤</Text>
+                    <Text style={styles.inputLabel}>Name</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Your full name"
+                    placeholderTextColor="#666"
+                    value={name}
+                    onChangeText={setName}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                {/* Email Input */}
+                <View style={styles.inputContainer}>
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.inputIcon}>✉️</Text>
+                    <Text style={styles.inputLabel}>Email</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="your@email.com"
+                    placeholderTextColor="#666"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                {/* Password Input */}
+                <View style={styles.inputContainer}>
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.inputIcon}>🔒</Text>
+                    <Text style={styles.inputLabel}>Password</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Choose a strong password"
+                    placeholderTextColor="#666"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+
+                {/* Sign Up Button */}
+                <TouchableOpacity 
+                  style={[styles.primaryButton, loading && styles.buttonDisabled]} 
+                  onPress={handleSignup}
+                  disabled={loading}
+                >
+                  <Text style={styles.primaryButtonText}>
+                    {loading ? 'Creating Account...' : 'Sign Up'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </View>
+
+        {/* Web App Button */}
+        <TouchableOpacity style={styles.webAppButton} onPress={openWebApp}>
+          <Text style={styles.webAppButtonText}>🌐 Try Web App (No Login Required)</Text>
+          <Text style={styles.webAppButtonSubtext}>Experience the full MyTrainPro platform</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -237,175 +349,275 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
   },
   header: {
-    backgroundColor: '#1a1a1a',
-    paddingVertical: 30,
-    paddingHorizontal: 20,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    marginBottom: 32,
   },
   logo: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
+    color: '#000000',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#ccc',
+    color: '#666666',
+    textAlign: 'center',
   },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
+  
+  // Card Styles - matching web version
   authCard: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#333',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#e5e5e5',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    marginBottom: 24,
+    padding: 24,
   },
-  authTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 10,
+  
+  // Tabs - matching web version
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    padding: 4,
+    marginBottom: 24,
   },
-  authSubtitle: {
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  activeTab: {
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666666',
+  },
+  activeTabText: {
+    color: '#000000',
+    fontWeight: '600',
+  },
+  
+  // Form Content
+  tabContent: {
+    flex: 1,
+  },
+  formContainer: {
+    gap: 16,
+  },
+  
+  // Replit Auth Button - matching web version
+  replitButton: {
+    backgroundColor: '#2563eb',
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  replitButtonIcon: {
     fontSize: 16,
-    color: '#ccc',
+  },
+  replitButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  replitSubtext: {
+    fontSize: 12,
+    color: '#666666',
     textAlign: 'center',
-    marginBottom: 25,
+    marginTop: -8,
+  },
+  
+  // Separator - matching web version
+  separator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#e5e5e5',
+  },
+  separatorText: {
+    fontSize: 12,
+    color: '#666666',
+    paddingHorizontal: 16,
+    backgroundColor: '#ffffff',
+    textTransform: 'uppercase',
+  },
+  
+  // Input Styles - matching web version
+  inputContainer: {
+    marginBottom: 16,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  inputIcon: {
+    fontSize: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000000',
   },
   input: {
-    backgroundColor: '#2a2a2a',
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 16,
-    color: '#fff',
-    marginBottom: 15,
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#444',
-  },
-  button: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: '#000',
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     fontSize: 16,
-    fontWeight: 'bold',
+    color: '#000000',
   },
-  buttonSecondary: {
-    backgroundColor: 'transparent',
-    borderRadius: 10,
-    padding: 15,
+  
+  // Primary Button - matching web version
+  primaryButton: {
+    backgroundColor: '#000000',
+    borderRadius: 8,
+    paddingVertical: 14,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#fff',
+    marginTop: 8,
   },
-  buttonSecondaryText: {
-    color: '#fff',
+  primaryButtonText: {
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   buttonDisabled: {
     opacity: 0.5,
   },
-  welcomeCard: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#333',
+  
+  // Web App Button
+  webAppButton: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 12,
+    padding: 20,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  webAppButtonText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  webAppButtonSubtext: {
+    color: '#666666',
+    fontSize: 14,
+  },
+  
+  // Welcome/Logged in styles
+  welcomeCard: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
   welcomeTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
+    color: '#000000',
+    marginBottom: 8,
   },
   welcomeText: {
     fontSize: 16,
-    color: '#ccc',
+    color: '#666666',
   },
   featuresCard: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 20,
+    backgroundColor: '#f9fafb',
+    borderRadius: 12,
+    padding: 24,
+    marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#333',
-  },
-  infoCard: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#333',
+    borderColor: '#e5e7eb',
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 15,
+    color: '#000000',
+    marginBottom: 16,
   },
   featureList: {
-    marginTop: 10,
+    gap: 8,
   },
   featureItem: {
     fontSize: 16,
-    color: '#ccc',
-    marginBottom: 8,
-    lineHeight: 22,
-  },
-  infoText: {
-    fontSize: 14,
-    color: '#ccc',
-    lineHeight: 20,
+    color: '#666666',
+    lineHeight: 24,
   },
   webButton: {
-    backgroundColor: '#333',
-    borderRadius: 15,
+    backgroundColor: '#374151',
+    borderRadius: 12,
     padding: 20,
     alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#555',
+    marginBottom: 24,
   },
   webButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   webButtonSubtext: {
-    color: '#ccc',
+    color: '#d1d5db',
     fontSize: 14,
   },
   logoutButton: {
     backgroundColor: 'transparent',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ff4444',
-    marginTop: 10,
+    borderColor: '#ef4444',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
   },
   logoutButtonText: {
-    color: '#ff4444',
+    color: '#ef4444',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
