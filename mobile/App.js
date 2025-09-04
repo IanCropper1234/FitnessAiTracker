@@ -20,8 +20,8 @@ export default function App() {
   const [error, setError] = useState(null);
   const webViewRef = useRef(null);
 
-  // Production URL without development preview banner
-  const serverUrl = 'https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev?_rdt=0';
+  // Production URL - use the main production domain
+  const serverUrl = 'https://fitness-ai-tracker-c0109009.replit.app';
 
   // Handle loading state
   const handleLoadStart = () => {
@@ -315,8 +315,9 @@ export default function App() {
         
         // Handle different types of navigation with session persistence
         onShouldStartLoadWithRequest={(request) => {
-          // Allow all navigation within the app domain
-          if (request.url.includes('worf.replit.dev')) {
+          // Allow all navigation within the app domains
+          if (request.url.includes('fitness-ai-tracker-c0109009.replit.app') || 
+              request.url.includes('mytrainpro.com')) {
             return true;
           }
           
