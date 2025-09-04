@@ -107,33 +107,26 @@ export default function App() {
           box-sizing: border-box;
         }
         
-        /* Main content area - prevent overlap with navigation */
-        main, .page-container, .dashboard-container, .content-area {
-          padding-top: max(60px, env(safe-area-inset-top, 44px)) !important;
-          padding-bottom: max(100px, calc(80px + env(safe-area-inset-bottom, 34px))) !important;
-          padding-left: max(16px, env(safe-area-inset-left)) !important;
-          padding-right: max(16px, env(safe-area-inset-right)) !important;
+        /* Reset excessive spacing - use minimal safe area */
+        main, .page-container, .dashboard-container, .content-area,
+        .min-h-screen > div, .ios-pwa-container > div {
+          padding-top: max(20px, env(safe-area-inset-top, 0px)) !important;
+          padding-bottom: max(80px, calc(60px + env(safe-area-inset-bottom, 0px))) !important;
+          padding-left: max(8px, env(safe-area-inset-left, 0px)) !important;
+          padding-right: max(8px, env(safe-area-inset-right, 0px)) !important;
           box-sizing: border-box;
           min-height: 100vh;
           overflow-x: hidden;
         }
         
-        /* Page content containers */
-        .min-h-screen > div, .ios-pwa-container > div {
-          padding-top: max(60px, env(safe-area-inset-top, 44px)) !important;
-          padding-bottom: max(100px, calc(80px + env(safe-area-inset-bottom, 34px))) !important;
-          padding-left: max(16px, env(safe-area-inset-left)) !important;
-          padding-right: max(16px, env(safe-area-inset-right)) !important;
-        }
-        
-        /* Bottom navigation - stick to very bottom */
+        /* Bottom navigation - minimal spacing */
         .fixed.bottom-0, .bottom-nav, nav[class*="bottom"], [class*="bottom-nav"] {
           position: fixed !important;
           bottom: 0px !important;
           left: 0 !important;
           right: 0 !important;
           z-index: 1000 !important;
-          padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+          padding-bottom: max(4px, env(safe-area-inset-bottom, 0px)) !important;
           background: rgba(0, 0, 0, 0.95) !important;
           backdrop-filter: blur(10px) !important;
         }
@@ -188,36 +181,22 @@ export default function App() {
           container.style.background = '#000000';
         });
         
-        // Fix content areas to prevent overlap
-        var contentAreas = document.querySelectorAll('main, .page-container, .dashboard-container, .content-area');
-        contentAreas.forEach(function(area) {
+        // Apply minimal, precise spacing for all content
+        var allContent = document.querySelectorAll('main, .page-container, .dashboard-container, .content-area, .min-h-screen > div, .ios-pwa-container > div');
+        allContent.forEach(function(element) {
           if (isIPhoneX) {
-            area.style.paddingTop = 'max(60px, env(safe-area-inset-top, 44px))';
-            area.style.paddingBottom = 'max(100px, calc(80px + env(safe-area-inset-bottom, 34px)))';
+            element.style.paddingTop = 'max(20px, env(safe-area-inset-top, 0px))';
+            element.style.paddingBottom = 'max(80px, calc(60px + env(safe-area-inset-bottom, 0px)))';
           } else {
-            area.style.paddingTop = '60px';
-            area.style.paddingBottom = '100px';
+            element.style.paddingTop = '20px';
+            element.style.paddingBottom = '80px';
           }
-          area.style.paddingLeft = 'max(16px, env(safe-area-inset-left, 0px))';
-          area.style.paddingRight = 'max(16px, env(safe-area-inset-right, 0px))';
-          area.style.boxSizing = 'border-box';
+          element.style.paddingLeft = 'max(8px, env(safe-area-inset-left, 0px))';
+          element.style.paddingRight = 'max(8px, env(safe-area-inset-right, 0px))';
+          element.style.boxSizing = 'border-box';
         });
         
-        // Fix all page content
-        var pageContent = document.querySelectorAll('.min-h-screen > div, .ios-pwa-container > div');
-        pageContent.forEach(function(content) {
-          if (isIPhoneX) {
-            content.style.paddingTop = 'max(60px, env(safe-area-inset-top, 44px))';
-            content.style.paddingBottom = 'max(100px, calc(80px + env(safe-area-inset-bottom, 34px)))';
-          } else {
-            content.style.paddingTop = '60px';
-            content.style.paddingBottom = '100px';
-          }
-          content.style.paddingLeft = 'max(16px, env(safe-area-inset-left, 0px))';
-          content.style.paddingRight = 'max(16px, env(safe-area-inset-right, 0px))';
-        });
-        
-        // Fix bottom navigation - stick to absolute bottom
+        // Fix bottom navigation with minimal padding
         var bottomNavs = document.querySelectorAll('.fixed.bottom-0, .bottom-nav, nav[class*=\"bottom\"], [class*=\"bottom-nav\"]');
         bottomNavs.forEach(function(nav) {
           nav.style.position = 'fixed';
@@ -226,9 +205,9 @@ export default function App() {
           nav.style.right = '0px';
           nav.style.zIndex = '1000';
           if (isIPhoneX) {
-            nav.style.paddingBottom = 'max(8px, env(safe-area-inset-bottom, 34px))';
+            nav.style.paddingBottom = 'max(4px, env(safe-area-inset-bottom, 0px))';
           } else {
-            nav.style.paddingBottom = '8px';
+            nav.style.paddingBottom = '4px';
           }
           nav.style.background = 'rgba(0, 0, 0, 0.95)';
           nav.style.backdropFilter = 'blur(10px)';
