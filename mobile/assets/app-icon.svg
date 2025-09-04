@@ -1,0 +1,16 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners for iOS -->
+  <rect width="1024" height="1024" rx="227" fill="#1a1a1a"/>
+  
+  <!-- White circle -->
+  <circle cx="512" cy="512" r="300" fill="#ffffff"/>
+  
+  <!-- TP Text -->
+  <text x="512" y="580" font-family="system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif" 
+        font-size="180" font-weight="700" text-anchor="middle" fill="#1a1a1a">TP</text>
+  
+  <!-- Decorative elements -->
+  <rect x="350" y="390" width="50" height="16" rx="8" fill="#1a1a1a"/>
+  <rect x="624" y="390" width="50" height="16" rx="8" fill="#1a1a1a"/>
+  <rect x="350" y="620" width="324" height="6" rx="3" fill="#1a1a1a"/>
+</svg>
