@@ -11,7 +11,6 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
 const { width, height } = Dimensions.get('window');
@@ -193,7 +192,7 @@ export default function App() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container} edges={[]}>
+      <View style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
         <View style={styles.errorContainer}>
           <Text style={styles.errorTitle}>Connection Error</Text>
@@ -211,12 +210,12 @@ export default function App() {
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={[]}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
       
       {/* Loading overlay */}
@@ -297,7 +296,7 @@ export default function App() {
           console.warn('HTTP Error:', nativeEvent.statusCode, nativeEvent.description);
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
