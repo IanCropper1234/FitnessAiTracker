@@ -29,7 +29,7 @@ export class VolumeDistributionEngine {
    */
   static async distributeVolumeAcrossExercises(
     weeklyTarget: number,           // 來自 MEV/MAV 的週目標組數
-    exercisesInProgram: any[],      // 程式中的相關動作
+    exerciseIds: number[],          // 程式中的相關動作ID
     muscleGroup: string,           // 目標肌群
     muscleGroupId: number,         // 肌群 ID
     trainingDays: number[],        // 訓練該肌群的天數 [1, 3, 5] 
@@ -38,7 +38,8 @@ export class VolumeDistributionEngine {
     
     try {
       // Step 1: 獲取動作詳細信息和優先級
-      const exerciseDetails = await this.getExerciseDetails(exercisesInProgram, muscleGroupId);
+      const exerciseDetails = await this.getExerciseDetails(exerciseIds, muscleGroupId);
+      console.log(`🔍 Exercise details retrieved: ${exerciseDetails.length} exercises`);
       
       // Step 2: 計算動作優先級
       const prioritizedExercises = await this.calculateExercisePriorities(exerciseDetails, muscleGroup);
@@ -52,8 +53,8 @@ export class VolumeDistributionEngine {
       // Step 5: 驗證和調整
       const result = this.validateAndAdjustAllocations(finalAllocations, weeklyTarget, muscleGroup);
       
-      console.log(`Volume distribution for ${muscleGroup}: ${weeklyTarget} sets across ${exercisesInProgram.length} exercises`);
-      console.log(`Exercise details found: ${exercisesInProgram.length}, priorities calculated: ${prioritizedExercises.length}`);
+      console.log(`Volume distribution for ${muscleGroup}: ${weeklyTarget} sets across ${exerciseIds.length} exercises`);
+      console.log(`Exercise details found: ${exerciseDetails.length}, priorities calculated: ${prioritizedExercises.length}`);
       console.log(`Base allocations: ${baseAllocations.length}, final allocations: ${finalAllocations.length}`);
       
       return result;
