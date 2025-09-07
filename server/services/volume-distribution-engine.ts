@@ -58,13 +58,14 @@ export class VolumeDistributionEngine {
       
     } catch (error) {
       console.error('Error in distributeVolumeAcrossExercises:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         muscleGroup,
         totalAllocatedSets: 0,
         allocations: [],
         isWithinConstraints: false,
         utilizationPercentage: 0,
-        warnings: [`Failed to distribute volume: ${error.message}`]
+        warnings: [`Failed to distribute volume: ${errorMessage}`]
       };
     }
   }
