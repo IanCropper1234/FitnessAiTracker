@@ -106,6 +106,7 @@ export class VolumeDistributionEngine {
   ): Promise<ExercisePriority[]> {
     
     console.log(`🔍 Calculating priorities for ${exerciseDetails.length} exercises in ${muscleGroup}`);
+    console.log(`🔍 Exercise details:`, exerciseDetails.map(e => ({ id: e.id, category: e.category, difficulty: e.difficulty, role: e.role })));
     
     return exerciseDetails.map(exercise => {
       let priority = 5; // Base priority
@@ -121,10 +122,21 @@ export class VolumeDistributionEngine {
         multiplier += 0.2;
       }
       
-      // 難度影響優先級
+      // 難度影響優先級 (處理字串難度)
+      let difficultyValue = 5; // 預設值
       if (exercise.difficulty) {
-        priority += Math.floor(exercise.difficulty / 2);
-        multiplier += (exercise.difficulty - 5) * 0.1;
+        if (typeof exercise.difficulty === 'string') {
+          const difficultyMap: Record<string, number> = {
+            'beginner': 3,
+            'intermediate': 5,
+            'advanced': 7
+          };
+          difficultyValue = difficultyMap[exercise.difficulty] || 5;
+        } else {
+          difficultyValue = exercise.difficulty;
+        }
+        priority += Math.floor(difficultyValue / 2);
+        multiplier += (difficultyValue - 5) * 0.1;
       }
       
       // 主要肌群動作優先級更高
@@ -145,12 +157,14 @@ export class VolumeDistributionEngine {
       priority = Math.max(1, Math.min(10, priority));
       multiplier = Math.max(0.5, Math.min(2.0, multiplier));
       
+      console.log(`📝 Exercise ${exercise.id}: priority=${priority}, multiplier=${multiplier}, category=${exercise.category}`);
+      
       return {
         exerciseId: exercise.id,
         priority,
         multiplier,
         category: exercise.category || 'accessory',
-        difficulty: exercise.difficulty || 5
+        difficulty: difficultyValue
       };
     });
   }
@@ -222,52 +236,74 @@ export class VolumeDistributionEngine {
     console.log(`🔄 Distributing ${totalSets} sets among ${exercises.length} exercises`);
     
     if (exercises.length === 0) return [];
+    if (totalSets <= 0) return [];
     
-    // 計算總權重
-    const totalWeight = exercises.reduce((sum, ex) => sum + (ex.priority * ex.multiplier), 0);
-    console.log(`⚖️ Total weight: ${totalWeight}`);
-    
-    let remainingSets = totalSets;
+    // 簡化分配：平均分配為基礎，確保每個動作至少1組
     const allocations: ExerciseVolumeAllocation[] = [];
+    let remainingSets = totalSets;
     
-    // 按優先級排序
-    const sortedExercises = exercises.sort((a, b) => b.priority - a.priority);
+    // 每個動作最少1組
+    const minSetsPerExercise = 1;
+    const totalMinSets = exercises.length * minSetsPerExercise;
     
-    for (let i = 0; i < sortedExercises.length; i++) {
-      const exercise = sortedExercises[i];
+    if (totalMinSets > totalSets) {
+      // 如果總組數不夠每個動作分配1組，平均分配
+      const setsPerExercise = Math.floor(totalSets / exercises.length);
+      const extraSets = totalSets % exercises.length;
       
-      let allocatedSets: number;
-      
-      if (i === sortedExercises.length - 1) {
-        // 最後一個動作分配剩餘組數
-        allocatedSets = remainingSets;
-      } else {
-        // 根據權重分配
-        const weight = exercise.priority * exercise.multiplier;
-        const proportion = weight / totalWeight;
-        allocatedSets = Math.max(1, Math.round(totalSets * proportion));
-      }
-      
-      // 確保每個動作至少 1 組，最多 6 組
-      allocatedSets = Math.max(1, Math.min(6, allocatedSets));
-      allocatedSets = Math.min(allocatedSets, remainingSets);
-      
-      allocations.push({
-        exerciseId: exercise.exerciseId,
-        exerciseName: `Exercise ${exercise.exerciseId}`, // Will be updated with real name
-        muscleGroup: '', // Will be filled by caller
-        muscleGroupId: 0, // Will be filled by caller
-        allocatedSets: allocatedSets || 0, // 確保不是 null
-        priority: ['push', 'pull', 'legs', 'compound'].includes(exercise.category) ? 'primary' : 'secondary',
-        contribution: 100, // Will be updated based on muscle mapping
-        trainingDays: [],
-        setsPerDay: {}
+      exercises.forEach((exercise, index) => {
+        const allocatedSets = setsPerExercise + (index < extraSets ? 1 : 0);
+        allocations.push({
+          exerciseId: exercise.exerciseId,
+          exerciseName: `Exercise ${exercise.exerciseId}`,
+          muscleGroup: '',
+          muscleGroupId: 0,
+          allocatedSets,
+          priority: ['push', 'pull', 'legs', 'compound'].includes(exercise.category) ? 'primary' : 'secondary',
+          contribution: 100,
+          trainingDays: [],
+          setsPerDay: {}
+        });
+      });
+    } else {
+      // 先分配每個動作1組，然後分配剩餘組數
+      exercises.forEach(exercise => {
+        allocations.push({
+          exerciseId: exercise.exerciseId,
+          exerciseName: `Exercise ${exercise.exerciseId}`,
+          muscleGroup: '',
+          muscleGroupId: 0,
+          allocatedSets: minSetsPerExercise,
+          priority: ['push', 'pull', 'legs', 'compound'].includes(exercise.category) ? 'primary' : 'secondary',
+          contribution: 100,
+          trainingDays: [],
+          setsPerDay: {}
+        });
+        remainingSets -= minSetsPerExercise;
       });
       
-      remainingSets -= allocatedSets;
-      
-      if (remainingSets <= 0) break;
+      // 分配剩餘組數，優先給前面的動作
+      let exerciseIndex = 0;
+      while (remainingSets > 0 && exerciseIndex < allocations.length) {
+        const maxAdditionalSets = 5; // 每個動作最多6組總計
+        const currentSets = allocations[exerciseIndex].allocatedSets;
+        const canAdd = Math.min(maxAdditionalSets - currentSets, remainingSets);
+        
+        if (canAdd > 0) {
+          allocations[exerciseIndex].allocatedSets += canAdd;
+          remainingSets -= canAdd;
+        }
+        
+        exerciseIndex++;
+        
+        // 如果已經遍歷完所有動作，重新開始
+        if (exerciseIndex >= allocations.length) {
+          exerciseIndex = 0;
+        }
+      }
     }
+    
+    console.log(`✅ Distribution complete: ${allocations.map(a => `Ex${a.exerciseId}:${a.allocatedSets}`).join(', ')}`);
     
     return allocations;
   }
