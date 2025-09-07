@@ -438,6 +438,10 @@ export const volumeLandmarks = pgTable("volume_landmarks", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// TypeScript types for volume allocation
+export type ExerciseVolumeAllocation = typeof exerciseVolumeAllocation.$inferSelect;
+export type InsertExerciseVolumeAllocation = typeof exerciseVolumeAllocation.$inferInsert;
+
 // Weekly volume tracking for progression
 export const weeklyVolumeTracking = pgTable("weekly_volume_tracking", {
   id: serial("id").primaryKey(),
