@@ -202,7 +202,16 @@ export class VolumeDistributionEngine {
     console.log(`📊 Exercise categories: ${compoundExercises.length} compound, ${isolationExercises.length} isolation`);
     console.log(`📊 Category breakdown:`, prioritizedExercises.map(e => ({ id: e.exerciseId, category: e.category })));
     
-    // 計算分配組數
+    // 特殊情況：如果只有一種類型的動作，將所有組數分配給該類型
+    if (compoundExercises.length > 0 && isolationExercises.length === 0) {
+      console.log(`📦 Only compound exercises found, allocating all ${totalSets} sets to compound`);
+      return this.distributeVolumeByPriority(totalSets, compoundExercises);
+    } else if (isolationExercises.length > 0 && compoundExercises.length === 0) {
+      console.log(`🎯 Only isolation exercises found, allocating all ${totalSets} sets to isolation`);
+      return this.distributeVolumeByPriority(totalSets, isolationExercises);
+    }
+    
+    // 正常情況：按比例分配組數
     const compoundSets = Math.floor(totalSets * compoundRatio);
     const isolationSets = totalSets - compoundSets;
     
@@ -285,7 +294,7 @@ export class VolumeDistributionEngine {
       // 分配剩餘組數，優先給前面的動作
       let exerciseIndex = 0;
       while (remainingSets > 0 && exerciseIndex < allocations.length) {
-        const maxAdditionalSets = 5; // 每個動作最多6組總計
+        const maxAdditionalSets = Math.min(8, Math.ceil(totalSets / exercises.length) + 2); // 動態設定最大組數
         const currentSets = allocations[exerciseIndex].allocatedSets;
         const canAdd = Math.min(maxAdditionalSets - currentSets, remainingSets);
         
