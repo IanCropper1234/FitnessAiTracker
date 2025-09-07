@@ -6,9 +6,17 @@ import {
   volumeLandmarks,
   exerciseMuscleMapping,
   workoutSessions,
-  workoutExercises
+  workoutExercises,
+  exerciseVolumeAllocation
 } from "@shared/schema";
 import { eq, and, or, asc, desc, inArray, sql } from "drizzle-orm";
+import { VolumeDistributionEngine } from "./volume-distribution-engine";
+import { SciAlgorithmCore } from "./scientific-algorithm-core";
+import type { 
+  WeeklyVolumeTarget, 
+  VolumeConstraints
+} from "@shared/types/volume-distribution";
+import { DistributionStrategy } from "@shared/types/volume-distribution";
 
 interface ExerciseTemplate {
   exerciseId: number;
@@ -57,13 +65,16 @@ interface TrainingTemplateData {
 export class TemplateEngine {
   
   /**
-   * Generate full program from template (all workout days)
+   * Generate full program from template with scientific volume distribution
+   * Updated to use VolumeDistributionEngine for proper set allocation
    */
   static async generateFullProgramFromTemplate(
     userId: number,
     templateId: number,
     mesocycleId?: number,
-    startDate?: Date
+    startDate?: Date,
+    currentWeek: number = 1,
+    totalWeeks: number = 6
   ): Promise<{
     sessions: Array<{
       sessionId: number;
@@ -72,6 +83,7 @@ export class TemplateEngine {
       exercises: ExerciseTemplate[];
     }>;
     totalWorkouts: number;
+    volumeDistribution: Record<string, any>;
   }> {
     
     // Get template data
@@ -87,25 +99,63 @@ export class TemplateEngine {
 
     const templateData = template[0].templateData as TrainingTemplateData;
     const sessions = [];
+    const volumeDistribution: Record<string, any> = {};
 
-    // Generate all workout sessions for the template
+    // Step 1: Get user's volume landmarks for scientific calculation
+    const userLandmarks = await db
+      .select({
+        muscleGroupId: volumeLandmarks.muscleGroupId,
+        muscleGroupName: muscleGroups.name,
+        targetVolume: volumeLandmarks.targetVolume,
+        currentVolume: volumeLandmarks.currentVolume,
+        mev: volumeLandmarks.mev,
+        mav: volumeLandmarks.mav,
+        mrv: volumeLandmarks.mrv,
+        recoveryLevel: volumeLandmarks.recoveryLevel,
+        adaptationLevel: volumeLandmarks.adaptationLevel,
+        frequencyMin: volumeLandmarks.frequencyMin,
+        frequencyMax: volumeLandmarks.frequencyMax
+      })
+      .from(volumeLandmarks)
+      .innerJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
+      .where(eq(volumeLandmarks.userId, userId));
+
+    console.log(`🎯 Generating program with scientific volume distribution for ${userLandmarks.length} muscle groups`);
+
+    // Step 2: Calculate weekly volume targets using RP methodology
+    const weeklyTargets = await this.calculateWeeklyVolumeTargets(userLandmarks, currentWeek, totalWeeks);
+    
+    // Step 3: Collect all exercises from template by muscle group
+    const exercisesByMuscleGroup = await this.organizeExercisesByMuscleGroup(templateData);
+    
+    // Step 4: Apply volume distribution for each muscle group
+    for (const [muscleGroupName, muscleGroupData] of Object.entries(exercisesByMuscleGroup)) {
+      const weeklyTarget = weeklyTargets[muscleGroupName];
+      if (!weeklyTarget) continue;
+
+      const trainingDays = this.getTrainingDaysForMuscleGroup(muscleGroupName, templateData);
+      
+      // Use VolumeDistributionEngine to distribute sets scientifically
+      const allocation = await VolumeDistributionEngine.distributeVolumeAcrossExercises(
+        weeklyTarget.targetSets,
+        muscleGroupData.exercises.map(e => e.exerciseId),
+        muscleGroupName,
+        muscleGroupData.muscleGroupId,
+        trainingDays,
+        DistributionStrategy.BALANCED
+      );
+      
+      volumeDistribution[muscleGroupName] = allocation;
+      
+      // Apply the allocation to template exercises
+      this.applyVolumeAllocationToTemplate(templateData, allocation);
+      
+      console.log(`📊 ${muscleGroupName}: distributed ${allocation.totalAllocatedSets} sets across ${allocation.allocations.length} exercises`);
+    }
+
+    // Step 5: Generate workout sessions with corrected volume allocation
     for (let workoutDay = 0; workoutDay < templateData.workouts.length; workoutDay++) {
       const workoutTemplate = templateData.workouts[workoutDay];
-      
-      // Get user's current volume landmarks
-      const userLandmarks = await db
-        .select({
-          muscleGroupId: volumeLandmarks.muscleGroupId,
-          muscleGroupName: muscleGroups.name,
-          targetVolume: volumeLandmarks.targetVolume,
-          currentVolume: volumeLandmarks.currentVolume,
-          mev: volumeLandmarks.mev,
-          mav: volumeLandmarks.mav,
-          recoveryLevel: volumeLandmarks.recoveryLevel
-        })
-        .from(volumeLandmarks)
-        .innerJoin(muscleGroups, eq(volumeLandmarks.muscleGroupId, muscleGroups.id))
-        .where(eq(volumeLandmarks.userId, userId));
 
       // Customize exercises for this workout
       const customizedExercises: ExerciseTemplate[] = [];
@@ -223,8 +273,117 @@ export class TemplateEngine {
 
     return {
       sessions,
-      totalWorkouts: templateData.workouts.length
+      totalWorkouts: templateData.workouts.length,
+      volumeDistribution
     };
+  }
+
+  /**
+   * Calculate weekly volume targets using RP methodology
+   */
+  private static async calculateWeeklyVolumeTargets(
+    userLandmarks: any[],
+    currentWeek: number,
+    totalWeeks: number
+  ): Promise<Record<string, WeeklyVolumeTarget>> {
+    const targets: Record<string, WeeklyVolumeTarget> = {};
+    
+    for (const landmark of userLandmarks) {
+      const progression = SciAlgorithmCore.calculateVolumeProgression(currentWeek, totalWeeks, {
+        mev: landmark.mev,
+        mav: landmark.mav,
+        mrv: landmark.mrv,
+        recoveryLevel: landmark.recoveryLevel,
+        adaptationLevel: landmark.adaptationLevel
+      });
+      
+      targets[landmark.muscleGroupName] = {
+        muscleGroup: landmark.muscleGroupName,
+        muscleGroupId: landmark.muscleGroupId,
+        targetSets: progression.targetSets,
+        phase: progression.phase,
+        adjustmentFactor: 1.0,
+        weekNumber: currentWeek
+      };
+    }
+    
+    return targets;
+  }
+
+  /**
+   * Organize exercises by muscle group from template data
+   */
+  private static async organizeExercisesByMuscleGroup(templateData: TrainingTemplateData): Promise<Record<string, any>> {
+    const exercisesByMuscleGroup: Record<string, any> = {};
+    
+    // Get all exercise IDs from template
+    const allExerciseIds = templateData.workouts.flatMap(workout => 
+      workout.exercises.map(ex => ex.exerciseId)
+    );
+    
+    // Get exercise-muscle group mappings
+    const mappings = await db
+      .select({
+        exerciseId: exerciseMuscleMapping.exerciseId,
+        muscleGroupId: exerciseMuscleMapping.muscleGroupId,
+        muscleGroupName: muscleGroups.name,
+        role: exerciseMuscleMapping.role
+      })
+      .from(exerciseMuscleMapping)
+      .innerJoin(muscleGroups, eq(exerciseMuscleMapping.muscleGroupId, muscleGroups.id))
+      .where(inArray(exerciseMuscleMapping.exerciseId, allExerciseIds));
+    
+    // Group by muscle group
+    for (const mapping of mappings) {
+      if (!exercisesByMuscleGroup[mapping.muscleGroupName]) {
+        exercisesByMuscleGroup[mapping.muscleGroupName] = {
+          muscleGroupId: mapping.muscleGroupId,
+          exercises: []
+        };
+      }
+      
+      exercisesByMuscleGroup[mapping.muscleGroupName].exercises.push({
+        exerciseId: mapping.exerciseId,
+        role: mapping.role
+      });
+    }
+    
+    return exercisesByMuscleGroup;
+  }
+
+  /**
+   * Get training days for a specific muscle group
+   */
+  private static getTrainingDaysForMuscleGroup(muscleGroup: string, templateData: TrainingTemplateData): number[] {
+    const trainingDays: number[] = [];
+    
+    templateData.workouts.forEach((workout, index) => {
+      const hasThisMuscleGroup = workout.focus.some(focus => 
+        focus.toLowerCase().includes(muscleGroup.toLowerCase()) ||
+        muscleGroup.toLowerCase().includes(focus.toLowerCase())
+      );
+      
+      if (hasThisMuscleGroup) {
+        trainingDays.push(index); // Workout day index
+      }
+    });
+    
+    return trainingDays.length > 0 ? trainingDays : [0, 2, 4]; // Default to Mon/Wed/Fri if not found
+  }
+
+  /**
+   * Apply volume allocation to template exercises
+   */
+  private static applyVolumeAllocationToTemplate(templateData: TrainingTemplateData, allocation: any): void {
+    // Update template exercises with allocated sets
+    for (const alloc of allocation.allocations) {
+      for (const workout of templateData.workouts) {
+        const exercise = workout.exercises.find(ex => ex.exerciseId === alloc.exerciseId);
+        if (exercise) {
+          exercise.sets = alloc.allocatedSets;
+        }
+      }
+    }
   }
 
   /**
