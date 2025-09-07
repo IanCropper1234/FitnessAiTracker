@@ -111,11 +111,12 @@ export class VolumeDistributionEngine {
       let priority = 5; // Base priority
       let multiplier = 1.0;
       
-      // 複合動作優先級更高
-      if (exercise.category === 'compound') {
+      // 複合動作優先級更高 (根據實際資料庫的類型)
+      const compoundCategories = ['push', 'pull', 'legs', 'compound'];
+      if (compoundCategories.includes(exercise.category)) {
         priority += 3;
         multiplier += 0.4;
-      } else if (exercise.category === 'isolation') {
+      } else {
         priority += 1;
         multiplier += 0.2;
       }
@@ -163,6 +164,8 @@ export class VolumeDistributionEngine {
     strategy: DistributionStrategy
   ): ExerciseVolumeAllocation[] {
     
+    console.log(`🎯 Applying distribution strategy: ${totalSets} sets to ${prioritizedExercises.length} exercises`);
+    
     let compoundRatio = 0.6; // Default balanced strategy
     
     switch (strategy) {
@@ -177,13 +180,19 @@ export class VolumeDistributionEngine {
         break;
     }
     
-    // 分離複合和孤立動作
-    const compoundExercises = prioritizedExercises.filter(e => e.category === 'compound');
-    const isolationExercises = prioritizedExercises.filter(e => e.category !== 'compound');
+    // 分離複合和孤立動作 (根據實際資料庫的類型)
+    const compoundCategories = ['push', 'pull', 'legs', 'compound'];
+    const compoundExercises = prioritizedExercises.filter(e => compoundCategories.includes(e.category));
+    const isolationExercises = prioritizedExercises.filter(e => !compoundCategories.includes(e.category));
+    
+    console.log(`📊 Exercise categories: ${compoundExercises.length} compound, ${isolationExercises.length} isolation`);
+    console.log(`📊 Category breakdown:`, prioritizedExercises.map(e => ({ id: e.exerciseId, category: e.category })));
     
     // 計算分配組數
     const compoundSets = Math.floor(totalSets * compoundRatio);
     const isolationSets = totalSets - compoundSets;
+    
+    console.log(`🔢 Set allocation: ${compoundSets} to compound, ${isolationSets} to isolation`);
     
     const allocations: ExerciseVolumeAllocation[] = [];
     
@@ -210,10 +219,13 @@ export class VolumeDistributionEngine {
     exercises: ExercisePriority[]
   ): ExerciseVolumeAllocation[] {
     
+    console.log(`🔄 Distributing ${totalSets} sets among ${exercises.length} exercises`);
+    
     if (exercises.length === 0) return [];
     
     // 計算總權重
     const totalWeight = exercises.reduce((sum, ex) => sum + (ex.priority * ex.multiplier), 0);
+    console.log(`⚖️ Total weight: ${totalWeight}`);
     
     let remainingSets = totalSets;
     const allocations: ExerciseVolumeAllocation[] = [];
@@ -246,7 +258,7 @@ export class VolumeDistributionEngine {
         muscleGroup: '', // Will be filled by caller
         muscleGroupId: 0, // Will be filled by caller
         allocatedSets: allocatedSets || 0, // 確保不是 null
-        priority: exercise.category === 'compound' ? 'primary' : 'secondary',
+        priority: ['push', 'pull', 'legs', 'compound'].includes(exercise.category) ? 'primary' : 'secondary',
         contribution: 100, // Will be updated based on muscle mapping
         trainingDays: [],
         setsPerDay: {}
