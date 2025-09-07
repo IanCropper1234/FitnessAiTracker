@@ -6112,6 +6112,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // All AI endpoints moved to dedicated AI router module
 
+  // Development-only test endpoints for volume distribution validation
+  if (process.env.NODE_ENV === 'development') {
+    const { testRouter } = await import('./test-endpoints');
+    app.use('/api/test', testRouter);
+    console.log('🧪 Test endpoints mounted at /api/test/*');
+  }
+
   const httpServer = createServer(app);
   return httpServer;
 }

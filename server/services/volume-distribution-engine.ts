@@ -53,6 +53,8 @@ export class VolumeDistributionEngine {
       const result = this.validateAndAdjustAllocations(finalAllocations, weeklyTarget, muscleGroup);
       
       console.log(`Volume distribution for ${muscleGroup}: ${weeklyTarget} sets across ${exercisesInProgram.length} exercises`);
+      console.log(`Exercise details found: ${exercisesInProgram.length}, priorities calculated: ${prioritizedExercises.length}`);
+      console.log(`Base allocations: ${baseAllocations.length}, final allocations: ${finalAllocations.length}`);
       
       return result;
       
@@ -101,6 +103,8 @@ export class VolumeDistributionEngine {
     exerciseDetails: any[],
     muscleGroup: string
   ): Promise<ExercisePriority[]> {
+    
+    console.log(`🔍 Calculating priorities for ${exerciseDetails.length} exercises in ${muscleGroup}`);
     
     return exerciseDetails.map(exercise => {
       let priority = 5; // Base priority
@@ -240,7 +244,7 @@ export class VolumeDistributionEngine {
         exerciseName: `Exercise ${exercise.exerciseId}`, // Will be updated with real name
         muscleGroup: '', // Will be filled by caller
         muscleGroupId: 0, // Will be filled by caller
-        allocatedSets,
+        allocatedSets: allocatedSets || 0, // 確保不是 null
         priority: exercise.category === 'compound' ? 'primary' : 'secondary',
         contribution: 100, // Will be updated based on muscle mapping
         trainingDays: [],
@@ -273,8 +277,9 @@ export class VolumeDistributionEngine {
       }
       
       // 平均分配到各訓練日
-      const baseSetsPerDay = Math.floor(totalSets / daysCount);
-      const extraSets = totalSets % daysCount;
+      const safeTotal = totalSets || 0;
+      const baseSetsPerDay = Math.floor(safeTotal / daysCount);
+      const extraSets = safeTotal % daysCount;
       
       trainingDays.forEach((day, index) => {
         setsPerDay[day] = baseSetsPerDay + (index < extraSets ? 1 : 0);
@@ -297,7 +302,7 @@ export class VolumeDistributionEngine {
     muscleGroup: string
   ): VolumeDistributionResult {
     
-    const totalAllocated = allocations.reduce((sum, alloc) => sum + alloc.allocatedSets, 0);
+    const totalAllocated = allocations.reduce((sum, alloc) => sum + (alloc.allocatedSets || 0), 0);
     const isWithinConstraints = Math.abs(totalAllocated - targetSets) <= 1; // Allow 1 set variance
     const utilizationPercentage = targetSets > 0 ? (totalAllocated / targetSets) * 100 : 0;
     
@@ -307,11 +312,11 @@ export class VolumeDistributionEngine {
       warnings.push(`Volume mismatch: allocated ${totalAllocated} sets vs target ${targetSets} sets`);
     }
     
-    if (allocations.some(alloc => alloc.allocatedSets === 0)) {
+    if (allocations.some(alloc => (alloc.allocatedSets || 0) === 0)) {
       warnings.push(`Some exercises received 0 sets`);
     }
     
-    if (allocations.some(alloc => alloc.allocatedSets > 6)) {
+    if (allocations.some(alloc => (alloc.allocatedSets || 0) > 6)) {
       warnings.push(`Some exercises received >6 sets per week`);
     }
     
