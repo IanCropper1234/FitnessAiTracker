@@ -42,8 +42,7 @@ export async function initializeVolumeLandmarks() {
         const landmarks = rpVolumeLandmarks[muscleGroup.name as keyof typeof rpVolumeLandmarks];
         
         if (landmarks) {
-          // Create volume landmarks with optional frequency fields
-          const landmarkData: any = {
+          await db.insert(volumeLandmarks).values({
             userId: userId,
             muscleGroupId: muscleGroup.id,
             mv: landmarks.mv,
@@ -54,18 +53,7 @@ export async function initializeVolumeLandmarks() {
             targetVolume: Math.round((landmarks.mev + landmarks.mav) / 2), // Start in middle range
             recoveryLevel: 5,
             adaptationLevel: 5
-          };
-          
-          // Add frequency fields if they exist in schema (for backwards compatibility)
-          try {
-            landmarkData.frequencyMin = 2; // Default minimum frequency
-            landmarkData.frequencyMax = 4; // Default maximum frequency
-          } catch (error) {
-            // Ignore if frequency columns don't exist yet
-            console.log("Frequency columns not available yet, will be added after migration");
-          }
-          
-          await db.insert(volumeLandmarks).values(landmarkData);
+          });
         }
       }
       

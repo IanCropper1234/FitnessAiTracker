@@ -161,31 +161,25 @@ export const scientificMuscleGroups = [
   }
 ];
 
-// Renaissance Periodization Volume Landmarks (sets per week) - 2024 Update
-// Based on latest RP methodology and research for hypertrophy training
+// Renaissance Periodization Volume Landmarks (sets per week)
+// Based on RP methodology for hypertrophy training
 export const rpVolumeLandmarks = {
   // Upper Body Push
-  chest: { mv: 6, mev: 8, mav: 16, mrv: 22 },           // Updated: Chest MEV 8-10, MAV 12-20, MRV 22+
-  front_delts: { mv: 6, mev: 2, mav: 7, mrv: 12 },     // New: Front delts (often get indirect volume)
-  side_delts: { mv: 6, mev: 8, mav: 16, mrv: 24 },     // New: Side delts need direct work
-  triceps: { mv: 6, mev: 4, mav: 12, mrv: 18 },        // Updated: Direct triceps work
+  chest: { mv: 0, mev: 8, mav: 18, mrv: 26 },
+  shoulders: { mv: 0, mev: 8, mav: 20, mrv: 28 },
+  triceps: { mv: 0, mev: 6, mav: 14, mrv: 20 },
 
   // Upper Body Pull  
-  lats: { mv: 6, mev: 8, mav: 16, mrv: 25 },           // Updated: Lats
-  rhomboids: { mv: 6, mev: 8, mav: 14, mrv: 22 },      // Updated: Mid traps/rhomboids
-  rear_delts: { mv: 6, mev: 8, mav: 16, mrv: 22 },     // Rear delts
-  biceps: { mv: 6, mev: 8, mav: 16, mrv: 26 },         // Updated: Biceps can handle more volume
+  lats: { mv: 0, mev: 8, mav: 18, mrv: 25 },
+  rhomboids: { mv: 0, mev: 8, mav: 16, mrv: 22 },
+  rear_delts: { mv: 0, mev: 8, mav: 16, mrv: 22 },
+  biceps: { mv: 0, mev: 6, mav: 14, mrv: 20 },
 
   // Lower Body
-  quads: { mv: 6, mev: 6, mav: 15, mrv: 20 },          // Updated: Quads 6-8 MEV, 12-18 MAV
-  hamstrings: { mv: 6, mev: 4, mav: 13, mrv: 20 },     // Updated: Hamstrings 4-6 MEV, 10-16 MAV
-  glutes: { mv: 6, mev: 4, mav: 12, mrv: 22 },         // Updated: Glutes
-  calves: { mv: 6, mev: 6, mav: 12, mrv: 20 },         // Updated: Calves
-
-  // Additional muscle groups based on 2024 RP data
-  traps: { mv: 6, mev: 0, mav: 10, mrv: 15 },          // New: Traps (often get indirect volume)
-  forearms: { mv: 6, mev: 4, mav: 12, mrv: 20 },       // New: Forearms
-  abs: { mv: 6, mev: 0, mav: 16, mrv: 25 }             // New: Abs can handle high volume
+  quads: { mv: 0, mev: 8, mav: 20, mrv: 28 },
+  hamstrings: { mv: 0, mev: 6, mav: 16, mrv: 22 },
+  glutes: { mv: 0, mev: 6, mav: 16, mrv: 22 },
+  calves: { mv: 0, mev: 6, mav: 14, mrv: 20 }
 };
 
 // Exercise to muscle group mapping with contribution percentages

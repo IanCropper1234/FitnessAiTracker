@@ -430,17 +430,9 @@ export const volumeLandmarks = pgTable("volume_landmarks", {
   // Auto-regulation factors
   recoveryLevel: integer("recovery_level").default(5), // 1-10 scale
   adaptationLevel: integer("adaptation_level").default(5), // 1-10 scale
-  // NEW: Training frequency constraints based on RP methodology
-  frequencyMin: integer("frequency_min").default(2), // Minimum training frequency per week
-  frequencyMax: integer("frequency_max").default(4), // Maximum training frequency per week
-  lastVolumeCheck: timestamp("last_volume_check"), // Last time volume was validated
   lastUpdated: timestamp("last_updated").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
-
-// TypeScript types for volume allocation
-export type ExerciseVolumeAllocation = typeof exerciseVolumeAllocation.$inferSelect;
-export type InsertExerciseVolumeAllocation = typeof exerciseVolumeAllocation.$inferInsert;
 
 // Weekly volume tracking for progression
 export const weeklyVolumeTracking = pgTable("weekly_volume_tracking", {
@@ -467,23 +459,6 @@ export const exerciseMuscleMapping = pgTable("exercise_muscle_mapping", {
   muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
   contributionPercentage: integer("contribution_percentage").notNull().default(100), // 0-100%
   role: text("role").notNull().default("primary"), // primary, secondary, stabilizer
-});
-
-// NEW: Exercise Volume Allocation Tracking
-// Tracks how weekly volume is distributed across exercises in mesocycles
-export const exerciseVolumeAllocation = pgTable("exercise_volume_allocation", {
-  id: serial("id").primaryKey(),
-  mesocycleId: integer("mesocycle_id").references(() => mesocycles.id).notNull(),
-  exerciseId: integer("exercise_id").references(() => exercises.id).notNull(),
-  muscleGroupId: integer("muscle_group_id").references(() => muscleGroups.id).notNull(),
-  weekNumber: integer("week_number").notNull(),
-  allocatedSets: integer("allocated_sets").notNull(),
-  allocationPriority: text("allocation_priority").notNull(), // 'primary', 'secondary', 'tertiary'
-  contributionPercentage: integer("contribution_percentage").default(100),
-  trainingDays: jsonb("training_days"), // Array of training days [1, 3, 5] (Monday, Wednesday, Friday)
-  setsPerDay: jsonb("sets_per_day"), // Object mapping day to sets {1: 2, 3: 2, 5: 1}
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Diet goals with TDEE calculation and auto-regulation

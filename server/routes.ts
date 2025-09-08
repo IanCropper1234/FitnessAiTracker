@@ -4665,74 +4665,146 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // OLD ROUTE - DISABLED IN FAVOR OF RP-BASED SYSTEM
-  // app.post("/api/training/mesocycles", requireAuth, async (req, res) => {
-  //   try {
-  //     const userId = req.userId;
-  //     const { name, totalWeeks, trainingDaysPerWeek, dayTemplates } = req.body;
-  //     
-  //     console.log('OLD Creating mesocycle with day templates:', { name, totalWeeks, trainingDaysPerWeek, dayTemplates });
-  //     
-  //     // Create mesocycle with training schedule
-  //     const mesocycleData = {
-  //       userId: Number(userId),
-  //       name,
-  //       totalWeeks,
-  //       currentWeek: 1,
-  //       startDate: new Date(),
-  //       endDate: new Date(Date.now() + totalWeeks * 7 * 24 * 60 * 60 * 1000),
-  //       programId: null,
-  //       templateId: null
-  //     };
-  //     
-  //     const [mesocycle] = await db.insert(mesocycles).values(mesocycleData).returning();
-  //     
-  //     // Generate workout sessions for the entire mesocycle based on day templates
-  //     if (dayTemplates && Object.keys(dayTemplates).length > 0) {
-  //       console.log('Generating workout sessions for mesocycle...');
-  //       
-  //       const sessionsToCreate = [];
-  //       const startDate = new Date(mesocycle.startDate);
-  //       
-  //       // Only generate sessions for Week 1 - subsequent weeks created via "Advance Week"
-  //       const week = 1;
-  //       const weekStartDate = new Date(startDate);
-  //       
-  //       // Generate sessions for each training day in Week 1
-  //       for (let day = 1; day <= trainingDaysPerWeek; day++) {
-  //         const templateId = dayTemplates[day.toString()];
-  //         
-  //         if (templateId) {
-  //           // Get the saved workout template
-  //           const savedTemplate = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
-  //           if (savedTemplate.length > 0) {
-  //             const template = savedTemplate[0];
-  //             // Calculate session date (distribute training days across the week)
-  //             const sessionDate = new Date(weekStartDate);
-  //             const dayOffset = Math.floor((day - 1) * 7 / trainingDaysPerWeek);
-  //             sessionDate.setDate(weekStartDate.getDate() + dayOffset);
-  //             
-  //             const sessionData = {
-  //               userId: Number(userId),
-  //               mesocycleId: mesocycle.id,
-  //               programId: null,
-  //               date: sessionDate,
-  //               name: `${template.name} - Week ${week} Day ${day}`,
-  //               isCompleted: false,
-  //               totalVolume: 0,
-  //               duration: template.estimatedDuration,
-  //               version: "2.0",
-  //               features: { spinnerSetInput: true, gestureNavigation: true },
-  //               algorithm: "RP_BASED",
-  //               week: week
-  //             };
-  //             
-  //             sessionsToCreate.push(sessionData);
-  //           }
-  //         }
-  //       }
-
-  // OLD ROUTE COMPLETELY REMOVED - NOW USING RP-BASED SYSTEM BELOW
+  app.post("/api/training/mesocycles", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { name, totalWeeks, trainingDaysPerWeek, dayTemplates } = req.body;
+      
+      console.log('Creating mesocycle with day templates:', { name, totalWeeks, trainingDaysPerWeek, dayTemplates });
+      
+      // Create mesocycle with training schedule
+      const mesocycleData = {
+        userId: Number(userId),
+        name,
+        totalWeeks,
+        currentWeek: 1,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + totalWeeks * 7 * 24 * 60 * 60 * 1000),
+        programId: null,
+        templateId: null
+      };
+      
+      const [mesocycle] = await db.insert(mesocycles).values(mesocycleData).returning();
+      
+      // Generate workout sessions for the entire mesocycle based on day templates
+      if (dayTemplates && Object.keys(dayTemplates).length > 0) {
+        console.log('Generating workout sessions for mesocycle...');
+        
+        const sessionsToCreate = [];
+        const startDate = new Date(mesocycle.startDate);
+        
+        // Only generate sessions for Week 1 - subsequent weeks created via "Advance Week"
+        const week = 1;
+        const weekStartDate = new Date(startDate);
+        
+        // Generate sessions for each training day in Week 1
+        for (let day = 1; day <= trainingDaysPerWeek; day++) {
+          const templateId = dayTemplates[day.toString()];
+          
+          if (templateId) {
+            // Get the saved workout template
+            const savedTemplate = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
+            if (savedTemplate.length > 0) {
+              const template = savedTemplate[0];
+              // Calculate session date (distribute training days across the week)
+              const sessionDate = new Date(weekStartDate);
+              const dayOffset = Math.floor((day - 1) * 7 / trainingDaysPerWeek);
+              sessionDate.setDate(weekStartDate.getDate() + dayOffset);
+              
+              const sessionData = {
+                userId: Number(userId),
+                mesocycleId: mesocycle.id,
+                programId: null,
+                date: sessionDate,
+                name: `${template.name} - Week ${week} Day ${day}`,
+                isCompleted: false,
+                totalVolume: 0,
+                duration: template.estimatedDuration,
+                version: "2.0",
+                features: { spinnerSetInput: true, gestureNavigation: true },
+                algorithm: "RP_BASED",
+                week: week
+              };
+              
+              sessionsToCreate.push(sessionData);
+            }
+          }
+        }
+        
+        // Create all sessions at once
+        if (sessionsToCreate.length > 0) {
+          try {
+            const createdSessions = await db.insert(workoutSessions).values(sessionsToCreate).returning();
+            console.log(`✅ Created ${createdSessions.length} workout sessions for mesocycle`);
+            
+            // Create exercises for each Week 1 session based on the template
+            for (let i = 0; i < createdSessions.length; i++) {
+              const session = createdSessions[i];
+              const day = i + 1; // Since we only have Week 1 sessions
+              const templateId = dayTemplates[day.toString()];
+              
+              if (templateId) {
+                try {
+                  const savedTemplateResult = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
+                  const savedTemplate = savedTemplateResult.length > 0 ? savedTemplateResult[0] : null;
+                  
+                  if (savedTemplate && savedTemplate.exerciseTemplates) {
+                    const exerciseTemplates = Array.isArray(savedTemplate.exerciseTemplates) 
+                      ? savedTemplate.exerciseTemplates 
+                      : JSON.parse(savedTemplate.exerciseTemplates as string);
+                    
+                    const exerciseInserts = exerciseTemplates.map((exercise: any, index: number) => ({
+                      sessionId: session.id,
+                      exerciseId: exercise.exerciseId,
+                      orderIndex: exercise.orderIndex || index,
+                      sets: exercise.sets,
+                      targetReps: exercise.targetReps,
+                      weight: null,
+                      restPeriod: exercise.restPeriod,
+                      specialMethod: exercise.specialMethod || null,
+                      specialConfig: exercise.specialConfig || null,
+                      notes: exercise.notes || null
+                    }));
+                    
+                    if (exerciseInserts.length > 0) {
+                      await db.insert(workoutExercises).values(exerciseInserts);
+                      console.log(`✅ Created ${exerciseInserts.length} exercises for session: ${session.name}`);
+                    }
+                  }
+                } catch (exerciseError) {
+                  console.error(`Error creating exercises for session ${session.id}:`, exerciseError);
+                  // Continue with other sessions even if one fails
+                }
+              }
+            }
+          } catch (sessionError) {
+            console.error('Error creating workout sessions:', sessionError);
+            throw new Error(`Failed to create workout sessions: ${sessionError instanceof Error ? sessionError.message : 'Unknown error'}`);
+          }
+        }
+      }
+      
+      res.json({ 
+        id: mesocycle.id, 
+        message: "Mesocycle created successfully with Week 1 sessions",
+        trainingDaysPerWeek,
+        dayTemplates,
+        sessionsCreated: Object.keys(dayTemplates).filter(day => dayTemplates[day]).length, // Only Week 1 sessions
+        note: "Subsequent weeks will be generated via Advance Week with AI-driven adjustments"
+      });
+    } catch (error) {
+      console.error("Error creating mesocycle:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        requestBody: req.body
+      });
+      res.status(500).json({ 
+        error: "Failed to create mesocycle",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
 
   // Update mesocycle (pause/restart/modify)
   app.put("/api/training/mesocycles/:id", requireAuth, async (req, res) => {
@@ -5950,49 +6022,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced mesocycle creation with special method distribution
-  app.post("/api/training/mesocycles", requireAuth, async (req, res) => {
-    try {
-      const userId = req.userId;
-      const { 
-        name, 
-        totalWeeks, 
-        trainingDaysPerWeek, 
-        dayTemplates, 
-        specialMethodStrategy,
-        targetMuscleGroups 
-      } = req.body;
-      
-      // Validate input
-      if (!name || !dayTemplates) {
-        return res.status(400).json({ error: "Name and day templates are required" });
-      }
-
-      // Convert dayTemplates to array of template IDs
-      const templateIds = Object.values(dayTemplates).filter(id => id !== null) as number[];
-      if (templateIds.length === 0) {
-        return res.status(400).json({ error: "At least one template must be assigned" });
-      }
-
-      const result = await UnifiedMesocycleTemplate.createMesocycleWithSpecialDistribution(
-        userId,
-        {
-          name,
-          totalWeeks: totalWeeks || 6,
-          trainingDaysPerWeek: trainingDaysPerWeek || 3,
-          dayTemplates,
-          specialMethodStrategy: specialMethodStrategy || "BALANCED",
-          targetMuscleGroups: targetMuscleGroups || []
-        }
-      );
-      
-      res.json(result);
-    } catch (error: any) {
-      console.error("Error creating enhanced mesocycle:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
   app.get("/api/training/mesocycles/:mesocycleId/validate", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);
@@ -6082,13 +6111,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI save endpoint moved to dedicated AI router
 
   // All AI endpoints moved to dedicated AI router module
-
-  // Development-only test endpoints for volume distribution validation
-  if (process.env.NODE_ENV === 'development') {
-    const { testRouter } = await import('./test-endpoints');
-    app.use('/api/test', testRouter);
-    console.log('🧪 Test endpoints mounted at /api/test/*');
-  }
 
   const httpServer = createServer(app);
   return httpServer;
