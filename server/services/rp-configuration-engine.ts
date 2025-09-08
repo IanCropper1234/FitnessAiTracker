@@ -138,9 +138,26 @@ export class RPConfigurationEngine {
    * Calculate training age in months
    */
   private static calculateTrainingAge(firstSession: Date | null, lastSession: Date | null): number {
-    if (!firstSession || !lastSession) return 0;
-    const diffTime = Math.abs(lastSession.getTime() - firstSession.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30)); // Convert to months
+    // Handle null cases properly
+    if (!firstSession || !lastSession) {
+      console.log(`⚠️ Training age calculation skipped - missing session data:`, { firstSession, lastSession });
+      return 0;
+    }
+    
+    // Ensure both are valid Date objects
+    const first = firstSession instanceof Date ? firstSession : new Date(firstSession);
+    const last = lastSession instanceof Date ? lastSession : new Date(lastSession);
+    
+    // Additional safety check
+    if (isNaN(first.getTime()) || isNaN(last.getTime())) {
+      console.log(`⚠️ Training age calculation failed - invalid dates:`, { first, last });
+      return 0;
+    }
+    
+    const diffTime = Math.abs(last.getTime() - first.getTime());
+    const months = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+    console.log(`📅 Training age calculated: ${months} months`);
+    return months;
   }
 
   /**
