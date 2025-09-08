@@ -86,18 +86,47 @@ export class TemplateEngine {
     volumeDistribution: Record<string, any>;
   }> {
     
-    // Get template data
-    const template = await db
+    // Get template data - check both user templates and system templates
+    let templateData;
+    
+    // First try saved workout templates (user templates)
+    const savedTemplate = await db
       .select()
-      .from(trainingTemplates)
-      .where(eq(trainingTemplates.id, templateId))
+      .from(savedWorkoutTemplates)
+      .where(eq(savedWorkoutTemplates.id, templateId))
       .limit(1);
-
-    if (template.length === 0) {
-      throw new Error("Template not found");
+      
+    if (savedTemplate.length > 0) {
+      console.log(`📋 Found saved workout template: ${savedTemplate[0].name}`);
+      // For saved workout templates, we need to handle the different structure
+      const template = savedTemplate[0];
+      const exercises = Array.isArray(template.exerciseTemplates) 
+        ? template.exerciseTemplates 
+        : JSON.parse(template.exerciseTemplates as string);
+      
+      // Convert saved template to training template format
+      templateData = {
+        name: template.name,
+        category: 'user_template',
+        exercises: exercises,
+        description: template.description || '',
+        estimatedDuration: template.estimatedDuration || 60
+      };
+    } else {
+      // Fallback to system training templates
+      const systemTemplate = await db
+        .select()
+        .from(trainingTemplates)
+        .where(eq(trainingTemplates.id, templateId))
+        .limit(1);
+        
+      if (systemTemplate.length === 0) {
+        throw new Error(`Template not found with ID: ${templateId}. Available templates should be checked.`);
+      }
+      
+      console.log(`📋 Found system training template: ${systemTemplate[0].name}`);
+      templateData = systemTemplate[0].templateData as TrainingTemplateData;
     }
-
-    const templateData = template[0].templateData as TrainingTemplateData;
     const sessions = [];
     const volumeDistribution: Record<string, any> = {};
 
