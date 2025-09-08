@@ -111,7 +111,8 @@ export class TemplateEngine {
         category: 'user_template',
         workouts: [{
           name: template.name,
-          exercises: exercises
+          exercises: exercises,
+          focus: ['Full Body'] // Default focus for saved templates
         }],
         description: template.description || '',
         estimatedDuration: template.estimatedDuration || 60
@@ -390,10 +391,12 @@ export class TemplateEngine {
   private static getTrainingDaysForMuscleGroup(muscleGroup: string, templateData: TrainingTemplateData): number[] {
     const trainingDays: number[] = [];
     
-    templateData.workouts.forEach((workout, index) => {
-      const hasThisMuscleGroup = workout.focus.some(focus => 
-        focus.toLowerCase().includes(muscleGroup.toLowerCase()) ||
-        muscleGroup.toLowerCase().includes(focus.toLowerCase())
+    templateData.workouts?.forEach((workout, index) => {
+      // Handle both array and missing focus properties
+      const focus = workout.focus || ['Full Body'];
+      const hasThisMuscleGroup = focus.some((f: string) => 
+        f.toLowerCase().includes(muscleGroup.toLowerCase()) ||
+        muscleGroup.toLowerCase().includes(f.toLowerCase())
       );
       
       if (hasThisMuscleGroup) {
