@@ -82,6 +82,8 @@ export default function CreateMesocyclePage() {
   const [trainingDaysPerWeek, setTrainingDaysPerWeek] = useState(3);
   const [buildMode] = useState<"template">("template");
   const [dayTemplates, setDayTemplates] = useState<Record<number, number | null>>({});
+  const [specialMethodStrategy, setSpecialMethodStrategy] = useState<string>("BALANCED");
+  const [targetMuscleGroups, setTargetMuscleGroups] = useState<string[]>([]);
 
 
 
@@ -150,7 +152,9 @@ export default function CreateMesocyclePage() {
       name: mesocycleName,
       totalWeeks,
       trainingDaysPerWeek,
-      dayTemplates: dayTemplates
+      dayTemplates: dayTemplates,
+      specialMethodStrategy,
+      targetMuscleGroups
     };
 
     createMesocycleMutation.mutate(mesocycleData);
@@ -236,6 +240,147 @@ export default function CreateMesocyclePage() {
                   <Label className="text-muted-foreground">Total Sessions</Label>
                   <div className="h-10 px-3 py-2 border rounded-md bg-muted text-muted-foreground text-sm flex items-center">
                     {totalWeeks * trainingDaysPerWeek} sessions
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Special Method Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Dumbbell className="h-4 w-4" />
+                Special Training Methods Distribution
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Configure how special training methods (Drop Sets, MyoReps, etc.) are distributed across your program based on scientific evidence.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="specialMethodStrategy">Distribution Strategy</Label>
+                <Select value={specialMethodStrategy} onValueChange={setSpecialMethodStrategy}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CONSERVATIVE">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Conservative (10-15%)</span>
+                        <span className="text-xs text-muted-foreground">Beginner-friendly, focus on technique mastery</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="BALANCED">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Balanced (20-30%)</span>
+                        <span className="text-xs text-muted-foreground">Evidence-based mix optimizing stimulus-to-fatigue ratio</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="AGGRESSIVE">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Aggressive (35-50%)</span>
+                        <span className="text-xs text-muted-foreground">Advanced trainees with high intensity tolerance</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="SPECIALIZATION">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">Muscle Specialization (40-60%)</span>
+                        <span className="text-xs text-muted-foreground">Target specific muscle groups for enhanced development</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Strategy Description */}
+              {specialMethodStrategy && (
+                <div className="p-3 bg-muted rounded-md">
+                  <div className="text-sm space-y-2">
+                    {specialMethodStrategy === "CONSERVATIVE" && (
+                      <>
+                        <p className="font-medium text-blue-600">Conservative Distribution</p>
+                        <p>• 10% MyoRep methods on accessories (weeks 4-6)</p>
+                        <p>• Focus on technique mastery and adaptation</p>
+                        <p>• Minimal fatigue accumulation</p>
+                        <p className="text-xs text-muted-foreground">Based on beginner adaptation research</p>
+                      </>
+                    )}
+                    {specialMethodStrategy === "BALANCED" && (
+                      <>
+                        <p className="font-medium text-green-600">Balanced Distribution</p>
+                        <p>• 15% MyoReps + 10% Drop Sets + 8% Cluster Sets</p>
+                        <p>• Phase-specific allocation (accumulation → intensification)</p>
+                        <p>• Optimized stimulus-to-fatigue ratio</p>
+                        <p className="text-xs text-muted-foreground">RP methodology - 20-30% special methods</p>
+                      </>
+                    )}
+                    {specialMethodStrategy === "AGGRESSIVE" && (
+                      <>
+                        <p className="font-medium text-orange-600">Aggressive Distribution</p>
+                        <p>• 20% MyoReps + 15% Drop Sets + 12% Cluster Sets + 8% Rest-Pause</p>
+                        <p>• Higher intensity tolerance required</p>
+                        <p>• Enhanced strength/power maintenance</p>
+                        <p className="text-xs text-muted-foreground">Advanced trainee protocols</p>
+                      </>
+                    )}
+                    {specialMethodStrategy === "SPECIALIZATION" && (
+                      <>
+                        <p className="font-medium text-purple-600">Muscle Specialization</p>
+                        <p>• 25% MyoReps + 20% Drop Sets + 10% Giant Sets</p>
+                        <p>• 50% increased volume for target muscles</p>
+                        <p>• Multiple angle stimulation</p>
+                        <p className="text-xs text-muted-foreground">Requires target muscle selection below</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Target Muscle Groups for Specialization */}
+              {specialMethodStrategy === "SPECIALIZATION" && (
+                <div className="space-y-2">
+                  <Label>Target Muscle Groups for Specialization</Label>
+                  <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                    {ALL_MUSCLE_GROUPS.map((muscle) => (
+                      <label key={muscle} className="flex items-center space-x-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={targetMuscleGroups.includes(muscle)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setTargetMuscleGroups([...targetMuscleGroups, muscle]);
+                            } else {
+                              setTargetMuscleGroups(targetMuscleGroups.filter(m => m !== muscle));
+                            }
+                          }}
+                          className="rounded border-gray-300"
+                        />
+                        <span>{MUSCLE_GROUP_DISPLAY_NAMES[muscle]}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {targetMuscleGroups.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {targetMuscleGroups.map((muscle) => (
+                        <Badge key={muscle} variant="secondary" className="text-xs">
+                          {MUSCLE_GROUP_DISPLAY_NAMES[muscle]}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-md border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-2">
+                  <Target className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-blue-800 dark:text-blue-200">Scientific Foundation</p>
+                    <p className="text-blue-700 dark:text-blue-300 mt-1">
+                      Distribution strategies are based on Renaissance Periodization methodology and 2024 meta-analysis research. 
+                      Special methods are allocated based on fatigue management, phase periodization, and individual recovery capacity.
+                    </p>
                   </div>
                 </div>
               </div>

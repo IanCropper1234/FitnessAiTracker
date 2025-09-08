@@ -6022,6 +6022,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced mesocycle creation with special method distribution
+  app.post("/api/training/mesocycles", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const { 
+        name, 
+        totalWeeks, 
+        trainingDaysPerWeek, 
+        dayTemplates, 
+        specialMethodStrategy,
+        targetMuscleGroups 
+      } = req.body;
+      
+      // Validate input
+      if (!name || !dayTemplates) {
+        return res.status(400).json({ error: "Name and day templates are required" });
+      }
+
+      // Convert dayTemplates to array of template IDs
+      const templateIds = Object.values(dayTemplates).filter(id => id !== null) as number[];
+      if (templateIds.length === 0) {
+        return res.status(400).json({ error: "At least one template must be assigned" });
+      }
+
+      const result = await UnifiedMesocycleTemplate.createMesocycleWithSpecialDistribution(
+        userId,
+        {
+          name,
+          totalWeeks: totalWeeks || 6,
+          trainingDaysPerWeek: trainingDaysPerWeek || 3,
+          dayTemplates,
+          specialMethodStrategy: specialMethodStrategy || "BALANCED",
+          targetMuscleGroups: targetMuscleGroups || []
+        }
+      );
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error creating enhanced mesocycle:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.get("/api/training/mesocycles/:mesocycleId/validate", requireAuth, async (req, res) => {
     try {
       const mesocycleId = parseInt(req.params.mesocycleId);

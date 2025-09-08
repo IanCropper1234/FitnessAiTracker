@@ -16,10 +16,7 @@ import type {
   DistributionStrategy,
   PhaseSpecificDistribution,
   DistributionConstraints,
-  DistributionResult,
-  DISTRIBUTION_STRATEGIES,
-  FATIGUE_COEFFICIENTS,
-  PHASE_MULTIPLIERS
+  DistributionResult
 } from "@shared/types/special-method-distribution";
 import { 
   DISTRIBUTION_STRATEGIES,
@@ -394,7 +391,7 @@ export class SpecialMethodDistributionEngine {
     justifications.push(strategy.scientificRationale);
     
     // Phase-specific justifications
-    const phases = [...new Set(distributions.map(d => d.phase))];
+    const phases = Array.from(new Set(distributions.map(d => d.phase)));
     for (const phase of phases) {
       switch (phase) {
         case 'accumulation':

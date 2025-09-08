@@ -7,6 +7,11 @@ import {
 } from "@shared/schema";
 import { eq, and, gte, sql, isNull } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
+import { SpecialMethodDistributionEngine } from "./special-method-distribution-engine";
+import type { 
+  DistributionConstraints 
+} from "@shared/types/special-method-distribution";
+import { DISTRIBUTION_STRATEGIES } from "@shared/types/special-method-distribution";
 
 export class UnifiedMesocycleTemplate {
   
@@ -233,5 +238,196 @@ export class UnifiedMesocycleTemplate {
       validation,
       workflow: "Template → Mesocycle → Sessions → Advance Week"
     };
+  }
+
+  /**
+   * Enhanced mesocycle creation with special method distribution
+   * Based on Renaissance Periodization methodology and scientific research
+   */
+  static async createMesocycleWithSpecialDistribution(
+    userId: number,
+    config: {
+      name: string;
+      totalWeeks: number;
+      trainingDaysPerWeek: number;
+      dayTemplates: Record<number, number | null>;
+      specialMethodStrategy: keyof typeof DISTRIBUTION_STRATEGIES;
+      targetMuscleGroups: string[];
+    }
+  ) {
+    console.log(`🧬 Creating enhanced mesocycle with special method distribution: ${config.specialMethodStrategy}`);
+    
+    // Step 1: Create mesocycle record
+    const [mesocycle] = await db
+      .insert(mesocycles)
+      .values({
+        userId,
+        templateId: null, // Multi-template approach
+        name: config.name,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + (config.totalWeeks * 7 * 24 * 60 * 60 * 1000)),
+        currentWeek: 1,
+        totalWeeks: config.totalWeeks,
+        phase: 'accumulation',
+        isActive: true,
+        createdAt: new Date()
+      })
+      .returning();
+    
+    console.log(`✅ Mesocycle created: ID ${mesocycle.id}`);
+    
+    // Step 2: Get all exercise IDs from templates
+    const allExerciseIds: number[] = [];
+    for (const [day, templateId] of Object.entries(config.dayTemplates)) {
+      if (templateId) {
+        const templateData = await this.getTemplateExercises(templateId);
+        allExerciseIds.push(...templateData);
+      }
+    }
+    
+    // Step 3: Generate special method distribution
+    const constraints: DistributionConstraints = {
+      maxSpecialMethodsPerSession: 40, // Max 40% per session
+      maxSpecialMethodsPerWeek: 50,    // Max 50% per week
+      minimumRegularSetsPercentage: 50, // At least 50% regular training
+      fatigueThreshold: 7,
+      experienceLevel: 'intermediate' // Default to intermediate
+    };
+    
+    const distribution = await SpecialMethodDistributionEngine.generateDistribution(
+      userId,
+      allExerciseIds,
+      config.totalWeeks,
+      config.specialMethodStrategy,
+      constraints,
+      config.targetMuscleGroups.length > 0 ? config.targetMuscleGroups : undefined
+    );
+    
+    console.log(`📊 Special method distribution generated: ${distribution.totalSpecialMethodPercentage}% special methods`);
+    
+    // Step 4: Generate sessions with special method distribution applied
+    const sessions = [];
+    for (const [day, templateId] of Object.entries(config.dayTemplates)) {
+      if (templateId) {
+        const dayNumber = parseInt(day);
+        const daySession = await TemplateEngine.generateFullProgramFromTemplate(
+          userId,
+          templateId,
+          mesocycle.id,
+          new Date(Date.now() + (dayNumber - 1) * 24 * 60 * 60 * 1000), // Offset by day
+          1, // Week 1
+          config.totalWeeks
+        );
+        
+        // Apply special method distribution to session
+        await this.applySpecialMethodDistribution(
+          daySession.sessions[0]?.sessionId,
+          distribution.weeklyDistribution[0] // Week 1 distribution
+        );
+        
+        sessions.push(...daySession.sessions);
+      }
+    }
+    
+    console.log(`✅ ${sessions.length} sessions created with special method distribution applied`);
+    
+    return {
+      mesocycle,
+      sessions,
+      distribution: {
+        strategy: distribution.strategy.name,
+        totalSpecialMethodPercentage: distribution.totalSpecialMethodPercentage,
+        expectedFatigueImpact: distribution.expectedFatigueImpact,
+        scientificJustification: distribution.scientificJustification,
+        warnings: distribution.warnings
+      },
+      message: `Enhanced mesocycle created with ${distribution.totalSpecialMethodPercentage}% special method distribution`
+    };
+  }
+
+  /**
+   * Get exercise IDs from a template
+   */
+  private static async getTemplateExercises(templateId: number): Promise<number[]> {
+    const [template] = await db
+      .select()
+      .from(trainingTemplates)
+      .where(eq(trainingTemplates.id, templateId));
+    
+    if (!template) return [];
+    
+    const templateData = template.templateData as any;
+    const exerciseIds: number[] = [];
+    
+    if (templateData.workouts) {
+      for (const workout of templateData.workouts) {
+        if (workout.exercises) {
+          exerciseIds.push(...workout.exercises.map((ex: any) => ex.exerciseId));
+        }
+      }
+    }
+    
+    return exerciseIds;
+  }
+
+  /**
+   * Apply special method distribution to workout session
+   */
+  private static async applySpecialMethodDistribution(
+    sessionId: number | undefined,
+    weeklyDistribution: any
+  ) {
+    if (!sessionId || !weeklyDistribution) return;
+    
+    console.log(`🎯 Applying special method distribution to session ${sessionId}`);
+    
+    // Get session exercises
+    const exercises = await db
+      .select()
+      .from(workoutExercises)
+      .where(eq(workoutExercises.sessionId, sessionId));
+    
+    // Apply distribution logic based on allocations
+    for (const allocation of weeklyDistribution.allocations) {
+      const targetCount = Math.ceil((exercises.length * allocation.percentage) / 100);
+      let appliedCount = 0;
+      
+      for (const exercise of exercises) {
+        if (appliedCount >= targetCount) break;
+        
+        // Simple distribution logic - can be enhanced based on muscle groups
+        if (!exercise.specialMethod) {
+          await db
+            .update(workoutExercises)
+            .set({
+              specialMethod: allocation.method,
+              specialConfig: this.getDefaultSpecialMethodConfig(allocation.method)
+            })
+            .where(eq(workoutExercises.id, exercise.id));
+          
+          appliedCount++;
+        }
+      }
+    }
+    
+    console.log(`✅ Special method distribution applied to session ${sessionId}`);
+  }
+
+  /**
+   * Get default configuration for special training methods
+   */
+  private static getDefaultSpecialMethodConfig(method: string): any {
+    switch (method) {
+      case 'myorep_match':
+        return { targetReps: 15, miniSets: 3, restSeconds: 20 };
+      case 'drop_set':
+        return { dropSets: 2, weightReductions: [20, 20], dropRestSeconds: 10 };
+      case 'cluster_set':
+        return { clusters: 3, repsPerCluster: 3, clusterRest: 20 };
+      case 'rest_pause':
+        return { pauseSets: 2, pauseSeconds: 15 };
+      default:
+        return {};
+    }
   }
 }
