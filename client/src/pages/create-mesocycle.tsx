@@ -309,7 +309,7 @@ export default function CreateMesocyclePage() {
                     {specialMethodStrategy === "BALANCED" && (
                       <>
                         <p className="font-medium text-green-600">Balanced Distribution</p>
-                        <p>• 15% MyoReps + 10% Drop Sets + 8% Cluster Sets</p>
+                        <p>• 15% MyoReps + 10% Drop Sets + 8% Supersets</p>
                         <p>• Phase-specific allocation (accumulation → intensification)</p>
                         <p>• Optimized stimulus-to-fatigue ratio</p>
                         <p className="text-xs text-muted-foreground">RP methodology - 20-30% special methods</p>
@@ -318,9 +318,9 @@ export default function CreateMesocyclePage() {
                     {specialMethodStrategy === "AGGRESSIVE" && (
                       <>
                         <p className="font-medium text-orange-600">Aggressive Distribution</p>
-                        <p>• 20% MyoReps + 15% Drop Sets + 12% Cluster Sets + 8% Rest-Pause</p>
+                        <p>• 20% MyoReps + 15% Drop Sets + 12% Supersets + 8% Giant Sets</p>
                         <p>• Higher intensity tolerance required</p>
-                        <p>• Enhanced strength/power maintenance</p>
+                        <p>• Enhanced training efficiency</p>
                         <p className="text-xs text-muted-foreground">Advanced trainee protocols</p>
                       </>
                     )}

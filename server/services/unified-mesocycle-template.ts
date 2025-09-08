@@ -420,12 +420,14 @@ export class UnifiedMesocycleTemplate {
     switch (method) {
       case 'myorep_match':
         return { targetReps: 15, miniSets: 3, restSeconds: 20 };
+      case 'myorep_no_match':
+        return { targetReps: 12, miniSets: 3, restSeconds: 25 };
       case 'drop_set':
         return { dropSets: 2, weightReductions: [20, 20], dropRestSeconds: 10 };
-      case 'cluster_set':
-        return { clusters: 3, repsPerCluster: 3, clusterRest: 20 };
-      case 'rest_pause':
-        return { pauseSets: 2, pauseSeconds: 15 };
+      case 'superset':
+        return { pairedExercises: 2, restBetweenExercises: 0, restBetweenSets: 90 };
+      case 'giant_set':
+        return { exercisesInSet: 3, restBetweenExercises: 0, restBetweenSets: 120 };
       default:
         return {};
     }

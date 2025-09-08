@@ -5,8 +5,6 @@ export type SpecialMethodType =
   | 'myorep_match' 
   | 'myorep_no_match' 
   | 'drop_set' 
-  | 'cluster_set' 
-  | 'rest_pause' 
   | 'superset' 
   | 'giant_set';
 
@@ -97,12 +95,12 @@ export const DISTRIBUTION_STRATEGIES: Record<string, DistributionStrategy> = {
         reasoning: "Matched hypertrophy with 2-3x time efficiency (meta-analysis 2023)"
       },
       {
-        method: 'cluster_set',
+        method: 'superset',
         percentage: 8,
         targetWeeks: [1, 2, 6],
-        exerciseTypes: ['compound'],
+        exerciseTypes: ['isolation'],
         muscleGroups: ['chest', 'lats', 'quads', 'glutes'],
-        reasoning: "Maintain velocity and power output in strength phases"
+        reasoning: "Time-efficient training with paired muscle groups"
       }
     ]
   },
@@ -130,20 +128,20 @@ export const DISTRIBUTION_STRATEGIES: Record<string, DistributionStrategy> = {
         reasoning: "Advanced trainee tolerance for higher intensity methods"
       },
       {
-        method: 'cluster_set',
+        method: 'superset',
         percentage: 12,
         targetWeeks: [1, 2, 5, 6],
-        exerciseTypes: ['compound'],
+        exerciseTypes: ['isolation'],
         muscleGroups: ['chest', 'lats', 'quads', 'glutes', 'hamstrings'],
-        reasoning: "Enhanced strength/power maintenance in high-volume phases"
+        reasoning: "Enhanced training efficiency with paired exercises"
       },
       {
-        method: 'rest_pause',
+        method: 'giant_set',
         percentage: 8,
         targetWeeks: [4, 5],
         exerciseTypes: ['isolation'],
         muscleGroups: ['triceps', 'biceps', 'shoulders'],
-        reasoning: "Peak intensity for specialization phases"
+        reasoning: "Peak intensity for multiple muscle groups"
       }
     ]
   },
@@ -187,8 +185,6 @@ export const FATIGUE_COEFFICIENTS: Record<SpecialMethodType, number> = {
   'myorep_match': 1.2,
   'myorep_no_match': 1.3,
   'drop_set': 1.4,
-  'cluster_set': 0.9, // Actually reduces fatigue by maintaining velocity
-  'rest_pause': 1.5,
   'superset': 1.6,
   'giant_set': 1.8
 };
