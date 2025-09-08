@@ -556,8 +556,16 @@ export class UnifiedMesocycleTemplate {
       
       // Filter exercises suitable for this method
       const suitableExercises = sessionExercises.filter((exercise: any) => {
+        console.log(`🔍 Evaluating exercise for ${allocation.method}:`, {
+          name: exercise.exerciseName,
+          category: exercise.exerciseCategory,
+          muscleGroups: exercise.exerciseMuscleGroups,
+          currentMethod: exercise.specialMethod
+        });
+        
         // Skip if already has special method
         if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
+          console.log(`⚠️ Skipping ${exercise.exerciseName} - already has special method: ${exercise.specialMethod}`);
           return false;
         }
         
@@ -566,7 +574,16 @@ export class UnifiedMesocycleTemplate {
         const isCompound = ['push', 'pull', 'legs', 'compound'].includes(exercise.exerciseCategory || '');
         const exerciseType = isCompound ? 'compound' : 'isolation';
         
+        console.log(`🏋️ Exercise type check for ${exercise.exerciseName}:`, {
+          category: exercise.exerciseCategory,
+          isCompound,
+          exerciseType,
+          requiredTypes: exerciseTypes,
+          passes: exerciseTypes.includes(exerciseType)
+        });
+        
         if (!exerciseTypes.includes(exerciseType)) {
+          console.log(`❌ ${exercise.exerciseName} rejected - type mismatch`);
           return false;
         }
         
@@ -577,11 +594,18 @@ export class UnifiedMesocycleTemplate {
             exerciseMuscleGroups.includes(mg) || 
             exerciseMuscleGroups.some((emg: string) => emg.includes(mg))
           );
+          console.log(`🎯 Muscle group check for ${exercise.exerciseName}:`, {
+            exerciseGroups: exerciseMuscleGroups,
+            requiredGroups: allocation.muscleGroups,
+            hasMatch: hasMatchingMuscleGroup
+          });
           if (!hasMatchingMuscleGroup) {
+            console.log(`❌ ${exercise.exerciseName} rejected - muscle group mismatch`);
             return false;
           }
         }
         
+        console.log(`✅ ${exercise.exerciseName} is suitable for ${allocation.method}`);
         return true;
       });
       
