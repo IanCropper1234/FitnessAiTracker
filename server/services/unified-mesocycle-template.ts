@@ -3,7 +3,8 @@ import {
   mesocycles, 
   workoutSessions, 
   workoutExercises,
-  trainingTemplates
+  trainingTemplates,
+  exercises
 } from "@shared/schema";
 import { eq, and, gte, sql, isNull } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
@@ -90,8 +91,12 @@ export class UnifiedMesocycleTemplate {
     const orphanedSessions = await db
       .select()
       .from(workoutSessions)
-      .where(eq(workoutSessions.userId, mesocycle.userId))
-      .where(eq(workoutSessions.mesocycleId, null));
+      .where(
+        and(
+          eq(workoutSessions.userId, mesocycle.userId),
+          isNull(workoutSessions.mesocycleId)
+        )
+      );
     
     return {
       valid: linkedSessions.length > 0,
