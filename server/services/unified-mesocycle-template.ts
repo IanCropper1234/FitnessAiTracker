@@ -164,8 +164,7 @@ export class UnifiedMesocycleTemplate {
       .set({ 
         currentWeek: 1,
         isActive: true,
-        phase: 'accumulation',
-        updatedAt: new Date()
+        phase: 'accumulation'
       })
       .where(eq(mesocycles.id, mesocycleId));
     
@@ -207,8 +206,7 @@ export class UnifiedMesocycleTemplate {
     const result = await db
       .update(mesocycles)
       .set({ 
-        isActive: true,
-        updatedAt: new Date()
+        isActive: true
       })
       .where(eq(mesocycles.id, mesocycleId));
     
@@ -307,9 +305,13 @@ export class UnifiedMesocycleTemplate {
     
     // Step 4: Generate sessions with special method distribution applied
     const sessions = [];
+    let sessionCount = 0;
+    
     for (const [day, templateId] of Object.entries(config.dayTemplates)) {
       if (templateId) {
         const dayNumber = parseInt(day);
+        console.log(`🏋️ Generating session for day ${dayNumber} using template ${templateId}`);
+        
         const daySession = await TemplateEngine.generateFullProgramFromTemplate(
           userId,
           templateId,
@@ -319,15 +321,25 @@ export class UnifiedMesocycleTemplate {
           config.totalWeeks
         );
         
-        // Apply special method distribution to session
-        await this.applySpecialMethodDistribution(
-          daySession.sessions[0]?.sessionId,
-          distribution.weeklyDistribution[0] // Week 1 distribution
-        );
+        // Apply special method distribution to ALL sessions generated from this template
+        for (const session of daySession.sessions) {
+          console.log(`🎯 Applying special methods to session ${session.sessionId} (${session.name})`);
+          
+          // Use Week 1 distribution for initial creation
+          const weeklyDist = distribution.weeklyDistribution.find(w => w.week === 1);
+          if (weeklyDist) {
+            await this.applySpecialMethodDistribution(session.sessionId, weeklyDist);
+            sessionCount++;
+          } else {
+            console.log(`⚠️ No weekly distribution found for week 1`);
+          }
+        }
         
         sessions.push(...daySession.sessions);
       }
     }
+    
+    console.log(`✅ Applied special methods to ${sessionCount} sessions total`);
     
     console.log(`✅ ${sessions.length} sessions created with special method distribution applied`);
     
@@ -377,26 +389,82 @@ export class UnifiedMesocycleTemplate {
     sessionId: number | undefined,
     weeklyDistribution: any
   ) {
-    if (!sessionId || !weeklyDistribution) return;
+    if (!sessionId || !weeklyDistribution || !weeklyDistribution.allocations) {
+      console.log(`⚠️ Skipping special method application - missing data:`, { sessionId, hasAllocations: !!weeklyDistribution?.allocations });
+      return;
+    }
     
     console.log(`🎯 Applying special method distribution to session ${sessionId}`);
+    console.log(`📋 Allocations to apply:`, weeklyDistribution.allocations);
     
-    // Get session exercises
-    const exercises = await db
-      .select()
+    // Get session exercises with exercise details
+    const sessionExercises = await db
+      .select({
+        id: workoutExercises.id,
+        exerciseId: workoutExercises.exerciseId,
+        sessionId: workoutExercises.sessionId,
+        sets: workoutExercises.sets,
+        specialMethod: workoutExercises.specialMethod,
+        exerciseName: exercises.name,
+        exerciseCategory: exercises.category,
+        exerciseMuscleGroups: exercises.muscleGroups
+      })
       .from(workoutExercises)
+      .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id))
       .where(eq(workoutExercises.sessionId, sessionId));
+    
+    console.log(`💪 Found ${sessionExercises.length} exercises in session ${sessionId}`);
+    
+    if (sessionExercises.length === 0) {
+      console.log(`⚠️ No exercises found in session ${sessionId}`);
+      return;
+    }
     
     // Apply distribution logic based on allocations
     for (const allocation of weeklyDistribution.allocations) {
-      const targetCount = Math.ceil((exercises.length * allocation.percentage) / 100);
-      let appliedCount = 0;
+      console.log(`🔧 Applying ${allocation.method} (${allocation.percentage}%) to session`);
       
-      for (const exercise of exercises) {
-        if (appliedCount >= targetCount) break;
+      // Calculate target count for this special method
+      const targetCount = Math.max(1, Math.ceil((sessionExercises.length * allocation.percentage) / 100));
+      console.log(`🎯 Target count for ${allocation.method}: ${targetCount} out of ${sessionExercises.length} exercises`);
+      
+      // Filter exercises suitable for this method
+      const suitableExercises = sessionExercises.filter((exercise: any) => {
+        // Skip if already has special method
+        if (exercise.specialMethod && exercise.specialMethod !== 'standard') {
+          return false;
+        }
         
-        // Simple distribution logic - can be enhanced based on muscle groups
-        if (!exercise.specialMethod) {
+        // Check if exercise type matches allocation criteria
+        const exerciseTypes = allocation.exerciseTypes || ['isolation', 'compound'];
+        const isCompound = ['push', 'pull', 'legs', 'compound'].includes(exercise.exerciseCategory || '');
+        const exerciseType = isCompound ? 'compound' : 'isolation';
+        
+        if (!exerciseTypes.includes(exerciseType)) {
+          return false;
+        }
+        
+        // Check muscle group match if specified
+        if (allocation.muscleGroups && allocation.muscleGroups.length > 0) {
+          const exerciseMuscleGroups = exercise.exerciseMuscleGroups || [];
+          const hasMatchingMuscleGroup = allocation.muscleGroups.some((mg: string) => 
+            exerciseMuscleGroups.includes(mg) || 
+            exerciseMuscleGroups.some((emg: string) => emg.includes(mg))
+          );
+          if (!hasMatchingMuscleGroup) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+      
+      console.log(`🎯 Found ${suitableExercises.length} suitable exercises for ${allocation.method}`);
+      
+      // Apply special method to target exercises
+      let appliedCount = 0;
+      for (const exercise of suitableExercises.slice(0, targetCount)) {
+        try {
           await db
             .update(workoutExercises)
             .set({
@@ -405,9 +473,14 @@ export class UnifiedMesocycleTemplate {
             })
             .where(eq(workoutExercises.id, exercise.id));
           
+          console.log(`✅ Applied ${allocation.method} to exercise: ${exercise.exerciseName}`);
           appliedCount++;
+        } catch (error) {
+          console.error(`❌ Failed to apply ${allocation.method} to exercise ${exercise.exerciseName}:`, error);
         }
       }
+      
+      console.log(`✅ Applied ${allocation.method} to ${appliedCount}/${targetCount} target exercises`);
     }
     
     console.log(`✅ Special method distribution applied to session ${sessionId}`);

@@ -102,8 +102,11 @@ export default function CreateMesocyclePage() {
   // Create mesocycle mutation
   const createMesocycleMutation = useMutation({
     mutationFn: async (mesocycleData: any) => {
+      console.log('🚀 Creating mesocycle with special method data:', mesocycleData);
       const response = await apiRequest('POST', '/api/training/mesocycles', mesocycleData);
-      return response.json();
+      const result = await response.json();
+      console.log('✅ Mesocycle creation result:', result);
+      return result;
     },
     onSuccess: () => {
       toast({
