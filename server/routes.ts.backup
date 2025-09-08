@@ -4701,36 +4701,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   //       // Generate sessions for each training day in Week 1
   //       for (let day = 1; day <= trainingDaysPerWeek; day++) {
   //         const templateId = dayTemplates[day.toString()];
-  //         
-  //         if (templateId) {
-  //           // Get the saved workout template
-  //           const savedTemplate = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
-  //           if (savedTemplate.length > 0) {
-  //             const template = savedTemplate[0];
-  //             // Calculate session date (distribute training days across the week)
-  //             const sessionDate = new Date(weekStartDate);
-  //             const dayOffset = Math.floor((day - 1) * 7 / trainingDaysPerWeek);
-  //             sessionDate.setDate(weekStartDate.getDate() + dayOffset);
-  //             
-  //             const sessionData = {
-  //               userId: Number(userId),
-  //               mesocycleId: mesocycle.id,
-  //               programId: null,
-  //               date: sessionDate,
-  //               name: `${template.name} - Week ${week} Day ${day}`,
-  //               isCompleted: false,
-  //               totalVolume: 0,
-  //               duration: template.estimatedDuration,
-  //               version: "2.0",
-  //               features: { spinnerSetInput: true, gestureNavigation: true },
-  //               algorithm: "RP_BASED",
-  //               week: week
-  //             };
-  //             
-  //             sessionsToCreate.push(sessionData);
-  //           }
-  //         }
-  //       }
+          
+          if (templateId) {
+            // Get the saved workout template
+            const savedTemplate = await db.select().from(savedWorkoutTemplates).where(eq(savedWorkoutTemplates.id, templateId)).limit(1);
+            if (savedTemplate.length > 0) {
+              const template = savedTemplate[0];
+              // Calculate session date (distribute training days across the week)
+              const sessionDate = new Date(weekStartDate);
+              const dayOffset = Math.floor((day - 1) * 7 / trainingDaysPerWeek);
+              sessionDate.setDate(weekStartDate.getDate() + dayOffset);
+              
+              const sessionData = {
+                userId: Number(userId),
+                mesocycleId: mesocycle.id,
+                programId: null,
+                date: sessionDate,
+                name: `${template.name} - Week ${week} Day ${day}`,
+                isCompleted: false,
+                totalVolume: 0,
+                duration: template.estimatedDuration,
+                version: "2.0",
+                features: { spinnerSetInput: true, gestureNavigation: true },
+                algorithm: "RP_BASED",
+                week: week
+              };
+              
+              sessionsToCreate.push(sessionData);
+            }
+          }
+        }
 
   // OLD ROUTE COMPLETELY REMOVED - NOW USING RP-BASED SYSTEM BELOW
 
