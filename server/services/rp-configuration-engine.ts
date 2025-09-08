@@ -105,8 +105,8 @@ export class RPConfigurationEngine {
       .select({
         totalSessions: sql<number>`count(*)`,
         avgVolume: sql<number>`avg(${workoutSessions.totalVolume})`,
-        firstSession: sql<Date>`min(${workoutSessions.date})`,
-        lastSession: sql<Date>`max(${workoutSessions.date})`
+        firstSession: sql<Date | null>`min(${workoutSessions.date})`,
+        lastSession: sql<Date | null>`max(${workoutSessions.date})`
       })
       .from(workoutSessions)
       .where(eq(workoutSessions.userId, userId));
@@ -137,7 +137,7 @@ export class RPConfigurationEngine {
   /**
    * Calculate training age in months
    */
-  private static calculateTrainingAge(firstSession: Date, lastSession: Date): number {
+  private static calculateTrainingAge(firstSession: Date | null, lastSession: Date | null): number {
     if (!firstSession || !lastSession) return 0;
     const diffTime = Math.abs(lastSession.getTime() - firstSession.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30)); // Convert to months
