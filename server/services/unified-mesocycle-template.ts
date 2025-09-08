@@ -569,14 +569,12 @@ export class UnifiedMesocycleTemplate {
           return false;
         }
         
-        // Check if exercise type matches allocation criteria
+        // Check if exercise type matches allocation criteria  
         const exerciseTypes = allocation.exerciseTypes || ['isolation', 'compound'];
-        const isCompound = ['push', 'pull', 'legs', 'compound'].includes(exercise.exerciseCategory || '');
-        const exerciseType = isCompound ? 'compound' : 'isolation';
+        const exerciseType = this.classifyExerciseType(exercise.exerciseName, exercise.exerciseCategory);
         
         console.log(`🏋️ Exercise type check for ${exercise.exerciseName}:`, {
           category: exercise.exerciseCategory,
-          isCompound,
           exerciseType,
           requiredTypes: exerciseTypes,
           passes: exerciseTypes.includes(exerciseType)
@@ -634,6 +632,62 @@ export class UnifiedMesocycleTemplate {
     }
     
     console.log(`✅ Special method distribution applied to session ${sessionId}`);
+  }
+
+  /**
+   * Classify exercise as compound or isolation based on name and category
+   */
+  private static classifyExerciseType(exerciseName: string, category: string): 'compound' | 'isolation' {
+    const name = exerciseName.toLowerCase();
+    
+    // Machine/Cable isolation exercises (even in compound categories)
+    if (name.includes('machine') || name.includes('cable')) {
+      // These machine exercises are typically isolation
+      const isolationKeywords = ['lateral', 'rear', 'front', 'chest support', 'seated', 'crunch', 'extension', 'curl', 'raise', 'fly', 'pec deck'];
+      if (isolationKeywords.some(keyword => name.includes(keyword))) {
+        return 'isolation';
+      }
+    }
+    
+    // Dumbbell isolation patterns
+    if (name.includes('dumbbell') || name.includes('db')) {
+      const isolationPatterns = ['lateral', 'rear', 'front', 'fly', 'raise', 'curl', 'extension', 'skullcrusher'];
+      if (isolationPatterns.some(pattern => name.includes(pattern))) {
+        return 'isolation';
+      }
+    }
+    
+    // Clear isolation exercise patterns
+    const isolationPatterns = [
+      'curl', 'extension', 'raise', 'fly', 'flye', 'lateral', 'rear', 'front',
+      'skullcrusher', 'kickback', 'crunch', 'leg curl', 'leg extension', 'calf raise'
+    ];
+    
+    if (isolationPatterns.some(pattern => name.includes(pattern))) {
+      return 'isolation';
+    }
+    
+    // Clear compound exercise patterns  
+    const compoundPatterns = [
+      'squat', 'deadlift', 'press', 'row', 'pulldown', 'pullup', 'pull-up', 
+      'pushup', 'push-up', 'dip', 'lunge', 'step-up'
+    ];
+    
+    if (compoundPatterns.some(pattern => name.includes(pattern))) {
+      return 'compound';
+    }
+    
+    // Fallback to category-based classification
+    if (['accessories', 'core'].includes(category || '')) {
+      return 'isolation';
+    }
+    
+    if (['push', 'pull', 'legs', 'compound'].includes(category || '')) {
+      return 'compound';
+    }
+    
+    // Default to isolation for unknown exercises
+    return 'isolation';
   }
 
   /**
