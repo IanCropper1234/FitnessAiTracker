@@ -9,6 +9,7 @@ import {
 import { eq, and, gte, sql, isNull } from "drizzle-orm";
 import { TemplateEngine } from "./template-engine";
 import { SpecialMethodDistributionEngine } from "./special-method-distribution-engine";
+import { RPConfigurationEngine } from "./rp-configuration-engine";
 import type { 
   DistributionConstraints 
 } from "@shared/types/special-method-distribution";
@@ -258,7 +259,11 @@ export class UnifiedMesocycleTemplate {
       targetMuscleGroups: string[];
     }
   ) {
-    console.log(`🧬 Creating enhanced mesocycle with special method distribution: ${config.specialMethodStrategy}`);
+    console.log(`🧬 Creating enhanced mesocycle with RP-based configuration and special method distribution: ${config.specialMethodStrategy}`);
+    
+    // Step 0: Assess user experience and profile for RP configuration
+    const userProfile = await RPConfigurationEngine.assessUserExperience(userId);
+    console.log(`🔬 User profile assessed: ${userProfile.experienceLevel} level, ${userProfile.recoveryCap} recovery`);
     
     // Step 1: Create mesocycle record
     const [mesocycle] = await db
@@ -288,13 +293,13 @@ export class UnifiedMesocycleTemplate {
       }
     }
     
-    // Step 3: Generate special method distribution
+    // Step 3: Generate special method distribution with user-specific constraints
     const constraints: DistributionConstraints = {
-      maxSpecialMethodsPerSession: 40, // Max 40% per session
-      maxSpecialMethodsPerWeek: 50,    // Max 50% per week
+      maxSpecialMethodsPerSession: userProfile.experienceLevel === 'beginner' ? 20 : 40, // Conservative for beginners
+      maxSpecialMethodsPerWeek: userProfile.experienceLevel === 'beginner' ? 30 : 50,    // Conservative for beginners
       minimumRegularSetsPercentage: 50, // At least 50% regular training
-      fatigueThreshold: 7,
-      experienceLevel: 'intermediate' // Default to intermediate
+      fatigueThreshold: userProfile.recoveryCap === 'low' ? 5 : 7,
+      experienceLevel: userProfile.experienceLevel
     };
     
     const distribution = await SpecialMethodDistributionEngine.generateDistribution(
@@ -326,11 +331,14 @@ export class UnifiedMesocycleTemplate {
           config.totalWeeks
         );
         
-        // Apply special method distribution to ALL sessions generated from this template
+        // Apply special method distribution AND RP configuration to ALL sessions generated from this template
         for (const session of daySession.sessions) {
-          console.log(`🎯 Applying special methods to session ${session.sessionId} (${session.name})`);
+          console.log(`🎯 Applying RP configuration and special methods to session ${session.sessionId} (${session.name})`);
           
-          // Use Week 1 distribution for initial creation
+          // Step 1: Apply RP-based configuration to all exercises
+          await this.applyRPConfiguration(session.sessionId, userProfile, mesocycle.phase, 1);
+          
+          // Step 2: Apply special method distribution
           const weeklyDist = distribution.weeklyDistribution.find(w => w.week === 1);
           if (weeklyDist) {
             await this.applySpecialMethodDistribution(session.sessionId, weeklyDist);
@@ -385,6 +393,119 @@ export class UnifiedMesocycleTemplate {
     }
     
     return exerciseIds;
+  }
+
+  /**
+   * Apply RP-based configuration to all exercises in a session
+   */
+  private static async applyRPConfiguration(
+    sessionId: number | undefined,
+    userProfile: any,
+    phase: 'accumulation' | 'intensification' | 'realization' | 'deload',
+    weekNumber: number
+  ) {
+    if (!sessionId) {
+      console.log(`⚠️ Skipping RP configuration - missing sessionId`);
+      return;
+    }
+
+    console.log(`🧬 Applying RP configuration to session ${sessionId} (Phase: ${phase}, Week: ${weekNumber})`);
+
+    // Get all exercises in this session with exercise details
+    const sessionExercises = await db
+      .select({
+        id: workoutExercises.id,
+        exerciseId: workoutExercises.exerciseId,
+        sessionId: workoutExercises.sessionId,
+        sets: workoutExercises.sets,
+        targetReps: workoutExercises.targetReps,
+        restPeriod: workoutExercises.restPeriod,
+        exerciseName: exercises.name,
+        exerciseCategory: exercises.category,
+        exerciseMuscleGroups: exercises.muscleGroups
+      })
+      .from(workoutExercises)
+      .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id))
+      .where(eq(workoutExercises.sessionId, sessionId));
+
+    console.log(`🔬 Applying RP configuration to ${sessionExercises.length} exercises`);
+
+    // Apply RP configuration to each exercise
+    for (const exercise of sessionExercises) {
+      try {
+        // Determine primary muscle group for this exercise
+        const primaryMuscleGroup = this.determinePrimaryMuscleGroup(exercise.exerciseMuscleGroups);
+        
+        // Generate RP configuration for this exercise
+        const rpConfig = await RPConfigurationEngine.generateExerciseConfiguration(
+          exercise.exerciseId,
+          phase,
+          weekNumber,
+          userProfile,
+          primaryMuscleGroup
+        );
+
+        // Update exercise with RP configuration
+        await db
+          .update(workoutExercises)
+          .set({
+            sets: rpConfig.sets,
+            targetReps: rpConfig.reps,
+            restPeriod: rpConfig.restPeriod,
+            notes: sql`COALESCE(notes, '') || ' [RP: ' || ${rpConfig.intensity}::text || '% 1RM]'`
+          })
+          .where(eq(workoutExercises.id, exercise.id));
+
+        console.log(`✅ Applied RP config to ${exercise.exerciseName}: ${rpConfig.sets} sets x ${rpConfig.reps} @ ${rpConfig.intensity}%`);
+      } catch (error) {
+        console.error(`❌ Error applying RP config to exercise ${exercise.exerciseId}:`, error);
+      }
+    }
+
+    console.log(`✅ RP configuration applied to all exercises in session ${sessionId}`);
+  }
+
+  /**
+   * Determine primary muscle group from exercise muscle groups array
+   */
+  private static determinePrimaryMuscleGroup(muscleGroups: string[]): string {
+    if (!muscleGroups || muscleGroups.length === 0) return 'chest';
+    
+    // Map common muscle group names to RP volume landmark categories
+    const muscleGroupMap: Record<string, string> = {
+      'chest': 'chest',
+      'pectorals': 'chest',
+      'back': 'back',
+      'lats': 'back',
+      'rhomboids': 'back',
+      'rear_delts': 'shoulders',
+      'shoulders': 'shoulders',
+      'deltoids': 'shoulders',
+      'biceps': 'biceps',
+      'triceps': 'triceps',
+      'forearms': 'forearms',
+      'quadriceps': 'quads',
+      'quads': 'quads',
+      'hamstrings': 'hamstrings',
+      'glutes': 'glutes',
+      'calves': 'calves',
+      'abs': 'abs',
+      'abdominals': 'abs',
+      'lower_back': 'lower_back'
+    };
+
+    // Find first matching muscle group
+    for (const mg of muscleGroups) {
+      const normalized = mg.toLowerCase().replace(/[^a-z]/g, '');
+      for (const [key, value] of Object.entries(muscleGroupMap)) {
+        if (normalized.includes(key) || key.includes(normalized)) {
+          return value;
+        }
+      }
+    }
+
+    // Default fallback
+    return 'chest';
   }
 
   /**
