@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { 
   trainingTemplates, 
+  savedWorkoutTemplates,
   exercises, 
   muscleGroups,
   volumeLandmarks,
@@ -108,7 +109,10 @@ export class TemplateEngine {
       templateData = {
         name: template.name,
         category: 'user_template',
-        exercises: exercises,
+        workouts: [{
+          name: template.name,
+          exercises: exercises
+        }],
         description: template.description || '',
         estimatedDuration: template.estimatedDuration || 60
       };
@@ -155,7 +159,7 @@ export class TemplateEngine {
     const weeklyTargets = await this.calculateWeeklyVolumeTargets(userLandmarks, currentWeek, totalWeeks);
     
     // Step 3: Collect all exercises from template by muscle group
-    const exercisesByMuscleGroup = await this.organizeExercisesByMuscleGroup(templateData);
+    const exercisesByMuscleGroup = await this.organizeExercisesByMuscleGroup(templateData as TrainingTemplateData);
     
     // Step 4: Apply volume distribution for each muscle group
     for (const [muscleGroupName, muscleGroupData] of Object.entries(exercisesByMuscleGroup)) {
