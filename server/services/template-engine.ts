@@ -391,12 +391,14 @@ export class TemplateEngine {
   private static getTrainingDaysForMuscleGroup(muscleGroup: string, templateData: TrainingTemplateData): number[] {
     const trainingDays: number[] = [];
     
-    templateData.workouts?.forEach((workout, index) => {
-      // Handle both array and missing focus properties
-      const focus = workout.focus || ['Full Body'];
+    (templateData.workouts || []).forEach((workout, index) => {
+      // Handle both array and missing focus properties with complete safety
+      const focus = Array.isArray(workout?.focus) ? workout.focus : ['Full Body'];
       const hasThisMuscleGroup = focus.some((f: string) => 
-        f.toLowerCase().includes(muscleGroup.toLowerCase()) ||
-        muscleGroup.toLowerCase().includes(f.toLowerCase())
+        f && typeof f === 'string' && (
+          f.toLowerCase().includes(muscleGroup.toLowerCase()) ||
+          muscleGroup.toLowerCase().includes(f.toLowerCase())
+        )
       );
       
       if (hasThisMuscleGroup) {
