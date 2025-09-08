@@ -336,7 +336,7 @@ export class UnifiedMesocycleTemplate {
           console.log(`🎯 Applying RP configuration and special methods to session ${session.sessionId} (${session.name})`);
           
           // Step 1: Apply RP-based configuration to all exercises
-          await this.applyRPConfiguration(session.sessionId, userProfile, mesocycle.phase, 1);
+          await this.applyRPConfiguration(session.sessionId, userProfile, mesocycle.phase as 'accumulation' | 'intensification' | 'realization' | 'deload', 1);
           
           // Step 2: Apply special method distribution
           const weeklyDist = distribution.weeklyDistribution.find(w => w.week === 1);
@@ -434,7 +434,7 @@ export class UnifiedMesocycleTemplate {
     for (const exercise of sessionExercises) {
       try {
         // Determine primary muscle group for this exercise
-        const primaryMuscleGroup = this.determinePrimaryMuscleGroup(exercise.exerciseMuscleGroups);
+        const primaryMuscleGroup = this.determinePrimaryMuscleGroup(exercise.exerciseMuscleGroups || []);
         
         // Generate RP configuration for this exercise
         const rpConfig = await RPConfigurationEngine.generateExerciseConfiguration(
