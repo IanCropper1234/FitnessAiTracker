@@ -112,6 +112,19 @@ export class RPConfigurationEngine {
       .where(eq(workoutSessions.userId, userId));
 
     const stats = userStats[0];
+    
+    // Comprehensive debugging
+    console.log(`📊 Raw stats from database:`, {
+      totalSessions: stats.totalSessions,
+      avgVolume: stats.avgVolume,
+      firstSession: stats.firstSession,
+      lastSession: stats.lastSession,
+      firstSessionType: typeof stats.firstSession,
+      lastSessionType: typeof stats.lastSession,
+      firstSessionConstructor: stats.firstSession?.constructor?.name,
+      lastSessionConstructor: stats.lastSession?.constructor?.name
+    });
+    
     const trainingAge = this.calculateTrainingAge(stats.firstSession, stats.lastSession);
     const experienceLevel = this.determineExperienceLevel(stats.totalSessions, trainingAge, stats.avgVolume);
     const recoveryCap = this.assessRecoveryCapacity(stats.totalSessions, trainingAge);
@@ -137,27 +150,58 @@ export class RPConfigurationEngine {
   /**
    * Calculate training age in months
    */
-  private static calculateTrainingAge(firstSession: Date | null, lastSession: Date | null): number {
-    // Handle null cases properly
-    if (!firstSession || !lastSession) {
-      console.log(`⚠️ Training age calculation skipped - missing session data:`, { firstSession, lastSession });
+  private static calculateTrainingAge(firstSession: any, lastSession: any): number {
+    console.log(`🔧 Training age calculation started:`, {
+      firstSession,
+      lastSession,
+      firstType: typeof firstSession,
+      lastType: typeof lastSession
+    });
+    
+    // Handle null/undefined cases
+    if (!firstSession || !lastSession || firstSession === null || lastSession === null) {
+      console.log(`⚠️ Training age calculation skipped - missing session data`);
       return 0;
     }
     
-    // Ensure both are valid Date objects
-    const first = firstSession instanceof Date ? firstSession : new Date(firstSession);
-    const last = lastSession instanceof Date ? lastSession : new Date(lastSession);
+    let first: Date;
+    let last: Date;
     
-    // Additional safety check
-    if (isNaN(first.getTime()) || isNaN(last.getTime())) {
-      console.log(`⚠️ Training age calculation failed - invalid dates:`, { first, last });
+    try {
+      // Convert to Date objects with multiple fallback strategies
+      if (firstSession instanceof Date) {
+        first = firstSession;
+      } else if (typeof firstSession === 'string' || typeof firstSession === 'number') {
+        first = new Date(firstSession);
+      } else {
+        console.log(`⚠️ Cannot convert firstSession to Date:`, firstSession);
+        return 0;
+      }
+      
+      if (lastSession instanceof Date) {
+        last = lastSession;
+      } else if (typeof lastSession === 'string' || typeof lastSession === 'number') {
+        last = new Date(lastSession);
+      } else {
+        console.log(`⚠️ Cannot convert lastSession to Date:`, lastSession);
+        return 0;
+      }
+      
+      // Validate that dates are valid
+      if (isNaN(first.getTime()) || isNaN(last.getTime())) {
+        console.log(`⚠️ Training age calculation failed - invalid dates after conversion`);
+        return 0;
+      }
+      
+      const diffTime = Math.abs(last.getTime() - first.getTime());
+      const months = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+      console.log(`📅 Training age calculated successfully: ${months} months`);
+      return months;
+      
+    } catch (error) {
+      console.error(`❌ Error in training age calculation:`, error);
       return 0;
     }
-    
-    const diffTime = Math.abs(last.getTime() - first.getTime());
-    const months = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
-    console.log(`📅 Training age calculated: ${months} months`);
-    return months;
   }
 
   /**
