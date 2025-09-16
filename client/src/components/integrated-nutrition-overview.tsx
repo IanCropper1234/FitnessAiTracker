@@ -159,40 +159,65 @@ export function IntegratedNutritionOverview({
         selectedDate
       });
       
-      if (copyOperation.type === 'section') {
-        if (externalCopyFromDate && copyOperation.sourceSection && externalCopyFromDate !== selectedDate) {
-          console.log('Executing section copy FROM date:', externalCopyFromDate, 'TO current date:', selectedDate);
-          handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
+      try {
+        if (copyOperation.type === 'section') {
+          if (externalCopyFromDate && copyOperation.sourceSection && externalCopyFromDate !== selectedDate) {
+            console.log('Executing section copy FROM date:', externalCopyFromDate, 'TO current date:', selectedDate);
+            // Add delay to ensure UI stability before copy operation
+            setTimeout(() => {
+              handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
+            }, 100);
+            setCopyOperation(null);
+            // Clear the external date states to prevent auto-reuse
+            if (externalSetCopyFromDate) {
+              externalSetCopyFromDate("");
+            }
+          } else if (externalCopyToDate && !copyOperation.sourceSection && externalCopyToDate !== selectedDate) {
+            console.log('Executing section copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
+            // Add delay to ensure UI stability before copy operation
+            setTimeout(() => {
+              handleCopySection(copyOperation.data, externalCopyToDate);
+            }, 100);
+            setCopyOperation(null);
+            // Clear the external date states to prevent auto-reuse
+            if (externalSetCopyToDate) {
+              externalSetCopyToDate("");
+            }
+          }
+        } else if (copyOperation.type === 'item' && externalCopyToDate && externalCopyToDate !== selectedDate) {
+          console.log('Executing individual item copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
+          // Add delay to ensure UI stability before copy operation
+          setTimeout(() => {
+            handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
+          }, 100);
           setCopyOperation(null);
           // Clear the external date states to prevent auto-reuse
-          if (externalSetCopyFromDate) {
-            externalSetCopyFromDate("");
+          if (externalSetCopyToDate) {
+            externalSetCopyToDate("");
           }
-        } else if (externalCopyToDate && !copyOperation.sourceSection && externalCopyToDate !== selectedDate) {
-          console.log('Executing section copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
-          handleCopySection(copyOperation.data, externalCopyToDate);
+        } else if (copyOperation.type === 'bulk' && externalCopyToDate && externalCopyToDate !== selectedDate) {
+          console.log('Executing bulk copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate, 'selectedLogIds:', copyOperation.data);
+          // Add delay to ensure UI stability before copy operation
+          setTimeout(() => {
+            handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
+          }, 100);
           setCopyOperation(null);
           // Clear the external date states to prevent auto-reuse
           if (externalSetCopyToDate) {
             externalSetCopyToDate("");
           }
         }
-      } else if (copyOperation.type === 'item' && externalCopyToDate && externalCopyToDate !== selectedDate) {
-        console.log('Executing individual item copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
-        handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
+      } catch (error) {
+        console.error('Error in copy operation effect:', error);
         setCopyOperation(null);
-        // Clear the external date states to prevent auto-reuse
+        // Clear date states on error
+        if (externalSetCopyFromDate) {
+          externalSetCopyFromDate("");
+        }
         if (externalSetCopyToDate) {
           externalSetCopyToDate("");
         }
-      } else if (copyOperation.type === 'bulk' && externalCopyToDate && externalCopyToDate !== selectedDate) {
-        console.log('Executing bulk copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate, 'selectedLogIds:', copyOperation.data);
-        handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
-        setCopyOperation(null);
-        // Clear the external date states to prevent auto-reuse
-        if (externalSetCopyToDate) {
-          externalSetCopyToDate("");
-        }
+        showError("Copy Error", "Copy operation failed. Please try again.");
       }
     }
   }, [externalCopyFromDate, externalCopyToDate, copyOperation, selectedDate]);
@@ -313,14 +338,21 @@ export function IntegratedNutritionOverview({
     mutationFn: async (logId: number) => {
       return await apiRequest("DELETE", `/api/nutrition/log/${logId}`);
     },
-    onSuccess: () => {
-      // Invalidate with user-specific query keys to prevent cache sharing between users
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      showSuccess("Success", "Food log deleted successfully");
+    onSuccess: async () => {
+      try {
+        // Batch cache invalidations to prevent navigation race conditions
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
+        ]);
+        showSuccess("Success", "Food log deleted successfully");
+      } catch (error) {
+        console.error('Error in delete cache invalidation:', error);
+        showSuccess("Success", "Food log deleted successfully");
+      }
     },
     onError: (error: any) => {
       showError("Error", error.message || "Failed to delete food log");
@@ -331,13 +363,19 @@ export function IntegratedNutritionOverview({
     mutationFn: async ({ logId, newMealType }: { logId: number; newMealType: string }) => {
       return await apiRequest("PUT", `/api/nutrition/logs/${logId}/meal-type`, { mealType: newMealType });
     },
-    onSuccess: () => {
-      // Invalidate with user-specific query keys to prevent cache sharing between users
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+    onSuccess: async () => {
+      try {
+        // Batch cache invalidations to prevent navigation race conditions
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
+        ]);
+      } catch (error) {
+        console.error('Error in meal type update cache invalidation:', error);
+      }
     },
     onError: (error: any) => {
       showError("Error", error.message || "Failed to move food item");
@@ -348,13 +386,19 @@ export function IntegratedNutritionOverview({
     mutationFn: async (foodData: any) => {
       return await apiRequest("POST", "/api/nutrition/log", foodData);
     },
-    onSuccess: () => {
-      // Invalidate with user-specific query keys to prevent cache sharing between users
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+    onSuccess: async () => {
+      try {
+        // Batch cache invalidations to prevent navigation race conditions
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
+        ]);
+      } catch (error) {
+        console.error('Error in copy food cache invalidation:', error);
+      }
     },
     onError: (error: any) => {
       console.error('Copy food mutation error:', error);
@@ -395,30 +439,44 @@ export function IntegratedNutritionOverview({
       
       return { results, errors, total: foodItems.length };
     },
-    onSuccess: ({ results, errors, total }, { targetDate }) => {
-      // Invalidate cache once after all operations complete
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      
-      const formattedDate = new Date(targetDate).toLocaleDateString();
-      
-      if (errors.length === 0) {
-        showSuccess("Success", `${results.length} food items copied to ${formattedDate}`);
-      } else if (results.length > 0) {
-        showWarning(
-          "Partial Success", 
-          `${results.length} of ${total} items copied successfully. ${errors.length} items failed.`
-        );
-      } else {
-        showError("Failed", "All copy operations failed. Please try again.");
+    onSuccess: async ({ results, errors, total }, { targetDate }) => {
+      try {
+        // Batch all cache invalidations to complete together and prevent race conditions
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
+        ]);
+        
+        const formattedDate = new Date(targetDate).toLocaleDateString();
+        
+        // Show appropriate success/error message
+        if (errors.length === 0) {
+          showSuccess("Success", `${results.length} food items copied to ${formattedDate}`);
+        } else if (results.length > 0) {
+          showWarning(
+            "Partial Success", 
+            `${results.length} of ${total} items copied successfully. ${errors.length} items failed.`
+          );
+        } else {
+          showError("Failed", "All copy operations failed. Please try again.");
+        }
+        
+        // Delay state cleanup to ensure cache invalidation is stable before navigation
+        setTimeout(() => {
+          setSelectedLogs([]);
+          setBulkMode(false);
+        }, 150);
+        
+      } catch (error) {
+        console.error('Error in sequentialBulkCopyMutation onSuccess:', error);
+        // Still clear state even if cache invalidation fails
+        setSelectedLogs([]);
+        setBulkMode(false);
+        showError("Warning", "Copy completed but cache refresh failed. Page may need manual refresh.");
       }
-      
-      // Clear bulk selection after copy
-      setSelectedLogs([]);
-      setBulkMode(false);
     },
     onError: (error: any) => {
       console.error('Bulk copy operation failed:', error);
@@ -431,16 +489,31 @@ export function IntegratedNutritionOverview({
       const promises = logIds.map(id => apiRequest("DELETE", `/api/nutrition/log/${id}`));
       return await Promise.all(promises);
     },
-    onSuccess: () => {
-      // Invalidate with user-specific query keys to prevent cache sharing between users
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      setBulkMode(false);
-      setSelectedLogs([]);
-      showSuccess("Success", `${selectedLogs.length} food logs deleted successfully`);
+    onSuccess: async () => {
+      try {
+        // Batch cache invalidations to prevent navigation race conditions
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
+        ]);
+        
+        // Delay state cleanup to ensure cache invalidation is stable
+        setTimeout(() => {
+          setBulkMode(false);
+          setSelectedLogs([]);
+        }, 100);
+        
+        showSuccess("Success", `${selectedLogs.length} food logs deleted successfully`);
+      } catch (error) {
+        console.error('Error in bulk delete cache invalidation:', error);
+        // Still clear state even if cache invalidation fails
+        setBulkMode(false);
+        setSelectedLogs([]);
+        showSuccess("Success", "Items deleted but cache refresh failed. Page may need manual refresh.");
+      }
     },
     onError: (error: any) => {
       showError("Error", error.message || "Failed to delete food logs");
@@ -476,16 +549,26 @@ export function IntegratedNutritionOverview({
     mutationFn: async ({ logId, quantity, unit }: { logId: number; quantity: number; unit: string }) => {
       return await apiRequest("PUT", `/api/nutrition/log/${logId}`, { quantity, unit });
     },
-    onSuccess: () => {
-      // Invalidate with user-specific query keys to prevent cache sharing between users
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      setShowEditDialog(false);
-      setEditingItem(null);
-      showSuccess("Success", "Food quantity and unit updated successfully");
+    onSuccess: async () => {
+      try {
+        // Batch cache invalidations to prevent navigation race conditions
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
+          queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
+        ]);
+        
+        setShowEditDialog(false);
+        setEditingItem(null);
+        showSuccess("Success", "Food quantity and unit updated successfully");
+      } catch (error) {
+        console.error('Error in edit quantity cache invalidation:', error);
+        setShowEditDialog(false);
+        setEditingItem(null);
+        showSuccess("Success", "Quantity updated but cache refresh failed. Page may need manual refresh.");
+      }
     },
     onError: (error: any) => {
       showError("Error", error.message || "Failed to update food item");
