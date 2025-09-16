@@ -46,9 +46,9 @@ export default function App() {
     console.log('Navigation to:', navState.url);
   };
 
-  // Inject JavaScript to optimize for mobile
+  // Inject JavaScript to optimize for mobile and handle visibility/reload
   const injectedJavaScript = `
-    // Add mobile-specific optimizations
+    // Add mobile-specific optimizations and auto-reload functionality
     (function() {
       // Configure viewport for mobile with safe area support - prevent auto-zoom
       var existingMeta = document.querySelector('meta[name="viewport"]');
@@ -59,6 +59,236 @@ export default function App() {
       meta.name = 'viewport';
       meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
       document.getElementsByTagName('head')[0].appendChild(meta);
+      
+      // Enhanced WebView Auto-Reload System
+      var WebViewReloadManager = {
+        lastActivity: Date.now(),
+        backgroundTime: null,
+        isVisible: !document.hidden,
+        checkInterval: null,
+        reloadAttempts: 0,
+        maxReloadAttempts: 3,
+        lastReloadAttempt: 0,
+        
+        // Initialize the reload manager
+        init: function() {
+          this.setupVisibilityListeners();
+          this.setupActivityTracking();
+          this.startBlankPageMonitoring();
+          this.startInactivityMonitoring();
+          console.log('[WebView] Auto-reload manager initialized');
+        },
+        
+        // Setup visibility change listeners
+        setupVisibilityListeners: function() {
+          var self = this;
+          
+          document.addEventListener('visibilitychange', function() {
+            var isVisible = !document.hidden;
+            var wasVisible = self.isVisible;
+            self.isVisible = isVisible;
+            
+            if (isVisible && !wasVisible) {
+              // App became visible (returned from background)
+              var backgroundDuration = self.backgroundTime ? Date.now() - self.backgroundTime : 0;
+              console.log('[WebView] App returned from background after:', backgroundDuration, 'ms');
+              
+              self.backgroundTime = null;
+              self.updateActivity();
+              
+              // Check for blank page after returning from background
+              setTimeout(function() {
+                if (self.isPageBlank()) {
+                  console.log('[WebView] Blank page detected after background return');
+                  self.handleAutoReload('background_return');
+                }
+              }, 1000);
+              
+            } else if (!isVisible && wasVisible) {
+              // App went to background
+              self.backgroundTime = Date.now();
+              console.log('[WebView] App went to background');
+            }
+            
+            // Notify React Native
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'VISIBILITY_CHANGE',
+                isVisible: isVisible,
+                backgroundDuration: backgroundDuration || 0,
+                timestamp: Date.now()
+              }));
+            }
+          });
+          
+          // iOS-specific page show/hide events
+          window.addEventListener('pageshow', function(event) {
+            console.log('[WebView] Page show event, persisted:', event.persisted);
+            setTimeout(function() {
+              if (self.isPageBlank()) {
+                console.log('[WebView] Blank page detected on page show');
+                self.handleAutoReload('page_show');
+              }
+            }, 1000);
+          });
+          
+          window.addEventListener('pagehide', function() {
+            console.log('[WebView] Page hide event');
+            self.backgroundTime = Date.now();
+          });
+        },
+        
+        // Setup activity tracking
+        setupActivityTracking: function() {
+          var self = this;
+          var events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+          
+          events.forEach(function(event) {
+            document.addEventListener(event, function() {
+              self.updateActivity();
+            }, { passive: true });
+          });
+        },
+        
+        // Update last activity timestamp
+        updateActivity: function() {
+          this.lastActivity = Date.now();
+        },
+        
+        // Check if page appears blank
+        isPageBlank: function() {
+          try {
+            // Check essential indicators of a blank page - optimized
+            var hasContent = document.body && document.body.children.length > 0;
+            var hasRoot = document.getElementById('root') && document.getElementById('root').innerHTML.trim() !== '';
+            
+            // Check for visible elements with content
+            var visibleElements = document.querySelectorAll('*:not(script):not(style):not(meta):not(link)');
+            var hasVisibleContent = false;
+            
+            for (var i = 0; i < Math.min(visibleElements.length, 20); i++) {
+              var el = visibleElements[i];
+              try {
+                var style = window.getComputedStyle(el);
+                if (style.display !== 'none' && style.visibility !== 'hidden' && el.textContent && el.textContent.trim()) {
+                  hasVisibleContent = true;
+                  break;
+                }
+              } catch (e) {
+                // Skip elements that can't be styled
+              }
+            }
+            
+            // Check for white/empty background
+            var bodyStyle = window.getComputedStyle(document.body);
+            var hasProperBackground = bodyStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' && 
+                                     bodyStyle.backgroundColor !== 'transparent';
+            
+            // Page is blank if essential indicators suggest it
+            var blankIndicators = [
+              !hasContent,
+              !hasRoot,
+              !hasVisibleContent
+            ].filter(Boolean).length;
+            
+            return blankIndicators >= 2;
+          } catch (error) {
+            console.warn('[WebView] Error checking blank page:', error);
+            return false;
+          }
+        },
+        
+        // Start monitoring for blank pages
+        startBlankPageMonitoring: function() {
+          var self = this;
+          
+          self.checkInterval = setInterval(function() {
+            if (self.isVisible && self.isPageBlank()) {
+              console.log('[WebView] Blank page detected during monitoring');
+              self.handleAutoReload('blank_page_monitoring');
+            }
+          }, 12000); // Check every 12 seconds - optimized interval
+        },
+        
+        // Start monitoring for long inactivity
+        startInactivityMonitoring: function() {
+          var self = this;
+          
+          setInterval(function() {
+            var timeSinceActivity = Date.now() - self.lastActivity;
+            var inactivityThreshold = 30 * 60 * 1000; // 30 minutes
+            
+            if (timeSinceActivity > inactivityThreshold) {
+              console.log('[WebView] Long inactivity detected:', timeSinceActivity, 'ms');
+              
+              if (self.isPageBlank()) {
+                console.log('[WebView] Blank page detected during inactivity');
+                self.handleAutoReload('inactivity');
+              }
+            }
+          }, 90000); // Check every 90 seconds - optimized for performance
+        },
+        
+        // Handle automatic reload with exponential backoff
+        handleAutoReload: function(reason) {
+          var now = Date.now();
+          var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : 0;
+          
+          // Exponential backoff: 1min, 2min, 4min (60000, 120000, 240000 ms)
+          var backoffTime = Math.pow(2, this.reloadAttempts) * 60000;
+          
+          // Check if we're within backoff period
+          if (timeSinceLastAttempt < backoffTime) {
+            console.log('[WebView] Reload attempt skipped due to backoff period:', Math.round((backoffTime - timeSinceLastAttempt) / 1000), 'seconds remaining');
+            return;
+          }
+          
+          if (this.reloadAttempts >= this.maxReloadAttempts) {
+            console.log('[WebView] Max reload attempts reached, skipping');
+            return;
+          }
+          
+          this.reloadAttempts++;
+          this.lastReloadAttempt = now;
+          console.log('[WebView] Auto-reloading due to:', reason, 'attempt:', this.reloadAttempts, 'next backoff:', Math.pow(2, this.reloadAttempts) * 60000 / 1000, 'seconds');
+          
+          // Notify React Native
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'AUTO_RELOAD',
+              reason: reason,
+              attempt: this.reloadAttempts,
+              nextBackoffSeconds: Math.pow(2, this.reloadAttempts) * 60,
+              timestamp: now
+            }));
+          }
+          
+          // Attempt reload with fallback
+          try {
+            window.location.reload();
+          } catch (error) {
+            console.error('[WebView] Failed to reload:', error);
+            // Fallback: navigate to origin
+            setTimeout(function() {
+              try {
+                window.location.href = window.location.origin;
+              } catch (e) {
+                console.error('[WebView] Failed to navigate to origin:', e);
+              }
+            }, 1000);
+          }
+        },
+        
+        // Cleanup
+        destroy: function() {
+          if (this.checkInterval) {
+            clearInterval(this.checkInterval);
+          }
+        }
+      };
+      
+      // Initialize the reload manager
+      WebViewReloadManager.init();
       
       // Add mobile class to body for mobile-specific CSS
       document.body.classList.add('mobile-app');
@@ -241,12 +471,30 @@ export default function App() {
       switch (message.type) {
         case 'READY':
           console.log('WebView is ready');
+          setIsLoading(false);
           break;
         case 'NAVIGATION':
           // Handle navigation events
           break;
         case 'ERROR':
           Alert.alert('Error', message.error);
+          break;
+        case 'AUTO_RELOAD':
+          console.log(`WebView auto-reload triggered: ${message.reason} (attempt ${message.attempt})`);
+          // Optional: Show user notification about auto-reload
+          if (message.attempt === 1) {
+            console.log('First auto-reload attempt, refreshing session...');
+          }
+          break;
+        case 'VISIBILITY_CHANGE':
+          console.log(`WebView visibility: ${message.isVisible ? 'visible' : 'hidden'}`);
+          if (message.backgroundDuration) {
+            console.log(`Background duration: ${message.backgroundDuration}ms`);
+          }
+          break;
+        case 'SESSION_PERSIST':
+          // Handle session data persistence
+          console.log('Session data persisted:', message.data);
           break;
         default:
           console.log('Unknown message type:', message.type);

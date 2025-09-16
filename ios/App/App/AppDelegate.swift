@@ -1,5 +1,5 @@
 import UIKit
-import Capacitor
+// Capacitor import removed - using React Native WebView instead
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,19 +14,60 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        print("[AppDelegate] App will resign active - preparing for background")
+        
+        // Save the current timestamp for background duration tracking
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "app_background_time")
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        print("[AppDelegate] App did enter background")
+        
+        // Set background time for duration tracking
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "app_background_time")
+        UserDefaults.standard.set(true, forKey: "app_was_backgrounded")
+        UserDefaults.standard.synchronize()
+        
+        // Note: Capacitor bridge notifications removed - using React Native WebView instead
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        print("[AppDelegate] App will enter foreground")
+        
+        let backgroundTime = UserDefaults.standard.double(forKey: "app_background_time")
+        let wasBackgrounded = UserDefaults.standard.bool(forKey: "app_was_backgrounded")
+        let currentTime = Date().timeIntervalSince1970
+        let backgroundDuration = backgroundTime > 0 ? currentTime - backgroundTime : 0
+        
+        print("[AppDelegate] Background duration: \(backgroundDuration) seconds")
+        
+        // Clear background tracking
+        UserDefaults.standard.removeObject(forKey: "app_background_time")
+        UserDefaults.standard.set(false, forKey: "app_was_backgrounded")
+        UserDefaults.standard.synchronize()
+        
+        // Note: Capacitor bridge notifications removed - React Native WebView handles state via injected JavaScript
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        print("[AppDelegate] App did become active")
+        
+        let backgroundTime = UserDefaults.standard.double(forKey: "app_background_time")
+        let wasBackgrounded = UserDefaults.standard.bool(forKey: "app_was_backgrounded")
+        let currentTime = Date().timeIntervalSince1970
+        let backgroundDuration = backgroundTime > 0 ? currentTime - backgroundTime : 0
+        
+        // If app was in background for a long time (>5 minutes), it's likely to need a refresh
+        let longBackgroundThreshold: Double = 5 * 60 // 5 minutes
+        let shouldCheckForBlankPage = backgroundDuration > longBackgroundThreshold
+        
+        print("[AppDelegate] Should check for blank page: \(shouldCheckForBlankPage) (duration: \(backgroundDuration)s)")
+        
+        // Note: Capacitor bridge notifications removed - React Native WebView handles state changes via injected JavaScript
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

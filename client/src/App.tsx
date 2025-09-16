@@ -13,6 +13,7 @@ import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
 import { FloatingTrainingMenu } from "@/components/floating-training-menu";
 import { IOSDatePicker } from "@/components/ui/ios-date-picker";
 import { TimezoneUtils } from "@shared/utils/timezone";
+import { useVisibilityDetection } from "./hooks/useVisibilityDetection";
 import Auth from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Nutrition } from "./pages/nutrition";
@@ -76,6 +77,35 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       initializeWorkoutSettings();
     }
   }, [user]);
+  
+  // Initialize iOS WebView visibility detection and auto-reload
+  useVisibilityDetection({
+    onVisibilityChange: (isVisible) => {
+      console.log('[App] Visibility changed:', isVisible ? 'visible' : 'hidden');
+      
+      // Invalidate queries when app becomes visible to refresh data
+      if (isVisible && user) {
+        queryClient.invalidateQueries({ 
+          predicate: (query) => {
+            const key = query.queryKey;
+            return Array.isArray(key) && (
+              (key.includes('/api/nutrition/summary') && key.includes(user?.id)) ||
+              (key.includes('/api/training/stats') && key.includes(user?.id)) ||
+              (key.includes('/api/user/profile') && key.includes(user?.id))
+            );
+          }
+        });
+      }
+    },
+    onBlankPageDetected: () => {
+      console.log('[App] Blank page detected by React hook');
+    },
+    onLongInactivity: () => {
+      console.log('[App] Long inactivity detected');
+    },
+    enableAutoReload: true,
+    inactivityThreshold: 30 * 60 * 1000 // 30 minutes
+  });
   
   // Global date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);
