@@ -97,6 +97,110 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* iOS WebView Input Auto-Zoom Prevention */
+/* Critical: All input elements must have font-size >= 16px to prevent iOS auto-zoom */
+.mobile-app input,
+.mobile-app textarea,
+.mobile-app select,
+.mobile-app input[type="text"],
+.mobile-app input[type="email"],
+.mobile-app input[type="password"],
+.mobile-app input[type="number"],
+.mobile-app input[type="tel"],
+.mobile-app input[type="url"],
+.mobile-app input[type="search"],
+.mobile-app input[type="date"],
+.mobile-app input[type="time"],
+.mobile-app input[type="datetime-local"] {
+  font-size: 16px;
+  min-height: 44px;
+  line-height: 1.2;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: text;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent zoom on focus for iOS WebView */
+.mobile-app input:focus,
+.mobile-app textarea:focus,
+.mobile-app select:focus {
+  font-size: 16px;
+  outline: none;
+  -webkit-user-select: text;
+}
+
+/* Specific styling for form elements in mobile WebView */
+@media screen and (max-device-width: 768px) {
+  .mobile-app input,
+  .mobile-app textarea,
+  .mobile-app select,
+  .mobile-app button {
+    font-size: 16px;
+    min-height: 44px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0.375rem;
+    touch-action: manipulation;
+  }
+  
+  /* Prevent iOS Safari auto-zoom on input focus */
+  .mobile-app input[type="text"]:focus,
+  .mobile-app input[type="email"]:focus,
+  .mobile-app input[type="password"]:focus,
+  .mobile-app input[type="number"]:focus,
+  .mobile-app input[type="tel"]:focus,
+  .mobile-app input[type="url"]:focus,
+  .mobile-app input[type="search"]:focus,
+  .mobile-app textarea:focus,
+  .mobile-app select:focus {
+    font-size: 16px;
+  }
+}
+
+/* iOS WebView specific optimizations */
+body.mobile-app {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+/* Prevent zoom on double tap */
+.mobile-app * {
+  touch-action: manipulation;
+}
+
+/* Allow text selection in input fields */
+.mobile-app input,
+.mobile-app textarea {
+  touch-action: manipulation;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Ensure all form controls maintain proper sizing - critical for auto-zoom prevention */
+.mobile-app .form-control,
+.mobile-app [class*="input"],
+.mobile-app [class*="textarea"] {
+  font-size: 16px !important;
+  min-height: 44px;
+  line-height: 1.2;
+}
+
+/* Specific fixes for shadcn/ui components - critical for auto-zoom prevention */
+.mobile-app [data-radix-select-trigger],
+.mobile-app [role="combobox"],
+.mobile-app [class*="select-trigger"] {
+  font-size: 16px !important;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
 /* Page transition animation */
 @keyframes page-slide-in-right {
   0% {

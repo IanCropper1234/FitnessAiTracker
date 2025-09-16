@@ -50,10 +50,14 @@ export default function App() {
   const injectedJavaScript = `
     // Add mobile-specific optimizations
     (function() {
-      // Configure viewport for mobile with safe area support
+      // Configure viewport for mobile with safe area support - prevent auto-zoom
+      var existingMeta = document.querySelector('meta[name="viewport"]');
+      if (existingMeta) {
+        existingMeta.remove();
+      }
       var meta = document.createElement('meta');
       meta.name = 'viewport';
-      meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover';
+      meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
       document.getElementsByTagName('head')[0].appendChild(meta);
       
       // Add mobile class to body for mobile-specific CSS
@@ -155,6 +159,8 @@ export default function App() {
       \`;
       document.head.appendChild(style);
       
+      // Note: iOS Input Auto-Zoom Prevention is now handled by CSS in index.css
+      
       // Apply device-specific safe area handling
       setTimeout(function() {
         // Remove any development banners
@@ -162,6 +168,8 @@ export default function App() {
         banners.forEach(function(banner) {
           if (banner) banner.remove();
         });
+        
+        // Note: Input auto-zoom prevention is handled by CSS in index.css for .mobile-app class
         
         // Detect device type and apply universal spacing
         var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
