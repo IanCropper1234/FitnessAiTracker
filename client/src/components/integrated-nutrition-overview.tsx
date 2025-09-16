@@ -355,10 +355,74 @@ export function IntegratedNutritionOverview({
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      showSuccess("Success", "Food copied successfully");
     },
     onError: (error: any) => {
+      console.error('Copy food mutation error:', error);
       showError("Error", error.message || "Failed to copy food");
+    }
+  });
+
+  // New sequential bulk copy mutation to replace concurrent forEach operations
+  const sequentialBulkCopyMutation = useMutation({
+    mutationFn: async ({ foodItems, targetDate }: { foodItems: any[], targetDate: string }) => {
+      const results = [];
+      const errors = [];
+      
+      // Process items sequentially to avoid concurrent API conflicts
+      for (let i = 0; i < foodItems.length; i++) {
+        const item = foodItems[i];
+        try {
+          const { id, createdAt, ...foodData } = item;
+          const newFoodData = {
+            ...foodData,
+            userId,
+            date: targetDate,
+            mealType: item.mealType
+          };
+          
+          const result = await apiRequest("POST", "/api/nutrition/log", newFoodData);
+          results.push(result);
+          
+          // Small delay to prevent overwhelming the API
+          if (i < foodItems.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        } catch (error: any) {
+          console.error(`Error copying item ${item.foodName}:`, error);
+          errors.push({ item: item.foodName, error: error.message || 'Unknown error' });
+        }
+      }
+      
+      return { results, errors, total: foodItems.length };
+    },
+    onSuccess: ({ results, errors, total }, { targetDate }) => {
+      // Invalidate cache once after all operations complete
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
+      
+      const formattedDate = new Date(targetDate).toLocaleDateString();
+      
+      if (errors.length === 0) {
+        showSuccess("Success", `${results.length} food items copied to ${formattedDate}`);
+      } else if (results.length > 0) {
+        showWarning(
+          "Partial Success", 
+          `${results.length} of ${total} items copied successfully. ${errors.length} items failed.`
+        );
+      } else {
+        showError("Failed", "All copy operations failed. Please try again.");
+      }
+      
+      // Clear bulk selection after copy
+      setSelectedLogs([]);
+      setBulkMode(false);
+    },
+    onError: (error: any) => {
+      console.error('Bulk copy operation failed:', error);
+      showError("Error", error.message || "Failed to copy food items");
     }
   });
 
@@ -391,40 +455,19 @@ export function IntegratedNutritionOverview({
         throw new Error('No logs found to copy');
       }
       
-      const promises = logsToCreate.map((log: any) => 
-        apiRequest("POST", "/api/nutrition/log", {
-          userId: log.userId,
-          date: targetDate,
-          foodName: log.foodName,
-          quantity: log.quantity,
-          unit: log.unit,
-          calories: log.calories,
-          protein: log.protein,
-          carbs: log.carbs,
-          fat: log.fat,
-          mealType: log.mealType,
-          category: log.category,
-          mealSuitability: log.mealSuitability
-        })
-      );
-      
-      return await Promise.all(promises);
+      // Use sequential processing instead of Promise.all to avoid concurrency issues
+      return await sequentialBulkCopyMutation.mutateAsync({
+        foodItems: logsToCreate,
+        targetDate
+      });
     },
     onSuccess: (_, variables) => {
-      // Invalidate with user-specific query keys to prevent cache sharing between users
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] });
-      setBulkMode(false);
-      setSelectedLogs([]);
-      
+      // Cache invalidation is handled by sequentialBulkCopyMutation
       const formattedDate = TimezoneUtils.formatForDisplay(variables.targetDate);
-      
-      showSuccess("Success", `${selectedLogs.length} food logs copied to ${formattedDate}`);
+      console.log(`Bulk copy completed for ${selectedLogs.length} items to ${formattedDate}`);
     },
     onError: (error: any) => {
+      console.error('Bulk copy mutation error:', error);
       showError("Error", error.message || "Failed to copy food logs");
     }
   });
@@ -928,23 +971,8 @@ export function IntegratedNutritionOverview({
     copyFoodMutation.mutate(newFoodData);
   };
 
-  const handleCopyFoodToDate = (log: any, targetDate: string) => {
-    const { id, createdAt, ...foodData } = log;
-    const newFoodData = {
-      ...foodData,
-      userId,
-      date: targetDate,
-      mealType: log.mealType // Keep same meal type when copying to date
-    };
-    copyFoodMutation.mutate(newFoodData);
-    
-    showSuccess("Food Copied", `${log.foodName} copied to ${new Date(targetDate).toLocaleDateString()}`);
-  };
-
-  const handleBulkCopyToDate = (selectedLogIds: number[], targetDate: string) => {
-    const logsToCreate = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => selectedLogIds.includes(log.id)) : [];
-    
-    logsToCreate.forEach((log: any) => {
+  const handleCopyFoodToDate = async (log: any, targetDate: string) => {
+    try {
       const { id, createdAt, ...foodData } = log;
       const newFoodData = {
         ...foodData,
@@ -952,56 +980,94 @@ export function IntegratedNutritionOverview({
         date: targetDate,
         mealType: log.mealType // Keep same meal type when copying to date
       };
-      copyFoodMutation.mutate(newFoodData);
-    });
-    
-    showSuccess("Foods Copied", `${logsToCreate.length} food items copied to ${new Date(targetDate).toLocaleDateString()}`);
-    
-    // Clear bulk selection after copy
-    setSelectedLogs([]);
-    setBulkMode(false);
+      
+      await copyFoodMutation.mutateAsync(newFoodData);
+      showSuccess("Food Copied", `${log.foodName} copied to ${new Date(targetDate).toLocaleDateString()}`);
+    } catch (error: any) {
+      console.error('Copy food to date failed:', error);
+      showError("Copy Failed", `Failed to copy ${log.foodName}: ${error.message || 'Unknown error'}`);
+    }
   };
 
-  const handleCopySection = (mealType: string, targetDate: string) => {
+  const handleBulkCopyToDate = async (selectedLogIds: number[], targetDate: string) => {
+    const logsToCreate = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => selectedLogIds.includes(log.id)) : [];
+    
+    if (logsToCreate.length === 0) {
+      showError("No Items", "No food items selected for copying");
+      return;
+    }
+    
+    try {
+      showInfo("Copying", `Starting to copy ${logsToCreate.length} food items...`);
+      
+      await sequentialBulkCopyMutation.mutateAsync({
+        foodItems: logsToCreate,
+        targetDate
+      });
+    } catch (error: any) {
+      console.error('Bulk copy to date failed:', error);
+      showError("Copy Failed", error.message || "Failed to copy food items");
+    }
+  };
+
+  const handleCopySection = async (mealType: string, targetDate: string) => {
     const mealLogs = Array.isArray(nutritionLogs) ? nutritionLogs.filter((log: any) => log.mealType === mealType) : [];
     
-    mealLogs.forEach((log: any) => {
-      const { id, createdAt, ...foodData } = log;
-      const newFoodData = {
-        ...foodData,
-        userId,
-        date: targetDate,
-        mealType
-      };
-      copyFoodMutation.mutate(newFoodData);
-    });
+    if (mealLogs.length === 0) {
+      showError("No Items", `No food items found in ${formatMealType(mealType)}`);
+      return;
+    }
+    
+    try {
+      showInfo("Copying", `Copying ${formatMealType(mealType)} to ${new Date(targetDate).toLocaleDateString()}...`);
+      
+      await sequentialBulkCopyMutation.mutateAsync({
+        foodItems: mealLogs,
+        targetDate
+      });
+      
+      showSuccess("Success", `${formatMealType(mealType)} copied successfully`);
+    } catch (error: any) {
+      console.error('Copy section failed:', error);
+      showError("Copy Failed", `Failed to copy ${formatMealType(mealType)}`);
+    }
   };
 
   const handleCopyFromDate = async (mealType: string, sourceDate: string, targetDate: string) => {
     try {
-      // Fetch nutrition logs from the source date
-      const response = await fetch(`/api/nutrition/logs?date=${sourceDate}`);
+      showInfo("Loading", `Loading ${formatMealType(mealType)} from ${new Date(sourceDate).toLocaleDateString()}...`);
+      
+      // Fetch nutrition logs from the source date with proper error handling
+      const response = await fetch(`/api/nutrition/logs?date=${sourceDate}`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch logs: ${response.statusText}`);
+      }
+      
       const sourceLogs = await response.json();
       
       // Filter logs for the specific meal type
-      const mealLogs = sourceLogs?.filter((log: any) => log.mealType === mealType) || [];
+      const mealLogs = Array.isArray(sourceLogs) ? sourceLogs.filter((log: any) => log.mealType === mealType) : [];
       
-      // Copy each log to the target date
-      mealLogs.forEach((log: any) => {
-        const { id, createdAt, ...foodData } = log;
-        const newFoodData = {
-          ...foodData,
-          userId,
-          date: targetDate,
-          mealType
-        };
-        copyFoodMutation.mutate(newFoodData);
+      if (mealLogs.length === 0) {
+        showWarning("No Items", `No ${formatMealType(mealType)} found on ${new Date(sourceDate).toLocaleDateString()}`);
+        return;
+      }
+      
+      showInfo("Copying", `Copying ${mealLogs.length} items from ${formatMealType(mealType)}...`);
+      
+      // Use sequential bulk copy to avoid concurrency issues
+      await sequentialBulkCopyMutation.mutateAsync({
+        foodItems: mealLogs,
+        targetDate
       });
       
-      showSuccess("Meal Copied", `${formatMealType(mealType)} copied from ${new Date(sourceDate).toLocaleDateString()}`);
-    } catch (error) {
+      showSuccess("Success", `${formatMealType(mealType)} copied from ${new Date(sourceDate).toLocaleDateString()}`);
+    } catch (error: any) {
       console.error('Copy from date failed:', error);
-      showError("Copy Failed", "Failed to copy meal from selected date");
+      showError("Copy Failed", error.message || "Failed to copy meal from selected date");
     }
   };
 
