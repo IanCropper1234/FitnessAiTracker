@@ -1768,22 +1768,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/nutrition/log", requireAuth, async (req, res) => {
     try {
       const userId = req.userId;
-      const logData = {
+      
+      // Log payload for debugging (without sensitive data)
+      console.log('POST /api/nutrition/log payload structure:', {
+        hasUserId: !!req.body.userId,
+        hasDate: !!req.body.date,
+        hasFoodName: !!req.body.foodName,
+        hasQuantity: !!req.body.quantity,
+        hasUnit: !!req.body.unit,
+        hasMealType: !!req.body.mealType,
+        keys: Object.keys(req.body)
+      });
+      
+      // Prepare the data for validation
+      const dataToValidate = {
         ...req.body,
         userId: Number(userId),
-        date: new Date(req.body.date)
+        date: req.body.date ? new Date(req.body.date) : new Date()
       };
+      
+      // Use safeParse for proper validation
+      const validationResult = insertNutritionLogSchema.safeParse(dataToValidate);
+      
+      if (!validationResult.success) {
+        console.error('Nutrition log validation failed:', validationResult.error.errors);
+        return res.status(400).json({ 
+          message: "Invalid nutrition log data", 
+          errors: validationResult.error.errors.map(err => ({
+            path: err.path.join('.'),
+            message: err.message,
+            code: err.code
+          }))
+        });
+      }
+      
+      // Use the validated data
+      const validatedData = validationResult.data;
       
       // Include micronutrient data if provided from AI analysis
       if (req.body.micronutrients) {
-        logData.micronutrients = req.body.micronutrients;
+        validatedData.micronutrients = req.body.micronutrients;
       }
       
-      const log = await storage.createNutritionLog(logData);
+      const log = await storage.createNutritionLog(validatedData);
       res.json(log);
     } catch (error: any) {
       console.error('Error creating nutrition log:', error);
-      res.status(400).json({ message: error.message });
+      res.status(500).json({ 
+        message: "Internal server error",
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
     }
   });
 

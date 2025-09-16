@@ -44,6 +44,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { insertNutritionLogSchema } from "@shared/schema";
 
 interface IntegratedNutritionOverviewProps {
   userId: number;
@@ -148,79 +149,93 @@ export function IntegratedNutritionOverview({
     }
   }, [bulkMode]);
 
-  // Effect to handle copy operations when external date pickers close with a date
+  // Explicit async handlers for copy operations - replace setTimeout-based logic
+  const executeCopyFromDate = async (mealType: string, sourceDate: string, targetDate: string) => {
+    try {
+      console.log('Executing section copy FROM date:', sourceDate, 'TO current date:', targetDate);
+      await handleCopyFromDate(mealType, sourceDate, targetDate);
+      // Clear the external date states after successful operation
+      if (externalSetCopyFromDate) {
+        externalSetCopyFromDate("");
+      }
+    } catch (error) {
+      console.error('Error in executeCopyFromDate:', error);
+      showError("Copy Error", "Copy from date failed. Please try again.");
+      // Clear date states on error
+      if (externalSetCopyFromDate) {
+        externalSetCopyFromDate("");
+      }
+    } finally {
+      setCopyOperation(null);
+    }
+  };
+
+  const executeCopyToDate = async (mealTypeOrItem: string | any, targetDate: string, isIndividualItem: boolean = false) => {
+    try {
+      if (isIndividualItem) {
+        console.log('Executing individual item copy FROM current date:', selectedDate, 'TO date:', targetDate);
+        await handleCopyFoodToDate(mealTypeOrItem, targetDate);
+      } else {
+        console.log('Executing section copy FROM current date:', selectedDate, 'TO date:', targetDate);
+        await handleCopySection(mealTypeOrItem, targetDate);
+      }
+      // Clear the external date states after successful operation
+      if (externalSetCopyToDate) {
+        externalSetCopyToDate("");
+      }
+    } catch (error) {
+      console.error('Error in executeCopyToDate:', error);
+      showError("Copy Error", "Copy to date failed. Please try again.");
+      // Clear date states on error
+      if (externalSetCopyToDate) {
+        externalSetCopyToDate("");
+      }
+    } finally {
+      setCopyOperation(null);
+    }
+  };
+
+  const executeBulkCopyToDate = async (selectedLogIds: number[], targetDate: string) => {
+    try {
+      console.log('Executing bulk copy FROM current date:', selectedDate, 'TO date:', targetDate, 'selectedLogIds:', selectedLogIds);
+      await handleBulkCopyToDate(selectedLogIds, targetDate);
+      // Clear the external date states after successful operation
+      if (externalSetCopyToDate) {
+        externalSetCopyToDate("");
+      }
+    } catch (error) {
+      console.error('Error in executeBulkCopyToDate:', error);
+      showError("Copy Error", "Bulk copy to date failed. Please try again.");
+      // Clear date states on error
+      if (externalSetCopyToDate) {
+        externalSetCopyToDate("");
+      }
+    } finally {
+      setCopyOperation(null);
+    }
+  };
+
+  // Effect to handle copy operations when external date pickers provide dates
   useEffect(() => {
-    // Only proceed if we have a copyOperation AND a NEWLY CHANGED external date
+    // Execute copy operations when external dates are provided and copy operation is set
     if (copyOperation) {
-      console.log('Copy operation effect triggered:', {
-        copyOperation,
-        externalCopyFromDate,
-        externalCopyToDate,
-        selectedDate
-      });
-      
-      try {
-        if (copyOperation.type === 'section') {
-          if (externalCopyFromDate && copyOperation.sourceSection && externalCopyFromDate !== selectedDate) {
-            console.log('Executing section copy FROM date:', externalCopyFromDate, 'TO current date:', selectedDate);
-            // Add delay to ensure UI stability before copy operation
-            setTimeout(() => {
-              handleCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
-            }, 100);
-            setCopyOperation(null);
-            // Clear the external date states to prevent auto-reuse
-            if (externalSetCopyFromDate) {
-              externalSetCopyFromDate("");
-            }
-          } else if (externalCopyToDate && !copyOperation.sourceSection && externalCopyToDate !== selectedDate) {
-            console.log('Executing section copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
-            // Add delay to ensure UI stability before copy operation
-            setTimeout(() => {
-              handleCopySection(copyOperation.data, externalCopyToDate);
-            }, 100);
-            setCopyOperation(null);
-            // Clear the external date states to prevent auto-reuse
-            if (externalSetCopyToDate) {
-              externalSetCopyToDate("");
-            }
-          }
-        } else if (copyOperation.type === 'item' && externalCopyToDate && externalCopyToDate !== selectedDate) {
-          console.log('Executing individual item copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate);
-          // Add delay to ensure UI stability before copy operation
-          setTimeout(() => {
-            handleCopyFoodToDate(copyOperation.data, externalCopyToDate);
-          }, 100);
-          setCopyOperation(null);
-          // Clear the external date states to prevent auto-reuse
-          if (externalSetCopyToDate) {
-            externalSetCopyToDate("");
-          }
-        } else if (copyOperation.type === 'bulk' && externalCopyToDate && externalCopyToDate !== selectedDate) {
-          console.log('Executing bulk copy FROM current date:', selectedDate, 'TO date:', externalCopyToDate, 'selectedLogIds:', copyOperation.data);
-          // Add delay to ensure UI stability before copy operation
-          setTimeout(() => {
-            handleBulkCopyToDate(copyOperation.data, externalCopyToDate);
-          }, 100);
-          setCopyOperation(null);
-          // Clear the external date states to prevent auto-reuse
-          if (externalSetCopyToDate) {
-            externalSetCopyToDate("");
-          }
+      if (copyOperation.type === 'section') {
+        if (externalCopyFromDate && copyOperation.sourceSection && externalCopyFromDate !== selectedDate) {
+          // Copy FROM a source date TO current date
+          executeCopyFromDate(copyOperation.data, externalCopyFromDate, selectedDate);
+        } else if (externalCopyToDate && !copyOperation.sourceSection && externalCopyToDate !== selectedDate) {
+          // Copy FROM current date TO target date
+          executeCopyToDate(copyOperation.data, externalCopyToDate, false);
         }
-      } catch (error) {
-        console.error('Error in copy operation effect:', error);
-        setCopyOperation(null);
-        // Clear date states on error
-        if (externalSetCopyFromDate) {
-          externalSetCopyFromDate("");
-        }
-        if (externalSetCopyToDate) {
-          externalSetCopyToDate("");
-        }
-        showError("Copy Error", "Copy operation failed. Please try again.");
+      } else if (copyOperation.type === 'item' && externalCopyToDate && externalCopyToDate !== selectedDate) {
+        // Copy individual item FROM current date TO target date
+        executeCopyToDate(copyOperation.data, externalCopyToDate, true);
+      } else if (copyOperation.type === 'bulk' && externalCopyToDate && externalCopyToDate !== selectedDate) {
+        // Copy multiple selected items FROM current date TO target date
+        executeBulkCopyToDate(copyOperation.data, externalCopyToDate);
       }
     }
-  }, [externalCopyFromDate, externalCopyToDate, copyOperation, selectedDate]);
+  }, [externalCopyFromDate, externalCopyToDate, copyOperation]);
   
   // Nutrition facts dialog state - removed, now using standalone page
   const [showMicronutrients, setShowMicronutrients] = useState(false);
@@ -386,16 +401,30 @@ export function IntegratedNutritionOverview({
     mutationFn: async (foodData: any) => {
       return await apiRequest("POST", "/api/nutrition/log", foodData);
     },
-    onSuccess: async () => {
+    onSuccess: async (_, foodData) => {
       try {
-        // Batch cache invalidations to prevent navigation race conditions
-        await Promise.all([
+        // Determine target date from the food data
+        const targetDate = foodData.date || selectedDate;
+        
+        // Build cache invalidation list
+        const cacheInvalidations = [
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
           queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
-        ]);
+        ];
+        
+        // If copying to a different date, also invalidate target date cache
+        if (targetDate !== selectedDate) {
+          cacheInvalidations.push(
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, targetDate] }),
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, targetDate] })
+          );
+        }
+        
+        // Batch cache invalidations to prevent navigation race conditions
+        await Promise.all(cacheInvalidations);
       } catch (error) {
         console.error('Error in copy food cache invalidation:', error);
       }
@@ -416,13 +445,8 @@ export function IntegratedNutritionOverview({
       for (let i = 0; i < foodItems.length; i++) {
         const item = foodItems[i];
         try {
-          const { id, createdAt, ...foodData } = item;
-          const newFoodData = {
-            ...foodData,
-            userId,
-            date: targetDate,
-            mealType: item.mealType
-          };
+          // Use centralized payload builder for consistent data processing
+          const newFoodData = buildNutritionLogPayload(item, targetDate, userId);
           
           const result = await apiRequest("POST", "/api/nutrition/log", newFoodData);
           results.push(result);
@@ -441,14 +465,25 @@ export function IntegratedNutritionOverview({
     },
     onSuccess: async ({ results, errors, total }, { targetDate }) => {
       try {
-        // Batch all cache invalidations to complete together and prevent race conditions
-        await Promise.all([
+        // Build cache invalidation list
+        const cacheInvalidations = [
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, selectedDate] }),
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, selectedDate] }),
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId] }),
           queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId] }),
           queryClient.invalidateQueries({ queryKey: ['/api/activities', userId] })
-        ]);
+        ];
+        
+        // If copying to a different date, also invalidate target date cache
+        if (targetDate !== selectedDate) {
+          cacheInvalidations.push(
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/summary', userId, targetDate] }),
+            queryClient.invalidateQueries({ queryKey: ['/api/nutrition/logs', userId, targetDate] })
+          );
+        }
+        
+        // Batch all cache invalidations to complete together and prevent race conditions
+        await Promise.all(cacheInvalidations);
         
         const formattedDate = new Date(targetDate).toLocaleDateString();
         
@@ -483,6 +518,94 @@ export function IntegratedNutritionOverview({
       showError("Error", error.message || "Failed to copy food items");
     }
   });
+
+  // Centralized payload builder function to ensure consistency across all copy operations
+  const buildNutritionLogPayload = (item: any, targetDate: string, userId: number) => {
+    try {
+      // Only include schema fields, exclude temporary UI fields and database-managed fields
+      const allowedFields = [
+        'foodName', 'quantity', 'unit', 'calories', 'protein', 'carbs', 'fat',
+        'mealType', 'mealOrder', 'scheduledTime', 'category', 'mealSuitability',
+        'micronutrients'
+      ];
+      
+      // Build clean payload
+      const cleanPayload: any = {
+        userId,
+        date: targetDate,
+        mealType: item.mealType || 'snack', // Fallback to valid enum value
+      };
+      
+      // Copy allowed fields with proper type conversion
+      for (const field of allowedFields) {
+        if (item[field] !== undefined && item[field] !== null) {
+          if (field === 'quantity' || field === 'calories' || field === 'protein' || field === 'carbs' || field === 'fat') {
+            // Ensure numeric fields are properly converted
+            const value = typeof item[field] === 'string' ? parseFloat(item[field]) : item[field];
+            if (!isNaN(value)) {
+              cleanPayload[field] = value;
+            }
+          } else if (field === 'mealOrder') {
+            // Ensure mealOrder is integer
+            const value = typeof item[field] === 'string' ? parseInt(item[field]) : item[field];
+            if (!isNaN(value)) {
+              cleanPayload[field] = value;
+            } else {
+              cleanPayload[field] = 1; // Default value
+            }
+          } else {
+            // For other fields, copy as-is
+            cleanPayload[field] = item[field];
+          }
+        }
+      }
+      
+      // Ensure required fields have defaults if missing
+      if (!cleanPayload.foodName) cleanPayload.foodName = 'Unknown Food';
+      if (!cleanPayload.quantity) cleanPayload.quantity = 1;
+      if (!cleanPayload.unit) cleanPayload.unit = 'serving';
+      if (!cleanPayload.calories) cleanPayload.calories = 0;
+      if (!cleanPayload.protein) cleanPayload.protein = 0;
+      if (!cleanPayload.carbs) cleanPayload.carbs = 0;
+      if (!cleanPayload.fat) cleanPayload.fat = 0;
+      if (!cleanPayload.mealOrder) cleanPayload.mealOrder = 1;
+      
+      // Validate mealType is in allowed enum values
+      const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snack', 'supplementation'];
+      if (!validMealTypes.includes(cleanPayload.mealType)) {
+        cleanPayload.mealType = 'snack';
+      }
+      
+      // Client-side validation using Zod schema
+      try {
+        const validatedPayload = insertNutritionLogSchema.parse(cleanPayload);
+        console.log('Payload validation successful for:', item.foodName);
+        return validatedPayload;
+      } catch (validationError: any) {
+        console.warn('Payload validation failed for:', item.foodName, validationError.errors);
+        // Log validation errors but don't prevent operation to avoid crashes
+        // Return sanitized payload for backwards compatibility
+        return cleanPayload;
+      }
+      
+    } catch (error: any) {
+      console.error('Error in buildNutritionLogPayload:', error);
+      // Return minimal valid payload in case of unexpected errors
+      return {
+        userId,
+        date: targetDate,
+        foodName: item.foodName || 'Unknown Food',
+        quantity: 1,
+        unit: 'serving',
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        mealType: 'snack',
+        mealOrder: 1
+      };
+    }
+  };
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (logIds: number[]) => {
@@ -1044,25 +1167,24 @@ export function IntegratedNutritionOverview({
   };
 
   const handleCopyFood = (log: any, targetMealType?: string) => {
-    const { id, createdAt, ...foodData } = log;
-    const newFoodData = {
-      ...foodData,
-      userId,
-      date: selectedDate,
-      mealType: targetMealType || log.mealType
-    };
-    copyFoodMutation.mutate(newFoodData);
+    try {
+      // Create a modified item with the target meal type if specified
+      const modifiedLog = targetMealType ? { ...log, mealType: targetMealType } : log;
+      
+      // Use centralized payload builder for consistent data processing
+      const newFoodData = buildNutritionLogPayload(modifiedLog, selectedDate, userId);
+      
+      copyFoodMutation.mutate(newFoodData);
+    } catch (error: any) {
+      console.error('Copy food failed:', error);
+      showError("Copy Failed", `Failed to copy ${log.foodName}: ${error.message || 'Unknown error'}`);
+    }
   };
 
   const handleCopyFoodToDate = async (log: any, targetDate: string) => {
     try {
-      const { id, createdAt, ...foodData } = log;
-      const newFoodData = {
-        ...foodData,
-        userId,
-        date: targetDate,
-        mealType: log.mealType // Keep same meal type when copying to date
-      };
+      // Use centralized payload builder for consistent data processing
+      const newFoodData = buildNutritionLogPayload(log, targetDate, userId);
       
       await copyFoodMutation.mutateAsync(newFoodData);
       showSuccess("Food Copied", `${log.foodName} copied to ${new Date(targetDate).toLocaleDateString()}`);
@@ -1131,8 +1253,14 @@ export function IntegratedNutritionOverview({
       
       const sourceLogs = await response.json();
       
+      // Defensive check for API response format
+      if (!Array.isArray(sourceLogs)) {
+        console.warn('API returned non-array response for nutrition logs:', typeof sourceLogs);
+        throw new Error('Invalid response format from server');
+      }
+      
       // Filter logs for the specific meal type
-      const mealLogs = Array.isArray(sourceLogs) ? sourceLogs.filter((log: any) => log.mealType === mealType) : [];
+      const mealLogs = sourceLogs.filter((log: any) => log.mealType === mealType);
       
       if (mealLogs.length === 0) {
         showWarning("No Items", `No ${formatMealType(mealType)} found on ${new Date(sourceDate).toLocaleDateString()}`);
