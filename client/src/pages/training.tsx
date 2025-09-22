@@ -29,7 +29,7 @@ export function TrainingPage({ user, activeTab: externalActiveTab, onTabChange }
   const hideHeader = isViewingDetails || (state?.hideMenuBar || false);
   
   return (
-    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
+    <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container pl-[20px] pr-[20px]">
       <div className="w-full max-w-none space-y-4">
         {/* Ultra-Compact iOS Header - Hide when viewing workout details or in active workout */}
         {!hideHeader && (
