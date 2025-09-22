@@ -2134,6 +2134,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search user's food history with query (searches all records, not limited by time)
+  app.get("/api/nutrition/history/search", requireAuth, async (req, res) => {
+    try {
+      const userId = req.userId;
+      const query = req.query.q as string;
+      
+      if (!query || query.trim() === '') {
+        res.json([]);
+        return;
+      }
+      
+      const searchTerm = `%${query.toLowerCase()}%`;
+      
+      const result = await db.execute(sql`
+        SELECT 
+          food_name,
+          quantity,
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          category,
+          meal_suitability,
+          micronutrients,
+          COUNT(*) as frequency,
+          MAX(date) as last_logged
+        FROM nutrition_logs 
+        WHERE user_id = ${userId} 
+          AND food_name IS NOT NULL
+          AND LOWER(food_name) LIKE ${searchTerm}
+        GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability, micronutrients
+        HAVING COUNT(*) >= 1
+        ORDER BY COUNT(*) DESC, MAX(date) DESC
+        LIMIT 50
+      `);
+      
+      const searchResults = result.rows.map((row: any) => ({
+        foodName: row.food_name,
+        quantity: parseFloat(row.quantity),
+        unit: row.unit,
+        calories: parseFloat(row.calories),
+        protein: parseFloat(row.protein),
+        carbs: parseFloat(row.carbs),
+        fat: parseFloat(row.fat),
+        category: row.category,
+        mealSuitability: row.meal_suitability,
+        micronutrients: row.micronutrients,
+        frequency: parseInt(row.frequency),
+        lastLogged: row.last_logged
+      }));
+
+      res.json(searchResults);
+    } catch (error: any) {
+      console.error('Search food history error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Copy meals from another date
   app.post("/api/nutrition/copy-meals", requireAuth, async (req, res) => {
     try {

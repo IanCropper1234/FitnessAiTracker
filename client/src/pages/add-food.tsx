@@ -36,6 +36,15 @@ import {
   UtensilsCrossed
 } from "lucide-react";
 
+// Debounce utility function for search
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
 interface User {
   id: number;
   email: string;
@@ -106,6 +115,8 @@ export function AddFood({ user }: AddFoodProps) {
   const [savedMealsSearchQuery, setSavedMealsSearchQuery] = useState('');
   const [historyDisplayLimit, setHistoryDisplayLimit] = useState(20); // Increased default display limit
   const [savedMealsDisplayLimit, setSavedMealsDisplayLimit] = useState(10);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   
   // Image recognition states - Enhanced for multiple images
   const [capturedImages, setCapturedImages] = useState<string[]>([]); // Multiple images
@@ -285,6 +296,46 @@ export function AddFood({ user }: AddFoodProps) {
       });
     }
   });
+
+  // Search food history in database with debouncing
+  const searchFoodHistory = React.useCallback(
+    debounce(async (query: string) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        setIsSearching(false);
+        return;
+      }
+      
+      setIsSearching(true);
+      try {
+        const response = await fetch(`/api/nutrition/history/search?q=${encodeURIComponent(query)}`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const results = await response.json();
+          setSearchResults(results);
+        } else {
+          setSearchResults([]);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300),
+    []
+  );
+
+  // Effect to trigger search when query changes
+  React.useEffect(() => {
+    if (historySearchQuery) {
+      searchFoodHistory(historySearchQuery);
+    } else {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
+  }, [historySearchQuery, searchFoodHistory]);
 
   // Fetch user's food history (unique foods they've logged before)
   const { data: foodHistory = [] } = useQuery({
@@ -737,14 +788,15 @@ export function AddFood({ user }: AddFoodProps) {
   const isLoading = aiAnalyzeMutation.isPending || logMutation.isPending || addSavedMealMutation.isPending || deleteSavedMealMutation.isPending;
   const canLog = (aiAnalyzeMutation.data || selectedFood) && mealType.trim() !== '';
   
-  // Filter food history based on search query with pagination
-  const filteredFoodHistory = Array.isArray(foodHistory) ? foodHistory.filter((item: any) => 
-    item.foodName.toLowerCase().includes(historySearchQuery.toLowerCase())
-  ) : [];
+  // Use search results when searching, otherwise use regular food history
+  const currentFoodData = historySearchQuery.trim() ? searchResults : foodHistory;
+  const filteredFoodHistory = Array.isArray(currentFoodData) ? currentFoodData : [];
   
-  // Apply display limit for pagination
-  const displayedFoodHistory = filteredFoodHistory.slice(0, historyDisplayLimit);
-  const hasMoreFoodHistory = filteredFoodHistory.length > historyDisplayLimit;
+  // Apply display limit for pagination (only for non-search results)
+  const displayedFoodHistory = historySearchQuery.trim() 
+    ? filteredFoodHistory // Show all search results
+    : filteredFoodHistory.slice(0, historyDisplayLimit); // Apply pagination for regular history
+  const hasMoreFoodHistory = !historySearchQuery.trim() && filteredFoodHistory.length > historyDisplayLimit;
 
   // Filter saved meals based on search query with pagination
   const filteredSavedMeals = Array.isArray(savedMeals) ? savedMeals.filter((meal: any) => 
@@ -1275,9 +1327,21 @@ export function AddFood({ user }: AddFoodProps) {
                       </div>
                     ))}
                     
-                    {filteredFoodHistory.length === 0 && historySearchQuery && (
+                    {/* Searching indicator */}
+                    {isSearching && historySearchQuery && (
+                      <div className="text-center py-4 text-blue-500 dark:text-blue-400">
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <p className="text-xs">Searching all your food records...</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* No results message */}
+                    {!isSearching && filteredFoodHistory.length === 0 && historySearchQuery && (
                       <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-                        <p className="text-xs">No matching foods found in your history</p>
+                        <p className="text-xs">No matching foods found in your complete food history</p>
+                        <p className="text-xs mt-1">Try different search terms or add new foods</p>
                       </div>
                     )}
                   </div>
