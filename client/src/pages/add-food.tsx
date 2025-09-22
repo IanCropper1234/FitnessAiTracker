@@ -104,7 +104,7 @@ export function AddFood({ user }: AddFoodProps) {
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [historySearchQuery, setHistorySearchQuery] = useState('');
   const [savedMealsSearchQuery, setSavedMealsSearchQuery] = useState('');
-  const [historyDisplayLimit, setHistoryDisplayLimit] = useState(10);
+  const [historyDisplayLimit, setHistoryDisplayLimit] = useState(20); // Increased default display limit
   const [savedMealsDisplayLimit, setSavedMealsDisplayLimit] = useState(10);
   
   // Image recognition states - Enhanced for multiple images
@@ -364,7 +364,7 @@ export function AddFood({ user }: AddFoodProps) {
 
   // Reset pagination when search queries change
   React.useEffect(() => {
-    setHistoryDisplayLimit(10);
+    setHistoryDisplayLimit(20); // Show more items by default
   }, [historySearchQuery]);
 
   React.useEffect(() => {

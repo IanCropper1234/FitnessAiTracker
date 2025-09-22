@@ -2084,9 +2084,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.userId;
       
-      // Get unique foods from user's nutrition logs (last 90 days for relevance)
-      const ninetyDaysAgo = new Date();
-      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      // Get unique foods from user's nutrition logs (last 180 days for better history coverage)
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setDate(sixMonthsAgo.getDate() - 180);
       
       const result = await db.execute(sql`
         SELECT 
@@ -2104,12 +2104,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           MAX(date) as last_logged
         FROM nutrition_logs 
         WHERE user_id = ${userId} 
-          AND date >= ${ninetyDaysAgo}
+          AND date >= ${sixMonthsAgo}
           AND food_name IS NOT NULL
         GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability, micronutrients
         HAVING COUNT(*) >= 1
         ORDER BY MAX(date) DESC, COUNT(*) DESC
-        LIMIT 50
+        LIMIT 100
       `);
       
       const foodHistory = result.rows.map((row: any) => ({
