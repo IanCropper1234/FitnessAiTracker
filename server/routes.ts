@@ -2145,7 +2145,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return;
       }
       
-      const searchTerm = `%${query.toLowerCase()}%`;
+      const searchQuery = query.toLowerCase();
+      console.log('Search API called with query:', query, 'for user:', userId);
       
       const result = await db.execute(sql`
         SELECT 
@@ -2164,7 +2165,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         FROM nutrition_logs 
         WHERE user_id = ${userId} 
           AND food_name IS NOT NULL
-          AND LOWER(food_name) LIKE ${searchTerm}
+          AND LOWER(food_name) LIKE '%' || ${searchQuery} || '%'
         GROUP BY food_name, quantity, unit, calories, protein, carbs, fat, category, meal_suitability, micronutrients
         HAVING COUNT(*) >= 1
         ORDER BY COUNT(*) DESC, MAX(date) DESC
@@ -2186,6 +2187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastLogged: row.last_logged
       }));
 
+      console.log('Search results count:', searchResults.length);
       res.json(searchResults);
     } catch (error: any) {
       console.error('Search food history error:', error);
