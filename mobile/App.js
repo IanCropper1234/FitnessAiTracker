@@ -314,12 +314,12 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* iPhone-specific safe area handling */
+        /* iPhone-specific safe area handling - Reduced top padding */
         @supports (padding: max(0px)) {
           .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
             background-color: #000000;
             min-height: 100vh;
-            padding-top: max(44px, env(safe-area-inset-top)) !important;
+            padding-top: max(8px, env(safe-area-inset-top)) !important;
             padding-bottom: max(34px, env(safe-area-inset-bottom)) !important;
             padding-left: env(safe-area-inset-left) !important;
             padding-right: env(safe-area-inset-right) !important;
@@ -327,11 +327,11 @@ export default function App() {
           }
         }
         
-        /* Fallback for older devices */
+        /* Fallback for older devices - Reduced top padding */
         .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
           background-color: #000000;
           min-height: 100vh;
-          padding-top: 44px !important;
+          padding-top: 8px !important;
           padding-bottom: 34px !important;
           box-sizing: border-box;
         }
