@@ -225,7 +225,7 @@ export function Nutrition({
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
       <div className="w-full max-w-none space-y-2">
         {/* Ultra-Compact iOS Header */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-4 px-4 py-2 mb-2">
+        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-4 px-4">
           <div className="flex items-center justify-between h-[44px]">
             {/* Left: Back Arrow Only */}
             <Button 

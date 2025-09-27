@@ -866,7 +866,7 @@ export function AddFood({ user }: AddFoodProps) {
                 <TabsTrigger value="saved-meals" className="tab-trigger-smooth">Saved Meals</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="ai-analysis" className="space-y-4 mt-4 tab-content-smooth">
+              <TabsContent value="ai-analysis" className="space-y-4 tab-content-smooth">
                 {/* AI Analysis Mode - Database Search Hidden */}
                 <div className="p-2 bg-blue-50 dark:bg-blue-900/20  border border-blue-200 dark:border-blue-700">
                   <div className="flex items-center gap-2">
@@ -1229,7 +1229,7 @@ export function AddFood({ user }: AddFoodProps) {
                 )}
               </TabsContent>
 
-              <TabsContent value="recent-foods" className="space-y-4 mt-4 tab-content-smooth">
+              <TabsContent value="recent-foods" className="space-y-4 tab-content-smooth">
                 {/* Recent Foods Section */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -1366,7 +1366,7 @@ export function AddFood({ user }: AddFoodProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="saved-meals" className="space-y-4 mt-4 tab-content-smooth">
+              <TabsContent value="saved-meals" className="space-y-4 tab-content-smooth">
                 {/* Saved Meals Section */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
