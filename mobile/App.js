@@ -367,8 +367,8 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* Fix for content being cut off */
-        .container, .content-wrapper {
+        /* Fix for content being cut off - exclude PWA containers */
+        .container:not(.ios-pwa-container), .content-wrapper {
           padding-top: var(--safe-area-inset-top, 0px);
           padding-bottom: var(--safe-area-inset-bottom, 0px);
         }

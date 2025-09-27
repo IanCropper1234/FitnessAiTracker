@@ -1955,7 +1955,7 @@ button, .ios-button {
   
   /* Full safe area insets for PWA containers */
   .ios-pwa-container {
-    padding-top: max(env(safe-area-inset-top), 10px);
+    padding-top: env(safe-area-inset-top);
     padding-bottom: max(env(safe-area-inset-bottom), 20px);
     padding-left: max(env(safe-area-inset-left), 16px);
     padding-right: max(env(safe-area-inset-right), 16px);
