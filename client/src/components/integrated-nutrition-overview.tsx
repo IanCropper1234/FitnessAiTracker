@@ -113,6 +113,9 @@ export function IntegratedNutritionOverview({
     sourceSection?: string;
   } | null>(null);
 
+  // State for managing nutrient sources visibility
+  const [expandedNutrients, setExpandedNutrients] = useState<{[key: string]: boolean}>({});
+
   // Bulk selection state - use external bulk mode if provided, otherwise internal state
   const [internalBulkMode, setInternalBulkMode] = useState(false);
   const [selectedLogs, setSelectedLogs] = useState<number[]>([]);
@@ -1690,7 +1693,10 @@ export function IntegratedNutritionOverview({
           unit: string,
           adequacy: any
         ) => {
-          const [showSources, setShowSources] = useState(false);
+          const showSources = expandedNutrients[nutrientKey] || false;
+          const setShowSources = (show: boolean) => {
+            setExpandedNutrients(prev => ({ ...prev, [nutrientKey]: show }));
+          };
           
           // Calculate nutrient contributions from each food using the same logic as dailyTotals
           const sources = micronutrientLogs
