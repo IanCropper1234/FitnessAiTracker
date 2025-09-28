@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   TouchableOpacity,
+  AppState,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 
@@ -18,7 +19,11 @@ const { width, height } = Dimensions.get('window');
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [webViewKey, setWebViewKey] = useState(0);
+  const [appState, setAppState] = useState(AppState.currentState);
   const webViewRef = useRef(null);
+  const backgroundTimeRef = useRef(null);
+  const reloadAttemptsRef = useRef(0);
 
   // Production URL - use the main production domain
   const serverUrl = 'https://fitness-ai-tracker-c0109009.replit.app';
@@ -33,17 +38,89 @@ export default function App() {
     setIsLoading(false);
   };
 
-  const handleError = (syntheticEvent) => {
-    const { nativeEvent } = syntheticEvent;
-    console.error('WebView error:', nativeEvent);
-    setError(nativeEvent);
-    setIsLoading(false);
-  };
+  // Legacy error handler - replaced by handleWebViewError
+  const handleError = handleWebViewError;
 
   // Handle navigation state changes
   const handleNavigationStateChange = (navState) => {
     // You can track navigation and add mobile-specific logic here
     console.log('Navigation to:', navState.url);
+  };
+
+  // Enhanced AppState handling for iOS WebView lifecycle
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      console.log('[App] AppState changed from', appState, 'to', nextAppState);
+      
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        // App came back to foreground
+        const backgroundDuration = backgroundTimeRef.current 
+          ? Date.now() - backgroundTimeRef.current 
+          : 0;
+        
+        console.log('[App] Returned from background after', backgroundDuration, 'ms');
+        
+        // If background duration > 5 minutes, likely need reload due to iOS memory management
+        if (backgroundDuration > 5 * 60 * 1000) {
+          console.log('[App] Long background detected, checking WebView state');
+          
+          // Start with a gentle reload attempt
+          setTimeout(() => {
+            if (webViewRef.current) {
+              console.log('[App] Attempting WebView reload after background');
+              webViewRef.current.reload();
+            }
+          }, 1000);
+          
+          // If still problematic after 3 seconds, force re-mount
+          setTimeout(() => {
+            if (reloadAttemptsRef.current < 2) {
+              console.log('[App] Force re-mounting WebView due to potential blank page');
+              reloadAttemptsRef.current++;
+              setWebViewKey(prev => prev + 1);
+            }
+          }, 4000);
+        }
+        
+        backgroundTimeRef.current = null;
+      } else if (nextAppState.match(/inactive|background/)) {
+        // App going to background
+        backgroundTimeRef.current = Date.now();
+        console.log('[App] App going to background');
+      }
+      
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+    return () => subscription?.remove();
+  }, [appState]);
+
+  // WebView process termination handler
+  const handleWebViewError = (syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    console.error('[App] WebView error:', nativeEvent);
+    
+    // Check if this is a process termination
+    if (nativeEvent.description?.includes('terminated') || 
+        nativeEvent.description?.includes('crash') ||
+        nativeEvent.code === -999) {
+      console.log('[App] WebView process terminated, force re-mounting');
+      setWebViewKey(prev => prev + 1);
+      reloadAttemptsRef.current = 0; // Reset attempts on process termination
+    } else {
+      setError(nativeEvent);
+    }
+    
+    setIsLoading(false);
+  };
+
+  // Content process termination handler (iOS specific)
+  const handleContentProcessDidTerminate = () => {
+    console.log('[App] WebView content process terminated by iOS');
+    setWebViewKey(prev => prev + 1);
+    reloadAttemptsRef.current = 0;
   };
 
   // Inject JavaScript to optimize for mobile and handle visibility/reload
@@ -548,16 +625,19 @@ export default function App() {
 
       {/* Full-screen WebView */}
       <WebView
+        key={webViewKey}
         ref={webViewRef}
         source={{ uri: serverUrl }}
         style={styles.webview}
         onLoadStart={handleLoadStart}
         onLoadEnd={handleLoadEnd}
-        onError={handleError}
+        onError={handleWebViewError}
         onNavigationStateChange={handleNavigationStateChange}
         onMessage={handleMessage}
         injectedJavaScript={injectedJavaScript}
         userAgent={userAgent}
+        onContentProcessDidTerminate={handleContentProcessDidTerminate}
+        onRenderProcessGone={handleContentProcessDidTerminate}
         
         // WebView configuration
         javaScriptEnabled={true}
