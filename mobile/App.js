@@ -38,8 +38,8 @@ export default function App() {
     setIsLoading(false);
   };
 
-  // Legacy error handler - replaced by handleWebViewError
-  const handleError = handleWebViewError;
+  // Placeholder - will be set after handleWebViewError is defined
+  let handleError;
 
   // Handle navigation state changes
   const handleNavigationStateChange = (navState) => {
@@ -123,6 +123,9 @@ export default function App() {
     reloadAttemptsRef.current = 0;
   };
 
+  // Set the error handler after function definitions
+  handleError = handleWebViewError;
+
   // Inject JavaScript to optimize for mobile and handle visibility/reload
   const injectedJavaScript = `
     // Add mobile-specific optimizations and auto-reload functionality
@@ -145,7 +148,7 @@ export default function App() {
         checkInterval: null,
         reloadAttempts: 0,
         maxReloadAttempts: 2, // Reduced - React Native will handle more aggressive reloading
-        lastReloadAttempt: 0,
+        lastReloadAttempt: null, // null allows first reload attempt immediately
         isReactNativeHandling: true, // Flag to coordinate with React Native
         
         // Initialize the reload manager
@@ -310,7 +313,7 @@ export default function App() {
         // Handle automatic reload with exponential backoff
         handleAutoReload: function(reason) {
           var now = Date.now();
-          var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : 0;
+          var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : Infinity;
           
           // Exponential backoff: 2min, 4min (conservative approach)
           var backoffTime = Math.pow(2, this.reloadAttempts + 1) * 60000;
