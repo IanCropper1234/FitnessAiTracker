@@ -540,10 +540,10 @@ export function IntegratedNutritionOverview({
       for (const field of allowedFields) {
         if (item[field] !== undefined && item[field] !== null) {
           if (field === 'quantity' || field === 'calories' || field === 'protein' || field === 'carbs' || field === 'fat') {
-            // Ensure numeric fields are properly converted
+            // Ensure numeric fields are properly converted to strings (required by API schema)
             const value = typeof item[field] === 'string' ? parseFloat(item[field]) : item[field];
             if (!isNaN(value)) {
-              cleanPayload[field] = value;
+              cleanPayload[field] = value.toString();
             }
           } else if (field === 'mealOrder') {
             // Ensure mealOrder is integer
@@ -560,14 +560,14 @@ export function IntegratedNutritionOverview({
         }
       }
       
-      // Ensure required fields have defaults if missing
+      // Ensure required fields have defaults if missing (convert numeric defaults to strings)
       if (!cleanPayload.foodName) cleanPayload.foodName = 'Unknown Food';
-      if (!cleanPayload.quantity) cleanPayload.quantity = 1;
+      if (!cleanPayload.quantity) cleanPayload.quantity = '1';
       if (!cleanPayload.unit) cleanPayload.unit = 'serving';
-      if (!cleanPayload.calories) cleanPayload.calories = 0;
-      if (!cleanPayload.protein) cleanPayload.protein = 0;
-      if (!cleanPayload.carbs) cleanPayload.carbs = 0;
-      if (!cleanPayload.fat) cleanPayload.fat = 0;
+      if (!cleanPayload.calories) cleanPayload.calories = '0';
+      if (!cleanPayload.protein) cleanPayload.protein = '0';
+      if (!cleanPayload.carbs) cleanPayload.carbs = '0';
+      if (!cleanPayload.fat) cleanPayload.fat = '0';
       if (!cleanPayload.mealOrder) cleanPayload.mealOrder = 1;
       
       // Validate mealType is in allowed enum values

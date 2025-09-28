@@ -185,7 +185,7 @@ export function NutritionLogger({ userId, selectedDate, onComplete, mealType, on
       userId,
       date: finalDate,
       foodName: foodName,
-      quantity: quantity,
+      quantity: quantity.toString(),
       unit: unit,
       calories: nutritionData.calories.toString(),
       protein: nutritionData.protein.toString(),
