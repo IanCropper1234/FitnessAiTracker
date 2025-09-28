@@ -137,15 +137,16 @@ export default function App() {
       meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
       document.getElementsByTagName('head')[0].appendChild(meta);
       
-      // Enhanced WebView Auto-Reload System
+      // Enhanced WebView Auto-Reload System - Works with React Native AppState
       var WebViewReloadManager = {
         lastActivity: Date.now(),
         backgroundTime: null,
         isVisible: !document.hidden,
         checkInterval: null,
         reloadAttempts: 0,
-        maxReloadAttempts: 3,
+        maxReloadAttempts: 2, // Reduced - React Native will handle more aggressive reloading
         lastReloadAttempt: 0,
+        isReactNativeHandling: true, // Flag to coordinate with React Native
         
         // Initialize the reload manager
         init: function() {
@@ -311,8 +312,22 @@ export default function App() {
           var now = Date.now();
           var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : 0;
           
-          // Exponential backoff: 1min, 2min, 4min (60000, 120000, 240000 ms)
-          var backoffTime = Math.pow(2, this.reloadAttempts) * 60000;
+          // Exponential backoff: 2min, 4min (conservative approach)
+          var backoffTime = Math.pow(2, this.reloadAttempts + 1) * 60000;
+          
+          // If React Native is handling lifecycle, be more conservative
+          if (this.isReactNativeHandling && reason === 'background_return') {
+            console.log('[WebView] Background return detected, deferring to React Native AppState handling');
+            // Notify React Native instead of reloading directly
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'BLANK_PAGE_DETECTED',
+                reason: reason,
+                timestamp: now
+              }));
+            }
+            return;
+          }
           
           // Check if we're within backoff period
           if (timeSinceLastAttempt < backoffTime) {
@@ -321,7 +336,14 @@ export default function App() {
           }
           
           if (this.reloadAttempts >= this.maxReloadAttempts) {
-            console.log('[WebView] Max reload attempts reached, skipping');
+            console.log('[WebView] Max reload attempts reached, notifying React Native for key-based re-mount');
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'FORCE_REMOUNT_NEEDED',
+                reason: 'max_reload_attempts_reached',
+                timestamp: now
+              }));
+            }
             return;
           }
           
@@ -572,6 +594,22 @@ export default function App() {
         case 'SESSION_PERSIST':
           // Handle session data persistence
           console.log('Session data persisted:', message.data);
+          break;
+        case 'BLANK_PAGE_DETECTED':
+          console.log(`[App] WebView detected blank page: ${message.reason}`);
+          // Trigger React Native-level reload
+          setTimeout(() => {
+            if (webViewRef.current) {
+              console.log('[App] React Native handling blank page with reload');
+              webViewRef.current.reload();
+            }
+          }, 500);
+          break;
+        case 'FORCE_REMOUNT_NEEDED':
+          console.log('[App] WebView requested force re-mount due to:', message.reason);
+          // Force re-mount with key change
+          setWebViewKey(prev => prev + 1);
+          reloadAttemptsRef.current = 0; // Reset attempts on re-mount
           break;
         default:
           console.log('Unknown message type:', message.type);
