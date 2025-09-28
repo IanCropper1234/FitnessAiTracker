@@ -670,14 +670,15 @@ export function AddFood({ user }: AddFoodProps) {
 
   const handleQuickAddFromHistory = (historyItem: any) => {
     const nutritionData = {
+      userId: user.id,
       date: selectedDate,
       foodName: historyItem.foodName,
-      quantity: historyItem.quantity || 1,
+      quantity: (historyItem.quantity || 1).toString(),
       unit: historyItem.unit || 'serving',
-      calories: historyItem.calories,
-      protein: historyItem.protein,
-      carbs: historyItem.carbs,
-      fat: historyItem.fat,
+      calories: (historyItem.calories || 0).toString(),
+      protein: (historyItem.protein || 0).toString(),
+      carbs: (historyItem.carbs || 0).toString(),
+      fat: (historyItem.fat || 0).toString(),
       mealType: mealType,
       category: historyItem.category,
       mealSuitability: historyItem.mealSuitability,
