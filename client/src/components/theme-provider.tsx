@@ -58,7 +58,18 @@ export function ThemeProvider({ children }: ReactNodeProps) {
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    // iOS WebView compatibility: provide fallback instead of throwing error
+    console.warn("useTheme hook used outside of ThemeProvider, using fallback values");
+    
+    return {
+      theme: "dark" as Theme,
+      toggleTheme: () => {
+        console.warn("toggleTheme called outside of ThemeProvider context");
+      },
+      setTheme: () => {
+        console.warn("setTheme called outside of ThemeProvider context");
+      }
+    };
   }
   return context;
 }

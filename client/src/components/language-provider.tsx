@@ -418,7 +418,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    // iOS WebView compatibility: provide fallback instead of throwing error
+    console.warn("useLanguage hook used outside of LanguageProvider, using fallback values");
+    
+    // Fallback implementation for iOS WebView
+    const fallbackT = (key: string): string => {
+      const fallbackTranslations = translations["en"] || {};
+      return fallbackTranslations[key] || key;
+    };
+    
+    return {
+      language: "en" as Language,
+      setLanguage: () => {
+        console.warn("setLanguage called outside of LanguageProvider context");
+      },
+      t: fallbackT
+    };
   }
   return context;
 }
