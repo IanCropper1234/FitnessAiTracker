@@ -562,7 +562,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 )}
               </CardContent>
             </Card>
-          </AnimatedTabsContent>
+          </TabsContent>
 
           <TabsContent value="fatigue" className="space-y-4">
             <Card>
@@ -615,7 +615,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 </div>
               </CardContent>
             </Card>
-          </AnimatedTabsContent>
+          </TabsContent>
 
           <TabsContent value="phase" className="space-y-4">
             <Card>
@@ -655,7 +655,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 )}
               </CardContent>
             </Card>
-          </AnimatedTabsContent>
+          </TabsContent>
         </Tabs>
       )}
       {/* Mesocycle History - Collapsible */}
