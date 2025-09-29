@@ -11,10 +11,9 @@ const AnimatedTabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center bg-muted p-1 text-muted-foreground border-0 shadow-none",
+      "inline-flex h-10 items-center justify-center bg-muted p-1 text-muted-foreground",
       className
     )}
-    role="tablist"
     {...props}
   />
 ))

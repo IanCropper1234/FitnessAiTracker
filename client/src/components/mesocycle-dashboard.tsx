@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { AnimatedTabs, AnimatedTabsContent, AnimatedTabsList, AnimatedTabsTrigger } from "@/components/ui/animated-tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Calendar, 
@@ -500,31 +500,31 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       )}
       {/* Recommendations */}
       {recommendations && (
-        <AnimatedTabs defaultValue="volume" className="w-full">
+        <Tabs defaultValue="volume" className="w-full">
           <div className="px-1">
-            <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5 backdrop-blur-sm">
-              <AnimatedTabsTrigger
+            <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5 backdrop-blur-sm rounded-lg">
+              <TabsTrigger
                 value="volume"
-                className="flex-1 px-2 py-1.5 text-xs font-medium transition-all duration-200 data-[state=active]:bg-blue-500 data-[state=active]:dark:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60"
+                className="flex-1 px-2 py-1.5 text-xs font-medium transition-all duration-200 data-[state=active]:bg-blue-500 data-[state=active]:dark:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60 rounded-md"
               >
                 Volume Progression
-              </AnimatedTabsTrigger>
-              <AnimatedTabsTrigger
+              </TabsTrigger>
+              <TabsTrigger
                 value="fatigue"
-                className="flex-1 px-2 py-1.5 text-xs font-medium transition-all duration-200 data-[state=active]:bg-emerald-500 data-[state=active]:dark:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60"
+                className="flex-1 px-2 py-1.5 text-xs font-medium transition-all duration-200 data-[state=active]:bg-emerald-500 data-[state=active]:dark:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60 rounded-md"
               >
                 Fatigue Analysis
-              </AnimatedTabsTrigger>
-              <AnimatedTabsTrigger
+              </TabsTrigger>
+              <TabsTrigger
                 value="phase"
-                className="flex-1 px-2 py-1.5 text-xs font-medium transition-all duration-200 data-[state=active]:bg-gray-900 data-[state=active]:dark:bg-gray-100 data-[state=active]:text-white data-[state=active]:dark:text-gray-900 data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60"
+                className="flex-1 px-2 py-1.5 text-xs font-medium transition-all duration-200 data-[state=active]:bg-gray-900 data-[state=active]:dark:bg-gray-100 data-[state=active]:text-white data-[state=active]:dark:text-gray-900 data-[state=active]:shadow-sm data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60 rounded-md"
               >
                 Phase Management
-              </AnimatedTabsTrigger>
+              </TabsTrigger>
             </div>
           </div>
 
-          <AnimatedTabsContent value="volume" className="space-y-4">
+          <TabsContent value="volume" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -564,7 +564,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
             </Card>
           </AnimatedTabsContent>
 
-          <AnimatedTabsContent value="fatigue" className="space-y-4">
+          <TabsContent value="fatigue" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -617,7 +617,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
             </Card>
           </AnimatedTabsContent>
 
-          <AnimatedTabsContent value="phase" className="space-y-4">
+          <TabsContent value="phase" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -656,7 +656,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
               </CardContent>
             </Card>
           </AnimatedTabsContent>
-        </AnimatedTabs>
+        </Tabs>
       )}
       {/* Mesocycle History - Collapsible */}
       {Array.isArray(mesocycles) && mesocycles.length > 0 && (
