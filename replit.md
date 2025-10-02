@@ -91,6 +91,10 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **TrainPro Rebranding**: All FitAI references updated to TrainPro across PWA and mobile applications, including icons, manifest files, service worker, and console logging.
 - **Unit Conversion Toggle**: Added kg/lbs conversion toggle button to Recent Entries section in nutrition progression component for weight data.
 - **Training Dashboard Cards Redesign**: Redesigned training statistics cards with clean color-coded layout, displaying authentic training data only: Total Sessions, Total Volume, Average Session Time.
+- **iOS Safe Area Optimization (Oct 2025)**: Enhanced iOS compatibility across all devices including iPhone 17 with Dynamic Island:
+  - Date picker overlay now includes top safe-area padding to prevent Dynamic Island obstruction
+  - iOS sticky headers updated with proper safe-area-inset handling (minimum 16px padding-top)
+  - Programs tab bar (Volume Progression, Fatigue Analysis, Phase Management) fixed to prevent text movement by removing scale animations and horizontal scrolling, using flex-1 distribution for stable layout
 
 ### iOS App Development Strategy
 TrainPro implements an **Expo hybrid approach** preserving 100% of existing PWA functionality while adding native iOS capabilities. Complete Expo configuration exists in `mobile/` directory with EAS Build setup. Development is on Replit with cloud-based building, eliminating the need for macOS/Xcode.

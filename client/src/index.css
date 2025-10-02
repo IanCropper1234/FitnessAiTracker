@@ -1980,7 +1980,7 @@ button, .ios-button {
   .ios-sticky-header {
     position: sticky;
     top: env(safe-area-inset-top, 0px);
-    padding-top: max(env(safe-area-inset-top, 16px), 16px);
+    padding-top: max(env(safe-area-inset-top, 0px), 16px);
     margin-top: env(safe-area-inset-top, 0px);
     z-index: 50;
     backdrop-filter: blur(10px);
