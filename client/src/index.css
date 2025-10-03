@@ -1976,12 +1976,11 @@ button, .ios-button {
     }
   }
   
-  /* Sticky header with proper iOS support and Dynamic Island spacing */
+  /* Sticky header with proper iOS support */
   .ios-sticky-header {
     position: sticky;
     top: env(safe-area-inset-top, 0px);
-    padding-top: max(env(safe-area-inset-top, 0px), 16px);
-    margin-top: env(safe-area-inset-top, 0px);
+    padding-top: max(env(safe-area-inset-top), 8px);
     z-index: 50;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);

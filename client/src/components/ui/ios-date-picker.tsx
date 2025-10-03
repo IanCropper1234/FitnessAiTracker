@@ -216,13 +216,9 @@ export function IOSDatePicker({
       {showDatePicker && (
         <div 
           className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center modal-overlay-enter ios-animation"
-          style={{ 
-            touchAction: 'none',
-            paddingTop: 'env(safe-area-inset-top, 16px)',
-            paddingBottom: 'env(safe-area-inset-bottom, 16px)'
-          }} // Prevent background scrolling and respect all safe areas (Dynamic Island, notch, home indicator)
+          style={{ touchAction: 'none' }} // Prevent background scrolling
         >
-          <div className="bg-background w-full max-w-md mx-4 mb-4 rounded-t-2xl shadow-2xl modal-content-enter ios-smooth-transform">
+          <div className="bg-background w-full max-w-md mx-4 mb-4  shadow-2xl modal-content-enter ios-smooth-transform">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <button
