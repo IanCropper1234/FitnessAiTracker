@@ -197,7 +197,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                       <Target className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -216,7 +216,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                       <Activity className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -235,7 +235,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                       <Scale className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -260,7 +260,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
                       <Zap className="w-5 h-5 text-orange-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -285,18 +285,18 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 ">
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <span className="text-sm font-medium">Mesocycle Progress</span>
                   <Badge variant="outline">{comprehensiveAnalytics?.training?.summary?.totalSessions >= 12 ? 'Complete' : 'In Progress'}</Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 ">
+                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded-lg">
                   <span className="text-sm font-medium">Nutrition Phase</span>
                   <Badge variant="outline">
                     {comprehensiveAnalytics?.bodyProgress?.progress?.weightChange < -0.5 ? 'Weight Loss' : 
                      comprehensiveAnalytics?.bodyProgress?.progress?.weightChange > 0.5 ? 'Weight Gain' : 'Maintenance'}
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 ">
+                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
                   <span className="text-sm font-medium">Volume Status</span>
                   <Badge variant="outline">
                     {comprehensiveAnalytics?.overview?.recoveryScore >= 7 ? 'Optimal' : 
@@ -336,7 +336,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                       <Zap className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -359,7 +359,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                       <Target className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -382,7 +382,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-orange-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -405,7 +405,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
                       <BarChart3 className="w-5 h-5 text-red-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -434,15 +434,15 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 ">
+                <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded-lg">
                   <span className="text-sm font-medium">Days with logs</span>
                   <Badge variant="outline">{nutritionAnalytics?.totalDays || comprehensiveAnalytics?.nutrition?.totalDays || 0} days</Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 ">
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <span className="text-sm font-medium">Total food entries</span>
                   <Badge variant="outline">{nutritionAnalytics?.totalLogs || comprehensiveAnalytics?.nutrition?.totalLogs || 0} entries</Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 ">
+                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
                   <span className="text-sm font-medium">Adherence Status</span>
                   <Badge variant="outline">
                     {(comprehensiveAnalytics?.nutrition?.adherencePercentage || 0) >= 85 ? 'On Track' : 
@@ -482,7 +482,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                       <Activity className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -503,7 +503,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
                       <BarChart3 className="w-5 h-5 text-red-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -524,7 +524,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                       <Clock className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -545,7 +545,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
               <Card className="p-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900  flex items-center justify-center">
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -576,11 +576,11 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                   <span className="text-sm font-medium">Average weekly volume</span>
                   <Badge variant="outline">{Math.round(trainingAnalytics?.summary?.averageWeeklyVolume || comprehensiveAnalytics?.training?.summary?.averageWeeklyVolume || 0)}</Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 ">
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <span className="text-sm font-medium">Sessions per week</span>
                   <Badge variant="outline">{comprehensiveAnalytics?.overview?.averageSessionsPerWeek || 0}</Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 ">
+                <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded-lg">
                   <span className="text-sm font-medium">Training Status</span>
                   <Badge variant="outline">
                     {(comprehensiveAnalytics?.training?.consistency || 0) >= 0.8 ? 'Consistent' : 
@@ -623,7 +623,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                     <Card className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900  flex items-center justify-center">
+                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                             <Scale className="w-5 h-5 text-blue-600" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -646,7 +646,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                     <Card className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900  flex items-center justify-center">
+                          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                             <TrendingUp className="w-5 h-5 text-purple-600" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -671,7 +671,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                     <Card className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-green-100 dark:bg-green-900  flex items-center justify-center">
+                          <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                             <Activity className="w-5 h-5 text-green-600" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -693,7 +693,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                       <Card className="p-4">
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900  flex items-center justify-center">
+                            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
                               <Target className="w-5 h-5 text-orange-600" />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -716,7 +716,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                       <Card className="p-4">
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-red-100 dark:bg-red-900  flex items-center justify-center">
+                            <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
                               <Zap className="w-5 h-5 text-red-600" />
                             </div>
                             <div className="flex-1 min-w-0">

@@ -15,13 +15,8 @@
   --chart-tooltip-border: #4b5563;
 }
 
-/* Force rounded corners globally - comprehensive approach */
+/* Force rounded corners globally - safe approach */
 @layer utilities {
-  /* Apply rounded corners to ALL UI elements */
-  *:not(html):not(body):not(svg):not(path):not(circle):not(rect):not(line) {
-    border-radius: 0.5rem !important;
-  }
-
   /* Specific overrides for different element types */
   button,
   .btn,
@@ -39,9 +34,7 @@
   /* Smaller radius for small elements */
   .badge,
   .chip,
-  .tag,
-  span[class*="bg-"],
-  small[class*="bg-"] {
+  .tag {
     border-radius: 0.25rem !important;
   }
 
