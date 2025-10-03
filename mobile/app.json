@@ -19,14 +19,22 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "1.0.1",
       "supportsTablet": true,
+      "bundleIdentifier": "com.trainpro.app",
+      "buildNumber": "19",
+      "icon": "./assets/icon.png",
       "infoPlist": {
-        "NSCameraUsageDescription": "MyTrainPro needs camera access to scan barcodes for food logging.",
-        "NSPhotoLibraryUsageDescription": "MyTrainPro needs photo library access to upload progress photos.",
-        "UIBackgroundModes": ["fetch"],
-        "UIViewControllerBasedStatusBarAppearance": false
+        "CFBundleDisplayName": "MyTrainPro",
+        "CFBundleName": "MyTrainPro",
+        "LSApplicationCategoryType": "public.app-category.healthcare-fitness",
+        "NSCameraUsageDescription": "MyTrainPro uses the camera to capture food images for AI-powered nutrition analysis and tracking.",
+        "NSPhotoLibraryUsageDescription": "MyTrainPro accesses your photo library to let you upload food images for nutrition analysis and set profile pictures.",
+        "NSHealthShareUsageDescription": "MyTrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
+        "NSHealthUpdateUsageDescription": "MyTrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
