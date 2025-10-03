@@ -1,0 +1,372 @@
+error	17:10:51.818656+0800	wifid	WiFiLQAMgrLinkRecommendationNotify: channel score: chq=3, tx-lat=4, rx-lat=5, tx-loss=5, rx-loss=5, txPer=0.0%, p95-lat=8, RT=0x0, link-recommendation=0x0
+error	17:10:51.942902+0800	WhatsApp	Background task still not ended after expiration handlers were called: <private>. This app will likely be terminated by the system. Call UIApplication.endBackgroundTask(_:) to avoid this.
+error	17:10:52.113650+0800	kernel	netagent_get_agent_domain_and_type: Type requested for invalid netagent
+error	17:10:52.546366+0800	SpringBoard	[<_UIKeyboardArbiterClientHandle: 0x7ad57ed80; [osservice<com.apple.SpringBoard>:242] <<UIKBArbiterClientFocusContext: 0x7b055d8a0; contextID = a4a5b482; sceneIdentity = com.apple.frontboard.systemappservices/FBSceneManager:com.apple.springboard >>; hosting PIDs {(
+)}; level 0.000000; active NO [wants NO]; suppression 0; iav 0.000000; on screen NO; isAcquiringFocus: YES>] Acquiring focus timer elapsed, clearing acquiring focus state
+error	17:10:52.703088+0800	wifid	LQM-WiFi: WeightAvgLQM isPosted=0 rssi=<-70:0> snr=<19:0>txRate=<306249:0> rxRate=<417340:0>
+error	17:10:52.703175+0800	wifid	LQM-WiFi: rxStart=772 rxBadPLCP=67 rxBadFCS=30
+error	17:10:52.703298+0800	wifid	LQM-WiFi: txRTSFrm=17 txCTSFrm=8 txAllFrm=30
+error	17:10:52.703310+0800	wifid	LQM-WiFi: rxBeaconMbss=47 rxDataUcastMbss=8 rxCNTRLUcast=73 txBACK=0 rxDataMcast=69, rxMgmtMcast=0
+error	17:10:52.703442+0800	wifid	LQM-WiFi: rxMpduInAmpdu=56 rxholes=0 rxPER=0 rxdup=0 rxaddbareq=0 txaddbaresp=0 txdelba=0 rxdelba=0
+error	17:10:52.703454+0800	wifid	LQM-WiFi: WME RX MSDUs in tids 0:102772, 1:212159, 2:6, 3:0, 4:1, 5:0, 6:2, 7:0
+error	17:10:52.703464+0800	wifid	LQM-WiFi: BTCoexExtStats1: bt_gnt_dur=0 [us] btc_status=0x2 bt_req_type_map=0x800004 bt_req_cnt=424 bt_prempt_cnt=0 bt_grant_cnt=0
+error	17:10:52.703473+0800	wifid	LQM-WiFi: BTCoexExtStats2: wlan_tx_denial_cnt = 0 wlan_rx_denial_cnt = 0 bt_SCO_rw_gnt_cnt = 0 bt_SCO_rs_gnt_cnt = 0 bt_SCO_rw_deny_cnt = 0 bt_SCO_rs_deny_cnt = 0 max_sco_consecutive_deny_cnt = 0
+error	17:10:52.703607+0800	wifid	LQM-WiFi: rxMulti=0 rxUndec=0
+error	17:10:52.703933+0800	wifid	LQM-WiFi: BTCoexExtStats3: bt_a2dp_gnt_cnt = 0 bt_a2dp_deny_cnt = 0 bt_crtpri_grant_cnt = 0 wifi_tx_denial_lt5ms = 0 wifi_tx_denial_lt30ms = 0, wifi_tx_denial_lt60ms = 0, wifi_tx_denial_ge60ms = 0
+error	17:10:52.703948+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BE<6 0 0 0 0 0 0 0 0 0 0> (4998ms)
+error	17:10:52.703958+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> BK<1 0 0 0 0 0 0 0 0 0 0> (4998ms)
+error	17:10:52.703970+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VI<0 0 0 0 0 0 0 0 0 0 0> (4998ms)
+error	17:10:52.704005+0800	wifid	LQM-WiFi: TX(00:00:00:00:00:00) AC<SU MS NB NRS NA CM EX TF FFP MRET FLE> VO<1 0 0 0 0 0 0 0 0 0 0> (4998ms)
+error	17:10:52.704021+0800	wifid	LQM-WiFi: L3 Control VO TX(00:00:00:00:00:00) Success=0 NoACK=0 Expired=0 OtherErr=0
+error	17:10:53.046566+0800	SpringBoard	The connection invalidated: Connection invalid.
+error	17:10:53.050209+0800	kernel	4 duplicate reports for Sandbox: SensingPredictXPCService(808) deny(1) file-read-metadata /private/var/mobile/Library/Caches/GeoServices/networkDefaults.plist
+error	17:10:53.050215+0800	kernel	Sandbox: MyTrainPro(918) deny(1) sysctl-read kern.bootargs
+error	17:10:53.065923+0800	SpringBoard	Live host view super view[(null)] not matching container view[<UIView: 0x7b2242840; frame = (0 0; 402 874); clipsToBounds = YES; layer = <CALayer: 0x7adbdd0b0>>], frame not updated
+error	17:10:53.067887+0800	SpringBoard	Live host view super view[(null)] not matching container view[<UIView: 0x7b2242840; frame = (0 0; 402 874); clipsToBounds = YES; layer = <CALayer: 0x7adbdd0b0>>], frame not updated
+error	17:10:53.068182+0800	SpringBoard	Live host view super view[(null)] not matching container view[<UIView: 0x7b2242840; frame = (0 0; 402 874); clipsToBounds = YES; layer = <CALayer: 0x7adbdd0b0>>], frame not updated
+error	17:10:53.071444+0800	SpringBoard	-[RTIInputSystemClient remoteTextInputSessionWithID:performInputOperation:]  perform input operation requires a valid sessionID. inputModality = Keyboard, inputOperation = <null selector>, customInfoType = UIEmojiSearchOperations
+error	17:10:53.071871+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:53.072763+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:53.077688+0800	SpringBoard	attention client com.apple.SpringBoard.HomeGrabberView-32 cannot reset; error:Error Domain=NSPOSIXErrorDomain Code=57 "Socket is not connected" UserInfo={NSLocalizedDescription= Not connected to server}
+error	17:10:53.078610+0800	SpringBoard	attention client com.apple.SpringBoard.HomeGrabberView-32 cannot reset; error:Error Domain=NSPOSIXErrorDomain Code=57 "Socket is not connected" UserInfo={NSLocalizedDescription= Not connected to server}
+error	17:10:53.086550+0800	SpringBoard	Live host view super view[(null)] not matching container view[<UIView: 0x7b2242840; frame = (0 0; 402 874); clipsToBounds = YES; layer = <CALayer: 0x7adbdd0b0>>], frame not updated
+error	17:10:53.134812+0800	symptomsd	src is neither of type defRoute4 or defRoute6
+fault	17:10:53.187336+0800	MyTrainPro	`UIScene` lifecycle will soon be required. Failure to adopt will result in an assert in the future.
+error	17:10:53.190531+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:53.190748+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:53.206319+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:53.206831+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:53.216553+0800	SpringBoard	Live host view super view[<SBCrossfadeView: 0x7b233ad80; frame = (0 0; 402 874); clipsToBounds = YES; layer = <CALayer: 0x7ae141dd0>>] not matching container view[<UIView: 0x7b2242840; frame = (0 0; 402 874); clipsToBounds = YES; layer = <CALayer: 0x7adbdd0b0>>], frame not updated
+error	17:10:53.234077+0800	mDNSResponder	nw_resolver_process_service_result [C650.1.1.1] Service result did not contain name, ignoring
+error	17:10:53.234225+0800	mDNSResponder	nw_resolver_process_service_result [C651.1.1.1] Service result did not contain name, ignoring
+error	17:10:53.235368+0800	mDNSResponder	nw_resolver_process_service_result [C652.1.1.1] Service result did not contain name, ignoring
+error	17:10:53.268671+0800	mDNSResponder	nw_flow_notify [C650 Hostname#15a8fc65:443 cancelled parent-flow ((null))] ignoring notification replaced_output_handler after cancellation
+error	17:10:53.269305+0800	kernel	netagent_get_agent_domain_and_type: Type requested for invalid netagent
+error	17:10:53.270298+0800	mDNSResponder	nw_flow_notify [C651 Hostname#15a8fc65:443 cancelled parent-flow ((null))] ignoring notification replaced_output_handler after cancellation
+error	17:10:53.275315+0800	mDNSResponder	nw_flow_notify [C652 Hostname#15a8fc65:443 cancelled parent-flow ((null))] ignoring notification replaced_output_handler after cancellation
+error	17:10:53.279491+0800	kernel	Sandbox: com.apple.WebKit.WebContent(919) deny(1) sysctl-read security.mac.lockdown_mode_state
+error	17:10:53.286050+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) sysctl-read security.mac.lockdown_mode_state
+error	17:10:53.289182+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) network-outbound /private/var/run/syslog
+error	17:10:53.291366+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.316545+0800	kernel	8 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.316551+0800	kernel	Sandbox: com.apple.WebKit.WebContent(919) deny(1) sysctl-read security.mac.lockdown_mode_state
+error	17:10:53.316833+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.350327+0800	MyTrainPro	Could not create a sandbox extension for '<private>'
+error	17:10:53.360220+0800	kernel	17 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.360224+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) sysctl-read security.mac.lockdown_mode_state
+error	17:10:53.360228+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.361445+0800	kernel	9 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.361454+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) network-outbound /private/var/run/syslog
+error	17:10:53.361493+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.363575+0800	kernel	14 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.363593+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.363595+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.363940+0800	kernel	7 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.363945+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.363971+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364037+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364042+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364337+0800	kernel	5 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364342+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364346+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364536+0800	kernel	3 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364540+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364695+0800	kernel	2 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364698+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364717+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364828+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364833+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364933+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364938+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364972+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.364976+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365029+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365032+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365036+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365051+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365066+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365081+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365118+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365163+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365204+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365259+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365305+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365320+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365324+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365339+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365355+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365370+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365426+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365432+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365434+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365945+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.365998+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366003+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366118+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366122+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366126+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366128+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366141+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366259+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366286+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366290+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366292+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366296+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366362+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366364+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366388+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366391+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366394+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366539+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366544+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366547+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366549+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366553+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366570+0800	kernel	2 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.366575+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.367791+0800	kernel	10 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.367795+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.367799+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.367842+0800	kernel	3 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.367846+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.367849+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.370826+0800	kernel	6 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.370862+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.370956+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.371161+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.371726+0800	kernel	7 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.371741+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.372139+0800	kernel	4 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.372143+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.372147+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.374996+0800	kernel	29 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.375000+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.375004+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376028+0800	kernel	16 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376034+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376038+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376040+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376086+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376105+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376147+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376159+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376180+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376183+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.376229+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377221+0800	kernel	7 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377227+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377465+0800	kernel	5 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377470+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377487+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377706+0800	kernel	4 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377711+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377739+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.377743+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.378077+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.378109+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.378115+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.378566+0800	kernel	3 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.378573+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.378577+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.379867+0800	kernel	7 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.379875+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.380093+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.380939+0800	kernel	9 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.380948+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.381239+0800	kernel	6 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.381246+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.381248+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.381546+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.381551+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.381593+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.382437+0800	kernel	20 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.382462+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.382466+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.382785+0800	kernel	2 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.382791+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.389731+0800	kernel	56 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.389738+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.390033+0800	kernel	4 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.390038+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.390063+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.390120+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.414171+0800	kernel	247 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.414215+0800	kernel	Sandbox: com.apple.WebKit.WebContent(919) deny(1) sysctl-read security.mac.lockdown_mode_state
+error	17:10:53.422302+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428211+0800	kernel	22 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428216+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428241+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428255+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428316+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428322+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.428384+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429435+0800	kernel	12 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429450+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429452+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429456+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429472+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429527+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429531+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429534+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429585+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429590+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429594+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429697+0800	kernel	2 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429702+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429704+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429754+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429759+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429761+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429802+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.429807+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430903+0800	kernel	17 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430918+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430932+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430943+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430946+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430948+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.430973+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431005+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431035+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431046+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431535+0800	kernel	4 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431540+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431961+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.431965+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.433346+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.433394+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.434058+0800	kernel	7 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.434067+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.434545+0800	kernel	12 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.434550+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.434554+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435051+0800	kernel	16 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435058+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435060+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435110+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435115+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435118+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435134+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435141+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435178+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435194+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435220+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435225+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435276+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435281+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435283+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435297+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435313+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435338+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435357+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435470+0800	kernel	2 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435475+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.435504+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.436614+0800	kernel	16 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.436621+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.437736+0800	kernel	1 duplicate report for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.437741+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.437835+0800	kernel	3 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.437839+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.437855+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.443936+0800	kernel	177 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.443968+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.443974+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.444816+0800	kernel	21 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.444825+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.analyticsd
+error	17:10:53.444829+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.451894+0800	kernel	91 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.451905+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453094+0800	kernel	5 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453124+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453130+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453133+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453136+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453156+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.453291+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.471396+0800	kernel	9 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.471401+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:53.493858+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:10:53.603689+0800	SpringBoard	attention client com.apple.SpringBoard.HomeGrabberView-32 cannot reset; error:Error Domain=NSPOSIXErrorDomain Code=57 "Socket is not connected" UserInfo={NSLocalizedDescription= Not connected to server}
+error	17:10:53.732270+0800	MyTrainPro	WebContent[919] Unable to hide query parameters from script (missing data)
+error	17:10:53.976739+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:53.976752+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:53.976912+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:53.976948+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:53.977046+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:54.037753+0800	kernel	332 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.037767+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.049474+0800	kernel	Profile container extends autobox but no autobox profile available for its executable
+error	17:10:54.054796+0800	kernel	71 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.054802+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) sysctl-read kern.maxfilesperproc
+error	17:10:54.054805+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.065510+0800	runningboardd	Rejecting launch request because [osservice<com.apple.SpringBoard>:242] is not entitled to launch processes
+error	17:10:54.077337+0800	runningboardd	Could not find attribute name Workspace-Test in domain plist com.apple.frontboard
+error	17:10:54.077466+0800	runningboardd	Could not find attribute name Workspace-Test in domain plist com.apple.frontboard
+error	17:10:54.077631+0800	runningboardd	Could not find attribute name Workspace-Test in domain plist com.apple.frontboard
+error	17:10:54.077703+0800	ScreenTimeWebExtension	Error acquiring assertion: <Error Domain=RBSAssertionErrorDomain Code=2 "Could not find attribute name in domain plist" UserInfo={NSLocalizedFailureReason=Could not find attribute name in domain plist}>
+error	17:10:54.080954+0800	runningboardd	Could not find attribute name Workspace-Test in domain plist com.apple.frontboard
+error	17:10:54.080971+0800	runningboardd	Could not find attribute name Workspace-Test in domain plist com.apple.frontboard
+error	17:10:54.081037+0800	runningboardd	Could not find attribute name Workspace-Test in domain plist com.apple.frontboard
+error	17:10:54.081207+0800	MyTrainPro	Error acquiring assertion: <Error Domain=RBSAssertionErrorDomain Code=2 "Could not find attribute name in domain plist" UserInfo={NSLocalizedFailureReason=Could not find attribute name in domain plist}>
+fault	17:10:54.081811+0800	MyTrainPro	59638328 Plugin query method called
+error	17:10:54.083507+0800	kernel	66 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.083515+0800	kernel	Sandbox: MyTrainPro(918) deny(1) mach-lookup com.apple.mobile.keybagd.UserManager.xpc
+error	17:10:54.083834+0800	kernel	Sandbox: MyTrainPro(918) deny(1) mach-lookup com.apple.mobile.usermanagerd.xpc
+error	17:10:54.083926+0800	MyTrainPro	(501) Invalidation handler invoked, clearing connection
+error	17:10:54.084000+0800	MyTrainPro	(501) personaAttributesForPersonaType for type:0 failed with error Error Domain=NSCocoaErrorDomain Code=4099 "The connection to service named com.apple.mobile.usermanagerd.xpc was invalidated: failed at lookup with error 159 - Sandbox restriction." UserInfo={NSDebugDescription=The connection to service named com.apple.mobile.usermanagerd.xpc was invalidated: failed at lookup with error 159 - Sandbox restriction.}
+error	17:10:54.084239+0800	runningboardd	Saved endowments: <private>
+error	17:10:54.114155+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.124639+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:54.125161+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:54.129863+0800	ScreenTimeWebExtension	(501) personaAttributesForPersonaType for type:0 failed with error Error Domain=NSPOSIXErrorDomain Code=1 "Operation not permitted"
+error	17:10:54.142343+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:10:54.144398+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:54.144903+0800	backboardd	cycle detected between [242-3E] -> [242-3]
+error	17:10:54.151303+0800	kernel	72 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.151308+0800	kernel	Sandbox: MyTrainPro(918) deny(1) forbidden-map-ls-database
+error	17:10:54.151442+0800	MyTrainPro	LaunchServices: store <private> or url <private> was nil: Error Domain=NSOSStatusErrorDomain Code=-54 "process may not map database" UserInfo={_LSLine=72, _LSFunction=_LSServer_GetServerStoreForConnectionWithCompletionHandler, _LSFile=LSDReadService.mm, NSDebugDescription=process may not map database}
+error	17:10:54.151449+0800	MyTrainPro	Attempt to map database failed: permission was denied. This attempt will not be retried.
+error	17:10:54.151456+0800	MyTrainPro	Failed to initialize client context with error Error Domain=NSOSStatusErrorDomain Code=-54 "process may not map database" UserInfo={_LSLine=72, _LSFunction=_LSServer_GetServerStoreForConnectionWithCompletionHandler, _LSFile=LSDReadService.mm, NSDebugDescription=process may not map database}
+error	17:10:54.152268+0800	appprotectiond	Extension with UUID <private> existed but has no effective container
+error	17:10:54.152976+0800	appprotectiond	Extension with UUID <private> existed but has no effective container
+error	17:10:54.153418+0800	appprotectiond	Extension with UUID <private> existed but has no effective container
+error	17:10:54.164664+0800	MyTrainPro	LaunchServices: store <private> or url <private> was nil: Error Domain=NSOSStatusErrorDomain Code=-54 "process may not map database" UserInfo={_LSLine=72, _LSFunction=_LSServer_GetServerStoreForConnectionWithCompletionHandler, _LSFile=LSDReadService.mm, NSDebugDescription=process may not map database}
+error	17:10:54.164730+0800	MyTrainPro	Attempt to map database failed: permission was denied. This attempt will not be retried.
+error	17:10:54.164738+0800	MyTrainPro	Failed to initialize client context with error Error Domain=NSOSStatusErrorDomain Code=-54 "process may not map database" UserInfo={_LSLine=72, _LSFunction=_LSServer_GetServerStoreForConnectionWithCompletionHandler, _LSFile=LSDReadService.mm, NSDebugDescription=process may not map database}
+error	17:10:54.164784+0800	appprotectiond	Extension with UUID <private> existed but has no effective container
+error	17:10:54.164824+0800	appprotectiond	Extension with UUID <private> existed but has no effective container
+error	17:10:54.165287+0800	appprotectiond	Extension with UUID <private> existed but has no effective container
+fault	17:10:54.166002+0800	MyTrainPro	Failed to change to usage state 2: (null)
+error	17:10:54.205162+0800	wirelessinsightsd	FederatedMobility[FMBasebandMetricsController]:Failed to extract at least one required field from dict for congestion metric: Error Domain=WISXPCUtils Code=0 UserInfo={NSLocalizedDescription=<private>}
+error	17:10:54.538016+0800	kernel	1 duplicate report for Sandbox: MyTrainPro(918) deny(1) forbidden-map-ls-database
+error	17:10:54.538126+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:54.605782+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:54.860158+0800	SpringBoard	attention client com.apple.SpringBoard.HomeGrabberView-32 cannot reset; error:Error Domain=NSPOSIXErrorDomain Code=57 "Socket is not connected" UserInfo={NSLocalizedDescription= Not connected to server}
+error	17:10:55.577919+0800	kernel	4 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:55.577964+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:55.653729+0800	kernel	5 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:55.653734+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:55.653947+0800	kernel	3 duplicate reports for Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:55.653954+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:55.654273+0800	symptomsd	src is neither of type defRoute4 or defRoute6
+error	17:10:55.779992+0800	kernel	netagent_get_agent_domain_and_type: Type requested for invalid netagent
+error	17:10:56.037988+0800	kernel	109 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:56.038002+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:56.038008+0800	kernel	Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:56.073987+0800	wirelessinsightsd	FederatedMobility[FMBasebandMetricsController]:Failed to extract at least one required field from dict for congestion metric: Error Domain=WISXPCUtils Code=0 UserInfo={NSLocalizedDescription=<private>}
+error	17:10:56.079860+0800	mDNSResponder	nw_flow_notify [C653 Hostname#15a8fc65:443 cancelled parent-flow ((null))] ignoring notification replaced_output_handler after cancellation
+error	17:10:56.082679+0800	mDNSResponder	nw_flow_notify [C655 Hostname#15a8fc65:443 cancelled parent-flow ((null))] ignoring notification replaced_output_handler after cancellation
+error	17:10:56.083113+0800	mDNSResponder	nw_flow_notify [C654 Hostname#15a8fc65:443 cancelled parent-flow ((null))] ignoring notification replaced_output_handler after cancellation
+error	17:10:56.130563+0800	thermalmonitord	<Error> could not find `cpu-avg-limiter-input-w2r property
+error	17:10:56.130592+0800	thermalmonitord	<Error> Failed to read `cpu-avg-limiter-input-w2r
+error	17:10:56.537947+0800	kernel	948 duplicate reports for Sandbox: com.apple.WebKit.Networking(921) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:56.538058+0800	kernel	Sandbox: com.apple.WebKit.GPU(920) deny(1) mach-lookup com.apple.diagnosticd
+error	17:10:56.678148+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:56.679167+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:56.679183+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:56.679198+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:56.679388+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:56.679404+0800	SpringBoard	attention client lost event tag is not a number: (null)
+error	17:10:56.712397+0800	locationd	[Composite] Can't check stream readiness for missing stream <private>
+error	17:10:56.820130+0800	wifid	WiFiLQAMgrLinkRecommendationNotify: channel score: chq=3, tx-lat=5, rx-lat=5, tx-loss=5, rx-loss=5, txPer=0.0%, p95-lat=0, RT=0x0, link-recommendation=0x0
