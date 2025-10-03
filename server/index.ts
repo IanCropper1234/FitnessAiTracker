@@ -75,7 +75,7 @@ app.use((req, res, next) => {
     console.error('❌ Server initialization error:', error);
     
     // Try basic server setup in case of registration failure
-    if (error.message.includes('duplicate') || error.message.includes('timeout')) {
+    if (error instanceof Error && (error.message.includes('duplicate') || error.message.includes('timeout'))) {
       console.log('🔧 Attempting basic server recovery...');
       server = require('http').createServer(app);
     } else {
