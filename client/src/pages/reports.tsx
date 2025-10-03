@@ -102,8 +102,8 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 w-full ios-pwa-container">
       <div className="w-full px-2 space-y-4 pl-[0px] pr-[0px] ml-[-3px] mr-[-3px]">
-        {/* Ultra-Compact iOS Header - 優化版本 */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-3">
+        {/* Ultra-Compact iOS Header - 由 WebView 控制 safe area */}
+        <div className="ios-sticky-header bg-background/95 border-b border-border/10 px-4 py-2">
           <div className="flex items-center justify-between h-[44px]">
             {/* Left: Back Arrow Only */}
             <Button 
