@@ -489,29 +489,33 @@ function AppContent({ location, showGlobalHeader }: { location: string; showGlob
 
   return (
     <>
-      {/* 全域 iOS Sticky Header - 應用層級,WebView 控制 safe area */}
+      {/* 全域 iOS Header - 完整支援所有 iOS 設備 */}
       {showGlobalHeader && (
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 px-4 py-2 fixed top-0 left-0 right-0 z-50">
-          <div className="flex items-center justify-between h-[44px]">
-            {/* Left Button */}
-            <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
-              {headerConfig.leftButton || <div className="w-[44px]" />}
-            </div>
+        <>
+          <div className="ios-sticky-header border-b border-border/10">
+            <div className="flex items-center justify-between h-[44px] px-4">
+              {/* Left Button - Apple HIG 標準尺寸 */}
+              <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
+                {headerConfig.leftButton || <div className="w-[44px]" />}
+              </div>
 
-            {/* Center: Title with Icon */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              {headerConfig.icon}
-              {headerConfig.title && (
-                <h1 className="text-base font-semibold">{headerConfig.title}</h1>
-              )}
-            </div>
+              {/* Center: Title with Icon */}
+              <div className="flex items-center gap-1.5 min-w-0 flex-1 justify-center">
+                {headerConfig.icon}
+                {headerConfig.title && (
+                  <h1 className="text-base font-semibold truncate">{headerConfig.title}</h1>
+                )}
+              </div>
 
-            {/* Right Button */}
-            <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
-              {headerConfig.rightButton || <div className="w-[44px]" />}
+              {/* Right Button - Apple HIG 標準尺寸 */}
+              <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
+                {headerConfig.rightButton || <div className="w-[44px]" />}
+              </div>
             </div>
           </div>
-        </div>
+          {/* Header Spacer - 確保內容不被遮擋 */}
+          <div className="ios-header-spacer" />
+        </>
       )}
 
       <AnimatedPage key={location}>

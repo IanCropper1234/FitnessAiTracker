@@ -130,10 +130,10 @@ export function ReportsPage({ userId }: ReportsPageProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 w-full ios-pwa-container">
-      <div className="w-full px-2 space-y-4 pl-[0px] pr-[0px] ml-[-3px] mr-[-3px]">
-        {/* Removed inline header, now managed by HeaderContext */}
+      <div className="w-full px-2 space-y-4">
+        {/* Header 由全域 HeaderContext 管理 */}
 
-        <div className="mt-4">
+        <div className="mt-2">
           <div className="p-4 pl-[0px] pr-[0px]">
             {/* Period and Report Type Selectors moved to body */}
             <div className="flex gap-3 mb-6 justify-center">

@@ -416,22 +416,34 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
 
-        /* iPhone-specific safe area support - Dynamic Island compatible */
+        /* iPhone 全設備 safe area 支援 - SE 到 16 Pro Max */
         @supports (padding: max(0px)) {
           .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
             background-color: #000000;
             min-height: 100vh;
             padding-top: 0 !important;
             padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            padding-left: env(safe-area-inset-left, 0px) !important;
+            padding-right: env(safe-area-inset-right, 0px) !important;
             box-sizing: border-box;
           }
 
-          /* Dynamic Island & Notch safe area for sticky headers */
+          /* Fixed Header safe area - 支援 Dynamic Island */
           .ios-sticky-header {
-            padding-top: max(8px, env(safe-area-inset-top)) !important;
+            position: fixed !important;
             top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            padding-top: env(safe-area-inset-top, 0px) !important;
+            padding-left: env(safe-area-inset-left, 0px) !important;
+            padding-right: env(safe-area-inset-right, 0px) !important;
+            z-index: 50 !important;
+          }
+          
+          /* Header Spacer 確保內容不被遮擋 */
+          .ios-header-spacer {
+            height: calc(44px + env(safe-area-inset-top, 0px)) !important;
+            flex-shrink: 0 !important;
           }
         }
 

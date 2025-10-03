@@ -1956,21 +1956,52 @@ button, .ios-button {
     }
   }
   
-  /* Sticky header - Dynamic Island & Notch compatible */
+  /* iOS Sticky Header - 全設備兼容(iPhone SE 到 iPhone 16 Pro Max) */
   .ios-sticky-header {
-    position: sticky;
+    position: fixed;
     top: 0;
-    padding-top: max(8px, env(safe-area-inset-top));  /* Dynamic Island 支援 */
+    left: 0;
+    right: 0;
     z-index: 50;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    background: var(--background);
+    /* Dynamic Island & Notch 安全區域支援 */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    /* iOS 毛玻璃效果 */
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: rgba(var(--background-rgb, 255, 255, 255), 0.72);
   }
   
-  /* 確保 safe area 在支援的瀏覽器中正確顯示 */
-  @supports (padding: max(0px)) {
+  /* Dark mode 背景調整 */
+  .dark .ios-sticky-header {
+    background-color: rgba(0, 0, 0, 0.72);
+  }
+  
+  /* 確保內容不被 fixed header 遮擋 */
+  .ios-header-spacer {
+    height: calc(44px + env(safe-area-inset-top, 0px));
+    flex-shrink: 0;
+  }
+  
+  /* 支援所有 iOS 設備的 safe area */
+  @supports (padding: env(safe-area-inset-top)) {
     .ios-sticky-header {
-      padding-top: max(8px, env(safe-area-inset-top, 8px));
+      padding-top: env(safe-area-inset-top);
+    }
+    
+    /* iPhone 16 Pro / Pro Max Dynamic Island 額外支援 */
+    @media (min-width: 430px) and (min-height: 932px) {
+      .ios-sticky-header {
+        padding-top: max(env(safe-area-inset-top), 59px);
+      }
+    }
+    
+    /* iPhone 14 Pro / 15 Pro Dynamic Island */
+    @media (min-width: 393px) and (min-height: 852px) {
+      .ios-sticky-header {
+        padding-top: max(env(safe-area-inset-top), 59px);
+      }
     }
   }
 /* Mobile-First Responsive Typography for iPhone SE/12 mini (320px-375px) */

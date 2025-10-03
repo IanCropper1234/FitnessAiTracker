@@ -254,8 +254,7 @@ export function Nutrition({
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
       <div className="w-full max-w-none space-y-2">
-        {/* Removed Ultra-Compact iOS Header */}
-        
+        {/* Header 由全域 HeaderContext 管理 */}
 
         {/* Enhanced Date Selector - Only show on overview tab */}
         {activeTab === "overview" && (
