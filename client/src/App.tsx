@@ -586,9 +586,11 @@ export default function App() {
         <ThemeProvider>
           <LanguageProvider>
             <TooltipProvider>
-              <WorkoutExecutionProvider>
-                <AppContent location={location} showGlobalHeader={showGlobalHeader} />
-              </WorkoutExecutionProvider>
+              <HeaderProvider>
+                <WorkoutExecutionProvider>
+                  <AppContent location={location} showGlobalHeader={showGlobalHeader} />
+                </WorkoutExecutionProvider>
+              </HeaderProvider>
             </TooltipProvider>
           </LanguageProvider>
         </ThemeProvider>
