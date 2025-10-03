@@ -56,6 +56,7 @@ import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
 import { initializeWorkoutSettings } from "@/hooks/useSettings";
 import { AnimatePresence } from "framer-motion";
 import { HeaderProvider, useHeader } from "./contexts/HeaderContext";
+import { useAuth } from "./hooks/useAuth";
 
 interface User {
   id: number;
@@ -484,8 +485,57 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 }
 
 // Create a separate component for the main app logic
-function AppContent({ location, showGlobalHeader }: { location: string; showGlobalHeader: boolean }) {
+function AppContent() {
   const { headerConfig } = useHeader();
+  const [location, setLocation] = useLocation();
+  const { user, isLoading } = useAuth();
+
+  // Redirect logic with email verification gate
+  useEffect(() => {
+    const protectedPages = [
+      '/exercise-selection',
+      '/create-training-template', 
+      '/edit-template',
+      '/template',
+      '/',
+      '/dashboard',
+      '/training',
+      '/nutrition',
+      '/reports',
+      '/profile'
+    ];
+    const isProtectedPage = protectedPages.some(page => location.startsWith(page)) || location === '/';
+
+    if (!user && isProtectedPage && location !== "/auth") {
+      console.log('Redirecting to auth - no user found');
+      setLocation("/auth");
+    } else if (user && location === "/auth") {
+      // Check email verification status
+      if (!user.emailVerified) {
+        console.log('User authenticated but email not verified, redirecting to verification');
+        setLocation("/email-verification");
+      } else {
+        console.log('User authenticated and verified, redirecting to dashboard');
+        setTimeout(() => setLocation("/"), 50);
+      }
+    } else if (user && !user.emailVerified && location !== "/email-verification" && location !== "/auth") {
+      // Block access to all pages if email not verified
+      console.log('User not verified, redirecting to verification page');
+      setLocation("/email-verification");
+    } else if (user && user.emailVerified && location === "/email-verification") {
+      // If verified user somehow ends up on verification page, redirect to dashboard
+      console.log('User already verified, redirecting to dashboard');
+      setLocation("/");
+    }
+  }, [user, isLoading, location, setLocation]);
+
+  // 檢測是否顯示全域 header(排除 auth 相關頁面)
+  const showGlobalHeader = !['/auth', '/email-verification', '/email-verification-success', '/privacy-policy', '/terms-of-service'].includes(location);
+
+  // Show loading while auth is being checked
+  if (isLoading) {
+    return <InstantLoadingScreen />;
+  }
 
   return (
     <>
@@ -516,33 +566,53 @@ function AppContent({ location, showGlobalHeader }: { location: string; showGlob
 
       <AnimatedPage key={location}>
         <Switch location={location}>
-          <Route path="/auth" component={Auth} />
-          <Route path="/email-verification" component={EmailVerification} />
+          <Route path="/auth">
+            <Auth onSuccess={() => {
+              if (user?.emailVerified) {
+                setLocation("/");
+              } else {
+                setLocation("/email-verification");
+              }
+            }} />
+          </Route>
+          <Route path="/email-verification">
+            {user && !user.emailVerified ? (
+              <EmailVerification 
+                user={user as any}
+                onVerificationSuccess={() => {
+                  window.location.reload();
+                }}
+                onReturnToLogin={() => {
+                  setLocation("/auth");
+                }}
+              />
+            ) : null}
+          </Route>
           <Route path="/email-verification-success" component={EmailVerificationSuccess} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms-of-service" component={TermsOfService} />
-          <ProtectedRoute path="/" component={Dashboard} />
-          <ProtectedRoute path="/dashboard" component={Dashboard} />
-          <ProtectedRoute path="/training" component={TrainingPage} />
-          <ProtectedRoute path="/nutrition" component={Nutrition} />
-          <ProtectedRoute path="/reports" component={ReportsPage} />
-          <ProtectedRoute path="/profile" component={ProfilePage} />
-          <ProtectedRoute path="/create-mesocycle" component={CreateMesocyclePage} />
-          <ProtectedRoute path="/create-training-template" component={CreateTrainingTemplate} />
-          <ProtectedRoute path="/edit-template/:id" component={EditTemplatePage} />
-          <ProtectedRoute path="/template-details/:id" component={TemplateDetails} />
-          <ProtectedRoute path="/create-workout-session" component={CreateWorkoutSession} />
-          <ProtectedRoute path="/training-analytics" component={TrainingAnalytics} />
-          <ProtectedRoute path="/add-food" component={AddFood} />
-          <ProtectedRoute path="/nutrition-facts" component={NutritionFactsPage} />
-          <ProtectedRoute path="/rp-coach" component={RPCoachPage} />
-          <ProtectedRoute path="/exercise-selection" component={ExerciseSelection} />
-          <ProtectedRoute path="/ai-exercise-recommendations" component={AIExerciseRecommendations} />
-          <ProtectedRoute path="/enhanced-nutrition-ai" component={EnhancedNutritionAI} />
-          <ProtectedRoute path="/wellness-test" component={WellnessTestPage} />
-          <ProtectedRoute path="/workout-feedback" component={WorkoutFeedbackPage} />
-          <ProtectedRoute path="/workout-settings" component={WorkoutSettings} />
-          <ProtectedRoute path="/ios-notification-demo" component={IOSNotificationDemo} />
+          <Route path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/training" component={TrainingPage} />
+          <Route path="/nutrition" component={Nutrition} />
+          <Route path="/reports" component={ReportsPage} />
+          <Route path="/profile" component={ProfilePage} />
+          <Route path="/create-mesocycle" component={CreateMesocyclePage} />
+          <Route path="/create-training-template" component={CreateTrainingTemplate} />
+          <Route path="/edit-template/:id" component={EditTemplatePage} />
+          <Route path="/template-details/:id" component={TemplateDetails} />
+          <Route path="/create-workout-session" component={CreateWorkoutSession} />
+          <Route path="/training-analytics" component={TrainingAnalytics} />
+          <Route path="/add-food" component={AddFood} />
+          <Route path="/nutrition-facts" component={NutritionFactsPage} />
+          <Route path="/rp-coach" component={RPCoachPage} />
+          <Route path="/exercise-selection" component={ExerciseSelection} />
+          <Route path="/ai-exercise-recommendations" component={AIExerciseRecommendations} />
+          <Route path="/enhanced-nutrition-ai" component={EnhancedNutritionAI} />
+          <Route path="/wellness-test" component={WellnessTestPage} />
+          <Route path="/workout-feedback" component={WorkoutFeedbackPage} />
+          <Route path="/workout-settings" component={WorkoutSettings} />
+          <Route path="/ios-notification-demo" component={IOSNotificationDemo} />
           <Route path="*" component={NotFound} />
         </Switch>
       </AnimatedPage>
@@ -554,9 +624,6 @@ function AppContent({ location, showGlobalHeader }: { location: string; showGlob
 export default function App() {
   // Track context initialization phases
   const [contextsReady, setContextsReady] = useState(false);
-
-  // Use location hook here to determine if the global header should be shown
-  const location = useLocation()[0];
 
   // Mark contexts as ready after minimal delay
   useEffect(() => {
@@ -575,9 +642,6 @@ export default function App() {
     return <InstantLoadingScreen />;
   }
 
-  // 檢測是否顯示全域 header(排除 auth 相關頁面)
-  const showGlobalHeader = !['/auth', '/email-verification', '/email-verification-success', '/onboarding', '/privacy-policy', '/terms-of-service'].includes(location);
-
   return (
     <ErrorBoundary level="critical">
       <QueryClientProvider client={queryClient}>
@@ -586,7 +650,7 @@ export default function App() {
             <TooltipProvider>
               <HeaderProvider>
                 <WorkoutExecutionProvider>
-                  <AppContent location={location} showGlobalHeader={showGlobalHeader} />
+                  <AppContent />
                 </WorkoutExecutionProvider>
               </HeaderProvider>
             </TooltipProvider>
