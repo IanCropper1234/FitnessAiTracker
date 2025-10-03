@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { AnimatedTabs, AnimatedTabsContent, AnimatedTabsList, AnimatedTabsTrigger } from "@/components/ui/animated-tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   Calendar, 
@@ -500,29 +500,29 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
       )}
       {/* Recommendations */}
       {recommendations && (
-        <AnimatedTabs defaultValue="volume" className="w-full">
-          <AnimatedTabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 p-1 relative rounded-lg shadow-inner">
-            <AnimatedTabsTrigger 
+        <Tabs defaultValue="volume" className="w-full">
+          <TabsList className="flex w-full overflow-x-auto scrollbar-hide bg-gray-100 dark:bg-gray-800 p-1 relative rounded-lg shadow-inner">
+            <TabsTrigger 
               value="volume" 
               className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
             >
               <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Volume Progression</span>
-            </AnimatedTabsTrigger>
-            <AnimatedTabsTrigger 
+            </TabsTrigger>
+            <TabsTrigger 
               value="fatigue" 
               className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
             >
               <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Fatigue Analysis</span>
-            </AnimatedTabsTrigger>
-            <AnimatedTabsTrigger 
+            </TabsTrigger>
+            <TabsTrigger 
               value="phase" 
               className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:bg-white data-[state=active]:dark:bg-gray-700 data-[state=active]:shadow-md data-[state=active]:scale-[1.02] data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:font-medium hover:bg-gray-200/70 dark:hover:bg-gray-700/70 hover:scale-[1.01] data-[state=inactive]:hover:text-gray-700 data-[state=inactive]:dark:hover:text-gray-300 before:absolute before:inset-0 before:rounded-md before:transition-all before:duration-300 before:ease-[cubic-bezier(0.4,0,0.2,1)] data-[state=active]:before:bg-gradient-to-b data-[state=active]:before:from-white/50 data-[state=active]:before:to-transparent data-[state=active]:dark:before:from-gray-600/50"
             >
               <span className="relative z-10 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]">Phase Management</span>
-            </AnimatedTabsTrigger>
-          </AnimatedTabsList>
+            </TabsTrigger>
+          </TabsList>
 
-          <AnimatedTabsContent value="volume" className="space-y-4">
+          <TabsContent value="volume" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -560,9 +560,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 )}
               </CardContent>
             </Card>
-          </AnimatedTabsContent>
+          </TabsContent>
 
-          <AnimatedTabsContent value="fatigue" className="space-y-4">
+          <TabsContent value="fatigue" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -613,9 +613,9 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 </div>
               </CardContent>
             </Card>
-          </AnimatedTabsContent>
+          </TabsContent>
 
-          <AnimatedTabsContent value="phase" className="space-y-4">
+          <TabsContent value="phase" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -653,8 +653,8 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
                 )}
               </CardContent>
             </Card>
-          </AnimatedTabsContent>
-        </AnimatedTabs>
+          </TabsContent>
+        </Tabs>
       )}
       {/* Mesocycle History - Collapsible */}
       {Array.isArray(mesocycles) && mesocycles.length > 0 && (

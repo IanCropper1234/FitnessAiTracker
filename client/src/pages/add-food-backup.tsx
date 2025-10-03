@@ -391,12 +391,12 @@ export function AddFood({ user }: AddFoodProps) {
         const logData = {
           date: selectedDate,
           foodName: item.foodName,
-          quantity: parseFloat(item.quantity).toString(),
+          quantity: parseFloat(item.quantity),
           unit: item.unit,
-          calories: parseFloat(item.calories).toString(),
-          protein: parseFloat(item.protein).toString(),
-          carbs: parseFloat(item.carbs).toString(),
-          fat: parseFloat(item.fat).toString(),
+          calories: parseFloat(item.calories),
+          protein: parseFloat(item.protein),
+          carbs: parseFloat(item.carbs),
+          fat: parseFloat(item.fat),
           mealType: mealType,
           category: item.category || null,
           mealSuitability: item.mealSuitability || []

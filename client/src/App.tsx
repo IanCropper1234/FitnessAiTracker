@@ -55,8 +55,6 @@ import { InstantLoadingScreen } from "@/components/InstantLoadingScreen";
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser";
 import { initializeWorkoutSettings } from "@/hooks/useSettings";
 import { AnimatePresence } from "framer-motion";
-import { HeaderProvider, useHeader } from "./contexts/HeaderContext";
-import { useAuth } from "./hooks/useAuth";
 
 interface User {
   id: number;
@@ -71,7 +69,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
   const [location, setLocation] = useLocation();
   const [activeNutritionTab, setActiveNutritionTab] = useState("overview");
   const [activeTrainingTab, setActiveTrainingTab] = useState("sessions");
-
+  
   // Initialize feature flags when user authentication state changes
   // Initialize workout settings when app starts
   useEffect(() => {
@@ -79,12 +77,12 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       initializeWorkoutSettings();
     }
   }, [user]);
-
+  
   // Initialize iOS WebView visibility detection and auto-reload
   useVisibilityDetection({
     onVisibilityChange: (isVisible) => {
       console.log('[App] Visibility changed:', isVisible ? 'visible' : 'hidden');
-
+      
       // Invalidate queries when app becomes visible to refresh data
       if (isVisible && user) {
         queryClient.invalidateQueries({ 
@@ -108,21 +106,21 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
     enableAutoReload: true,
     inactivityThreshold: 30 * 60 * 1000 // 30 minutes
   });
-
+  
   // Global date picker state
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
-
+  
   // Body tracking specific date picker state
   const [showBodyDatePicker, setShowBodyDatePicker] = useState(false);
   const [bodyTrackingDate, setBodyTrackingDate] = useState(TimezoneUtils.getCurrentDate());
-
+  
   // Copy meal date picker states
   const [showCopyFromDatePicker, setShowCopyFromDatePicker] = useState(false);
   const [copyFromDate, setCopyFromDate] = useState("");
   const [showCopyToDatePicker, setShowCopyToDatePicker] = useState(false);
   const [copyToDate, setCopyToDate] = useState("");
-
+  
   // Completely disable cache clearing to prevent iOS PWA reload issues
   // Cache clearing was causing infinite loading states on PWA reload
   // useEffect(() => {
@@ -138,7 +136,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       '/template'
     ];
     const isProtectedPage = protectedPages.some(page => location.startsWith(page));
-
+    
     if (!user && location !== "/auth" && location !== "/email-verification") {
       // Delay redirect for protected pages to allow auth recovery
       if (isProtectedPage) {
@@ -150,7 +148,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             setLocation("/auth");
           }
         }, 2000); // 2 second delay for auth recovery
-
+        
         return () => clearTimeout(timeoutId);
       } else {
         console.log('Redirecting to auth - no user found');
@@ -202,13 +200,13 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
             )}
           </AnimatedPage>
         </Route>
-
+        
         <Route path="/email-verification-success">
           <AnimatedPage>
             <EmailVerificationSuccess />
           </AnimatedPage>
         </Route>
-
+        
         <Route path="/">
           <AnimatedPage>
             {user && user.emailVerified ? (
@@ -393,14 +391,14 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           </AnimatedPage>
         </Route>
       </Switch>
-
+      
       {showBottomNav && <BottomNavigation />}
       {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
       {showTrainingMenu && <FloatingTrainingMenu onTabSelect={setActiveTrainingTab} activeTab={activeTrainingTab} />}
-
+      
       {/* Global Complete Set Button */}
       <GlobalCompleteSetButton />
-
+      
       {/* Global iOS Date Picker Modal */}
       {user && (
         <IOSDatePicker 
@@ -424,7 +422,7 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
           setShowDatePicker={setShowDatePicker}
         />
       )}
-
+      
       {/* Body Tracking iOS Date Picker Modal */}
       {user && (
         <IOSDatePicker 
@@ -486,137 +484,164 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
 
 // Create a separate component for the main app logic
 function AppContent() {
-  const { headerConfig } = useHeader();
-  const [location, setLocation] = useLocation();
-  const { user, isLoading } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [minLoadingTime, setMinLoadingTime] = useState(true);
+  const [previousUserId, setPreviousUserId] = useState<number | null>(null);
+  
+  // First-time user detection (now inside QueryClientProvider)
+  const { 
+    isFirstTimeUser, 
+    isLoading: firstTimeUserLoading, 
+    completeOnboarding 
+  } = useFirstTimeUser(user?.id);
+  
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Redirect logic with email verification gate
+  // Setup global error handling - must be at top level
   useEffect(() => {
-    const protectedPages = [
-      '/exercise-selection',
-      '/create-training-template', 
-      '/edit-template',
-      '/template',
-      '/',
-      '/dashboard',
-      '/training',
-      '/nutrition',
-      '/reports',
-      '/profile'
-    ];
-    const isProtectedPage = protectedPages.some(page => location.startsWith(page)) || location === '/';
+    setupGlobalErrorHandling();
+  }, []);
 
-    if (!user && isProtectedPage && location !== "/auth") {
-      console.log('Redirecting to auth - no user found');
-      setLocation("/auth");
-    } else if (user && location === "/auth") {
-      // Check email verification status
-      if (!user.emailVerified) {
-        console.log('User authenticated but email not verified, redirecting to verification');
-        setLocation("/email-verification");
-      } else {
-        console.log('User authenticated and verified, redirecting to dashboard');
-        setTimeout(() => setLocation("/"), 50);
-      }
-    } else if (user && !user.emailVerified && location !== "/email-verification" && location !== "/auth") {
-      // Block access to all pages if email not verified
-      console.log('User not verified, redirecting to verification page');
-      setLocation("/email-verification");
-    } else if (user && user.emailVerified && location === "/email-verification") {
-      // If verified user somehow ends up on verification page, redirect to dashboard
-      console.log('User already verified, redirecting to dashboard');
-      setLocation("/");
+  // Clear cache when user changes to prevent data leakage
+  useEffect(() => {
+    if (user && previousUserId && user.id !== previousUserId) {
+      console.log(`User changed from ${previousUserId} to ${user.id}, clearing old user cache`);
+      // Clear cache for the previous user to prevent data leakage
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          if (Array.isArray(queryKey) && queryKey.length > 0) {
+            const hasApiPath = queryKey.some(key => typeof key === 'string' && key.startsWith('/api/'));
+            const hasPreviousUserId = queryKey.includes(previousUserId);
+            // Invalidate queries that include the previous user ID
+            return hasApiPath && hasPreviousUserId;
+          }
+          return false;
+        }
+      });
     }
-  }, [user, isLoading, location, setLocation]);
+    
+    // Update the previous user ID
+    if (user?.id) {
+      setPreviousUserId(user.id);
+    } else if (!user) {
+      // User signed out, clear all cache to prevent any leakage
+      console.log('User signed out, clearing all cache');
+      queryClient.clear();
+      setPreviousUserId(null);
+    }
+  }, [user?.id]);
 
-  // 檢測是否顯示全域 header(排除 auth 相關頁面)
-  const showGlobalHeader = !['/auth', '/email-verification', '/email-verification-success', '/privacy-policy', '/terms-of-service'].includes(location);
+  // Ensure minimum loading time for better UX
+  useEffect(() => {
+    // Show loading animation for at least 2.5 seconds
+    const minLoadingTimer = setTimeout(() => {
+      setMinLoadingTime(false);
+    }, 2500);
 
-  // Show loading while auth is being checked
-  if (isLoading) {
-    return <InstantLoadingScreen />;
+    return () => clearTimeout(minLoadingTimer);
+  }, []);
+
+  // Check authentication status on app initialization with retry logic for iOS PWA
+  useEffect(() => {
+    const checkAuth = async (retryCount = 0) => {
+      try {
+        console.log(`Checking authentication status... (attempt ${retryCount + 1})`);
+        const response = await fetch('/api/auth/user', {
+          credentials: 'include',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        console.log('Auth check response status:', response.status);
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('Authentication successful, user data:', userData);
+          setUser(userData.user);
+        } else {
+          console.log('Not authenticated - no valid session');
+          // In iOS PWA, sometimes the first auth check fails due to timing issues
+          // Retry once after a short delay
+          if (retryCount === 0) {
+            console.log('Retrying authentication check in iOS PWA environment...');
+            setTimeout(() => checkAuth(1), 1000);
+            return;
+          }
+        }
+      } catch (error) {
+        console.log('Authentication check failed:', error);
+        // Retry once on network error in PWA environment
+        if (retryCount === 0) {
+          console.log('Retrying authentication check due to network error...');
+          setTimeout(() => checkAuth(1), 1500);
+          return;
+        }
+      } finally {
+        if (retryCount > 0) {
+          setAuthLoading(false);
+        }
+      }
+      
+      if (retryCount === 0) {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+  
+  // Show onboarding for first-time users after auth is complete
+  useEffect(() => {
+    if (!authLoading && user && !firstTimeUserLoading) {
+      setShowOnboarding(isFirstTimeUser);
+    }
+  }, [authLoading, user, isFirstTimeUser, firstTimeUserLoading]);
+  
+  // Handle onboarding completion
+  const handleOnboardingComplete = useCallback(() => {
+    completeOnboarding();
+    setShowOnboarding(false);
+  }, [completeOnboarding]);
+
+  if (authLoading || minLoadingTime || (user && firstTimeUserLoading)) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <AppInitialLoading />
+            </TooltipProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    );
   }
 
   return (
-    <>
-      {/* 全域 iOS Sticky Header - 應用層級,WebView 控制 safe area */}
-      {showGlobalHeader && (
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 px-4 py-2 fixed top-0 left-0 right-0 z-50">
-          <div className="flex items-center justify-between h-[44px]">
-            {/* Left Button */}
-            <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
-              {headerConfig.leftButton || <div className="w-[44px]" />}
-            </div>
-
-            {/* Center: Title with Icon */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              {headerConfig.icon}
-              {headerConfig.title && (
-                <h1 className="text-base font-semibold">{headerConfig.title}</h1>
-              )}
-            </div>
-
-            {/* Right Button */}
-            <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
-              {headerConfig.rightButton || <div className="w-[44px]" />}
-            </div>
+    <div className="text-foreground bg-background theme-transition">
+      <AnimatePresence mode="wait">
+        {showOnboarding ? (
+          <FirstTimeUserLoading 
+            key="onboarding"
+            onComplete={handleOnboardingComplete}
+          />
+        ) : (
+          <div key="main-app">
+            <ErrorBoundary level="page">
+              <AppRouter user={user} setUser={setUser} />
+            </ErrorBoundary>
+            <Toaster />
+            <IOSNotificationManager 
+              position="top" 
+              maxNotifications={3}
+              defaultAutoHideDelay={5000}
+            />
           </div>
-        </div>
-      )}
-
-      <AnimatedPage key={location}>
-        <Switch location={location}>
-          <Route path="/auth">
-            <Auth onSuccess={() => {
-              if (user?.emailVerified) {
-                setLocation("/");
-              } else {
-                setLocation("/email-verification");
-              }
-            }} />
-          </Route>
-          <Route path="/email-verification">
-            {user && !user.emailVerified ? (
-              <EmailVerification 
-                user={user as any}
-                onVerificationSuccess={() => {
-                  window.location.reload();
-                }}
-                onReturnToLogin={() => {
-                  setLocation("/auth");
-                }}
-              />
-            ) : null}
-          </Route>
-          <Route path="/email-verification-success" component={EmailVerificationSuccess} />
-          <Route path="/privacy-policy" component={PrivacyPolicy} />
-          <Route path="/terms-of-service" component={TermsOfService} />
-          <Route path="/" component={Dashboard} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/training" component={TrainingPage} />
-          <Route path="/nutrition" component={Nutrition} />
-          <Route path="/reports" component={ReportsPage} />
-          <Route path="/profile" component={ProfilePage} />
-          <Route path="/create-mesocycle" component={CreateMesocyclePage} />
-          <Route path="/create-training-template" component={CreateTrainingTemplate} />
-          <Route path="/edit-template/:id" component={EditTemplatePage} />
-          <Route path="/template-details/:id" component={TemplateDetails} />
-          <Route path="/create-workout-session" component={CreateWorkoutSession} />
-          <Route path="/training-analytics" component={TrainingAnalytics} />
-          <Route path="/add-food" component={AddFood} />
-          <Route path="/nutrition-facts" component={NutritionFactsPage} />
-          <Route path="/rp-coach" component={RPCoachPage} />
-          <Route path="/exercise-selection" component={ExerciseSelection} />
-          <Route path="/ai-exercise-recommendations" component={AIExerciseRecommendations} />
-          <Route path="/enhanced-nutrition-ai" component={EnhancedNutritionAI} />
-          <Route path="/wellness-test" component={WellnessTestPage} />
-          <Route path="/workout-feedback" component={WorkoutFeedbackPage} />
-          <Route path="/workout-settings" component={WorkoutSettings} />
-          <Route path="/ios-notification-demo" component={IOSNotificationDemo} />
-          <Route path="*" component={NotFound} />
-        </Switch>
-      </AnimatedPage>
-    </>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -624,7 +649,7 @@ function AppContent() {
 export default function App() {
   // Track context initialization phases
   const [contextsReady, setContextsReady] = useState(false);
-
+  
   // Mark contexts as ready after minimal delay
   useEffect(() => {
     // Use requestAnimationFrame to ensure DOM is ready
@@ -632,27 +657,25 @@ export default function App() {
       const timer = setTimeout(() => {
         setContextsReady(true);
       }, 50); // Minimal delay for context setup
-
+      
       return () => clearTimeout(timer);
     });
   }, []);
-
+  
   // Show instant loading screen before any context initialization
   if (!contextsReady) {
     return <InstantLoadingScreen />;
   }
-
+  
   return (
     <ErrorBoundary level="critical">
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <LanguageProvider>
             <TooltipProvider>
-              <HeaderProvider>
-                <WorkoutExecutionProvider>
-                  <AppContent />
-                </WorkoutExecutionProvider>
-              </HeaderProvider>
+              <WorkoutExecutionProvider>
+                <AppContent />
+              </WorkoutExecutionProvider>
             </TooltipProvider>
           </LanguageProvider>
         </ThemeProvider>

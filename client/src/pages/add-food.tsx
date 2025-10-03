@@ -670,15 +670,14 @@ export function AddFood({ user }: AddFoodProps) {
 
   const handleQuickAddFromHistory = (historyItem: any) => {
     const nutritionData = {
-      userId: user.id,
       date: selectedDate,
       foodName: historyItem.foodName,
-      quantity: (historyItem.quantity || 1).toString(),
+      quantity: historyItem.quantity || 1,
       unit: historyItem.unit || 'serving',
-      calories: (historyItem.calories || 0).toString(),
-      protein: (historyItem.protein || 0).toString(),
-      carbs: (historyItem.carbs || 0).toString(),
-      fat: (historyItem.fat || 0).toString(),
+      calories: historyItem.calories,
+      protein: historyItem.protein,
+      carbs: historyItem.carbs,
+      fat: historyItem.fat,
       mealType: mealType,
       category: historyItem.category,
       mealSuitability: historyItem.mealSuitability,
@@ -696,12 +695,12 @@ export function AddFood({ user }: AddFoodProps) {
         const logData = {
           date: selectedDate,
           foodName: item.foodName,
-          quantity: parseFloat(item.quantity).toString(),
+          quantity: parseFloat(item.quantity),
           unit: item.unit,
-          calories: parseFloat(item.calories).toString(),
-          protein: parseFloat(item.protein).toString(),
-          carbs: parseFloat(item.carbs).toString(),
-          fat: parseFloat(item.fat).toString(),
+          calories: parseFloat(item.calories),
+          protein: parseFloat(item.protein),
+          carbs: parseFloat(item.carbs),
+          fat: parseFloat(item.fat),
           mealType: mealType,
           category: item.category || null,
           mealSuitability: item.mealSuitability || [],
@@ -772,7 +771,7 @@ export function AddFood({ user }: AddFoodProps) {
     const logData = {
       date: selectedDate,
       foodName: foodName || selectedFood?.name || "Unknown Food",
-      quantity: quantity.toString(),
+      quantity: quantity,
       unit: unit,
       calories: nutritionData.calories.toString(),
       protein: nutritionData.protein.toString(),
@@ -867,7 +866,7 @@ export function AddFood({ user }: AddFoodProps) {
                 <TabsTrigger value="saved-meals" className="tab-trigger-smooth">Saved Meals</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="ai-analysis" className="space-y-4 tab-content-smooth">
+              <TabsContent value="ai-analysis" className="space-y-4 mt-4 tab-content-smooth">
                 {/* AI Analysis Mode - Database Search Hidden */}
                 <div className="p-2 bg-blue-50 dark:bg-blue-900/20  border border-blue-200 dark:border-blue-700">
                   <div className="flex items-center gap-2">
@@ -1230,7 +1229,7 @@ export function AddFood({ user }: AddFoodProps) {
                 )}
               </TabsContent>
 
-              <TabsContent value="recent-foods" className="space-y-4 tab-content-smooth">
+              <TabsContent value="recent-foods" className="space-y-4 mt-4 tab-content-smooth">
                 {/* Recent Foods Section */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -1367,7 +1366,7 @@ export function AddFood({ user }: AddFoodProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="saved-meals" className="space-y-4 tab-content-smooth">
+              <TabsContent value="saved-meals" className="space-y-4 mt-4 tab-content-smooth">
                 {/* Saved Meals Section */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
