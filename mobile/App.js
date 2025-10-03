@@ -26,7 +26,15 @@ export default function App() {
   const reloadAttemptsRef = useRef(0);
 
   // Production URL - use the main production domain
-  const serverUrl = 'https://fitness-ai-tracker-c0109009.replit.app';
+  const serverUrl = __DEV__ 
+    ? 'https://fitness-ai-tracker-c0109009.replit.app'
+    : 'https://fitness-ai-tracker-c0109009.replit.app';
+  
+  // Add error logging for TestFlight debugging
+  useEffect(() => {
+    console.log('[App] Environment:', __DEV__ ? 'development' : 'production');
+    console.log('[App] Server URL:', serverUrl);
+  }, []);
 
   // Handle loading state
   const handleLoadStart = () => {
@@ -126,19 +134,21 @@ export default function App() {
   // Set the error handler after function definitions
   handleError = handleWebViewError;
 
-  // Inject JavaScript to optimize for mobile and handle visibility/reload
+  // Simplified injectedJavaScript for TestFlight compatibility
   const injectedJavaScript = `
-    // Add mobile-specific optimizations and auto-reload functionality
     (function() {
-      // Configure viewport for mobile with safe area support - prevent auto-zoom
-      var existingMeta = document.querySelector('meta[name="viewport"]');
-      if (existingMeta) {
-        existingMeta.remove();
-      }
-      var meta = document.createElement('meta');
-      meta.name = 'viewport';
-      meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
-      document.getElementsByTagName('head')[0].appendChild(meta);
+      try {
+        // Configure viewport for mobile with safe area support
+        var existingMeta = document.querySelector('meta[name="viewport"]');
+        if (existingMeta) {
+          existingMeta.remove();
+        }
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
+        if (document.head) {
+          document.head.appendChild(meta);
+        }
 
       // Enhanced WebView Auto-Reload System - Works with React Native AppState
       var WebViewReloadManager = {
@@ -655,12 +665,18 @@ export default function App() {
           <Text style={styles.errorMessage}>
             Unable to load MyTrainPro. Please check your internet connection.
           </Text>
+          <Text style={styles.errorDetails}>
+            Error: {error.description || error.code || 'Unknown error'}
+          </Text>
+          <Text style={styles.errorDetails}>
+            URL: {serverUrl}
+          </Text>
           <TouchableOpacity 
             style={styles.retryButton}
             onPress={() => {
               setError(null);
               setIsLoading(true);
-              webViewRef.current?.reload();
+              setWebViewKey(prev => prev + 1);
             }}
           >
             <Text style={styles.retryButtonText}>Retry</Text>
@@ -818,7 +834,14 @@ const styles = StyleSheet.create({
     color: '#666666',
     textAlign: 'center',
     lineHeight: 24,
-    marginBottom: 24,
+    marginBottom: 12,
+  },
+  errorDetails: {
+    fontSize: 12,
+    color: '#999999',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontFamily: 'Courier',
   },
   retryButton: {
     backgroundColor: '#2563eb',

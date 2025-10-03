@@ -31,7 +31,18 @@
         "NSPhotoLibraryUsageDescription": "MyTrainPro accesses your photo library to let you upload food images for nutrition analysis and set profile pictures.",
         "NSHealthShareUsageDescription": "MyTrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
         "NSHealthUpdateUsageDescription": "MyTrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSExceptionDomains": {
+            "replit.app": {
+              "NSExceptionAllowsInsecureHTTPLoads": false,
+              "NSIncludesSubdomains": true,
+              "NSExceptionRequiresForwardSecrecy": true,
+              "NSExceptionMinimumTLSVersion": "TLSv1.2"
+            }
+          }
+        }
       },
       "config": {
         "usesNonExemptEncryption": false
