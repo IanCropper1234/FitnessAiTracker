@@ -49,8 +49,27 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache when possible
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
+  const url = new URL(event.request.url);
+  
+  // Skip service worker for Vite development server requests
+  // These include HMR, @vite/client, and module imports
+  if (url.pathname.includes('@vite') || 
+      url.pathname.includes('/@fs/') ||
+      url.pathname.includes('/@id/') ||
+      url.pathname.includes('/.vite/') ||
+      url.pathname.includes('/node_modules/') ||
+      url.pathname.includes('/@react-refresh') ||
+      url.pathname.endsWith('.tsx') ||
+      url.pathname.endsWith('.ts') ||
+      url.pathname.endsWith('.jsx') ||
+      url.pathname.endsWith('.js') && url.pathname.includes('/src/')) {
+    // Let Vite handle these requests directly
+    return;
+  }
+  
+  // Pass through non-GET requests to the network
   if (event.request.method !== 'GET') {
+    event.respondWith(fetch(event.request));
     return;
   }
   
@@ -84,11 +103,46 @@ self.addEventListener('fetch', (event) => {
           }
           
           return response;
-        }).catch(() => {
+        }).catch((error) => {
           // Fallback for offline scenarios
+          console.error('Fetch failed:', error);
+          
+          // Try to serve from cache as fallback
           if (event.request.url === self.location.origin + '/') {
-            return caches.match('/');
+            return caches.match('/').then((response) => {
+              if (response) {
+                return response;
+              }
+              // Return a basic offline response if nothing in cache
+              return new Response('Offline - TrainPro', {
+                status: 503,
+                statusText: 'Service Unavailable',
+                headers: new Headers({
+                  'Content-Type': 'text/html'
+                })
+              });
+            });
           }
+          
+          // Return a proper error response for other requests
+          return new Response('Network request failed', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({
+              'Content-Type': 'text/plain'
+            })
+          });
+        });
+      })
+      .catch((error) => {
+        // If caches.match fails, return an error response
+        console.error('Cache match failed:', error);
+        return new Response('Service Worker Error', {
+          status: 500,
+          statusText: 'Internal Server Error',
+          headers: new Headers({
+            'Content-Type': 'text/plain'
+          })
         });
       })
   );
