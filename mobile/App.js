@@ -416,25 +416,25 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* iPhone-specific safe area handling - No top padding */
+        /* iPhone-specific safe area handling - 僅在底部使用 safe area */
         @supports (padding: max(0px)) {
           .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
             background-color: #000000;
             min-height: 100vh;
-            padding-top: env(safe-area-inset-top) !important;
-            padding-bottom: max(34px, env(safe-area-inset-bottom)) !important;
-            padding-left: env(safe-area-inset-left) !important;
-            padding-right: env(safe-area-inset-right) !important;
+            padding-top: 0 !important;
+            padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
             box-sizing: border-box;
           }
         }
         
-        /* Fallback for older devices - No top padding */
+        /* Fallback for older devices */
         .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
           background-color: #000000;
           min-height: 100vh;
-          padding-top: 0px !important;
-          padding-bottom: 34px !important;
+          padding-top: 0 !important;
+          padding-bottom: 70px !important;
           box-sizing: border-box;
         }
         
@@ -445,10 +445,10 @@ export default function App() {
         
         /* Remove all custom padding - let the app handle its own spacing */
         main, .page-container, .dashboard-container, .content-area {
-          padding-top: 0px !important;
+          padding-top: 0 !important;
           padding-bottom: 70px !important;
-          padding-left: 0px !important;
-          padding-right: 0px !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
           box-sizing: border-box;
           min-height: 100vh;
           overflow-x: hidden;
