@@ -53,53 +53,20 @@ export default function App() {
     console.log('Navigation to:', navState.url);
   };
 
-  // Enhanced AppState handling for iOS WebView lifecycle
+  // 簡化的 AppState 處理 - 僅記錄狀態變化
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
-      console.log('[App] AppState changed from', appState, 'to', nextAppState);
-
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        // App came back to foreground
-        const backgroundDuration = backgroundTimeRef.current 
-          ? Date.now() - backgroundTimeRef.current 
-          : 0;
-
-        console.log('[App] Returned from background after', backgroundDuration, 'ms');
-
-        // If background duration > 5 minutes, likely need reload due to iOS memory management
-        if (backgroundDuration > 5 * 60 * 1000) {
-          console.log('[App] Long background detected, checking WebView state');
-
-          // Start with a gentle reload attempt
-          setTimeout(() => {
-            if (webViewRef.current) {
-              console.log('[App] Attempting WebView reload after background');
-              webViewRef.current.reload();
-            }
-          }, 1000);
-
-          // If still problematic after 3 seconds, force re-mount
-          setTimeout(() => {
-            if (reloadAttemptsRef.current < 2) {
-              console.log('[App] Force re-mounting WebView due to potential blank page');
-              reloadAttemptsRef.current++;
-              setWebViewKey(prev => prev + 1);
-            }
-          }, 4000);
-        }
-
-        backgroundTimeRef.current = null;
-      } else if (nextAppState.match(/inactive|background/)) {
-        // App going to background
-        backgroundTimeRef.current = Date.now();
-        console.log('[App] App going to background');
+      console.log('[App] AppState:', nextAppState);
+      
+      if (nextAppState === 'active' && appState.match(/inactive|background/)) {
+        // 從背景返回時簡單記錄
+        console.log('[App] App became active');
       }
-
+      
       setAppState(nextAppState);
     };
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
-
     return () => subscription?.remove();
   }, [appState]);
 
@@ -132,46 +99,24 @@ export default function App() {
   // Set the error handler after function definitions
   handleError = handleWebViewError;
 
-  // Minimal injectedJavaScript for TestFlight stability
+  // Minimal injectedJavaScript - 極簡版避免崩潰
   const injectedJavaScript = `
     (function() {
       try {
-        // Configure viewport
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no';
-        document.head.appendChild(meta);
-
-        // Add mobile class
-        document.body.classList.add('mobile-app');
-
-        // Basic safe area CSS
-        var style = document.createElement('style');
-        style.textContent = \`
-          html, body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            -webkit-overflow-scrolling: touch;
-          }
-          .ios-sticky-header {
-            padding-top: env(safe-area-inset-top, 0px) !important;
-          }
-          .fixed.bottom-0 {
-            padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-          }
-        \`;
-        document.head.appendChild(style);
-
-        // Send ready signal
+        // 只添加必要的 mobile class
+        if (document.body) {
+          document.body.classList.add('mobile-app');
+        }
+        
+        // 發送就緒信號
         if (window.ReactNativeWebView) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'READY',
             timestamp: Date.now()
           }));
         }
-      } catch (error) {
-        console.error('[WebView] Initialization error:', error);
+      } catch (e) {
+        // 靜默處理錯誤,避免崩潰
       }
     })();
     true;
