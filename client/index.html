@@ -67,7 +67,8 @@
       });
 
       // Register Service Worker for PWA functionality - iOS Compatible
-      if ('serviceWorker' in navigator) {
+      // Only register in production to avoid conflicts with Vite HMR
+      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
         window.addEventListener('load', async function() {
           try {
             const registration = await navigator.serviceWorker.register('/sw.js', {
@@ -82,6 +83,14 @@
             
           } catch (error) {
             console.error('TrainPro PWA: ServiceWorker registration failed:', error);
+          }
+        });
+      } else if ('serviceWorker' in navigator && window.location.hostname === 'localhost') {
+        // Unregister any existing service workers in development
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('TrainPro: Unregistered service worker for development mode');
           }
         });
       }
