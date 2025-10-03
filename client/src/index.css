@@ -1956,15 +1956,22 @@ button, .ios-button {
     }
   }
   
-  /* Sticky header - 移除所有 padding,由 WebView 控制 */
+  /* Sticky header - Dynamic Island & Notch compatible */
   .ios-sticky-header {
     position: sticky;
     top: 0;
-    padding-top: 0;  /* WebView 會處理 safe area */
+    padding-top: max(8px, env(safe-area-inset-top));  /* Dynamic Island 支援 */
     z-index: 50;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background: var(--background);
+  }
+  
+  /* 確保 safe area 在支援的瀏覽器中正確顯示 */
+  @supports (padding: max(0px)) {
+    .ios-sticky-header {
+      padding-top: max(8px, env(safe-area-inset-top, 8px));
+    }
   }
 /* Mobile-First Responsive Typography for iPhone SE/12 mini (320px-375px) */
 @layer utilities {
