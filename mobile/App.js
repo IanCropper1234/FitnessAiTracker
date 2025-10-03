@@ -51,19 +51,19 @@ export default function App() {
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
       console.log('[App] AppState changed from', appState, 'to', nextAppState);
-
+      
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
         // App came back to foreground
         const backgroundDuration = backgroundTimeRef.current 
           ? Date.now() - backgroundTimeRef.current 
           : 0;
-
+        
         console.log('[App] Returned from background after', backgroundDuration, 'ms');
-
+        
         // If background duration > 5 minutes, likely need reload due to iOS memory management
         if (backgroundDuration > 5 * 60 * 1000) {
           console.log('[App] Long background detected, checking WebView state');
-
+          
           // Start with a gentle reload attempt
           setTimeout(() => {
             if (webViewRef.current) {
@@ -71,7 +71,7 @@ export default function App() {
               webViewRef.current.reload();
             }
           }, 1000);
-
+          
           // If still problematic after 3 seconds, force re-mount
           setTimeout(() => {
             if (reloadAttemptsRef.current < 2) {
@@ -81,19 +81,19 @@ export default function App() {
             }
           }, 4000);
         }
-
+        
         backgroundTimeRef.current = null;
       } else if (nextAppState.match(/inactive|background/)) {
         // App going to background
         backgroundTimeRef.current = Date.now();
         console.log('[App] App going to background');
       }
-
+      
       setAppState(nextAppState);
     };
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
-
+    
     return () => subscription?.remove();
   }, [appState]);
 
@@ -101,7 +101,7 @@ export default function App() {
   const handleWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     console.error('[App] WebView error:', nativeEvent);
-
+    
     // Check if this is a process termination
     if (nativeEvent.description?.includes('terminated') || 
         nativeEvent.description?.includes('crash') ||
@@ -112,7 +112,7 @@ export default function App() {
     } else {
       setError(nativeEvent);
     }
-
+    
     setIsLoading(false);
   };
 
@@ -139,7 +139,7 @@ export default function App() {
       meta.name = 'viewport';
       meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
       document.getElementsByTagName('head')[0].appendChild(meta);
-
+      
       // Enhanced WebView Auto-Reload System - Works with React Native AppState
       var WebViewReloadManager = {
         lastActivity: Date.now(),
@@ -150,7 +150,7 @@ export default function App() {
         maxReloadAttempts: 2, // Reduced - React Native will handle more aggressive reloading
         lastReloadAttempt: null, // null allows first reload attempt immediately
         isReactNativeHandling: true, // Flag to coordinate with React Native
-
+        
         // Initialize the reload manager
         init: function() {
           this.setupVisibilityListeners();
@@ -159,24 +159,24 @@ export default function App() {
           this.startInactivityMonitoring();
           console.log('[WebView] Auto-reload manager initialized');
         },
-
+        
         // Setup visibility change listeners
         setupVisibilityListeners: function() {
           var self = this;
-
+          
           document.addEventListener('visibilitychange', function() {
             var isVisible = !document.hidden;
             var wasVisible = self.isVisible;
             self.isVisible = isVisible;
-
+            
             if (isVisible && !wasVisible) {
               // App became visible (returned from background)
               var backgroundDuration = self.backgroundTime ? Date.now() - self.backgroundTime : 0;
               console.log('[WebView] App returned from background after:', backgroundDuration, 'ms');
-
+              
               self.backgroundTime = null;
               self.updateActivity();
-
+              
               // Check for blank page after returning from background
               setTimeout(function() {
                 if (self.isPageBlank()) {
@@ -184,13 +184,13 @@ export default function App() {
                   self.handleAutoReload('background_return');
                 }
               }, 1000);
-
+              
             } else if (!isVisible && wasVisible) {
               // App went to background
               self.backgroundTime = Date.now();
               console.log('[WebView] App went to background');
             }
-
+            
             // Notify React Native
             if (window.ReactNativeWebView) {
               window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -201,7 +201,7 @@ export default function App() {
               }));
             }
           });
-
+          
           // iOS-specific page show/hide events
           window.addEventListener('pageshow', function(event) {
             console.log('[WebView] Page show event, persisted:', event.persisted);
@@ -212,41 +212,41 @@ export default function App() {
               }
             }, 1000);
           });
-
+          
           window.addEventListener('pagehide', function() {
             console.log('[WebView] Page hide event');
             self.backgroundTime = Date.now();
           });
         },
-
+        
         // Setup activity tracking
         setupActivityTracking: function() {
           var self = this;
           var events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-
+          
           events.forEach(function(event) {
             document.addEventListener(event, function() {
               self.updateActivity();
             }, { passive: true });
           });
         },
-
+        
         // Update last activity timestamp
         updateActivity: function() {
           this.lastActivity = Date.now();
         },
-
+        
         // Check if page appears blank
         isPageBlank: function() {
           try {
             // Check essential indicators of a blank page - optimized
             var hasContent = document.body && document.body.children.length > 0;
             var hasRoot = document.getElementById('root') && document.getElementById('root').innerHTML.trim() !== '';
-
+            
             // Check for visible elements with content
             var visibleElements = document.querySelectorAll('*:not(script):not(style):not(meta):not(link)');
             var hasVisibleContent = false;
-
+            
             for (var i = 0; i < Math.min(visibleElements.length, 20); i++) {
               var el = visibleElements[i];
               try {
@@ -259,30 +259,30 @@ export default function App() {
                 // Skip elements that can't be styled
               }
             }
-
+            
             // Check for white/empty background
             var bodyStyle = window.getComputedStyle(document.body);
             var hasProperBackground = bodyStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' && 
                                      bodyStyle.backgroundColor !== 'transparent';
-
+            
             // Page is blank if essential indicators suggest it
             var blankIndicators = [
               !hasContent,
               !hasRoot,
               !hasVisibleContent
             ].filter(Boolean).length;
-
+            
             return blankIndicators >= 2;
           } catch (error) {
             console.warn('[WebView] Error checking blank page:', error);
             return false;
           }
         },
-
+        
         // Start monitoring for blank pages
         startBlankPageMonitoring: function() {
           var self = this;
-
+          
           self.checkInterval = setInterval(function() {
             if (self.isVisible && self.isPageBlank()) {
               console.log('[WebView] Blank page detected during monitoring');
@@ -290,18 +290,18 @@ export default function App() {
             }
           }, 12000); // Check every 12 seconds - optimized interval
         },
-
+        
         // Start monitoring for long inactivity
         startInactivityMonitoring: function() {
           var self = this;
-
+          
           setInterval(function() {
             var timeSinceActivity = Date.now() - self.lastActivity;
             var inactivityThreshold = 30 * 60 * 1000; // 30 minutes
-
+            
             if (timeSinceActivity > inactivityThreshold) {
               console.log('[WebView] Long inactivity detected:', timeSinceActivity, 'ms');
-
+              
               if (self.isPageBlank()) {
                 console.log('[WebView] Blank page detected during inactivity');
                 self.handleAutoReload('inactivity');
@@ -309,15 +309,15 @@ export default function App() {
             }
           }, 90000); // Check every 90 seconds - optimized for performance
         },
-
+        
         // Handle automatic reload with exponential backoff
         handleAutoReload: function(reason) {
           var now = Date.now();
           var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : Infinity;
-
+          
           // Exponential backoff: 2min, 4min (conservative approach)
           var backoffTime = Math.pow(2, this.reloadAttempts + 1) * 60000;
-
+          
           // If React Native is handling lifecycle, be more conservative
           if (this.isReactNativeHandling && reason === 'background_return') {
             console.log('[WebView] Background return detected, deferring to React Native AppState handling');
@@ -331,13 +331,13 @@ export default function App() {
             }
             return;
           }
-
+          
           // Check if we're within backoff period
           if (timeSinceLastAttempt < backoffTime) {
             console.log('[WebView] Reload attempt skipped due to backoff period:', Math.round((backoffTime - timeSinceLastAttempt) / 1000), 'seconds remaining');
             return;
           }
-
+          
           if (this.reloadAttempts >= this.maxReloadAttempts) {
             console.log('[WebView] Max reload attempts reached, notifying React Native for key-based re-mount');
             if (window.ReactNativeWebView) {
@@ -349,11 +349,11 @@ export default function App() {
             }
             return;
           }
-
+          
           this.reloadAttempts++;
           this.lastReloadAttempt = now;
           console.log('[WebView] Auto-reloading due to:', reason, 'attempt:', this.reloadAttempts, 'next backoff:', Math.pow(2, this.reloadAttempts) * 60000 / 1000, 'seconds');
-
+          
           // Notify React Native
           if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -364,7 +364,7 @@ export default function App() {
               timestamp: now
             }));
           }
-
+          
           // Attempt reload with fallback
           try {
             window.location.reload();
@@ -380,7 +380,7 @@ export default function App() {
             }, 1000);
           }
         },
-
+        
         // Cleanup
         destroy: function() {
           if (this.checkInterval) {
@@ -388,15 +388,15 @@ export default function App() {
           }
         }
       };
-
+      
       // Initialize the reload manager
       WebViewReloadManager.init();
-
+      
       // Add mobile class to body for mobile-specific CSS
       document.body.classList.add('mobile-app');
       document.body.style.overflow = 'auto';
       document.body.style.webkitOverflowScrolling = 'touch';
-
+      
       // Add CSS for proper safe area handling
       var style = document.createElement('style');
       style.textContent = \`
@@ -406,7 +406,7 @@ export default function App() {
           --safe-area-inset-left: env(safe-area-inset-left);
           --safe-area-inset-right: env(safe-area-inset-right);
         }
-
+        
         html, body {
           margin: 0;
           padding: 0;
@@ -415,51 +415,45 @@ export default function App() {
           overflow-x: hidden;
           -webkit-overflow-scrolling: touch;
         }
-
-        /* iPhone-specific safe area support - Dynamic Island compatible */
+        
+        /* iPhone-specific safe area handling - No top padding */
         @supports (padding: max(0px)) {
           .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
             background-color: #000000;
             min-height: 100vh;
-            padding-top: 0 !important;
-            padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            padding-top: env(safe-area-inset-top) !important;
+            padding-bottom: max(34px, env(safe-area-inset-bottom)) !important;
+            padding-left: env(safe-area-inset-left) !important;
+            padding-right: env(safe-area-inset-right) !important;
             box-sizing: border-box;
           }
-
-          /* Dynamic Island & Notch safe area for sticky headers */
-          .ios-sticky-header {
-            padding-top: max(8px, env(safe-area-inset-top)) !important;
-            top: 0 !important;
-          }
         }
-
-        /* Fallback for older devices */
+        
+        /* Fallback for older devices - No top padding */
         .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
           background-color: #000000;
           min-height: 100vh;
-          padding-top: 0 !important;
-          padding-bottom: 70px !important;
+          padding-top: 0px !important;
+          padding-bottom: 34px !important;
           box-sizing: border-box;
         }
-
+        
         /* Apply safe area to all direct children of main container */
         .ios-pwa-container > *, .min-h-screen > * {
           box-sizing: border-box;
         }
-
+        
         /* Remove all custom padding - let the app handle its own spacing */
         main, .page-container, .dashboard-container, .content-area {
-          padding-top: 0 !important;
+          padding-top: 0px !important;
           padding-bottom: 70px !important;
-          padding-left: 0 !important;
-          padding-right: 0 !important;
+          padding-left: 0px !important;
+          padding-right: 0px !important;
           box-sizing: border-box;
           min-height: 100vh;
           overflow-x: hidden;
         }
-
+        
         /* Bottom navigation - stick to bottom with safe area */
         .fixed.bottom-0, nav[class*="bottom"] {
           position: fixed !important;
@@ -469,18 +463,18 @@ export default function App() {
           z-index: 1000 !important;
           padding-bottom: env(safe-area-inset-bottom, 0px) !important;
         }
-
+        
         /* Ensure scrolling works smoothly */
         * {
           -webkit-overflow-scrolling: touch;
         }
-
+        
         /* Fix for content being cut off - exclude PWA containers */
         .container:not(.ios-pwa-container), .content-wrapper {
           padding-top: var(--safe-area-inset-top, 0px);
           padding-bottom: var(--safe-area-inset-bottom, 0px);
         }
-
+        
         /* Hide development banners completely */
         .dev-banner, .preview-banner, [data-preview], .replit-preview-notice {
           display: none !important;
@@ -489,16 +483,16 @@ export default function App() {
           margin: 0 !important;
           padding: 0 !important;
         }
-
+        
         /* Fix for Replit development preview */
         body.mobile-app .replit-ui, body.mobile-app [class*="preview"], body.mobile-app [class*="banner"] {
           display: none !important;
         }
       \`;
       document.head.appendChild(style);
-
+      
       // Note: iOS Input Auto-Zoom Prevention is now handled by CSS in index.css
-
+      
       // Apply device-specific safe area handling
       setTimeout(function() {
         // Remove any development banners
@@ -506,13 +500,13 @@ export default function App() {
         banners.forEach(function(banner) {
           if (banner) banner.remove();
         });
-
+        
         // Note: Input auto-zoom prevention is handled by CSS in index.css for .mobile-app class
-
+        
         // Detect device type and apply universal spacing
         var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
         var isIPhoneX = isIOS && window.screen.height >= 812;
-
+        
         // Reset all containers to default
         var containers = document.querySelectorAll('.ios-pwa-container, .min-h-screen, #root, [data-reactroot]');
         containers.forEach(function(container) {
@@ -522,13 +516,13 @@ export default function App() {
           container.style.paddingRight = '';
           container.style.minHeight = '100vh';
         });
-
+        
         // Only adjust main content area for bottom navigation
         var mainContent = document.querySelectorAll('main, .page-container, .dashboard-container');
         mainContent.forEach(function(element) {
           element.style.paddingBottom = '70px';
         });
-
+        
         // Fix bottom navigation
         var bottomNavs = document.querySelectorAll('.fixed.bottom-0, nav[class*=\"bottom\"]');
         bottomNavs.forEach(function(nav) {
@@ -541,7 +535,7 @@ export default function App() {
             nav.style.paddingBottom = 'env(safe-area-inset-bottom, 0px)';
           }
         });
-
+        
         // Ensure session persistence
         if (window.localStorage) {
           var sessionData = window.localStorage.getItem('session_data');
@@ -553,20 +547,20 @@ export default function App() {
           }
         }
       }, 1000);
-
+      
       // Enable smooth scrolling
       document.addEventListener('touchstart', function() {}, { passive: true });
       document.addEventListener('touchmove', function(e) {
         // Allow scrolling
       }, { passive: true });
-
+      
       // Send ready signal to React Native
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: 'READY',
         timestamp: Date.now()
       }));
     })();
-
+    
     true; // Required for injected JavaScript
   `;
 
@@ -575,7 +569,7 @@ export default function App() {
     try {
       const message = JSON.parse(event.nativeEvent.data);
       console.log('Message from WebView:', message);
-
+      
       switch (message.type) {
         case 'READY':
           console.log('WebView is ready');
@@ -661,7 +655,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
-
+      
       {/* Loading overlay */}
       {isLoading && (
         <View style={styles.loadingOverlay}>
@@ -685,7 +679,7 @@ export default function App() {
         userAgent={userAgent}
         onContentProcessDidTerminate={handleContentProcessDidTerminate}
         onRenderProcessGone={handleContentProcessDidTerminate}
-
+        
         // WebView configuration
         javaScriptEnabled={true}
         domStorageEnabled={true}
@@ -699,24 +693,24 @@ export default function App() {
         overScrollMode="always"
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
-
+        
         // iOS specific
         allowsInlineMediaPlayback={true}
         mediaPlaybackRequiresUserAction={false}
-
+        
         // Android specific
         mixedContentMode="compatibility"
-
+        
         // Security and performance
         allowsFullscreenVideo={true}
         allowsBackForwardNavigationGestures={true}
         cacheEnabled={true}
         incognito={false}
-
+        
         // Session persistence settings
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
-
+        
         // Handle different types of navigation with session persistence
         onShouldStartLoadWithRequest={(request) => {
           // Allow all navigation within the app domains
@@ -724,23 +718,23 @@ export default function App() {
               request.url.includes('mytrainpro.com')) {
             return true;
           }
-
+          
           // Handle external links
           if (request.url.startsWith('http') || request.url.startsWith('https')) {
             Linking.openURL(request.url);
             return false;
           }
-
+          
           return true;
         }}
-
+        
         // Optimize rendering
         renderLoading={() => (
           <View style={styles.webviewLoading}>
             <ActivityIndicator size="large" color="#2563eb" />
           </View>
         )}
-
+        
         // Handle HTTP errors
         onHttpError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;

@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "19",
+      "buildNumber": "18",
       "icon": "./assets/icon.png",
       "infoPlist": {
         "CFBundleDisplayName": "MyTrainPro",
@@ -57,12 +57,6 @@
       "eas": {
         "projectId": "b0fa7770-552d-4612-8f93-3b8944c63ef3"
       }
-    },
-    "updates": {
-      "url": "https://u.expo.dev/b0fa7770-552d-4612-8f93-3b8944c63ef3"
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
     }
   }
 }
