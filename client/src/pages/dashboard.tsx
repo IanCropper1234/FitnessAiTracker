@@ -11,6 +11,7 @@ import { MacroChart } from "@/components/macro-chart";
 import { EnhancedTrainingOverview } from "@/components/enhanced-training-overview";
 import { AnimatedPage } from "@/components/page-transition";
 import { AnimatedDashboardCard, useStaggeredAnimation } from "@/components/ui/dashboard-animations";
+import { useAuth } from "@/hooks/useAuth";
 
 import { RecentActivity } from "@/components/recent-activity";
 import { DailyWellnessReminder } from "@/components/daily-wellness-reminder";
@@ -20,25 +21,14 @@ import { Input } from "@/components/ui/input";
 import { LoadingState, DashboardCardSkeleton } from "@/components/ui/loading";
 import { TimezoneUtils } from "@shared/utils/timezone";
 
-interface User {
-  id: number;
-  email: string;
-  name: string;
-}
-
-interface DashboardProps {
-  user: User;
-  selectedDate: string;
-  setSelectedDate: (date: string) => void;
-  showDatePicker: boolean;
-  setShowDatePicker: (show: boolean) => void;
-}
-
-export function Dashboard({ user, selectedDate, setSelectedDate, showDatePicker, setShowDatePicker }: DashboardProps) {
+export function Dashboard() {
+  const { user } = useAuth();
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
+  const [selectedDate, setSelectedDate] = useState(TimezoneUtils.getCurrentDate());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTrainingOverview, setShowTrainingOverview] = useState(false);
   
   // Animation refs for dashboard cards

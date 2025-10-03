@@ -1,0 +1,713 @@
+useSettings.ts:45 Settings loaded from localStorage: {workoutExecutionV2: true, spinnerSetInput: true, gestureNavigation: true, circularProgress: true, restTimerFAB: true, …}
+(index):139 TrainPro PWA: Running in Safari - can be installed via Share > Add to Home Screen
+(index):110 TrainPro PWA: ServiceWorker registered successfully
+App.tsx:510 Redirecting to auth - no user found
+(index):149 TrainPro PWA: Install prompt available
+page-transition.tsx:25 AnimatedPage: Page changed from  to /auth
+App.tsx:518 User authenticated and verified, redirecting to dashboard
+timezone.ts:30 Uncaught TypeError: Cannot read properties of undefined (reading 'split')
+    at TimezoneUtils.parseUserDate (timezone.ts:30:43)
+    at Dashboard (dashboard.tsx:67:37)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=1376d246:11548:26)
+    at mountIndeterminateComponent (chunk-RPCDYKBN.js?v=1376d246:14926:21)
+    at beginWork (chunk-RPCDYKBN.js?v=1376d246:15914:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=1376d246:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=1376d246:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=1376d246:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=1376d246:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=1376d246:19198:20)
+parseUserDate @ timezone.ts:30
+Dashboard @ dashboard.tsx:67
+renderWithHooks @ chunk-RPCDYKBN.js?v=1376d246:11548
+mountIndeterminateComponent @ chunk-RPCDYKBN.js?v=1376d246:14926
+beginWork @ chunk-RPCDYKBN.js?v=1376d246:15914
+callCallback2 @ chunk-RPCDYKBN.js?v=1376d246:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1376d246:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1376d246:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=1376d246:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=1376d246:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=1376d246:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=1376d246:19116
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18874
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+(anonymous) @ App.tsx:519
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1376d246:555
+flush @ @tanstack_react-query.js?v=1376d246:569
+batch @ @tanstack_react-query.js?v=1376d246:587
+dispatch_fn @ @tanstack_react-query.js?v=1376d246:996
+setData @ @tanstack_react-query.js?v=1376d246:696
+onSuccess @ @tanstack_react-query.js?v=1376d246:897
+resolve @ @tanstack_react-query.js?v=1376d246:456
+Promise.then
+run @ @tanstack_react-query.js?v=1376d246:498
+start @ @tanstack_react-query.js?v=1376d246:536
+fetch @ @tanstack_react-query.js?v=1376d246:926
+executeFetch_fn @ @tanstack_react-query.js?v=1376d246:2211
+onSubscribe @ @tanstack_react-query.js?v=1376d246:1898
+subscribe @ @tanstack_react-query.js?v=1376d246:24
+(anonymous) @ @tanstack_react-query.js?v=1376d246:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1376d246:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+dispatchSetState @ chunk-RPCDYKBN.js?v=1376d246:12403
+(anonymous) @ App.tsx:633
+setTimeout
+(anonymous) @ App.tsx:632
+requestAnimationFrame
+(anonymous) @ App.tsx:631
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:387
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+updateContainer @ chunk-RPCDYKBN.js?v=1376d246:20776
+ReactDOMHydrationRoot.render.ReactDOMRoot.render @ chunk-RPCDYKBN.js?v=1376d246:21116
+(anonymous) @ main.tsx:5
+timezone.ts:30 Uncaught TypeError: Cannot read properties of undefined (reading 'split')
+    at TimezoneUtils.parseUserDate (timezone.ts:30:43)
+    at Dashboard (dashboard.tsx:67:37)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=1376d246:11548:26)
+    at mountIndeterminateComponent (chunk-RPCDYKBN.js?v=1376d246:14926:21)
+    at beginWork (chunk-RPCDYKBN.js?v=1376d246:15914:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=1376d246:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=1376d246:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=1376d246:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=1376d246:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=1376d246:19198:20)
+parseUserDate @ timezone.ts:30
+Dashboard @ dashboard.tsx:67
+renderWithHooks @ chunk-RPCDYKBN.js?v=1376d246:11548
+mountIndeterminateComponent @ chunk-RPCDYKBN.js?v=1376d246:14926
+beginWork @ chunk-RPCDYKBN.js?v=1376d246:15914
+callCallback2 @ chunk-RPCDYKBN.js?v=1376d246:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1376d246:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1376d246:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=1376d246:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=1376d246:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=1376d246:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=1376d246:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=1376d246:18736
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18879
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+(anonymous) @ App.tsx:519
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1376d246:555
+flush @ @tanstack_react-query.js?v=1376d246:569
+batch @ @tanstack_react-query.js?v=1376d246:587
+dispatch_fn @ @tanstack_react-query.js?v=1376d246:996
+setData @ @tanstack_react-query.js?v=1376d246:696
+onSuccess @ @tanstack_react-query.js?v=1376d246:897
+resolve @ @tanstack_react-query.js?v=1376d246:456
+Promise.then
+run @ @tanstack_react-query.js?v=1376d246:498
+start @ @tanstack_react-query.js?v=1376d246:536
+fetch @ @tanstack_react-query.js?v=1376d246:926
+executeFetch_fn @ @tanstack_react-query.js?v=1376d246:2211
+onSubscribe @ @tanstack_react-query.js?v=1376d246:1898
+subscribe @ @tanstack_react-query.js?v=1376d246:24
+(anonymous) @ @tanstack_react-query.js?v=1376d246:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1376d246:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+dispatchSetState @ chunk-RPCDYKBN.js?v=1376d246:12403
+(anonymous) @ App.tsx:633
+setTimeout
+(anonymous) @ App.tsx:632
+requestAnimationFrame
+(anonymous) @ App.tsx:631
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:387
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+updateContainer @ chunk-RPCDYKBN.js?v=1376d246:20776
+ReactDOMHydrationRoot.render.ReactDOMRoot.render @ chunk-RPCDYKBN.js?v=1376d246:21116
+(anonymous) @ main.tsx:5
+App.tsx:519 The above error occurred in the <Dashboard> component:
+
+    at Dashboard (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/pages/dashboard.tsx:34:29)
+    at Route (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1376d246:265:16)
+    at Switch (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1376d246:321:17)
+    at div
+    at AnimatedPage (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/page-transition.tsx:20:32)
+    at AppContent (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/App.tsx?v=kZJlm-N_HGqs-CqU4q2TD:834:28)
+    at WorkoutExecutionProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/contexts/WorkoutExecutionContext.tsx:32:44)
+    at HeaderProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/contexts/HeaderContext.tsx:20:34)
+    at Provider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=1376d246:38:15)
+    at TooltipProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=1376d246:66:5)
+    at LanguageProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/language-provider.tsx:383:36)
+    at ThemeProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/theme-provider.tsx:20:33)
+    at QueryClientProvider (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=1376d246:2805:3)
+    at ErrorBoundary (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/components/error-boundary.tsx:54:5)
+    at App (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/App.tsx?v=kZJlm-N_HGqs-CqU4q2TD:1112:45)
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+logCapturedError @ chunk-RPCDYKBN.js?v=1376d246:14032
+callback @ chunk-RPCDYKBN.js?v=1376d246:14078
+callCallback @ chunk-RPCDYKBN.js?v=1376d246:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=1376d246:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=1376d246:17075
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=1376d246:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19353
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+(anonymous) @ App.tsx:519
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1376d246:555
+flush @ @tanstack_react-query.js?v=1376d246:569
+batch @ @tanstack_react-query.js?v=1376d246:587
+dispatch_fn @ @tanstack_react-query.js?v=1376d246:996
+setData @ @tanstack_react-query.js?v=1376d246:696
+onSuccess @ @tanstack_react-query.js?v=1376d246:897
+resolve @ @tanstack_react-query.js?v=1376d246:456
+Promise.then
+run @ @tanstack_react-query.js?v=1376d246:498
+start @ @tanstack_react-query.js?v=1376d246:536
+fetch @ @tanstack_react-query.js?v=1376d246:926
+executeFetch_fn @ @tanstack_react-query.js?v=1376d246:2211
+onSubscribe @ @tanstack_react-query.js?v=1376d246:1898
+subscribe @ @tanstack_react-query.js?v=1376d246:24
+(anonymous) @ @tanstack_react-query.js?v=1376d246:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1376d246:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+dispatchSetState @ chunk-RPCDYKBN.js?v=1376d246:12403
+(anonymous) @ App.tsx:633
+setTimeout
+(anonymous) @ App.tsx:632
+requestAnimationFrame
+(anonymous) @ App.tsx:631
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:387
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+updateContainer @ chunk-RPCDYKBN.js?v=1376d246:20776
+ReactDOMHydrationRoot.render.ReactDOMRoot.render @ chunk-RPCDYKBN.js?v=1376d246:21116
+(anonymous) @ main.tsx:5
+error-boundary.tsx:26 🔴 Error Boundary Report
+error-boundary.tsx:27 Error: TypeError: Cannot read properties of undefined (reading 'split')
+    at TimezoneUtils.parseUserDate (timezone.ts:30:43)
+    at Dashboard (dashboard.tsx:67:37)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=1376d246:11548:26)
+    at mountIndeterminateComponent (chunk-RPCDYKBN.js?v=1376d246:14926:21)
+    at beginWork (chunk-RPCDYKBN.js?v=1376d246:15914:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=1376d246:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=1376d246:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=1376d246:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=1376d246:19116:15)
+    at recoverFromConcurrentError (chunk-RPCDYKBN.js?v=1376d246:18736:28)
+report @ error-boundary.tsx:27
+componentDidCatch @ error-boundary.tsx:88
+callback @ chunk-RPCDYKBN.js?v=1376d246:14084
+callCallback @ chunk-RPCDYKBN.js?v=1376d246:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=1376d246:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=1376d246:17075
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=1376d246:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19353
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+(anonymous) @ App.tsx:519
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1376d246:555
+flush @ @tanstack_react-query.js?v=1376d246:569
+batch @ @tanstack_react-query.js?v=1376d246:587
+dispatch_fn @ @tanstack_react-query.js?v=1376d246:996
+setData @ @tanstack_react-query.js?v=1376d246:696
+onSuccess @ @tanstack_react-query.js?v=1376d246:897
+resolve @ @tanstack_react-query.js?v=1376d246:456
+Promise.then
+run @ @tanstack_react-query.js?v=1376d246:498
+start @ @tanstack_react-query.js?v=1376d246:536
+fetch @ @tanstack_react-query.js?v=1376d246:926
+executeFetch_fn @ @tanstack_react-query.js?v=1376d246:2211
+onSubscribe @ @tanstack_react-query.js?v=1376d246:1898
+subscribe @ @tanstack_react-query.js?v=1376d246:24
+(anonymous) @ @tanstack_react-query.js?v=1376d246:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1376d246:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+dispatchSetState @ chunk-RPCDYKBN.js?v=1376d246:12403
+(anonymous) @ App.tsx:633
+setTimeout
+(anonymous) @ App.tsx:632
+requestAnimationFrame
+(anonymous) @ App.tsx:631
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:387
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+updateContainer @ chunk-RPCDYKBN.js?v=1376d246:20776
+ReactDOMHydrationRoot.render.ReactDOMRoot.render @ chunk-RPCDYKBN.js?v=1376d246:21116
+(anonymous) @ main.tsx:5
+error-boundary.tsx:28 Error Info: {componentStack: '\n    at Dashboard (https://06480408-c2d8-4ed1-9930….dev/src/App.tsx?v=kZJlm-N_HGqs-CqU4q2TD:1112:45)'}
+report @ error-boundary.tsx:28
+componentDidCatch @ error-boundary.tsx:88
+callback @ chunk-RPCDYKBN.js?v=1376d246:14084
+callCallback @ chunk-RPCDYKBN.js?v=1376d246:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=1376d246:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=1376d246:17075
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=1376d246:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19353
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+(anonymous) @ App.tsx:519
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1376d246:555
+flush @ @tanstack_react-query.js?v=1376d246:569
+batch @ @tanstack_react-query.js?v=1376d246:587
+dispatch_fn @ @tanstack_react-query.js?v=1376d246:996
+setData @ @tanstack_react-query.js?v=1376d246:696
+onSuccess @ @tanstack_react-query.js?v=1376d246:897
+resolve @ @tanstack_react-query.js?v=1376d246:456
+Promise.then
+run @ @tanstack_react-query.js?v=1376d246:498
+start @ @tanstack_react-query.js?v=1376d246:536
+fetch @ @tanstack_react-query.js?v=1376d246:926
+executeFetch_fn @ @tanstack_react-query.js?v=1376d246:2211
+onSubscribe @ @tanstack_react-query.js?v=1376d246:1898
+subscribe @ @tanstack_react-query.js?v=1376d246:24
+(anonymous) @ @tanstack_react-query.js?v=1376d246:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1376d246:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+dispatchSetState @ chunk-RPCDYKBN.js?v=1376d246:12403
+(anonymous) @ App.tsx:633
+setTimeout
+(anonymous) @ App.tsx:632
+requestAnimationFrame
+(anonymous) @ App.tsx:631
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:387
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+updateContainer @ chunk-RPCDYKBN.js?v=1376d246:20776
+ReactDOMHydrationRoot.render.ReactDOMRoot.render @ chunk-RPCDYKBN.js?v=1376d246:21116
+(anonymous) @ main.tsx:5
+error-boundary.tsx:29 Context: {level: 'critical', timestamp: '2025-10-03T09:38:11.644Z', errorId: 'err_1759484291642_c1vsixfvw'}
+report @ error-boundary.tsx:29
+componentDidCatch @ error-boundary.tsx:88
+callback @ chunk-RPCDYKBN.js?v=1376d246:14084
+callCallback @ chunk-RPCDYKBN.js?v=1376d246:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=1376d246:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=1376d246:17075
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=1376d246:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19353
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+(anonymous) @ App.tsx:519
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1376d246:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1376d246:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1376d246:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1376d246:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1376d246:555
+flush @ @tanstack_react-query.js?v=1376d246:569
+batch @ @tanstack_react-query.js?v=1376d246:587
+dispatch_fn @ @tanstack_react-query.js?v=1376d246:996
+setData @ @tanstack_react-query.js?v=1376d246:696
+onSuccess @ @tanstack_react-query.js?v=1376d246:897
+resolve @ @tanstack_react-query.js?v=1376d246:456
+Promise.then
+run @ @tanstack_react-query.js?v=1376d246:498
+start @ @tanstack_react-query.js?v=1376d246:536
+fetch @ @tanstack_react-query.js?v=1376d246:926
+executeFetch_fn @ @tanstack_react-query.js?v=1376d246:2211
+onSubscribe @ @tanstack_react-query.js?v=1376d246:1898
+subscribe @ @tanstack_react-query.js?v=1376d246:24
+(anonymous) @ @tanstack_react-query.js?v=1376d246:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1376d246:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+dispatchSetState @ chunk-RPCDYKBN.js?v=1376d246:12403
+(anonymous) @ App.tsx:633
+setTimeout
+(anonymous) @ App.tsx:632
+requestAnimationFrame
+(anonymous) @ App.tsx:631
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1376d246:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1376d246:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1376d246:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1376d246:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1376d246:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1376d246:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=1376d246:19328
+workLoop @ chunk-RPCDYKBN.js?v=1376d246:197
+flushWork @ chunk-RPCDYKBN.js?v=1376d246:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:384
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:387
+r @ inpage.js:227
+t @ inpage.js:227
+V @ inpage.js:227
+postMessage
+i @ inpage.js:227
+e @ inpage.js:227
+schedulePerformWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1376d246:400
+requestHostCallback @ chunk-RPCDYKBN.js?v=1376d246:418
+unstable_scheduleCallback @ chunk-RPCDYKBN.js?v=1376d246:330
+scheduleCallback$1 @ chunk-RPCDYKBN.js?v=1376d246:19826
+ensureRootIsScheduled @ chunk-RPCDYKBN.js?v=1376d246:18652
+scheduleUpdateOnFiber @ chunk-RPCDYKBN.js?v=1376d246:18562
+updateContainer @ chunk-RPCDYKBN.js?v=1376d246:20776
+ReactDOMHydrationRoot.render.ReactDOMRoot.render @ chunk-RPCDYKBN.js?v=1376d246:21116
+(anonymous) @ main.tsx:5
+page-transition.tsx:65 ✅ ANIMATION COMPLETED for page: /auth
