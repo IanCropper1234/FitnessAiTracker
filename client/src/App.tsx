@@ -396,8 +396,8 @@ function AppRouter({ user, setUser }: { user: User | null; setUser: (user: User 
       {showNutritionMenu && <FloatingNutritionMenu onTabSelect={setActiveNutritionTab} activeTab={activeNutritionTab} />}
       {showTrainingMenu && <FloatingTrainingMenu onTabSelect={setActiveTrainingTab} activeTab={activeTrainingTab} />}
       
-      {/* Global Complete Set Button - Temporarily disabled for debugging */}
-      {/* <GlobalCompleteSetButton /> */}
+      {/* Global Complete Set Button */}
+      <GlobalCompleteSetButton />
       
       {/* Global iOS Date Picker Modal */}
       {user && (
