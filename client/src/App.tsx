@@ -516,35 +516,33 @@ function AppContent({ location, showGlobalHeader }: { location: string; showGlob
 
       <AnimatedPage key={location}>
         <Switch location={location}>
-          <Route path="/auth" component={AuthPage} />
+          <Route path="/auth" component={Auth} />
           <Route path="/email-verification" component={EmailVerification} />
           <Route path="/email-verification-success" component={EmailVerificationSuccess} />
-          <Route path="/onboarding" component={Onboarding} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms-of-service" component={TermsOfService} />
-          <ProtectedRoute path="/" component={Home} />
+          <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/dashboard" component={Dashboard} />
-          <ProtectedRoute path="/training" component={Training} />
+          <ProtectedRoute path="/training" component={TrainingPage} />
           <ProtectedRoute path="/nutrition" component={Nutrition} />
-          <ProtectedRoute path="/reports" component={Reports} />
-          <ProtectedRoute path="/profile" component={Profile} />
-          <ProtectedRoute path="/create-mesocycle" component={CreateMesocycle} />
+          <ProtectedRoute path="/reports" component={ReportsPage} />
+          <ProtectedRoute path="/profile" component={ProfilePage} />
+          <ProtectedRoute path="/create-mesocycle" component={CreateMesocyclePage} />
           <ProtectedRoute path="/create-training-template" component={CreateTrainingTemplate} />
-          <ProtectedRoute path="/edit-template/:id" component={EditTemplate} />
+          <ProtectedRoute path="/edit-template/:id" component={EditTemplatePage} />
           <ProtectedRoute path="/template-details/:id" component={TemplateDetails} />
           <ProtectedRoute path="/create-workout-session" component={CreateWorkoutSession} />
           <ProtectedRoute path="/training-analytics" component={TrainingAnalytics} />
           <ProtectedRoute path="/add-food" component={AddFood} />
-          <ProtectedRoute path="/nutrition-facts" component={NutritionFacts} />
+          <ProtectedRoute path="/nutrition-facts" component={NutritionFactsPage} />
           <ProtectedRoute path="/rp-coach" component={RPCoachPage} />
           <ProtectedRoute path="/exercise-selection" component={ExerciseSelection} />
           <ProtectedRoute path="/ai-exercise-recommendations" component={AIExerciseRecommendations} />
           <ProtectedRoute path="/enhanced-nutrition-ai" component={EnhancedNutritionAI} />
-          <ProtectedRoute path="/language-demo" component={LanguageDemo} />
           <ProtectedRoute path="/wellness-test" component={WellnessTestPage} />
           <ProtectedRoute path="/workout-feedback" component={WorkoutFeedbackPage} />
           <ProtectedRoute path="/workout-settings" component={WorkoutSettings} />
-          <ProtectedRoute path="/ios-notification-demo" component={IOSNotificationDemoPage} />
+          <ProtectedRoute path="/ios-notification-demo" component={IOSNotificationDemo} />
           <Route path="*" component={NotFound} />
         </Switch>
       </AnimatedPage>
