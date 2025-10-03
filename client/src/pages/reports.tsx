@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
+import { useHeader } from "@/contexts/HeaderContext";
 
 interface ReportsPageProps {
   userId: number;
@@ -31,6 +32,34 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   const [, setLocation] = useLocation();
   const [selectedPeriod, setSelectedPeriod] = useState("30");
   const [reportType, setReportType] = useState("overview");
+  const { setHeaderConfig } = useHeader();
+
+  // 設定此頁面的 header 配置
+  useEffect(() => {
+    setHeaderConfig({
+      leftButton: (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => setLocation('/')}
+          className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+      ),
+      title: "Analytics",
+      icon: <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" />,
+      rightButton: (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
+        >
+          <Download className="w-5 h-5" />
+        </Button>
+      )
+    });
+  }, [setHeaderConfig, setLocation]);
 
   // Fetch comprehensive analytics data
   const { data: comprehensiveAnalytics, isLoading } = useQuery({
@@ -102,35 +131,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 w-full ios-pwa-container">
       <div className="w-full px-2 space-y-4 pl-[0px] pr-[0px] ml-[-3px] mr-[-3px]">
-        {/* Ultra-Compact iOS Header - 由 WebView 控制 safe area */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 px-4 py-2">
-          <div className="flex items-center justify-between h-[44px]">
-            {/* Left: Back Arrow Only */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setLocation('/')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            
-            {/* Center: Compact Title with Icon */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-              <h1 className="text-base font-semibold">Analytics</h1>
-            </div>
-            
-            {/* Right: Context Menu */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
-            >
-              <Download className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
+        {/* Removed inline header, now managed by HeaderContext */}
 
         <div className="mt-4">
           <div className="p-4 pl-[0px] pr-[0px]">
@@ -423,7 +424,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 </div>
               </Card>
             </div>
-            
+
             {/* RP Nutrition Analysis */}
             <Card>
               <CardHeader className="pb-3">
@@ -561,7 +562,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                 </div>
               </Card>
             </div>
-            
+
             {/* RP Training Analysis */}
             <Card>
               <CardHeader className="pb-3">
@@ -752,28 +753,28 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Pump Quality</div>
                         </div>
-                        
+
                         <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 ">
                           <div className="text-lg font-bold text-blue-600">
                             {comprehensiveAnalytics.feedback.averages.energyLevel}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Energy Level</div>
                         </div>
-                        
+
                         <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 ">
                           <div className="text-lg font-bold text-purple-600">
                             {comprehensiveAnalytics.feedback.averages.sleepQuality}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Sleep Quality</div>
                         </div>
-                        
+
                         <div className="text-center p-3 bg-orange-50 dark:bg-orange-950 ">
                           <div className="text-lg font-bold text-orange-600">
                             {comprehensiveAnalytics.feedback.summary.recoveryScore}/10
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">Recovery Score</div>
                         </div>
-                        
+
                         <div className="text-center p-3 bg-red-50 dark:bg-red-950 ">
                           <div className="text-lg font-bold text-red-600">
                             {comprehensiveAnalytics.feedback.summary.fatigueScore}/10
@@ -781,7 +782,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
                           <div className="text-sm text-gray-600 dark:text-gray-400">Fatigue Score</div>
                         </div>
                       </div>
-                      
+
                       {comprehensiveAnalytics.feedback.trends && (
                         <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 ">
                           <h4 className="text-sm font-medium mb-2">Recent Trends</h4>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/components/language-provider";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,7 @@ import { ShoppingListGenerator } from "@/components/shopping-list-generator";
 
 import { LoadingState, NutritionLogSkeleton } from "@/components/ui/loading";
 import { useLocation } from "wouter";
+import { useHeader } from "@/contexts/HeaderContext";
 
 import { AnimatedTabs, AnimatedTabsContent, AnimatedTabsList, AnimatedTabsTrigger } from "@/components/ui/animated-tabs";
 import { FloatingNutritionMenu } from "@/components/floating-nutrition-menu";
@@ -107,6 +108,35 @@ export function Nutrition({
   const [, setLocation] = useLocation();
   const activeTab = externalActiveTab || "overview";
   const setActiveTab = onTabChange || (() => {});
+  const { setHeaderConfig } = useHeader();
+
+  // 設定此頁面的 header 配置
+  useEffect(() => {
+    setHeaderConfig({
+      leftButton: (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => setLocation('/')}
+          className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+      ),
+      title: "Nutrition",
+      icon: <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />,
+      rightButton: (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => setShowDatePicker(true)}
+          className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
+        >
+          <Calendar className="w-5 h-5" />
+        </Button>
+      )
+    });
+  }, [setHeaderConfig, setLocation, setShowDatePicker]);
 
   // Memoized tab content to prevent re-rendering
   const memoizedTabs = React.useMemo(() => ({
@@ -142,7 +172,7 @@ export function Nutrition({
     />,
     progression: <NutritionProgression userId={user.id} />,
     shopping: <ShoppingListGenerator userId={user.id} />
-  }), [user.id, selectedDate, bodyTrackingDate, copyFromDate, showCopyFromDatePicker, copyToDate, showCopyToDatePicker]);
+  }), [user.id, selectedDate, bodyTrackingDate, copyFromDate, showCopyFromDatePicker, copyToDate, showCopyToDatePicker, setShowDatePicker]);
 
   const { data: nutritionSummary, isLoading: summaryLoading } = useQuery({
     queryKey: ['/api/nutrition/summary', user.id, selectedDate],
@@ -224,36 +254,8 @@ export function Nutrition({
   return (
     <div className="min-h-screen bg-background text-foreground w-full ios-pwa-container">
       <div className="w-full max-w-none space-y-2">
-        {/* Ultra-Compact iOS Header */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-4 px-4">
-          <div className="flex items-center justify-between h-[44px]">
-            {/* Left: Back Arrow Only */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setLocation('/')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback ios-smooth-transform button-press-animation"
-            >
-              <ArrowLeft className="w-5 h-5 transition-transform duration-150" />
-            </Button>
-            
-            {/* Center: Compact Title with Icon */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <Utensils className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 transition-colors duration-200" />
-              <h1 className="text-base font-semibold transition-colors duration-200">Nutrition</h1>
-            </div>
-            
-            {/* Right: Context Menu */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setShowDatePicker(true)}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback ios-smooth-transform button-press-animation invisible"
-            >
-              <Calendar className="w-5 h-5 transition-transform duration-150" />
-            </Button>
-          </div>
-        </div>
+        {/* Removed Ultra-Compact iOS Header */}
+        
 
         {/* Enhanced Date Selector - Only show on overview tab */}
         {activeTab === "overview" && (
@@ -270,7 +272,7 @@ export function Nutrition({
               >
                 <ChevronLeft className="h-4 w-4 transition-transform duration-150" />
               </button>
-              
+
               <button
                 onClick={() => setShowDatePicker(true)}
                 className="ios-touch-feedback ios-smooth-transform flex items-center gap-2 px-4 py-2  hover:bg-accent/50 transition-all duration-200 active:scale-98 min-h-[44px]"
@@ -284,7 +286,7 @@ export function Nutrition({
                 </span>
                 <ChevronDown className="h-4 w-4 text-foreground/50 transition-transform duration-150" />
               </button>
-              
+
               <button
                 onClick={() => {
                   const nextDay = TimezoneUtils.addDays(selectedDate, 1);
