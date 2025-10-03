@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   TouchableOpacity,
+  AppState,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 
@@ -18,7 +19,11 @@ const { width, height } = Dimensions.get('window');
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [webViewKey, setWebViewKey] = useState(0);
+  const [appState, setAppState] = useState(AppState.currentState);
   const webViewRef = useRef(null);
+  const backgroundTimeRef = useRef(null);
+  const reloadAttemptsRef = useRef(0);
 
   // Production URL - use the main production domain
   const serverUrl = 'https://fitness-ai-tracker-c0109009.replit.app';
@@ -33,18 +38,93 @@ export default function App() {
     setIsLoading(false);
   };
 
-  const handleError = (syntheticEvent) => {
-    const { nativeEvent } = syntheticEvent;
-    console.error('WebView error:', nativeEvent);
-    setError(nativeEvent);
-    setIsLoading(false);
-  };
+  // Placeholder - will be set after handleWebViewError is defined
+  let handleError;
 
   // Handle navigation state changes
   const handleNavigationStateChange = (navState) => {
     // You can track navigation and add mobile-specific logic here
     console.log('Navigation to:', navState.url);
   };
+
+  // Enhanced AppState handling for iOS WebView lifecycle
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      console.log('[App] AppState changed from', appState, 'to', nextAppState);
+      
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        // App came back to foreground
+        const backgroundDuration = backgroundTimeRef.current 
+          ? Date.now() - backgroundTimeRef.current 
+          : 0;
+        
+        console.log('[App] Returned from background after', backgroundDuration, 'ms');
+        
+        // If background duration > 5 minutes, likely need reload due to iOS memory management
+        if (backgroundDuration > 5 * 60 * 1000) {
+          console.log('[App] Long background detected, checking WebView state');
+          
+          // Start with a gentle reload attempt
+          setTimeout(() => {
+            if (webViewRef.current) {
+              console.log('[App] Attempting WebView reload after background');
+              webViewRef.current.reload();
+            }
+          }, 1000);
+          
+          // If still problematic after 3 seconds, force re-mount
+          setTimeout(() => {
+            if (reloadAttemptsRef.current < 2) {
+              console.log('[App] Force re-mounting WebView due to potential blank page');
+              reloadAttemptsRef.current++;
+              setWebViewKey(prev => prev + 1);
+            }
+          }, 4000);
+        }
+        
+        backgroundTimeRef.current = null;
+      } else if (nextAppState.match(/inactive|background/)) {
+        // App going to background
+        backgroundTimeRef.current = Date.now();
+        console.log('[App] App going to background');
+      }
+      
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+    return () => subscription?.remove();
+  }, [appState]);
+
+  // WebView process termination handler
+  const handleWebViewError = (syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    console.error('[App] WebView error:', nativeEvent);
+    
+    // Check if this is a process termination
+    if (nativeEvent.description?.includes('terminated') || 
+        nativeEvent.description?.includes('crash') ||
+        nativeEvent.code === -999) {
+      console.log('[App] WebView process terminated, force re-mounting');
+      setWebViewKey(prev => prev + 1);
+      reloadAttemptsRef.current = 0; // Reset attempts on process termination
+    } else {
+      setError(nativeEvent);
+    }
+    
+    setIsLoading(false);
+  };
+
+  // Content process termination handler (iOS specific)
+  const handleContentProcessDidTerminate = () => {
+    console.log('[App] WebView content process terminated by iOS');
+    setWebViewKey(prev => prev + 1);
+    reloadAttemptsRef.current = 0;
+  };
+
+  // Set the error handler after function definitions
+  handleError = handleWebViewError;
 
   // Inject JavaScript to optimize for mobile and handle visibility/reload
   const injectedJavaScript = `
@@ -60,15 +140,16 @@ export default function App() {
       meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover';
       document.getElementsByTagName('head')[0].appendChild(meta);
       
-      // Enhanced WebView Auto-Reload System
+      // Enhanced WebView Auto-Reload System - Works with React Native AppState
       var WebViewReloadManager = {
         lastActivity: Date.now(),
         backgroundTime: null,
         isVisible: !document.hidden,
         checkInterval: null,
         reloadAttempts: 0,
-        maxReloadAttempts: 3,
-        lastReloadAttempt: 0,
+        maxReloadAttempts: 2, // Reduced - React Native will handle more aggressive reloading
+        lastReloadAttempt: null, // null allows first reload attempt immediately
+        isReactNativeHandling: true, // Flag to coordinate with React Native
         
         // Initialize the reload manager
         init: function() {
@@ -232,10 +313,24 @@ export default function App() {
         // Handle automatic reload with exponential backoff
         handleAutoReload: function(reason) {
           var now = Date.now();
-          var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : 0;
+          var timeSinceLastAttempt = this.lastReloadAttempt ? now - this.lastReloadAttempt : Infinity;
           
-          // Exponential backoff: 1min, 2min, 4min (60000, 120000, 240000 ms)
-          var backoffTime = Math.pow(2, this.reloadAttempts) * 60000;
+          // Exponential backoff: 2min, 4min (conservative approach)
+          var backoffTime = Math.pow(2, this.reloadAttempts + 1) * 60000;
+          
+          // If React Native is handling lifecycle, be more conservative
+          if (this.isReactNativeHandling && reason === 'background_return') {
+            console.log('[WebView] Background return detected, deferring to React Native AppState handling');
+            // Notify React Native instead of reloading directly
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'BLANK_PAGE_DETECTED',
+                reason: reason,
+                timestamp: now
+              }));
+            }
+            return;
+          }
           
           // Check if we're within backoff period
           if (timeSinceLastAttempt < backoffTime) {
@@ -244,7 +339,14 @@ export default function App() {
           }
           
           if (this.reloadAttempts >= this.maxReloadAttempts) {
-            console.log('[WebView] Max reload attempts reached, skipping');
+            console.log('[WebView] Max reload attempts reached, notifying React Native for key-based re-mount');
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'FORCE_REMOUNT_NEEDED',
+                reason: 'max_reload_attempts_reached',
+                timestamp: now
+              }));
+            }
             return;
           }
           
@@ -314,15 +416,15 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* iPhone-specific safe area handling */
+        /* iPhone-specific safe area handling - 僅在底部使用 safe area */
         @supports (padding: max(0px)) {
           .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
             background-color: #000000;
             min-height: 100vh;
-            padding-top: max(44px, env(safe-area-inset-top)) !important;
-            padding-bottom: max(34px, env(safe-area-inset-bottom)) !important;
-            padding-left: env(safe-area-inset-left) !important;
-            padding-right: env(safe-area-inset-right) !important;
+            padding-top: 0 !important;
+            padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
             box-sizing: border-box;
           }
         }
@@ -331,8 +433,8 @@ export default function App() {
         .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
           background-color: #000000;
           min-height: 100vh;
-          padding-top: 44px !important;
-          padding-bottom: 34px !important;
+          padding-top: 0 !important;
+          padding-bottom: 70px !important;
           box-sizing: border-box;
         }
         
@@ -343,10 +445,10 @@ export default function App() {
         
         /* Remove all custom padding - let the app handle its own spacing */
         main, .page-container, .dashboard-container, .content-area {
-          padding-top: 0px !important;
+          padding-top: 0 !important;
           padding-bottom: 70px !important;
-          padding-left: 0px !important;
-          padding-right: 0px !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
           box-sizing: border-box;
           min-height: 100vh;
           overflow-x: hidden;
@@ -367,8 +469,8 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* Fix for content being cut off */
-        .container, .content-wrapper {
+        /* Fix for content being cut off - exclude PWA containers */
+        .container:not(.ios-pwa-container), .content-wrapper {
           padding-top: var(--safe-area-inset-top, 0px);
           padding-bottom: var(--safe-area-inset-bottom, 0px);
         }
@@ -496,6 +598,22 @@ export default function App() {
           // Handle session data persistence
           console.log('Session data persisted:', message.data);
           break;
+        case 'BLANK_PAGE_DETECTED':
+          console.log(`[App] WebView detected blank page: ${message.reason}`);
+          // Trigger React Native-level reload
+          setTimeout(() => {
+            if (webViewRef.current) {
+              console.log('[App] React Native handling blank page with reload');
+              webViewRef.current.reload();
+            }
+          }, 500);
+          break;
+        case 'FORCE_REMOUNT_NEEDED':
+          console.log('[App] WebView requested force re-mount due to:', message.reason);
+          // Force re-mount with key change
+          setWebViewKey(prev => prev + 1);
+          reloadAttemptsRef.current = 0; // Reset attempts on re-mount
+          break;
         default:
           console.log('Unknown message type:', message.type);
       }
@@ -548,16 +666,19 @@ export default function App() {
 
       {/* Full-screen WebView */}
       <WebView
+        key={webViewKey}
         ref={webViewRef}
         source={{ uri: serverUrl }}
         style={styles.webview}
         onLoadStart={handleLoadStart}
         onLoadEnd={handleLoadEnd}
-        onError={handleError}
+        onError={handleWebViewError}
         onNavigationStateChange={handleNavigationStateChange}
         onMessage={handleMessage}
         injectedJavaScript={injectedJavaScript}
         userAgent={userAgent}
+        onContentProcessDidTerminate={handleContentProcessDidTerminate}
+        onRenderProcessGone={handleContentProcessDidTerminate}
         
         // WebView configuration
         javaScriptEnabled={true}

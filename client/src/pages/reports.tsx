@@ -102,15 +102,15 @@ export function ReportsPage({ userId }: ReportsPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 w-full ios-pwa-container">
       <div className="w-full px-2 space-y-4 pl-[0px] pr-[0px] ml-[-3px] mr-[-3px]">
-        {/* Ultra-Compact iOS Header */}
-        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-6">
+        {/* Ultra-Compact iOS Header - 優化版本 */}
+        <div className="ios-sticky-header bg-background/95 border-b border-border/10 -mx-2 px-4 py-2 ml-[-8px] mr-[-8px] mb-3">
           <div className="flex items-center justify-between h-[44px]">
             {/* Left: Back Arrow Only */}
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => setLocation('/')}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
@@ -125,7 +125,7 @@ export function ReportsPage({ userId }: ReportsPageProps) {
             <Button 
               variant="ghost" 
               size="sm"
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50  ios-touch-feedback"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] p-0 hover:bg-accent/50 ios-touch-feedback"
             >
               <Download className="w-5 h-5" />
             </Button>
