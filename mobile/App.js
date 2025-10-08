@@ -427,33 +427,6 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* iPhone-specific safe area handling - 僅在底部使用 safe area */
-        @supports (padding: max(0px)) {
-          .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
-            background-color: #000000;
-            min-height: 100vh;
-            padding-top: env(safe-area-inset-top) !important;
-            padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            box-sizing: border-box;
-          }
-        }
-        
-        /* Fallback for older devices */
-        .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
-          background-color: #000000;
-          min-height: 100vh;
-          padding-top: env(safe-area-inset-top, 0) !important;  
-          padding-bottom: 70px !important;
-          box-sizing: border-box;
-        }
-        
-        /* Apply safe area to all direct children of main container */
-        .ios-pwa-container > *, .min-h-screen > * {
-          box-sizing: border-box;
-        }
-        
         /* Remove all custom padding - let the app handle its own spacing */
         main, .page-container, .dashboard-container, .content-area {
           padding-top: 0 !important;
