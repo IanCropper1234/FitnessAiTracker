@@ -119,8 +119,8 @@ export async function analyzeNutritionMultiImage(
         ? `**Task:** Extract and analyze nutritional information from nutrition facts labels across ${imageCount} image(s).
 
 **Analysis Approach:**
-1. **EXACT Label Reading:** Read nutrition values EXACTLY as displayed - if the label shows 107 calories, report 107 (NOT 535 or any other value)
-2. **Serving Size Accuracy:** Use ONLY the serving size shown on the label (typically 1 serving = 20g for chocolate)
+1. **EXACT Label Reading:** Read nutrition values EXACTLY as displayed. Do not scale, multiply, or adjust any values.
+2. **Serving Size Accuracy:** Use ONLY the serving size shown on the label (E.g. typically 1 serving = 20g for chocolate)
 3. **NO VALUE ADJUSTMENT:** Report values exactly as they appear - never multiply, divide, scale, or adjust ANY numbers
 4. **Food Name Integration:** Use "${foodName}" to validate label information and resolve ambiguities
 5. **Portion Calculation:** ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit} based on label serving sizes` : `Use the exact serving size and values stated on the nutrition labels`}
@@ -131,8 +131,6 @@ export async function analyzeNutritionMultiImage(
 **CRITICAL - Serving Details for Nutrition Labels:**
 - Extract the EXACT serving size text from the nutrition facts label (e.g., "1 container (150g)", "2 slices (45g)", "1 cup (30g)")
 - Read ALL nutrition values EXACTLY as shown on the label for the stated serving size
-- ABSOLUTE RULE: If the label shows 107 calories, report exactly 107 - never 535 or any scaled value
-- DO NOT multiply or scale values - use the exact numbers from the label
 - If multiple products, specify which product the serving refers to
 - Include both the descriptive portion AND weight/volume when available
 - VERIFICATION REQUIREMENT: Before submitting response, confirm your reported calories exactly match what is visible on the nutrition label
