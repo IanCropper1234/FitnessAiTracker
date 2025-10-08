@@ -427,17 +427,6 @@ export default function App() {
           -webkit-overflow-scrolling: touch;
         }
         
-        /* Remove all custom padding - let the app handle its own spacing */
-        main, .page-container, .dashboard-container, .content-area {
-          padding-top: 0 !important;
-          padding-bottom: 70px !important;
-          padding-left: 0 !important;
-          padding-right: 0 !important;
-          box-sizing: border-box;
-          min-height: 100vh;
-          overflow-x: hidden;
-        }
-        
         /* Bottom navigation - stick to bottom with safe area */
         .fixed.bottom-0, nav[class*="bottom"] {
           position: fixed !important;
