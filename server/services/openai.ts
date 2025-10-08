@@ -157,7 +157,9 @@ export async function analyzeNutritionMultiImage(
 
 2. **MULTI-IMAGE COMPOSITION ANALYSIS:**
    - Examine all ${imageCount} images to understand complete meal composition
-   - Look for ingredients not immediately obvious (sauces, seasonings, cooking oils, etc.)
+   - **VISIBLE INGREDIENTS ONLY**: Only include ingredients that are clearly visible in the images
+   - **USER-MENTIONED INGREDIENTS**: Include ingredients mentioned in food name "${foodName}" or description "${foodDescription || ''}"
+   - **NO ASSUMED INGREDIENTS**: Do NOT add sauces, seasonings, or cooking oils unless they are visible OR explicitly mentioned by the user
    - Consider cooking methods that affect nutrition (fried vs grilled, added fats, etc.)
 
 3. **INTELLIGENT PORTION ESTIMATION WITH ACCURATE VOLUME ANALYSIS:**
@@ -175,21 +177,29 @@ export async function analyzeNutritionMultiImage(
      4. **Apply Food Density Knowledge**: Convert visual volume to weight using food-specific density
      5. **Reality Check Against Typical Portions**: Verify estimate against standard serving sizes
    
-   - **PORTION SIZE ACCURACY RULES**:
-     * Small snacks (cookies, small pastries): typically 20-80g each = 80-350 calories
-     * Medium portions (single servings): typically 100-200g = 200-600 calories
-     * Large single portions: typically 200-400g = 400-1000 calories
+   - **PORTION SIZE ACCURACY RULES - IMAGE ANALYSIS MODE**:
+     * **AUTO-CALCULATE from visual analysis**: Determine ACTUAL portion size by analyzing the image
+     * Use reference objects to calculate real-world dimensions and weight
+     * Cross-reference with typical portion guidelines only for validation:
+       - Small snacks: typically 20-50g each = 80-200 calories
+       - Medium portions: typically 100-150g = 250-450 calories  
+       - Large portions: typically 200-300g = 500-800 calories
+     * **PRIORITY**: Visual analysis > typical portions (trust your measurement over averages)
      * Be especially careful with fried/baked items - they often appear larger than actual weight
    
    - **CONSERVATIVE ESTIMATION PRINCIPLE**: When in doubt, choose smaller realistic portions over oversized estimates
 
 4. **MATHEMATICAL INGREDIENT-LEVEL NUTRITION CALCULATION:**
    - Calculate nutrition for each identified component with DETAILED breakdown
-   - Apply cooking method adjustments (roasting/frying adds oil calories, skin adds fat)
-   - Sum components for total meal nutrition: Base Food + Cooking Additions + Visible Extras
+   - **COOKING METHOD ADJUSTMENTS - CONSERVATIVE APPROACH**:
+     * Add cooking oil/fat calories ONLY if:
+       a) Oil/grease is CLEARLY VISIBLE in the image (shiny surface, pooling, etc.), OR
+       b) User explicitly mentioned cooking method in food name "${foodName}" or description "${foodDescription || ''}" (e.g., "fried", "deep-fried", "pan-fried", "sautéed with oil")
+     * Do NOT assume added fats/oils if not visible or mentioned
+   - Sum components for total meal nutrition: Base Food + ONLY VISIBLE/MENTIONED cooking additions
    - **STEP-BY-STEP CALCULATION**: Show math for each component
    - Include micronutrients from all identified ingredients
-   - **VERIFICATION**: Ensure final calories > raw/plain version if cooking/preparation is visible
+   - **VERIFICATION**: Ensure final calories ≈ visible components (not inflated beyond what's actually shown or mentioned)
 
 5. **PORTION UNIT OPTIMIZATION:**
    - PRIORITIZE ACCURACY: Use grams (g) for most solid foods including baked goods, snacks, donuts, cookies, etc.
@@ -300,23 +310,26 @@ Return only valid JSON with all required fields.`
 3. **CONTEXTUAL PORTION ANALYSIS:**
    - Food: "${primaryInput}"${foodDescription && foodDescription.trim() ? ` with context: "${foodDescription}"` : ''}
    ${foodDescription && foodDescription.trim() ? `
-   - **CRITICAL PREPARATION ANALYSIS**: The description "${foodDescription}" contains cooking/preparation details that MUST be mathematically added to base nutrition:
+   - **USER-MENTIONED INGREDIENTS ANALYSIS**: The description "${foodDescription}" may contain cooking/preparation details
      
-     **STEP-BY-STEP CALCULATION REQUIRED:**
-     1. Start with BASE skinless food nutrition (e.g., skinless chicken breast: ~165 cal/100g)
-     2. Add skin impact: +30-40 calories per 100g (+15-20g fat)
-     3. Add cooking oil: Estimate 1-2 tbsp olive oil = +120-240 calories (+14-28g fat)
-     4. Total = Base + Skin + Oil additions
+     **CONSERVATIVE COOKING ADJUSTMENT RULES:**
+     1. **ONLY add cooking calories if user EXPLICITLY MENTIONS them**:
+        - User says "with oil/butter/sauce" → Add those calories
+        - User says "fried/deep-fried" → Add frying oil calories  
+        - User says "with skin" → Add skin calories
+        - User DOES NOT mention → DO NOT add any cooking calories
      
-     **COOKING METHOD IMPACT:**
-     * "Roasted/grilled with oil" = base + oil calories (typically +120-200 cal)
-     * "Fried" = base + significant oil absorption (+200-300 cal)
-     * "With skin" = base + skin fat content (+30-50 cal per 100g)
-     * "Butter/oil" mentioned = add 100-120 cal per tbsp used
+     2. **Start with base food nutrition** (e.g., chicken breast: ~165 cal/100g)
      
-     **VERIFICATION RULE**: Final calories for prepared food MUST be higher than plain/raw version
-     Example: Plain chicken breast (165 cal) → Roasted with skin + oil (280-320 cal)
-   - ALWAYS show ingredient breakdown with separate calorie contributions` : ''}
+     3. **Add ONLY what user explicitly mentioned**:
+        - "with oil" mentioned → +120-200 cal for cooking oil
+        - "fried" mentioned → +200-300 cal for oil absorption
+        - "with skin" mentioned → +30-50 cal per 100g for skin
+        - Nothing mentioned → Add 0 calories (use base food only)
+     
+     **VERIFICATION RULE**: Final calories ≈ sum of explicitly mentioned components
+     Example: "Chicken breast" = 165 cal | "Chicken breast with oil" = 165 + 120 = 285 cal
+   - Show ingredient breakdown for components user mentioned` : ''}
    - Determine realistic serving sizes based on food type and common consumption patterns
    - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}
 
@@ -337,10 +350,10 @@ Return only valid JSON with all required fields.`
    - For snack items like egg waffles, cookies, donuts: typical single servings are 150-400 calories
    - Be conservative with portion estimates - prefer smaller realistic portions over oversized estimates
    - **PREPARATION LOGIC CHECK**: If description mentions cooking methods/additions:
-     * Verify final calories > base food calories (cooked/prepared should be higher)
-     * Check fat content increased appropriately with oils/skin
+     * Verify final calories ≈ base food + only explicitly mentioned additions
+     * Only increase calories if user mentioned cooking oil, butter, skin, or frying
      * Ensure ingredient breakdown adds up to total nutrition
-     * Flag if prepared food has LOWER calories than plain version (likely error)
+     * DO NOT flag lower calories - plain/unmentioned preparations should use base nutrition
    - Flag any unusual or potentially incorrect values
 
 **OUTPUT REQUIREMENTS - JSON format with these EXACT fields:**
@@ -826,10 +839,17 @@ Return only valid JSON with all required fields.`
 **Task:** Provide detailed nutritional analysis with transparent methodology and clear assumptions.
 
 **Required Analysis:**
-1. **Portion & Detail Recognition:** Accurately identify quantities, portion sizes, and preparation methods
+1. **Portion & Detail Recognition - TEXT ANALYSIS MODE:** 
+   - If user specifies portion size in text (e.g., "1 cup", "200g", "2 pieces"), use EXACTLY that amount
+   - If no portion specified, assume MEDIUM/NORMAL portion size for that food type:
+     * Snacks/sweets: 30-50g (small to medium serving)
+     * Main dishes: 150-200g (standard single serving)
+     * Sides/vegetables: 80-120g (typical side portion)
+   - Reference user's description for any cooking methods or added ingredients mentioned
 2. **Ingredient Breakdown:** For mixed dishes, infer probable ingredients and proportions based on common recipes
 3. **Database-Informed Estimation:** Base estimates on USDA FoodData Central, Open Food Facts, and trusted sources
 4. **Assumption Transparency:** Clearly state any assumptions made due to ambiguous descriptions
+5. **User-Mentioned Ingredients Only:** Only include ingredients/cooking methods explicitly mentioned in the text description
 
 **Output Requirements - JSON format with these exact fields:**
 - calories: total calories (number)
