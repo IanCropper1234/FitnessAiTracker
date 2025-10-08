@@ -135,7 +135,7 @@
   .mobile-app input,
   .mobile-app textarea,
   .mobile-app select,
-  .mobile-app button:not([role="tab"]) {  /* 👈 添加 :not([role="tab"]) */
+  .mobile-app button:not([role="tab"]):not([data-filter-tabs]) {  /* 👈 添加 :not([role="tab"]) */
     font-size: 16px;
     min-height: 44px;
     -webkit-appearance: none;
