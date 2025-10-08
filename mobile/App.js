@@ -421,7 +421,7 @@ export default function App() {
           .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
             background-color: #000000;
             min-height: 100vh;
-            padding-top: 0 !important;
+            padding-top: env(safe-area-inset-top) !important;
             padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
@@ -433,7 +433,7 @@ export default function App() {
         .ios-pwa-container, .min-h-screen, #root, [data-reactroot] {
           background-color: #000000;
           min-height: 100vh;
-          padding-top: 0 !important;
+          padding-top: env(safe-area-inset-top, 0) !important;  
           padding-bottom: 70px !important;
           box-sizing: border-box;
         }
