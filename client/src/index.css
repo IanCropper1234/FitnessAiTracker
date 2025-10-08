@@ -707,7 +707,6 @@ body:has([data-radix-select-content][data-state="open"]) {
 /* iOS Safe Area Support for Toasts */
 .top-safe-area-inset-top {
   top: env(safe-area-inset-top, 0px);
-  padding-top: max(1rem, env(safe-area-inset-top));
 }
 
 /* Enhanced Toast Swipe Gestures */
@@ -1953,18 +1952,25 @@ button, .ios-button {
   }
   
   /* Full safe area insets for PWA containers - 僅底部使用 safe area */
-  .ios-pwa-container {
-    padding-top: 20px;
-    padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom, 0)));
-    padding-left: 16px;
-    padding-right: 16px;
-    margin: 0 auto;
-    max-width: 420px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
+.ios-pwa-container {
+  padding-top: env(safe-area-inset-top, 20px); /* ✅ 有 Dynamic Island 時自動適配，沒有則用 20px */
+  padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom, 0)));
+  padding-left: 16px;
+  padding-right: 16px;
+  margin: 0 auto;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Toast 不需要額外的 padding-top，只需要 top 定位 */
+.top-safe-area-inset-top {
+  top: env(safe-area-inset-top, 0px); /* ✅ 保留這個 */
+  /* ❌ 移除下面這行，避免重複加 padding */
+  /* padding-top: max(1rem, env(safe-area-inset-top)); */
+}
 
   /* Smaller screens like iPhone 12 mini */
   @media (max-width: 375px) {

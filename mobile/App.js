@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
+import React, { useState, useEffect, useRef } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
   StatusBar,
   Alert,
   Linking,
@@ -11,10 +11,10 @@ import {
   Platform,
   TouchableOpacity,
   AppState,
-} from 'react-native';
-import { WebView } from 'react-native-webview';
+} from "react-native";
+import { WebView } from "react-native-webview";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +26,7 @@ export default function App() {
   const reloadAttemptsRef = useRef(0);
 
   // Production URL - use the main production domain
-  const serverUrl = 'https://fitness-ai-tracker-c0109009.replit.app';
+  const serverUrl = "https://fitness-ai-tracker-c0109009.replit.app";
 
   // Handle loading state
   const handleLoadStart = () => {
@@ -44,82 +44,93 @@ export default function App() {
   // Handle navigation state changes
   const handleNavigationStateChange = (navState) => {
     // You can track navigation and add mobile-specific logic here
-    console.log('Navigation to:', navState.url);
+    console.log("Navigation to:", navState.url);
   };
 
   // Enhanced AppState handling for iOS WebView lifecycle
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
-      console.log('[App] AppState changed from', appState, 'to', nextAppState);
-      
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      console.log("[App] AppState changed from", appState, "to", nextAppState);
+
+      if (appState.match(/inactive|background/) && nextAppState === "active") {
         // App came back to foreground
-        const backgroundDuration = backgroundTimeRef.current 
-          ? Date.now() - backgroundTimeRef.current 
+        const backgroundDuration = backgroundTimeRef.current
+          ? Date.now() - backgroundTimeRef.current
           : 0;
-        
-        console.log('[App] Returned from background after', backgroundDuration, 'ms');
-        
+
+        console.log(
+          "[App] Returned from background after",
+          backgroundDuration,
+          "ms",
+        );
+
         // If background duration > 5 minutes, likely need reload due to iOS memory management
         if (backgroundDuration > 5 * 60 * 1000) {
-          console.log('[App] Long background detected, checking WebView state');
-          
+          console.log("[App] Long background detected, checking WebView state");
+
           // Start with a gentle reload attempt
           setTimeout(() => {
             if (webViewRef.current) {
-              console.log('[App] Attempting WebView reload after background');
+              console.log("[App] Attempting WebView reload after background");
               webViewRef.current.reload();
             }
           }, 1000);
-          
+
           // If still problematic after 3 seconds, force re-mount
           setTimeout(() => {
             if (reloadAttemptsRef.current < 2) {
-              console.log('[App] Force re-mounting WebView due to potential blank page');
+              console.log(
+                "[App] Force re-mounting WebView due to potential blank page",
+              );
               reloadAttemptsRef.current++;
-              setWebViewKey(prev => prev + 1);
+              setWebViewKey((prev) => prev + 1);
             }
           }, 4000);
         }
-        
+
         backgroundTimeRef.current = null;
       } else if (nextAppState.match(/inactive|background/)) {
         // App going to background
         backgroundTimeRef.current = Date.now();
-        console.log('[App] App going to background');
+        console.log("[App] App going to background");
       }
-      
+
       setAppState(nextAppState);
     };
 
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+
     return () => subscription?.remove();
   }, [appState]);
 
   // WebView process termination handler
   const handleWebViewError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
-    console.error('[App] WebView error:', nativeEvent);
-    
+    console.error("[App] WebView error:", nativeEvent);
+
     // Check if this is a process termination
-    if (nativeEvent.description?.includes('terminated') || 
-        nativeEvent.description?.includes('crash') ||
-        nativeEvent.code === -999) {
-      console.log('[App] WebView process terminated, force re-mounting');
-      setWebViewKey(prev => prev + 1);
+    if (
+      nativeEvent.description?.includes("terminated") ||
+      nativeEvent.description?.includes("crash") ||
+      nativeEvent.code === -999
+    ) {
+      console.log("[App] WebView process terminated, force re-mounting");
+      setWebViewKey((prev) => prev + 1);
       reloadAttemptsRef.current = 0; // Reset attempts on process termination
     } else {
       setError(nativeEvent);
     }
-    
+
     setIsLoading(false);
   };
 
   // Content process termination handler (iOS specific)
   const handleContentProcessDidTerminate = () => {
-    console.log('[App] WebView content process terminated by iOS');
-    setWebViewKey(prev => prev + 1);
+    console.log("[App] WebView content process terminated by iOS");
+    setWebViewKey((prev) => prev + 1);
     reloadAttemptsRef.current = 0;
   };
 
@@ -568,76 +579,88 @@ export default function App() {
   const handleMessage = (event) => {
     try {
       const message = JSON.parse(event.nativeEvent.data);
-      console.log('Message from WebView:', message);
-      
+      console.log("Message from WebView:", message);
+
       switch (message.type) {
-        case 'READY':
-          console.log('WebView is ready');
+        case "READY":
+          console.log("WebView is ready");
           setIsLoading(false);
           break;
-        case 'NAVIGATION':
+        case "NAVIGATION":
           // Handle navigation events
           break;
-        case 'ERROR':
-          Alert.alert('Error', message.error);
+        case "ERROR":
+          Alert.alert("Error", message.error);
           break;
-        case 'AUTO_RELOAD':
-          console.log(`WebView auto-reload triggered: ${message.reason} (attempt ${message.attempt})`);
+        case "AUTO_RELOAD":
+          console.log(
+            `WebView auto-reload triggered: ${message.reason} (attempt ${message.attempt})`,
+          );
           // Optional: Show user notification about auto-reload
           if (message.attempt === 1) {
-            console.log('First auto-reload attempt, refreshing session...');
+            console.log("First auto-reload attempt, refreshing session...");
           }
           break;
-        case 'VISIBILITY_CHANGE':
-          console.log(`WebView visibility: ${message.isVisible ? 'visible' : 'hidden'}`);
+        case "VISIBILITY_CHANGE":
+          console.log(
+            `WebView visibility: ${message.isVisible ? "visible" : "hidden"}`,
+          );
           if (message.backgroundDuration) {
             console.log(`Background duration: ${message.backgroundDuration}ms`);
           }
           break;
-        case 'SESSION_PERSIST':
+        case "SESSION_PERSIST":
           // Handle session data persistence
-          console.log('Session data persisted:', message.data);
+          console.log("Session data persisted:", message.data);
           break;
-        case 'BLANK_PAGE_DETECTED':
+        case "BLANK_PAGE_DETECTED":
           console.log(`[App] WebView detected blank page: ${message.reason}`);
           // Trigger React Native-level reload
           setTimeout(() => {
             if (webViewRef.current) {
-              console.log('[App] React Native handling blank page with reload');
+              console.log("[App] React Native handling blank page with reload");
               webViewRef.current.reload();
             }
           }, 500);
           break;
-        case 'FORCE_REMOUNT_NEEDED':
-          console.log('[App] WebView requested force re-mount due to:', message.reason);
+        case "FORCE_REMOUNT_NEEDED":
+          console.log(
+            "[App] WebView requested force re-mount due to:",
+            message.reason,
+          );
           // Force re-mount with key change
-          setWebViewKey(prev => prev + 1);
+          setWebViewKey((prev) => prev + 1);
           reloadAttemptsRef.current = 0; // Reset attempts on re-mount
           break;
         default:
-          console.log('Unknown message type:', message.type);
+          console.log("Unknown message type:", message.type);
       }
     } catch (error) {
-      console.error('Error parsing WebView message:', error);
+      console.error("Error parsing WebView message:", error);
     }
   };
 
   // Custom user agent to identify mobile app requests
   const userAgent = Platform.select({
-    ios: 'MyTrainPro-iOS/1.0.0 (iPhone; iOS 14.0) AppleWebKit/605.1.15 Safari/604.1',
-    android: 'MyTrainPro-Android/1.0.0 (Android 10; Mobile) Chrome/91.0.4472.120',
+    ios: "MyTrainPro-iOS/1.0.0 (iPhone; iOS 14.0) AppleWebKit/605.1.15 Safari/604.1",
+    android:
+      "MyTrainPro-Android/1.0.0 (Android 10; Mobile) Chrome/91.0.4472.120",
   });
 
   if (error) {
     return (
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="#000000"
+          translucent={true}
+        />
         <View style={styles.errorContainer}>
           <Text style={styles.errorTitle}>Connection Error</Text>
           <Text style={styles.errorMessage}>
             Unable to load MyTrainPro. Please check your internet connection.
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.retryButton}
             onPress={() => {
               setError(null);
@@ -654,8 +677,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" translucent={true} />
-      
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#000000"
+        translucent={true}
+      />
+
       {/* Loading overlay */}
       {isLoading && (
         <View style={styles.loadingOverlay}>
@@ -679,7 +706,6 @@ export default function App() {
         userAgent={userAgent}
         onContentProcessDidTerminate={handleContentProcessDidTerminate}
         onRenderProcessGone={handleContentProcessDidTerminate}
-        
         // WebView configuration
         javaScriptEnabled={true}
         domStorageEnabled={true}
@@ -693,52 +719,54 @@ export default function App() {
         overScrollMode="always"
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
-        
         // iOS specific
         allowsInlineMediaPlayback={true}
         mediaPlaybackRequiresUserAction={false}
-        
         // Android specific
         mixedContentMode="compatibility"
-        
         // Security and performance
         allowsFullscreenVideo={true}
         allowsBackForwardNavigationGestures={true}
         cacheEnabled={true}
         incognito={false}
-        
         // Session persistence settings
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
-        
         // Handle different types of navigation with session persistence
         onShouldStartLoadWithRequest={(request) => {
           // Allow all navigation within the app domains
-          if (request.url.includes('fitness-ai-tracker-c0109009.replit.app') || 
-              request.url.includes('mytrainpro.com')) {
+          if (
+            request.url.includes("fitness-ai-tracker-c0109009.replit.app") ||
+            request.url.includes("mytrainpro.com")
+          ) {
             return true;
           }
-          
+
           // Handle external links
-          if (request.url.startsWith('http') || request.url.startsWith('https')) {
+          if (
+            request.url.startsWith("http") ||
+            request.url.startsWith("https")
+          ) {
             Linking.openURL(request.url);
             return false;
           }
-          
+
           return true;
         }}
-        
         // Optimize rendering
         renderLoading={() => (
           <View style={styles.webviewLoading}>
             <ActivityIndicator size="large" color="#2563eb" />
           </View>
         )}
-        
         // Handle HTTP errors
         onHttpError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
-          console.warn('HTTP Error:', nativeEvent.statusCode, nativeEvent.description);
+          console.warn(
+            "HTTP Error:",
+            nativeEvent.statusCode,
+            nativeEvent.description,
+          );
         }}
       />
     </View>
@@ -748,69 +776,69 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   webview: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   loadingOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#000000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#000000",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1000,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#666666',
-    fontWeight: '500',
+    color: "#666666",
+    fontWeight: "500",
   },
   webviewLoading: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000000",
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   errorTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   errorMessage: {
     fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
+    color: "#666666",
+    textAlign: "center",
     lineHeight: 24,
     marginBottom: 24,
   },
   retryButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
   retryButtonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
