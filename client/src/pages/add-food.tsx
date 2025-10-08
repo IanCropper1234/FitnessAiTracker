@@ -606,11 +606,11 @@ export function AddFood({ user }: AddFoodProps) {
     let processedCount = 0;
 
     Array.from(files).forEach((file, index) => {
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
         toast({
           title: "File Too Large",
-          description: `Image ${index + 1} is larger than 5MB`,
+          description: `Image ${index + 1} is larger than 10MB`,
           variant: "destructive"
         });
         return;

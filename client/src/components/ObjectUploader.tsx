@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 interface ObjectUploaderProps {
   maxNumberOfFiles?: number;
-  maxFileSize?: number;
+  maxFileSize?: number; // bytes, default 10MB
   onGetUploadParameters: () => Promise<{
     method: "PUT";
     url: string;
@@ -16,7 +16,7 @@ interface ObjectUploaderProps {
 
 export function ObjectUploader({
   maxNumberOfFiles = 1,
-  maxFileSize = 5242880, // 5MB default
+  maxFileSize = 10485760, // 10MB default
   onGetUploadParameters,
   onComplete,
   buttonClassName,
