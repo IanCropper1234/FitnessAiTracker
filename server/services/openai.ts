@@ -312,23 +312,34 @@ Return only valid JSON with all required fields.`
    ${foodDescription && foodDescription.trim() ? `
    - **USER-MENTIONED INGREDIENTS ANALYSIS**: The description "${foodDescription}" may contain cooking/preparation details
      
-     **CONSERVATIVE COOKING ADJUSTMENT RULES:**
-     1. **ONLY add cooking calories if user EXPLICITLY MENTIONS them**:
-        - User says "with oil/butter/sauce" → Add those calories
-        - User says "fried/deep-fried" → Add frying oil calories  
-        - User says "with skin" → Add skin calories
-        - User DOES NOT mention → DO NOT add any cooking calories
+     **COOKING ADDITION DETECTION RULES (TEXT MODE):**
+     **CRITICAL**: Scan the description "${foodDescription}" for these TRIGGER KEYWORDS:
      
-     2. **Start with base food nutrition** (e.g., chicken breast: ~165 cal/100g)
+     **OIL/FAT TRIGGERS** (ADD +120-200 cal per tbsp):
+     - Contains "with oil", "with butter", "with ghee", "in oil", "in butter"
+     - Contains "olive oil", "vegetable oil", "coconut oil", "cooking oil"
+     - Contains "oiled", "buttered", "greased"
      
-     3. **Add ONLY what user explicitly mentioned**:
-        - "with oil" mentioned → +120-200 cal for cooking oil
-        - "fried" mentioned → +200-300 cal for oil absorption
-        - "with skin" mentioned → +30-50 cal per 100g for skin
-        - Nothing mentioned → Add 0 calories (use base food only)
+     **FRYING TRIGGERS** (ADD +200-300 cal for oil absorption):
+     - Contains "fried", "deep-fried", "pan-fried", "stir-fried", "deep fried"
      
-     **VERIFICATION RULE**: Final calories ≈ sum of explicitly mentioned components
-     Example: "Chicken breast" = 165 cal | "Chicken breast with oil" = 165 + 120 = 285 cal
+     **SKIN TRIGGERS** (ADD +30-50 cal/100g):
+     - Contains "with skin", "skin on", "crispy skin"
+     
+     **SAUCE/DRESSING TRIGGERS** (ADD calories based on type):
+     - Contains "with sauce", "in sauce", "with dressing", "with gravy"
+     
+     **CALCULATION PROCESS:**
+     1. Start with BASE food nutrition (chicken breast: ~165 cal/100g)
+     2. Scan description for trigger keywords above
+     3. ADD calories ONLY for detected triggers
+     4. If NO triggers found → Use base food only (do NOT add cooking calories)
+     
+     **EXAMPLES:**
+     - "roasted with olive oil" → HAS TRIGGER "with olive oil" → 165 + 140 = 305 cal ✓
+     - "chicken breast" → NO TRIGGERS → 165 cal ✓
+     - "fried chicken" → HAS TRIGGER "fried" → 165 + 250 = 415 cal ✓
+     - "grilled chicken" → NO TRIGGERS → 165 cal ✓
    - Show ingredient breakdown for components user mentioned` : ''}
    - Determine realistic serving sizes based on food type and common consumption patterns
    - ${portionWeight && portionUnit ? `Calculate nutrition for ${portionWeight}${portionUnit}` : `Calculate for ${quantity} ${unit}(s) but provide optimal serving unit recommendation`}

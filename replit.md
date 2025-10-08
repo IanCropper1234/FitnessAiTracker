@@ -72,6 +72,13 @@ Core services include `NutritionService`, `TrainingService`, `AnalyticsService`,
 - **Integration Points**: Exercise Recommendations, Nutrition Analysis, Food Image Recognition, Multi-Image Nutrition Analysis, Program Optimization.
 - **Performance Results**: 100% success rate, improved cost efficiency, maintained response quality
 - **Migration Benefits**: Reduced AI costs, maintained functionality, enhanced performance monitoring
+- **Nutrition Analysis Accuracy Fix** (Oct 2025): Resolved over-estimation issues in AI food analysis by implementing conservative cooking adjustment rules:
+  - Only add cooking calories when explicitly mentioned by user or visible in images
+  - Removed forced cooking oil/fat additions for all prepared foods
+  - Updated validation from "calories > raw baseline" to "calories ≈ visible/mentioned components"
+  - Text mode: Only calculates ingredients user explicitly mentions (no assumptions)
+  - Image mode: Only adds cooking adjustments when visible OR mentioned by user
+  - Portion estimation: Text uses user input or medium default, Image auto-calculates from visual analysis
 
 ### Key Features & Implementations
 - **Enhanced Registration System**: Multi-step progressive registration, real-time password strength validation, advanced security features (account lockout, rate limiting), email verification, and enhanced password requirements.
