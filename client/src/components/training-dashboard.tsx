@@ -1257,10 +1257,10 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
 
               {/* Session Filter Tabs */}
               <div className="px-1">
-                <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5  backdrop-blur-sm">
+                <div className="flex gap-0.5 bg-gray-100/80 dark:bg-gray-800/60 p-0.5  backdrop-blur-sm" data-filter-tabs>
                   <button
                     onClick={() => setSessionFilter('active')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
+                    className={`filter-tab-button flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'active'
                         ? 'bg-blue-500 dark:bg-blue-600 text-white shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
@@ -1270,7 +1270,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   </button>
                   <button
                     onClick={() => setSessionFilter('completed')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
+                    className={`filter-tab-button flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'completed'
                         ? 'bg-emerald-500 dark:bg-emerald-600 text-white shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
@@ -1280,7 +1280,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   </button>
                   <button
                     onClick={() => setSessionFilter('all')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
+                    className={`filter-tab-button flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'all'
                         ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
@@ -1290,7 +1290,7 @@ export function TrainingDashboard({ userId, activeTab = "dashboard", onViewState
                   </button>
                   <button
                     onClick={() => setSessionFilter('templates')}
-                    className={`flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
+                    className={`filter-tab-button flex-1 px-2 py-1.5 text-xs font-medium  transition-all duration-200 ${
                       sessionFilter === 'templates'
                         ? 'bg-purple-500 dark:bg-purple-600 text-white shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-700/60'
