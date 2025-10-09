@@ -714,6 +714,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Apple Sign In routes
   app.post('/api/auth/apple', (req, res, next) => {
+    console.log('🍎 [Apple OAuth] Initial request received:', {
+      method: req.method,
+      url: req.url,
+      body: req.body,
+      headers: {
+        'content-type': req.get('content-type'),
+        'user-agent': req.get('user-agent')
+      }
+    });
+    
     // Generate CSRF state token
     const state = randomBytes(32).toString('hex');
     const redirectUrl = req.body.redirect || '/';
@@ -723,6 +733,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       redirectUrl 
     });
 
+    console.log('🍎 [Apple OAuth] Calling passport.authenticate with state:', state.substring(0, 10) + '...');
+    
     passport.authenticate('apple', {
       state,
     })(req, res, next);
