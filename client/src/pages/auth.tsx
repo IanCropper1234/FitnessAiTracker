@@ -9,7 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { ExternalLink, Mail, Lock, Smartphone } from "lucide-react";
+import { ExternalLink, Mail, Lock } from "lucide-react";
+import { SiGoogle, SiApple } from "react-icons/si";
 import { ProgressiveRegistrationForm } from "@/components/ProgressiveRegistrationForm";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -222,9 +223,12 @@ export default function Auth({ onSuccess }: AuthProps) {
     signInMutation.mutate(data);
   };
 
-  const handleReplitAuth = () => {
-    // Redirect to Replit Auth login endpoint
-    window.location.href = "/api/login";
+  const handleGoogleOAuth = () => {
+    window.location.href = '/api/auth/google';
+  };
+  
+  const handleAppleOAuth = () => {
+    window.location.href = '/api/auth/apple';
   };
 
   return (
@@ -261,31 +265,38 @@ export default function Auth({ onSuccess }: AuthProps) {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="space-y-4"
               >
-                {/* Replit Auth Section - Supports Google, Apple, Email, GitHub */}
                 <div className="space-y-3">
-                <Button 
-                  onClick={handleReplitAuth}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
-                  type="button"
-                >
-                  <Smartphone className="h-4 w-4" />
-                  Sign in with Google • Apple • Email
-                </Button>
-                <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-                  Choose from multiple secure login options
-                </p>
-                
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full bg-gray-300 dark:bg-gray-600" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
-                      Or use existing account
-                    </span>
+                  <Button 
+                    onClick={handleGoogleOAuth}
+                    className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center gap-2"
+                    type="button"
+                    data-testid="button-google-signin"
+                  >
+                    <SiGoogle className="h-4 w-4" />
+                    Sign in with Google
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleAppleOAuth}
+                    className="w-full bg-black dark:bg-gray-900 text-white hover:bg-gray-800 dark:hover:bg-gray-700 flex items-center justify-center gap-2"
+                    type="button"
+                    data-testid="button-apple-signin"
+                  >
+                    <SiApple className="h-4 w-4" />
+                    Sign in with Apple
+                  </Button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full bg-gray-300 dark:bg-gray-600" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
+                        Or continue with email
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
               {/* Legacy Email/Password Login for existing users */}
               <form onSubmit={handleSignIn} className="space-y-4">
@@ -335,21 +346,28 @@ export default function Auth({ onSuccess }: AuthProps) {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="space-y-4"
               >
-                {/* Enhanced Registration with Replit Auth Options */}
+                {/* Enhanced Registration with OAuth Options */}
                 <div className="space-y-4">
-                {/* Replit Auth Section */}
                 <div className="space-y-3">
                   <Button 
-                    onClick={handleReplitAuth}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
+                    onClick={handleGoogleOAuth}
+                    className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center gap-2"
                     type="button"
+                    data-testid="button-google-signup"
                   >
-                    <Smartphone className="h-4 w-4" />
-                    Sign up with Google • Apple • Email
+                    <SiGoogle className="h-4 w-4" />
+                    Sign up with Google
                   </Button>
-                  <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-                    Quick setup with your preferred account
-                  </p>
+                  
+                  <Button 
+                    onClick={handleAppleOAuth}
+                    className="w-full bg-black dark:bg-gray-900 text-white hover:bg-gray-800 dark:hover:bg-gray-700 flex items-center justify-center gap-2"
+                    type="button"
+                    data-testid="button-apple-signup"
+                  >
+                    <SiApple className="h-4 w-4" />
+                    Sign up with Apple
+                  </Button>
                   
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
@@ -357,7 +375,7 @@ export default function Auth({ onSuccess }: AuthProps) {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                       <span className="bg-white dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
-                        Or use enhanced manual registration
+                        Or create account with email
                       </span>
                     </div>
                   </div>
