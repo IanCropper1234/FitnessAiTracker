@@ -7,7 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "description": "AI-powered fitness coaching with evidence-based periodization, nutrition tracking, and personalized workout plans for serious fitness enthusiasts.",
-    "keywords": ["fitness", "AI", "workout", "nutrition", "bodybuilding", "training", "health"],
+    "keywords": [
+      "fitness",
+      "AI",
+      "workout",
+      "nutrition",
+      "bodybuilding",
+      "training",
+      "health"
+    ],
     "privacy": "public",
     "scheme": "mytrainpro",
     "newArchEnabled": true,
@@ -36,7 +44,9 @@
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": ["mytrainpro"]
+            "CFBundleURLSchemes": [
+              "mytrainpro"
+            ]
           }
         ]
       },
@@ -66,7 +76,10 @@
               "host": "auth"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -77,8 +90,8 @@
       "eas": {
         "projectId": "b0fa7770-552d-4612-8f93-3b8944c63ef3"
       },
-      "googleClientIdWeb": "$GOOGLE_CLIENT_ID_WEB",
-      "googleClientIdIos": "$GOOGLE_CLIENT_ID_IOS"
+      "googleClientIdWeb": "497657957131-8gb7mmtgbknc78qdovbs8hff1b2263r9.apps.googleusercontent.com",
+      "googleClientIdIos": "497657957131-l96b41913u5g99k0flv7usfdj410iu21.apps.googleusercontent.com"
     }
   }
 }

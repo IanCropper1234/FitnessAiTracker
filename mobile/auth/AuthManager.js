@@ -73,14 +73,26 @@ export class AuthManager {
         ? Constants.expoConfig?.extra?.googleClientIdIos
         : Constants.expoConfig?.extra?.googleClientIdWeb;
 
+      // Diagnostic logs
+      console.log('[Google OAuth] Starting Google Sign In...');
+      console.log('[Google OAuth] Platform:', Platform.OS);
+      console.log('[Google OAuth] Client ID:', clientId ? clientId.substring(0, 30) + '...' : 'NOT CONFIGURED');
+
+      // Validate client ID configuration
       if (!clientId) {
-        throw new Error('Google Client ID not configured');
+        throw new Error('Google Client ID not configured. Please check app.json configuration.');
+      }
+
+      if (clientId.startsWith('$')) {
+        throw new Error('Google Client ID contains environment variable placeholder. Please run: node scripts/configure-app-json.js');
       }
 
       const redirectUri = AuthSession.makeRedirectUri({
         scheme: 'mytrainpro',
         path: 'auth/google'
       });
+
+      console.log('[Google OAuth] Redirect URI:', redirectUri);
 
       // Generate PKCE parameters using cryptographically secure random
       const { codeVerifier, codeChallenge } = await this.generatePKCE();
@@ -141,9 +153,15 @@ export class AuthManager {
         return { success: true, sessionData };
       }
 
+      console.log('[Google OAuth] User cancelled sign in');
       return { success: false, error: 'Google sign in cancelled' };
     } catch (error) {
-      console.error('Google OAuth error:', error);
+      console.error('[Google OAuth] Detailed error:', {
+        message: error.message,
+        code: error.code,
+        name: error.name,
+        stack: error.stack
+      });
       
       // Clean up on error
       try {
@@ -151,10 +169,14 @@ export class AuthManager {
         await SecureStore.deleteItemAsync('oauth_nonce');
         await SecureStore.deleteItemAsync('oauth_code_verifier');
       } catch (cleanupError) {
-        console.error('Cleanup error:', cleanupError);
+        console.error('[Google OAuth] Cleanup error:', cleanupError);
       }
       
-      return { success: false, error: error.message };
+      return { 
+        success: false, 
+        error: `Google sign in failed: ${error.message}`,
+        details: error.code || error.name
+      };
     }
   }
 
@@ -240,6 +262,8 @@ export class AuthManager {
 
   static async signInWithApple() {
     try {
+      console.log('[Apple OAuth] Starting Apple Sign In...');
+      
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -247,20 +271,40 @@ export class AuthManager {
         ],
       });
 
+      console.log('[Apple OAuth] Received credential:', {
+        hasIdentityToken: !!credential.identityToken,
+        hasUser: !!credential.user,
+        hasEmail: !!credential.email,
+        hasFullName: !!credential.fullName
+      });
+
       if (credential.identityToken) {
+        console.log('[Apple OAuth] Exchanging identity token with backend...');
         const sessionData = await this.exchangeAppleToken(
           credential.identityToken,
           credential.user || null,
           credential.fullName
         );
         await this.saveSession(sessionData);
+        console.log('[Apple OAuth] Sign in successful');
         return { success: true, sessionData };
       }
 
-      return { success: false, error: 'Apple sign in failed' };
+      console.log('[Apple OAuth] No identity token received');
+      return { success: false, error: 'Apple sign in failed: No identity token received' };
     } catch (error) {
-      console.error('Apple OAuth error:', error);
-      return { success: false, error: error.message };
+      console.error('[Apple OAuth] Detailed error:', {
+        message: error.message,
+        code: error.code,
+        name: error.name,
+        stack: error.stack
+      });
+      
+      return { 
+        success: false, 
+        error: `Apple sign in failed: ${error.message}`,
+        details: error.code || error.name
+      };
     }
   }
 

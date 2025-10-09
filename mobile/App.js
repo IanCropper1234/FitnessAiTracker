@@ -67,11 +67,23 @@ export default function App() {
         // Trigger WebView reload to inject session
         setWebViewKey(prev => prev + 1);
       } else {
-        Alert.alert("Sign In Failed", result.error || "Unable to sign in with Google");
+        // Display detailed error to user
+        Alert.alert(
+          "Google Sign In Failed", 
+          result.error || "Unable to sign in with Google",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                console.log("[Auth] Error details:", result.details);
+              }
+            }
+          ]
+        );
       }
     } catch (error) {
       console.error("[Auth] Google sign in error:", error);
-      Alert.alert("Error", "An error occurred during Google sign in");
+      Alert.alert("Error", `An error occurred: ${error.message}`);
     } finally {
       setIsAuthenticating(false);
     }
@@ -87,11 +99,23 @@ export default function App() {
         // Trigger WebView reload to inject session
         setWebViewKey(prev => prev + 1);
       } else {
-        Alert.alert("Sign In Failed", result.error || "Unable to sign in with Apple");
+        // Display detailed error to user
+        Alert.alert(
+          "Apple Sign In Failed", 
+          result.error || "Unable to sign in with Apple",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                console.log("[Auth] Error details:", result.details);
+              }
+            }
+          ]
+        );
       }
     } catch (error) {
       console.error("[Auth] Apple sign in error:", error);
-      Alert.alert("Error", "An error occurred during Apple sign in");
+      Alert.alert("Error", `An error occurred: ${error.message}`);
     } finally {
       setIsAuthenticating(false);
     }
