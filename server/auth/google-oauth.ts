@@ -20,13 +20,22 @@ export function setupGoogleAuth() {
     return;
   }
 
+  // 動態生成 callback URL
+  const baseUrl = process.env.REPL_SLUG 
+    ? `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`
+    : (process.env.BASE_URL || 'http://localhost:5000');
+  
+  const callbackURL = `${baseUrl}/api/auth/google/callback`;
+  
+  console.log(`🔗 Google OAuth callback URL: ${callbackURL}`);
+
   passport.use(
     "google",
     new GoogleStrategy(
       {
         clientID,
         clientSecret,
-        callbackURL: "/api/auth/google/callback",
+        callbackURL,
         passReqToCallback: true,
       },
       async (

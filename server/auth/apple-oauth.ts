@@ -70,13 +70,22 @@ export function setupAppleAuth() {
   try {
     const clientSecret = generateAppleClientSecret();
 
+    // 動態生成 callback URL
+    const baseUrl = process.env.REPL_SLUG 
+      ? `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`
+      : (process.env.BASE_URL || 'http://localhost:5000');
+    
+    const callbackURL = `${baseUrl}/api/auth/apple/callback`;
+    
+    console.log(`🔗 Apple OAuth callback URL: ${callbackURL}`);
+
     passport.use(
       "apple",
       new AppleStrategy(
         {
           clientID: serviceId,
           teamID: teamId,
-          callbackURL: "/api/auth/apple/callback",
+          callbackURL,
           keyID: keyId,
           privateKeyString: formattedApplePrivateKey,
           passReqToCallback: true,
