@@ -130,6 +130,81 @@ export class DatabaseStorage implements IStorage {
     return updatedUser || undefined;
   }
 
+  // OAuth Methods
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.googleId, googleId));
+    return user || undefined;
+  }
+
+  async getUserByAppleId(appleId: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.appleId, appleId));
+    return user || undefined;
+  }
+
+  async linkGoogleAccount(userId: number, googleId: string): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ googleId, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!updatedUser) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return updatedUser;
+  }
+
+  async linkAppleAccount(userId: number, appleId: string): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ appleId, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!updatedUser) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return updatedUser;
+  }
+
+  async createOAuthUser(data: {
+    googleId?: string;
+    appleId?: string;
+    email: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    profileImageUrl?: string;
+  }): Promise<User> {
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        googleId: data.googleId || null,
+        appleId: data.appleId || null,
+        email: data.email,
+        name: data.name,
+        firstName: data.firstName || null,
+        lastName: data.lastName || null,
+        profileImageUrl: data.profileImageUrl || null,
+        emailVerified: true, // OAuth users have verified emails
+        isActive: true, // OAuth users are immediately active
+        password: null, // OAuth users don't have passwords
+        preferredLanguage: "en",
+        theme: "dark",
+      })
+      .returning();
+    
+    return newUser;
+  }
+
   // User Profiles
   async getUserProfile(userId: string | number): Promise<UserProfile | undefined> {
     const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, Number(userId)));

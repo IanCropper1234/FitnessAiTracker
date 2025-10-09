@@ -2,6 +2,11 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage-db";
 import { setupAuth } from "./replitAuth";
+import { setupGoogleAuth } from "./auth/google-oauth";
+import { setupAppleAuth } from "./auth/apple-oauth";
+import { verifyGoogleIdToken, verifyAppleIdToken } from "./auth/token-verification";
+import passport from "passport";
+import { randomBytes } from "crypto";
 import { initializeExercises } from "./data/exercises";
 import { initializeNutritionDatabase } from "./data/nutrition-seed";
 import { initializeVolumeLandmarks } from "./init-volume-landmarks";
@@ -488,6 +493,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth middleware - re-enabling Replit Auth integration
   await setupAuth(app);
   
+  // Setup OAuth strategies (Google and Apple)
+  setupGoogleAuth();
+  setupAppleAuth();
+  
   // Initialize email service
   emailService.initialize().then(success => {
     if (success) {
@@ -536,6 +545,296 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // OAuth state management for CSRF protection
+  const oauthStates = new Map<string, { timestamp: number; redirectUrl?: string }>();
+  
+  // Clean up expired states every hour
+  setInterval(() => {
+    const now = Date.now();
+    for (const [state, data] of oauthStates.entries()) {
+      if (now - data.timestamp > 3600000) { // 1 hour
+        oauthStates.delete(state);
+      }
+    }
+  }, 3600000);
+
+  // Google OAuth routes
+  app.get('/api/auth/google', (req, res, next) => {
+    // Generate CSRF state token
+    const state = randomBytes(32).toString('hex');
+    const redirectUrl = req.query.redirect as string || '/';
+    
+    oauthStates.set(state, { 
+      timestamp: Date.now(),
+      redirectUrl 
+    });
+
+    passport.authenticate('google', {
+      scope: ['profile', 'email'],
+      state,
+    })(req, res, next);
+  });
+
+  app.get('/api/auth/google/callback', (req, res, next) => {
+    const state = req.query.state as string;
+    
+    // Verify state token
+    if (!state || !oauthStates.has(state)) {
+      console.error('Invalid OAuth state token');
+      return res.redirect('/login?error=invalid_state');
+    }
+
+    const stateData = oauthStates.get(state)!;
+    oauthStates.delete(state);
+
+    passport.authenticate('google', { session: false }, async (err: any, user: any) => {
+      if (err) {
+        console.error('Google OAuth error:', err);
+        return res.redirect('/login?error=oauth_failed');
+      }
+
+      if (!user || !user.userId) {
+        console.error('No user returned from Google OAuth');
+        return res.redirect('/login?error=no_user');
+      }
+
+      try {
+        // Create session for OAuth user
+        const session = req.session as any;
+        session.userId = user.userId;
+        session.provider = 'google';
+        session.loginTime = Date.now();
+        session.userAgent = req.get('User-Agent') || 'unknown';
+        session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+
+        // Save session before redirecting
+        await new Promise<void>((resolve, reject) => {
+          session.save((err: any) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+
+        console.log(`✅ Google OAuth session created for user ${user.userId}`);
+        
+        const redirectUrl = stateData.redirectUrl || '/';
+        res.redirect(redirectUrl);
+      } catch (error) {
+        console.error('Session creation error:', error);
+        res.redirect('/login?error=session_failed');
+      }
+    })(req, res, next);
+  });
+
+  // Apple Sign In routes
+  app.post('/api/auth/apple', (req, res, next) => {
+    // Generate CSRF state token
+    const state = randomBytes(32).toString('hex');
+    const redirectUrl = req.body.redirect || '/';
+    
+    oauthStates.set(state, { 
+      timestamp: Date.now(),
+      redirectUrl 
+    });
+
+    passport.authenticate('apple', {
+      state,
+    })(req, res, next);
+  });
+
+  app.post('/api/auth/apple/callback', (req, res, next) => {
+    const state = req.body.state as string;
+    
+    // Verify state token
+    if (!state || !oauthStates.has(state)) {
+      console.error('Invalid OAuth state token');
+      return res.redirect('/login?error=invalid_state');
+    }
+
+    const stateData = oauthStates.get(state)!;
+    oauthStates.delete(state);
+
+    passport.authenticate('apple', { session: false }, async (err: any, user: any) => {
+      if (err) {
+        console.error('Apple Sign In error:', err);
+        return res.redirect('/login?error=oauth_failed');
+      }
+
+      if (!user || !user.userId) {
+        console.error('No user returned from Apple Sign In');
+        return res.redirect('/login?error=no_user');
+      }
+
+      try {
+        // Create session for OAuth user
+        const session = req.session as any;
+        session.userId = user.userId;
+        session.provider = 'apple';
+        session.loginTime = Date.now();
+        session.userAgent = req.get('User-Agent') || 'unknown';
+        session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+
+        // Save session before redirecting
+        await new Promise<void>((resolve, reject) => {
+          session.save((err: any) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+
+        console.log(`✅ Apple Sign In session created for user ${user.userId}`);
+        
+        const redirectUrl = stateData.redirectUrl || '/';
+        res.redirect(redirectUrl);
+      } catch (error) {
+        console.error('Session creation error:', error);
+        res.redirect('/login?error=session_failed');
+      }
+    })(req, res, next);
+  });
+
+  // Mobile Google OAuth - Token Exchange
+  app.post('/api/auth/google/mobile', async (req, res) => {
+    const { idToken } = req.body;
+    
+    if (!idToken) {
+      return res.status(400).json({ error: 'Missing idToken in request body' });
+    }
+
+    try {
+      // Verify Google ID token
+      const ticket = await verifyGoogleIdToken(idToken);
+      const payload = ticket.getPayload();
+      
+      if (!payload) {
+        return res.status(401).json({ error: 'Invalid token payload' });
+      }
+
+      // Find or create user
+      let user = await storage.getUserByGoogleId(payload.sub);
+      
+      if (!user && payload.email) {
+        // Check if user exists with this email
+        user = await storage.getUserByEmail(payload.email);
+        
+        if (user) {
+          // Link Google account to existing user
+          console.log(`Mobile Google OAuth: Linking Google account to existing user: ${payload.email}`);
+          user = await storage.linkGoogleAccount(user.id, payload.sub);
+        } else {
+          // Create new user with Google account
+          console.log(`Mobile Google OAuth: Creating new user with Google account: ${payload.email}`);
+          user = await storage.createOAuthUser({
+            googleId: payload.sub,
+            email: payload.email,
+            name: payload.name || payload.email.split('@')[0],
+            profileImageUrl: payload.picture
+          });
+        }
+      }
+
+      if (!user) {
+        return res.status(401).json({ error: 'Failed to create or find user' });
+      }
+
+      // Create session
+      const session = req.session as any;
+      session.userId = user.id;
+      session.provider = 'google';
+      session.loginTime = Date.now();
+      session.userAgent = req.get('User-Agent') || 'unknown';
+      session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+
+      // Save session
+      await new Promise<void>((resolve, reject) => {
+        session.save((err: any) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      console.log(`✅ Mobile Google OAuth session created for user ${user.id}`);
+      
+      res.json({ success: true, user });
+    } catch (error: any) {
+      console.error('Mobile Google OAuth error:', error);
+      res.status(401).json({ error: 'Invalid Google token', details: error.message });
+    }
+  });
+
+  // Mobile Apple OAuth - Token Exchange
+  app.post('/api/auth/apple/mobile', async (req, res) => {
+    const { identityToken, user: appleUser } = req.body;
+    
+    if (!identityToken) {
+      return res.status(400).json({ error: 'Missing identityToken in request body' });
+    }
+
+    try {
+      // Verify Apple identity token
+      const decoded = await verifyAppleIdToken(identityToken);
+      
+      if (!decoded || !decoded.sub) {
+        return res.status(401).json({ error: 'Invalid Apple token payload' });
+      }
+
+      // Find or create user
+      let user = await storage.getUserByAppleId(decoded.sub);
+      
+      if (!user && decoded.email) {
+        // Check if user exists with this email
+        user = await storage.getUserByEmail(decoded.email);
+        
+        if (user) {
+          // Link Apple account to existing user
+          console.log(`Mobile Apple OAuth: Linking Apple account to existing user: ${decoded.email}`);
+          user = await storage.linkAppleAccount(user.id, decoded.sub);
+        } else {
+          // Create new user with Apple account
+          const displayName = appleUser?.fullName 
+            ? `${appleUser.fullName.givenName || ''} ${appleUser.fullName.familyName || ''}`.trim()
+            : decoded.email?.split('@')[0] || 'User';
+
+          console.log(`Mobile Apple OAuth: Creating new user with Apple account: ${decoded.email}`);
+          user = await storage.createOAuthUser({
+            appleId: decoded.sub,
+            email: decoded.email,
+            name: displayName,
+            firstName: appleUser?.fullName?.givenName,
+            lastName: appleUser?.fullName?.familyName
+          });
+        }
+      }
+
+      if (!user) {
+        return res.status(401).json({ error: 'Failed to create or find user' });
+      }
+
+      // Create session
+      const session = req.session as any;
+      session.userId = user.id;
+      session.provider = 'apple';
+      session.loginTime = Date.now();
+      session.userAgent = req.get('User-Agent') || 'unknown';
+      session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+
+      // Save session
+      await new Promise<void>((resolve, reject) => {
+        session.save((err: any) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      console.log(`✅ Mobile Apple OAuth session created for user ${user.id}`);
+      
+      res.json({ success: true, user });
+    } catch (error: any) {
+      console.error('Mobile Apple OAuth error:', error);
+      res.status(401).json({ error: 'Invalid Apple token', details: error.message });
     }
   });
   

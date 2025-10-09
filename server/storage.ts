@@ -32,6 +32,21 @@ export interface IStorage {
   updateUserDeveloperSettings(id: string | number, showDeveloperFeatures: boolean): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   
+  // OAuth Methods
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
+  getUserByAppleId(appleId: string): Promise<User | undefined>;
+  linkGoogleAccount(userId: number, googleId: string): Promise<User>;
+  linkAppleAccount(userId: number, appleId: string): Promise<User>;
+  createOAuthUser(data: {
+    googleId?: string;
+    appleId?: string;
+    email: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+    profileImageUrl?: string;
+  }): Promise<User>;
+  
   // User Profiles  
   getUserProfile(userId: string | number | number): Promise<UserProfile | undefined>;
   createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
