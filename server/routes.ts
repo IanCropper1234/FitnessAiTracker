@@ -7,6 +7,7 @@ import { setupAppleAuth } from "./auth/apple-oauth";
 import { verifyGoogleIdToken, verifyAppleIdToken } from "./auth/token-verification";
 import passport from "passport";
 import { randomBytes } from "crypto";
+import cookieParser from "cookie-parser";
 import { initializeExercises } from "./data/exercises";
 import { initializeNutritionDatabase } from "./data/nutrition-seed";
 import { initializeVolumeLandmarks } from "./init-volume-landmarks";
@@ -506,12 +507,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Add cookie parser middleware to read cookies
+  app.use(cookieParser());
+  
+  // Mobile Session Recovery Middleware
+  // This middleware checks for the mobile cookie and restores the session
+  app.use((req, res, next) => {
+    // If we already have a session with userId, skip mobile cookie check
+    if ((req.session as any)?.userId) {
+      return next();
+    }
+
+    // Check for mobile-specific cookie
+    const mobileSessionId = req.cookies?.['trainpro.mobile.session'];
+    
+    if (mobileSessionId) {
+      console.log('🔄 [Mobile Session] Detected mobile cookie, attempting session recovery:', {
+        mobileSessionId: mobileSessionId.substring(0, 10) + '...',
+        currentSessionId: req.sessionID
+      });
+
+      // Get session store
+      const sessionStore = req.sessionStore;
+      
+      // Load session from store using mobile session ID
+      sessionStore.get(mobileSessionId, (err, sessionData) => {
+        if (err) {
+          console.error('❌ [Mobile Session] Error loading session:', err);
+          return next();
+        }
+
+        if (sessionData && sessionData.userId) {
+          console.log('✅ [Mobile Session] Session recovered successfully:', {
+            userId: sessionData.userId,
+            mobileSessionId: mobileSessionId.substring(0, 10) + '...'
+          });
+
+          // Restore session data to current request
+          Object.assign(req.session, sessionData);
+          
+          // Update session ID to match mobile cookie
+          req.sessionID = mobileSessionId;
+          
+          // Save the session to ensure it's persisted
+          req.session.save((saveErr) => {
+            if (saveErr) {
+              console.error('❌ [Mobile Session] Error saving session:', saveErr);
+            } else {
+              console.log('💾 [Mobile Session] Session saved successfully');
+            }
+            next();
+          });
+        } else {
+          console.warn('⚠️  [Mobile Session] No valid session data found for mobile cookie');
+          next();
+        }
+      });
+    } else {
+      next();
+    }
+  });
+  
   // Auth routes - supporting both legacy session auth and Replit Auth
   app.get('/api/auth/user', async (req: any, res) => {
     try {
       console.log('Auth check - Session ID:', req.sessionID);
       console.log('Auth check - Replit Auth authenticated:', req.isAuthenticated && req.isAuthenticated());
       console.log('Auth check - Session userId:', (req.session as any)?.userId);
+      
+      // Check for mobile-specific cookie
+      const mobileCookie = req.cookies?.['trainpro.mobile.session'];
+      if (mobileCookie) {
+        console.log('Auth check - Mobile cookie present:', mobileCookie.substring(0, 10) + '...');
+        console.log('Auth check - Mobile session match:', mobileCookie === req.sessionID ? 'YES' : 'NO');
+      }
       
       // First try Replit Auth
       if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
@@ -524,7 +593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Fallback to legacy session auth
+      // Fallback to session auth (supports both regular and mobile cookies)
       const sessionUserId = (req.session as any)?.userId;
       if (sessionUserId) {
         const user = await storage.getUser(sessionUserId);
@@ -726,28 +795,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mobile Google OAuth - Token Exchange with nonce validation
   app.post('/api/auth/google/mobile', async (req, res) => {
+    console.log('📱 [Mobile Google OAuth] Request received:', {
+      hasIdToken: !!req.body.idToken,
+      hasNonce: !!req.body.nonce,
+      userAgent: req.get('User-Agent'),
+      origin: req.get('Origin'),
+      referer: req.get('Referer')
+    });
+
     const { idToken, nonce } = req.body;
     
     if (!idToken || !nonce) {
+      console.error('❌ [Mobile Google OAuth] Missing required fields:', {
+        hasIdToken: !!idToken,
+        hasNonce: !!nonce
+      });
       return res.status(400).json({ error: 'Missing idToken or nonce' });
     }
 
     try {
       // Verify Google ID token
+      console.log('🔐 [Mobile Google OAuth] Verifying ID token...');
       const ticket = await verifyGoogleIdToken(idToken);
       const payload = ticket.getPayload();
       
       if (!payload) {
+        console.error('❌ [Mobile Google OAuth] Invalid token payload');
         return res.status(401).json({ error: 'Invalid token payload' });
       }
 
+      console.log('✅ [Mobile Google OAuth] Token verified:', {
+        sub: payload.sub,
+        email: payload.email,
+        nonce: payload.nonce?.substring(0, 10) + '...'
+      });
+
       // Verify nonce to prevent token replay attacks
       if (payload.nonce !== nonce) {
-        console.error('Nonce mismatch:', { expected: nonce, received: payload.nonce });
+        console.error('❌ [Mobile Google OAuth] Nonce mismatch:', { 
+          expected: nonce?.substring(0, 10) + '...', 
+          received: payload.nonce?.substring(0, 10) + '...'
+        });
         return res.status(401).json({ error: 'Invalid nonce - possible replay attack' });
       }
 
       // Find or create user
+      console.log('👤 [Mobile Google OAuth] Finding or creating user...');
       let user = await storage.getUserByGoogleId(payload.sub);
       
       if (!user && payload.email) {
@@ -756,11 +849,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (user) {
           // Link Google account to existing user
-          console.log(`Mobile Google OAuth: Linking Google account to existing user: ${payload.email}`);
+          console.log(`🔗 [Mobile Google OAuth] Linking Google account to existing user: ${payload.email}`);
           user = await storage.linkGoogleAccount(user.id, payload.sub);
         } else {
           // Create new user with Google account
-          console.log(`Mobile Google OAuth: Creating new user with Google account: ${payload.email}`);
+          console.log(`✨ [Mobile Google OAuth] Creating new user with Google account: ${payload.email}`);
           user = await storage.createOAuthUser({
             googleId: payload.sub,
             email: payload.email,
@@ -771,8 +864,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (!user) {
+        console.error('❌ [Mobile Google OAuth] Failed to create or find user');
         return res.status(401).json({ error: 'Failed to create or find user' });
       }
+
+      console.log('✅ [Mobile Google OAuth] User found/created:', { userId: user.id });
 
       // Create session
       const session = req.session as any;
@@ -782,40 +878,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
       session.userAgent = req.get('User-Agent') || 'unknown';
       session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
 
+      console.log('💾 [Mobile Google OAuth] Saving session...', {
+        sessionId: req.sessionID,
+        userId: user.id
+      });
+
       // Save session
       await new Promise<void>((resolve, reject) => {
         session.save((err: any) => {
-          if (err) reject(err);
-          else resolve();
+          if (err) {
+            console.error('❌ [Mobile Google OAuth] Session save failed:', err);
+            reject(err);
+          } else {
+            console.log('✅ [Mobile Google OAuth] Session saved successfully');
+            resolve();
+          }
         });
       });
 
-      console.log(`✅ Mobile Google OAuth session created for user ${user.id}`);
+      console.log('✅ [Mobile Google OAuth] Authentication successful:', {
+        userId: user.id,
+        sessionId: req.sessionID,
+        cookieName: 'trainpro.session'
+      });
+
+      // Set mobile-specific cookie that JavaScript can access
+      // This is necessary because the main session cookie is httpOnly
+      res.cookie('trainpro.mobile.session', req.sessionID, {
+        httpOnly: false,  // Allow JavaScript access for mobile WebView injection
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+        path: '/'
+      });
+
+      console.log('🍪 [Mobile Google OAuth] Mobile session cookie set:', {
+        sessionId: req.sessionID,
+        cookieName: 'trainpro.mobile.session'
+      });
       
-      res.json({ success: true, user });
+      res.json({ 
+        success: true, 
+        user,
+        sessionId: req.sessionID,
+        cookieName: 'trainpro.mobile.session'
+      });
     } catch (error: any) {
-      console.error('Mobile Google OAuth error:', error);
+      console.error('❌ [Mobile Google OAuth] Error:', {
+        message: error.message,
+        stack: error.stack
+      });
       res.status(401).json({ error: 'Invalid Google token', details: error.message });
     }
   });
 
   // Mobile Apple OAuth - Token Exchange
   app.post('/api/auth/apple/mobile', async (req, res) => {
+    console.log('📱 [Mobile Apple OAuth] Request received:', {
+      hasIdentityToken: !!req.body.identityToken,
+      hasUser: !!req.body.user,
+      userAgent: req.get('User-Agent'),
+      origin: req.get('Origin'),
+      referer: req.get('Referer')
+    });
+
     const { identityToken, user: appleUser } = req.body;
     
     if (!identityToken) {
+      console.error('❌ [Mobile Apple OAuth] Missing identityToken');
       return res.status(400).json({ error: 'Missing identityToken in request body' });
     }
 
     try {
       // Verify Apple identity token
+      console.log('🔐 [Mobile Apple OAuth] Verifying identity token...');
       const decoded = await verifyAppleIdToken(identityToken);
       
       if (!decoded || !decoded.sub) {
+        console.error('❌ [Mobile Apple OAuth] Invalid token payload');
         return res.status(401).json({ error: 'Invalid Apple token payload' });
       }
 
+      console.log('✅ [Mobile Apple OAuth] Token verified:', {
+        sub: decoded.sub,
+        email: decoded.email
+      });
+
       // Find or create user
+      console.log('👤 [Mobile Apple OAuth] Finding or creating user...');
       let user = await storage.getUserByAppleId(decoded.sub);
       
       if (!user && decoded.email) {
@@ -824,7 +974,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (user) {
           // Link Apple account to existing user
-          console.log(`Mobile Apple OAuth: Linking Apple account to existing user: ${decoded.email}`);
+          console.log(`🔗 [Mobile Apple OAuth] Linking Apple account to existing user: ${decoded.email}`);
           user = await storage.linkAppleAccount(user.id, decoded.sub);
         } else {
           // Create new user with Apple account
@@ -832,7 +982,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             ? `${appleUser.fullName.givenName || ''} ${appleUser.fullName.familyName || ''}`.trim()
             : decoded.email?.split('@')[0] || 'User';
 
-          console.log(`Mobile Apple OAuth: Creating new user with Apple account: ${decoded.email}`);
+          console.log(`✨ [Mobile Apple OAuth] Creating new user with Apple account: ${decoded.email}`);
           user = await storage.createOAuthUser({
             appleId: decoded.sub,
             email: decoded.email,
@@ -844,8 +994,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (!user) {
+        console.error('❌ [Mobile Apple OAuth] Failed to create or find user');
         return res.status(401).json({ error: 'Failed to create or find user' });
       }
+
+      console.log('✅ [Mobile Apple OAuth] User found/created:', { userId: user.id });
 
       // Create session
       const session = req.session as any;
@@ -855,19 +1008,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       session.userAgent = req.get('User-Agent') || 'unknown';
       session.clientIP = req.ip || req.connection.remoteAddress || 'unknown';
 
+      console.log('💾 [Mobile Apple OAuth] Saving session...', {
+        sessionId: req.sessionID,
+        userId: user.id
+      });
+
       // Save session
       await new Promise<void>((resolve, reject) => {
         session.save((err: any) => {
-          if (err) reject(err);
-          else resolve();
+          if (err) {
+            console.error('❌ [Mobile Apple OAuth] Session save failed:', err);
+            reject(err);
+          } else {
+            console.log('✅ [Mobile Apple OAuth] Session saved successfully');
+            resolve();
+          }
         });
       });
 
-      console.log(`✅ Mobile Apple OAuth session created for user ${user.id}`);
+      console.log('✅ [Mobile Apple OAuth] Authentication successful:', {
+        userId: user.id,
+        sessionId: req.sessionID,
+        cookieName: 'trainpro.session'
+      });
+
+      // Set mobile-specific cookie that JavaScript can access
+      // This is necessary because the main session cookie is httpOnly
+      res.cookie('trainpro.mobile.session', req.sessionID, {
+        httpOnly: false,  // Allow JavaScript access for mobile WebView injection
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+        path: '/'
+      });
+
+      console.log('🍪 [Mobile Apple OAuth] Mobile session cookie set:', {
+        sessionId: req.sessionID,
+        cookieName: 'trainpro.mobile.session'
+      });
       
-      res.json({ success: true, user });
+      res.json({ 
+        success: true, 
+        user,
+        sessionId: req.sessionID,
+        cookieName: 'trainpro.mobile.session'
+      });
     } catch (error: any) {
-      console.error('Mobile Apple OAuth error:', error);
+      console.error('❌ [Mobile Apple OAuth] Error:', {
+        message: error.message,
+        stack: error.stack
+      });
       res.status(401).json({ error: 'Invalid Apple token', details: error.message });
     }
   });

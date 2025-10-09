@@ -9,7 +9,7 @@ import { encode as btoa, decode as atob } from 'base-64';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const BACKEND_URL = 'https://fitness-ai-tracker-c0109009.replit.app';
+const BACKEND_URL = 'https://mytrainpro.com';
 
 export class AuthManager {
   // Generate PKCE challenge using cryptographically secure random
@@ -251,11 +251,33 @@ export class AuthManager {
     }
 
     const data = await backendResponse.json();
-    const cookies = backendResponse.headers.get('set-cookie');
+    
+    console.log('[Google OAuth] Backend response:', {
+      hasUser: !!data.user,
+      hasSessionId: !!data.sessionId,
+      hasCookieName: !!data.cookieName
+    });
+    
+    // Construct mobile-specific cookie string for WebView injection
+    // Note: Fetch API cannot access httpOnly cookies from Set-Cookie header
+    // So we use the mobile-specific cookie returned in the response body
+    let cookieString = '';
+    if (data.sessionId && data.cookieName) {
+      // Build cookie string that JavaScript can set
+      const maxAge = 7 * 24 * 60 * 60; // 1 week in seconds
+      const secure = BACKEND_URL.startsWith('https') ? '; Secure' : '';
+      cookieString = `${data.cookieName}=${data.sessionId}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+      
+      console.log('[Google OAuth] Constructed cookie:', {
+        cookieName: data.cookieName,
+        sessionId: data.sessionId.substring(0, 10) + '...'
+      });
+    }
     
     return {
       user: data.user,
-      cookies: cookies || '',
+      cookies: cookieString,
+      sessionId: data.sessionId,
       timestamp: Date.now()
     };
   }
@@ -330,11 +352,33 @@ export class AuthManager {
     }
 
     const data = await response.json();
-    const setCookieHeader = response.headers.get('set-cookie');
+    
+    console.log('[Apple OAuth] Backend response:', {
+      hasUser: !!data.user,
+      hasSessionId: !!data.sessionId,
+      hasCookieName: !!data.cookieName
+    });
+    
+    // Construct mobile-specific cookie string for WebView injection
+    // Note: Fetch API cannot access httpOnly cookies from Set-Cookie header
+    // So we use the mobile-specific cookie returned in the response body
+    let cookieString = '';
+    if (data.sessionId && data.cookieName) {
+      // Build cookie string that JavaScript can set
+      const maxAge = 7 * 24 * 60 * 60; // 1 week in seconds
+      const secure = BACKEND_URL.startsWith('https') ? '; Secure' : '';
+      cookieString = `${data.cookieName}=${data.sessionId}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+      
+      console.log('[Apple OAuth] Constructed cookie:', {
+        cookieName: data.cookieName,
+        sessionId: data.sessionId.substring(0, 10) + '...'
+      });
+    }
     
     return {
       user: data.user,
-      cookies: setCookieHeader || '',
+      cookies: cookieString,
+      sessionId: data.sessionId,
       timestamp: Date.now()
     };
   }
