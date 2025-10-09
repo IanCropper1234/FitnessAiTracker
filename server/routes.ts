@@ -696,12 +696,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })(req, res, next);
   });
 
-  // Mobile Google OAuth - Token Exchange
+  // Mobile Google OAuth - Token Exchange with nonce validation
   app.post('/api/auth/google/mobile', async (req, res) => {
-    const { idToken } = req.body;
+    const { idToken, nonce } = req.body;
     
-    if (!idToken) {
-      return res.status(400).json({ error: 'Missing idToken in request body' });
+    if (!idToken || !nonce) {
+      return res.status(400).json({ error: 'Missing idToken or nonce' });
     }
 
     try {
@@ -711,6 +711,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!payload) {
         return res.status(401).json({ error: 'Invalid token payload' });
+      }
+
+      // Verify nonce to prevent token replay attacks
+      if (payload.nonce !== nonce) {
+        console.error('Nonce mismatch:', { expected: nonce, received: payload.nonce });
+        return res.status(401).json({ error: 'Invalid nonce - possible replay attack' });
       }
 
       // Find or create user

@@ -9,6 +9,7 @@
     "description": "AI-powered fitness coaching with evidence-based periodization, nutrition tracking, and personalized workout plans for serious fitness enthusiasts.",
     "keywords": ["fitness", "AI", "workout", "nutrition", "bodybuilding", "training", "health"],
     "privacy": "public",
+    "scheme": "mytrainpro",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -23,6 +24,7 @@
       "bundleIdentifier": "com.trainpro.app",
       "buildNumber": "23",
       "icon": "./assets/icon.png",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "CFBundleDisplayName": "MyTrainPro",
         "CFBundleName": "MyTrainPro",
@@ -31,7 +33,12 @@
         "NSPhotoLibraryUsageDescription": "MyTrainPro accesses your photo library to let you upload food images for nutrition analysis and set profile pictures.",
         "NSHealthShareUsageDescription": "MyTrainPro integrates with Apple Health to sync your fitness and nutrition data for comprehensive health tracking.",
         "NSHealthUpdateUsageDescription": "MyTrainPro can write workout and nutrition data to Apple Health to keep all your health information synchronized.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": ["mytrainpro"]
+          }
+        ]
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -48,7 +55,20 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ],
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "mytrainpro",
+              "host": "auth"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -56,7 +76,9 @@
     "extra": {
       "eas": {
         "projectId": "b0fa7770-552d-4612-8f93-3b8944c63ef3"
-      }
+      },
+      "googleClientIdWeb": "$GOOGLE_CLIENT_ID_WEB",
+      "googleClientIdIos": "$GOOGLE_CLIENT_ID_IOS"
     }
   }
 }
