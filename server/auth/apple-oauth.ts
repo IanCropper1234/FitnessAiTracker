@@ -71,13 +71,20 @@ export function setupAppleAuth() {
   try {
     const clientSecret = generateAppleClientSecret();
 
+    // Generate callback URL using PRIMARY_DOMAIN if available, otherwise use relative path
+    const callbackURL = process.env.PRIMARY_DOMAIN 
+      ? `https://${process.env.PRIMARY_DOMAIN}/api/auth/apple/callback`
+      : "/api/auth/apple/callback";
+    
+    console.log(`📱 Apple OAuth callback URL configured: ${callbackURL}`);
+
     passport.use(
       "apple",
       new AppleStrategy(
         {
           clientID: serviceId,
           teamID: teamId,
-          callbackURL: "/api/auth/apple/callback",
+          callbackURL,
           keyID: keyId,
           privateKeyString: formattedApplePrivateKey,
           passReqToCallback: true,
