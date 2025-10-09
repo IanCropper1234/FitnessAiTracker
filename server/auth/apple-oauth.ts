@@ -3,6 +3,7 @@ import { Strategy as AppleStrategy } from "passport-apple";
 import jwt from "jsonwebtoken";
 import { storage } from "../storage-db";
 import type { Request } from "express";
+import { deriveBaseUrlFromRequest } from "./oauth-utils";
 
 interface AppleProfile {
   id: string;
@@ -70,22 +71,13 @@ export function setupAppleAuth() {
   try {
     const clientSecret = generateAppleClientSecret();
 
-    // 動態生成 callback URL
-    const baseUrl = process.env.REPL_SLUG 
-      ? `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`
-      : (process.env.BASE_URL || 'http://localhost:5000');
-    
-    const callbackURL = `${baseUrl}/api/auth/apple/callback`;
-    
-    console.log(`🔗 Apple OAuth callback URL: ${callbackURL}`);
-
     passport.use(
       "apple",
       new AppleStrategy(
         {
           clientID: serviceId,
           teamID: teamId,
-          callbackURL,
+          callbackURL: "/api/auth/apple/callback",
           keyID: keyId,
           privateKeyString: formattedApplePrivateKey,
           passReqToCallback: true,
@@ -99,6 +91,9 @@ export function setupAppleAuth() {
           done: (error: any, user?: any) => void
         ) => {
           try {
+            const actualCallbackUrl = `${deriveBaseUrlFromRequest(req)}/api/auth/apple/callback`;
+            console.log(`🔗 Apple OAuth callback URL (from request): ${actualCallbackUrl}`);
+            
             const appleId = profile.id || idToken?.sub;
             
             // Apple only provides email on first sign-in
@@ -161,7 +156,7 @@ export function setupAppleAuth() {
       )
     );
 
-    console.log("✅ Apple Sign In strategy configured");
+    console.log("✅ Apple Sign In strategy configured with dynamic callback URL");
   } catch (error) {
     console.error("Failed to configure Apple Sign In:", error);
   }

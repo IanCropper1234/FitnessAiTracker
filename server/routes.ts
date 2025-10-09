@@ -580,6 +580,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/auth/google/callback', (req, res, next) => {
     const state = req.query.state as string;
+    const error = req.query.error as string;
+    
+    // 記錄所有 query parameters
+    console.log('📥 Google OAuth callback:', {
+      state: state?.substring(0, 10) + '...',
+      error,
+      hasCode: !!req.query.code,
+      allParams: Object.keys(req.query)
+    });
+    
+    if (error) {
+      console.error('❌ Google OAuth returned error:', error);
+      return res.redirect(`/login?error=google_${error}`);
+    }
     
     // Verify state token
     if (!state || !oauthStates.has(state)) {
@@ -647,6 +661,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/auth/apple/callback', (req, res, next) => {
     const state = req.body.state as string;
+    const error = req.body.error as string;
+    
+    // 記錄所有 body parameters
+    console.log('📥 Apple OAuth callback:', {
+      state: state?.substring(0, 10) + '...',
+      error,
+      hasCode: !!req.body.code,
+      allParams: Object.keys(req.body)
+    });
+    
+    if (error) {
+      console.error('❌ Apple OAuth returned error:', error);
+      return res.redirect(`/login?error=apple_${error}`);
+    }
     
     // Verify state token
     if (!state || !oauthStates.has(state)) {

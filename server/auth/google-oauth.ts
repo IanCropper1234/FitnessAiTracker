@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { storage } from "../storage-db";
 import type { Request } from "express";
+import { deriveBaseUrlFromRequest } from "./oauth-utils";
 
 interface GoogleProfile {
   id: string;
@@ -20,22 +21,13 @@ export function setupGoogleAuth() {
     return;
   }
 
-  // 動態生成 callback URL
-  const baseUrl = process.env.REPL_SLUG 
-    ? `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`
-    : (process.env.BASE_URL || 'http://localhost:5000');
-  
-  const callbackURL = `${baseUrl}/api/auth/google/callback`;
-  
-  console.log(`🔗 Google OAuth callback URL: ${callbackURL}`);
-
   passport.use(
     "google",
     new GoogleStrategy(
       {
         clientID,
         clientSecret,
-        callbackURL,
+        callbackURL: "/api/auth/google/callback",
         passReqToCallback: true,
       },
       async (
@@ -46,6 +38,9 @@ export function setupGoogleAuth() {
         done: (error: any, user?: any) => void
       ) => {
         try {
+          const actualCallbackUrl = `${deriveBaseUrlFromRequest(req)}/api/auth/google/callback`;
+          console.log(`🔗 Google OAuth callback URL (from request): ${actualCallbackUrl}`);
+          
           const googleId = profile.id;
           const email = profile.emails?.[0]?.value;
           const firstName = profile.name?.givenName;
@@ -100,5 +95,5 @@ export function setupGoogleAuth() {
     )
   );
 
-  console.log("✅ Google OAuth strategy configured");
+  console.log("✅ Google OAuth strategy configured with dynamic callback URL");
 }
