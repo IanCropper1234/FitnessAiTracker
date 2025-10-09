@@ -228,7 +228,12 @@ export default function Auth({ onSuccess }: AuthProps) {
   };
   
   const handleAppleOAuth = () => {
-    window.location.href = '/api/auth/apple';
+    // Create a form and submit it as POST to match backend route
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/auth/apple';
+    document.body.appendChild(form);
+    form.submit();
   };
 
   return (
