@@ -47,8 +47,13 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - **Runtime**: Node.js with Express.js
 - **API Design**: RESTful API with modular service layer architecture
 - **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Hybrid authentication system supporting both legacy session-based auth and Replit Auth. All API routes are protected with automatic user ID extraction.
-- **Security**: Robust security hardening for sensitive operations with dual auth support, including rate limiting, account lockout, password strength validation, session security, timing attack prevention, enhanced logging, stronger encryption, and strict input validation.
+- **Authentication**: Custom OAuth 2.0 system with Google and Apple Sign In support for complete control over user experience. Hybrid implementation supporting both web and native mobile flows. All API routes protected with automatic user ID extraction.
+- **OAuth Implementation**: 
+  - **Web Flow**: Server-side OAuth with Passport.js strategies
+  - **Mobile Flow**: Native OAuth (expo-auth-session, expo-apple-authentication) → Token Exchange → WebView Session Injection
+  - **Security**: PKCE with SHA-256 (expo-crypto CSPRNG), state/nonce verification, backend token validation
+  - **Mobile Architecture**: Authorization Code + PKCE flow, cryptographic nonce verification, secure session injection via SecureStore
+- **Security**: Production-grade OAuth security with CSRF protection (state verification), token replay prevention (nonce validation), PKCE entropy strengthening (expo-crypto), JWT decoding with base64 padding fixes, comprehensive rate limiting, account lockout, password strength validation, session security, timing attack prevention, enhanced logging, and strict input validation.
 - **Data Processing**: Service layer with specialized algorithms for scientific periodization methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression, consolidated via `SciAlgorithmCore`.
 
 ### Core Database Schema
