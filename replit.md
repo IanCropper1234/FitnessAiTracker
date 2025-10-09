@@ -51,7 +51,12 @@ TrainPro is an enterprise-grade AI-powered fitness platform providing intelligen
 - **OAuth Implementation**: 
   - **Web Flow**: Server-side OAuth with Passport.js strategies
   - **Mobile Flow**: Native OAuth (expo-auth-session, expo-apple-authentication) → Token Exchange → WebView Session Injection
-  - **Security**: PKCE with SHA-256 (expo-crypto CSPRNG), state/nonce verification, backend token validation
+  - **Callback URL Strategy**: Request-based dynamic callback generation using actual request host headers (x-forwarded-host/host), eliminating environment detection issues. Relative callback paths (`/api/auth/[provider]/callback`) auto-adapt to production/dev/local environments without configuration.
+  - **Environment Adaptation**: Automatic detection across all deployment scenarios:
+    - Production: `https://fitness-ai-tracker-c0109009.replit.app/api/auth/[provider]/callback`
+    - Development: `https://workspace-c0109009.replit.app/api/auth/[provider]/callback`
+    - Local: `http://localhost:5000/api/auth/[provider]/callback`
+  - **Security**: PKCE with SHA-256 (expo-crypto CSPRNG), state/nonce verification, backend token validation, request-derived callback URLs for domain matching
   - **Mobile Architecture**: Authorization Code + PKCE flow, cryptographic nonce verification, secure session injection via SecureStore
 - **Security**: Production-grade OAuth security with CSRF protection (state verification), token replay prevention (nonce validation), PKCE entropy strengthening (expo-crypto), JWT decoding with base64 padding fixes, comprehensive rate limiting, account lockout, password strength validation, session security, timing attack prevention, enhanced logging, and strict input validation.
 - **Data Processing**: Service layer with specialized algorithms for scientific periodization methodology, including auto-regulation, volume landmarks, mesocycle periodization, and load progression, consolidated via `SciAlgorithmCore`.
