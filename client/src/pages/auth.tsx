@@ -223,12 +223,39 @@ export default function Auth({ onSuccess }: AuthProps) {
     signInMutation.mutate(data);
   };
 
+  // Check if running in mobile app WebView
+  const isMobileApp = () => {
+    return typeof (window as any).ReactNativeWebView !== 'undefined' || 
+           document.body.classList.contains('mobile-app');
+  };
+
   const handleGoogleOAuth = () => {
+    // If in mobile app, use native OAuth
+    if (isMobileApp() && typeof (window as any).ReactNativeWebView !== 'undefined') {
+      console.log('[Auth] Requesting native Google OAuth');
+      (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+        type: 'OAUTH_REQUEST',
+        provider: 'google'
+      }));
+      return;
+    }
+    
+    // Otherwise use web OAuth
     window.location.href = '/api/auth/google';
   };
   
   const handleAppleOAuth = () => {
-    // Create a form and submit it as POST to match backend route
+    // If in mobile app, use native OAuth
+    if (isMobileApp() && typeof (window as any).ReactNativeWebView !== 'undefined') {
+      console.log('[Auth] Requesting native Apple OAuth');
+      (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+        type: 'OAUTH_REQUEST',
+        provider: 'apple'
+      }));
+      return;
+    }
+    
+    // Otherwise use web OAuth
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/api/auth/apple';

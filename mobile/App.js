@@ -605,6 +605,14 @@ export default function App() {
           console.log("WebView is ready");
           setIsLoading(false);
           break;
+        case "OAUTH_REQUEST":
+          console.log(`[App] OAuth request from WebView: ${message.provider}`);
+          if (message.provider === 'google') {
+            handleGoogleSignIn();
+          } else if (message.provider === 'apple') {
+            handleAppleSignIn();
+          }
+          break;
         case "NAVIGATION":
           break;
         case "ERROR":
