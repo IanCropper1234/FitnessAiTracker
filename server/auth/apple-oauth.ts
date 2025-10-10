@@ -101,12 +101,51 @@ export function setupAppleAuth() {
             const actualCallbackUrl = `${deriveBaseUrlFromRequest(req)}/api/auth/apple/callback`;
             console.log(`🔗 Apple OAuth callback URL (from request): ${actualCallbackUrl}`);
             
-            const appleId = profile.id || idToken?.sub;
+            console.log('🍎 [Apple OAuth] Received data:', {
+              profileId: profile.id,
+              profileEmail: profile.email,
+              profileName: profile.name,
+              idTokenType: typeof idToken,
+              idTokenKeys: idToken ? Object.keys(idToken) : 'null'
+            });
             
-            // Apple only provides email on first sign-in
-            const email = profile.email || idToken?.email;
+            // Decode idToken if it's a string
+            let decodedIdToken = idToken;
+            if (typeof idToken === 'string') {
+              try {
+                // JWT is base64 encoded, decode the payload
+                const parts = idToken.split('.');
+                if (parts.length === 3) {
+                  const payload = parts[1];
+                  // Add padding if needed
+                  const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+                  const paddedBase64 = base64 + '='.repeat((4 - base64.length % 4) % 4);
+                  const decoded = Buffer.from(paddedBase64, 'base64').toString('utf-8');
+                  decodedIdToken = JSON.parse(decoded);
+                  console.log('🍎 [Apple OAuth] Decoded idToken:', {
+                    sub: decodedIdToken.sub,
+                    email: decodedIdToken.email,
+                    email_verified: decodedIdToken.email_verified
+                  });
+                }
+              } catch (decodeError) {
+                console.error('Failed to decode idToken:', decodeError);
+              }
+            }
+            
+            const appleId = profile.id || decodedIdToken?.sub;
+            
+            // Apple only provides email on first sign-in in profile, but always in idToken
+            const email = profile.email || decodedIdToken?.email;
             const firstName = profile.name?.firstName;
             const lastName = profile.name?.lastName;
+
+            console.log('🍎 [Apple OAuth] Extracted values:', {
+              appleId,
+              email,
+              firstName,
+              lastName
+            });
 
             if (!appleId) {
               return done(new Error("No Apple ID found in profile"));
