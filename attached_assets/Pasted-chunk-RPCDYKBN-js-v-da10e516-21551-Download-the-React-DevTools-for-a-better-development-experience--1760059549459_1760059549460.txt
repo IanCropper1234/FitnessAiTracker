@@ -1,0 +1,129 @@
+chunk-RPCDYKBN.js?v=da10e516:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-RPCDYKBN.js?v=c66f5819:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:1062 Uncaught TypeError: Cannot read properties of null (reading 'useContext')
+    at useContext (chunk-QCHXOAYK.js?v=c66f5819:1062:29)
+    at MotionComponent (framer-motion.js?v=c66f5819:6536:40)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=da10e516:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=da10e516:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=da10e516:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=da10e516:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=da10e516:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=da10e516:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=da10e516:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=da10e516:19198:20)
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:1062 Uncaught TypeError: Cannot read properties of null (reading 'useContext')
+    at useContext (chunk-QCHXOAYK.js?v=c66f5819:1062:29)
+    at MotionComponent (framer-motion.js?v=c66f5819:6536:40)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=da10e516:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=da10e516:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=da10e516:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=da10e516:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=da10e516:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=da10e516:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=da10e516:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=da10e516:19198:20)
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:1062 Uncaught TypeError: Cannot read properties of null (reading 'useContext')
+    at useContext (chunk-QCHXOAYK.js?v=c66f5819:1062:29)
+    at MotionComponent (framer-motion.js?v=c66f5819:6536:40)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=da10e516:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=da10e516:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=da10e516:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=da10e516:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=da10e516:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=da10e516:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=da10e516:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=da10e516:19198:20)
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:136 Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.
+printWarning @ chunk-QCHXOAYK.js?v=c66f5819:136
+chunk-QCHXOAYK.js?v=c66f5819:1062 Uncaught TypeError: Cannot read properties of null (reading 'useContext')
+    at useContext (chunk-QCHXOAYK.js?v=c66f5819:1062:29)
+    at MotionComponent (framer-motion.js?v=c66f5819:6536:40)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=da10e516:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=da10e516:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=da10e516:15946:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=da10e516:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=da10e516:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=da10e516:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=da10e516:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=da10e516:19198:20)
+chunk-RPCDYKBN.js?v=da10e516:14032 The above error occurred in the <ForwardRef(MotionComponent)> component:
+
+    at MotionComponent (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=c66f5819:6536:40)
+    at div
+    at div
+    at InstantLoadingScreen
+    at App (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/App.tsx?v=0qbXqGm9DKDbctNlymogR:1022:45)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=da10e516:14032
+chunk-RPCDYKBN.js?v=da10e516:14032 The above error occurred in the <ForwardRef(MotionComponent)> component:
+
+    at MotionComponent (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=c66f5819:6536:40)
+    at div
+    at div
+    at InstantLoadingScreen
+    at App (https://06480408-c2d8-4ed1-9930-a2a5ef556988-00-12b1yngnrq34l.worf.replit.dev/src/App.tsx?v=0qbXqGm9DKDbctNlymogR:1022:45)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=da10e516:14032
+chunk-RPCDYKBN.js?v=da10e516:19413 Uncaught TypeError: Cannot read properties of null (reading 'useContext')
+    at useContext (chunk-QCHXOAYK.js?v=c66f5819:1062:29)
+    at MotionComponent (framer-motion.js?v=c66f5819:6536:40)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=da10e516:11548:26)
+    at updateForwardRef (chunk-RPCDYKBN.js?v=da10e516:14325:28)
+    at beginWork (chunk-RPCDYKBN.js?v=da10e516:15946:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=da10e516:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=da10e516:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=da10e516:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=da10e516:19116:15)
+    at recoverFromConcurrentError (chunk-RPCDYKBN.js?v=da10e516:18736:28)
+(index):110 TrainPro PWA: ServiceWorker registered successfully
+(index):149 TrainPro PWA: Install prompt available
