@@ -31,7 +31,7 @@ export default function App() {
   const backgroundTimeRef = useRef(null);
   const reloadAttemptsRef = useRef(0);
 
-  const serverUrl = "https://fitness-ai-tracker-c0109009.replit.app";
+  const serverUrl = "https://mytrainpro.com";
 
   useEffect(() => {
     checkExistingSession();
