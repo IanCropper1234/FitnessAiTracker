@@ -241,7 +241,7 @@ export default function MesocycleDashboard({ userId }: MesocycleDashboardProps) 
   };
 
   // State for collapsible cards
-  const [isVolumeTargetsOpen, setIsVolumeTargetsOpen] = useState(true);
+  const [isVolumeTargetsOpen, setIsVolumeTargetsOpen] = useState(false);
 
   // Collapsible History Card Component
   const CollapsibleHistoryCard = ({ mesocycles, getPhaseColor }: { mesocycles: Mesocycle[], getPhaseColor: (phase: string) => string }) => {
