@@ -18,7 +18,7 @@
     ],
     "privacy": "public",
     "scheme": "mytrainpro",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.trainpro.app",
-      "buildNumber": "25",
+      "buildNumber": "26",
       "icon": "./assets/icon.png",
       "usesAppleSignIn": true,
       "infoPlist": {
