@@ -720,9 +720,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       body: req.body,
       headers: {
         'content-type': req.get('content-type'),
-        'user-agent': req.get('user-agent')
+        'user-agent': req.get('user-agent'),
+        'host': req.get('host'),
+        'x-forwarded-host': req.get('x-forwarded-host')
       }
     });
+    
+    // Log the strategy configuration
+    const strategy = passport._strategies['apple'] as any;
+    if (strategy && strategy._callbackURL) {
+      console.log(`🍎 [Apple OAuth] Strategy callback URL: ${strategy._callbackURL}`);
+    }
     
     // Generate CSRF state token
     const state = randomBytes(32).toString('hex');
